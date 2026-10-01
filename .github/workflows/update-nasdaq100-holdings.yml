@@ -22,7 +22,7 @@ jobs:
           python-version: '3.12'
 
       - name: 의존성 설치
-        run: pip install requests
+        run: pip install -r scripts/requirements.txt
 
       - name: 보유종목 업데이트
         id: update

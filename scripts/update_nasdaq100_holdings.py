@@ -1,8 +1,8 @@
 """
 나스닥100 (QQQ) 보유 종목 자동 업데이트 스크립트
 
-Invesco 공식 CSV에서 최신 비율·종목 편입/편출을 반영하여
-web/app/nasdaq100-holdings/data.ts 를 자동 재생성합니다.
+etf-scraper 패키지(primary) → Invesco 직접 CSV(fallback) 순서로 데이터 취득.
+최신 비율·종목 편입/편출을 반영하여 web/app/nasdaq100-holdings/data.ts 를 재생성합니다.
 
 수동 관리 파일: web/app/nasdaq100-holdings/descriptions.json
   - 한글 종목명, 섹터, 주요 제품/사업 설명, 종목 유형(type)
@@ -25,22 +25,24 @@ from pathlib import Path
 import requests
 
 # ── 경로 ──────────────────────────────────────────────
-ROOT             = Path(__file__).parent.parent
-DESCRIPTIONS     = ROOT / "web/app/nasdaq100-holdings/descriptions.json"
-DATA_TS          = ROOT / "web/app/nasdaq100-holdings/data.ts"
+ROOT         = Path(__file__).parent.parent
+DESCRIPTIONS = ROOT / "web/app/nasdaq100-holdings/descriptions.json"
+DATA_TS      = ROOT / "web/app/nasdaq100-holdings/data.ts"
 
-# ── Invesco 공식 CSV URL ───────────────────────────────
+# ── Invesco 직접 CSV URL (fallback) ───────────────────
 INVESCO_URL = (
     "https://www.invesco.com/us/financial-products/etfs/holdings/main/holdings/0"
     "?audienceType=Investor&action=download&ticker=QQQ"
 )
-HEADERS = {
+INVESCO_HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
         "AppleWebKit/537.36 (KHTML, like Gecko) "
         "Chrome/124.0.0.0 Safari/537.36"
     ),
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept": "text/csv,application/octet-stream,*/*;q=0.8",
+    "Referer": "https://www.invesco.com/us/financial-products/etfs/product-detail?audienceType=Investor&ticker=QQQ",
+    "Accept-Language": "en-US,en;q=0.9",
 }
 
 # ── TypeScript → descriptions.json 초기화용 regex ────
@@ -84,76 +86,116 @@ def init_descriptions():
 
 
 # ─────────────────────────────────────────────────────
-# CSV 다운로드
+# 데이터 취득: etf-scraper (primary) → Invesco 직접 (fallback)
 # ─────────────────────────────────────────────────────
-def download_csv() -> str:
-    print("Invesco CSV 다운로드 중...")
-    resp = requests.get(INVESCO_URL, headers=HEADERS, timeout=30)
+def fetch_via_etf_scraper() -> tuple[str, list[dict]]:
+    """etf-scraper 패키지로 QQQ holdings 취득"""
+    from etf_scraper import ETFScraper  # noqa: PLC0415
+
+    print("etf-scraper로 QQQ holdings 조회 중...")
+    scraper = ETFScraper()
+    df = scraper.query_holdings("QQQ", None)  # None = 최신 날짜
+
+    if df is None or df.empty:
+        raise ValueError("etf-scraper: 빈 DataFrame 반환")
+
+    print(f"취득 완료 — {len(df)}개 행, 컬럼: {list(df.columns)}")
+
+    # ── 기준일 추출 ──────────────────────────────────
+    date_col = next((c for c in df.columns if "date" in c.lower()), None)
+    if date_col and not df[date_col].isnull().all():
+        raw_date = str(df[date_col].iloc[0])
+        as_of_kr = _format_date_kr(raw_date)
+    else:
+        as_of_kr = datetime.utcnow().strftime("%Y년 %-m월 %-d일")
+
+    # ── ticker 컬럼 ───────────────────────────────────
+    ticker_col = next(
+        (c for c in df.columns if c.lower() in ("ticker", "symbol")), None
+    )
+    if not ticker_col:
+        raise ValueError(f"ticker 컬럼 없음: {list(df.columns)}")
+
+    # ── weight 컬럼 ───────────────────────────────────
+    weight_col = next(
+        (c for c in df.columns
+         if any(k in c.lower() for k in ("pct_assets", "weight", "% of", "%weight"))),
+        None,
+    )
+    if not weight_col:
+        raise ValueError(f"weight 컬럼 없음: {list(df.columns)}")
+
+    holdings = []
+    rank = 1
+    for _, row in df.iterrows():
+        ticker = str(row[ticker_col]).strip().upper()
+        if not ticker or ticker in ("-", "NAN", ""):
+            continue
+        try:
+            w = float(str(row[weight_col]).replace("%", "").replace(",", ""))
+            # etf-scraper는 0~1 범위로 반환하는 경우가 있음 → 100 곱하기
+            if w < 1.5:
+                w = round(w * 100, 4)
+            else:
+                w = round(w, 4)
+        except (ValueError, TypeError):
+            continue
+        holdings.append({"rank": rank, "ticker": ticker, "weight": w})
+        rank += 1
+
+    return as_of_kr, holdings
+
+
+def fetch_via_direct_download() -> tuple[str, list[dict]]:
+    """Invesco 직접 CSV 다운로드 (fallback)"""
+    print("Invesco 직접 CSV 다운로드 중 (fallback)...")
+    resp = requests.get(INVESCO_URL, headers=INVESCO_HEADERS, timeout=30)
     resp.raise_for_status()
-    content = resp.content.decode("utf-8-sig")  # BOM 제거
+    content = resp.content.decode("utf-8-sig")
     print(f"다운로드 완료 ({len(content):,} bytes)")
-    return content
+    return _parse_invesco_csv(content)
 
 
-# ─────────────────────────────────────────────────────
-# CSV 파싱
-# ─────────────────────────────────────────────────────
-def parse_csv(content: str) -> tuple[str, list[dict]]:
-    """(기준일 한국어, 종목 리스트[rank, ticker, weight]) 반환"""
+def _parse_invesco_csv(content: str) -> tuple[str, list[dict]]:
+    """Invesco CSV 파싱 → (기준일 한국어, 종목 리스트)"""
     lines = content.splitlines()
     as_of_raw = ""
     header_idx = None
 
     for i, line in enumerate(lines):
         low = line.lower()
-
-        # 기준일 감지
         if not as_of_raw and ("as of" in low or "holdings as of" in low):
             m = re.search(
                 r'"?([A-Za-z]+ \d{1,2},?\s*\d{4}|\d{2}/\d{2}/\d{4})"?', line
             )
             if m:
                 as_of_raw = m.group(1).strip()
-
-        # 헤더 행 감지 (ticker 또는 weight 컬럼 포함)
         if header_idx is None and re.search(r"ticker|%weight|weight\s*\(", low) and "," in line:
             header_idx = i
             break
 
     if header_idx is None:
-        print("경고: CSV 헤더 행을 찾지 못했습니다. 첫 번째 행을 헤더로 사용합니다.")
+        print("경고: CSV 헤더 행 미감지 → 첫 번째 행 사용")
         header_idx = 0
 
     as_of_kr = _format_date_kr(as_of_raw) if as_of_raw else datetime.utcnow().strftime("%Y년 %-m월 %-d일")
-
     reader = csv.DictReader(io.StringIO("\n".join(lines[header_idx:])))
     holdings = []
     rank = 1
 
     for row in reader:
-        # 컬럼명 정규화
-        norm = {
-            re.sub(r'[\s%()#]', '', k).lower(): v.strip()
-            for k, v in row.items() if k
-        }
-
+        norm = {re.sub(r'[\s%()#]', '', k).lower(): v.strip() for k, v in row.items() if k}
         ticker = (norm.get("ticker") or norm.get("symbol") or "").strip().upper()
         weight_raw = (
-            norm.get("weight")
-            or norm.get("weight(")
-            or norm.get("weightpct")
-            or norm.get("weight(%")
-            or norm.get("%weight")
-            or ""
+            norm.get("weight") or norm.get("weightpct") or
+            norm.get("weight(%") or norm.get("%weight") or ""
         ).replace("%", "").replace(",", "").strip()
-
         if not ticker or ticker in ("-", ""):
             continue
         try:
             weight = round(float(weight_raw), 4)
         except ValueError:
             continue
-
         holdings.append({"rank": rank, "ticker": ticker, "weight": weight})
         rank += 1
 
@@ -271,9 +313,19 @@ def main():
         init_descriptions()
         return
 
-    # 1. CSV 다운로드 & 파싱
-    content = download_csv()
-    as_of_kr, holdings = parse_csv(content)
+    # 1. 데이터 취득 (etf-scraper → 직접 다운로드 순)
+    as_of_kr, holdings = None, None
+    try:
+        as_of_kr, holdings = fetch_via_etf_scraper()
+    except Exception as e:
+        print(f"etf-scraper 실패: {e}")
+        print("직접 다운로드로 재시도...")
+        try:
+            as_of_kr, holdings = fetch_via_direct_download()
+        except Exception as e2:
+            print(f"직접 다운로드도 실패: {e2}")
+            sys.exit(1)
+
     print(f"기준일: {as_of_kr}  |  종목 수: {len(holdings)}")
 
     if not holdings:
