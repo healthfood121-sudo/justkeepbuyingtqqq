@@ -175,7 +175,7 @@ function SyntheticDataContent() {
           </Link>
           <h1 className="text-2xl font-black mb-2">백테스트 데이터 — 합성 NDX 1929 시나리오</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            C전략 · 일 적립 20만원 · 목표 10억 · 1927~2026 (합성) / 1971~2026 (실측)
+            A전략 · 일 적립 20만원 · 목표 10억 · 1927~2026 (합성) / 1971~2026 (실측)
           </p>
         </div>
 

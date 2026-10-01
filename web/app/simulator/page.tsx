@@ -165,7 +165,7 @@ export default function SimulatorPage() {
               hint={`월 ${(dailyInvest * 21 / 10000).toFixed(0)}만원 상당`}
             />
             <NumInput
-              label="B전략 거치금 / A전략 한도"
+              label="C전략 거치금 / B전략 한도"
               value={capInvest}
               onChange={v => { setCapInvest(v); setLumpSum(v) }}
               min={0} step={10_000_000}
@@ -194,9 +194,9 @@ export default function SimulatorPage() {
           <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-5 space-y-3">
             <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">전략 설명</h2>
             {[
-              { s: 'A', color: 'text-yellow-500 dark:text-yellow-400', title: 'A전략 — 한도 후 중단', desc: `매일 ${(dailyInvest/10000).toFixed(0)}만원 적립하다, 누적 투자액이 ${(capInvest/1e8).toFixed(2)}억 도달 시 중단 후 보유.` },
-              { s: 'B', color: 'text-blue-500 dark:text-blue-400', title: 'B전략 — 거치+계속 적립', desc: `첫날 ${(lumpSum/1e8).toFixed(2)}억 거치 후, 매일 ${(dailyInvest/10000).toFixed(0)}만원 계속 적립.` },
-              { s: 'C', color: 'text-emerald-600 dark:text-emerald-400', title: 'C전략 — 계속 적립', desc: `거치 없이 매일 ${(dailyInvest/10000).toFixed(0)}만원 한도 없이 계속.` },
+              { s: 'C', color: 'text-emerald-600 dark:text-emerald-400', title: 'A전략 — 계속 적립', desc: `거치 없이 매일 ${(dailyInvest/10000).toFixed(0)}만원 한도 없이 계속.` },
+              { s: 'A', color: 'text-yellow-500 dark:text-yellow-400', title: 'B전략 — 한도 후 중단', desc: `매일 ${(dailyInvest/10000).toFixed(0)}만원 적립하다, 누적 투자액이 ${(capInvest/1e8).toFixed(2)}억 도달 시 중단 후 보유.` },
+              { s: 'B', color: 'text-blue-500 dark:text-blue-400', title: 'C전략 — 거치+계속 적립', desc: `첫날 ${(lumpSum/1e8).toFixed(2)}억 거치 후, 매일 ${(dailyInvest/10000).toFixed(0)}만원 계속 적립.` },
             ].map(({ s, color, title, desc }) => (
               <div key={s} className="border-l-2 border-gray-200 dark:border-gray-700 pl-3">
                 <p className={`text-xs font-semibold ${color}`}>{title}</p>
@@ -307,11 +307,12 @@ export default function SimulatorPage() {
                   )
 
                   const { params } = cohortJson.meta
+                  // 표시 순서: JSON C(A전략) → JSON A(B전략) → JSON B(C전략)
                   const colDef: { col: typeof tableSort.col; label: string }[] = [
                     { col: 'start', label: '시작일' },
-                    { col: 'yA', label: 'A 종료일' },
-                    { col: 'yB', label: 'B 종료일' },
-                    { col: 'yC', label: 'C 종료일' },
+                    { col: 'yC', label: 'A 종료일' },
+                    { col: 'yA', label: 'B 종료일' },
+                    { col: 'yB', label: 'C 종료일' },
                   ]
 
                   const sorted = [...cohortJson.rows].sort((x, y) => {
@@ -353,23 +354,29 @@ export default function SimulatorPage() {
                               <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">A 소요</th>
                               <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">B 소요</th>
                               <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">C 소요</th>
-                              <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">A 투자원금</th>
-                              <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">B 투자원금</th>
-                              <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">C 투자원금</th>
+                              <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">A 투입금</th>
+                              <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">B 투입금</th>
+                              <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">C 투입금</th>
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                             {sorted.map((r) => (
                               <tr key={r.s} className="hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors">
                                 <td className="py-2 px-3 text-gray-600 dark:text-gray-300 font-mono whitespace-nowrap">{r.s.slice(0,7)}</td>
+                                {/* A전략(JSON C, emerald) */}
+                                <td className={`py-2 px-3 font-mono whitespace-nowrap ${r.sC === 'completed' ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-300 dark:text-gray-600'}`}>
+                                  {fmtD(r.eC)}
+                                </td>
+                                {/* B전략(JSON A, yellow) */}
                                 <td className={`py-2 px-3 font-mono whitespace-nowrap ${r.sA === 'completed' ? 'text-yellow-500 dark:text-yellow-400' : 'text-gray-300 dark:text-gray-600'}`}>
                                   {fmtD(r.eA)}
                                 </td>
+                                {/* C전략(JSON B, blue) */}
                                 <td className={`py-2 px-3 font-mono whitespace-nowrap ${r.sB === 'completed' ? 'text-blue-500 dark:text-blue-400' : 'text-gray-300 dark:text-gray-600'}`}>
                                   {fmtD(r.eB)}
                                 </td>
-                                <td className={`py-2 px-3 font-mono whitespace-nowrap ${r.sC === 'completed' ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-300 dark:text-gray-600'}`}>
-                                  {fmtD(r.eC)}
+                                <td className={`py-2 px-3 font-mono ${r.sC === 'completed' ? 'text-emerald-600/70 dark:text-emerald-400/70' : 'text-gray-300 dark:text-gray-600'}`}>
+                                  {fmtY(r.yC)}
                                 </td>
                                 <td className={`py-2 px-3 font-mono ${r.sA === 'completed' ? 'text-yellow-500/70 dark:text-yellow-400/70' : 'text-gray-300 dark:text-gray-600'}`}>
                                   {fmtY(r.yA)}
@@ -377,12 +384,9 @@ export default function SimulatorPage() {
                                 <td className={`py-2 px-3 font-mono ${r.sB === 'completed' ? 'text-blue-500/70 dark:text-blue-400/70' : 'text-gray-300 dark:text-gray-600'}`}>
                                   {fmtY(r.yB)}
                                 </td>
-                                <td className={`py-2 px-3 font-mono ${r.sC === 'completed' ? 'text-emerald-600/70 dark:text-emerald-400/70' : 'text-gray-300 dark:text-gray-600'}`}>
-                                  {fmtY(r.yC)}
-                                </td>
+                                <td className="py-2 px-3 text-gray-400 font-mono">{fmtInv(r.iC)}</td>
                                 <td className="py-2 px-3 text-gray-400 font-mono">{fmtInv(r.iA)}</td>
                                 <td className="py-2 px-3 text-gray-400 font-mono">{fmtInv(r.iB)}</td>
-                                <td className="py-2 px-3 text-gray-400 font-mono">{fmtInv(r.iC)}</td>
                               </tr>
                             ))}
                           </tbody>

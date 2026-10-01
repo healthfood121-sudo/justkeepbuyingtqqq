@@ -6,8 +6,8 @@ export interface BacktestParams {
   instrument: Instrument
   strategy: Strategy
   dailyInvest: number      // 원 (기본 200_000)
-  capInvest: number        // A전략 한도 (기본 250_000_000)
-  lumpSum: number          // B전략 거치금 (기본 250_000_000)
+  capInvest: number        // B전략 한도 (기본 250_000_000)
+  lumpSum: number          // C전략 거치금 (기본 250_000_000)
   targetAmount: number     // 목표금액 (기본 1_000_000_000)
 }
 

@@ -88,13 +88,13 @@ export default function LumpSumVsSplitPost() {
           </h1>
           <div className="flex items-center gap-3 flex-wrap">
             <span className="text-sm text-gray-400">2026-10-01</span>
-            {['B전략', '거치', '분할매수', 'TQQQ', '백테스트'].map(t => <Tag key={t}>{t}</Tag>)}
+            {['C전략', '거치', '분할매수', 'TQQQ', '백테스트'].map(t => <Tag key={t}>{t}</Tag>)}
           </div>
         </div>
 
         {/* 본문 */}
         <P>
-          B전략(거치 2.5억 + 매일 20만원 계속 적립)을 쓰기로 했다면,
+          C전략(거치 2.5억 + 매일 20만원 계속 적립)을 쓰기로 했다면,
           바로 다음 질문이 따라온다.
         </P>
         <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-6 py-4 mb-6 text-gray-600 dark:text-gray-200 italic text-sm leading-relaxed">
@@ -116,7 +116,7 @@ export default function LumpSumVsSplitPost() {
         <div className="space-y-3 mb-8">
           <div className="flex gap-3 text-sm">
             <span className="text-yellow-500 dark:text-yellow-400 font-mono shrink-0">기준선</span>
-            <span className="text-gray-600 dark:text-gray-300">첫날 2.5억 전액 즉시 거치 (기존 B전략)</span>
+            <span className="text-gray-600 dark:text-gray-300">첫날 2.5억 전액 즉시 거치 (기존 C전략)</span>
           </div>
           <div className="flex gap-3 text-sm">
             <span className="text-blue-500 dark:text-blue-400 font-mono shrink-0">하락 대기</span>

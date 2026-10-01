@@ -162,15 +162,15 @@ export default function WithdrawalGuidePage() {
 
         <div className="space-y-2 mb-6 text-sm">
           <div className="flex gap-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg px-4 py-3">
-            <span className="text-gray-400 font-mono shrink-0 w-28">기준연수 (B전략)</span>
+            <span className="text-gray-400 font-mono shrink-0 w-28">기준연수 (C전략)</span>
             <span className="text-gray-600 dark:text-gray-300">
-              <strong className="text-gray-800 dark:text-gray-200">13년.</strong> B전략 TQQQ worst 소요기간이 약 12.24년이므로 올림.
+              <strong className="text-gray-800 dark:text-gray-200">13년.</strong> C전략 TQQQ worst 소요기간이 약 12.24년이므로 올림.
             </span>
           </div>
           <div className="flex gap-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg px-4 py-3">
-            <span className="text-gray-400 font-mono shrink-0 w-28">기준연수 (C전략)</span>
+            <span className="text-gray-400 font-mono shrink-0 w-28">기준연수 (A전략)</span>
             <span className="text-gray-600 dark:text-gray-300">
-              <strong className="text-gray-800 dark:text-gray-200">14년.</strong> C전략 TQQQ worst 소요기간이 약 13.74년이므로 올림.
+              <strong className="text-gray-800 dark:text-gray-200">14년.</strong> A전략 TQQQ worst 소요기간이 약 13.74년이므로 올림.
             </span>
           </div>
         </div>
@@ -265,7 +265,7 @@ export default function WithdrawalGuidePage() {
             <AnalysisLink
               href="/posts/lump-sum-vs-split"
               title="거치금 2.5억, 한번에 넣을까 vs 3년에 나눠 넣을까"
-              desc="인출 버퍼 기준연수의 근거가 된 B전략 worst 케이스(12.24년) 분석."
+              desc="인출 버퍼 기준연수의 근거가 된 C전략 worst 케이스(12.24년) 분석."
             />
             <AnalysisLink
               href="/posts/synthetic-ndx-1929"

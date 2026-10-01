@@ -108,7 +108,7 @@ export default function WithdrawalStrategyPost() {
           buffer_amount = buffer_years × 일적립액 × 252
         </div>
         <P>
-          NDX 3x B전략 기준 실측 최장 소요기간은 <strong className="text-gray-900 dark:text-white">12.24년</strong>
+          NDX 3x C전략 기준 실측 최장 소요기간은 <strong className="text-gray-900 dark:text-white">12.24년</strong>
           (1999~2001 닷컴버블 진입 시점)입니다.
           그래서 기준값(BUFFER_REF_YEARS)을 13으로 설정했습니다.
         </P>

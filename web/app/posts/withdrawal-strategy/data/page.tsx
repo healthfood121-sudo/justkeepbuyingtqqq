@@ -182,7 +182,7 @@ function WithdrawalDataContent() {
           </Link>
           <h1 className="text-2xl font-black mb-2">백테스트 데이터 — 인출 전략 Method A vs B</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            NDX 3x B전략 · 거치 2.5억 + 일 적립 20만원 · 목표 10억 달성 후 40년 인출 시뮬레이션
+            NDX 3x C전략 · 거치 2.5억 + 일 적립 20만원 · 목표 10억 달성 후 40년 인출 시뮬레이션
           </p>
         </div>
 

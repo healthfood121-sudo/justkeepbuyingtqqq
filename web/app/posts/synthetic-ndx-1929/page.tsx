@@ -253,7 +253,7 @@ function CohortScatterChart({
   return (
     <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-4 mb-2">
       <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 font-medium">
-        진입 시점별 목표 달성 소요기간 — NDX 3x C전략 (일 20만원, 목표 10억)
+        진입 시점별 목표 달성 소요기간 — NDX 3x A전략 (일 20만원, 목표 10억)
       </p>
       <ResponsiveContainer width="100%" height={300}>
         <ScatterChart margin={{ left: 8, right: 8, top: 4, bottom: 4 }}>
@@ -405,7 +405,7 @@ export default function SyntheticNdx1929Post() {
           </p>
           <div className="flex items-center gap-3 flex-wrap">
             <span className="text-sm text-gray-400">2026-10-01</span>
-            {['C전략', '1929', '가상데이터', '베타', '백테스트'].map(t => <Tag key={t}>{t}</Tag>)}
+            {['A전략', '1929', '가상데이터', '베타', '백테스트'].map(t => <Tag key={t}>{t}</Tag>)}
           </div>
         </div>
 
@@ -488,9 +488,9 @@ export default function SyntheticNdx1929Post() {
         </ChartCaption>
 
         {/* ── 4. NDX 1x 결과 ── */}
-        <H2>NDX 1x 합성 백테스트 — C전략 (일 20만원, 목표 10억)</H2>
+        <H2>NDX 1x 합성 백테스트 — A전략 (일 20만원, 목표 10억)</H2>
         <P>
-          먼저 레버리지 없는 1배 기준이다. 실제 NDX 1x C전략의 worst는 14.34년(1996-06)이다.
+          먼저 레버리지 없는 1배 기준이다. 실제 NDX 1x A전략의 worst는 14.34년(1996-06)이다.
           합성 구간 포함 시 어떻게 달라지는지 확인했다.
         </P>
         <Table
@@ -510,7 +510,7 @@ export default function SyntheticNdx1929Post() {
         </P>
 
         {/* ── 5. NDX 3x 결과 ── */}
-        <H2>NDX 3x 합성 백테스트 — C전략</H2>
+        <H2>NDX 3x 합성 백테스트 — A전략</H2>
         <P>
           실제로 투자하는 TQQQ는 3배 레버리지다. 합성 1x 수익률에 3배를 적용해 같은 방식으로 테스트했다.
         </P>
@@ -589,7 +589,7 @@ export default function SyntheticNdx1929Post() {
           {[
             {
               color: 'text-green-500 dark:text-green-400',
-              text: '최근 베타(β=1.14~1.24) 기준, NDX 3x C전략의 전체 worst는 닷컴버블(1998-06, 13.74년)이다. 1929년 대공황은 3배 레버리지에서 7~8년 수준으로 단축된다.',
+              text: '최근 베타(β=1.14~1.24) 기준, NDX 3x A전략의 전체 worst는 닷컴버블(1998-06, 13.74년)이다. 1929년 대공황은 3배 레버리지에서 7~8년 수준으로 단축된다.',
             },
             {
               color: 'text-blue-500 dark:text-blue-400',
