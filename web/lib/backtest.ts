@@ -35,6 +35,11 @@ function runCohort(
   let hitIdx = -1
   let hitValue = 0
 
+  // C전략: 3년(36개월) 월 분할 거치 — 매월 첫 거래일에 lumpSum/36 추가
+  const seenMonths = new Set<string>()
+  let splitCount = 0
+  const monthlyChunk = lumpSum / 36
+
   for (let j = 0; j < n; j++) {
     const px = prices[startIdx + j]
     let inv: number
@@ -44,7 +49,16 @@ function runCohort(
     } else if (strategy === 'B') {
       inv = j < nInvestDays ? dailyInvest : 0   // B전략: 한도 후 중단
     } else {
-      inv = j === 0 ? lumpSum : dailyInvest      // C전략: 거치 + 계속 적립
+      // C전략: 매일 20만원 + 매월 첫 거래일에 lumpSum/36 (36개월간)
+      const d = dates[startIdx + j]
+      const mk = `${d.getFullYear()}-${d.getMonth()}`
+      if (!seenMonths.has(mk) && splitCount < 36) {
+        seenMonths.add(mk)
+        splitCount++
+        inv = dailyInvest + monthlyChunk
+      } else {
+        inv = dailyInvest
+      }
     }
 
     cumShares += inv / px

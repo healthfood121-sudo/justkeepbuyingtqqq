@@ -24,7 +24,7 @@ interface Props {
 }
 
 const COLORS = { A: '#10b981', B: '#f59e0b', C: '#3b82f6' }
-const LABELS = { A: 'A전략(계속적립)', B: 'B전략(한도후중단)', C: 'C전략(거치+계속)' }
+const LABELS = { A: 'A전략(계속적립)', B: 'B전략(한도후중단)', C: 'C전략(3년분할거치)' }
 
 function toPoints(results: CohortResult[]) {
   return results

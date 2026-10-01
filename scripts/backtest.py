@@ -63,7 +63,7 @@ def backtest_cohort(prices, start_i, strategy, target, dates_pd):
     strategy: 'A', 'B', 'C'
       A — 매일 20만원, 한도 없이 계속 (JUST KEEP BUYING)
       B — 매일 20만원, 누적 투자액 2.5억 도달 시 중단
-      C — 거치 2.5억 + 이후 매일 20만원 계속
+      C — 매일 20만원 + 거치금 2.5억을 36개월 월 분할 (매월 첫 거래일에 LUMP_SUM/36 추가)
     target: 목표 금액 (예: 1_000_000_000)
     returns: dict
     """
@@ -84,9 +84,12 @@ def backtest_cohort(prices, start_i, strategy, target, dates_pd):
         inv[:k] = DAILY_INVEST
 
     else:  # C
-        # 거치 2.5억 (day 0) + 이후 매일 20만원 계속
+        # 3년 월 분할 거치: 매월 첫 거래일에 LUMP_SUM/36 추가 (36개월)
         inv = np.full(n, float(DAILY_INVEST))
-        inv[0] = LUMP_SUM  # 첫날은 거치금만
+        monthly_chunk = LUMP_SUM / 36
+        month_starts = get_monthly_starts(dates_pd[start_i : start_i + n])
+        for ms in month_starts[:36]:
+            inv[ms] += monthly_chunk
 
     shares_per_day = inv / px
     cum_shares     = np.cumsum(shares_per_day)

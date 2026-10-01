@@ -200,7 +200,7 @@ export default function SimulatorPage() {
             {[
               { s: 'A', color: 'text-emerald-600 dark:text-emerald-400', title: 'A전략 — 계속 적립', desc: `거치 없이 매일 ${(dailyInvest/10000).toFixed(0)}만원 한도 없이 계속.` },
               { s: 'B', color: 'text-yellow-500 dark:text-yellow-400', title: 'B전략 — 한도 후 중단', desc: `매일 ${(dailyInvest/10000).toFixed(0)}만원 적립하다, 누적 투자액이 ${(capInvest/1e8).toFixed(2)}억 도달 시 중단 후 보유.` },
-              { s: 'C', color: 'text-blue-500 dark:text-blue-400', title: 'C전략 — 거치+계속 적립', desc: `첫날 ${(lumpSum/1e8).toFixed(2)}억 거치 후, 매일 ${(dailyInvest/10000).toFixed(0)}만원 계속 적립.` },
+              { s: 'C', color: 'text-blue-500 dark:text-blue-400', title: 'C전략 — 3년 분할 거치', desc: `${(lumpSum/1e8).toFixed(2)}억을 36개월에 걸쳐 매월 균등 분할 거치 + 매일 ${(dailyInvest/10000).toFixed(0)}만원 계속 적립.` },
             ].map(({ s, color, title, desc }) => (
               <div key={s} className="border-l-2 border-gray-200 dark:border-gray-700 pl-3">
                 <p className={`text-xs font-semibold ${color}`}>{title}</p>
