@@ -1,0 +1,15 @@
+name: 임시 소스 테스트
+on:
+  push:
+    branches: [claude/pensive-thompson-afnyjg]
+    paths: [scripts/_probe_sources.py, .github/workflows/_probe-sources.yml]
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install requests
+      - run: python scripts/_probe_sources.py
