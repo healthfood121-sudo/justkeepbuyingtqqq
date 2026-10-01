@@ -28,7 +28,7 @@ export const HOLDINGS: Holding[] = [
   { rank:   4, ticker: 'AMZN', name: '아마존닷컴', weight: 6.31, sector: '이커머스/클라우드', products: 'Amazon.com 쇼핑몰, AWS 클라우드, Prime Video, Alexa, 물류/광고', type: 'stock' },
   { rank:   5, ticker: 'GOOGL', name: '알파벳 클래스 A', weight: 5.10, sector: '인터넷/광고', products: 'Google 검색, YouTube, Google Cloud, Android, Waymo 자율주행, Gemini AI', type: 'stock' },
   { rank:   6, ticker: 'GOOG', name: '알파벳 클래스 C', weight: 4.77, sector: '인터넷/광고', products: 'Google 검색, YouTube, Google Cloud (클래스 C, 무의결권)', type: 'stock' },
-  { rank:   7, ticker: 'SPCX', name: 'Space Exploration Technologies Corp. Class A Common Stock', weight: 4.63, sector: '', products: '', type: 'stock' },
+  { rank:   7, ticker: 'SPCX', name: '스페이스X', weight: 4.63, sector: '우주항공/위성통신', products: '팰컨9·스타십 로켓, 드래곤 우주선, 스타링크 위성 인터넷', type: 'stock' },
   { rank:   8, ticker: 'META', name: '메타 플랫폼', weight: 4.31, sector: '소셜미디어/광고', products: 'Facebook, Instagram, WhatsApp, Meta Quest VR 헤드셋, Llama AI 모델', type: 'stock' },
   { rank:   9, ticker: 'AVGO', name: '브로드컴', weight: 3.91, sector: '반도체/네트워크', products: '데이터센터 네트워킹 칩, 맞춤형 AI ASIC, WiFi/블루투스 칩, VMware', type: 'stock' },
   { rank:  10, ticker: 'TSLA', name: '테슬라', weight: 3.27, sector: '전기차/에너지', products: 'Model 3/Y/S/X/Cybertruck 전기차, 에너지저장장치(Powerwall), 태양광, FSD', type: 'stock' },
