@@ -50,34 +50,34 @@ def xlsx_to_json(xlsx_path: Path, json_path: Path):
 
         row = {
             "s":  start_str,
-            # A전략
-            "sA": raw.get("status_A"),
-            "yA": round(raw["years_A"], 4) if raw.get("years_A") is not None else None,
-            "eA": end_date_str(sd, raw.get("years_A")),
-            "iA": int(raw["invested_A"]) if raw.get("invested_A") is not None else None,
-            # B전략
-            "sB": raw.get("status_B"),
-            "yB": round(raw["years_B"], 4) if raw.get("years_B") is not None else None,
-            "eB": end_date_str(sd, raw.get("years_B")),
-            "iB": int(raw["invested_B"]) if raw.get("invested_B") is not None else None,
-            # C전략
-            "sC": raw.get("status_C"),
-            "yC": round(raw["years_C"], 4) if raw.get("years_C") is not None else None,
-            "eC": end_date_str(sd, raw.get("years_C")),
-            "iC": int(raw["invested_C"]) if raw.get("invested_C") is not None else None,
+            # A전략 (계속 적립 — 구 C)
+            "sA": raw.get("status_C"),
+            "yA": round(raw["years_C"], 4) if raw.get("years_C") is not None else None,
+            "eA": end_date_str(sd, raw.get("years_C")),
+            "iA": int(raw["invested_C"]) if raw.get("invested_C") is not None else None,
+            # B전략 (한도 후 중단 — 구 A)
+            "sB": raw.get("status_A"),
+            "yB": round(raw["years_A"], 4) if raw.get("years_A") is not None else None,
+            "eB": end_date_str(sd, raw.get("years_A")),
+            "iB": int(raw["invested_A"]) if raw.get("invested_A") is not None else None,
+            # C전략 (거치+계속 적립 — 구 B)
+            "sC": raw.get("status_B"),
+            "yC": round(raw["years_B"], 4) if raw.get("years_B") is not None else None,
+            "eC": end_date_str(sd, raw.get("years_B")),
+            "iC": int(raw["invested_B"]) if raw.get("invested_B") is not None else None,
         }
         rows.append(row)
 
-    # 메타 정보 포함
-    completed_B = [r for r in rows if r["sB"] == "completed"]
-    years_B = [r["yB"] for r in completed_B]
+    # 메타 정보 포함 (C전략 = 거치+계속 기준)
+    completed_C = [r for r in rows if r["sC"] == "completed"]
+    years_C = [r["yC"] for r in completed_C]
 
     meta = {
         "params": {"dailyInvest": 200000, "lumpSum": 250000000, "target": 1000000000},
         "total": len(rows),
-        "completedB": len(completed_B),
-        "avgB":    round(sum(years_B)/len(years_B), 2) if years_B else None,
-        "maxB":    round(max(years_B), 2) if years_B else None,
+        "completedC": len(completed_C),
+        "avgC":    round(sum(years_C)/len(years_C), 2) if years_C else None,
+        "maxC":    round(max(years_C), 2) if years_C else None,
         "source":  xlsx_path.name,
     }
 

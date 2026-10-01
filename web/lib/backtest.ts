@@ -40,11 +40,11 @@ function runCohort(
     let inv: number
 
     if (strategy === 'A') {
-      inv = j < nInvestDays ? dailyInvest : 0
+      inv = dailyInvest                          // A전략: 계속 적립, 한도 없음
     } else if (strategy === 'B') {
-      inv = j === 0 ? lumpSum : dailyInvest
+      inv = j < nInvestDays ? dailyInvest : 0   // B전략: 한도 후 중단
     } else {
-      inv = dailyInvest
+      inv = j === 0 ? lumpSum : dailyInvest      // C전략: 거치 + 계속 적립
     }
 
     cumShares += inv / px

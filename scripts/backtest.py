@@ -61,6 +61,9 @@ def backtest_cohort(prices, start_i, strategy, target, dates_pd):
     prices: 전체 합성가격 numpy array
     start_i: 코호트 시작 인덱스
     strategy: 'A', 'B', 'C'
+      A — 매일 20만원, 한도 없이 계속 (JUST KEEP BUYING)
+      B — 매일 20만원, 누적 투자액 2.5억 도달 시 중단
+      C — 거치 2.5억 + 이후 매일 20만원 계속
     target: 목표 금액 (예: 1_000_000_000)
     returns: dict
     """
@@ -71,19 +74,19 @@ def backtest_cohort(prices, start_i, strategy, target, dates_pd):
     px = prices[start_i : start_i + n]
 
     if strategy == "A":
+        # 매일 20만원, 한도 없음 (JUST KEEP BUYING)
+        inv = np.full(n, float(DAILY_INVEST))
+
+    elif strategy == "B":
         # 매일 20만원, 누적 투자액 2.5억 도달 시 중단
         k = min(n, N_INVEST_DAYS)
         inv = np.zeros(n)
         inv[:k] = DAILY_INVEST
 
-    elif strategy == "B":
-        # 거치 2.5억 (day 0, 일반매수 없음) + 이후 매일 20만원 (day 1~)
-        inv = np.full(n, float(DAILY_INVEST))
-        inv[0] = LUMP_SUM  # 첫날은 거치금만 (일반매수 없음)
-
     else:  # C
-        # 매일 20만원, 한도 없음
+        # 거치 2.5억 (day 0) + 이후 매일 20만원 계속
         inv = np.full(n, float(DAILY_INVEST))
+        inv[0] = LUMP_SUM  # 첫날은 거치금만
 
     shares_per_day = inv / px
     cum_shares     = np.cumsum(shares_per_day)
