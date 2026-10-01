@@ -5,9 +5,9 @@ interface Props {
 }
 
 const strategyInfo = {
-  A: { label: 'A전략', desc: '한도 후 중단', color: 'text-yellow-400', bg: 'bg-yellow-400/10 border-yellow-400/30' },
-  B: { label: 'B전략', desc: '거치+계속 적립', color: 'text-blue-400', bg: 'bg-blue-400/10 border-blue-400/30' },
-  C: { label: 'C전략', desc: '거치없이 계속', color: 'text-emerald-400', bg: 'bg-emerald-400/10 border-emerald-400/30' },
+  A: { label: 'A전략', desc: '한도 후 중단', color: 'text-yellow-500 dark:text-yellow-400', bg: 'bg-yellow-50 border-yellow-200 dark:bg-yellow-400/10 dark:border-yellow-400/30' },
+  B: { label: 'B전략', desc: '거치+계속 적립', color: 'text-blue-500 dark:text-blue-400', bg: 'bg-blue-50 border-blue-200 dark:bg-blue-400/10 dark:border-blue-400/30' },
+  C: { label: 'C전략', desc: '거치없이 계속', color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 border-emerald-200 dark:bg-emerald-400/10 dark:border-emerald-400/30' },
 }
 
 export default function StrategySummaryRow({ summaries }: Props) {
@@ -20,7 +20,7 @@ export default function StrategySummaryRow({ summaries }: Props) {
           <div key={s} className={`rounded-xl p-4 border ${info.bg}`}>
             <div className="flex items-center gap-2 mb-3">
               <span className={`text-lg font-bold ${info.color}`}>{info.label}</span>
-              <span className="text-xs text-gray-400">{info.desc}</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">{info.desc}</span>
             </div>
             <div className="space-y-2">
               <Stat label="완료율" value={`${sum.completionRate.toFixed(1)}%`} />
@@ -38,8 +38,8 @@ export default function StrategySummaryRow({ summaries }: Props) {
 function Stat({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
   return (
     <div className="flex justify-between items-baseline">
-      <span className="text-xs text-gray-400">{label}</span>
-      <span className={`text-sm font-semibold ${highlight ? 'text-red-400' : 'text-white'}`}>{value}</span>
+      <span className="text-xs text-gray-500 dark:text-gray-400">{label}</span>
+      <span className={`text-sm font-semibold ${highlight ? 'text-red-500 dark:text-red-400' : 'text-gray-900 dark:text-white'}`}>{value}</span>
     </div>
   )
 }

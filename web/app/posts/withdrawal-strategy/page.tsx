@@ -1,29 +1,30 @@
 import Link from 'next/link'
+import Header from '@/components/Header'
 
 function Tag({ children }: { children: string }) {
   return (
-    <span className="text-xs bg-gray-800 text-gray-300 px-2 py-0.5 rounded-full">{children}</span>
+    <span className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-full">{children}</span>
   )
 }
 
 function H2({ children }: { children: React.ReactNode }) {
-  return <h2 className="text-xl font-bold mt-12 mb-4 text-white">{children}</h2>
+  return <h2 className="text-xl font-bold mt-12 mb-4 text-gray-900 dark:text-white">{children}</h2>
 }
 
 function H3({ children }: { children: React.ReactNode }) {
-  return <h3 className="text-base font-semibold mt-8 mb-3 text-gray-200">{children}</h3>
+  return <h3 className="text-base font-semibold mt-8 mb-3 text-gray-700 dark:text-gray-200">{children}</h3>
 }
 
 function P({ children }: { children: React.ReactNode }) {
-  return <p className="text-gray-300 leading-relaxed mb-4">{children}</p>
+  return <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">{children}</p>
 }
 
 function Callout({ color = 'blue', children }: { color?: 'blue' | 'yellow' | 'red' | 'green'; children: React.ReactNode }) {
   const styles = {
-    blue:   'bg-blue-500/10 border-blue-500/30 text-blue-200',
-    yellow: 'bg-yellow-500/10 border-yellow-500/30 text-yellow-200',
-    red:    'bg-red-500/10 border-red-500/30 text-red-200',
-    green:  'bg-green-500/10 border-green-500/30 text-green-200',
+    blue:   'bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-500/10 dark:border-blue-500/30 dark:text-blue-200',
+    yellow: 'bg-yellow-50 border-yellow-200 text-yellow-800 dark:bg-yellow-500/10 dark:border-yellow-500/30 dark:text-yellow-200',
+    red:    'bg-red-50 border-red-200 text-red-800 dark:bg-red-500/10 dark:border-red-500/30 dark:text-red-200',
+    green:  'bg-green-50 border-green-200 text-green-800 dark:bg-green-500/10 dark:border-green-500/30 dark:text-green-200',
   }
   return (
     <div className={`border rounded-xl px-5 py-4 mb-6 text-sm leading-relaxed ${styles[color]}`}>
@@ -37,17 +38,17 @@ function Table({ headers, rows }: { headers: string[]; rows: (string | number)[]
     <div className="overflow-x-auto mb-8">
       <table className="w-full text-sm border-collapse">
         <thead>
-          <tr className="border-b border-gray-700">
+          <tr className="border-b border-gray-200 dark:border-gray-700">
             {headers.map((h) => (
-              <th key={h} className="py-2 px-4 text-left text-gray-400 font-medium">{h}</th>
+              <th key={h} className="py-2 px-4 text-left text-gray-500 dark:text-gray-400 font-medium">{h}</th>
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-800">
+        <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
           {rows.map((row, i) => (
-            <tr key={i} className="hover:bg-gray-800/50 transition-colors">
+            <tr key={i} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
               {row.map((cell, j) => (
-                <td key={j} className="py-2.5 px-4 text-gray-300">{cell}</td>
+                <td key={j} className="py-2.5 px-4 text-gray-700 dark:text-gray-300">{cell}</td>
               ))}
             </tr>
           ))}
@@ -59,31 +60,20 @@ function Table({ headers, rows }: { headers: string[]; rows: (string | number)[]
 
 export default function WithdrawalStrategyPost() {
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
-      {/* 헤더 */}
-      <header className="border-b border-gray-800">
-        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="text-xl font-black tracking-tight">
-            justkeepbuying<span className="text-blue-400">tqqq</span>
-          </Link>
-          <nav className="flex items-center gap-4 text-sm text-gray-400">
-            <Link href="/simulator" className="hover:text-white transition-colors">시뮬레이터</Link>
-            <Link href="/posts" className="hover:text-white transition-colors">글</Link>
-          </nav>
-        </div>
-      </header>
+    <div className="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-white">
+      <Header activePage="posts" maxWidth="max-w-4xl" />
 
       <main className="max-w-3xl mx-auto px-6 py-16">
         {/* 글 헤더 */}
         <div className="mb-12">
-          <Link href="/posts" className="text-sm text-gray-500 hover:text-gray-300 transition-colors mb-6 inline-block">
+          <Link href="/posts" className="text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors mb-6 inline-block">
             ← 목록으로
           </Link>
           <h1 className="text-3xl font-black leading-tight mb-4">
             인출 전략 설계기: 버블 케이스 재진입 방법 비교 (A vs B)
           </h1>
           <div className="flex items-center gap-3 flex-wrap">
-            <span className="text-sm text-gray-500">2026-10-01</span>
+            <span className="text-sm text-gray-400">2026-10-01</span>
             {['인출', '백테스트', 'TQQQ', '닷컴버블'].map(t => <Tag key={t}>{t}</Tag>)}
           </div>
         </div>
@@ -92,7 +82,7 @@ export default function WithdrawalStrategyPost() {
         <P>
           10억 목표를 달성하고 인출 단계로 넘어가는 로직을 설계하다가,
           예상치 못한 엣지 케이스를 발견했습니다.
-          너무 <strong className="text-white">빠르게 목표를 달성한 코호트</strong>가
+          너무 <strong className="text-gray-900 dark:text-white">빠르게 목표를 달성한 코호트</strong>가
           오히려 가장 위험한 상황에 빠질 수 있다는 것입니다.
         </P>
 
@@ -102,18 +92,18 @@ export default function WithdrawalStrategyPost() {
           인출 초기에도 어려울 수 있으니 현금 버퍼를 두자"입니다.
           공식으로 표현하면:
         </P>
-        <div className="bg-gray-900 border border-gray-800 rounded-xl px-6 py-4 mb-6 font-mono text-sm text-blue-300">
+        <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl px-6 py-4 mb-6 font-mono text-sm text-blue-600 dark:text-blue-300">
           buffer_years = max(0, 최장기간 − 소요기간)<br />
           buffer_amount = buffer_years × 일적립액 × 252
         </div>
         <P>
-          NDX 3x B전략 기준 실측 최장 소요기간은 <strong className="text-white">12.24년</strong>
+          NDX 3x B전략 기준 실측 최장 소요기간은 <strong className="text-gray-900 dark:text-white">12.24년</strong>
           (1999~2001 닷컴버블 진입 코호트)입니다.
           그래서 기준값(BUFFER_REF_YEARS)을 13으로 설정했습니다.
         </P>
         <P>
           그런데 소요기간이 1.5년 미만인 "버블 케이스"는 다르게 처리합니다.
-          버퍼를 현금으로 쌓는 게 아니라, <strong className="text-white">전량 매도 후 대기</strong>합니다.
+          버퍼를 현금으로 쌓는 게 아니라, <strong className="text-gray-900 dark:text-white">전량 매도 후 대기</strong>합니다.
           1.5년 안에 10억을 달성했다는 건 시장이 비정상적으로 빠르게 올랐다는 신호이기 때문입니다.
         </P>
 
@@ -130,7 +120,7 @@ export default function WithdrawalStrategyPost() {
 
         <P>
           1998년 4월에 매도한 건 나쁜 판단이 아닙니다. TQQQ 합성가격이 이미 3.5배 올라있었으니까요.
-          문제는 <strong className="text-white">기계적인 2년 타이머</strong>가 정확히 닷컴버블 최고점을 겨냥해버린 것입니다.
+          문제는 <strong className="text-gray-900 dark:text-white">기계적인 2년 타이머</strong>가 정확히 닷컴버블 최고점을 겨냥해버린 것입니다.
         </P>
 
         <Table
@@ -204,7 +194,7 @@ export default function WithdrawalStrategyPost() {
         <P>
           Method A가 압도적으로 유리합니다. 이유는 반직관적입니다:
           2년을 기다리면 DCA 시작 시점이 닷컴버블 정점(2000년) 근처가 됩니다.
-          하지만 이 시점부터 <strong className="text-white">닷컴버블 전체 붕괴 구간(TQQQ 7,218→7)</strong>에
+          하지만 이 시점부터 <strong className="text-gray-900 dark:text-white">닷컴버블 전체 붕괴 구간(TQQQ 7,218→7)</strong>에
           걸쳐 10억 전액을 분산 투입하기 때문에,
           바닥권에서 엄청난 양의 주식을 저렴하게 쌓을 수 있습니다.
         </P>
@@ -246,8 +236,8 @@ export default function WithdrawalStrategyPost() {
             '2년 대기는 단순해 보이지만, 결과적으로 닷컴버블 직전 코호트에게 전체 붕괴 구간을 DCA로 매수하는 기회를 줍니다.',
             'SP500 기준 -20% / -50% 트리거는 TQQQ 포트폴리오 기준보다 훨씬 안정적인 신호를 제공합니다.',
           ].map((item, i) => (
-            <li key={i} className="flex gap-3 text-gray-300 text-sm">
-              <span className="text-blue-400 mt-0.5 shrink-0">→</span>
+            <li key={i} className="flex gap-3 text-gray-600 dark:text-gray-300 text-sm">
+              <span className="text-blue-500 dark:text-blue-400 mt-0.5 shrink-0">→</span>
               <span>{item}</span>
             </li>
           ))}
@@ -259,9 +249,9 @@ export default function WithdrawalStrategyPost() {
         </P>
 
         {/* 구분선 */}
-        <div className="border-t border-gray-800 mt-16 pt-8 flex items-center justify-between text-sm text-gray-500">
-          <Link href="/posts" className="hover:text-gray-300 transition-colors">← 글 목록</Link>
-          <Link href="/simulator" className="hover:text-gray-300 transition-colors">시뮬레이터에서 직접 돌려보기 →</Link>
+        <div className="border-t border-gray-200 dark:border-gray-800 mt-16 pt-8 flex items-center justify-between text-sm text-gray-400">
+          <Link href="/posts" className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors">← 글 목록</Link>
+          <Link href="/simulator" className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors">시뮬레이터에서 직접 돌려보기 →</Link>
         </div>
       </main>
     </div>

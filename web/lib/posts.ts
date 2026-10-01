@@ -8,6 +8,14 @@ export type PostMeta = {
 
 export const posts: PostMeta[] = [
   {
+    slug: 'synthetic-ndx-1929',
+    title: '1929년 대공황 시나리오는 TQQQ에서 얼마나 걸릴까',
+    date: '2026-10-01',
+    tags: ['C전략', '1929', '가상데이터', '베타', '백테스트'],
+    summary:
+      'NDX 데이터는 1971년부터만 존재한다. SP500과 NDX의 베타 회귀로 가상 pre-1971 NDX를 합성해 1929년 대공황을 테스트했다. 최근 베타(β=1.14~1.24) 기준, 1929 진입은 오히려 7~8년에 끝나고 전체 worst는 닷컴버블(13.74년)이다.',
+  },
+  {
     slug: 'lump-sum-vs-split',
     title: '거치금 2.5억, 한번에 넣을까 vs 3년에 나눠 넣을까',
     date: '2026-10-01',

@@ -3,6 +3,7 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 import { makeDistribution } from '@/lib/backtest'
 import type { CohortResult } from '@/lib/types'
+import { useTheme } from '@/components/ThemeProvider'
 
 interface Props {
   resultsA: CohortResult[]
@@ -13,8 +14,8 @@ interface Props {
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null
   return (
-    <div className="bg-gray-900 border border-gray-700 rounded px-3 py-2 text-sm">
-      <p className="text-gray-400 mb-1">{label}년 구간</p>
+    <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded px-3 py-2 text-sm shadow-md">
+      <p className="text-gray-500 dark:text-gray-400 mb-1">{label}년 구간</p>
       {payload.map((p: any) => (
         <p key={p.name} style={{ color: p.fill }}>{p.name}: {p.value.toFixed(1)}%</p>
       ))}
@@ -23,6 +24,13 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 }
 
 export default function DistributionChart({ resultsA, resultsB, resultsC }: Props) {
+  const { theme } = useTheme()
+  const isDark = theme === 'dark'
+
+  const gridColor = isDark ? '#374151' : '#e5e7eb'
+  const axisColor = isDark ? '#6b7280' : '#9ca3af'
+  const tickColor = isDark ? '#9ca3af' : '#6b7280'
+
   const distA = makeDistribution(resultsA)
   const distB = makeDistribution(resultsB)
   const distC = makeDistribution(resultsC)
@@ -47,20 +55,23 @@ export default function DistributionChart({ resultsA, resultsB, resultsC }: Prop
   return (
     <ResponsiveContainer width="100%" height={280}>
       <BarChart data={data} margin={{ top: 10, right: 20, bottom: 20, left: 10 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+        <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
         <XAxis
           dataKey="bin"
-          tick={{ fill: '#9ca3af', fontSize: 10 }}
-          stroke="#6b7280"
-          label={{ value: '소요기간(년)', position: 'insideBottom', offset: -12, fill: '#6b7280', fontSize: 12 }}
+          tick={{ fill: tickColor, fontSize: 10 }}
+          stroke={axisColor}
+          label={{ value: '소요기간(년)', position: 'insideBottom', offset: -12, fill: axisColor, fontSize: 12 }}
         />
         <YAxis
-          tick={{ fill: '#9ca3af', fontSize: 11 }}
-          stroke="#6b7280"
+          tick={{ fill: tickColor, fontSize: 11 }}
+          stroke={axisColor}
           tickFormatter={v => `${v}%`}
         />
         <Tooltip content={<CustomTooltip />} />
-        <Legend wrapperStyle={{ paddingTop: 8 }} formatter={v => <span className="text-sm text-gray-300">{v}전략</span>} />
+        <Legend
+          wrapperStyle={{ paddingTop: 8 }}
+          formatter={v => <span className="text-sm" style={{ color: tickColor }}>{v}전략</span>}
+        />
         <Bar dataKey="A" fill="#f59e0b" opacity={0.8} name="A" />
         <Bar dataKey="B" fill="#3b82f6" opacity={0.8} name="B" />
         <Bar dataKey="C" fill="#10b981" opacity={0.8} name="C" />
