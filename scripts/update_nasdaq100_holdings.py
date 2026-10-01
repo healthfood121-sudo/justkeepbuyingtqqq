@@ -2,7 +2,7 @@
 나스닥100 (QQQ) 보유 종목 자동 업데이트 스크립트
 
 구성종목: Nasdaq 공식 API / 비중: Invesco 공식 QQQ 보유내역 API.
-Invesco 가 응답하지 않으면 그 회차는 건너뛰고 다음 실행 때 재시도.
+Invesco 가 응답하지 않으면 그 회차는 건너뛰고 다음 날 실행 때 재시도.
 최신 비율·종목 편입/편출을 반영하여 web/app/nasdaq100-holdings/data.ts 를 재생성합니다.
 
 수동 관리 파일: web/app/nasdaq100-holdings/descriptions.json
@@ -49,7 +49,7 @@ INVESCO_API_HEADER_SETS = [
     {},                                              # requests 기본 헤더
     {"User-Agent": "curl/8.5.0", "Accept": "*/*"},
 ]
-INVESCO_ROUNDS = 3
+INVESCO_ROUNDS = 5  # 하루 1회 실행이므로 한 번 실행에서 넉넉히 재시도
 
 # ── Nasdaq 공식 나스닥100 구성종목 API (편입/편출 기준) ──
 # 비중은 제공하지 않음 (종목·회사명·시가총액만). 비중은 Invesco 에서만 가져온다.
@@ -129,7 +129,7 @@ def fetch_via_invesco_api() -> tuple[str, list[dict]]:
     for n, url, headers in attempts:
         if n != prev_round:
             prev_round = n
-            time.sleep(10)  # 간헐적 406 → 잠시 후 재시도
+            time.sleep(30)  # 간헐적 406 → 잠시 후 재시도
         print(f"Invesco API 조회 (라운드 {n}/{INVESCO_ROUNDS}, 헤더 {INVESCO_API_HEADER_SETS.index(headers) + 1}): {url}")
         try:
             resp = requests.get(url, headers=headers, timeout=30)
