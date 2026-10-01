@@ -108,11 +108,11 @@ export default function AccumulationGuidePage() {
           이를 테스트에서 빼면 방법론이 얼마나 험한 상황을 버티는지 알 수 없다.
         </P>
         <P>
-          그래서 이 사이트는 NDX 일별 수익률에 레버리지를 곱한 <strong className="text-gray-900 dark:text-white">합성가격</strong>을 사용한다.
+          그래서 이 사이트는 나스닥 일별 수익률에 레버리지를 곱한 <strong className="text-gray-900 dark:text-white">합성가격</strong>을 사용한다.
         </P>
         <FormulaBlock>
           합성가격₀ = 100<br />
-          합성가격ₜ = 합성가격ₜ₋₁ × (1 + NDX 일수익률 × 레버리지)
+          합성가격ₜ = 합성가격ₜ₋₁ × (1 + 나스닥 일수익률 × 레버리지)
         </FormulaBlock>
         <P>
           변동성 끌림은 이 누적 곱셈에 자동 반영된다. 단, 운용비용(TQQQ 0.88%/년)·스왑금리·추적오차는
@@ -120,13 +120,15 @@ export default function AccumulationGuidePage() {
         </P>
 
         <Callout color="yellow">
-          <strong>NDX 데이터 스플라이스 보정.</strong> 1985-10-01에 원본 데이터에 −60% 급락처럼 보이는
-          소스 전환 오류가 있다. 이 사이트는 해당 지점을 비율 보정해 연속 수익률로 변환한 뒤 사용한다.
+          <strong>기반 데이터: 나스닥 종합지수 + 나스닥100 이어붙임.</strong>{' '}
+          나스닥100(NDX)은 1985년부터 산출됐다. 1985년 이전 구간은 나스닥 종합지수(COMP) 데이터로 대체해
+          1971년까지 소급한다. 단, 두 지수를 이어붙이는 1985-10-01 지점에서 원본 데이터에 −60% 급락처럼 보이는
+          소스 전환 스케일 오류가 있다. 이 사이트는 해당 지점을 비율 보정해 연속 수익률로 변환한 뒤 사용한다.
         </Callout>
 
         <P>
-          나스닥100 데이터가 1971년까지밖에 없어서 1929년 대공황을 직접 테스트할 수 없다.
-          SP500과 NDX의 베타 회귀로 합성 pre-1971 NDX를 만들어 1929년도 검증했다.
+          이렇게 이어붙여도 1971년이 한계다. 1929년 대공황을 직접 테스트할 수 없다.
+          SP500과 NDX의 베타 회귀로 가상의 pre-1971 NDX를 합성해 1929년도 검증했다.
         </P>
         <AnalysisLink
           href="/posts/synthetic-ndx-1929"

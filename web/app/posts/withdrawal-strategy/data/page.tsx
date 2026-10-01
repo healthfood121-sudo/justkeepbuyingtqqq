@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Header from '@/components/Header'
@@ -143,7 +143,7 @@ function CohortTable({
 
 // ── 메인 ─────────────────────────────────────────────────
 
-export default function WithdrawalDataPage() {
+function WithdrawalDataContent() {
   const searchParams = useSearchParams()
   const initMethod = (searchParams.get('method') ?? 'A').toUpperCase() as 'A' | 'B'
   const initBubble = searchParams.get('bubble') === '1'
@@ -262,5 +262,13 @@ export default function WithdrawalDataPage() {
 
       </main>
     </div>
+  )
+}
+
+export default function WithdrawalDataPage() {
+  return (
+    <Suspense>
+      <WithdrawalDataContent />
+    </Suspense>
   )
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Header from '@/components/Header'
@@ -115,7 +115,7 @@ function CohortTable({ cohorts, worstY }: { cohorts: CohortRow[]; worstY: number
 
 // ── 메인 ─────────────────────────────────────────────────
 
-export default function LumpSumDataPage() {
+function LumpSumDataContent() {
   const searchParams = useSearchParams()
 
   const initInst   = searchParams.get('inst')   ?? 'ndx3x'
@@ -246,5 +246,13 @@ export default function LumpSumDataPage() {
 
       </main>
     </div>
+  )
+}
+
+export default function LumpSumDataPage() {
+  return (
+    <Suspense>
+      <LumpSumDataContent />
+    </Suspense>
   )
 }

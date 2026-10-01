@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Header from '@/components/Header'
@@ -131,7 +131,7 @@ function CohortTable({ cohorts, worstY }: { cohorts: CohortRow[]; worstY: number
 
 // ── 메인 ─────────────────────────────────────────────────
 
-export default function SyntheticDataPage() {
+function SyntheticDataContent() {
   const searchParams = useSearchParams()
 
   const initLev  = (searchParams.get('lev') ?? '3x') as '1x' | '3x'
@@ -256,5 +256,13 @@ export default function SyntheticDataPage() {
 
       </main>
     </div>
+  )
+}
+
+export default function SyntheticDataPage() {
+  return (
+    <Suspense>
+      <SyntheticDataContent />
+    </Suspense>
   )
 }
