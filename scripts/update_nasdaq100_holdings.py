@@ -55,6 +55,9 @@ SLICKCHARTS_HEADERS = {
     "Accept-Language": "en-US,en;q=0.9",
 }
 
+# 데이터 소스에서 얻은 영문 종목명 (신규 편입 종목의 임시 이름으로 사용)
+SOURCE_NAMES: dict[str, str] = {}
+
 # 비정상 데이터로 data.ts를 덮어쓰지 않기 위한 최소 종목 수
 MIN_HOLDINGS = 90
 
@@ -183,12 +186,32 @@ def fetch_via_slickcharts() -> tuple[str, list[dict]]:
     # 페이지에 사이드바 시세 표(SPY/QQQ/DIA 등)도 있으므로 'Weight' 헤더가 있는 표만 사용
     tables = re.findall(r"<table[^>]*>.*?</table>", html, re.S | re.I)
     main_table = next((t for t in tables if re.search(r">\s*Weight\s*<", t, re.I)), "")
+    # 헤더에서 Company / Symbol / Weight 열 위치를 찾아 셀 단위로 읽는다
+    def cells(tr: str, tag: str) -> list[str]:
+        raw = re.findall(rf"<{tag}[^>]*>(.*?)</{tag}>", tr, re.S | re.I)
+        return [re.sub(r"<[^>]+>", "", c).replace("&amp;", "&").strip() for c in raw]
+
+    trs = re.findall(r"<tr[^>]*>(.*?)</tr>", main_table, re.S | re.I)
+    header = next((cells(tr, "th") for tr in trs if "<th" in tr.lower()), [])
+    col = {h.lower(): i for i, h in enumerate(header)}
+    i_sym, i_wt, i_name = col.get("symbol"), col.get("weight"), col.get("company")
+    if i_sym is None or i_wt is None:
+        raise ValueError(f"Slickcharts 표 헤더 인식 실패: {header}")
+
     rows = []
-    for tr in re.findall(r"<tr[^>]*>(.*?)</tr>", main_table, re.S):
-        sym = re.search(r'href="/symbol/([A-Za-z.\-]+)"', tr)
-        pct = re.search(r"([\d.]+)\s*%", tr)
-        if sym and pct:
-            rows.append((sym.group(1).upper().replace(".", "-"), float(pct.group(1))))
+    for tr in trs:
+        tds = cells(tr, "td")
+        if len(tds) <= max(i_sym, i_wt):
+            continue
+        ticker = tds[i_sym].upper().replace(".", "-")
+        try:
+            weight = float(tds[i_wt].replace("%", "").replace(",", ""))
+        except ValueError:
+            continue
+        if ticker:
+            rows.append((ticker, weight))
+            if i_name is not None and i_name < len(tds):
+                SOURCE_NAMES[ticker] = tds[i_name]
     # 같은 종목이 중복 등장하면 첫 행만
     seen, uniq = set(), []
     for t, w in rows:
@@ -239,7 +262,7 @@ def detect_changes(holdings: list[dict], descs: dict) -> dict[str, list[str]]:
 def apply_additions(descs: dict, added: list[str]) -> dict:
     """신규 편입 종목을 descriptions에 빈 항목으로 추가"""
     for ticker in added:
-        descs[ticker] = {"name": ticker, "sector": "", "products": "", "type": "stock"}
+        descs[ticker] = {"name": SOURCE_NAMES.get(ticker, ticker), "sector": "", "products": "", "type": "stock"}
     return descs
 
 
@@ -360,7 +383,9 @@ def main():
     # 3. 편입/편출 감지
     changes = detect_changes(holdings, descs)
     if changes["added"]:
-        print(f"🆕 신규 편입 ({len(changes['added'])}): {', '.join(changes['added'])}")
+        print(f"🆕 신규 편입 ({len(changes['added'])}):")
+        for t in changes["added"]:
+            print(f"   - {t}: {SOURCE_NAMES.get(t, '?')}")
         descs = apply_additions(descs, changes["added"])
         DESCRIPTIONS.write_text(json.dumps(descs, ensure_ascii=False, indent=2), encoding="utf-8")
         print("   → descriptions.json 에 빈 항목 추가됨 (섹터/설명 수동 입력 필요)")
