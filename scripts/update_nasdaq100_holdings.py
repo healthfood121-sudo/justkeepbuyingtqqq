@@ -17,6 +17,7 @@ import argparse
 import json
 import re
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -107,8 +108,11 @@ def init_descriptions():
 def fetch_via_invesco_api() -> tuple[str, list[dict]]:
     """Invesco 공식 holdings JSON API"""
     last_err: Exception | None = None
-    for url in INVESCO_API_URLS:
-        print(f"Invesco API 조회: {url}")
+    attempts = [(url, n) for n in range(1, 4) for url in INVESCO_API_URLS]
+    for url, n in attempts:
+        print(f"Invesco API 조회 (시도 {n}/3): {url}")
+        if n > 1:
+            time.sleep(5)  # 간헐적 406 → 잠시 후 재시도
         try:
             resp = requests.get(url, headers=INVESCO_API_HEADERS, timeout=30)
             resp.raise_for_status()
@@ -155,8 +159,10 @@ def _extract_json_holdings(data) -> tuple[list[tuple[str, float]], str]:
             if dicts:
                 tk = pick(dicts[0], ("ticker", "symbol"), ("fund",))
                 wk = pick(dicts[0], ("weight", "percent"))
+                nk = pick(dicts[0], ("name", "description"), ("fund", "class"))
                 if tk and wk:
                     rows = []
+                    names = {}
                     for d in dicts:
                         t = str(d.get(tk) or "").strip().upper()
                         try:
@@ -165,8 +171,11 @@ def _extract_json_holdings(data) -> tuple[list[tuple[str, float]], str]:
                             continue
                         if t and t not in ("-", "NAN", "NONE"):
                             rows.append((t, w))
+                            if nk and d.get(nk):
+                                names[t] = str(d[nk]).strip()
                     if len(rows) > len(best):
                         best = rows
+                        SOURCE_NAMES.update(names)
             for v in node:
                 walk(v)
 
@@ -251,10 +260,11 @@ def _format_date_kr(s: str) -> str:
 # 편입/편출 감지
 # ─────────────────────────────────────────────────────
 def detect_changes(holdings: list[dict], descs: dict) -> dict[str, list[str]]:
-    new_set  = {h["ticker"] for h in holdings}
-    prev_set = set(descs.keys())
+    """편입 = 설명이 없는 신규 종목, 편출 = 이전 data.ts 에 있었는데 사라진 종목"""
+    new_set = {h["ticker"] for h in holdings}
+    prev_set = set(re.findall(r"ticker:\s*'([^']+)'", DATA_TS.read_text(encoding="utf-8"))) if DATA_TS.exists() else set()
     return {
-        "added":   sorted(new_set - prev_set),
+        "added":   sorted(t for t in new_set if desc_key(t) not in descs),
         "removed": sorted(prev_set - new_set),
     }
 
@@ -274,7 +284,21 @@ def _ts_str(s: str) -> str:
     return s.replace("\\", "\\\\").replace("'", "\\'")
 
 
+# 분기마다 바뀌는 지수선물 티커(NQZ6, NQH7 …)와 현금 항목을 고정 설명 키로 연결
+_FUTURES_RE = re.compile(r"^NQ[FGHJKMNQUVXZ]\d{1,2}$")
+_CASH_TICKERS = ("USD", "CASH", "COLL")
+
+
+def desc_key(ticker: str) -> str:
+    if _FUTURES_RE.match(ticker):
+        return "FUT"
+    if ticker in _CASH_TICKERS:
+        return "CASH"
+    return ticker
+
+
 def _infer_type(ticker: str, descs: dict) -> str:
+    ticker = desc_key(ticker)
     if ticker in descs:
         return descs[ticker].get("type", "stock")
     if ticker in ("CASH", "COLL"):
@@ -292,7 +316,7 @@ def generate_data_ts(as_of_kr: str, holdings: list[dict], descs: dict, source: s
     rows = []
     for h in holdings:
         t = h["ticker"]
-        d = descs.get(t, {})
+        d = descs.get(desc_key(t), {})
         name     = _ts_str(d.get("name", t))
         sector   = _ts_str(d.get("sector", ""))
         products = _ts_str(d.get("products", ""))
