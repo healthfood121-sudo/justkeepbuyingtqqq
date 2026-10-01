@@ -102,7 +102,7 @@ function WithdrawSection() {
             {' '}— 목표 달성 소요기간이 짧을수록 버퍼를 더 쌓는다.
             <br />
             <span className="text-gray-400 dark:text-gray-500 text-xs font-mono mt-1 block">
-              버퍼 기간 = max(0, 13년 − 소요기간)<br />
+              버퍼 기간 = max(0, 14년 − 소요기간)<br />
               버퍼 금액 = 버퍼 기간 × 일적립액 × 252
             </span>
           </p>
@@ -111,22 +111,13 @@ function WithdrawSection() {
         <div className="flex gap-3">
           <span className="text-blue-500 dark:text-blue-400 shrink-0 font-mono">02</span>
           <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-            <span className="text-gray-900 dark:text-white font-semibold">버블 케이스</span>
-            {' '}(소요 1.5년 미만) — 전량 매도 후 2년 대기,
-            이후 버퍼 기간 동안 매일 균등 분산 재진입.
-          </p>
-        </div>
-
-        <div className="flex gap-3">
-          <span className="text-blue-500 dark:text-blue-400 shrink-0 font-mono">03</span>
-          <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
             <span className="text-gray-900 dark:text-white font-semibold">월 1% 인출 시작</span>
             {' '}— 조정장은 그냥 맞고 간다.
           </p>
         </div>
 
         <div className="flex gap-3">
-          <span className="text-yellow-500 dark:text-yellow-400 shrink-0 font-mono">04</span>
+          <span className="text-yellow-500 dark:text-yellow-400 shrink-0 font-mono">03</span>
           <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
             <span className="text-gray-900 dark:text-white font-semibold">SP500 −20%</span>
             {' '}— 인출 중단, 1년간 일적립액으로 매수 재개.
@@ -135,22 +126,13 @@ function WithdrawSection() {
         </div>
 
         <div className="flex gap-3">
-          <span className="text-red-500 dark:text-red-400 shrink-0 font-mono">05</span>
+          <span className="text-red-500 dark:text-red-400 shrink-0 font-mono">04</span>
           <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
             <span className="text-gray-900 dark:text-white font-semibold">SP500 −50%</span>
-            {' '}— 남은 현금 버퍼를 13년에 걸쳐 매일 분산 매수.
+            {' '}— 남은 현금 버퍼를 14년으로 나누어 매일 분산 매수.
             8억 회복 시 인출 재시작.
           </p>
         </div>
-      </div>
-
-      <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3 text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-        전 구간 백테스트(1971~2026, 643 코호트) 결과
-        <span className="text-green-600 dark:text-green-400 font-semibold ml-1">100% 생존</span>.
-        최악 시나리오(닷컴버블 직전 진입)도 40년 후 96억+ 회복.{' '}
-        <Link href="/posts/withdrawal-strategy" className="text-blue-500 dark:text-blue-400 hover:underline">
-          설계 과정 읽기 →
-        </Link>
       </div>
 
       <SimButton href="/simulator" />
