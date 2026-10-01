@@ -81,13 +81,13 @@ export default function ScatterPlot({ resultsA, resultsB, resultsC, showA = true
           wrapperStyle={{ paddingTop: 8 }}
         />
         {showA && dataA.length > 0 && (
-          <Scatter name={LABELS.A} data={dataA} fill={COLORS.A} opacity={0.7} r={2} />
+          <Scatter name={LABELS.A} data={dataA} fill={COLORS.A} opacity={0.5} r={1.5} />
         )}
         {showB && dataB.length > 0 && (
-          <Scatter name={LABELS.B} data={dataB} fill={COLORS.B} opacity={0.7} r={2} />
+          <Scatter name={LABELS.B} data={dataB} fill={COLORS.B} opacity={0.5} r={1.5} />
         )}
         {showC && dataC.length > 0 && (
-          <Scatter name={LABELS.C} data={dataC} fill={COLORS.C} opacity={0.7} r={2} />
+          <Scatter name={LABELS.C} data={dataC} fill={COLORS.C} opacity={0.5} r={1.5} />
         )}
       </ScatterChart>
     </ResponsiveContainer>
