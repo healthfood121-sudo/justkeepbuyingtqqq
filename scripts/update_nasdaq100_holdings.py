@@ -1,7 +1,7 @@
 """
 나스닥100 (QQQ) 보유 종목 자동 업데이트 스크립트
 
-Invesco 공식 CSV(primary) → NASDAQ API(fallback) 순서로 데이터 취득.
+Invesco 공식 JSON API(primary) → Slickcharts(fallback) 순서로 데이터 취득.
 최신 비율·종목 편입/편출을 반영하여 web/app/nasdaq100-holdings/data.ts 를 재생성합니다.
 
 수동 관리 파일: web/app/nasdaq100-holdings/descriptions.json
@@ -14,8 +14,6 @@ Invesco 공식 CSV(primary) → NASDAQ API(fallback) 순서로 데이터 취득.
 """
 
 import argparse
-import csv
-import io
 import json
 import re
 import sys
@@ -29,32 +27,32 @@ ROOT         = Path(__file__).parent.parent
 DESCRIPTIONS = ROOT / "web/app/nasdaq100-holdings/descriptions.json"
 DATA_TS      = ROOT / "web/app/nasdaq100-holdings/data.ts"
 
-# ── Invesco 공식 CSV URL ──────────────────────────────
-INVESCO_URL = (
-    "https://www.invesco.com/us/financial-products/etfs/holdings/main/holdings/0"
-    "?audienceType=Investor&action=download&ticker=QQQ"
-)
-# 브라우저 흉내 헤더는 봇 차단에 걸려 406이 날 수 있으므로,
-# 단순한 헤더부터 순서대로 시도한다.
 _BROWSER_UA = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 )
-INVESCO_HEADER_SETS = [
-    {},                                              # requests 기본 헤더
-    {"User-Agent": "curl/8.5.0", "Accept": "*/*"},
-    {"User-Agent": _BROWSER_UA, "Accept": "*/*"},
-]
 
-# ── NASDAQ API (fallback) ─────────────────────────────
-NASDAQ_URL = "https://api.nasdaq.com/api/quote/QQQ/holdings"
-NASDAQ_PARAMS = {"assetclass": "etf", "limit": 300}
-NASDAQ_HEADERS = {
+# ── Invesco 공식 JSON API (primary) ───────────────────
+# 예전 CSV 다운로드 URL은 이제 웹사이트 HTML을 반환하므로 사용하지 않음.
+INVESCO_API_URLS = [
+    "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/QQQ/holdings/fund"
+    "?idType=ticker&interval=monthly&productType=ETF",
+    "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/QQQ/holdings/fund"
+    "?idType=ticker&productType=ETF",
+]
+INVESCO_API_HEADERS = {
     "User-Agent": _BROWSER_UA,
     "Accept": "application/json, text/plain, */*",
+    "Origin": "https://www.invesco.com",
+    "Referer": "https://www.invesco.com/",
+}
+
+# ── Slickcharts 나스닥100 지수 비중 (fallback) ─────────
+SLICKCHARTS_URL = "https://www.slickcharts.com/nasdaq100"
+SLICKCHARTS_HEADERS = {
+    "User-Agent": _BROWSER_UA,
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     "Accept-Language": "en-US,en;q=0.9",
-    "Origin": "https://www.nasdaq.com",
-    "Referer": "https://www.nasdaq.com/",
 }
 
 # 비정상 데이터로 data.ts를 덮어쓰지 않기 위한 최소 종목 수
@@ -101,85 +99,102 @@ def init_descriptions():
 
 
 # ─────────────────────────────────────────────────────
-# 데이터 취득: Invesco 공식 CSV (primary) → NASDAQ API (fallback)
+# 데이터 취득: Invesco JSON API (primary) → Slickcharts (fallback)
 # ─────────────────────────────────────────────────────
-def fetch_via_invesco() -> tuple[str, list[dict]]:
-    """Invesco 공식 QQQ holdings CSV"""
+def fetch_via_invesco_api() -> tuple[str, list[dict]]:
+    """Invesco 공식 holdings JSON API"""
     last_err: Exception | None = None
-    for i, headers in enumerate(INVESCO_HEADER_SETS, 1):
-        print(f"Invesco CSV 다운로드 시도 {i}/{len(INVESCO_HEADER_SETS)}...")
+    for url in INVESCO_API_URLS:
+        print(f"Invesco API 조회: {url}")
         try:
-            resp = requests.get(INVESCO_URL, headers=headers, timeout=30)
+            resp = requests.get(url, headers=INVESCO_API_HEADERS, timeout=30)
             resp.raise_for_status()
-            content = resp.content.decode("utf-8-sig")
-            print(f"다운로드 완료 ({len(content):,} bytes, {resp.headers.get('Content-Type')})")
-            as_of_kr, holdings = _parse_invesco_csv(content)
-            if not holdings:
-                print("  파싱된 종목 없음 — 응답 앞부분:")
-                print("\n".join("    " + l[:200] for l in content.splitlines()[:15]))
-            return as_of_kr, holdings
+            data = resp.json()
         except Exception as e:  # noqa: BLE001
             print(f"  실패: {e}")
             last_err = e
-    raise RuntimeError(f"Invesco 다운로드 실패: {last_err}")
+            continue
+        rows, as_of_raw = _extract_json_holdings(data)
+        if rows:
+            return _to_holdings(as_of_raw, rows)
+        print(f"  종목 목록을 찾지 못함 — 응답 앞부분: {resp.text[:500]!r}")
+        last_err = ValueError("holdings 목록 없음")
+    raise RuntimeError(f"Invesco API 실패: {last_err}")
 
 
-def _parse_invesco_csv(content: str) -> tuple[str, list[dict]]:
-    """Invesco CSV 파싱 → (기준일 한국어, 비중 내림차순 종목 리스트)
+def _extract_json_holdings(data) -> tuple[list[tuple[str, float]], str]:
+    """JSON 구조를 몰라도 (ticker, weight) 목록을 찾아낸다.
 
-    포맷: Fund Ticker,Security Identifier,Holding Ticker,Shares/Par Value,
-          MarketValue,Weight,Name,Class of Shares,Sector,Date
+    dict 리스트 중 ticker/symbol 키와 weight/percent 키를 가진 항목이
+    가장 많은 리스트를 holdings 로 간주.
     """
-    lines = content.splitlines()
-    header_idx = next(
-        (i for i, line in enumerate(lines) if re.search(r"ticker", line, re.I) and "," in line),
-        None,
-    )
-    if header_idx is None:
-        raise ValueError(f"CSV 헤더 행 미감지. 앞부분: {content[:300]!r}")
+    best: list[tuple[str, float]] = []
+    as_of = ""
 
-    reader = csv.DictReader(io.StringIO("\n".join(lines[header_idx:])))
-    as_of_raw = ""
-    rows = []
-    for row in reader:
-        norm = {re.sub(r"[\s%()#/_]", "", k).lower(): (v or "").strip() for k, v in row.items() if k}
-        ticker = (norm.get("holdingticker") or norm.get("ticker") or norm.get("symbol") or "").upper()
-        weight_raw = (norm.get("weight") or norm.get("percentageoffund") or "").replace("%", "").replace(",", "")
-        if not ticker or ticker in ("-", "NAN"):
-            continue
-        try:
-            weight = float(weight_raw)
-        except ValueError:
-            continue
-        as_of_raw = as_of_raw or norm.get("date") or norm.get("positiondate") or ""
-        rows.append((ticker, weight))
+    def pick(d: dict, words: tuple[str, ...], exclude: tuple[str, ...] = ()) -> str | None:
+        for k in d:
+            lk = k.lower()
+            if any(w in lk for w in words) and not any(x in lk for x in exclude):
+                return k
+        return None
 
-    return _to_holdings(as_of_raw, rows)
+    def walk(node):
+        nonlocal best, as_of
+        if isinstance(node, dict):
+            if not as_of:
+                k = pick(node, ("asofdate", "effectivedate", "holdingsdate", "asof"))
+                if k and isinstance(node[k], str):
+                    as_of = node[k]
+            for v in node.values():
+                walk(v)
+        elif isinstance(node, list):
+            dicts = [x for x in node if isinstance(x, dict)]
+            if dicts:
+                tk = pick(dicts[0], ("ticker", "symbol"), ("fund",))
+                wk = pick(dicts[0], ("weight", "percent"))
+                if tk and wk:
+                    rows = []
+                    for d in dicts:
+                        t = str(d.get(tk) or "").strip().upper()
+                        try:
+                            w = float(str(d.get(wk)).replace("%", "").replace(",", ""))
+                        except ValueError:
+                            continue
+                        if t and t not in ("-", "NAN", "NONE"):
+                            rows.append((t, w))
+                    if len(rows) > len(best):
+                        best = rows
+            for v in node:
+                walk(v)
+
+    walk(data)
+    # 0~1 비율로 오는 경우 % 로 환산
+    if best and sum(w for _, w in best) < 2:
+        best = [(t, w * 100) for t, w in best]
+    return best, as_of
 
 
-def fetch_via_nasdaq_api() -> tuple[str, list[dict]]:
-    """NASDAQ 공개 API (fallback)"""
-    print("NASDAQ API로 QQQ holdings 조회 중...")
-    resp = requests.get(NASDAQ_URL, params=NASDAQ_PARAMS, headers=NASDAQ_HEADERS, timeout=30)
+def fetch_via_slickcharts() -> tuple[str, list[dict]]:
+    """Slickcharts 나스닥100 지수 구성/비중 (QQQ와 사실상 동일)"""
+    print(f"Slickcharts 조회: {SLICKCHARTS_URL}")
+    resp = requests.get(SLICKCHARTS_URL, headers=SLICKCHARTS_HEADERS, timeout=30)
     resp.raise_for_status()
-    data = resp.json().get("data") or {}
-    table = data.get("holdings") or data.get("holdingTable") or {}
-    rows_raw = table.get("rows") or (table.get("table") or {}).get("rows") or []
-    if not rows_raw:
-        raise ValueError(f"NASDAQ API: rows 없음. data 키: {list(data.keys())}")
-
+    html = resp.text
     rows = []
-    for r in rows_raw:
-        ticker = (r.get("symbol") or r.get("ticker") or "").strip().upper()
-        pct = str(r.get("percentHeld") or r.get("weight") or "").replace("%", "").replace(",", "").strip()
-        if not ticker:
-            continue
-        try:
-            rows.append((ticker, float(pct)))
-        except ValueError:
-            continue
-    as_of_raw = str(data.get("asOfDate") or table.get("asOf") or "").replace("As of", "").strip()
-    return _to_holdings(as_of_raw, rows)
+    for tr in re.findall(r"<tr[^>]*>(.*?)</tr>", html, re.S):
+        sym = re.search(r'href="/symbol/([A-Za-z.\-]+)"', tr)
+        pct = re.search(r"([\d.]+)\s*%", tr)
+        if sym and pct:
+            rows.append((sym.group(1).upper().replace(".", "-"), float(pct.group(1))))
+    # 같은 종목이 중복 등장하면 첫 행만
+    seen, uniq = set(), []
+    for t, w in rows:
+        if t not in seen:
+            seen.add(t)
+            uniq.append((t, w))
+    if not uniq:
+        print(f"  파싱 실패 — 응답 앞부분: {html[:500]!r}")
+    return _to_holdings("", uniq)
 
 
 def _to_holdings(as_of_raw: str, rows: list[tuple[str, float]]) -> tuple[str, list[dict]]:
@@ -245,7 +260,7 @@ def _infer_type(ticker: str, descs: dict) -> str:
     return "stock"
 
 
-def generate_data_ts(as_of_kr: str, holdings: list[dict], descs: dict) -> str:
+def generate_data_ts(as_of_kr: str, holdings: list[dict], descs: dict, source: str) -> str:
     today = datetime.utcnow().strftime("%Y-%m-%d")
 
     rows = []
@@ -283,7 +298,7 @@ export interface Holding {{
 
 export const META = {{
   asOf: '{as_of_kr}',
-  source: 'Invesco',
+  source: '{_ts_str(source)}',
   price: '',
   priceDate: '',
 }}
@@ -306,9 +321,10 @@ def main():
         init_descriptions()
         return
 
-    # 1. 데이터 취득 (Invesco → NASDAQ 순)
+    # 1. 데이터 취득 (Invesco API → Slickcharts 순)
     as_of_kr, holdings = "", []
-    for fetch in (fetch_via_invesco, fetch_via_nasdaq_api):
+    source = ""
+    for fetch, label in ((fetch_via_invesco_api, "Invesco"), (fetch_via_slickcharts, "Slickcharts (NDX)")):
         try:
             as_of_kr, holdings = fetch()
         except Exception as e:  # noqa: BLE001
@@ -317,6 +333,7 @@ def main():
             continue
         if len(holdings) >= MIN_HOLDINGS:
             print(f"{fetch.__name__} 성공")
+            source = label
             break
         print(f"{fetch.__name__}: 종목 수 {len(holdings)}개 — 비정상 데이터로 판단, 다음 소스 시도")
         holdings = []
@@ -345,7 +362,7 @@ def main():
         print(f"🗑️  편출 ({len(changes['removed'])}): {', '.join(changes['removed'])}")
 
     # 4. data.ts 재생성
-    ts = generate_data_ts(as_of_kr, holdings, descs)
+    ts = generate_data_ts(as_of_kr, holdings, descs, source)
     DATA_TS.write_text(ts, encoding="utf-8")
     print(f"✅ data.ts 업데이트 완료 → {DATA_TS}")
 
