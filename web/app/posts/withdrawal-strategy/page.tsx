@@ -1,0 +1,269 @@
+import Link from 'next/link'
+
+function Tag({ children }: { children: string }) {
+  return (
+    <span className="text-xs bg-gray-800 text-gray-300 px-2 py-0.5 rounded-full">{children}</span>
+  )
+}
+
+function H2({ children }: { children: React.ReactNode }) {
+  return <h2 className="text-xl font-bold mt-12 mb-4 text-white">{children}</h2>
+}
+
+function H3({ children }: { children: React.ReactNode }) {
+  return <h3 className="text-base font-semibold mt-8 mb-3 text-gray-200">{children}</h3>
+}
+
+function P({ children }: { children: React.ReactNode }) {
+  return <p className="text-gray-300 leading-relaxed mb-4">{children}</p>
+}
+
+function Callout({ color = 'blue', children }: { color?: 'blue' | 'yellow' | 'red' | 'green'; children: React.ReactNode }) {
+  const styles = {
+    blue:   'bg-blue-500/10 border-blue-500/30 text-blue-200',
+    yellow: 'bg-yellow-500/10 border-yellow-500/30 text-yellow-200',
+    red:    'bg-red-500/10 border-red-500/30 text-red-200',
+    green:  'bg-green-500/10 border-green-500/30 text-green-200',
+  }
+  return (
+    <div className={`border rounded-xl px-5 py-4 mb-6 text-sm leading-relaxed ${styles[color]}`}>
+      {children}
+    </div>
+  )
+}
+
+function Table({ headers, rows }: { headers: string[]; rows: (string | number)[][] }) {
+  return (
+    <div className="overflow-x-auto mb-8">
+      <table className="w-full text-sm border-collapse">
+        <thead>
+          <tr className="border-b border-gray-700">
+            {headers.map((h) => (
+              <th key={h} className="py-2 px-4 text-left text-gray-400 font-medium">{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-800">
+          {rows.map((row, i) => (
+            <tr key={i} className="hover:bg-gray-800/50 transition-colors">
+              {row.map((cell, j) => (
+                <td key={j} className="py-2.5 px-4 text-gray-300">{cell}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+export default function WithdrawalStrategyPost() {
+  return (
+    <div className="min-h-screen bg-gray-950 text-white">
+      {/* 헤더 */}
+      <header className="border-b border-gray-800">
+        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
+          <Link href="/" className="text-xl font-black tracking-tight">
+            justkeepbuying<span className="text-blue-400">tqqq</span>
+          </Link>
+          <nav className="flex items-center gap-4 text-sm text-gray-400">
+            <Link href="/simulator" className="hover:text-white transition-colors">시뮬레이터</Link>
+            <Link href="/posts" className="hover:text-white transition-colors">글</Link>
+          </nav>
+        </div>
+      </header>
+
+      <main className="max-w-3xl mx-auto px-6 py-16">
+        {/* 글 헤더 */}
+        <div className="mb-12">
+          <Link href="/posts" className="text-sm text-gray-500 hover:text-gray-300 transition-colors mb-6 inline-block">
+            ← 목록으로
+          </Link>
+          <h1 className="text-3xl font-black leading-tight mb-4">
+            인출 전략 설계기: 버블 케이스 재진입 방법 비교 (A vs B)
+          </h1>
+          <div className="flex items-center gap-3 flex-wrap">
+            <span className="text-sm text-gray-500">2026-10-01</span>
+            {['인출', '백테스트', 'TQQQ', '닷컴버블'].map(t => <Tag key={t}>{t}</Tag>)}
+          </div>
+        </div>
+
+        {/* 본문 */}
+        <P>
+          10억 목표를 달성하고 인출 단계로 넘어가는 로직을 설계하다가,
+          예상치 못한 엣지 케이스를 발견했습니다.
+          너무 <strong className="text-white">빠르게 목표를 달성한 코호트</strong>가
+          오히려 가장 위험한 상황에 빠질 수 있다는 것입니다.
+        </P>
+
+        <H2>버블 케이스란?</H2>
+        <P>
+          인출 전략의 핵심 아이디어는 "적립에 오래 걸렸으면 그만큼 험한 시장을 겪은 것이고,
+          인출 초기에도 어려울 수 있으니 현금 버퍼를 두자"입니다.
+          공식으로 표현하면:
+        </P>
+        <div className="bg-gray-900 border border-gray-800 rounded-xl px-6 py-4 mb-6 font-mono text-sm text-blue-300">
+          buffer_years = max(0, 최장기간 − 소요기간)<br />
+          buffer_amount = buffer_years × 일적립액 × 252
+        </div>
+        <P>
+          NDX 3x B전략 기준 실측 최장 소요기간은 <strong className="text-white">12.24년</strong>
+          (1999~2001 닷컴버블 진입 코호트)입니다.
+          그래서 기준값(BUFFER_REF_YEARS)을 13으로 설정했습니다.
+        </P>
+        <P>
+          그런데 소요기간이 1.5년 미만인 "버블 케이스"는 다르게 처리합니다.
+          버퍼를 현금으로 쌓는 게 아니라, <strong className="text-white">전량 매도 후 대기</strong>합니다.
+          1.5년 안에 10억을 달성했다는 건 시장이 비정상적으로 빠르게 올랐다는 신호이기 때문입니다.
+        </P>
+
+        <H2>문제 발견: 1996-10 코호트</H2>
+        <P>
+          백테스트 전체 코호트를 돌려보니, 최솟값이 가장 낮은 케이스가 예상 밖의 시점에서 나왔습니다.
+        </P>
+        <Callout color="yellow">
+          <strong>1996-10 시작 코호트</strong><br />
+          소요기간 1.498년 → 버블 케이스 판정 → 1998-04에 전량 매도<br />
+          2년 대기 → <strong>2000-04 재진입 = 닷컴버블 정점</strong><br />
+          이후 TQQQ −99.9% → 포트폴리오 천만원까지 추락
+        </Callout>
+
+        <P>
+          1998년 4월에 매도한 건 나쁜 판단이 아닙니다. TQQQ 합성가격이 이미 3.5배 올라있었으니까요.
+          문제는 <strong className="text-white">기계적인 2년 타이머</strong>가 정확히 닷컴버블 최고점을 겨냥해버린 것입니다.
+        </P>
+
+        <Table
+          headers={['날짜', 'SP500 (1996-10=100)', 'TQQQ 합성 (1996-10=100)', '비고']}
+          rows={[
+            ['1996-10', '100', '100', '적립 시작'],
+            ['1998-04', '161', '348', '10억 달성, 전량 매도'],
+            ['1999-12', '213', '5,172', '대기 중 (보유 현금: 10억)'],
+            ['2000-04', '217', '7,218', '재진입 ← 최고점'],
+            ['2002-10', '123', '7', 'TQQQ −99.9%'],
+            ['2003-03', '122', '9', '바닥권'],
+          ]}
+        />
+
+        <P>
+          재진입 후 TQQQ 7,218에서 7로 추락. 명목 10억이 1천만원이 됩니다.
+          물론 SP500 −20% 구간마다 일 20만원씩 1년간 매수(RESCUE_1Y)를 통해
+          바닥에서 주식을 쌓았고, 40년 후에는 96억으로 회복되었습니다.
+          하지만 중간에 잔고가 천만원까지 떨어지는 건 실제로 견디기 어렵습니다.
+        </P>
+
+        <H2>두 가지 개선안 비교</H2>
+        <P>
+          "2년 대기 후 lump-sum 재진입"의 문제는 시장 상황을 전혀 고려하지 않는다는 점입니다.
+          이를 해결하기 위해 두 가지 방법을 비교했습니다.
+        </P>
+
+        <H3>Method A: 2년 대기 후 DCA 재진입</H3>
+        <P>
+          기존처럼 2년을 기다리되, 재진입할 때 한 번에 다 사지 않고
+          buffer_years(11.5년) 동안 매일 균등 분산 매수합니다.
+          1998-04에 팔면 → 2000-04부터 분산 매수 시작 → 2011년까지 지속.
+        </P>
+
+        <H3>Method B: 즉시 DCA 재진입</H3>
+        <P>
+          대기 없이 바로 buffer_years 동안 분산 매수를 시작합니다.
+          1998-04에 팔면 → 즉시 분산 매수 시작 → 2009년까지 지속.
+        </P>
+
+        <H2>백테스트 결과</H2>
+
+        <Callout color="green">
+          두 방법 모두 643/643 코호트 100% 생존 달성
+        </Callout>
+
+        <Table
+          headers={['지표', 'Method A (2년 대기+DCA)', 'Method B (즉시 DCA)']}
+          rows={[
+            ['생존율', '643/643 = 100%', '643/643 = 100%'],
+            ['평균 최종값', '186억', '183억'],
+            ['평균 인출 총액', '635.7억', '639.4억'],
+            ['버블케이스 평균 최종값', '149억', '131억'],
+          ]}
+        />
+
+        <P>
+          전체 수치는 비슷하지만, 케이스를 세부적으로 보면 차이가 있습니다.
+        </P>
+
+        <H3>1996-1997 시작 코호트 (닷컴 직전 진입)</H3>
+        <Table
+          headers={['시작', '소요기간', 'Method A 최종', 'Method B 최종']}
+          rows={[
+            ['1996-01', '1.39년', '245억', '99억'],
+            ['1996-07', '1.09년', '244억', '99억'],
+            ['1996-10', '1.50년', '245억', '97억'],
+            ['1997-05', '1.20년', '237억', '96억'],
+          ]}
+        />
+        <P>
+          Method A가 압도적으로 유리합니다. 이유는 반직관적입니다:
+          2년을 기다리면 DCA 시작 시점이 닷컴버블 정점(2000년) 근처가 됩니다.
+          하지만 이 시점부터 <strong className="text-white">닷컴버블 전체 붕괴 구간(TQQQ 7,218→7)</strong>에
+          걸쳐 10억 전액을 분산 투입하기 때문에,
+          바닥권에서 엄청난 양의 주식을 저렴하게 쌓을 수 있습니다.
+        </P>
+        <P>
+          반면 Method B는 1998년부터 즉시 분산 매수를 시작하므로,
+          아직 비싼 1998~2000년 구간에 예산의 25% 가량을 사용하고,
+          정작 중요한 바닥 구간에서 쓸 수 있는 예산이 줄어듭니다.
+        </P>
+
+        <H3>1998-1999 시작 코호트 (닷컴 중반 진입)</H3>
+        <Table
+          headers={['시작', '소요기간', 'Method A 최종', 'Method B 최종']}
+          rows={[
+            ['1998-09', '0.36년', '244.7억', '245.6억'],
+            ['1999-03', '0.79년', '245.3억', '246.9억'],
+            ['1999-08', '0.41년', '241.0억', '243.1억'],
+          ]}
+        />
+        <P>
+          이 구간은 Method B가 소폭 우세합니다. 즉시 매수 시작 시점이
+          이미 버블 정점에 가까워 2년 기다림의 메리트가 없고,
+          오히려 더 빨리 시작하는 것이 유리합니다.
+        </P>
+
+        <H2>결론과 현재 설계 방향</H2>
+        <Callout color="blue">
+          <strong>전체 112개 버블 케이스 중 Method B가 80개, A가 32개에서 우세.</strong><br />
+          하지만 <strong>최악의 시나리오(닷컴 직전 진입)에서는 A가 압도적</strong>으로 안전합니다.
+          두 방법을 모두 구현해두고 계속 연구 중입니다.
+        </Callout>
+
+        <P>
+          핵심 교훈은 다음과 같습니다:
+        </P>
+        <ul className="list-none space-y-3 mb-8">
+          {[
+            '버블 케이스 판단 기준(1.5년)은 시장 상태가 아닌 소요기간으로 결정되기 때문에 불완전합니다.',
+            '고점 lump-sum 재진입보다 DCA가 훨씬 안전하지만, "언제부터 DCA를 시작하느냐"가 결과를 크게 바꿉니다.',
+            '2년 대기는 단순해 보이지만, 결과적으로 닷컴버블 직전 코호트에게 전체 붕괴 구간을 DCA로 매수하는 기회를 줍니다.',
+            'SP500 기준 -20% / -50% 트리거는 TQQQ 포트폴리오 기준보다 훨씬 안정적인 신호를 제공합니다.',
+          ].map((item, i) => (
+            <li key={i} className="flex gap-3 text-gray-300 text-sm">
+              <span className="text-blue-400 mt-0.5 shrink-0">→</span>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+
+        <P>
+          아직 확정되지 않은 부분이 많습니다. 버블 케이스 threshold를 1.5년으로 유지할지,
+          시장 조건 기반으로 바꿀지, 두 method 중 하나를 선택할지 계속 테스트 중입니다.
+        </P>
+
+        {/* 구분선 */}
+        <div className="border-t border-gray-800 mt-16 pt-8 flex items-center justify-between text-sm text-gray-500">
+          <Link href="/posts" className="hover:text-gray-300 transition-colors">← 글 목록</Link>
+          <Link href="/simulator" className="hover:text-gray-300 transition-colors">시뮬레이터에서 직접 돌려보기 →</Link>
+        </div>
+      </main>
+    </div>
+  )
+}
