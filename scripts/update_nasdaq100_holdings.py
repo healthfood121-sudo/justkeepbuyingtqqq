@@ -19,7 +19,7 @@ import io
 import json
 import re
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 import requests
@@ -112,8 +112,12 @@ def fetch_via_invesco() -> tuple[str, list[dict]]:
             resp = requests.get(INVESCO_URL, headers=headers, timeout=30)
             resp.raise_for_status()
             content = resp.content.decode("utf-8-sig")
-            print(f"다운로드 완료 ({len(content):,} bytes)")
-            return _parse_invesco_csv(content)
+            print(f"다운로드 완료 ({len(content):,} bytes, {resp.headers.get('Content-Type')})")
+            as_of_kr, holdings = _parse_invesco_csv(content)
+            if not holdings:
+                print("  파싱된 종목 없음 — 응답 앞부분:")
+                print("\n".join("    " + l[:200] for l in content.splitlines()[:15]))
+            return as_of_kr, holdings
         except Exception as e:  # noqa: BLE001
             print(f"  실패: {e}")
             last_err = e
@@ -187,7 +191,7 @@ def _to_holdings(as_of_raw: str, rows: list[tuple[str, float]]) -> tuple[str, li
 
 
 def _today_kr() -> str:
-    dt = datetime.utcnow()
+    dt = datetime.now(timezone.utc)
     return f"{dt.year}년 {dt.month}월 {dt.day}일"
 
 
