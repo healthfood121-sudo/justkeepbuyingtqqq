@@ -130,22 +130,28 @@ def main():
     ndx_df   = load_ndx()
     sp500_df = load_sp500()
 
-    cohort_out = {}   # {beta_key: [rows]}
-    price_out  = {}   # {beta_key: [monthly]}
-    real_ndx3x = {}   # 실제 NDX 3x (1971~)
+    cohort_out = {}   # {beta_key: {"1x": [...], "3x": [...]}}
+    price_out  = {}   # {beta_key: [monthly 3x]}
 
-    # 실제 NDX 3x 코호트 (비교 기준선)
-    ndx_ret   = ndx_df["Close"].pct_change().fillna(0).values
-    ndx3x_px  = 100.0 * np.cumprod(1.0 + ndx_ret * 3)
-    real_ndx3x["cohorts"] = backtest_c(ndx_df["Date"].values, ndx3x_px)
+    # 실제 NDX 코호트 (비교 기준선)
+    ndx_ret  = ndx_df["Close"].pct_change().fillna(0).values
+    ndx1x_px = 100.0 * np.cumprod(1.0 + ndx_ret * 1)
+    ndx3x_px = 100.0 * np.cumprod(1.0 + ndx_ret * 3)
+    real_cohorts = {
+        "1x": backtest_c(ndx_df["Date"].values, ndx1x_px),
+        "3x": backtest_c(ndx_df["Date"].values, ndx3x_px),
+    }
 
     for key, beta, alpha in BETAS:
         print(f"  {key} β={beta}...")
         dates, px1x = make_synthetic(sp500_df, ndx_df, beta, alpha)
         px3x = apply_leverage(px1x, 3.0)
 
-        cohort_out[key] = backtest_c(dates, px3x)
-        price_out[key]  = monthly_prices(dates, px3x)
+        cohort_out[key] = {
+            "1x": backtest_c(dates, px1x),
+            "3x": backtest_c(dates, px3x),
+        }
+        price_out[key] = monthly_prices(dates, px3x)
 
     # ── 저장 ──────────────────────────────────────────────
     Path(OUT_DIR).mkdir(parents=True, exist_ok=True)
@@ -154,9 +160,9 @@ def main():
     cohorts_path = OUT_DIR + "synthetic_ndx_cohorts.json"
     with open(cohorts_path, "w", encoding="utf-8") as f:
         json.dump({
-            "note":   "NDX 3x C전략 — 베타별 코호트 소요기간 (일 20만원, 목표 10억)",
+            "note":   "C전략 — 베타별·레버리지별 코호트 소요기간 (일 20만원, 목표 10억)",
             "betas":  {k: b for k, b, _ in [(k, b, a) for k, b, a in BETAS]},
-            "real":   real_ndx3x["cohorts"],
+            "real":   real_cohorts,
             "synth":  cohort_out,
         }, f, ensure_ascii=False, separators=(",", ":"))
     size = Path(cohorts_path).stat().st_size / 1024

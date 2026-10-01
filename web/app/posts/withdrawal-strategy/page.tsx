@@ -1,6 +1,17 @@
 import Link from 'next/link'
 import Header from '@/components/Header'
 
+function DataLink({ href }: { href: string }) {
+  return (
+    <Link
+      href={href}
+      className="text-xs text-blue-500 dark:text-blue-400 hover:underline whitespace-nowrap"
+    >
+      데이터 →
+    </Link>
+  )
+}
+
 function Tag({ children }: { children: string }) {
   return (
     <span className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-full">{children}</span>
@@ -33,7 +44,7 @@ function Callout({ color = 'blue', children }: { color?: 'blue' | 'yellow' | 're
   )
 }
 
-function Table({ headers, rows }: { headers: string[]; rows: (string | number)[][] }) {
+function Table({ headers, rows }: { headers: string[]; rows: (string | number | React.ReactNode)[][] }) {
   return (
     <div className="overflow-x-auto mb-8">
       <table className="w-full text-sm border-collapse">
@@ -82,7 +93,7 @@ export default function WithdrawalStrategyPost() {
         <P>
           10억 목표를 달성하고 인출 단계로 넘어가는 로직을 설계하다가,
           예상치 못한 엣지 케이스를 발견했습니다.
-          너무 <strong className="text-gray-900 dark:text-white">빠르게 목표를 달성한 코호트</strong>가
+          너무 <strong className="text-gray-900 dark:text-white">빠르게 목표를 달성한 경우</strong>가
           오히려 가장 위험한 상황에 빠질 수 있다는 것입니다.
         </P>
 
@@ -98,7 +109,7 @@ export default function WithdrawalStrategyPost() {
         </div>
         <P>
           NDX 3x B전략 기준 실측 최장 소요기간은 <strong className="text-gray-900 dark:text-white">12.24년</strong>
-          (1999~2001 닷컴버블 진입 코호트)입니다.
+          (1999~2001 닷컴버블 진입 시점)입니다.
           그래서 기준값(BUFFER_REF_YEARS)을 13으로 설정했습니다.
         </P>
         <P>
@@ -107,12 +118,12 @@ export default function WithdrawalStrategyPost() {
           1.5년 안에 10억을 달성했다는 건 시장이 비정상적으로 빠르게 올랐다는 신호이기 때문입니다.
         </P>
 
-        <H2>문제 발견: 1996-10 코호트</H2>
+        <H2>문제 발견: 1996년 10월 진입</H2>
         <P>
-          백테스트 전체 코호트를 돌려보니, 최솟값이 가장 낮은 케이스가 예상 밖의 시점에서 나왔습니다.
+          전체 경우를 돌려보니, 최솟값이 가장 낮은 케이스가 예상 밖의 시점에서 나왔습니다.
         </P>
         <Callout color="yellow">
-          <strong>1996-10 시작 코호트</strong><br />
+          <strong>1996년 10월 진입</strong><br />
           소요기간 1.498년 → 버블 케이스 판정 → 1998-04에 전량 매도<br />
           2년 대기 → <strong>2000-04 재진입 = 닷컴버블 정점</strong><br />
           이후 TQQQ −99.9% → 포트폴리오 천만원까지 추락
@@ -164,13 +175,17 @@ export default function WithdrawalStrategyPost() {
         <H2>백테스트 결과</H2>
 
         <Callout color="green">
-          두 방법 모두 643/643 코호트 100% 생존 달성
+          두 방법 모두 643가지 경우 100% 생존 달성
         </Callout>
 
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">전략별 결과 요약</span>
+          <DataLink href="/posts/withdrawal-strategy/data" />
+        </div>
         <Table
           headers={['지표', 'Method A (2년 대기+DCA)', 'Method B (즉시 DCA)']}
           rows={[
-            ['생존율', '643/643 = 100%', '643/643 = 100%'],
+            ['생존율', '643/643가지 경우 = 100%', '643/643가지 경우 = 100%'],
             ['평균 최종값', '186억', '183억'],
             ['평균 인출 총액', '635.7억', '639.4억'],
             ['버블케이스 평균 최종값', '149억', '131억'],
@@ -181,14 +196,14 @@ export default function WithdrawalStrategyPost() {
           전체 수치는 비슷하지만, 케이스를 세부적으로 보면 차이가 있습니다.
         </P>
 
-        <H3>1996-1997 시작 코호트 (닷컴 직전 진입)</H3>
+        <H3>1996–1997년 진입 (닷컴버블 직전)</H3>
         <Table
-          headers={['시작', '소요기간', 'Method A 최종', 'Method B 최종']}
+          headers={['시작', '소요기간', 'Method A 최종', 'Method B 최종', '']}
           rows={[
-            ['1996-01', '1.39년', '245억', '99억'],
-            ['1996-07', '1.09년', '244억', '99억'],
-            ['1996-10', '1.50년', '245억', '97억'],
-            ['1997-05', '1.20년', '237억', '96억'],
+            ['1996-01', '1.39년', '245억', '99억', <DataLink key="a" href="/posts/withdrawal-strategy/data?method=A&bubble=1" />],
+            ['1996-07', '1.09년', '244억', '99억', <DataLink key="b" href="/posts/withdrawal-strategy/data?method=A&bubble=1" />],
+            ['1996-10', '1.50년', '245억', '97억', <DataLink key="c" href="/posts/withdrawal-strategy/data?method=A&bubble=1" />],
+            ['1997-05', '1.20년', '237억', '96억', <DataLink key="d" href="/posts/withdrawal-strategy/data?method=A&bubble=1" />],
           ]}
         />
         <P>
@@ -204,13 +219,13 @@ export default function WithdrawalStrategyPost() {
           정작 중요한 바닥 구간에서 쓸 수 있는 예산이 줄어듭니다.
         </P>
 
-        <H3>1998-1999 시작 코호트 (닷컴 중반 진입)</H3>
+        <H3>1998–1999년 진입 (닷컴버블 중반)</H3>
         <Table
-          headers={['시작', '소요기간', 'Method A 최종', 'Method B 최종']}
+          headers={['시작', '소요기간', 'Method A 최종', 'Method B 최종', '']}
           rows={[
-            ['1998-09', '0.36년', '244.7억', '245.6억'],
-            ['1999-03', '0.79년', '245.3억', '246.9억'],
-            ['1999-08', '0.41년', '241.0억', '243.1억'],
+            ['1998-09', '0.36년', '244.7억', '245.6억', <DataLink key="a" href="/posts/withdrawal-strategy/data?method=B&bubble=1" />],
+            ['1999-03', '0.79년', '245.3억', '246.9억', <DataLink key="b" href="/posts/withdrawal-strategy/data?method=B&bubble=1" />],
+            ['1999-08', '0.41년', '241.0억', '243.1억', <DataLink key="c" href="/posts/withdrawal-strategy/data?method=B&bubble=1" />],
           ]}
         />
         <P>
@@ -233,7 +248,7 @@ export default function WithdrawalStrategyPost() {
           {[
             '버블 케이스 판단 기준(1.5년)은 시장 상태가 아닌 소요기간으로 결정되기 때문에 불완전합니다.',
             '고점 lump-sum 재진입보다 DCA가 훨씬 안전하지만, "언제부터 DCA를 시작하느냐"가 결과를 크게 바꿉니다.',
-            '2년 대기는 단순해 보이지만, 결과적으로 닷컴버블 직전 코호트에게 전체 붕괴 구간을 DCA로 매수하는 기회를 줍니다.',
+            '2년 대기는 단순해 보이지만, 결과적으로 닷컴버블 직전에 진입한 경우에 전체 붕괴 구간을 DCA로 매수하는 기회를 줍니다.',
             'SP500 기준 -20% / -50% 트리거는 TQQQ 포트폴리오 기준보다 훨씬 안정적인 신호를 제공합니다.',
           ].map((item, i) => (
             <li key={i} className="flex gap-3 text-gray-600 dark:text-gray-300 text-sm">

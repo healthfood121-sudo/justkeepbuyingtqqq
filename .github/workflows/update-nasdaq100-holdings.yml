@@ -1,0 +1,47 @@
+name: 나스닥100 보유종목 자동 업데이트
+
+on:
+  schedule:
+    # 매일 KST 10:00 (UTC 01:00) 실행
+    - cron: '0 1 * * *'
+  workflow_dispatch:  # 수동 실행 가능
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Python 3.12 설정
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: 의존성 설치
+        run: pip install requests
+
+      - name: 보유종목 업데이트
+        id: update
+        run: python scripts/update_nasdaq100_holdings.py
+
+      - name: 변경사항 커밋 & 푸시
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add web/app/nasdaq100-holdings/data.ts
+          git add web/app/nasdaq100-holdings/descriptions.json
+
+          if git diff --cached --quiet; then
+            echo "변경사항 없음 — 스킵"
+          else
+            DATE=$(date +'%Y-%m-%d')
+            git commit -m "auto: 나스닥100 보유종목 업데이트 ${DATE}"
+            git push
+            echo "✅ 커밋 & 푸시 완료"
+          fi

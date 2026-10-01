@@ -3,6 +3,17 @@
 import { useEffect, useState, useMemo } from 'react'
 import Link from 'next/link'
 import Header from '@/components/Header'
+
+function DataLink({ lev, beta }: { lev: '1x' | '3x'; beta: string }) {
+  return (
+    <Link
+      href={`/posts/synthetic-ndx-1929/data?lev=${lev}&beta=${beta}`}
+      className="text-xs text-blue-500 dark:text-blue-400 hover:underline whitespace-nowrap"
+    >
+      데이터 →
+    </Link>
+  )
+}
 import {
   LineChart, Line, XAxis, YAxis, Tooltip as ReTooltip,
   Legend, ReferenceLine, ReferenceArea, ResponsiveContainer,
@@ -15,8 +26,8 @@ type CohortRow = { s: string; y: number | null }
 type PriceRow  = { d: string; p: number }
 
 type CohortJson = {
-  real:  CohortRow[]
-  synth: Record<string, CohortRow[]>
+  real:  { '1x': CohortRow[]; '3x': CohortRow[] }
+  synth: Record<string, { '1x': CohortRow[]; '3x': CohortRow[] }>
 }
 type PriceJson = {
   synth: Record<string, PriceRow[]>
@@ -353,21 +364,21 @@ export default function SyntheticNdx1929Post() {
 
   const pretechDots = useMemo<ScatterDot[]>(() => {
     if (!cohortJson) return []
-    return cohortJson.synth['pre-tech']
+    return cohortJson.synth['pre-tech']['3x']
       .filter(r => r.y !== null)
       .map(r => ({ x: ymToDecimal(r.s), y: r.y as number }))
   }, [cohortJson])
 
   const recentDots = useMemo<ScatterDot[]>(() => {
     if (!cohortJson) return []
-    return cohortJson.synth['recent']
+    return cohortJson.synth['recent']['3x']
       .filter(r => r.y !== null)
       .map(r => ({ x: ymToDecimal(r.s), y: r.y as number }))
   }, [cohortJson])
 
   const realDots = useMemo<ScatterDot[]>(() => {
     if (!cohortJson) return []
-    return cohortJson.real
+    return cohortJson.real['3x']
       .filter(r => r.y !== null)
       .map(r => ({ x: ymToDecimal(r.s), y: r.y as number }))
   }, [cohortJson])
@@ -401,7 +412,7 @@ export default function SyntheticNdx1929Post() {
         {/* ── 1. 왜 1929년인가 ── */}
         <H2>왜 1929년을 테스트해야 하는가</H2>
         <P>
-          NDX 기반 백테스트의 모든 코호트는 1971년 2월부터 시작한다. 현재 데이터 기준 worst-case는
+          NDX 기반 백테스트는 1971년 2월부터 시작하는 모든 진입 시점을 다룬다. 현재 데이터 기준 worst-case는
           닷컴버블 직전인{' '}
           <strong className="text-gray-900 dark:text-white">1998년 6월 진입, 13.74년</strong>이다.
           여기서 인출식 현금 버퍼를 계산하는 기준인 BUFFER_REF=14가 나왔다.
@@ -483,13 +494,13 @@ export default function SyntheticNdx1929Post() {
           합성 구간 포함 시 어떻게 달라지는지 확인했다.
         </P>
         <Table
-          headers={['베타', '전체 worst', '진입 시점', '1929-01 진입']}
+          headers={['베타', '전체 worst', '진입 시점', '1929-01 진입', '']}
           highlight={[1, 2]}
           rows={[
-            ['β=0.767  pre-tech',  '17.38년', '1960-07', '16.28년'],
-            ['β=1.138  recent',    '15.38년', '1962-07', '14.33년'],
-            ['β=1.244  tech-era',  '15.37년', '1962-11', '14.40년'],
-            ['β=1.294  latest',    '17.41년', '1927-12', '16.47년'],
+            ['β=0.767  pre-tech',  '17.38년', '1960-07', '16.28년', <DataLink key="pt" lev="1x" beta="pre-tech" />],
+            ['β=1.138  recent',    '15.38년', '1962-07', '14.33년', <DataLink key="rc" lev="1x" beta="recent" />],
+            ['β=1.244  tech-era',  '15.37년', '1962-11', '14.40년', <DataLink key="te" lev="1x" beta="tech-era" />],
+            ['β=1.294  latest',    '17.41년', '1927-12', '16.47년', <DataLink key="lt" lev="1x" beta="latest" />],
           ]}
         />
         <P>
@@ -504,19 +515,21 @@ export default function SyntheticNdx1929Post() {
           실제로 투자하는 TQQQ는 3배 레버리지다. 합성 1x 수익률에 3배를 적용해 같은 방식으로 테스트했다.
         </P>
         <Table
-          headers={['베타', '전체 worst', '진입 시점', '1929-01 진입']}
+          headers={['베타', '전체 worst', '진입 시점', '1929-01 진입', '']}
           highlight={[1, 2]}
           rows={[
-            ['β=0.767  pre-tech',  '17.32년', '1927-12', '16.31년'],
+            ['β=0.767  pre-tech',  '17.32년', '1927-12', '16.31년', <DataLink key="pt" lev="3x" beta="pre-tech" />],
             ['β=1.138  recent',
               <strong key="w" className="text-green-600 dark:text-green-400">13.74년 (닷컴!)</strong>,
               '1998-06',
-              <strong key="c" className="text-blue-500 dark:text-blue-400">7.76년</strong>],
+              <strong key="c" className="text-blue-500 dark:text-blue-400">7.76년</strong>,
+              <DataLink key="rc" lev="3x" beta="recent" />],
             ['β=1.244  tech-era',
               <strong key="w" className="text-green-600 dark:text-green-400">13.74년 (닷컴!)</strong>,
               '1998-06',
-              <strong key="c" className="text-blue-500 dark:text-blue-400">7.76년</strong>],
-            ['β=1.294  latest',  '17.69년', '1927-12', '16.68년'],
+              <strong key="c" className="text-blue-500 dark:text-blue-400">7.76년</strong>,
+              <DataLink key="te" lev="3x" beta="tech-era" />],
+            ['β=1.294  latest',  '17.69년', '1927-12', '16.68년', <DataLink key="lt" lev="3x" beta="latest" />],
           ]}
         />
 
@@ -526,7 +539,7 @@ export default function SyntheticNdx1929Post() {
         </Callout>
 
         {/* ── 차트 2: 코호트 산점도 ── */}
-        <H3>전체 코호트 산점도: 진입 시점 vs 소요기간</H3>
+        <H3>진입 시점별 소요기간 전체 분포</H3>
         <P>
           아래 산점도는 1927년부터 2026년까지 매월 진입했을 때 10억 달성까지 걸린 시간을 점으로 찍은 것이다.
           회색 점이 pre-tech β=0.767, 파란 점이 recent β=1.138(합성),
@@ -538,7 +551,7 @@ export default function SyntheticNdx1929Post() {
           realDots={realDots}
         />
         <ChartCaption>
-          붉은 영역: 1929 대공황 진입 코호트 · 파란 영역: 닷컴버블 진입 코호트 ·
+          붉은 영역: 1929 대공황 진입 시점 · 파란 영역: 닷컴버블 진입 시점 ·
           노란 점선: BUFFER_REF=14 · 파란 점(recent β)에서 대공황 구간이 8년 이하에 몰려 있음을 확인
         </ChartCaption>
 
@@ -565,8 +578,8 @@ export default function SyntheticNdx1929Post() {
           결국 13.74년이 걸린다.
         </P>
         <P>
-          차트에서도 확인할 수 있다. 파란 점(recent β) 기준으로 1929~1933년 진입 코호트(붉은 영역)는
-          모두 8년 이하에 몰려 있다. 반면 1997~2001년 진입 코호트(파란 영역)는 10~14년에 분포한다.
+          차트에서도 확인할 수 있다. 파란 점(recent β) 기준으로 1929~1933년 진입 시점(붉은 영역)은
+          모두 8년 이하에 몰려 있다. 반면 1997~2001년 진입 시점(파란 영역)은 10~14년에 분포한다.
           노란 점(실제 NDX)의 1998-06이 전체 최고점 13.74년이다.
         </P>
 

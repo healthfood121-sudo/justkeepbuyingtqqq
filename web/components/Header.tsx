@@ -5,7 +5,7 @@ import { useTheme } from './ThemeProvider'
 
 interface HeaderProps {
   maxWidth?: string
-  activePage?: 'simulator' | 'posts'
+  activePage?: 'simulator' | 'posts' | 'qqq-holdings'
 }
 
 export default function Header({ maxWidth = 'max-w-6xl', activePage }: HeaderProps) {
@@ -36,7 +36,15 @@ export default function Header({ maxWidth = 'max-w-6xl', activePage }: HeaderPro
                 activePage === 'posts' ? 'text-gray-900 dark:text-white font-semibold' : ''
               }`}
             >
-              글
+              필독 방법론
+            </Link>
+            <Link
+              href="/nasdaq100-holdings"
+              className={`transition-colors hover:text-gray-900 dark:hover:text-white ${
+                activePage === 'qqq-holdings' ? 'text-gray-900 dark:text-white font-semibold' : ''
+              }`}
+            >
+              나스닥100 구성종목
             </Link>
           </nav>
           <button

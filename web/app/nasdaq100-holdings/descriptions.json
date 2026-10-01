@@ -1,0 +1,638 @@
+{
+  "NVDA": {
+    "name": "엔비디아",
+    "sector": "반도체",
+    "products": "GPU(H100/B200 시리즈), AI 가속기, CUDA 플랫폼, 데이터센터 칩, 자율주행 DRIVE 플랫폼",
+    "type": "stock"
+  },
+  "AAPL": {
+    "name": "애플",
+    "sector": "전자기기/소프트웨어",
+    "products": "아이폰, 맥(iMac/MacBook), 아이패드, 애플워치, AirPods, App Store, iCloud",
+    "type": "stock"
+  },
+  "MU": {
+    "name": "마이크론 테크놀로지",
+    "sector": "반도체",
+    "products": "DRAM, NAND 플래시 메모리, HBM(AI용 고대역폭 메모리), SSD",
+    "type": "stock"
+  },
+  "MSFT": {
+    "name": "마이크로소프트",
+    "sector": "소프트웨어/클라우드",
+    "products": "Windows, Office 365, Azure 클라우드, Xbox, LinkedIn, GitHub, Copilot AI",
+    "type": "stock"
+  },
+  "AMZN": {
+    "name": "아마존닷컴",
+    "sector": "이커머스/클라우드",
+    "products": "Amazon.com 쇼핑몰, AWS 클라우드, Prime Video, Alexa, 물류/광고",
+    "type": "stock"
+  },
+  "AMD": {
+    "name": "어드밴스드 마이크로 디바이스",
+    "sector": "반도체",
+    "products": "Ryzen CPU, Radeon GPU, EPYC 서버칩, Instinct AI 가속기(MI300 시리즈)",
+    "type": "stock"
+  },
+  "GOOGL": {
+    "name": "알파벳 클래스 A",
+    "sector": "인터넷/광고",
+    "products": "Google 검색, YouTube, Google Cloud, Android, Waymo 자율주행, Gemini AI",
+    "type": "stock"
+  },
+  "TSLA": {
+    "name": "테슬라",
+    "sector": "전기차/에너지",
+    "products": "Model 3/Y/S/X/Cybertruck 전기차, 에너지저장장치(Powerwall), 태양광, FSD",
+    "type": "stock"
+  },
+  "GOOG": {
+    "name": "알파벳 클래스 C",
+    "sector": "인터넷/광고",
+    "products": "Google 검색, YouTube, Google Cloud (클래스 C, 무의결권)",
+    "type": "stock"
+  },
+  "META": {
+    "name": "메타 플랫폼",
+    "sector": "소셜미디어/광고",
+    "products": "Facebook, Instagram, WhatsApp, Meta Quest VR 헤드셋, Llama AI 모델",
+    "type": "stock"
+  },
+  "AVGO": {
+    "name": "브로드컴",
+    "sector": "반도체/네트워크",
+    "products": "데이터센터 네트워킹 칩, 맞춤형 AI ASIC, WiFi/블루투스 칩, VMware",
+    "type": "stock"
+  },
+  "INTC": {
+    "name": "인텔",
+    "sector": "반도체",
+    "products": "Core/Xeon CPU, 파운드리 서비스(IFS), Arc GPU, 네트워크 칩",
+    "type": "stock"
+  },
+  "WMT": {
+    "name": "월마트",
+    "sector": "유통/소매",
+    "products": "대형마트, Sam's Club 창고형 매장, Walmart+ 멤버십, 이커머스",
+    "type": "stock"
+  },
+  "AMAT": {
+    "name": "어플라이드 머티리얼즈",
+    "sector": "반도체 장비",
+    "products": "반도체 제조 장비(CVD/PVD/에칭), 디스플레이 제조 장비",
+    "type": "stock"
+  },
+  "CSCO": {
+    "name": "시스코 시스템즈",
+    "sector": "네트워크/IT",
+    "products": "네트워크 스위치·라우터, 보안 솔루션(Duo, Umbrella), Webex, 데이터센터 장비",
+    "type": "stock"
+  },
+  "LRCX": {
+    "name": "램 리서치",
+    "sector": "반도체 장비",
+    "products": "반도체 식각(에칭)·증착·세정 장비 — NAND/DRAM 제조 핵심",
+    "type": "stock"
+  },
+  "COST": {
+    "name": "코스트코 홀세일",
+    "sector": "유통/소매",
+    "products": "창고형 회원제 대형마트, Kirkland 자체 브랜드 식료품·생활용품",
+    "type": "stock"
+  },
+  "NFLX": {
+    "name": "넷플릭스",
+    "sector": "스트리밍/콘텐츠",
+    "products": "동영상 스트리밍, 오리지널 드라마·영화·애니메이션, 게임 서비스",
+    "type": "stock"
+  },
+  "KLAC": {
+    "name": "KLA 코퍼레이션",
+    "sector": "반도체 장비",
+    "products": "반도체 공정 계측 및 결함 검사 장비",
+    "type": "stock"
+  },
+  "PLTR": {
+    "name": "팔란티어 테크놀로지스",
+    "sector": "소프트웨어/AI",
+    "products": "정부·군사용 데이터 분석(Gotham), 기업용 AI 플랫폼(Foundry, AIP)",
+    "type": "stock"
+  },
+  "PANW": {
+    "name": "팔로알토 네트웍스",
+    "sector": "사이버보안",
+    "products": "차세대 방화벽, SASE 보안 플랫폼(Prisma), XDR(Cortex)",
+    "type": "stock"
+  },
+  "TXN": {
+    "name": "텍사스 인스트루먼트",
+    "sector": "반도체",
+    "products": "아날로그 반도체, 임베디드 프로세서 — 산업·자동차용 마이크로컨트롤러",
+    "type": "stock"
+  },
+  "SNDK": {
+    "name": "샌디스크",
+    "sector": "저장장치",
+    "products": "NAND 플래시 메모리, SSD, 플래시 드라이브, 메모리 카드",
+    "type": "stock"
+  },
+  "LIN": {
+    "name": "린데",
+    "sector": "산업용 가스",
+    "products": "산업용 가스(산소·질소·수소·아르곤), 반도체 공정용 특수가스",
+    "type": "stock"
+  },
+  "MRVL": {
+    "name": "마벨 테크놀로지",
+    "sector": "반도체",
+    "products": "데이터센터용 맞춤 AI ASIC, 이더넷 칩, 스토리지 컨트롤러, 광트랜시버",
+    "type": "stock"
+  },
+  "AMGN": {
+    "name": "암젠",
+    "sector": "바이오의약품",
+    "products": "Enbrel(류마티스), Prolia(골다공증), Repatha(콜레스테롤), Lumakras",
+    "type": "stock"
+  },
+  "CRWD": {
+    "name": "크라우드스트라이크",
+    "sector": "사이버보안",
+    "products": "Falcon 플랫폼 — 엔드포인트 보안, 위협 인텔리전스, SIEM",
+    "type": "stock"
+  },
+  "PEP": {
+    "name": "펩시코",
+    "sector": "식음료",
+    "products": "펩시콜라, 게토레이, 도리토스, 레이즈, 퀘이커 오트밀",
+    "type": "stock"
+  },
+  "TMUS": {
+    "name": "티모바일 US",
+    "sector": "통신",
+    "products": "미국 무선통신 서비스(5G), 모바일 요금제, 홈 인터넷",
+    "type": "stock"
+  },
+  "WDC": {
+    "name": "웨스턴 디지털",
+    "sector": "저장장치",
+    "products": "HDD(하드디스크) 전문 기업 — 2025.2 NAND/SSD 사업을 Sandisk로 완전 분사 후 HDD에만 집중, 데이터센터용 Nearline HDD 중심",
+    "type": "stock"
+  },
+  "QCOM": {
+    "name": "퀄컴",
+    "sector": "반도체/통신",
+    "products": "스냅드래곤 모바일 AP, 5G 모뎀 칩, 자동차·IoT용 반도체",
+    "type": "stock"
+  },
+  "STX": {
+    "name": "시게이트 테크놀로지",
+    "sector": "저장장치",
+    "products": "HDD 세계 1위, 데이터센터·NAS·소비자용 스토리지",
+    "type": "stock"
+  },
+  "ADI": {
+    "name": "아날로그 디바이스",
+    "sector": "반도체",
+    "products": "아날로그·혼성신호 반도체 — 산업·의료·자동차·통신용 센서·DAC/ADC",
+    "type": "stock"
+  },
+  "GILD": {
+    "name": "길리어드 사이언스",
+    "sector": "바이오의약품",
+    "products": "HIV 치료제(Biktarvy, Truvada), C형 간염, 항암제(Tecartus)",
+    "type": "stock"
+  },
+  "ASML": {
+    "name": "ASML 홀딩(ADR)",
+    "sector": "반도체 장비",
+    "products": "EUV(극자외선) 및 DUV 노광 장비 — 첨단 반도체 제조 핵심 독점 장비",
+    "type": "stock"
+  },
+  "APP": {
+    "name": "AppLovin",
+    "sector": "앱/광고 기술",
+    "products": "모바일 앱 광고·마케팅 플랫폼(AXON AI) — 2025.6 게임 스튜디오 사업 전체를 Tripledot에 매각, 현재 순수 애드테크 기업",
+    "type": "stock"
+  },
+  "ISRG": {
+    "name": "인튜이티브 서지컬",
+    "sector": "의료기기",
+    "products": "다빈치 로봇 수술 시스템 — 복강경·전립선·부인과 수술용 로봇",
+    "type": "stock"
+  },
+  "SHOP": {
+    "name": "쇼피파이",
+    "sector": "이커머스 플랫폼",
+    "products": "온라인 쇼핑몰 구축 플랫폼, 결제(Shopify Payments), 물류",
+    "type": "stock"
+  },
+  "BKNG": {
+    "name": "부킹 홀딩스",
+    "sector": "여행/온라인 플랫폼",
+    "products": "Booking.com, Priceline, Kayak, Agoda — 글로벌 온라인 여행 예약",
+    "type": "stock"
+  },
+  "VRTX": {
+    "name": "버텍스 제약",
+    "sector": "바이오의약품",
+    "products": "낭포성 섬유증 치료제(Trikafta), 겸상적혈구병·신장질환 치료제",
+    "type": "stock"
+  },
+  "ARM": {
+    "name": "ARM Holdings(ADR)",
+    "sector": "반도체 설계",
+    "products": "CPU·GPU 아키텍처 IP 라이선스 — 스마트폰·서버·자동차 칩 설계 표준",
+    "type": "stock"
+  },
+  "SBUX": {
+    "name": "스타벅스",
+    "sector": "외식/소매",
+    "products": "전 세계 커피 전문점 체인, 원두·RTD 음료, 리워드 멤버십 앱",
+    "type": "stock"
+  },
+  "FTNT": {
+    "name": "포티넷",
+    "sector": "사이버보안",
+    "products": "FortiGate 방화벽, SD-WAN, 보안 운영체제(FortiOS)",
+    "type": "stock"
+  },
+  "CDNS": {
+    "name": "케이던스 디자인 시스템즈",
+    "sector": "EDA 소프트웨어",
+    "products": "반도체 설계 자동화(EDA) 소프트웨어, 칩 검증 툴, AI 설계 플랫폼",
+    "type": "stock"
+  },
+  "MAR": {
+    "name": "메리어트 인터내셔널",
+    "sector": "숙박/호텔",
+    "products": "Marriott, Sheraton, Westin, W Hotels, Ritz-Carlton 등 호텔 브랜드",
+    "type": "stock"
+  },
+  "ADP": {
+    "name": "오토매틱 데이터 프로세싱",
+    "sector": "HR/급여 소프트웨어",
+    "products": "기업 급여 관리, HR 소프트웨어, 복리후생·세금 신고 자동화",
+    "type": "stock"
+  },
+  "MNST": {
+    "name": "몬스터 비버리지",
+    "sector": "식음료",
+    "products": "Monster Energy 에너지 드링크, Reign, NOS",
+    "type": "stock"
+  },
+  "CSX": {
+    "name": "CSX 코퍼레이션",
+    "sector": "철도 물류",
+    "products": "미국 동부 화물 철도 운송 — 석탄·자동차·농산물·컨테이너",
+    "type": "stock"
+  },
+  "MELI": {
+    "name": "메르카도리브레",
+    "sector": "이커머스/핀테크",
+    "products": "라틴아메리카 최대 이커머스 플랫폼, MercadoPago 결제",
+    "type": "stock"
+  },
+  "ADBE": {
+    "name": "어도비",
+    "sector": "소프트웨어/크리에이티브",
+    "products": "Photoshop, Illustrator, Premiere Pro, Acrobat, Firefly AI",
+    "type": "stock"
+  },
+  "CEG": {
+    "name": "컨스텔레이션 에너지",
+    "sector": "에너지(원자력)",
+    "products": "원자력 발전소 운영(미국 최대), 청정 에너지 공급",
+    "type": "stock"
+  },
+  "DDOG": {
+    "name": "Datadog",
+    "sector": "클라우드 모니터링",
+    "products": "클라우드 인프라 모니터링, APM, 로그 관리, 보안 모니터링",
+    "type": "stock"
+  },
+  "CMCSA": {
+    "name": "컴캐스트",
+    "sector": "미디어/통신",
+    "products": "Xfinity 케이블·인터넷, NBCUniversal 방송·영화, Peacock",
+    "type": "stock"
+  },
+  "SNPS": {
+    "name": "시놉시스",
+    "sector": "EDA 소프트웨어",
+    "products": "반도체 설계 자동화(EDA) 소프트웨어, 보안 테스팅, AI 설계 도구",
+    "type": "stock"
+  },
+  "DASH": {
+    "name": "DoorDash",
+    "sector": "음식 배달 플랫폼",
+    "products": "음식 배달 앱(미국 1위), Wolt(유럽), DashPass 구독",
+    "type": "stock"
+  },
+  "MDLZ": {
+    "name": "몬델리즈 인터내셔널",
+    "sector": "식음료",
+    "products": "오레오, 리츠 크래커, 토블론 초콜릿, Cadbury, Trident 껌",
+    "type": "stock"
+  },
+  "HONA": {
+    "name": "허니웰 에어로스페이스",
+    "sector": "항공우주/방산",
+    "products": "항공기 엔진·추진 시스템, 콕핏·항법 장비, 보조동력장치(APU) — 2026.6.29 허니웰에서 분사",
+    "type": "stock"
+  },
+  "AEP": {
+    "name": "아메리칸 일렉트릭 파워",
+    "sector": "전력/유틸리티",
+    "products": "미국 중부·남부 전력망 운영, 발전·송전·배전 (11개 주)",
+    "type": "stock"
+  },
+  "INTU": {
+    "name": "인튜이트",
+    "sector": "금융 소프트웨어",
+    "products": "TurboTax(세금 신고), QuickBooks(회계), Credit Karma, Mailchimp",
+    "type": "stock"
+  },
+  "ORLY": {
+    "name": "오라일리 자동차",
+    "sector": "자동차 부품 유통",
+    "products": "자동차 부품·액세서리 소매 체인 — DIY 및 정비소용",
+    "type": "stock"
+  },
+  "HON": {
+    "name": "허니웰 테크놀로지스",
+    "sector": "산업 자동화",
+    "products": "건물 자동화·HVAC, 산업용 공정 제어, 안전 장비 — 항공우주 분사 후 자동화 전문 기업으로 재편",
+    "type": "stock"
+  },
+  "CTAS": {
+    "name": "신타스",
+    "sector": "기업 서비스",
+    "products": "기업용 유니폼·작업복 임대·세탁, 안전 용품, 응급처치 키트",
+    "type": "stock"
+  },
+  "ALAB": {
+    "name": "아스테라 랩스",
+    "sector": "반도체",
+    "products": "AI 데이터센터용 고속 연결 칩(PCIe 리타이머, AEC)",
+    "type": "stock"
+  },
+  "NXPI": {
+    "name": "NXP 반도체",
+    "sector": "반도체",
+    "products": "자동차용 반도체(ADAS·전기차), 산업용 MCU, NFC 칩",
+    "type": "stock"
+  },
+  "ROST": {
+    "name": "로스 스토어즈",
+    "sector": "유통/소매",
+    "products": "미국 오프프라이스 의류·홈 제품 할인 소매 체인",
+    "type": "stock"
+  },
+  "REGN": {
+    "name": "리제네론 제약",
+    "sector": "바이오의약품",
+    "products": "Dupixent(아토피·천식), Eylea(황반변성), Kevzara",
+    "type": "stock"
+  },
+  "WBD": {
+    "name": "워너 브라더스 디스커버리",
+    "sector": "미디어/엔터테인먼트",
+    "products": "HBO Max 스트리밍, Warner Bros. 영화, CNN, DC 콘텐츠",
+    "type": "stock"
+  },
+  "MPWR": {
+    "name": "모놀리식 파워 시스템즈",
+    "sector": "반도체",
+    "products": "고효율 전력 관리 IC — AI 서버 전원 공급, 자동차·산업용",
+    "type": "stock"
+  },
+  "PCAR": {
+    "name": "PACCAR",
+    "sector": "상용차 제조",
+    "products": "Kenworth, Peterbilt, DAF 트럭 브랜드, 금융·부품·서비스",
+    "type": "stock"
+  },
+  "ABNB": {
+    "name": "에어비앤비",
+    "sector": "온라인 숙박 플랫폼",
+    "products": "전 세계 단기 숙박 임대 플랫폼, Experiences 여행 프로그램",
+    "type": "stock"
+  },
+  "RKLB": {
+    "name": "로켓랩",
+    "sector": "우주/항공",
+    "products": "Electron 소형 로켓 발사, Neutron 중형 로켓 개발, 우주선 부품",
+    "type": "stock"
+  },
+  "TER": {
+    "name": "테라다인",
+    "sector": "반도체 장비",
+    "products": "반도체 테스트 장비(ATE), 로봇 자동화(Universal Robots)",
+    "type": "stock"
+  },
+  "LITE": {
+    "name": "루멘텀 홀딩스",
+    "sector": "광학 부품",
+    "products": "광트랜시버, 레이저 광원, 3D 센싱 모듈",
+    "type": "stock"
+  },
+  "FAST": {
+    "name": "패스트너 컴퍼니",
+    "sector": "산업용 유통",
+    "products": "볼트·나사 등 산업용 체결 부품 및 공구 유통 체인",
+    "type": "stock"
+  },
+  "PDD": {
+    "name": "PDD 홀딩스(ADR)",
+    "sector": "이커머스",
+    "products": "Temu(미국·글로벌 초저가 이커머스), Pinduoduo(중국)",
+    "type": "stock"
+  },
+  "BKR": {
+    "name": "베이커 휴즈",
+    "sector": "에너지 서비스",
+    "products": "유전 시추 장비·서비스, LNG 장비, 산업용 터빈·압축기",
+    "type": "stock"
+  },
+  "XEL": {
+    "name": "엑셀 에너지",
+    "sector": "전력/유틸리티",
+    "products": "미국 중서부·남서부 전력·천연가스 공급 (풍력 발전 비중 높음)",
+    "type": "stock"
+  },
+  "EA": {
+    "name": "일렉트로닉 아츠",
+    "sector": "비디오게임",
+    "products": "EA Sports FC, Madden NFL, The Sims, Apex Legends, Battlefield",
+    "type": "stock"
+  },
+  "EXC": {
+    "name": "엑셀론",
+    "sector": "전력/유틸리티",
+    "products": "미국 동부 전력 배전 유틸리티(ComEd, PECO, BGE 등)",
+    "type": "stock"
+  },
+  "FER": {
+    "name": "페로비알",
+    "sector": "인프라/건설",
+    "products": "유료 도로·교량·공항 운영(O&M), 건설 프로젝트",
+    "type": "stock"
+  },
+  "FANG": {
+    "name": "다이아몬드백 에너지",
+    "sector": "에너지(석유·가스)",
+    "products": "미국 퍼미안 분지 원유·천연가스 시추 및 생산",
+    "type": "stock"
+  },
+  "AXON": {
+    "name": "액손 엔터프라이즈",
+    "sector": "공공 안전 기술",
+    "products": "경찰용 테이저건, 바디캠, 대시캠, Axon Evidence 클라우드",
+    "type": "stock"
+  },
+  "CCEP": {
+    "name": "코카콜라 유로퍼시픽 파트너스",
+    "sector": "식음료",
+    "products": "코카콜라·판타·스프라이트 등 유럽·태평양 병입·유통 파트너",
+    "type": "stock"
+  },
+  "NBIS": {
+    "name": "네비우스 그룹",
+    "sector": "AI 인프라",
+    "products": "AI 클라우드 컴퓨팅 인프라(GPU 클러스터 임대), 데이터센터",
+    "type": "stock"
+  },
+  "TTWO": {
+    "name": "Take-Two 인터랙티브",
+    "sector": "비디오게임",
+    "products": "GTA 시리즈, Red Dead Redemption, NBA 2K, Borderlands",
+    "type": "stock"
+  },
+  "MCHP": {
+    "name": "마이크로칩 테크놀로지",
+    "sector": "반도체",
+    "products": "마이크로컨트롤러(MCU), FPGA, 아날로그 반도체",
+    "type": "stock"
+  },
+  "KDP": {
+    "name": "큐리그 닥터페퍼",
+    "sector": "식음료",
+    "products": "닥터페퍼·캐나다 드라이·스냅플 음료, Keurig 커피머신",
+    "type": "stock"
+  },
+  "ODFL": {
+    "name": "올드 도미니언 화물선",
+    "sector": "물류/운송",
+    "products": "미국 LTL(소량화물) 트럭 운송 — 전국 당일·익일 배송",
+    "type": "stock"
+  },
+  "IDXX": {
+    "name": "IDEXX 래버러토리스",
+    "sector": "동물 의료 진단",
+    "products": "반려동물·가축용 진단 장비 및 시약, 수의학 소프트웨어",
+    "type": "stock"
+  },
+  "ADSK": {
+    "name": "오토데스크",
+    "sector": "설계 소프트웨어",
+    "products": "AutoCAD, Revit(BIM), Maya(3D 애니메이션), Fusion 360",
+    "type": "stock"
+  },
+  "CASH": {
+    "name": "현금 및 현금성 자산",
+    "sector": "현금",
+    "products": "현금성 자산 및 담보 포지션",
+    "type": "cash"
+  },
+  "ALNY": {
+    "name": "알닐람 제약",
+    "sector": "바이오의약품",
+    "products": "RNA 간섭(RNAi) 치료제 — Onpattro, Givlaari, Oxlumo",
+    "type": "stock"
+  },
+  "PYPL": {
+    "name": "페이팔 홀딩스",
+    "sector": "핀테크/결제",
+    "products": "PayPal 온라인 결제, Venmo 개인 송금, Braintree, BNPL",
+    "type": "stock"
+  },
+  "PAYX": {
+    "name": "페이첵스",
+    "sector": "HR/급여 소프트웨어",
+    "products": "중소기업 급여 처리·HR 관리·세금 신고 아웃소싱",
+    "type": "stock"
+  },
+  "ROP": {
+    "name": "로퍼 테크놀로지스",
+    "sector": "소프트웨어/산업",
+    "products": "틈새 B2B 소프트웨어(의료·교육·물류·에너지), 산업용 기술 제품",
+    "type": "stock"
+  },
+  "CRWV": {
+    "name": "CoreWeave",
+    "sector": "AI 클라우드",
+    "products": "NVIDIA GPU 특화 클라우드 컴퓨팅 임대 — AI 학습·추론 인프라",
+    "type": "stock"
+  },
+  "TRI": {
+    "name": "톰슨 로이터",
+    "sector": "정보 서비스",
+    "products": "법률 데이터베이스(Westlaw), 세금 소프트웨어(ONESOURCE), Reuters",
+    "type": "stock"
+  },
+  "MSTR": {
+    "name": "Strategy Inc(구 MicroStrategy)",
+    "sector": "비트코인 트레저리",
+    "products": "BI 소프트웨어 + 비트코인 대규모 보유 전략(BTC 트레저리)",
+    "type": "stock"
+  },
+  "KHC": {
+    "name": "크래프트 하인즈",
+    "sector": "식음료",
+    "products": "크래프트 치즈, 하인즈 케첩, Jell-O, Kool-Aid, Philadelphia",
+    "type": "stock"
+  },
+  "GEHC": {
+    "name": "GE 헬스케어 테크놀로지스",
+    "sector": "의료기기",
+    "products": "CT·MRI·X레이 영상 장비, 초음파, AI 의료 영상 진단",
+    "type": "stock"
+  },
+  "CPRT": {
+    "name": "코파트",
+    "sector": "자동차 경매",
+    "products": "사고·폐차 차량 온라인 경매 플랫폼",
+    "type": "stock"
+  },
+  "DXCM": {
+    "name": "덱스콤",
+    "sector": "의료기기",
+    "products": "연속혈당측정기(CGM) — 당뇨 환자용 실시간 혈당 모니터링",
+    "type": "stock"
+  },
+  "WDAY": {
+    "name": "Workday",
+    "sector": "HR/ERP 소프트웨어",
+    "products": "클라우드 기반 HR·재무 관리·급여 ERP 소프트웨어",
+    "type": "stock"
+  },
+  "FUT": {
+    "name": "CME 나스닥100 E-mini 선물",
+    "sector": "파생상품",
+    "products": "지수 추종을 위한 선물 계약 (현금관리/레버리지 목적)",
+    "type": "futures"
+  },
+  "COLL": {
+    "name": "현금 담보(Cash Collateral)",
+    "sector": "현금",
+    "products": "파생상품 포지션에 대한 현금 담보",
+    "type": "cash"
+  },
+  "ADJ": {
+    "name": "기타 조정(반올림 등)",
+    "sector": "기타",
+    "products": "펀드 운용상의 반올림/기타 조정 항목",
+    "type": "other"
+  }
+}

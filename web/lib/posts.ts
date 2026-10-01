@@ -4,9 +4,28 @@ export type PostMeta = {
   date: string
   tags: string[]
   summary: string
+  pinned?: boolean
 }
 
 export const posts: PostMeta[] = [
+  {
+    slug: 'accumulation-guide',
+    title: '적립식 방법론: 어떤 종목을, 얼마씩, 어떤 전략으로',
+    date: '2026-10-01',
+    tags: ['적립식', 'A전략', 'B전략', 'C전략', 'TQQQ', '방법론'],
+    summary:
+      'TQQQ 장기 적립의 전체 설계도. 종목 선택(QQQ/QLD/TQQQ), 세 가지 전략(A/B/C), 거치금이 있을 때 분할 진입, 합성가격의 의미까지—방법론의 처음과 끝을 정리한다.',
+    pinned: true,
+  },
+  {
+    slug: 'withdrawal-guide',
+    title: '인출식 방법론: 10억 달성 후 어떻게 꺼내 쓰나',
+    date: '2026-10-01',
+    tags: ['인출식', '버퍼', 'FIRE', 'TQQQ', '방법론'],
+    summary:
+      '10억을 달성했다면 다음이 더 중요하다. 버블 점검, 버퍼 계산, 월 1% 인출, SP500 −20%·−50% 각각 대응까지—인출 단계 전체 방법론을 설명한다.',
+    pinned: true,
+  },
   {
     slug: 'synthetic-ndx-1929',
     title: '1929년 대공황 시나리오는 TQQQ에서 얼마나 걸릴까',
@@ -21,7 +40,7 @@ export const posts: PostMeta[] = [
     date: '2026-10-01',
     tags: ['B전략', '거치', '분할매수', 'TQQQ', '백테스트'],
     summary:
-      '668개 코호트 백테스트 결과, TQQQ(3배)에서 3년 시간 분할이 최악의 소요기간을 12.24년 → 8.82년으로 3.4년 단축했다. 하락 대기형은 오히려 역효과. QLD·QQQ에서는 즉시 거치가 더 낫다.',
+      '668가지 경우를 백테스트한 결과, TQQQ(3배)에서 3년 시간 분할이 최악의 소요기간을 12.24년 → 8.82년으로 3.4년 단축했다. 하락 대기형은 오히려 역효과. QLD·QQQ에서는 즉시 거치가 더 낫다.',
   },
   {
     slug: 'withdrawal-strategy-design',

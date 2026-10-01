@@ -237,7 +237,7 @@ export default function SimulatorPage() {
                   목표 {(targetAmount/1e8).toFixed(0)}억
                 </span>
                 <span className="text-gray-400 text-xs">
-                  {results.A.length}개 코호트 (1971~현재)
+                  {results.A.length}가지 경우 (1971~현재)
                 </span>
               </div>
 
@@ -270,14 +270,14 @@ export default function SimulatorPage() {
                 {activeChart === 'scatter' && (
                   <div>
                     <p className="text-xs text-gray-400 mb-4">
-                      X축: 투자 시작 연도 &nbsp;|&nbsp; Y축: 목표 달성까지 소요 기간(년) &nbsp;|&nbsp; 미달성 코호트는 표시 안 됨
+                      X축: 투자 시작 연도 &nbsp;|&nbsp; Y축: 목표 달성까지 소요 기간(년) &nbsp;|&nbsp; 미달성 시점은 표시 안 됨
                     </p>
                     <ScatterPlot resultsA={results.A} resultsB={results.B} resultsC={results.C} />
                   </div>
                 )}
                 {activeChart === 'dist' && (
                   <div>
-                    <p className="text-xs text-gray-400 mb-4">0.5년 단위 bin &nbsp;|&nbsp; 전체 코호트 대비 비율(%)</p>
+                    <p className="text-xs text-gray-400 mb-4">0.5년 단위 bin &nbsp;|&nbsp; 전체 경우 대비 비율(%)</p>
                     <DistributionChart resultsA={results.A} resultsB={results.B} resultsC={results.C} />
                   </div>
                 )}

@@ -175,9 +175,9 @@ export default function MethodologySection() {
             key={s.num}
             className={`bg-gray-50 dark:bg-gray-900 rounded-2xl border ${s.color} p-6`}
           >
-            <p className={`text-xs font-black mb-3 ${s.tagColor}`}>{s.tag}</p>
-            <div className="flex items-baseline gap-3 mb-1">
+            <div className="flex items-baseline gap-2 mb-1">
               <span className="font-mono text-xs text-gray-400 dark:text-gray-600">{s.num}</span>
+              <span className={`text-xs font-bold tracking-wide ${s.tagColor}`}>{s.tag}</span>
               <h3 className="text-base font-bold text-gray-900 dark:text-white">{s.title}</h3>
             </div>
             <p className="text-xs text-gray-400 dark:text-gray-500 mb-5">{s.sub}</p>

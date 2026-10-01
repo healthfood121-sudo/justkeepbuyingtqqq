@@ -1,6 +1,17 @@
 import Link from 'next/link'
 import Header from '@/components/Header'
 
+function DataLink({ inst, m }: { inst: string; m: string }) {
+  return (
+    <Link
+      href={`/posts/lump-sum-vs-split/data?inst=${inst}&m=${m}`}
+      className="text-xs text-blue-500 dark:text-blue-400 hover:underline whitespace-nowrap"
+    >
+      데이터 →
+    </Link>
+  )
+}
+
 function Tag({ children }: { children: string }) {
   return (
     <span className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-full">{children}</span>
@@ -124,26 +135,26 @@ export default function LumpSumVsSplitPost() {
         </div>
 
         <P>
-          1971년부터 2026년까지 매월 시작할 수 있는 모든 시점(668개 코호트)에 각 방식을 적용했다.
+          1971년부터 2026년까지 매월 시작할 수 있는 모든 시점(668가지 경우)에 각 방식을 적용했다.
           평가 기준은 완료율, 평균 소요기간, 그리고 <strong className="text-gray-900 dark:text-white">최악의 경우(최장 소요기간)</strong>.
         </P>
 
         <H2>결과: TQQQ(3배) 전체 수치</H2>
 
         <Table
-          headers={['방식', '완료율', '평균', '중앙값', '최단', '최장']}
+          headers={['방식', '완료율', '평균', '중앙값', '최단', '최장', '']}
           highlight={[0, 4, 9]}
           rows={[
-            ['기준선 — 즉시 거치', '96.3%', '3.02년', '2.46년', '0.33년', <strong key="max" className="text-yellow-500 dark:text-yellow-300">12.24년</strong>],
-            ['하락 −15% 후 1년 분산', '95.7%', '3.40년', '2.93년', '0.85년', '12.73년'],
-            ['하락 −20% 후 1년 분산', '95.5%', '3.45년', '3.03년', '0.85년', '12.73년'],
-            ['하락 −30% 후 1년 분산', '95.4%', '3.50년', '3.09년', '0.90년', '12.82년'],
-            ['월 분할 3년 (36개월)', '94.8%', '3.64년', '3.23년', '1.27년', <strong key="max" className="text-green-600 dark:text-green-300">8.82년</strong>],
-            ['월 분할 4년 (48개월)', '94.5%', '3.90년', '3.53년', '1.35년', <strong key="max" className="text-green-600 dark:text-green-300">8.82년</strong>],
-            ['월 분할 5년 (60개월)', '94.0%', '4.09년', '3.78년', '1.42년', <strong key="max" className="text-green-600 dark:text-green-300">8.67년</strong>],
-            ['일 분할 1년 (252일)', '95.7%', '3.28년', '2.78년', '0.77년', '12.65년'],
-            ['일 분할 2년 (504일)', '95.2%', '3.46년', '3.02년', '1.10년', '12.99년'],
-            ['일 분할 3년 (756일)', '94.8%', '3.66년', '3.25년', '1.27년', <strong key="max" className="text-green-600 dark:text-green-300">8.82년</strong>],
+            ['기준선 — 즉시 거치', '96.3%', '3.02년', '2.46년', '0.33년', <strong key="max" className="text-yellow-500 dark:text-yellow-300">12.24년</strong>, <DataLink inst="ndx3x" m="instant" />],
+            ['하락 −15% 후 1년 분산', '95.7%', '3.40년', '2.93년', '0.85년', '12.73년', <DataLink inst="ndx3x" m="dip15" />],
+            ['하락 −20% 후 1년 분산', '95.5%', '3.45년', '3.03년', '0.85년', '12.73년', <DataLink inst="ndx3x" m="dip20" />],
+            ['하락 −30% 후 1년 분산', '95.4%', '3.50년', '3.09년', '0.90년', '12.82년', <DataLink inst="ndx3x" m="dip30" />],
+            ['월 분할 3년 (36개월)', '94.8%', '3.64년', '3.23년', '1.27년', <strong key="max" className="text-green-600 dark:text-green-300">8.82년</strong>, <DataLink inst="ndx3x" m="monthly3y" />],
+            ['월 분할 4년 (48개월)', '94.5%', '3.90년', '3.53년', '1.35년', <strong key="max" className="text-green-600 dark:text-green-300">8.82년</strong>, <DataLink inst="ndx3x" m="monthly4y" />],
+            ['월 분할 5년 (60개월)', '94.0%', '4.09년', '3.78년', '1.42년', <strong key="max" className="text-green-600 dark:text-green-300">8.67년</strong>, <DataLink inst="ndx3x" m="monthly5y" />],
+            ['일 분할 1년 (252일)', '95.7%', '3.28년', '2.78년', '0.77년', '12.65년', <DataLink inst="ndx3x" m="daily1y" />],
+            ['일 분할 2년 (504일)', '95.2%', '3.46년', '3.02년', '1.10년', '12.99년', <DataLink inst="ndx3x" m="daily2y" />],
+            ['일 분할 3년 (756일)', '94.8%', '3.66년', '3.25년', '1.27년', <strong key="max" className="text-green-600 dark:text-green-300">8.82년</strong>, <DataLink inst="ndx3x" m="daily3y" />],
           ]}
         />
 
@@ -176,15 +187,15 @@ export default function LumpSumVsSplitPost() {
         <H2>QLD(2배), QQQ(1배): 분할이 오히려 손해</H2>
 
         <Table
-          headers={['종목', '방식', '완료율', '평균', '최장']}
-          highlight={[0, 3, 6, 9]}
+          headers={['종목', '방식', '완료율', '평균', '최장', '']}
+          highlight={[0, 3]}
           rows={[
-            [<strong key="q" className="text-gray-900 dark:text-white">QLD (2x)</strong>, '즉시 거치 (기준선)', '95.2%', '3.83년', '11.55년'],
-            ['', '월 분할 3년', '93.9%', '4.41년', '12.38년'],
-            ['', '월 분할 5년', '93.1%', '4.74년', '9.24년'],
-            [<strong key="q" className="text-gray-900 dark:text-white">QQQ (1x)</strong>, '즉시 거치 (기준선)', '91.2%', '5.64년', '11.72년'],
-            ['', '월 분할 3년', '90.7%', '6.20년', '12.31년'],
-            ['', '월 분할 5년', '90.0%', '6.48년', '11.78년'],
+            [<strong key="q" className="text-gray-900 dark:text-white">QLD (2x)</strong>, '즉시 거치 (기준선)', '95.2%', '3.83년', '11.55년', <DataLink inst="ndx2x" m="instant" />],
+            ['', '월 분할 3년', '93.9%', '4.41년', '12.38년', <DataLink inst="ndx2x" m="monthly3y" />],
+            ['', '월 분할 5년', '93.1%', '4.74년', '9.24년', <DataLink inst="ndx2x" m="monthly5y" />],
+            [<strong key="q" className="text-gray-900 dark:text-white">QQQ (1x)</strong>, '즉시 거치 (기준선)', '91.2%', '5.64년', '11.72년', <DataLink inst="ndx1x" m="instant" />],
+            ['', '월 분할 3년', '90.7%', '6.20년', '12.31년', <DataLink inst="ndx1x" m="monthly3y" />],
+            ['', '월 분할 5년', '90.0%', '6.48년', '11.78년', <DataLink inst="ndx1x" m="monthly5y" />],
           ]}
         />
 
@@ -215,7 +226,7 @@ export default function LumpSumVsSplitPost() {
         <P>
           초기 구현에서는 하락 조건을 계산할 때 역사상 전체 최고점을 기준으로 삼는 버그가 있었다.
           나스닥100 3배 합성자산의 역사적 최고점은 아직도 2000년 3월 닷컴버블 피크다.
-          그래서 2000년 이후 시작한 거의 모든 코호트가 "이미 −90% 넘게 하락한 상태"로 잘못 계산됐다.
+          그래서 2000년 이후 시작한 거의 모든 진입 시점이 "이미 −90% 넘게 하락한 상태"로 잘못 계산됐다.
           이를 <strong className="text-gray-900 dark:text-white">각 투자자가 투자를 시작한 시점 이후의 최고점</strong> 기준으로 수정한 뒤에도
           3년 분할의 효과는 그대로 유지됐다.
         </P>
