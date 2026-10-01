@@ -103,6 +103,8 @@ export default function ScatterPlot({ resultsA, resultsB, resultsC, showA = true
           label={{ value: '투자 시작 연도', position: 'insideBottom', offset: -12, fill: axisColor, fontSize: 12 }}
         />
         <YAxis
+          type="number"
+          dataKey="y"
           stroke={axisColor}
           tick={{ fill: tickColor, fontSize: 11 }}
           label={{ value: '소요기간(년)', angle: -90, position: 'insideLeft', fill: axisColor, fontSize: 12 }}
