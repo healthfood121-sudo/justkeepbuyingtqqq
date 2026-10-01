@@ -311,18 +311,27 @@ export default function SimulatorPage() {
                   )
 
                   const { params } = cohortJson.meta
-                  const colDef: { col: typeof tableSort.col; label: string }[] = [
+
+                  // 활성 전략의 sort 컬럼만 허용
+                  const activeSortCol: typeof tableSort.col =
+                    (tableSort.col === 'yA' && !show.A) ||
+                    (tableSort.col === 'yB' && !show.B) ||
+                    (tableSort.col === 'yC' && !show.C)
+                      ? 'start'
+                      : tableSort.col
+
+                  const sortableCols: { col: typeof tableSort.col; label: string }[] = [
                     { col: 'start', label: '시작일' },
-                    { col: 'yA', label: 'A 종료일' },
-                    { col: 'yB', label: 'B 종료일' },
-                    { col: 'yC', label: 'C 종료일' },
+                    ...(show.A ? [{ col: 'yA' as const, label: 'A 종료일' }] : []),
+                    ...(show.B ? [{ col: 'yB' as const, label: 'B 종료일' }] : []),
+                    ...(show.C ? [{ col: 'yC' as const, label: 'C 종료일' }] : []),
                   ]
 
                   const sorted = [...cohortJson.rows].sort((x, y) => {
                     const v = (r: CohortJsonRow) => {
-                      if (tableSort.col === 'start') return r.s
-                      if (tableSort.col === 'yA') return r.yA ?? 9999
-                      if (tableSort.col === 'yB') return r.yB ?? 9999
+                      if (activeSortCol === 'start') return r.s
+                      if (activeSortCol === 'yA') return r.yA ?? 9999
+                      if (activeSortCol === 'yB') return r.yB ?? 9999
                       return r.yC ?? 9999
                     }
                     const a = v(x), b = v(y)
@@ -342,51 +351,39 @@ export default function SimulatorPage() {
                         <table className="w-full text-xs">
                           <thead className="sticky top-0 bg-gray-50 dark:bg-gray-900 z-10">
                             <tr className="border-b border-gray-200 dark:border-gray-700">
-                              {colDef.map(({ col, label }) => (
+                              {sortableCols.map(({ col, label }) => (
                                 <th
                                   key={col}
                                   onClick={() => toggleSort(col)}
                                   className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium cursor-pointer hover:text-gray-900 dark:hover:text-white select-none whitespace-nowrap"
                                 >
                                   {label}
-                                  {tableSort.col === col && (
+                                  {activeSortCol === col && (
                                     <span className="ml-1 text-blue-500 dark:text-blue-400">{tableSort.dir === 1 ? '↑' : '↓'}</span>
                                   )}
                                 </th>
                               ))}
-                              <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">A 소요</th>
-                              <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">B 소요</th>
-                              <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">C 소요</th>
-                              <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">A 투입금</th>
-                              <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">B 투입금</th>
-                              <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">C 투입금</th>
+                              {show.A && <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">A 소요</th>}
+                              {show.B && <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">B 소요</th>}
+                              {show.C && <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">C 소요</th>}
+                              {show.A && <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">A 투입금</th>}
+                              {show.B && <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">B 투입금</th>}
+                              {show.C && <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">C 투입금</th>}
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                             {sorted.map((r) => (
                               <tr key={r.s} className="hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors">
                                 <td className="py-2 px-3 text-gray-600 dark:text-gray-300 font-mono whitespace-nowrap">{r.s.slice(0,7)}</td>
-                                <td className={`py-2 px-3 font-mono whitespace-nowrap ${r.sA === 'completed' ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-300 dark:text-gray-600'}`}>
-                                  {fmtD(r.eA)}
-                                </td>
-                                <td className={`py-2 px-3 font-mono whitespace-nowrap ${r.sB === 'completed' ? 'text-yellow-500 dark:text-yellow-400' : 'text-gray-300 dark:text-gray-600'}`}>
-                                  {fmtD(r.eB)}
-                                </td>
-                                <td className={`py-2 px-3 font-mono whitespace-nowrap ${r.sC === 'completed' ? 'text-blue-500 dark:text-blue-400' : 'text-gray-300 dark:text-gray-600'}`}>
-                                  {fmtD(r.eC)}
-                                </td>
-                                <td className={`py-2 px-3 font-mono ${r.sA === 'completed' ? 'text-emerald-600/70 dark:text-emerald-400/70' : 'text-gray-300 dark:text-gray-600'}`}>
-                                  {fmtY(r.yA)}
-                                </td>
-                                <td className={`py-2 px-3 font-mono ${r.sB === 'completed' ? 'text-yellow-500/70 dark:text-yellow-400/70' : 'text-gray-300 dark:text-gray-600'}`}>
-                                  {fmtY(r.yB)}
-                                </td>
-                                <td className={`py-2 px-3 font-mono ${r.sC === 'completed' ? 'text-blue-500/70 dark:text-blue-400/70' : 'text-gray-300 dark:text-gray-600'}`}>
-                                  {fmtY(r.yC)}
-                                </td>
-                                <td className="py-2 px-3 text-gray-400 font-mono">{fmtInv(r.iA)}</td>
-                                <td className="py-2 px-3 text-gray-400 font-mono">{fmtInv(r.iB)}</td>
-                                <td className="py-2 px-3 text-gray-400 font-mono">{fmtInv(r.iC)}</td>
+                                {show.A && <td className={`py-2 px-3 font-mono whitespace-nowrap ${r.sA === 'completed' ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-300 dark:text-gray-600'}`}>{fmtD(r.eA)}</td>}
+                                {show.B && <td className={`py-2 px-3 font-mono whitespace-nowrap ${r.sB === 'completed' ? 'text-yellow-500 dark:text-yellow-400' : 'text-gray-300 dark:text-gray-600'}`}>{fmtD(r.eB)}</td>}
+                                {show.C && <td className={`py-2 px-3 font-mono whitespace-nowrap ${r.sC === 'completed' ? 'text-blue-500 dark:text-blue-400' : 'text-gray-300 dark:text-gray-600'}`}>{fmtD(r.eC)}</td>}
+                                {show.A && <td className={`py-2 px-3 font-mono ${r.sA === 'completed' ? 'text-emerald-600/70 dark:text-emerald-400/70' : 'text-gray-300 dark:text-gray-600'}`}>{fmtY(r.yA)}</td>}
+                                {show.B && <td className={`py-2 px-3 font-mono ${r.sB === 'completed' ? 'text-yellow-500/70 dark:text-yellow-400/70' : 'text-gray-300 dark:text-gray-600'}`}>{fmtY(r.yB)}</td>}
+                                {show.C && <td className={`py-2 px-3 font-mono ${r.sC === 'completed' ? 'text-blue-500/70 dark:text-blue-400/70' : 'text-gray-300 dark:text-gray-600'}`}>{fmtY(r.yC)}</td>}
+                                {show.A && <td className="py-2 px-3 text-gray-400 font-mono">{fmtInv(r.iA)}</td>}
+                                {show.B && <td className="py-2 px-3 text-gray-400 font-mono">{fmtInv(r.iB)}</td>}
+                                {show.C && <td className="py-2 px-3 text-gray-400 font-mono">{fmtInv(r.iC)}</td>}
                               </tr>
                             ))}
                           </tbody>
