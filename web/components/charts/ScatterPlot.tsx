@@ -16,7 +16,7 @@ interface Props {
   showC?: boolean
 }
 
-const COLORS = { A: '#f59e0b', B: '#3b82f6', C: '#10b981' }
+const COLORS = { A: '#10b981', B: '#f59e0b', C: '#3b82f6' }
 const LABELS = { A: 'A전략(계속적립)', B: 'B전략(한도후중단)', C: 'C전략(거치+계속)' }
 
 function toScatterData(results: CohortResult[]) {

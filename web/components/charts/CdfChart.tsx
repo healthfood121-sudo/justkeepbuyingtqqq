@@ -9,6 +9,9 @@ interface Props {
   resultsA: CohortResult[]
   resultsB: CohortResult[]
   resultsC: CohortResult[]
+  showA?: boolean
+  showB?: boolean
+  showC?: boolean
 }
 
 const CustomTooltip = ({ active, payload, label }: any) => {
@@ -23,7 +26,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   )
 }
 
-export default function CdfChart({ resultsA, resultsB, resultsC }: Props) {
+export default function CdfChart({ resultsA, resultsB, resultsC, showA = true, showB = true, showC = true }: Props) {
   const { theme } = useTheme()
   const isDark = theme === 'dark'
 
@@ -44,9 +47,9 @@ export default function CdfChart({ resultsA, resultsB, resultsC }: Props) {
 
   const data = Array.from({ length: maxYr }, (_, i) => ({
     year: i + 1,
-    A: cdfA.find(p => p.year === i + 1)?.pct ?? 0,
-    B: cdfB.find(p => p.year === i + 1)?.pct ?? 0,
-    C: cdfC.find(p => p.year === i + 1)?.pct ?? 0,
+    ...(showA ? { A: cdfA.find(p => p.year === i + 1)?.pct ?? 0 } : {}),
+    ...(showB ? { B: cdfB.find(p => p.year === i + 1)?.pct ?? 0 } : {}),
+    ...(showC ? { C: cdfC.find(p => p.year === i + 1)?.pct ?? 0 } : {}),
   }))
 
   return (
@@ -72,9 +75,9 @@ export default function CdfChart({ resultsA, resultsB, resultsC }: Props) {
         />
         <ReferenceLine y={50} stroke={refLineColor} strokeDasharray="4 2" label={{ value: '50%', fill: axisColor, fontSize: 10 }} />
         <ReferenceLine y={80} stroke={refLineColor} strokeDasharray="4 2" label={{ value: '80%', fill: axisColor, fontSize: 10 }} />
-        <Line type="monotone" dataKey="A" stroke="#f59e0b" strokeWidth={2} dot={false} name="A" />
-        <Line type="monotone" dataKey="B" stroke="#3b82f6" strokeWidth={2} dot={false} name="B" />
-        <Line type="monotone" dataKey="C" stroke="#10b981" strokeWidth={2} dot={false} name="C" />
+        {showA && <Line type="monotone" dataKey="A" stroke="#10b981" strokeWidth={2} dot={false} name="A" />}
+        {showB && <Line type="monotone" dataKey="B" stroke="#f59e0b" strokeWidth={2} dot={false} name="B" />}
+        {showC && <Line type="monotone" dataKey="C" stroke="#3b82f6" strokeWidth={2} dot={false} name="C" />}
       </LineChart>
     </ResponsiveContainer>
   )

@@ -2,6 +2,8 @@ import type { BacktestSummary } from '@/lib/types'
 
 interface Props {
   summaries: { A: BacktestSummary; B: BacktestSummary; C: BacktestSummary }
+  show: Record<'A' | 'B' | 'C', boolean>
+  onToggle: (s: 'A' | 'B' | 'C') => void
 }
 
 const strategyInfo = {
@@ -10,17 +12,23 @@ const strategyInfo = {
   C: { label: 'C전략', desc: '거치+계속 적립', color: 'text-blue-500 dark:text-blue-400', bg: 'bg-blue-50 border-blue-200 dark:bg-blue-400/10 dark:border-blue-400/30' },
 }
 
-export default function StrategySummaryRow({ summaries }: Props) {
+export default function StrategySummaryRow({ summaries, show, onToggle }: Props) {
   return (
     <div className="grid grid-cols-3 gap-3">
       {(['A', 'B', 'C'] as const).map(s => {
         const sum = summaries[s]
         const info = strategyInfo[s]
+        const isOn = show[s]
         return (
-          <div key={s} className={`rounded-xl p-4 border ${info.bg}`}>
+          <button
+            key={s}
+            onClick={() => onToggle(s)}
+            className={`rounded-xl p-4 border text-left transition-opacity cursor-pointer select-none ${info.bg} ${isOn ? 'opacity-100' : 'opacity-35'}`}
+          >
             <div className="flex items-center gap-2 mb-3">
               <span className={`text-lg font-bold ${info.color}`}>{info.label}</span>
               <span className="text-xs text-gray-500 dark:text-gray-400">{info.desc}</span>
+              {!isOn && <span className="ml-auto text-xs text-gray-400 dark:text-gray-500">숨김</span>}
             </div>
             <div className="space-y-2">
               <Stat label="완료율" value={`${sum.completionRate.toFixed(1)}%`} />
@@ -28,7 +36,7 @@ export default function StrategySummaryRow({ summaries }: Props) {
               <Stat label="중간값" value={sum.medianYears ? `${sum.medianYears.toFixed(1)}년` : '—'} />
               <Stat label="최장" value={sum.maxYears ? `${sum.maxYears.toFixed(1)}년` : '—'} highlight />
             </div>
-          </div>
+          </button>
         )
       })}
     </div>

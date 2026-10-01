@@ -9,6 +9,9 @@ interface Props {
   resultsA: CohortResult[]
   resultsB: CohortResult[]
   resultsC: CohortResult[]
+  showA?: boolean
+  showB?: boolean
+  showC?: boolean
 }
 
 const CustomTooltip = ({ active, payload, label }: any) => {
@@ -23,7 +26,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   )
 }
 
-export default function DistributionChart({ resultsA, resultsB, resultsC }: Props) {
+export default function DistributionChart({ resultsA, resultsB, resultsC, showA = true, showB = true, showC = true }: Props) {
   const { theme } = useTheme()
   const isDark = theme === 'dark'
 
@@ -41,14 +44,14 @@ export default function DistributionChart({ resultsA, resultsB, resultsC }: Prop
     distC.at(-1)?.yearsBin ?? 0,
   )
 
-  const data: { bin: string; A: number; B: number; C: number }[] = []
+  const data: { bin: string; A?: number; B?: number; C?: number }[] = []
   for (let b = 0; b <= maxBin + 0.5; b += 0.5) {
     const key = Math.round(b * 10) / 10
     data.push({
       bin: key.toFixed(1),
-      A: distA.find(d => d.yearsBin === key)?.pct ?? 0,
-      B: distB.find(d => d.yearsBin === key)?.pct ?? 0,
-      C: distC.find(d => d.yearsBin === key)?.pct ?? 0,
+      ...(showA ? { A: distA.find(d => d.yearsBin === key)?.pct ?? 0 } : {}),
+      ...(showB ? { B: distB.find(d => d.yearsBin === key)?.pct ?? 0 } : {}),
+      ...(showC ? { C: distC.find(d => d.yearsBin === key)?.pct ?? 0 } : {}),
     })
   }
 
@@ -72,9 +75,9 @@ export default function DistributionChart({ resultsA, resultsB, resultsC }: Prop
           wrapperStyle={{ paddingTop: 8 }}
           formatter={v => <span className="text-sm" style={{ color: tickColor }}>{v}전략</span>}
         />
-        <Bar dataKey="A" fill="#f59e0b" opacity={0.8} name="A" />
-        <Bar dataKey="B" fill="#3b82f6" opacity={0.8} name="B" />
-        <Bar dataKey="C" fill="#10b981" opacity={0.8} name="C" />
+        {showA && <Bar dataKey="A" fill="#10b981" opacity={0.8} name="A" />}
+        {showB && <Bar dataKey="B" fill="#f59e0b" opacity={0.8} name="B" />}
+        {showC && <Bar dataKey="C" fill="#3b82f6" opacity={0.8} name="C" />}
       </BarChart>
     </ResponsiveContainer>
   )

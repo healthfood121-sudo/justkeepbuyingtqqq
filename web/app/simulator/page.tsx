@@ -69,6 +69,10 @@ export default function SimulatorPage() {
   const [tableSort, setTableSort] = useState<{ col: 'start' | 'yA' | 'yB' | 'yC'; dir: 1 | -1 }>({ col: 'start', dir: 1 })
   const [cohortJson, setCohortJson] = useState<CohortJsonFile | null>(null)
   const [jsonLoading, setJsonLoading] = useState(false)
+  const [show, setShow] = useState<Record<'A' | 'B' | 'C', boolean>>({ A: true, B: true, C: true })
+
+  const toggleShow = (s: 'A' | 'B' | 'C') =>
+    setShow(prev => ({ ...prev, [s]: !prev[s] }))
 
   // 파라미터 상태
   const [instrument, setInstrument] = useState<Instrument>('ndx3x')
@@ -241,8 +245,8 @@ export default function SimulatorPage() {
                 </span>
               </div>
 
-              {/* 전략별 요약 */}
-              <StrategySummaryRow summaries={summaries} />
+              {/* 전략별 요약 (클릭으로 on/off) */}
+              <StrategySummaryRow summaries={summaries} show={show} onToggle={toggleShow} />
 
               {/* 차트/데이터 탭 */}
               <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-5">
@@ -272,19 +276,19 @@ export default function SimulatorPage() {
                     <p className="text-xs text-gray-400 mb-4">
                       X축: 투자 시작 연도 &nbsp;|&nbsp; Y축: 목표 달성까지 소요 기간(년) &nbsp;|&nbsp; 미달성 시점은 표시 안 됨
                     </p>
-                    <ScatterPlot resultsA={results.A} resultsB={results.B} resultsC={results.C} />
+                    <ScatterPlot resultsA={results.A} resultsB={results.B} resultsC={results.C} showA={show.A} showB={show.B} showC={show.C} />
                   </div>
                 )}
                 {activeChart === 'dist' && (
                   <div>
                     <p className="text-xs text-gray-400 mb-4">0.5년 단위 bin &nbsp;|&nbsp; 전체 경우 대비 비율(%)</p>
-                    <DistributionChart resultsA={results.A} resultsB={results.B} resultsC={results.C} />
+                    <DistributionChart resultsA={results.A} resultsB={results.B} resultsC={results.C} showA={show.A} showB={show.B} showC={show.C} />
                   </div>
                 )}
                 {activeChart === 'cdf' && (
                   <div>
                     <p className="text-xs text-gray-400 mb-4">N년 이내 목표 달성 누적 비율 &nbsp;|&nbsp; 50%·80% 기준선 표시</p>
-                    <CdfChart resultsA={results.A} resultsB={results.B} resultsC={results.C} />
+                    <CdfChart resultsA={results.A} resultsB={results.B} resultsC={results.C} showA={show.A} showB={show.B} showC={show.C} />
                   </div>
                 )}
                 {activeChart === 'table' && (() => {
