@@ -50,4 +50,12 @@ export const posts: PostMeta[] = [
     summary:
       '10억 목표 달성 후 인출 단계로 넘어갈 때, 너무 빠르게 목표를 달성한 "버블 케이스"를 어떻게 처리할지 백테스트로 비교했습니다. 2년 대기 후 DCA(Method A) vs 즉시 DCA(Method B).',
   },
+  {
+    slug: 'withdrawal-comparison',
+    title: '인출 전략 비교: SP500 드로다운 기반 vs NDX 200MA 기반',
+    date: '2026-10-01',
+    tags: ['인출', '백테스트', 'TQQQ', '200MA', '비교'],
+    summary:
+      '두 인출 전략을 418가지 코호트로 비교. SP500 드로다운 기반(A안)은 하락장에서 주식을 보유하고 인출만 중단, NDX MA200 기반(B안)은 전량 현금 전환 후 이자로 생활. 중앙값 기준 B안이 203억 vs 12.7억으로 압도적 우세.',
+  },
 ]
