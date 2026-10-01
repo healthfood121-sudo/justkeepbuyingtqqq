@@ -180,8 +180,11 @@ def fetch_via_slickcharts() -> tuple[str, list[dict]]:
     resp = requests.get(SLICKCHARTS_URL, headers=SLICKCHARTS_HEADERS, timeout=30)
     resp.raise_for_status()
     html = resp.text
+    # 페이지에 사이드바 시세 표(SPY/QQQ/DIA 등)도 있으므로 'Weight' 헤더가 있는 표만 사용
+    tables = re.findall(r"<table[^>]*>.*?</table>", html, re.S | re.I)
+    main_table = next((t for t in tables if re.search(r">\s*Weight\s*<", t, re.I)), "")
     rows = []
-    for tr in re.findall(r"<tr[^>]*>(.*?)</tr>", html, re.S):
+    for tr in re.findall(r"<tr[^>]*>(.*?)</tr>", main_table, re.S):
         sym = re.search(r'href="/symbol/([A-Za-z.\-]+)"', tr)
         pct = re.search(r"([\d.]+)\s*%", tr)
         if sym and pct:
@@ -261,7 +264,7 @@ def _infer_type(ticker: str, descs: dict) -> str:
 
 
 def generate_data_ts(as_of_kr: str, holdings: list[dict], descs: dict, source: str) -> str:
-    today = datetime.utcnow().strftime("%Y-%m-%d")
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
     rows = []
     for h in holdings:
@@ -344,6 +347,9 @@ def main():
 
     total = sum(h["weight"] for h in holdings)
     print(f"기준일: {as_of_kr}  |  종목 수: {len(holdings)}  |  비중 합계: {total:.2f}%")
+    if not 95 <= total <= 105:
+        print(f"오류: 비중 합계 {total:.2f}% 가 비정상 — data.ts 를 변경하지 않습니다.")
+        sys.exit(1)
 
     # 2. descriptions 로드
     if not DESCRIPTIONS.exists():
