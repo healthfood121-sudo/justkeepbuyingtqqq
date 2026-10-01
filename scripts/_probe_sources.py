@@ -1,54 +1,35 @@
-"""임시: 나스닥100 데이터 소스 후보 접속 테스트 (확인 후 삭제)"""
+"""임시: 나스닥100 데이터 소스 후보 상세 테스트 (확인 후 삭제)"""
 import json, re, requests
 from datetime import date, timedelta
 
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
-NASDAQ_H = {"User-Agent": UA, "Accept": "application/json, text/plain, */*", "Accept-Language": "en-US,en;q=0.9",
-            "Origin": "https://www.nasdaq.com", "Referer": "https://www.nasdaq.com/"}
-HTML_H = {"User-Agent": UA, "Accept": "text/html,application/xhtml+xml,*/*;q=0.8", "Accept-Language": "en-US,en;q=0.9"}
+H = {"User-Agent": UA, "Accept": "application/json, text/javascript, */*; q=0.01", "X-Requested-With": "XMLHttpRequest",
+     "Referer": "https://indexes.nasdaqomx.com/Index/Weighting/NDX"}
 
-d = date.today()
+# 1) Nasdaq Global Indexes: 페이지 JS 가 보내는 파라미터 확인
+page = requests.get("https://indexes.nasdaqomx.com/Index/Weighting/NDX", headers={"User-Agent": UA}, timeout=25).text
+for m in re.finditer(r"(WeightingData|mDataProp|aoColumns|sTitle|Weight|timeOfDay)[^\n]{0,200}", page):
+    print("PAGE:", m.group(0)[:220])
+
+d = date.today() - timedelta(days=1)
 while d.weekday() >= 5:
     d -= timedelta(days=1)
-prev = d - timedelta(days=1)
-while prev.weekday() >= 5:
-    prev -= timedelta(days=1)
+cols = ["Name", "Symbol", "Weight", "Sector", "Price", "Shares", "IndexWeight", "PercentWeight"]
+form = {"id": "NDX", "tradeDate": f"{d.isoformat()}T00:00:00.000", "timeOfDay": "EOD",
+        "sEcho": 1, "iColumns": len(cols), "iDisplayStart": 0, "iDisplayLength": 200}
+for i, c in enumerate(cols):
+    form[f"mDataProp_{i}"] = c
+r = requests.post("https://indexes.nasdaqomx.com/Index/WeightingData", headers=H, data=form, timeout=25)
+print("WEIGHTING:", r.status_code, r.text[:600])
 
-probes = [
-    ("nasdaq list-type nasdaq100", "GET", "https://api.nasdaq.com/api/quote/list-type/nasdaq100", NASDAQ_H, None),
-    ("nasdaq QQQ holdings v1", "GET", "https://api.nasdaq.com/api/quote/QQQ/holdings?assetclass=etf", NASDAQ_H, None),
-    ("nasdaq NDX info", "GET", "https://api.nasdaq.com/api/quote/NDX/info?assetclass=index", NASDAQ_H, None),
-    ("nasdaq NDX constituents", "GET", "https://api.nasdaq.com/api/quote/NDX/constituents?assetclass=index", NASDAQ_H, None),
-    ("nasdaq indexes weighting page", "GET", "https://indexes.nasdaqomx.com/Index/Weighting/NDX", HTML_H, None),
-    ("nasdaq indexes WeightingData SOD", "POST", "https://indexes.nasdaqomx.com/Index/WeightingData",
-     {**HTML_H, "Accept": "application/json", "X-Requested-With": "XMLHttpRequest"},
-     {"id": "NDX", "tradeDate": f"{d.isoformat()}T00:00:00.000", "timeOfDay": "SOD"}),
-    ("nasdaq indexes WeightingData EOD prev", "POST", "https://indexes.nasdaqomx.com/Index/WeightingData",
-     {**HTML_H, "Accept": "application/json", "X-Requested-With": "XMLHttpRequest"},
-     {"id": "NDX", "tradeDate": f"{prev.isoformat()}T00:00:00.000", "timeOfDay": "EOD"}),
-    ("nasdaq.com NDX page", "GET", "https://www.nasdaq.com/market-activity/quotes/nasdaq-ndx-index", HTML_H, None),
-    ("invesco dng holdings", "GET", "https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/QQQ/holdings/fund?idType=ticker&productType=ETF",
-     {"User-Agent": UA, "Accept": "application/json"}, None),
-    ("stockanalysis qqq", "GET", "https://stockanalysis.com/etf/qqq/holdings/", HTML_H, None),
-    ("zacks qqq", "GET", "https://www.zacks.com/funds/etf/QQQ/holding", HTML_H, None),
-    ("wikipedia nasdaq-100", "GET", "https://en.wikipedia.org/wiki/Nasdaq-100", HTML_H, None),
-]
-
-for name, method, url, headers, data in probes:
-    try:
-        r = requests.request(method, url, headers=headers, data=data, timeout=25)
-        body = r.text
-        ctype = r.headers.get("Content-Type", "")
-        info = f"{r.status_code} {len(body):,}B {ctype}"
-        extra = ""
-        if "json" in ctype or body.lstrip().startswith(("{", "[")):
-            try:
-                j = r.json()
-                extra = " keys=" + (str(list(j.keys()))[:200] if isinstance(j, dict) else f"list[{len(j)}]")
-            except Exception:
-                pass
-        n_pct = len(re.findall(r"\d+\.\d+\s*%", body))
-        print(f"### {name}: {info}{extra} pct_count={n_pct}")
-        print("    " + re.sub(r"\s+", " ", body[:700]))
-    except Exception as e:
-        print(f"### {name}: ERROR {e}")
+# 2) stockanalysis: 전체 목록이 들어있는지
+for url in ("https://stockanalysis.com/etf/qqq/holdings/", "https://stockanalysis.com/etf/qqq/holdings/__data.json"):
+    r = requests.get(url, headers={"User-Agent": UA}, timeout=25)
+    t = r.text
+    print("SA:", url, r.status_code, len(t))
+    syms = re.findall(r'"?s"?\s*:\s*"\$?([A-Z.]{1,6})"', t)
+    print("   symbols-like:", len(syms), syms[:10])
+    for kw in ("NVDA", "NQZ6", "USD", "SPCX", "WDAY", "holdings", "count", "asOf", "date"):
+        i = t.find(kw)
+        if i >= 0:
+            print(f"   [{kw}] ...{re.sub(chr(10),' ',t[max(0,i-150):i+200])}...")
