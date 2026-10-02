@@ -58,8 +58,9 @@ function simUrl(params: { daily?: number; target?: number; lump?: number }) {
   if (params.daily)  q.set('daily',  String(params.daily))
   if (params.target) q.set('target', String(params.target))
   if (params.lump)   q.set('lump',   String(params.lump))
+  if (params.lump)   q.set('cap',    String(params.lump))  // B한도 = C거치금 (목돈 동일 사용)
   const qs = q.toString()
-  return `/simulator${qs ? '?' + qs : ''}`
+  return `/simulator/custom${qs ? '?' + qs : ''}`
 }
 
 function fmt(n: number) {
@@ -79,16 +80,16 @@ function AccumSection() {
 
   return (
     <div>
-      <AmountInput label="거치금액 (없으면 0)" value={lump} onChange={setLump} />
+      <AmountInput label="목돈 (없으면 0)" value={lump} onChange={setLump} />
       {lump > 0 && (
         <div className="pl-3 border-l-2 border-blue-300 dark:border-blue-800 my-1">
           <Derived
-            label={`3년(${SPLIT_DAYS}거래일)로 분할`}
+            label="C전략: 3년 분할 거치"
             value={`일 ${fmt(dailyLump)}`}
           />
           <Derived
-            label="닷컴버블 대비 분할 매수"
-            value="최악의 고점 진입 위험 최소화"
+            label="B전략: 매입한도로도 적용"
+            value={`누적 ${fmt(lump)} 도달 시 중단`}
           />
         </div>
       )}
