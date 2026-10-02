@@ -141,7 +141,10 @@ export default function WithdrawalGuidePage() {
         <Callout color="blue">
           <strong>EMA200 15일 연속 + 동적 인출률 (S0) — 대부분 권장</strong><br />
           668가지 시작 시점 기준: 생존율 100% · 중간값 20년 후 <strong>1,109억</strong> · 연평균 수익률 25.9%<br />
-          매수 후 구조적으로 1일 재매도 없음 · 평균 거래 21회/20년
+          매수 후 구조적으로 1일 재매도 없음 · 평균 거래 21회/20년<br />
+          <Link href="/posts/withdrawal-guide/tradelog" className="text-blue-600 dark:text-blue-400 underline text-xs mt-1 inline-block">
+            전체 거래 로그 — 668가지 시작 시점 날짜별 매수/매도 기록 →
+          </Link>
         </Callout>
 
         <P>
