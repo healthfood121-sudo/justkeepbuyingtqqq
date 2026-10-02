@@ -1,5 +1,6 @@
 import Header from '@/components/Header'
 import HomeSimulator from '@/components/HomeSimulator'
+import Link from 'next/link'
 
 const principles = [
   {
@@ -34,20 +35,88 @@ export default function HomePage() {
         </h1>
       </section>
 
-      {/* 원칙 */}
-      <section className="max-w-2xl mx-auto px-6 py-10">
-        <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-white mb-5">원칙</h2>
-        <div className="flex flex-col gap-3">
-          {principles.map(p => (
-            <div key={p.num} className="bg-gray-50 dark:bg-gray-900/60 border border-gray-200 dark:border-gray-800 rounded-xl px-5 py-4">
-              <div className="flex items-baseline gap-2 mb-1">
-                <span className="font-mono text-xs text-gray-400 dark:text-gray-600">{p.num}</span>
-                <h3 className="text-sm font-bold text-gray-900 dark:text-white">{p.title}</h3>
-                <span className="text-xs text-blue-500 dark:text-blue-400">{p.sub}</span>
-              </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed pl-6">{p.desc}</p>
+      {/* 원칙 + 방법론 */}
+      <section className="max-w-6xl mx-auto px-6 py-10">
+        <div className="grid md:grid-cols-2 gap-8 items-start">
+
+          {/* 왼쪽: 원칙 */}
+          <div>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">원칙</h2>
+            <div className="flex flex-col gap-3">
+              {principles.map(p => (
+                <div key={p.num} className="bg-gray-50 dark:bg-gray-900/60 border border-gray-200 dark:border-gray-800 rounded-xl px-5 py-4">
+                  <div className="flex items-baseline gap-2 mb-1">
+                    <span className="font-mono text-xs text-gray-400 dark:text-gray-600">{p.num}</span>
+                    <h3 className="text-sm font-bold text-gray-900 dark:text-white">{p.title}</h3>
+                    <span className="text-xs text-blue-500 dark:text-blue-400">{p.sub}</span>
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed pl-6">{p.desc}</p>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
+
+          {/* 오른쪽: 방법론 */}
+          <div className="space-y-4">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">방법론</h2>
+
+            {/* 적립식 */}
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700/30 rounded-2xl p-5">
+              <div className="flex items-baseline gap-2 mb-3">
+                <span className="text-xs font-bold text-blue-500 dark:text-blue-400 tracking-wide">JUST KEEP BUYING</span>
+                <span className="text-base font-bold text-gray-900 dark:text-white">적립식</span>
+              </div>
+              <div className="space-y-1.5 mb-4">
+                <p className="text-xs text-gray-600 dark:text-gray-300">
+                  <span className="font-semibold text-emerald-600 dark:text-emerald-400">A전략</span> — 한도 없이 매일 적립
+                </p>
+                <p className="text-xs text-gray-600 dark:text-gray-300">
+                  <span className="font-semibold text-yellow-500 dark:text-yellow-400">B전략</span> — 매입액 한도 도달 시 중단 후 보유
+                </p>
+                <p className="text-xs text-gray-600 dark:text-gray-300">
+                  <span className="font-semibold text-blue-500 dark:text-blue-400">C전략</span> — 목돈을 3년 분할 거치 + 계속 적립
+                </p>
+              </div>
+              <div className="text-xs text-gray-400 dark:text-gray-500 font-mono mb-4">
+                TQQQ · C전략 기준: 완료율 94.8% · 중간 3.23년 · 최악 8.82년
+              </div>
+              <Link
+                href="/posts/accumulation-guide"
+                className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+              >
+                방법론 상세 보기 →
+              </Link>
+            </div>
+
+            {/* 인출식 */}
+            <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-700/30 rounded-2xl p-5">
+              <div className="flex items-baseline gap-2 mb-3">
+                <span className="text-xs font-bold text-purple-500 dark:text-purple-400 tracking-wide">JUST KEEP SELLING</span>
+                <span className="text-base font-bold text-gray-900 dark:text-white">인출식</span>
+              </div>
+              <div className="space-y-1.5 mb-4">
+                <p className="text-xs text-gray-600 dark:text-gray-300">
+                  <span className="font-semibold text-gray-800 dark:text-gray-200">하락 신호</span> — NDX EMA200 연속 15일 이탈 시 전량 현금
+                </p>
+                <p className="text-xs text-gray-600 dark:text-gray-300">
+                  <span className="font-semibold text-gray-800 dark:text-gray-200">동적 인출</span> — 자산 규모에 따라 월 0.3 / 0.5 / 0.7%
+                </p>
+                <p className="text-xs text-gray-600 dark:text-gray-300">
+                  <span className="font-semibold text-gray-800 dark:text-gray-200">조기 재진입</span> — RSI &lt; 30 + 이격도 −10% 시 즉시 매수
+                </p>
+              </div>
+              <div className="text-xs text-gray-400 dark:text-gray-500 font-mono mb-4">
+                418코호트 생존율 100% · 중간 1,176억 · CAGR 25.9%
+              </div>
+              <Link
+                href="/posts/withdrawal-guide"
+                className="text-xs text-purple-600 dark:text-purple-400 hover:underline font-semibold"
+              >
+                방법론 상세 보기 →
+              </Link>
+            </div>
+          </div>
+
         </div>
       </section>
 
