@@ -638,6 +638,23 @@ def main():
     size_kb = OUT_PATH.stat().st_size / 1024
     print(f"\n[4] 저장 완료: {OUT_PATH}")
     print(f"    파일 크기: {size_kb:.0f} KB")
+
+    # ── 전체 코호트 월별 데이터 (상세 페이지용) ──
+    # 컴팩트 포맷: a=[[value, state(0W/1H/2HD)], ...], b=[[value, inv(0/1)], ...]
+    STATE_MAP = {"WITHDRAW": 0, "HOLD": 1, "HOLD_DEEP": 2}
+    monthly_all = {}
+    for c in cohorts:
+        monthly_all[c["start"]] = {
+            "a": [[round(s["value"], 4), STATE_MAP.get(s["state"], 0)] for s in c["_monthly_a"]],
+            "b": [[round(s["value"], 4), 1 if s["is_invested"] else 0] for s in c["_monthly_b"]],
+        }
+
+    monthly_path = OUT_PATH.parent / "withdrawal_monthly.json"
+    with open(monthly_path, "w", encoding="utf-8") as f:
+        json.dump(monthly_all, f, ensure_ascii=False, separators=(",", ":"), cls=NpEncoder)
+
+    m_kb = monthly_path.stat().st_size / 1024
+    print(f"    월별 전체 데이터: {monthly_path.name}  ({m_kb:.0f} KB)")
     print(f"    소요 시간: {time.time() - t0:.1f}초")
 
 

@@ -159,7 +159,7 @@ export default function AccumulationGuidePage() {
           </div>
         </div>
 
-        <H3>B전략 — 한도 후 중단</H3>
+        <H3>B전략 — 매입액 한도</H3>
         <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl px-5 py-4 mb-6 text-sm space-y-2">
           <div className="flex gap-3">
             <span className="text-yellow-500 dark:text-yellow-400 font-mono shrink-0 w-12">방법</span>

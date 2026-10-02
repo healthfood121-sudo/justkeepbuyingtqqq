@@ -153,6 +153,12 @@ export default function WithdrawalGuidePage() {
         {/* ── 2. 현재 최선 후보 전략 ──────────────────────────── */}
         <H2>2. 현재 최선 후보: EMA200 연속 신호 + 동적 인출률</H2>
 
+        <Callout color="yellow">
+          <strong>업데이트 (2026-10-02):</strong> 이 페이지는 EMA200 기반 전략을 설명한다.
+          이후 RSI 조기 재진입 연구에서 더 나은 조합이 발견됐다 (중앙값 3,918억).{' '}
+          <Link href="/posts/withdrawal-new-ideas" className="underline">새 아이디어 테스트 결과 →</Link>
+        </Callout>
+
         <Callout color="green">
           <strong>418개 코호트 백테스트 결과 (초기 10억, NDX 3x, 20년)</strong><br />
           생존율 100% · 중앙값 20년 후 <strong>1,176억</strong> · CAGR <strong>25.9%</strong> · 최솟값 1.68억 · 평균 거래 21회/20년

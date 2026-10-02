@@ -170,10 +170,10 @@ function DataTable({ cohorts, highlightStart }: { cohorts: Cohort[]; highlightSt
                 </td>
                 <td className="py-2 px-3 text-xs">
                   <Link
-                    href={`/posts/withdrawal-comparison/data?start=${c.start}`}
+                    href={`/posts/withdrawal-comparison/data/cohort?start=${c.start}`}
                     className="text-blue-500 dark:text-blue-400 hover:underline"
                   >
-                    →
+                    상세 →
                   </Link>
                 </td>
               </tr>

@@ -35,6 +35,14 @@ export const posts: PostMeta[] = [
       'NDX 데이터는 1971년부터만 존재한다. SP500과 NDX의 베타 회귀로 가상 pre-1971 NDX를 합성해 1929년 대공황을 테스트했다. 최근 베타(β=1.14~1.24) 기준, 1929 진입은 오히려 7~8년에 끝나고 전체 worst는 닷컴버블(13.74년)이다.',
   },
   {
+    slug: 'strategy-abc',
+    title: 'A·B·C 전략 비교: 계속적립 vs 매입액한도 vs 분할거치',
+    date: '2026-10-01',
+    tags: ['A전략', 'B전략', 'C전략', 'TQQQ', '비교', '백테스트'],
+    summary:
+      '세 가지 적립 전략을 668코호트로 비교. A(계속적립)와 B(매입액한도)는 완료율·소요기간 거의 동일하지만 VOO에서 B전략 최장 31년이 특이 케이스. C(분할거치)는 TQQQ에서 worst-case를 8.82년으로 단축.',
+  },
+  {
     slug: 'lump-sum-vs-split',
     title: '거치금 2.5억, 한번에 넣을까 vs 3년에 나눠 넣을까',
     date: '2026-10-01',
@@ -49,6 +57,14 @@ export const posts: PostMeta[] = [
     tags: ['인출', '백테스트', 'TQQQ', '닷컴버블'],
     summary:
       '10억 목표 달성 후 인출 단계로 넘어갈 때, 너무 빠르게 목표를 달성한 "버블 케이스"를 어떻게 처리할지 백테스트로 비교했습니다. 2년 대기 후 DCA(Method A) vs 즉시 DCA(Method B).',
+  },
+  {
+    slug: 'withdrawal-new-ideas',
+    title: '인출 전략 새 아이디어 8가지를 테스트해봤다',
+    date: '2026-10-01',
+    tags: ['인출식', 'RSI', 'EMA200', 'Guyton-Klinger', 'DCA', '백테스트'],
+    summary:
+      '골든크로스, 분할재진입, Guyton-Klinger, 변동성 조정, 동적레버리지, RSI 조기재진입, Floor 보장형 등 8가지 아이디어를 418코호트로 테스트. RSI<30 조기재진입이 중앙값 3,231억으로 현재 최선(1,176억) 대비 2.75배 우세.',
   },
   {
     slug: 'withdrawal-comparison',

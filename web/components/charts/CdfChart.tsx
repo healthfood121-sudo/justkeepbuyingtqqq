@@ -2,7 +2,7 @@
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ReferenceLine } from 'recharts'
 import { makeCdf } from '@/lib/backtest'
-import type { CohortResult } from '@/lib/types'
+import type { CohortResult, CdfPoint } from '@/lib/types'
 import { useTheme } from '@/components/ThemeProvider'
 
 interface Props {
@@ -45,11 +45,20 @@ export default function CdfChart({ resultsA, resultsB, resultsC, showA = true, s
     cdfC.at(-1)?.year ?? 0,
   )
 
+  // 특정 년도의 CDF 값: 범위 초과 시 마지막 값 유지 (0으로 떨어지지 않도록)
+  const getVal = (cdf: CdfPoint[], yr: number) => {
+    const p = cdf.find(p => p.year === yr)
+    if (p) return p.pct
+    const last = cdf.at(-1)
+    if (last && yr > last.year) return last.pct
+    return 0
+  }
+
   const data = Array.from({ length: maxYr }, (_, i) => ({
     year: i + 1,
-    ...(showA ? { A: cdfA.find(p => p.year === i + 1)?.pct ?? 0 } : {}),
-    ...(showB ? { B: cdfB.find(p => p.year === i + 1)?.pct ?? 0 } : {}),
-    ...(showC ? { C: cdfC.find(p => p.year === i + 1)?.pct ?? 0 } : {}),
+    ...(showA ? { A: getVal(cdfA, i + 1) } : {}),
+    ...(showB ? { B: getVal(cdfB, i + 1) } : {}),
+    ...(showC ? { C: getVal(cdfC, i + 1) } : {}),
   }))
 
   return (

@@ -1,14 +1,28 @@
 'use client'
 
-import { useState, useEffect, useCallback, useTransition } from 'react'
+import { useState, useEffect, useCallback, useTransition, useRef, Suspense } from 'react'
 import type { BacktestParams, Instrument, StrategyResults } from '@/lib/types'
 import type { PriceData } from '@/lib/dataLoader'
-import { runBacktest, summarize } from '@/lib/backtest'
+import { runBacktest, summarize, runCohortDetail } from '@/lib/backtest'
+import type { CohortDetail } from '@/lib/backtest'
 import ScatterPlot from '@/components/charts/ScatterPlot'
 import DistributionChart from '@/components/charts/DistributionChart'
 import CdfChart from '@/components/charts/CdfChart'
 import StrategySummaryRow from '@/components/StrategySummaryRow'
 import Header from '@/components/Header'
+import { useSearchParams } from 'next/navigation'
+import {
+  Chart as ChartJS,
+  LineElement,
+  PointElement,
+  LinearScale,
+  CategoryScale,
+  Tooltip,
+  Legend,
+} from 'chart.js'
+import { Line } from 'react-chartjs-2'
+
+ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend)
 
 // JSON 코호트 데이터 타입
 interface CohortJsonRow {
@@ -52,6 +66,172 @@ function NumInput({ label, value, onChange, min, max, step, unit, hint }: {
   )
 }
 
+// ===== 코호트 상세 모달 =====
+const STRATEGY_COLORS = { A: '#10b981', B: '#f59e0b', C: '#3b82f6' }
+const STRATEGY_LABELS = { A: 'A전략 (계속적립)', B: 'B전략 (매입액한도)', C: 'C전략 (3년분할)' }
+
+function CohortModal({
+  details,
+  targetAmount,
+  initialVis,
+  onClose,
+}: {
+  details: { A: CohortDetail; B: CohortDetail; C: CohortDetail }
+  targetAmount: number
+  initialVis: Record<'A' | 'B' | 'C', boolean>
+  onClose: () => void
+}) {
+  const [vis, setVis] = useState<Record<'A' | 'B' | 'C', boolean>>(initialVis)
+  const toggleVis = (s: 'A' | 'B' | 'C') => setVis(prev => ({ ...prev, [s]: !prev[s] }))
+
+  const startDate = details.A.startDate
+  const fmt = (v: number) => v >= 1e8 ? `${(v / 1e8).toFixed(1)}억` : `${Math.round(v / 1e4).toLocaleString()}만`
+  const fmtY = (y: number | null) => y == null ? '진행중' : `${y.toFixed(1)}년`
+
+  // 가장 긴 시리즈 기준으로 레이블 생성
+  const maxLen = Math.max(details.A.snapshots.length, details.B.snapshots.length, details.C.snapshots.length)
+  const labels = Array.from({ length: maxLen }, (_, i) =>
+    i % 12 === 0 ? `${i / 12}년` : ''
+  )
+
+  const datasets = (['A', 'B', 'C'] as const)
+    .filter(s => vis[s])
+    .map(s => ({
+      label: STRATEGY_LABELS[s],
+      data: details[s].snapshots.map(p => p.value / 1e8),
+      borderColor: STRATEGY_COLORS[s],
+      backgroundColor: 'transparent',
+      borderWidth: 1.5,
+      pointRadius: 0,
+      pointHoverRadius: 4,
+      tension: 0.1,
+    }))
+
+  // 누적 투자금 (활성화된 전략 중 첫 번째 기준)
+  const refStrategy = (['A', 'B', 'C'] as const).find(s => vis[s])
+  if (refStrategy) {
+    datasets.push({
+      label: '누적 투자금',
+      data: details[refStrategy].snapshots.map(p => p.cumInvest / 1e8),
+      borderColor: '#d1d5db',
+      backgroundColor: 'transparent',
+      borderWidth: 1,
+      pointRadius: 0,
+      pointHoverRadius: 0,
+      tension: 0.1,
+    } as any)
+  }
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: false as const,
+    interaction: { mode: 'index' as const, intersect: false },
+    scales: {
+      x: {
+        ticks: { color: '#6b7280', font: { size: 10 }, maxRotation: 0 },
+        grid: { color: '#f3f4f6' },
+      },
+      y: {
+        title: { display: true, text: '억원', color: '#9ca3af', font: { size: 11 } },
+        ticks: { color: '#6b7280', font: { size: 11 } },
+        grid: { color: '#f3f4f6' },
+      },
+    },
+    plugins: {
+      legend: { labels: { color: '#6b7280', font: { size: 11 }, usePointStyle: true } },
+      tooltip: {
+        callbacks: {
+          title: (items: any[]) => {
+            const idx = items[0]?.dataIndex ?? 0
+            const snap = details.A.snapshots[idx]
+            if (!snap) return ''
+            const d = snap.date
+            return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')} (${(idx/12).toFixed(1)}년차)`
+          },
+          label: (ctx: any) => {
+            if (ctx.dataset.label?.includes('누적')) return `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)}억`
+            const s = (['A','B','C'] as const).find(k => STRATEGY_LABELS[k] === ctx.dataset.label)
+            const detail = s ? details[s] : null
+            const snap = detail?.snapshots[ctx.dataIndex]
+            if (!snap) return `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)}억`
+            return `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)}억 (투자 ${(snap.cumInvest/1e8).toFixed(2)}억)`
+          },
+        },
+        backgroundColor: '#fff',
+        borderColor: '#e5e7eb',
+        borderWidth: 1,
+        titleColor: '#374151',
+        bodyColor: '#374151',
+        padding: 10,
+      },
+    },
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 overflow-y-auto py-8 px-4"
+      onClick={e => e.target === e.currentTarget && onClose()}
+    >
+      <div className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-3xl shadow-2xl">
+        {/* 헤더 */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800">
+          <div>
+            <h2 className="text-base font-bold text-gray-900 dark:text-white">
+              코호트 상세 — {startDate.getFullYear()}-{String(startDate.getMonth()+1).padStart(2,'0')} 시작
+            </h2>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">목표: {fmt(targetAmount)}</p>
+          </div>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-xl font-light">✕</button>
+        </div>
+
+        {/* 통계 비교 */}
+        <div className="px-6 pt-4 pb-2">
+          <div className="grid grid-cols-3 gap-3 mb-4">
+            {(['A', 'B', 'C'] as const).map(s => {
+              const d = details[s]
+              const on = vis[s]
+              return (
+                <button
+                  key={s}
+                  onClick={() => toggleVis(s)}
+                  className={`rounded-xl border px-3 py-3 text-center text-left transition-opacity cursor-pointer select-none ${on ? 'opacity-100' : 'opacity-35'}`}
+                  style={{ borderColor: STRATEGY_COLORS[s] + '60', backgroundColor: STRATEGY_COLORS[s] + '10' }}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-xs font-bold" style={{ color: STRATEGY_COLORS[s] }}>{STRATEGY_LABELS[s]}</p>
+                    {!on && <span className="text-xs text-gray-400">숨김</span>}
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">소요기간</p>
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white">{fmtY(d.yearsToTarget)}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5">총 투자금</p>
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white">{fmt(d.accumulatedInvestment)}</p>
+                  {d.endDate && (
+                    <>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5">달성일</p>
+                      <p className="text-xs font-mono text-gray-700 dark:text-gray-300">
+                        {d.endDate.getFullYear()}-{String(d.endDate.getMonth()+1).padStart(2,'0')}
+                      </p>
+                    </>
+                  )}
+                </button>
+              )
+            })}
+          </div>
+
+          {/* 차트 */}
+          <div style={{ height: 300 }}>
+            <Line data={{ labels, datasets }} options={options} />
+          </div>
+          <p className="text-xs text-gray-400 dark:text-gray-600 text-right mt-1 mb-2">
+            회색 점선: 누적 투자금 · 목표 달성 시 해당 전략 선 종료
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 const instrumentOptions: { value: Instrument; label: string; sublabel: string }[] = [
   { value: 'ndx3x', label: 'TQQQ (NDX 3x)', sublabel: '나스닥100 3배 레버리지' },
   { value: 'ndx2x', label: 'QLD (NDX 2x)', sublabel: '나스닥100 2배 레버리지' },
@@ -60,7 +240,9 @@ const instrumentOptions: { value: Instrument; label: string; sublabel: string }[
 ]
 
 // ===== 메인 시뮬레이터 페이지 =====
-export default function SimulatorPage() {
+function SimulatorInner() {
+  const searchParams = useSearchParams()
+
   const [priceData, setPriceData] = useState<{ ndx: PriceData; sp5: PriceData } | null>(null)
   const [loading, setLoading] = useState(true)
   const [isPending, startTransition] = useTransition()
@@ -70,16 +252,40 @@ export default function SimulatorPage() {
   const [cohortJson, setCohortJson] = useState<CohortJsonFile | null>(null)
   const [jsonLoading, setJsonLoading] = useState(false)
   const [show, setShow] = useState<Record<'A' | 'B' | 'C', boolean>>({ A: true, B: true, C: true })
+  const [modalDetail, setModalDetail] = useState<{ A: CohortDetail; B: CohortDetail; C: CohortDetail } | null>(null)
 
   const toggleShow = (s: 'A' | 'B' | 'C') =>
     setShow(prev => ({ ...prev, [s]: !prev[s] }))
 
-  // 파라미터 상태
+  // 파라미터 상태 (URL 파라미터 우선)
   const [instrument, setInstrument] = useState<Instrument>('ndx3x')
-  const [dailyInvest, setDailyInvest] = useState(200_000)
-  const [capInvest, setCapInvest] = useState(250_000_000)
-  const [lumpSum, setLumpSum] = useState(250_000_000)
-  const [targetAmount, setTargetAmount] = useState(1_000_000_000)
+  const [dailyInvest, setDailyInvest] = useState(() => Number(searchParams.get('daily'))  || 200_000)
+  const [capInvest,   setCapInvest]   = useState(() => Number(searchParams.get('lump'))   || 250_000_000)
+  const [lumpSum,     setLumpSum]     = useState(() => Number(searchParams.get('lump'))   || 250_000_000)
+  const [targetAmount,setTargetAmount]= useState(() => Number(searchParams.get('target')) || 1_000_000_000)
+
+  const openCohortDetail = useCallback((startDateStr: string) => {
+    if (!priceData) return
+    const data = instrument === 'sp500' ? priceData.sp5 : priceData.ndx
+    const { dates } = data
+
+    let prices: import('@/lib/dataLoader').PriceData['lev1']
+    if (instrument === 'ndx1x') prices = data.lev1
+    else if (instrument === 'ndx2x') prices = data.lev2
+    else if (instrument === 'ndx3x') prices = data.lev3
+    else prices = data.lev1
+
+    const target = new Date(startDateStr).getTime()
+    let startIdx = 0
+    for (let i = 0; i < dates.length; i++) {
+      if (dates[i].getTime() >= target) { startIdx = i; break }
+    }
+
+    const detail = (s: 'A' | 'B' | 'C') =>
+      runCohortDetail(prices, dates, startIdx, s, dailyInvest, capInvest, lumpSum, targetAmount)
+
+    setModalDetail({ A: detail('A'), B: detail('B'), C: detail('C') })
+  }, [priceData, instrument, dailyInvest, capInvest, lumpSum, targetAmount])
 
   // 데이터 로드
   useEffect(() => {
@@ -199,7 +405,7 @@ export default function SimulatorPage() {
             <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">전략 설명</h2>
             {[
               { s: 'A', color: 'text-emerald-600 dark:text-emerald-400', title: 'A전략 — 계속 적립', desc: `거치 없이 매일 ${(dailyInvest/10000).toFixed(0)}만원 한도 없이 계속.` },
-              { s: 'B', color: 'text-yellow-500 dark:text-yellow-400', title: 'B전략 — 한도 후 중단', desc: `매일 ${(dailyInvest/10000).toFixed(0)}만원 적립하다, 누적 투자액이 ${(capInvest/1e8).toFixed(2)}억 도달 시 중단 후 보유.` },
+              { s: 'B', color: 'text-yellow-500 dark:text-yellow-400', title: 'B전략 — 매입액 한도', desc: `매일 ${(dailyInvest/10000).toFixed(0)}만원 적립하다, 누적 투자액이 ${(capInvest/1e8).toFixed(2)}억 도달 시 중단 후 보유.` },
               { s: 'C', color: 'text-blue-500 dark:text-blue-400', title: 'C전략 — 3년 분할 거치', desc: `${(lumpSum/1e8).toFixed(2)}억을 36개월에 걸쳐 매월 균등 분할 거치 + 매일 ${(dailyInvest/10000).toFixed(0)}만원 계속 적립.` },
             ].map(({ s, color, title, desc }) => (
               <div key={s} className="border-l-2 border-gray-200 dark:border-gray-700 pl-3">
@@ -222,6 +428,15 @@ export default function SimulatorPage() {
             <div className="flex items-center justify-center h-64 text-gray-400">
               파라미터를 설정하고 실행 버튼을 누르세요.
             </div>
+          )}
+
+          {modalDetail && (
+            <CohortModal
+              details={modalDetail}
+              targetAmount={targetAmount}
+              initialVis={show}
+              onClose={() => setModalDetail(null)}
+            />
           )}
 
           {results && summaries && (
@@ -373,8 +588,12 @@ export default function SimulatorPage() {
                           </thead>
                           <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                             {sorted.map((r) => (
-                              <tr key={r.s} className="hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors">
-                                <td className="py-2 px-3 text-gray-600 dark:text-gray-300 font-mono whitespace-nowrap">{r.s.slice(0,7)}</td>
+                              <tr
+                                key={r.s}
+                                onClick={() => openCohortDetail(r.s)}
+                                className="hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors cursor-pointer"
+                              >
+                                <td className="py-2 px-3 text-blue-600 dark:text-blue-400 font-mono whitespace-nowrap underline underline-offset-2">{r.s.slice(0,7)}</td>
                                 {show.A && <td className={`py-2 px-3 font-mono whitespace-nowrap ${r.sA === 'completed' ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-300 dark:text-gray-600'}`}>{fmtD(r.eA)}</td>}
                                 {show.B && <td className={`py-2 px-3 font-mono whitespace-nowrap ${r.sB === 'completed' ? 'text-yellow-500 dark:text-yellow-400' : 'text-gray-300 dark:text-gray-600'}`}>{fmtD(r.eB)}</td>}
                                 {show.C && <td className={`py-2 px-3 font-mono whitespace-nowrap ${r.sC === 'completed' ? 'text-blue-500 dark:text-blue-400' : 'text-gray-300 dark:text-gray-600'}`}>{fmtD(r.eC)}</td>}
@@ -405,5 +624,13 @@ export default function SimulatorPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function SimulatorPage() {
+  return (
+    <Suspense>
+      <SimulatorInner />
+    </Suspense>
   )
 }

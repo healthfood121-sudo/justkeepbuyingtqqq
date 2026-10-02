@@ -186,6 +186,111 @@ export function makeCdf(results: CohortResult[]): CdfPoint[] {
   return cdf
 }
 
+// ===== 코호트 상세 (월별 스냅샷) =====
+
+export interface CohortSnapshot {
+  date: Date
+  value: number       // 평가금액 (원)
+  cumInvest: number   // 누적 투자금 (원)
+}
+
+export interface CohortDetail extends CohortResult {
+  snapshots: CohortSnapshot[]
+}
+
+export function runCohortDetail(
+  prices: Float64Array,
+  dates: Date[],
+  startIdx: number,
+  strategy: 'A' | 'B' | 'C',
+  dailyInvest: number,
+  capInvest: number,
+  lumpSum: number,
+  targetAmount: number
+): CohortDetail {
+  const nInvestDays = Math.floor(capInvest / dailyInvest)
+  const n = prices.length - startIdx
+  const startDate = dates[startIdx]
+
+  let cumShares = 0
+  let cumInvest = 0
+  let hitIdx = -1
+  let hitValue = 0
+
+  const seenMonths = new Set<string>()
+  let splitCount = 0
+  const monthlyChunk = lumpSum / 36
+
+  const snapshots: CohortSnapshot[] = []
+  let lastSnapMonth = ''
+
+  for (let j = 0; j < n; j++) {
+    const px = prices[startIdx + j]
+    const d = dates[startIdx + j]
+    let inv: number
+
+    if (strategy === 'A') {
+      inv = dailyInvest
+    } else if (strategy === 'B') {
+      inv = j < nInvestDays ? dailyInvest : 0
+    } else {
+      const mk = `${d.getFullYear()}-${d.getMonth()}`
+      if (!seenMonths.has(mk) && splitCount < 36) {
+        seenMonths.add(mk); splitCount++
+        inv = dailyInvest + monthlyChunk
+      } else {
+        inv = dailyInvest
+      }
+    }
+
+    cumShares += inv / px
+    cumInvest += inv
+    const portVal = cumShares * px
+
+    // 매월 첫 거래일 스냅샷
+    const monthKey = `${d.getFullYear()}-${d.getMonth()}`
+    if (monthKey !== lastSnapMonth) {
+      snapshots.push({ date: d, value: portVal, cumInvest })
+      lastSnapMonth = monthKey
+    }
+
+    if (portVal >= targetAmount) {
+      hitIdx = j
+      hitValue = portVal
+      break
+    }
+  }
+
+  // 목표 달성 시점 마지막 스냅샷 추가 (달성일이 월초가 아닐 경우 보완)
+  if (hitIdx >= 0) {
+    const hitDate = dates[startIdx + hitIdx]
+    const lastSnap = snapshots[snapshots.length - 1]
+    if (!lastSnap || lastSnap.date.getTime() !== hitDate.getTime()) {
+      snapshots.push({ date: hitDate, value: hitValue, cumInvest })
+    }
+  }
+
+  const base = hitIdx >= 0 ? {
+    startDate,
+    endDate: dates[startIdx + hitIdx],
+    status: 'completed' as const,
+    yearsToTarget: Math.round((dates[startIdx + hitIdx].getTime() - startDate.getTime()) / 86400000) / 365.25,
+    daysToTarget: Math.round((dates[startIdx + hitIdx].getTime() - startDate.getTime()) / 86400000),
+    finalValue: hitValue,
+    accumulatedInvestment: cumInvest,
+  } : {
+    startDate,
+    endDate: null,
+    status: 'in_progress' as const,
+    yearsToTarget: null,
+    daysToTarget: null,
+    finalValue: cumShares * prices[prices.length - 1],
+    accumulatedInvestment: cumInvest,
+  }
+
+  return { ...base, snapshots }
+}
+
 // ===== 인출 시뮬레이션 =====
 export interface WithdrawalSimParams {
   startPortfolio: number

@@ -53,6 +53,15 @@ function SimButton({ href }: { href: string }) {
   )
 }
 
+function simUrl(params: { daily?: number; target?: number; lump?: number }) {
+  const q = new URLSearchParams()
+  if (params.daily)  q.set('daily',  String(params.daily))
+  if (params.target) q.set('target', String(params.target))
+  if (params.lump)   q.set('lump',   String(params.lump))
+  const qs = q.toString()
+  return `/simulator${qs ? '?' + qs : ''}`
+}
+
 function fmt(n: number) {
   if (n >= 1e8) return `${(n / 1e8).toFixed(1)}억원`
   if (n >= 1e4) return `${Math.round(n / 1e4).toLocaleString()}만원`
@@ -85,7 +94,7 @@ function AccumSection() {
       )}
       <AmountInput label="일 적립액" value={daily}  onChange={setDaily}  />
       <AmountInput label="목표금액"  value={target} onChange={setTarget} />
-      <SimButton href="/simulator" />
+      <SimButton href={simUrl({ daily, target, lump })} />
     </div>
   )
 }
