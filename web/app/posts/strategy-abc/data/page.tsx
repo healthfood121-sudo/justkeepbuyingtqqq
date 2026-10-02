@@ -89,7 +89,12 @@ function StatBanner({ label, rows, color }: { label: string; rows: CohortJsonRow
 
 type SortCol = 'start' | 'yA' | 'yB' | 'yC'
 
-function DataTable({ rows }: { rows: CohortJsonRow[] }) {
+function calcCagr(target: number, invested: number | null, years: number | null): number | null {
+  if (!invested || !years || invested <= 0 || years <= 0) return null
+  return (Math.pow(target / invested, 1 / years) - 1) * 100
+}
+
+function DataTable({ rows, target }: { rows: CohortJsonRow[]; target: number }) {
   const [sort, setSort] = useState<{ col: SortCol; dir: 1 | -1 }>({ col: 'start', dir: 1 })
 
   const sorted = useMemo(() => {
@@ -122,6 +127,12 @@ function DataTable({ rows }: { rows: CohortJsonRow[] }) {
   const fmtInv = (n: number | null) =>
     n == null ? '—' : n >= 1e8 ? `${(n / 1e8).toFixed(1)}억` : `${Math.round(n / 1e4).toLocaleString()}만`
 
+  const fmtCagr = (invested: number | null, years: number | null) => {
+    const r = calcCagr(target, invested, years)
+    if (r == null) return null
+    return `연 ${r.toFixed(1)}%`
+  }
+
   return (
     <div className="overflow-auto max-h-[540px]">
       <table className="w-full text-xs border-collapse">
@@ -138,9 +149,11 @@ function DataTable({ rows }: { rows: CohortJsonRow[] }) {
                 <span className={S_COLOR[s]}>{s}</span> 소요
               </Th>
             ))}
-            <th className="py-2 px-3 text-xs text-gray-400 dark:text-gray-500 text-left whitespace-nowrap">A 투입</th>
-            <th className="py-2 px-3 text-xs text-gray-400 dark:text-gray-500 text-left whitespace-nowrap">B 투입</th>
-            <th className="py-2 px-3 text-xs text-gray-400 dark:text-gray-500 text-left whitespace-nowrap">C 투입</th>
+            {(['A', 'B', 'C'] as const).map(s => (
+              <th key={s} className="py-2 px-3 text-xs text-gray-400 dark:text-gray-500 text-left whitespace-nowrap">
+                <span className={S_COLOR[s]}>{s}</span> 투입 · 수익률
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -159,9 +172,17 @@ function DataTable({ rows }: { rows: CohortJsonRow[] }) {
                     {fmtY(r[`y${s}`])}
                   </td>
                 ))}
-                <td className="py-2 px-3 text-gray-400 font-mono">{fmtInv(r.iA)}</td>
-                <td className="py-2 px-3 text-gray-400 font-mono">{fmtInv(r.iB)}</td>
-                <td className="py-2 px-3 text-gray-400 font-mono">{fmtInv(r.iC)}</td>
+                {(['A', 'B', 'C'] as const).map(s => {
+                  const inv = r[`i${s}`] as number | null
+                  const yr  = r[`y${s}`] as number | null
+                  const cagr = fmtCagr(inv, yr)
+                  return (
+                    <td key={s} className="py-2 px-3 font-mono">
+                      <span className="text-gray-400">{fmtInv(inv)}</span>
+                      {cagr && <span className="block text-emerald-500 dark:text-emerald-400 text-[10px]">{cagr}</span>}
+                    </td>
+                  )
+                })}
               </tr>
             )
           })}
@@ -198,7 +219,7 @@ function DataPageInner() {
           <Link href="/posts/strategy-abc" className="text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 mb-4 inline-block">
             ← 분석 글로
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">A·B·C 전략 비교 — 전체 코호트 데이터</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">A·B·C 전략 비교 — 전체 진입 시점 데이터</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             일 20만원 · 거치/한도 2.5억 · 목표 10억 · 1971~현재
           </p>
@@ -227,9 +248,9 @@ function DataPageInner() {
           <>
             <StatBanner label={inst} rows={data.rows} color="" />
             <p className="text-xs text-gray-400 dark:text-gray-500 mb-3">
-              헤더 클릭 → 정렬 · 노란 행 = B전략이 A전략보다 1년 이상 더 걸린 코호트
+              헤더 클릭 → 정렬 · 노란 행 = B전략이 A전략보다 1년 이상 더 걸린 진입 시점
             </p>
-            <DataTable rows={data.rows} />
+            <DataTable rows={data.rows} target={data.meta.params.target} />
           </>
         )}
       </main>

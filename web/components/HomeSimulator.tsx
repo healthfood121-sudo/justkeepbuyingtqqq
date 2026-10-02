@@ -270,6 +270,11 @@ export default function HomeSimulator() {
                   y == null ? <span className="text-gray-300 dark:text-gray-600">진행중</span> : <span>{y.toFixed(2)}년</span>
                 const fmtInv = (n: number | null) =>
                   n == null ? '—' : n >= 1e8 ? `${(n/1e8).toFixed(1)}억` : `${Math.round(n/1e4).toLocaleString()}만`
+                const fmtCagr = (inv: number | null, yr: number | null) => {
+                  if (!inv || !yr || inv <= 0 || yr <= 0) return null
+                  const r = (Math.pow(PRESET.target / inv, 1 / yr) - 1) * 100
+                  return `연 ${r.toFixed(1)}%`
+                }
                 const fmtD = (s: string | null) =>
                   s ? <span>{s.slice(0, 7)}</span> : <span className="text-gray-300 dark:text-gray-600">—</span>
 
@@ -323,9 +328,9 @@ export default function HomeSimulator() {
                             {show.A && <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">A 소요</th>}
                             {show.B && <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">B 소요</th>}
                             {show.C && <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">C 소요</th>}
-                            {show.A && <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">A 투입금</th>}
-                            {show.B && <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">B 투입금</th>}
-                            {show.C && <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">C 투입금</th>}
+                            {show.A && <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">A 투입·수익률</th>}
+                            {show.B && <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">B 투입·수익률</th>}
+                            {show.C && <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">C 투입·수익률</th>}
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -342,9 +347,9 @@ export default function HomeSimulator() {
                               {show.A && <td className={`py-2 px-3 font-mono ${r.sA === 'completed' ? 'text-emerald-600/70 dark:text-emerald-400/70' : 'text-gray-300 dark:text-gray-600'}`}>{fmtY(r.yA)}</td>}
                               {show.B && <td className={`py-2 px-3 font-mono ${r.sB === 'completed' ? 'text-yellow-500/70 dark:text-yellow-400/70' : 'text-gray-300 dark:text-gray-600'}`}>{fmtY(r.yB)}</td>}
                               {show.C && <td className={`py-2 px-3 font-mono ${r.sC === 'completed' ? 'text-blue-500/70 dark:text-blue-400/70' : 'text-gray-300 dark:text-gray-600'}`}>{fmtY(r.yC)}</td>}
-                              {show.A && <td className="py-2 px-3 text-gray-400 font-mono">{fmtInv(r.iA)}</td>}
-                              {show.B && <td className="py-2 px-3 text-gray-400 font-mono">{fmtInv(r.iB)}</td>}
-                              {show.C && <td className="py-2 px-3 text-gray-400 font-mono">{fmtInv(r.iC)}</td>}
+                              {show.A && <td className="py-2 px-3 font-mono"><span className="text-gray-400">{fmtInv(r.iA)}</span>{fmtCagr(r.iA, r.yA) && <span className="block text-emerald-500 dark:text-emerald-400 text-[10px]">{fmtCagr(r.iA, r.yA)}</span>}</td>}
+                              {show.B && <td className="py-2 px-3 font-mono"><span className="text-gray-400">{fmtInv(r.iB)}</span>{fmtCagr(r.iB, r.yB) && <span className="block text-emerald-500 dark:text-emerald-400 text-[10px]">{fmtCagr(r.iB, r.yB)}</span>}</td>}
+                              {show.C && <td className="py-2 px-3 font-mono"><span className="text-gray-400">{fmtInv(r.iC)}</span>{fmtCagr(r.iC, r.yC) && <span className="block text-emerald-500 dark:text-emerald-400 text-[10px]">{fmtCagr(r.iC, r.yC)}</span>}</td>}
                             </tr>
                           ))}
                         </tbody>
