@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect, useCallback, useMemo, Suspense } from 'react'
+import { useState, useEffect, useCallback, useTransition, Suspense } from 'react'
 import type { CohortResult, Instrument } from '@/lib/types'
 import type { PriceData } from '@/lib/dataLoader'
-import { runCohortDetail, summarize } from '@/lib/backtest'
+import { runBacktest, runCohortDetail, summarize } from '@/lib/backtest'
 import type { CohortDetail } from '@/lib/backtest'
 import ScatterPlot from '@/components/charts/ScatterPlot'
 import DistributionChart from '@/components/charts/DistributionChart'
@@ -16,33 +16,67 @@ import { useSearchParams } from 'next/navigation'
 
 // ─── 타입 ────────────────────────────────────────────────────
 
-interface CohortJsonRow {
+interface CohortRow {
   s: string
   sA: string; yA: number | null; eA: string | null; iA: number | null
   sB: string; yB: number | null; eB: string | null; iB: number | null
   sC: string; yC: number | null; eC: string | null; iC: number | null
 }
-interface CohortJsonFile {
-  meta: { params: { dailyInvest: number; lumpSum: number; target: number }; total: number }
-  rows: CohortJsonRow[]
+
+// ─── 유틸 ────────────────────────────────────────────────────
+
+function toTableRows(
+  rA: CohortResult[],
+  rB: CohortResult[],
+  rC: CohortResult[]
+): CohortRow[] {
+  const fmtDate = (d: Date | null) => d ? d.toISOString().slice(0, 10) : null
+  const sts = (r: CohortResult) => r.status === 'completed' ? 'completed' : 'ongoing'
+  return rA.map((a, i) => {
+    const b = rB[i], c = rC[i]
+    return {
+      s: a.startDate.toISOString().slice(0, 10),
+      sA: sts(a), yA: a.yearsToTarget, eA: fmtDate(a.endDate),
+      iA: a.accumulatedInvestment ? Math.round(a.accumulatedInvestment) : null,
+      sB: sts(b), yB: b.yearsToTarget, eB: fmtDate(b.endDate),
+      iB: b.accumulatedInvestment ? Math.round(b.accumulatedInvestment) : null,
+      sC: sts(c), yC: c.yearsToTarget, eC: fmtDate(c.endDate),
+      iC: c.accumulatedInvestment ? Math.round(c.accumulatedInvestment) : null,
+    }
+  })
+}
+
+// ─── 입력 컴포넌트 ────────────────────────────────────────────
+
+function NumInput({ label, value, onChange, min, step, hint, sublabel }: {
+  label: string
+  sublabel?: string
+  value: number
+  onChange: (v: number) => void
+  min?: number
+  step?: number
+  hint?: string
+}) {
+  return (
+    <div>
+      <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-0.5">{label}</label>
+      {sublabel && <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">{sublabel}</p>}
+      <div className="flex items-center gap-2">
+        <input
+          type="number"
+          value={value}
+          onChange={e => onChange(Number(e.target.value))}
+          min={min} step={step}
+          className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white text-sm focus:border-blue-500 focus:outline-none"
+        />
+        <span className="text-gray-400 text-xs whitespace-nowrap">원</span>
+      </div>
+      {hint && <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{hint}</p>}
+    </div>
+  )
 }
 
 // ─── 상수 ────────────────────────────────────────────────────
-
-// 사전 계산 기준값 (JSON 생성 파라미터와 일치)
-const PRESET = {
-  daily:  200_000,
-  cap:    250_000_000,
-  lump:   250_000_000,
-  target: 1_000_000_000,
-}
-
-const JSON_MAP: Record<Instrument, string> = {
-  ndx3x: '/data/cohorts_ndx3x_10b.json',
-  ndx2x: '/data/cohorts_ndx2x_10b.json',
-  ndx1x: '/data/cohorts_ndx1x_10b.json',
-  sp500: '/data/cohorts_sp500_10b.json',
-}
 
 const instrumentOptions: { value: Instrument; label: string; sublabel: string }[] = [
   { value: 'ndx3x', label: 'TQQQ (NDX 3x)', sublabel: '나스닥100 3배 레버리지' },
@@ -51,83 +85,54 @@ const instrumentOptions: { value: Instrument; label: string; sublabel: string }[
   { value: 'sp500', label: 'VOO (S&P500)', sublabel: 'S&P500 1배' },
 ]
 
-// ─── JSON → CohortResult 변환 ─────────────────────────────
-
-function jsonRowsToResults(rows: CohortJsonRow[], s: 'A' | 'B' | 'C'): CohortResult[] {
-  return rows.map(r => {
-    const eKey = `e${s}` as 'eA' | 'eB' | 'eC'
-    const sKey = `s${s}` as 'sA' | 'sB' | 'sC'
-    const yKey = `y${s}` as 'yA' | 'yB' | 'yC'
-    const iKey = `i${s}` as 'iA' | 'iB' | 'iC'
-    return {
-      startDate: new Date(r.s),
-      endDate: r[eKey] ? new Date(r[eKey]!) : null,
-      status: r[sKey] === 'completed' ? 'completed' as const : 'in_progress' as const,
-      yearsToTarget: r[yKey] ?? null,
-      daysToTarget: null,
-      finalValue: 0,
-      accumulatedInvestment: r[iKey] ?? 0,
-    }
-  })
-}
-
 // ─── 메인 ────────────────────────────────────────────────────
 
-function SimulatorInner() {
+function CustomSimulatorInner() {
   const searchParams = useSearchParams()
 
-  // 가격 데이터 (코호트 상세 모달 전용 — 백그라운드 로드)
   const [priceData, setPriceData] = useState<{ ndx: PriceData; sp5: PriceData } | null>(null)
+  const [dataLoading, setDataLoading] = useState(true)
+  const [isPending, startTransition] = useTransition()
 
-  const [cohortJson, setCohortJson] = useState<CohortJsonFile | null>(null)
-  const [jsonLoading, setJsonLoading] = useState(true)
+  const [instrument, setInstrument]   = useState<Instrument>('ndx3x')
+  const [dailyInvest, setDailyInvest] = useState(() => Number(searchParams.get('daily'))  || 200_000)
+  const [capInvest,   setCapInvest]   = useState(() => Number(searchParams.get('cap'))    || 250_000_000)
+  const [lumpSum,     setLumpSum]     = useState(() => Number(searchParams.get('lump'))   || 250_000_000)
+  const [targetAmount,setTargetAmount]= useState(() => Number(searchParams.get('target')) || 1_000_000_000)
+
+  const [results, setResults] = useState<{ A: CohortResult[]; B: CohortResult[]; C: CohortResult[] } | null>(null)
   const [show, setShow] = useState<Record<'A' | 'B' | 'C', boolean>>({ A: true, B: true, C: true })
   const [activeChart, setActiveChart] = useState<'scatter' | 'dist' | 'cdf' | 'table'>('scatter')
   const [tableSort, setTableSort] = useState<{ col: 'start' | 'yA' | 'yB' | 'yC'; dir: 1 | -1 }>({ col: 'start', dir: 1 })
   const [modalDetail, setModalDetail] = useState<{ A: CohortDetail; B: CohortDetail; C: CohortDetail } | null>(null)
 
-  const [instrument, setInstrument] = useState<Instrument>(() => {
-    const p = searchParams.get('inst') as Instrument
-    return instrumentOptions.some(o => o.value === p) ? p : 'ndx3x'
-  })
-
   const toggleShow = (s: 'A' | 'B' | 'C') =>
     setShow(prev => ({ ...prev, [s]: !prev[s] }))
 
-  // JSON 로드
-  useEffect(() => {
-    setJsonLoading(true)
-    setCohortJson(null)
-    fetch(JSON_MAP[instrument])
-      .then(r => r.json())
-      .then((data: CohortJsonFile) => { setCohortJson(data); setJsonLoading(false) })
-      .catch(() => setJsonLoading(false))
-  }, [instrument])
-
-  // 가격 데이터 백그라운드 로드 (모달 준비)
+  // 가격 데이터 로드
   useEffect(() => {
     import('@/lib/dataLoader').then(({ loadNdx, loadSp500 }) =>
-      Promise.all([loadNdx(), loadSp500()]).then(([ndx, sp5]) => setPriceData({ ndx, sp5 }))
+      Promise.all([loadNdx(), loadSp500()]).then(([ndx, sp5]) => {
+        setPriceData({ ndx, sp5 })
+        setDataLoading(false)
+      })
     )
   }, [])
 
-  // JSON → results (차트/통계 공통 소스)
-  const results = useMemo(() => {
-    if (!cohortJson) return null
-    return {
-      A: jsonRowsToResults(cohortJson.rows, 'A'),
-      B: jsonRowsToResults(cohortJson.rows, 'B'),
-      C: jsonRowsToResults(cohortJson.rows, 'C'),
-    }
-  }, [cohortJson])
+  // 백테스트 실행
+  const runSim = useCallback(() => {
+    if (!priceData) return
+    const data = instrument === 'sp500' ? priceData.sp5 : priceData.ndx
+    startTransition(() => {
+      const res = runBacktest(data, {
+        instrument, strategy: 'A',
+        dailyInvest, capInvest, lumpSum, targetAmount,
+      })
+      setResults({ A: res.A, B: res.B, C: res.C })
+    })
+  }, [priceData, instrument, dailyInvest, capInvest, lumpSum, targetAmount])
 
-  const summaries = results ? {
-    A: summarize(results.A, 'A'),
-    B: summarize(results.B, 'B'),
-    C: summarize(results.C, 'C'),
-  } : null
-
-  // 코호트 상세 모달 (사전 기준값으로 실행)
+  // 코호트 상세 모달
   const openCohortDetail = useCallback((startDateStr: string) => {
     if (!priceData) return
     const data = instrument === 'sp500' ? priceData.sp5 : priceData.ndx
@@ -146,9 +151,17 @@ function SimulatorInner() {
     }
 
     const detail = (s: 'A' | 'B' | 'C') =>
-      runCohortDetail(prices, dates, startIdx, s, PRESET.daily, PRESET.cap, PRESET.lump, PRESET.target)
+      runCohortDetail(prices, dates, startIdx, s, dailyInvest, capInvest, lumpSum, targetAmount)
     setModalDetail({ A: detail('A'), B: detail('B'), C: detail('C') })
-  }, [priceData, instrument])
+  }, [priceData, instrument, dailyInvest, capInvest, lumpSum, targetAmount])
+
+  const summaries = results ? {
+    A: summarize(results.A, 'A'),
+    B: summarize(results.B, 'B'),
+    C: summarize(results.C, 'C'),
+  } : null
+
+  const tableRows = results ? toTableRows(results.A, results.B, results.C) : null
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-white">
@@ -159,57 +172,99 @@ function SimulatorInner() {
         {/* ===== 왼쪽 패널 ===== */}
         <div className="w-full lg:w-80 shrink-0 space-y-4">
 
-          {/* 사전 계산 배너 */}
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700/30 rounded-2xl p-4">
-            <p className="text-xs font-semibold text-blue-700 dark:text-blue-300 uppercase tracking-wider mb-2">
-              기본 설정 기준 결과
-            </p>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs mb-3">
-              <span className="text-gray-500 dark:text-gray-400">일 투자액</span>
-              <span className="font-semibold text-gray-800 dark:text-gray-200">20만원</span>
-              <span className="text-gray-500 dark:text-gray-400">B전략 매입한도</span>
-              <span className="font-semibold text-gray-800 dark:text-gray-200">2.5억</span>
-              <span className="text-gray-500 dark:text-gray-400">C전략 거치금</span>
-              <span className="font-semibold text-gray-800 dark:text-gray-200">2.5억</span>
-              <span className="text-gray-500 dark:text-gray-400">목표 금액</span>
-              <span className="font-semibold text-gray-800 dark:text-gray-200">10억</span>
-            </div>
-            <Link
-              href="/simulator/custom"
-              className="flex items-center justify-center gap-1 w-full py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition-colors"
-            >
-              직접 설정하기 →
-            </Link>
-          </div>
+          {/* 뒤로가기 */}
+          <Link
+            href="/simulator"
+            className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+          >
+            ← 기본 설정 결과 보기
+          </Link>
 
-          {/* 종목 선택 */}
-          <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-5 space-y-3">
-            <h2 className="text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">종목</h2>
-            <div className="space-y-1.5">
-              {instrumentOptions.map(opt => (
-                <button
-                  key={opt.value}
-                  onClick={() => setInstrument(opt.value)}
-                  className={`w-full text-left px-3 py-2.5 rounded-lg border transition-colors ${
-                    instrument === opt.value
-                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-500/10 text-gray-900 dark:text-white'
-                      : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'
-                  }`}
-                >
-                  <div className="text-sm font-medium">{opt.label}</div>
-                  <div className="text-xs text-gray-400">{opt.sublabel}</div>
-                </button>
-              ))}
+          {/* 설정 패널 */}
+          <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-5 space-y-5">
+            <h2 className="text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">직접 설정</h2>
+
+            {/* 종목 */}
+            <div>
+              <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-2">종목</label>
+              <div className="space-y-1.5">
+                {instrumentOptions.map(opt => (
+                  <button
+                    key={opt.value}
+                    onClick={() => setInstrument(opt.value)}
+                    className={`w-full text-left px-3 py-2.5 rounded-lg border transition-colors ${
+                      instrument === opt.value
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-500/10 text-gray-900 dark:text-white'
+                        : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500'
+                    }`}
+                  >
+                    <div className="text-sm font-medium">{opt.label}</div>
+                    <div className="text-xs text-gray-400">{opt.sublabel}</div>
+                  </button>
+                ))}
+              </div>
             </div>
+
+            {/* 수치 입력 */}
+            <NumInput
+              label="일 투자액"
+              value={dailyInvest}
+              onChange={setDailyInvest}
+              min={10000} step={10000}
+              hint={`월 ${(dailyInvest * 21 / 10000).toFixed(0)}만원 상당`}
+            />
+            <NumInput
+              label="B전략 매입한도"
+              sublabel="누적 투자액이 이 금액에 도달하면 매수 중단"
+              value={capInvest}
+              onChange={setCapInvest}
+              min={0} step={10_000_000}
+              hint={`${(capInvest / 1e8).toFixed(2)}억원`}
+            />
+            <NumInput
+              label="C전략 거치금"
+              sublabel="36개월에 걸쳐 균등 분할 투입할 목돈"
+              value={lumpSum}
+              onChange={setLumpSum}
+              min={0} step={10_000_000}
+              hint={`${(lumpSum / 1e8).toFixed(2)}억원 (월 ${(lumpSum / 36 / 1e4).toFixed(0)}만)`}
+            />
+            <NumInput
+              label="목표 금액"
+              value={targetAmount}
+              onChange={setTargetAmount}
+              min={100_000_000} step={100_000_000}
+              hint={`${(targetAmount / 1e8).toFixed(0)}억원`}
+            />
+
+            <button
+              onClick={runSim}
+              disabled={dataLoading || isPending}
+              className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:bg-gray-200 dark:disabled:bg-gray-700 disabled:text-gray-400 dark:disabled:text-gray-500 text-white font-semibold transition-colors"
+            >
+              {dataLoading ? '데이터 로딩 중...' : isPending ? '계산 중...' : '▶ 백테스트 실행'}
+            </button>
           </div>
 
           {/* 전략 설명 */}
           <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-5 space-y-3">
             <h2 className="text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">전략 설명</h2>
             {[
-              { s: 'A', color: 'text-emerald-600 dark:text-emerald-400', title: 'A전략 — 계속 적립', desc: '거치 없이 매일 20만원 한도 없이 계속.' },
-              { s: 'B', color: 'text-yellow-500 dark:text-yellow-400', title: 'B전략 — 매입액 한도', desc: '매일 20만원 적립하다, 누적 투자액이 2.5억 도달 시 중단 후 보유.' },
-              { s: 'C', color: 'text-blue-500 dark:text-blue-400', title: 'C전략 — 3년 분할 거치', desc: '2.5억을 36개월에 걸쳐 매월 균등 분할 거치 + 매일 20만원 계속 적립.' },
+              {
+                s: 'A', color: 'text-emerald-600 dark:text-emerald-400',
+                title: 'A전략 — 계속 적립',
+                desc: `매일 ${(dailyInvest/10000).toFixed(0)}만원, 한도 없이 계속.`,
+              },
+              {
+                s: 'B', color: 'text-yellow-500 dark:text-yellow-400',
+                title: 'B전략 — 매입액 한도',
+                desc: `매일 ${(dailyInvest/10000).toFixed(0)}만원 적립, 누적 ${(capInvest/1e8).toFixed(2)}억 도달 시 매수 중단.`,
+              },
+              {
+                s: 'C', color: 'text-blue-500 dark:text-blue-400',
+                title: 'C전략 — 3년 분할 거치',
+                desc: `${(lumpSum/1e8).toFixed(2)}억을 36개월 균등 분할 + 매일 ${(dailyInvest/10000).toFixed(0)}만원 계속.`,
+              },
             ].map(({ s, color, title, desc }) => (
               <div key={s} className="border-l-2 border-gray-200 dark:border-gray-700 pl-3">
                 <p className={`text-xs font-semibold ${color}`}>{title}</p>
@@ -221,22 +276,32 @@ function SimulatorInner() {
 
         {/* ===== 오른쪽: 결과 패널 ===== */}
         <div className="flex-1 space-y-5">
-          {jsonLoading && (
+
+          {!results && !isPending && (
+            <div className="flex flex-col items-center justify-center h-64 gap-3 text-gray-400">
+              {dataLoading
+                ? <p>가격 데이터 로딩 중...</p>
+                : <><p className="text-base">파라미터를 설정하고</p><p className="text-base font-semibold text-blue-500">▶ 백테스트 실행을 누르세요</p></>
+              }
+            </div>
+          )}
+
+          {isPending && (
             <div className="flex items-center justify-center h-64 text-gray-400">
-              데이터 로딩 중...
+              계산 중...
             </div>
           )}
 
           {modalDetail && (
             <CohortModal
               details={modalDetail}
-              targetAmount={PRESET.target}
+              targetAmount={targetAmount}
               initialVis={show}
               onClose={() => setModalDetail(null)}
             />
           )}
 
-          {!jsonLoading && results && summaries && (
+          {!isPending && results && summaries && tableRows && (
             <>
               {/* 종목/조건 요약 */}
               <div className="flex flex-wrap items-center gap-2 text-sm">
@@ -244,20 +309,21 @@ function SimulatorInner() {
                   {instrumentOptions.find(o => o.value === instrument)?.label}
                 </span>
                 <span className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-3 py-1 rounded-full">
-                  일 20만원
+                  일 {(dailyInvest/10000).toFixed(0)}만원
                 </span>
                 <span className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-3 py-1 rounded-full">
-                  B한도 2.5억 · C거치 2.5억
+                  B한도 {(capInvest/1e8).toFixed(2)}억
                 </span>
                 <span className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-3 py-1 rounded-full">
-                  목표 10억
+                  C거치 {(lumpSum/1e8).toFixed(2)}억
                 </span>
-                <span className="text-gray-400 text-xs">
-                  {results.A.length}가지 경우
+                <span className="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-3 py-1 rounded-full">
+                  목표 {(targetAmount/1e8).toFixed(0)}억
                 </span>
+                <span className="text-gray-400 text-xs">{results.A.length}가지 경우</span>
               </div>
 
-              {/* 전략별 요약 (클릭으로 on/off) */}
+              {/* 전략별 요약 */}
               <StrategySummaryRow summaries={summaries} show={show} onToggle={toggleShow} />
 
               {/* 차트/데이터 탭 */}
@@ -267,7 +333,7 @@ function SimulatorInner() {
                     { id: 'scatter', label: '산점도' },
                     { id: 'dist',    label: '분포' },
                     { id: 'cdf',     label: 'CDF' },
-                    { id: 'table',   label: `데이터 (${cohortJson?.meta.total ?? results.A.length}개)` },
+                    { id: 'table',   label: `데이터 (${results.A.length}개)` },
                   ] as const).map(({ id, label }) => (
                     <button
                       key={id}
@@ -286,7 +352,7 @@ function SimulatorInner() {
                 {activeChart === 'scatter' && (
                   <div>
                     <p className="text-xs text-gray-400 mb-4">
-                      X축: 투자 시작 연도 &nbsp;|&nbsp; Y축: 목표 달성까지 소요 기간(년) &nbsp;|&nbsp; 미달성 시점은 표시 안 됨
+                      X축: 투자 시작 연도 &nbsp;|&nbsp; Y축: 소요 기간(년) &nbsp;|&nbsp; 미달성은 표시 안 됨
                     </p>
                     <ScatterPlot resultsA={results.A} resultsB={results.B} resultsC={results.C} showA={show.A} showB={show.B} showC={show.C} />
                   </div>
@@ -299,12 +365,11 @@ function SimulatorInner() {
                 )}
                 {activeChart === 'cdf' && (
                   <div>
-                    <p className="text-xs text-gray-400 mb-4">N년 이내 목표 달성 누적 비율 &nbsp;|&nbsp; 50%·80% 기준선 표시</p>
+                    <p className="text-xs text-gray-400 mb-4">N년 이내 목표 달성 누적 비율 &nbsp;|&nbsp; 50%·80% 기준선</p>
                     <CdfChart resultsA={results.A} resultsB={results.B} resultsC={results.C} showA={show.A} showB={show.B} showC={show.C} />
                   </div>
                 )}
                 {activeChart === 'table' && (() => {
-                  const rows = cohortJson!.rows
                   const fmtY = (y: number | null) =>
                     y == null ? <span className="text-gray-300 dark:text-gray-600">진행중</span> : <span>{y.toFixed(2)}년</span>
                   const fmtInv = (n: number | null) =>
@@ -325,8 +390,8 @@ function SimulatorInner() {
                     ...(show.C ? [{ col: 'yC' as const, label: 'C 종료일' }] : []),
                   ]
 
-                  const sorted = [...rows].sort((x, y) => {
-                    const v = (r: CohortJsonRow) => {
+                  const sorted = [...tableRows].sort((x, y) => {
+                    const v = (r: CohortRow) => {
                       if (activeSortCol === 'start') return r.s
                       if (activeSortCol === 'yA') return r.yA ?? 9999
                       if (activeSortCol === 'yB') return r.yB ?? 9999
@@ -341,10 +406,7 @@ function SimulatorInner() {
 
                   return (
                     <div>
-                      <p className="text-xs text-gray-400 mb-3">
-                        행 클릭 → 코호트 상세 보기
-                        {!priceData && <span className="ml-2 text-gray-300">(가격 데이터 로딩 중…)</span>}
-                      </p>
+                      <p className="text-xs text-gray-400 mb-3">행 클릭 → 코호트 상세 보기</p>
                       <div className="overflow-auto max-h-[500px]">
                         <table className="w-full text-xs">
                           <thead className="sticky top-0 bg-gray-50 dark:bg-gray-900 z-10">
@@ -399,7 +461,7 @@ function SimulatorInner() {
               {/* 캐비엇 */}
               <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700/30 rounded-xl p-4 text-xs text-yellow-800 dark:text-yellow-200/70 space-y-1">
                 <p>⚠️ <strong>합성 가격 사용:</strong> TQQQ/QLD의 실제 상장 역사는 짧아, NDX 일별 수익률 × 레버리지로 합성한 이론값을 사용합니다.</p>
-                <p>⚠️ <strong>비용 미반영:</strong> 운용비용(TQQQ 0.88%/년)·추적오차는 미반영입니다. 변동성 끌림은 일별 복리 계산에 자동 반영됩니다.</p>
+                <p>⚠️ <strong>비용 미반영:</strong> 운용비용(TQQQ 0.88%/년)·추적오차는 미반영입니다.</p>
                 <p>⚠️ <strong>과거 데이터 기반:</strong> 미래 수익을 보장하지 않으며, 닷컴버블(1999-2000)이 유일하게 관측된 극단적 사례입니다.</p>
               </div>
             </>
@@ -410,10 +472,10 @@ function SimulatorInner() {
   )
 }
 
-export default function SimulatorPage() {
+export default function CustomSimulatorPage() {
   return (
     <Suspense>
-      <SimulatorInner />
+      <CustomSimulatorInner />
     </Suspense>
   )
 }
