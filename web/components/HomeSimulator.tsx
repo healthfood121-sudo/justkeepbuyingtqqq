@@ -67,7 +67,6 @@ export default function HomeSimulator() {
   const [cohortJson, setCohortJson] = useState<CohortJsonFile | null>(null)
   const [jsonLoading, setJsonLoading] = useState(true)
   const [show, setShow] = useState<Record<'A' | 'B' | 'C', boolean>>({ A: true, B: true, C: true })
-  const [activeChart, setActiveChart] = useState<'scatter' | 'dist' | 'cdf' | 'table'>('scatter')
   const [tableSort, setTableSort] = useState<{ col: 'start' | 'yA' | 'yB' | 'yC'; dir: 1 | -1 }>({ col: 'start', dir: 1 })
   const [instrument, setInstrument] = useState<Instrument>('ndx3x')
   const [youtubeLinks, setYoutubeLinks] = useState<Record<string, string>>({})
@@ -192,163 +191,151 @@ export default function HomeSimulator() {
 
             <StrategySummaryRow summaries={summaries} show={show} onToggle={toggleShow} />
 
-            {/* 차트/데이터 탭 */}
-            <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-5">
-              <div className="flex gap-1 mb-5 bg-gray-100 dark:bg-gray-800 rounded-lg p-1 w-fit">
-                {([
-                  { id: 'scatter', label: '산점도' },
-                  { id: 'dist',    label: '분포' },
-                  { id: 'cdf',     label: 'CDF' },
-                  { id: 'table',   label: `데이터 (${cohortJson?.meta.total ?? results.A.length}개)` },
-                ] as const).map(({ id, label }) => (
-                  <button
-                    key={id}
-                    onClick={() => setActiveChart(id)}
-                    className={`px-4 py-1.5 rounded-md text-sm transition-colors ${
-                      activeChart === id
-                        ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
-                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
-                    }`}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
+            {/* ── 데이터 테이블 ── */}
+            {(() => {
+              const rows = cohortJson!.rows
+              const fmtY = (y: number | null) =>
+                y == null ? <span className="text-gray-300 dark:text-gray-600">진행중</span> : <span>{y.toFixed(2)}년</span>
+              const fmtInv = (n: number | null) =>
+                n == null ? '—' : n >= 1e8 ? `${(n/1e8).toFixed(1)}억` : `${Math.round(n/1e4).toLocaleString()}만`
+              const fmtCagr = (inv: number | null, yr: number | null) => {
+                if (!inv || !yr || inv <= 0 || yr <= 0) return null
+                const r = (Math.pow(PRESET.target / inv, 1 / yr) - 1) * 100
+                return `연 ${r.toFixed(1)}%`
+              }
+              const fmtD = (s: string | null) =>
+                s ? <span>{s.slice(0, 7)}</span> : <span className="text-gray-300 dark:text-gray-600">—</span>
 
-              {activeChart === 'scatter' && (
-                <div>
-                  <p className="text-xs text-gray-400 mb-4">X축: 투자 시작 연도 | Y축: 목표 달성까지 소요 기간(년) | 미달성은 표시 안 됨</p>
-                  <ScatterPlot resultsA={results.A} resultsB={results.B} resultsC={results.C} showA={show.A} showB={show.B} showC={show.C} />
-                </div>
-              )}
-              {activeChart === 'dist' && (
-                <div>
-                  <p className="text-xs text-gray-400 mb-4">0.5년 단위 bin | 전체 경우 대비 비율(%)</p>
-                  <DistributionChart resultsA={results.A} resultsB={results.B} resultsC={results.C} showA={show.A} showB={show.B} showC={show.C} />
-                </div>
-              )}
-              {activeChart === 'cdf' && (
-                <div>
-                  <p className="text-xs text-gray-400 mb-4">N년 이내 목표 달성 누적 비율 | 50%·80% 기준선 표시</p>
-                  <CdfChart resultsA={results.A} resultsB={results.B} resultsC={results.C} showA={show.A} showB={show.B} showC={show.C} />
-                </div>
-              )}
-              {activeChart === 'table' && (() => {
-                const rows = cohortJson!.rows
-                const fmtY = (y: number | null) =>
-                  y == null ? <span className="text-gray-300 dark:text-gray-600">진행중</span> : <span>{y.toFixed(2)}년</span>
-                const fmtInv = (n: number | null) =>
-                  n == null ? '—' : n >= 1e8 ? `${(n/1e8).toFixed(1)}억` : `${Math.round(n/1e4).toLocaleString()}만`
-                const fmtCagr = (inv: number | null, yr: number | null) => {
-                  if (!inv || !yr || inv <= 0 || yr <= 0) return null
-                  const r = (Math.pow(PRESET.target / inv, 1 / yr) - 1) * 100
-                  return `연 ${r.toFixed(1)}%`
+              const activeSortCol: typeof tableSort.col =
+                (tableSort.col === 'yA' && !show.A) ||
+                (tableSort.col === 'yB' && !show.B) ||
+                (tableSort.col === 'yC' && !show.C)
+                  ? 'start' : tableSort.col
+
+              const sortableCols: { col: typeof tableSort.col; label: string }[] = [
+                { col: 'start', label: '시작일' },
+                ...(show.A ? [{ col: 'yA' as const, label: 'A 종료일' }] : []),
+                ...(show.B ? [{ col: 'yB' as const, label: 'B 종료일' }] : []),
+                ...(show.C ? [{ col: 'yC' as const, label: 'C 종료일' }] : []),
+              ]
+
+              const sorted = [...rows].sort((x, y) => {
+                const v = (r: CohortJsonRow) => {
+                  if (activeSortCol === 'start') return r.s
+                  if (activeSortCol === 'yA') return r.yA ?? 9999
+                  if (activeSortCol === 'yB') return r.yB ?? 9999
+                  return r.yC ?? 9999
                 }
-                const fmtD = (s: string | null) =>
-                  s ? <span>{s.slice(0, 7)}</span> : <span className="text-gray-300 dark:text-gray-600">—</span>
+                const a = v(x), b = v(y)
+                return (a < b ? -1 : a > b ? 1 : 0) * tableSort.dir
+              })
 
-                const activeSortCol: typeof tableSort.col =
-                  (tableSort.col === 'yA' && !show.A) ||
-                  (tableSort.col === 'yB' && !show.B) ||
-                  (tableSort.col === 'yC' && !show.C)
-                    ? 'start' : tableSort.col
+              const toggleSort = (col: typeof tableSort.col) =>
+                setTableSort(s => ({ col, dir: s.col === col ? (-s.dir as 1 | -1) : 1 }))
 
-                const sortableCols: { col: typeof tableSort.col; label: string }[] = [
-                  { col: 'start', label: '시작일' },
-                  ...(show.A ? [{ col: 'yA' as const, label: 'A 종료일' }] : []),
-                  ...(show.B ? [{ col: 'yB' as const, label: 'B 종료일' }] : []),
-                  ...(show.C ? [{ col: 'yC' as const, label: 'C 종료일' }] : []),
-                ]
-
-                const sorted = [...rows].sort((x, y) => {
-                  const v = (r: CohortJsonRow) => {
-                    if (activeSortCol === 'start') return r.s
-                    if (activeSortCol === 'yA') return r.yA ?? 9999
-                    if (activeSortCol === 'yB') return r.yB ?? 9999
-                    return r.yC ?? 9999
-                  }
-                  const a = v(x), b = v(y)
-                  return (a < b ? -1 : a > b ? 1 : 0) * tableSort.dir
-                })
-
-                const toggleSort = (col: typeof tableSort.col) =>
-                  setTableSort(s => ({ col, dir: s.col === col ? (-s.dir as 1 | -1) : 1 }))
-
-                return (
-                  <div>
-                    <p className="text-xs text-gray-400 mb-3">
-                      상세보기: 일별 백테스트 전체 데이터 · 쇼츠: 유튜브 영상
-                    </p>
-                    <div className="overflow-auto max-h-[500px]">
-                      <table className="w-full text-xs">
-                        <thead className="sticky top-0 bg-gray-50 dark:bg-gray-900 z-10">
-                          <tr className="border-b border-gray-200 dark:border-gray-700">
-                            {sortableCols.map(({ col, label }) => (
-                              <th
-                                key={col}
-                                onClick={() => toggleSort(col)}
-                                className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium cursor-pointer hover:text-gray-900 dark:hover:text-white select-none whitespace-nowrap"
-                              >
-                                {label}
-                                {activeSortCol === col && <span className="ml-1 text-blue-500">{tableSort.dir === 1 ? '↑' : '↓'}</span>}
-                              </th>
-                            ))}
-                            {show.A && <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">A 소요</th>}
-                            {show.B && <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">B 소요</th>}
-                            {show.C && <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">C 소요</th>}
-                            {show.A && <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">A 투입·수익률</th>}
-                            {show.B && <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">B 투입·수익률</th>}
-                            {show.C && <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">C 투입·수익률</th>}
-                            <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">바로가기</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                          {sorted.map(r => {
-                            const start = r.s.slice(0, 7)
-                            const ytUrl = youtubeLinks[start]
-                            return (
-                              <tr key={r.s} className="hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors">
-                                <td className="py-2 px-3 text-gray-600 dark:text-gray-400 font-mono whitespace-nowrap">{start}</td>
-                                {show.A && <td className={`py-2 px-3 font-mono whitespace-nowrap ${r.sA === 'completed' ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-300 dark:text-gray-600'}`}>{fmtD(r.eA)}</td>}
-                                {show.B && <td className={`py-2 px-3 font-mono whitespace-nowrap ${r.sB === 'completed' ? 'text-yellow-500 dark:text-yellow-400' : 'text-gray-300 dark:text-gray-600'}`}>{fmtD(r.eB)}</td>}
-                                {show.C && <td className={`py-2 px-3 font-mono whitespace-nowrap ${r.sC === 'completed' ? 'text-blue-500 dark:text-blue-400' : 'text-gray-300 dark:text-gray-600'}`}>{fmtD(r.eC)}</td>}
-                                {show.A && <td className={`py-2 px-3 font-mono ${r.sA === 'completed' ? 'text-emerald-600/70 dark:text-emerald-400/70' : 'text-gray-300 dark:text-gray-600'}`}>{fmtY(r.yA)}</td>}
-                                {show.B && <td className={`py-2 px-3 font-mono ${r.sB === 'completed' ? 'text-yellow-500/70 dark:text-yellow-400/70' : 'text-gray-300 dark:text-gray-600'}`}>{fmtY(r.yB)}</td>}
-                                {show.C && <td className={`py-2 px-3 font-mono ${r.sC === 'completed' ? 'text-blue-500/70 dark:text-blue-400/70' : 'text-gray-300 dark:text-gray-600'}`}>{fmtY(r.yC)}</td>}
-                                {show.A && <td className="py-2 px-3 font-mono"><span className="text-gray-400">{fmtInv(r.iA)}</span>{fmtCagr(r.iA, r.yA) && <span className="block text-emerald-500 dark:text-emerald-400 text-[10px]">{fmtCagr(r.iA, r.yA)}</span>}</td>}
-                                {show.B && <td className="py-2 px-3 font-mono"><span className="text-gray-400">{fmtInv(r.iB)}</span>{fmtCagr(r.iB, r.yB) && <span className="block text-emerald-500 dark:text-emerald-400 text-[10px]">{fmtCagr(r.iB, r.yB)}</span>}</td>}
-                                {show.C && <td className="py-2 px-3 font-mono"><span className="text-gray-400">{fmtInv(r.iC)}</span>{fmtCagr(r.iC, r.yC) && <span className="block text-emerald-500 dark:text-emerald-400 text-[10px]">{fmtCagr(r.iC, r.yC)}</span>}</td>}
-                                <td className="py-2 px-2 whitespace-nowrap">
-                                  <div className="flex gap-1.5">
-                                    <Link
-                                      href={`/simulator/cohort?start=${start}&inst=${instrument}`}
-                                      className="text-[11px] px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
-                                    >
-                                      상세보기
-                                    </Link>
-                                    {ytUrl ? (
-                                      <a
-                                        href={ytUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-[11px] px-2 py-0.5 rounded bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
-                                      >
-                                        쇼츠
-                                      </a>
-                                    ) : (
-                                      <span className="text-[11px] px-2 py-0.5 text-gray-300 dark:text-gray-700">쇼츠</span>
-                                    )}
-                                  </div>
-                                </td>
-                              </tr>
-                            )
-                          })}
-                        </tbody>
-                      </table>
-                    </div>
+              return (
+                <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-5">
+                  <div className="flex items-baseline gap-2 mb-3">
+                    <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">데이터</h3>
+                    <span className="text-xs text-gray-400">{cohortJson?.meta.total ?? results.A.length}개 시뮬레이션 경우</span>
+                    <span className="text-xs text-gray-400 ml-auto">상세보기: 일별 전체 데이터 · 쇼츠: 유튜브 영상</span>
                   </div>
-                )
-              })()}
+                  <div className="overflow-auto max-h-[500px]">
+                    <table className="w-full text-xs">
+                      <thead className="sticky top-0 bg-gray-50 dark:bg-gray-900 z-10">
+                        <tr className="border-b border-gray-200 dark:border-gray-700">
+                          {sortableCols.map(({ col, label }) => (
+                            <th
+                              key={col}
+                              onClick={() => toggleSort(col)}
+                              className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium cursor-pointer hover:text-gray-900 dark:hover:text-white select-none whitespace-nowrap"
+                            >
+                              {label}
+                              {activeSortCol === col && <span className="ml-1 text-blue-500">{tableSort.dir === 1 ? '↑' : '↓'}</span>}
+                            </th>
+                          ))}
+                          {show.A && <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">A 소요</th>}
+                          {show.B && <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">B 소요</th>}
+                          {show.C && <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">C 소요</th>}
+                          {show.A && <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">A 투입·수익률</th>}
+                          {show.B && <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">B 투입·수익률</th>}
+                          {show.C && <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">C 투입·수익률</th>}
+                          <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">바로가기</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                        {sorted.map(r => {
+                          const start = r.s.slice(0, 7)
+                          const ytUrl = youtubeLinks[start]
+                          return (
+                            <tr key={r.s} className="hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors">
+                              <td className="py-2 px-3 text-gray-600 dark:text-gray-400 font-mono whitespace-nowrap">{start}</td>
+                              {show.A && <td className={`py-2 px-3 font-mono whitespace-nowrap ${r.sA === 'completed' ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-300 dark:text-gray-600'}`}>{fmtD(r.eA)}</td>}
+                              {show.B && <td className={`py-2 px-3 font-mono whitespace-nowrap ${r.sB === 'completed' ? 'text-yellow-500 dark:text-yellow-400' : 'text-gray-300 dark:text-gray-600'}`}>{fmtD(r.eB)}</td>}
+                              {show.C && <td className={`py-2 px-3 font-mono whitespace-nowrap ${r.sC === 'completed' ? 'text-blue-500 dark:text-blue-400' : 'text-gray-300 dark:text-gray-600'}`}>{fmtD(r.eC)}</td>}
+                              {show.A && <td className={`py-2 px-3 font-mono ${r.sA === 'completed' ? 'text-emerald-600/70 dark:text-emerald-400/70' : 'text-gray-300 dark:text-gray-600'}`}>{fmtY(r.yA)}</td>}
+                              {show.B && <td className={`py-2 px-3 font-mono ${r.sB === 'completed' ? 'text-yellow-500/70 dark:text-yellow-400/70' : 'text-gray-300 dark:text-gray-600'}`}>{fmtY(r.yB)}</td>}
+                              {show.C && <td className={`py-2 px-3 font-mono ${r.sC === 'completed' ? 'text-blue-500/70 dark:text-blue-400/70' : 'text-gray-300 dark:text-gray-600'}`}>{fmtY(r.yC)}</td>}
+                              {show.A && <td className="py-2 px-3 font-mono"><span className="text-gray-400">{fmtInv(r.iA)}</span>{fmtCagr(r.iA, r.yA) && <span className="block text-emerald-500 dark:text-emerald-400 text-[10px]">{fmtCagr(r.iA, r.yA)}</span>}</td>}
+                              {show.B && <td className="py-2 px-3 font-mono"><span className="text-gray-400">{fmtInv(r.iB)}</span>{fmtCagr(r.iB, r.yB) && <span className="block text-emerald-500 dark:text-emerald-400 text-[10px]">{fmtCagr(r.iB, r.yB)}</span>}</td>}
+                              {show.C && <td className="py-2 px-3 font-mono"><span className="text-gray-400">{fmtInv(r.iC)}</span>{fmtCagr(r.iC, r.yC) && <span className="block text-emerald-500 dark:text-emerald-400 text-[10px]">{fmtCagr(r.iC, r.yC)}</span>}</td>}
+                              <td className="py-2 px-2 whitespace-nowrap">
+                                <div className="flex gap-1.5">
+                                  <Link
+                                    href={`/simulator/cohort?start=${start}&inst=${instrument}`}
+                                    className="text-[11px] px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+                                  >
+                                    상세보기
+                                  </Link>
+                                  {ytUrl ? (
+                                    <a
+                                      href={ytUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-[11px] px-2 py-0.5 rounded bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
+                                    >
+                                      쇼츠
+                                    </a>
+                                  ) : (
+                                    <span className="text-[11px] px-2 py-0.5 text-gray-300 dark:text-gray-700">쇼츠</span>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          )
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )
+            })()}
+
+            {/* ── 산점도 ── */}
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-5">
+              <div className="flex items-baseline gap-2 mb-3">
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">산점도</h3>
+                <span className="text-xs text-gray-400">X축: 투자 시작 연도 | Y축: 소요 기간(년) | 미달성 제외</span>
+              </div>
+              <ScatterPlot resultsA={results.A} resultsB={results.B} resultsC={results.C} showA={show.A} showB={show.B} showC={show.C} />
+            </div>
+
+            {/* ── 분포 ── */}
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-5">
+              <div className="flex items-baseline gap-2 mb-3">
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">분포</h3>
+                <span className="text-xs text-gray-400">0.5년 단위 | 전체 경우 대비 비율(%)</span>
+              </div>
+              <DistributionChart resultsA={results.A} resultsB={results.B} resultsC={results.C} showA={show.A} showB={show.B} showC={show.C} />
+            </div>
+
+            {/* ── CDF ── */}
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-5">
+              <div className="flex items-baseline gap-2 mb-3">
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">CDF</h3>
+                <span className="text-xs text-gray-400">N년 이내 달성 누적 비율 | 50%·80% 기준선</span>
+              </div>
+              <CdfChart resultsA={results.A} resultsB={results.B} resultsC={results.C} showA={show.A} showB={show.B} showC={show.C} />
             </div>
 
             {/* 캐비엇 */}
