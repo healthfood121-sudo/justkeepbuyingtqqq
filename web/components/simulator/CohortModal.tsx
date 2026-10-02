@@ -108,7 +108,9 @@ export default function CohortModal({
             const detail = s ? details[s] : null
             const snap = detail?.snapshots[ctx.dataIndex]
             if (!snap) return `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)}억`
-            return `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)}억 (투자 ${(snap.cumInvest/1e8).toFixed(2)}억)`
+            const ret = snap.cumInvest > 0 ? (snap.value - snap.cumInvest) / snap.cumInvest * 100 : 0
+            const retStr = (ret >= 0 ? '+' : '') + ret.toFixed(1) + '%'
+            return `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)}억 (투자 ${(snap.cumInvest/1e8).toFixed(2)}억 · ${retStr})`
           },
         },
         backgroundColor: '#fff',
