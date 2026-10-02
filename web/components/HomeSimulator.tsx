@@ -303,7 +303,7 @@ export default function HomeSimulator() {
                 return (
                   <div>
                     <p className="text-xs text-gray-400 mb-3">
-                      행 클릭 → 코호트 상세 보기
+                      행 클릭 → 진입 시점 상세 보기
                       {!priceData && <span className="ml-2 text-gray-300">(가격 데이터 로딩 중…)</span>}
                     </p>
                     <div className="overflow-auto max-h-[500px]">

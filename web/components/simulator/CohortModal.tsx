@@ -130,7 +130,7 @@ export default function CohortModal({
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800">
           <div>
             <h2 className="text-base font-bold text-gray-900 dark:text-white">
-              코호트 상세 — {startDate.getFullYear()}-{String(startDate.getMonth()+1).padStart(2,'0')} 시작
+              {startDate.getFullYear()}-{String(startDate.getMonth()+1).padStart(2,'0')} 진입 시점 상세
             </h2>
             <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">목표: {fmt(targetAmount)}</p>
           </div>

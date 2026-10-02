@@ -456,7 +456,7 @@ function CustomSimulatorInner() {
 
                   return (
                     <div>
-                      <p className="text-xs text-gray-400 mb-3">행 클릭 → 코호트 상세 보기</p>
+                      <p className="text-xs text-gray-400 mb-3">행 클릭 → 진입 시점 상세 보기</p>
                       <div className="overflow-auto max-h-[500px]">
                         <table className="w-full text-xs">
                           <thead className="sticky top-0 bg-gray-50 dark:bg-gray-900 z-10">
