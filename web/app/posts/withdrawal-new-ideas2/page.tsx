@@ -122,8 +122,8 @@ export default function WithdrawalNewIdeas2Page() {
 
         <Callout color="yellow">
           <strong>핵심 결론: 세 가지 모두 기존 최선보다 나쁘다</strong><br />
-          직관적으로 합리적인 아이디어였지만 418가지 진입 시점 시뮬레이션 결과, 현재 최선(D10GK 3,918억)은
-          물론 기준선(EMA200 15일 전략, 1,176억)도 넘지 못했다.
+          직관적으로 합리적인 아이디어였지만 668가지 진입 시점 시뮬레이션 결과, 현재 최선(D10GK 3,741억)은
+          물론 기준선(EMA200 15일 전략, 1,109억)도 넘지 못했다.
           특히 단계적 현금화는 예상을 뒤엎고 134억으로 가장 낮았다.
         </Callout>
 
@@ -205,7 +205,7 @@ export default function WithdrawalNewIdeas2Page() {
         </div>
 
         {/* ── 3. 결과 ─────────────────────────────────────────── */}
-        <H2>3. 결과 (418가지 진입 시점, 초기 10억, 20년)</H2>
+        <H2>3. 결과 (668가지 진입 시점, 초기 10억, 20년)</H2>
 
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">전략별 요약</span>
@@ -401,7 +401,7 @@ export default function WithdrawalNewIdeas2Page() {
           흥미롭게도 DLEV는 1999-03처럼 이미 레버리지가 낮아진 상태(자산 50억 이상)로 버블 정점을 맞이한
           경우에는 오히려 유리했다. 50억 이상이면 QQQ 위주라서 폭락 충격이 줄고,
           이후 반등을 안정적으로 탈 수 있었다.
-          하지만 전체 418가지 진입 시점으로 보면 이런 경우가 소수여서 중앙값이 낮게 나왔다.
+          하지만 전체 668가지 진입 시점으로 보면 이런 경우가 소수여서 중앙값이 낮게 나왔다.
         </P>
 
         {/* ── 7. 종합 비교 ──────────────────────────────────────── */}
@@ -432,8 +432,8 @@ export default function WithdrawalNewIdeas2Page() {
         <Callout color="purple">
           <strong>D10GK가 여전히 최선</strong><br />
           트레일링 스탑, 단계적 현금화, 자산 규모별 레버리지 하향 세 가지를 추가 검증했으나
-          418가지 진입 시점 중앙값 기준으로 기존 최선(D10GK 3,918억)은 물론
-          기준선(1,176억)도 넘지 못했다.
+          668가지 진입 시점 중앙값 기준으로 기존 최선(D10GK 3,741억)은 물론
+          기준선(1,109억)도 넘지 못했다.
           탈출·재진입 신호는 이진 방식(전량 현금 ↔ 전량 투자)이 단계적 방식보다 강하고,
           레버리지는 자산이 커져도 줄이는 것이 이득이 아니었다.
         </Callout>
@@ -467,7 +467,7 @@ export default function WithdrawalNewIdeas2Page() {
           <AnalysisLink
             href="/posts/withdrawal-new-ideas2/data"
             title="전체 진입 시점별 데이터 →"
-            desc="418가지 진입 시점별 7개 전략 결과를 모두 볼 수 있는 데이터 뷰어."
+            desc="668가지 진입 시점별 7개 전략 결과를 모두 볼 수 있는 데이터 뷰어."
           />
           <div className="mt-6 flex flex-col sm:flex-row gap-3">
             <Link

@@ -140,7 +140,7 @@ export default function WithdrawalGuidePage() {
 
         <Callout color="green">
           <strong>RSI 과매도 조기 재진입 + 이격도 필터 + Guyton-Klinger (D10GK)</strong><br />
-          418가지 시작 시점 기준: 생존율 100% · 중간값 20년 후 <strong>3,918억</strong> · 연평균 수익률 32.4%<br />
+          668가지 시작 시점 기준: 생존율 100% · 중간값 20년 후 <strong>3,741억</strong> · 연평균 수익률 32.1%<br />
           2000년 3월(버블 정점) 시작: 46억 · 2003년 3월(버블 붕괴 후) 시작: 231억
         </Callout>
 
@@ -186,14 +186,24 @@ export default function WithdrawalGuidePage() {
               link: '테스트 결과 →',
             },
             {
-              step: '현재',
+              step: '4단계',
               color: 'border-green-300 dark:border-green-700',
               badge: 'bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-400',
               title: 'RSI + 이격도 −10% 필터 + Guyton-Klinger (D10GK)',
-              result: '★ 중간값 3,918억',
+              result: '★ 중간값 3,741억 (668가지 기준)',
               desc: 'RSI 신호에 "EMA200보다 10% 이상 떨어진 상태"라는 조건을 추가해 가짜 신호를 줄였다. 자산이 많이 늘었을 때 인출을 자동으로 줄여주는 Guyton-Klinger 규칙도 결합. 과최적화 여부도 검증 완료.',
               href: '/posts/withdrawal-new-ideas',
               link: '상세 분석 →',
+            },
+            {
+              step: '현재',
+              color: 'border-gray-300 dark:border-gray-700',
+              badge: 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400',
+              title: '트레일링 스탑·단계적 현금화·레버리지 하향 검증',
+              result: '추가 아이디어 3가지 — 모두 기준선 미달',
+              desc: '3가지 새 아이디어(T25/T20/T15 트레일링 스탑, 단계적 현금화 GRAD, 자산 규모별 레버리지 하향 DLEV)를 668가지 진입 시점으로 테스트. 모두 기준선을 넘지 못했다. 단, T25는 거래 12회로 가장 단순하고 장기 상승장에서 강점이 있다.',
+              href: '/posts/withdrawal-new-ideas2',
+              link: '검증 결과 →',
             },
           ].map(({ step, color, badge, title, result, desc, href, link }) => (
             <div key={step} className={`border rounded-xl px-4 py-4 ${color}`}>
@@ -442,8 +452,65 @@ export default function WithdrawalGuidePage() {
           SP500 −50%: 버퍼 전액을 14년에 걸쳐 분산 매수.
         </P>
 
-        {/* ── 6. 아직 해결 안 된 것들 ──────────────────────────── */}
-        <H2>6. 아직 해결 안 된 것들</H2>
+        {/* ── 6. 어떤 전략을 선택할까 ─────────────────────────── */}
+        <H2>6. 어떤 전략을 선택할까</H2>
+
+        <P>
+          수익만 보면 D10GK가 압도적이다. 하지만 실생활에서 꾸준히 유지할 수 있는 전략인지도 중요하다.
+          복잡한 규칙은 지키다 지쳐 포기하면 무의미하기 때문이다.
+        </P>
+
+        <Table
+          headers={['전략', '평균 거래', '규칙 복잡도', '신호 확인', '중앙값']}
+          rows={[
+            [<strong key="d10gk" className="text-green-600 dark:text-green-400">D10GK</strong>,
+              '47회/20년', '★★★', '매일 확인 (알림 설정 권장)', <strong key="d10gkv" className="text-green-600 dark:text-green-400">3,741억</strong>],
+            ['S0 (EMA200 15일)', '21회/20년', '★★☆', '매일 확인', '1,109억'],
+            [<strong key="t25" className="text-blue-600 dark:text-blue-400">T25 (트레일링 스탑)</strong>,
+              <strong key="t25t" className="text-blue-600 dark:text-blue-400">12회/20년</strong>, '★☆☆', '주 1회면 충분', '1,064억'],
+          ]}
+        />
+
+        <H3>T25 — 가장 단순한 전략</H3>
+        <P>
+          규칙이 딱 두 줄이다.
+        </P>
+        <FormulaBlock>
+          매도: 52주(약 1년) 최고가 대비 −25% 이상 하락 → 전량 현금 전환<br />
+          매수: EMA200 위 15거래일 연속 회복 → 전액 재매수
+        </FormulaBlock>
+        <P>
+          "52주 최고가"는 어느 증권앱에서도 바로 확인할 수 있다.
+          20년에 평균 12번, 약 20개월에 한 번꼴만 행동하면 된다.
+          성과는 D10GK의 약 28% 수준이지만,{' '}
+          2009년 3월(금융위기 바닥) 같은 장기 상승장 초입에서는
+          오히려 D10GK(1,588억)를 큰 폭으로 앞서기도 한다(2,675억).
+        </P>
+
+        <H3>D10GK — 수익 최대화 전략</H3>
+        <P>
+          RSI와 이격도를 매일 확인해야 하는 부담이 있다. 하지만 핵심은
+          &ldquo;RSI가 30 이하로 떨어지면 알림&rdquo; 하나를 설정해두는 것이다.
+          알림 없는 날에는 신경 쓸 필요가 없고, 알림이 오면 이격도 조건까지만 확인하면 된다.
+          20년에 47번(약 5개월에 1회) 행동 기회가 생긴다.
+        </P>
+
+        <Callout color="blue">
+          <strong>RSI는 종가 기준이다</strong><br />
+          RSI는 장 마감(미국 동부 오후 4시, 한국 새벽 5시)에 종가가 확정된 뒤에야 최종값이 결정된다.
+          장중 RSI는 미확정 상태이므로 참고만 할 것.
+          실제 운영은 &ldquo;새벽 5시 이후 확인 → 조건 충족 시 다음 날 개장 후 매매&rdquo; 흐름이 현실적이다.
+        </Callout>
+
+        <H3>결론: 무엇을 선택할까</H3>
+        <Callout color="yellow">
+          수익을 극대화하고 싶고 알림 설정을 감수할 수 있다면 → <strong>D10GK</strong><br />
+          거래를 최소화하고 단순하게 유지하고 싶다면 → <strong>T25</strong><br />
+          중간 어딘가를 원한다면 → <strong>S0 (EMA200 15일)</strong>
+        </Callout>
+
+        {/* ── 7. 아직 해결 안 된 것들 ──────────────────────────── */}
+        <H2>7. 아직 해결 안 된 것들</H2>
 
         <H3>확인된 것</H3>
         <ul className="list-none space-y-3 mb-6">
@@ -485,6 +552,11 @@ export default function WithdrawalGuidePage() {
               desc="현재 최선 D10GK의 근거. RSI 과매도 + 이격도 필터 + Guyton-Klinger 조합 분석."
             />
             <AnalysisLink
+              href="/posts/withdrawal-new-ideas2"
+              title="더 나을 줄 알았던 전략 3가지를 테스트해봤다"
+              desc="트레일링 스탑·단계적 현금화·레버리지 하향 — 668가지 진입 시점으로 모두 검증. T25가 가장 단순한 대안."
+            />
+            <AnalysisLink
               href="/posts/withdrawal-comparison"
               title="인출 전략 비교: SP500 기반 vs NDX 200MA 기반"
               desc="418가지 시작 시점 비교. 두 전략의 중앙값 12.7억 vs 203억 차이가 발생하는 원인 분석."
@@ -493,11 +565,6 @@ export default function WithdrawalGuidePage() {
               href="/posts/withdrawal-strategy"
               title="인출 전략 설계기: 버블 케이스 재진입 방법 비교 (A vs B)"
               desc="버블 케이스를 2년 대기(Method A) vs 즉시 DCA(Method B)로 처리할 때 643가지 시작 시점에서 어떤 차이가 나는지 분석."
-            />
-            <AnalysisLink
-              href="/posts/lump-sum-vs-split"
-              title="거치금 2.5억, 한번에 넣을까 vs 3년에 나눠 넣을까"
-              desc="인출 버퍼 기준연수의 근거가 된 C전략 worst 케이스(12.24년) 분석."
             />
           </div>
           <div className="mt-6 flex flex-col sm:flex-row gap-3">
