@@ -222,7 +222,6 @@ export function runCohortDetail(
   const monthlyChunk = lumpSum / 36
 
   const snapshots: CohortSnapshot[] = []
-  let lastSnapMonth = ''
 
   for (let j = 0; j < n; j++) {
     const px = prices[startIdx + j]
@@ -247,12 +246,8 @@ export function runCohortDetail(
     cumInvest += inv
     const portVal = cumShares * px
 
-    // 매월 첫 거래일 스냅샷
-    const monthKey = `${d.getFullYear()}-${d.getMonth()}`
-    if (monthKey !== lastSnapMonth) {
-      snapshots.push({ date: d, value: portVal, cumInvest })
-      lastSnapMonth = monthKey
-    }
+    // 매일 스냅샷
+    snapshots.push({ date: d, value: portVal, cumInvest })
 
     if (portVal >= targetAmount) {
       hitIdx = j

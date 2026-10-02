@@ -36,10 +36,16 @@ export default function CohortModal({
   const fmt = (v: number) => v >= 1e8 ? `${(v / 1e8).toFixed(1)}억` : `${Math.round(v / 1e4).toLocaleString()}만`
   const fmtY = (y: number | null) => y == null ? '진행중' : `${y.toFixed(1)}년`
 
-  const maxLen = Math.max(details.A.snapshots.length, details.B.snapshots.length, details.C.snapshots.length)
-  const labels = Array.from({ length: maxLen }, (_, i) =>
-    i % 12 === 0 ? `${i / 12}년` : ''
-  )
+  const longestStrategy = (['A', 'B', 'C'] as const).reduce((m, s) =>
+    details[s].snapshots.length > details[m].snapshots.length ? s : m, 'A' as const)
+  const refSnaps = details[longestStrategy].snapshots
+  const labels = refSnaps.map((snap, i) => {
+    const days = (snap.date.getTime() - startDate.getTime()) / 86400000
+    const year = Math.floor(days / 365.25)
+    if (i === 0) return '0년'
+    const prevDays = (refSnaps[i - 1].date.getTime() - startDate.getTime()) / 86400000
+    return Math.floor(prevDays / 365.25) !== year ? `${year}년` : ''
+  })
 
   const datasets = (['A', 'B', 'C'] as const)
     .filter(s => vis[s])
@@ -90,10 +96,11 @@ export default function CohortModal({
         callbacks: {
           title: (items: any[]) => {
             const idx = items[0]?.dataIndex ?? 0
-            const snap = details.A.snapshots[idx]
+            const snap = details.A.snapshots[idx] ?? details.B.snapshots[idx] ?? details.C.snapshots[idx]
             if (!snap) return ''
             const d = snap.date
-            return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')} (${(idx/12).toFixed(1)}년차)`
+            const days = Math.round((d.getTime() - startDate.getTime()) / 86400000)
+            return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} (${(days/365.25).toFixed(1)}년차)`
           },
           label: (ctx: any) => {
             if (ctx.dataset.label?.includes('누적')) return `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)}억`

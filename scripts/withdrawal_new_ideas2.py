@@ -547,6 +547,8 @@ def run_sim(ndx3x, qqq, closes, ema200, rsi14, trail_peaks,
     if min_val == float('inf'):
         min_val = 0.0
 
+    ongoing = (sim_len < int(SIM_YEARS * 252)) and (final > 0)
+
     return {
         "final":     round(final / 1e8, 2),
         "withdrawn": round(cum_withdrawn / 1e8, 2),
@@ -554,6 +556,8 @@ def run_sim(ndx3x, qqq, closes, ema200, rsi14, trail_peaks,
         "bankrupt":  bool(final <= 0),
         "cagr":      round(cagr, 2),
         "trades":    trade_count,
+        "ongoing":   bool(ongoing),
+        "actual_yr": round(actual_yr, 1),
     }
 
 
@@ -594,11 +598,9 @@ def main():
     ndx3x, qqq, closes, ema200, rsi14, trail_peaks, \
         dates, sp500, fed_rates = load_data()
 
-    first_valid = int(np.where(~np.isnan(ema200))[0][0])
-    starts      = [i for i in get_monthly_starts(dates)
-                   if i >= first_valid and (len(ndx3x) - i) / 252 >= SIM_YEARS]
+    starts = list(get_monthly_starts(dates))  # 1971-01부터 현재까지 모든 월별 시작점
 
-    print(f"코호트: {len(starts)}개  전략: {len(STRATEGIES)}개", flush=True)
+    print(f"시작점: {len(starts)}개  전략: {len(STRATEGIES)}개", flush=True)
 
     n_workers = min(mp.cpu_count(), len(STRATEGIES))
     with mp.Pool(
@@ -618,17 +620,21 @@ def main():
 
     for pname, results in raw:
         p     = next(x for x in STRATEGIES if x.name == pname)
-        total = len(results)
-        bankrupt = sum(1 for r in results if r["bankrupt"])
-        finals   = [r["final"]     for r in results if not r["bankrupt"]]
-        withds   = [r["withdrawn"] for r in results]
-        mins     = [r["min"]       for r in results]
-        cagrs    = [r["cagr"]      for r in results if not r["bankrupt"]]
-        trades   = [r["trades"]    for r in results]
+        total   = len(results)
+        # 20년 완료 코호트만 summary 통계에 사용 (ongoing 제외)
+        done    = [r for r in results if not r["ongoing"] and not r["bankrupt"]]
+        bankrupt= sum(1 for r in results if r["bankrupt"] and not r["ongoing"])
+        n_done  = len(done) + bankrupt
+        finals  = [r["final"]     for r in done]
+        withds  = [r["withdrawn"] for r in done]
+        mins    = [r["min"]       for r in done]
+        cagrs   = [r["cagr"]      for r in done]
+        trades  = [r["trades"]    for r in done]
+        ongoing_cnt = sum(1 for r in results if r["ongoing"])
 
         sf   = sorted(finals)
         nf   = len(sf)
-        surv = (total - bankrupt) / total * 100
+        surv = (n_done - bankrupt) / n_done * 100 if n_done > 0 else 100.0
 
         summary_rows.append({
             "name":          pname,
@@ -642,6 +648,8 @@ def main():
             "min_of_min":    round(min(mins)            if mins  else 0.0, 4),
             "avg_cagr":      round(sum(cagrs) / len(cagrs) if cagrs else 0.0, 2),
             "avg_trades":    round(sum(trades) / len(trades) if trades else 0.0, 1),
+            "n_completed":   n_done,
+            "n_ongoing":     ongoing_cnt,
         })
 
     summary_rows.sort(key=lambda r: r["med_final"], reverse=True)
@@ -653,24 +661,28 @@ def main():
         for p in STRATEGIES:
             r = strategy_results[p.name][ki]
             row[p.name] = {
-                "final":    r["final"],
-                "cagr":     r["cagr"],
-                "min":      r["min"],
-                "bankrupt": r["bankrupt"],
-                "trades":   r["trades"],
+                "final":     r["final"],
+                "cagr":      r["cagr"],
+                "min":       r["min"],
+                "bankrupt":  r["bankrupt"],
+                "trades":    r["trades"],
+                "ongoing":   r["ongoing"],
+                "actual_yr": r["actual_yr"],
             }
         cohort_rows.append(row)
 
     # 콘솔 출력
-    print(f"{'이름':<7} {'설명':<44} {'생존율':>6} {'중앙':>8} {'CAGR':>6} {'거래':>5}", flush=True)
-    print("-" * 78, flush=True)
+    print(f"{'이름':<7} {'설명':<44} {'생존율':>6} {'중앙':>8} {'CAGR':>6} {'거래':>5} {'완료':>5} {'진행중':>5}", flush=True)
+    print("-" * 88, flush=True)
     for row in summary_rows:
         tag = "★ " if row["name"] == summary_rows[0]["name"] else "  "
         print(f"{tag}{row['name']:<5} {row['desc']:<44} "
               f"{row['survival_rate']:>5.1f}% "
               f"{row['med_final']:>7.1f}억 "
               f"{row['avg_cagr']:>5.1f}% "
-              f"{row['avg_trades']:>4.0f}회", flush=True)
+              f"{row['avg_trades']:>4.0f}회 "
+              f"{row['n_completed']:>5}개 "
+              f"{row['n_ongoing']:>5}개", flush=True)
 
     print("\n주요 코호트 (20년 후, 억):", flush=True)
     names = [p.name for p in STRATEGIES]

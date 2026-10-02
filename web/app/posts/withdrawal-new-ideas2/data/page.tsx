@@ -13,6 +13,8 @@ interface StrategyResult {
   min: number
   bankrupt: boolean
   trades: number
+  ongoing: boolean
+  actual_yr: number
 }
 
 interface CohortRow {
@@ -32,6 +34,8 @@ interface SummaryRow {
   min_of_min: number
   avg_cagr: number
   avg_trades: number
+  n_completed: number
+  n_ongoing: number
 }
 
 interface StrategyMeta {
@@ -83,6 +87,7 @@ function SummaryCard({ row }: { row: SummaryRow }) {
         <div><span className="opacity-60">CAGR</span> <span className="font-semibold">{fmtPct(row.avg_cagr)}</span></div>
         <div><span className="opacity-60">거래</span> <span className="font-semibold">{row.avg_trades.toFixed(0)}회</span></div>
       </div>
+      <div className="text-xs opacity-50 mt-1">완료 {row.n_completed}개 · 진행중 {row.n_ongoing}개</div>
     </div>
   )
 }
@@ -130,22 +135,31 @@ function DataTable({
 
             return (
               <tr key={row.start} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
-                <td className="py-1.5 px-2 font-mono text-gray-500 dark:text-gray-400">{row.start}</td>
+                {(() => {
+                  const anyOngoing = strategies.some(s => (row[s.name] as StrategyResult | undefined)?.ongoing)
+                  return (
+                    <td className={`py-1.5 px-2 font-mono ${anyOngoing ? 'text-blue-400 dark:text-blue-500' : 'text-gray-500 dark:text-gray-400'}`}>
+                      {row.start}{anyOngoing ? ' ↗' : ''}
+                    </td>
+                  )
+                })()}
                 {strategies.map((s, i) => {
                   const r = row[s.name] as StrategyResult | undefined
                   const val = finals[i]
                   const isBest = val > 0 && val === maxFinal
                   const isBankrupt = r?.bankrupt
+                  const isOngoing = r?.ongoing
                   return (
                     <td
                       key={s.name}
                       className={`py-1.5 px-2 text-right font-mono ${
                         isBankrupt ? 'text-red-500' :
+                        isOngoing  ? 'text-blue-400 dark:text-blue-500 italic' :
                         isBest     ? 'font-bold text-green-600 dark:text-green-400' :
                                      'text-gray-700 dark:text-gray-300'
                       }`}
                     >
-                      {isBankrupt ? '파산' : val.toFixed(1)}
+                      {isBankrupt ? '파산' : isOngoing ? `${val.toFixed(1)}~` : val.toFixed(1)}
                     </td>
                   )
                 })}
@@ -238,8 +252,9 @@ function DataPageInner() {
           </Link>
           <h1 className="text-2xl font-bold">새 아이디어 2차 실험 — 전체 진입 시점별 데이터</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            초기 10억 · NDX 3x · 20년 시뮬레이션 · {data.meta.n_cohorts}가지 진입 시점
+            초기 10억 · NDX 3x · 최대 20년 시뮬레이션 · {data.meta.n_cohorts}가지 진입 시점
             · 기준선(S0) 중앙값 {fmt억(baselineRow?.med_final ?? 0)}억
+            (20년 완료 {baselineRow?.n_completed ?? 0}개 기준)
           </p>
         </div>
 
@@ -267,7 +282,7 @@ function DataPageInner() {
         </div>
 
         <p className="text-xs text-gray-400 dark:text-gray-500 mb-3">
-          헤더 클릭 → 정렬 · 굵은 녹색 = 해당 진입 시점 1위 · 최소 1개 전략 선택 필요
+          헤더 클릭 → 정렬 · 굵은 녹색 = 해당 진입 시점 1위 · 파란색 숫자(↗~) = 20년 미완료(진행 중)
           {highlight ? ` · 선택 진입 시점: ${highlight}` : ''}
         </p>
 
