@@ -135,20 +135,27 @@ export default function WithdrawalGuidePage() {
           더 나은 방법이 발견될 때마다 업데이트하고, 각 연구 단계의 근거는 아래 링크에서 확인할 수 있습니다.
         </Callout>
 
-        {/* ── 현재 최선 후보 ───────────────────────────────────── */}
-        <H2>현재 최선 후보</H2>
+        {/* ── 현재 권장 전략 ───────────────────────────────────── */}
+        <H2>현재 권장 전략</H2>
 
-        <Callout color="green">
-          <strong>RSI 과매도 조기 재진입 + 이격도 필터 + Guyton-Klinger (D10GK)</strong><br />
-          668가지 시작 시점 기준: 생존율 100% · 중간값 20년 후 <strong>3,741억</strong> · 연평균 수익률 32.1%<br />
-          2000년 3월(버블 정점) 시작: 46억 · 2003년 3월(버블 붕괴 후) 시작: 231억
+        <Callout color="blue">
+          <strong>EMA200 15일 연속 + 동적 인출률 (S0) — 대부분 권장</strong><br />
+          668가지 시작 시점 기준: 생존율 100% · 중간값 20년 후 <strong>1,109억</strong> · 연평균 수익률 25.9%<br />
+          매수 후 구조적으로 1일 재매도 없음 · 평균 거래 21회/20년
         </Callout>
 
         <P>
-          EMA200 기반 전략에서 출발해 여러 아이디어를 테스트한 결과,
-          현재는 RSI 과매도 신호를 활용한 조기 재진입 전략이 가장 좋은 성과를 내고 있다.
-          EMA200 신호만 기다리던 기준 전략(중간값 1,109억) 대비 약 3.4배 우세하다.
+          EMA200 기반 전략에서 출발해 여러 아이디어를 테스트했다.
+          수익만 보면 D10GK(중간값 3,741억)가 압도적이지만, 대부분의 사람에게는 S0가 현실적인 선택이다.
+          S0는 매수 후 최소 15거래일 보유가 구조적으로 보장되고, 668가지 시작 시점 전체에서 1일 재매도 사례가 단 한 건도 없다.
+          T25(1,064억)보다 수익도 앞서며 규칙이 단순하다.
         </P>
+
+        <Callout color="green">
+          <strong>수익 극대화 옵션: RSI 과매도 조기 재진입 + 이격도 필터 + Guyton-Klinger (D10GK)</strong><br />
+          668가지 시작 시점 기준: 생존율 100% · 중간값 20년 후 <strong>3,741억</strong> · 연평균 수익률 32.1%<br />
+          S0 대비 3.4배 우세. 단, 하락장에서 매수 다음날 재매도 사이클이 반복된다.
+        </Callout>
 
         {/* ── 전체 전략 비교 ───────────────────────────────────── */}
         <H2>지금까지 테스트한 전략 전체 비교</H2>
@@ -272,13 +279,13 @@ export default function WithdrawalGuidePage() {
             },
             {
               step: '2단계',
-              color: 'border-blue-200 dark:border-blue-800/50',
+              color: 'border-blue-300 dark:border-blue-700',
               badge: 'bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400',
-              title: 'EMA200 연속 15일 + 동적 인출률',
-              result: '중간값 1,176억',
-              desc: '나스닥100이 EMA200 아래에서 15거래일 연속이면 전액 현금 전환. 95가지 설정값 조합에서 찾은 최선이었다.',
-              href: null,
-              link: null,
+              title: '★ EMA200 연속 15일 + 동적 인출률 (S0) — 현재 권장',
+              result: '중간값 1,109억 (668가지 기준) · 생존율 100%',
+              desc: '나스닥100이 EMA200 아래에서 15거래일 연속이면 전액 현금 전환. 95가지 설정값 조합 탐색에서 최적 조합. 매수 후 1일 재매도 사례 없음 — 구조적 안전장치.',
+              href: '/posts/withdrawal-new-ideas',
+              link: '아이디어 8가지 →',
             },
             {
               step: '3단계',
@@ -344,17 +351,12 @@ export default function WithdrawalGuidePage() {
           이 두 원칙을 어떻게 구현하느냐가 인출 전략의 핵심이다.
         </P>
 
-        {/* ── 2. 현재 최선 후보 전략 ──────────────────────────── */}
-        <H2>2. EMA200 기반 전략 상세 (2단계 연구 기록)</H2>
+        {/* ── 2. S0 권장 전략 상세 ────────────────────────────── */}
+        <H2>2. S0 — 권장 전략 상세</H2>
 
         <Callout color="blue">
-          아래는 현재 최선(D10GK)의 기반이 된 EMA200 전략의 설계 근거다.
-          D10GK도 EMA200 매도 신호는 그대로 사용하고, 매수 신호에만 RSI 조건을 추가한 것이다.
-        </Callout>
-
-        <Callout color="green">
-          <strong>EMA200 연속15일 + 동적 인출률 — 418가지 시작 시점</strong><br />
-          생존율 100% · 중간값 20년 후 <strong>1,176억</strong> · 연평균 수익률 25.9% · 최솟값 1.68억 · 평균 매매 21회/20년
+          <strong>EMA200 연속15일 + 동적 인출률 (S0) — 668가지 시작 시점</strong><br />
+          생존율 100% · 중간값 20년 후 <strong>1,109억</strong> · 연평균 수익률 25.9% · 최솟값 1.68억 · 평균 매매 21회/20년
         </Callout>
 
         <H3>2-1. 하락 신호: NDX 지수이동평균(EMA200) 연속 15일 필터</H3>
@@ -424,7 +426,7 @@ export default function WithdrawalGuidePage() {
         <H2>3. 주요 시나리오 비교 (초기 10억, 20년)</H2>
 
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">전략별 요약 (418가지 시작 시점)</span>
+          <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">전략별 요약 (668가지 시작 시점)</span>
           <Link href="/posts/withdrawal-comparison/data" className="text-xs text-blue-500 dark:text-blue-400 hover:underline">
             전체 데이터 →
           </Link>
@@ -439,9 +441,9 @@ export default function WithdrawalGuidePage() {
             ['SMA200 연속10일 (B3)',    '100%',  '328억',   '18.6%', '0.73억',   '25'],
             ['SMA200 + 동적인출 (B3C1)', '100%', '619억',   '22.1%', '1.88억',   '25'],
             ['EMA200 연속10일 + 동적인출', '100%', '798억',  '23.8%', '1.60억',   '29'],
-            [<strong key="best" className="text-green-600 dark:text-green-400">★ EMA200 연속15일 + 동적인출 (현재 후보)</strong>,
-              '100%', <strong key="bv" className="text-green-600 dark:text-green-400">1,176억</strong>,
-              <strong key="bc" className="text-green-600 dark:text-green-400">25.9%</strong>,
+            [<strong key="best" className="text-blue-600 dark:text-blue-400">★ EMA200 연속15일 + 동적인출 (S0)</strong>,
+              '100%', <strong key="bv" className="text-blue-600 dark:text-blue-400">1,176억</strong>,
+              <strong key="bc" className="text-blue-600 dark:text-blue-400">25.9%</strong>,
               '1.68억', '21'],
           ]}
         />
@@ -529,7 +531,7 @@ export default function WithdrawalGuidePage() {
 
         <Callout color="yellow">
           아래 내용은 이전에 사용하던 방법론이다.
-          현재 후보(B3+C1)보다 성능이 낮지만, 설계 사고 방식을 이해하는 데 참고가 된다.
+          S0 전략보다 성능이 낮지만, 설계 사고 방식을 이해하는 데 참고가 된다.
           특히 버블 케이스 처리와 버퍼 계산 로직은 여전히 유효한 관점이다.
         </Callout>
 
@@ -621,10 +623,10 @@ export default function WithdrawalGuidePage() {
         </Callout>
 
         <H3>결론: 무엇을 선택할까</H3>
-        <Callout color="yellow">
-          수익을 극대화하고 싶고 알림 설정을 감수할 수 있다면 → <strong>D10GK</strong><br />
-          수익과 안정성을 동시에 원한다면 → <strong>S0 (EMA200 15일)</strong><br />
-          거래 횟수만 줄이고 싶다면 → <strong>T25</strong> (단, 1일 재매도 27.6% 감수)
+        <Callout color="blue">
+          <strong>대부분의 사람</strong>에게 → <strong>S0 (EMA200 15일)</strong> — 1일 재매도 없음 · 중간값 1,109억<br />
+          수익을 극대화하고 알림 설정을 감수할 수 있다면 → <strong>D10GK</strong> — 중간값 3,741억<br />
+          거래 횟수를 최소화하고 싶다면 → <strong>T25</strong> — 12회/20년 (단, 1일 재매도 27.6% 감수)
         </Callout>
         <P>
           솔직히 말하면, <strong className="text-gray-900 dark:text-white">대부분의 사람에게는 S0가 현실적인 선택이다.</strong>{' '}
@@ -673,8 +675,8 @@ export default function WithdrawalGuidePage() {
           <div className="space-y-0">
             <AnalysisLink
               href="/posts/withdrawal-new-ideas"
-              title="인출 전략 새 아이디어 8가지 — RSI 조기 재진입이 최선"
-              desc="현재 최선 D10GK의 근거. RSI 과매도 + 이격도 필터 + Guyton-Klinger 조합 분석."
+              title="인출 전략 새 아이디어 8가지 — S0가 대부분에게 최선"
+              desc="S0(EMA200 15일)를 기준으로 RSI 조기 재진입·골든크로스·동적 레버리지 등 8가지 비교. D10GK는 수익 극대화 옵션."
             />
             <AnalysisLink
               href="/posts/withdrawal-new-ideas2"
