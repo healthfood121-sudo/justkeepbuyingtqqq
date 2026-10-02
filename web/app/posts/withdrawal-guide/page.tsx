@@ -147,8 +147,112 @@ export default function WithdrawalGuidePage() {
         <P>
           EMA200 기반 전략에서 출발해 여러 아이디어를 테스트한 결과,
           현재는 RSI 과매도 신호를 활용한 조기 재진입 전략이 가장 좋은 성과를 내고 있다.
-          EMA200 신호만 기다리던 기준 전략(중간값 1,176억) 대비 약 3.3배 우세하다.
+          EMA200 신호만 기다리던 기준 전략(중간값 1,109억) 대비 약 3.4배 우세하다.
         </P>
+
+        {/* ── 전체 전략 비교 ───────────────────────────────────── */}
+        <H2>지금까지 테스트한 전략 전체 비교</H2>
+        <P>
+          1단계부터 5단계까지 연구에서 나온 모든 전략의 결과를 한 표에 정리했다.
+          초기 자산 10억 · 668가지 시작 시점(1971~현재) · 20년 시뮬레이션 기준.
+        </P>
+
+        <div className="overflow-x-auto mb-3">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="border-b border-gray-200 dark:border-gray-700">
+                {['전략', '중앙값', '생존율', '거래/20년', '포스트', '데이터'].map(h => (
+                  <th key={h} className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+              {[
+                {
+                  name: 'SP500 드로다운 v1',
+                  step: '1단계',
+                  med: '12.7억', survival: '100%', trades: '—',
+                  post: '/posts/withdrawal-comparison', postLabel: '비교 분석',
+                  data: '/posts/withdrawal-comparison/data',
+                  dim: true,
+                },
+                {
+                  name: 'NDX SMA200 기준선',
+                  step: '1단계',
+                  med: '203억', survival: '99.8%', trades: '144회',
+                  post: '/posts/withdrawal-comparison', postLabel: '비교 분석',
+                  data: '/posts/withdrawal-comparison/data',
+                  dim: true,
+                },
+                {
+                  name: 'EMA200 15일 (S0)',
+                  step: '2단계',
+                  med: '1,109억', survival: '100%', trades: '21회',
+                  post: '/posts/withdrawal-new-ideas', postLabel: '아이디어 8가지',
+                  data: '/posts/withdrawal-new-ideas/data',
+                  dim: false,
+                },
+                {
+                  name: 'RSI<30 조기 재진입',
+                  step: '3단계',
+                  med: '3,231억', survival: '100%', trades: '57회',
+                  post: '/posts/withdrawal-new-ideas', postLabel: '아이디어 8가지',
+                  data: '/posts/withdrawal-new-ideas/data',
+                  dim: false,
+                },
+                {
+                  name: '★ D10GK (현재 최선)',
+                  step: '4단계',
+                  med: '3,741억', survival: '100%', trades: '47회',
+                  post: '/posts/withdrawal-new-ideas', postLabel: '아이디어 8가지',
+                  data: '/posts/withdrawal-new-ideas/data',
+                  best: true,
+                },
+                {
+                  name: 'T25 트레일링스탑',
+                  step: '5단계',
+                  med: '1,064억', survival: '100%', trades: '12회',
+                  post: '/posts/withdrawal-new-ideas2', postLabel: '새 아이디어',
+                  data: '/posts/withdrawal-new-ideas2/data',
+                  dim: false,
+                },
+                {
+                  name: 'DLEV 레버리지 하향',
+                  step: '5단계',
+                  med: '474억', survival: '100%', trades: '35회',
+                  post: '/posts/withdrawal-new-ideas2', postLabel: '새 아이디어',
+                  data: '/posts/withdrawal-new-ideas2/data',
+                  dim: true,
+                },
+                {
+                  name: 'GRAD 단계적 현금화',
+                  step: '5단계',
+                  med: '131억', survival: '100%', trades: '54회',
+                  post: '/posts/withdrawal-new-ideas2', postLabel: '새 아이디어',
+                  data: '/posts/withdrawal-new-ideas2/data',
+                  dim: true,
+                },
+              ].map(row => (
+                <tr key={row.name} className={`hover:bg-gray-50 dark:hover:bg-gray-800/50 ${row.dim ? 'opacity-50' : ''}`}>
+                  <td className="py-2 px-3 text-gray-700 dark:text-gray-300">
+                    <span className={row.best ? 'font-bold text-green-600 dark:text-green-400' : ''}>{row.name}</span>
+                    <span className="ml-1.5 text-xs text-gray-400 dark:text-gray-600">{row.step}</span>
+                  </td>
+                  <td className={`py-2 px-3 font-mono ${row.best ? 'font-bold text-green-600 dark:text-green-400' : 'text-gray-700 dark:text-gray-300'}`}>{row.med}</td>
+                  <td className="py-2 px-3 text-gray-500 dark:text-gray-400">{row.survival}</td>
+                  <td className="py-2 px-3 text-gray-500 dark:text-gray-400">{row.trades}</td>
+                  <td className="py-2 px-3">
+                    <Link href={row.post} className="text-xs text-blue-500 dark:text-blue-400 hover:underline whitespace-nowrap">{row.postLabel} →</Link>
+                  </td>
+                  <td className="py-2 px-3">
+                    <Link href={row.data} className="text-xs text-gray-400 dark:text-gray-500 hover:text-blue-500 dark:hover:text-blue-400 hover:underline whitespace-nowrap">데이터 →</Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="text-xs text-gray-400 dark:text-gray-500 mb-10">흐린 행은 현재 채택되지 않은 전략. 중앙값은 20년 완료 기준.</p>
 
         {/* ── 연구 흐름 ────────────────────────────────────────── */}
         <H2>연구 흐름: 어떻게 여기까지 왔나</H2>
