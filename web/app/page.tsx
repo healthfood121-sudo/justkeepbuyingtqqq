@@ -89,7 +89,7 @@ export default function HomePage() {
               </div>
               <div className="mb-3">
                 <div className="flex justify-between items-baseline mb-1">
-                  <span className="text-xs font-bold text-blue-700 dark:text-blue-300">S0 — EMA200 15일 · 대부분 권장</span>
+                  <span className="text-xs font-bold text-blue-700 dark:text-blue-300">S0 — EMA200 15일</span>
                   <span className="text-xs font-mono font-bold text-blue-600 dark:text-blue-400">중간값 1,109억</span>
                 </div>
                 <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
@@ -97,9 +97,8 @@ export default function HomePage() {
                   매수 후 1일 재매도 없음. 생존율 100%.
                 </p>
               </div>
-              <div className="text-xs text-gray-400 dark:text-gray-500 border-t border-purple-100 dark:border-purple-800/30 pt-2 mb-4">
+              <div className="text-xs text-gray-400 dark:text-gray-500 mb-4">
                 668가지 시작 시점 · 동적 인출 월 0.3~0.7%
-                <span className="ml-2 opacity-70">| D10GK 옵션: 중간값 3,741억 (복잡도 높음)</span>
               </div>
               <Link
                 href="/posts/withdrawal-guide"
