@@ -176,6 +176,22 @@
 
 ---
 
+### D10GK 과최적화 검증
+
+| 파일 | 크기 | 스크립트 | 내용 |
+|------|------|----------|------|
+| `withdrawal_overfit_check.json` | 2 KB | `withdrawal_overfit_check.py` | 3가지 OOS 테스트 (NDX 합성+SP500 1985~+민감도) |
+| `withdrawal_sp500_overfit.json` | 2 KB | `withdrawal_sp500_overfit.py` | SP500 3x 전체기간 (1950~2005, 662코호트) |
+
+**withdrawal_sp500_overfit.json 결과 (재검증):**
+- 전체 662코호트: D10GK 88억 > S0 48억, 개별 83.1% 승률 → ✅
+- pre-1985 OOS 410코호트: D10GK 81억 > S0 44억, 82.9% 승률 → ✅
+- 1985~2005: 중앙값은 S0 우세(133 vs 111)이나 개별 승률 83.3% — 1987-08(블랙먼데이) 특수케이스
+
+**사용처:** `/posts/withdrawal-new-ideas` 11번 섹션
+
+---
+
 ## 미사용 / 탐색용 스크립트
 
 | 스크립트 | 출력 | 상태 |
