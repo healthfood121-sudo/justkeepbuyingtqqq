@@ -100,52 +100,53 @@ function AccumSection() {
   )
 }
 
-// ── 03 인출식 ─────────────────────────────────────────
+// ── 02 인출식 ─────────────────────────────────────────
 function WithdrawSection() {
   return (
     <div className="space-y-4 text-sm">
       <div className="space-y-3">
         <div className="flex gap-3">
-          <span className="text-blue-500 dark:text-blue-400 shrink-0 font-mono">01</span>
+          <span className="text-purple-500 dark:text-purple-400 shrink-0 font-mono">01</span>
           <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-            <span className="text-gray-900 dark:text-white font-semibold">현금 버퍼 계산</span>
-            {' '}— 목표 달성 소요기간이 짧을수록 버퍼를 더 쌓는다.
-            <br />
+            <span className="text-gray-900 dark:text-white font-semibold">동적 인출 시작</span>
+            {' '}— 자산이 작을 때 덜 꺼내고, 클 때 더 꺼낸다.
             <span className="text-gray-400 dark:text-gray-500 text-xs font-mono mt-1 block">
-              버퍼 기간 = max(0, 14년 − 소요기간)<br />
-              버퍼 금액 = 버퍼 기간 × 일적립액 × 252
+              10억 미만 → 월 0.3% · 10~20억 → 월 0.5% · 20억 이상 → 월 0.7%
             </span>
           </p>
         </div>
 
         <div className="flex gap-3">
-          <span className="text-blue-500 dark:text-blue-400 shrink-0 font-mono">02</span>
+          <span className="text-purple-500 dark:text-purple-400 shrink-0 font-mono">02</span>
           <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-            <span className="text-gray-900 dark:text-white font-semibold">월 1% 인출 시작</span>
-            {' '}— 조정장은 그냥 맞고 간다.
+            <span className="text-gray-900 dark:text-white font-semibold">하락 신호 → 전량 현금 전환</span>
+            {' '}— 나스닥100이 EMA200 아래 15거래일 연속이면 전량 매도. 현금은 외화RP로 이자를 받는다.
           </p>
         </div>
 
         <div className="flex gap-3">
-          <span className="text-yellow-500 dark:text-yellow-400 shrink-0 font-mono">03</span>
+          <span className="text-purple-500 dark:text-purple-400 shrink-0 font-mono">03</span>
           <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-            <span className="text-gray-900 dark:text-white font-semibold">SP500 −20%</span>
-            {' '}— 인출 중단, 1년간 일적립액으로 매수 재개.
-            8억 회복 시 인출 재시작.
+            <span className="text-gray-900 dark:text-white font-semibold">과매도 신호 → 즉시 재매수</span>
+            {' '}— EMA200 회복 신호를 기다리지 않고, RSI 14일이 30 미만이면서 가격이 EMA200보다 10% 이상 떨어진 상태면 바로 재진입.
           </p>
         </div>
 
         <div className="flex gap-3">
-          <span className="text-red-500 dark:text-red-400 shrink-0 font-mono">04</span>
+          <span className="text-purple-500 dark:text-purple-400 shrink-0 font-mono">04</span>
           <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-            <span className="text-gray-900 dark:text-white font-semibold">SP500 −50%</span>
-            {' '}— 남은 현금 버퍼를 14년으로 나누어 매일 분산 매수.
-            8억 회복 시 인출 재시작.
+            <span className="text-gray-900 dark:text-white font-semibold">Guyton-Klinger 조정</span>
+            {' '}— 자산이 크게 늘면 인출을 자동으로 줄여 복리를 지킨다.
           </p>
         </div>
       </div>
 
-      <SimButton href="/simulator" />
+      <Link
+        href="/posts/withdrawal-guide"
+        className="mt-5 block w-full text-center bg-purple-600 hover:bg-purple-500 text-white py-2.5 rounded-xl text-sm font-semibold transition-colors"
+      >
+        방법론 상세 보기 →
+      </Link>
     </div>
   )
 }

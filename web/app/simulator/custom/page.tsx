@@ -87,18 +87,52 @@ const instrumentOptions: { value: Instrument; label: string; sublabel: string }[
 
 // ─── 메인 ────────────────────────────────────────────────────
 
+const LS_KEY = 'sim_custom_v1'
+
+function loadStorage() {
+  try {
+    const raw = localStorage.getItem(LS_KEY)
+    return raw ? JSON.parse(raw) : null
+  } catch { return null }
+}
+
+function saveStorage(params: {
+  instrument: string; daily: number; cap: number; lump: number; target: number
+}) {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(params)) } catch {}
+}
+
 function CustomSimulatorInner() {
   const searchParams = useSearchParams()
 
   const [priceData, setPriceData] = useState<{ ndx: PriceData; sp5: PriceData } | null>(null)
   const [dataLoading, setDataLoading] = useState(true)
   const [isPending, startTransition] = useTransition()
+  const [restoredFromStorage, setRestoredFromStorage] = useState(false)
 
-  const [instrument, setInstrument]   = useState<Instrument>('ndx3x')
-  const [dailyInvest, setDailyInvest] = useState(() => Number(searchParams.get('daily'))  || 200_000)
-  const [capInvest,   setCapInvest]   = useState(() => Number(searchParams.get('cap'))    || 250_000_000)
-  const [lumpSum,     setLumpSum]     = useState(() => Number(searchParams.get('lump'))   || 250_000_000)
-  const [targetAmount,setTargetAmount]= useState(() => Number(searchParams.get('target')) || 1_000_000_000)
+  // 초기값: URL 파라미터 > localStorage > 기본값
+  const [instrument, setInstrument] = useState<Instrument>(() => {
+    const url = searchParams.get('inst') as Instrument
+    if (url && ['ndx3x','ndx2x','ndx1x','sp500'].includes(url)) return url
+    const stored = loadStorage()
+    return (stored?.instrument as Instrument) ?? 'ndx3x'
+  })
+  const [dailyInvest, setDailyInvest] = useState(() => {
+    const url = Number(searchParams.get('daily')); if (url) return url
+    return loadStorage()?.daily ?? 200_000
+  })
+  const [capInvest, setCapInvest] = useState(() => {
+    const url = Number(searchParams.get('cap')); if (url) return url
+    return loadStorage()?.cap ?? 250_000_000
+  })
+  const [lumpSum, setLumpSum] = useState(() => {
+    const url = Number(searchParams.get('lump')); if (url) return url
+    return loadStorage()?.lump ?? 250_000_000
+  })
+  const [targetAmount, setTargetAmount] = useState(() => {
+    const url = Number(searchParams.get('target')); if (url) return url
+    return loadStorage()?.target ?? 1_000_000_000
+  })
 
   const [results, setResults] = useState<{ A: CohortResult[]; B: CohortResult[]; C: CohortResult[] } | null>(null)
   const [show, setShow] = useState<Record<'A' | 'B' | 'C', boolean>>({ A: true, B: true, C: true })
@@ -108,6 +142,12 @@ function CustomSimulatorInner() {
 
   const toggleShow = (s: 'A' | 'B' | 'C') =>
     setShow(prev => ({ ...prev, [s]: !prev[s] }))
+
+  // localStorage 복원 여부 표시 (URL 파라미터 없이 진입한 경우)
+  useEffect(() => {
+    const hasUrl = searchParams.get('daily') || searchParams.get('cap') || searchParams.get('lump')
+    if (!hasUrl && loadStorage()) setRestoredFromStorage(true)
+  }, []) // eslint-disable-line
 
   // 가격 데이터 로드
   useEffect(() => {
@@ -122,6 +162,9 @@ function CustomSimulatorInner() {
   // 백테스트 실행
   const runSim = useCallback(() => {
     if (!priceData) return
+    // 파라미터 브라우저에 저장
+    saveStorage({ instrument, daily: dailyInvest, cap: capInvest, lump: lumpSum, target: targetAmount })
+    setRestoredFromStorage(false)
     const data = instrument === 'sp500' ? priceData.sp5 : priceData.ndx
     startTransition(() => {
       const res = runBacktest(data, {
@@ -182,7 +225,14 @@ function CustomSimulatorInner() {
 
           {/* 설정 패널 */}
           <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-5 space-y-5">
-            <h2 className="text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">직접 설정</h2>
+            <div className="flex items-center justify-between">
+              <h2 className="text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">직접 설정</h2>
+              {restoredFromStorage && (
+                <span className="text-xs text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-0.5 rounded-full">
+                  이전 설정 복원됨
+                </span>
+              )}
+            </div>
 
             {/* 종목 */}
             <div>
