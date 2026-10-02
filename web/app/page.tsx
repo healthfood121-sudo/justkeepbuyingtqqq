@@ -1,5 +1,5 @@
 import Header from '@/components/Header'
-import MethodologySection from '@/components/MethodologySection'
+import HomeSimulator from '@/components/HomeSimulator'
 
 const principles = [
   {
@@ -12,7 +12,7 @@ const principles = [
     num: '02',
     title: '투자공부 대신 삶을 살아라',
     sub: '모두가 평등한 자원인 시간',
-    desc: '모든 사람에게 똑같이 주어지는 자원은 시간뿐이다. 일반인의 투자공부는 지수공부로 충분하고, 그것만 해도 시간이 오래 걸린다. 나머지 시간은 그동안 하고 싶었지만, 시간이 없어서 못했던 일에 써라. 가족과 산책을 해도 좋고, 달리기를 해도 좋고, 악기를 배워도 좋고, 여행을 다녀도 좋다.',
+    desc: '모든 사람에게 똑같이 주어지는 자원은 시간뿐이다. 일반인의 투자공부는 지수공부로 충분하고, 그것만 해도 시간이 오래 걸린다. 나머지 시간은 그동안 하고 싶었지만, 시간이 없어서 못했던 일에 써라.',
   },
   {
     num: '03',
@@ -51,9 +51,13 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 방법론 */}
+      {/* 시뮬레이터 */}
       <div className="border-t border-gray-200 dark:border-gray-800">
-        <MethodologySection />
+        <div className="max-w-7xl mx-auto px-4 pt-6 pb-2">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">백테스트 결과</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">내 투자 설정 기준 · 1971년~현재 전체 코호트</p>
+        </div>
+        <HomeSimulator />
       </div>
 
       {/* 푸터 */}

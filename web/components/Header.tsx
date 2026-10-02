@@ -23,7 +23,7 @@ export default function Header({ maxWidth = 'max-w-6xl', activePage }: HeaderPro
         <div className="flex items-center gap-3">
           <nav className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
             <Link
-              href="/simulator"
+              href="/simulator/custom"
               className={`transition-colors hover:text-gray-900 dark:hover:text-white ${
                 activePage === 'simulator' ? 'text-gray-900 dark:text-white font-semibold' : ''
               }`}
