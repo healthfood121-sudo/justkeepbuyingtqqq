@@ -202,7 +202,7 @@ export default function WithdrawalGuidePage() {
                   dim: false,
                 },
                 {
-                  name: '★ D10GK (현재 최선)',
+                  name: '★ D10GK (수익 최선)',
                   step: '4단계',
                   med: '3,741억', survival: '100%', trades: '47회',
                   post: '/posts/withdrawal-new-ideas', postLabel: '아이디어 8가지',
@@ -215,7 +215,7 @@ export default function WithdrawalGuidePage() {
                   med: '1,064억', survival: '100%', trades: '12회',
                   post: '/posts/withdrawal-new-ideas2', postLabel: '새 아이디어',
                   data: '/posts/withdrawal-new-ideas2/data',
-                  dim: true,
+                  dim: false,
                 },
                 {
                   name: 'DLEV 레버리지 하향',
