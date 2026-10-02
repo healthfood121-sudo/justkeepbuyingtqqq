@@ -86,6 +86,15 @@ export const posts: PostMeta[] = [
     category: '인출식',
   },
   {
+    slug: 'withdrawal-signal-test',
+    title: '10억 달성 후 바로 꺼낼까, 1~2년 더 기다릴까',
+    date: '2026-10-03',
+    tags: ['인출식', 'EMA200', '인출지연', 'FIRE', 'TQQQ', '백테스트'],
+    summary:
+      'TQQQ 자체 가격 기준 EMA200 신호와 인출 시작 지연(1년/2년) 두 가지를 418가지 시작 시점으로 검증. TQQQ EMA200 신호는 중앙값 276억으로 기준(1,176억)의 1/4 수준으로 열등. 인출 2년 지연은 +13%(1,333억) 개선 — 단, 지연 기간 중 다른 수입원이 있는 경우에만 유효.',
+    category: '인출식',
+  },
+  {
     slug: 'withdrawal-comparison',
     title: '인출 전략 비교: SP500 드로다운 기반 vs NDX 200MA 기반',
     date: '2026-10-01',
