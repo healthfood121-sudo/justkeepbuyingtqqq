@@ -94,19 +94,18 @@ export default function HomePage() {
                 <span className="text-xs font-bold text-purple-500 dark:text-purple-400 tracking-wide">JUST KEEP SELLING</span>
                 <span className="text-base font-bold text-gray-900 dark:text-white">인출식</span>
               </div>
-              <div className="space-y-1.5 mb-4">
-                <p className="text-xs text-gray-600 dark:text-gray-300">
-                  <span className="font-semibold text-gray-800 dark:text-gray-200">S0 (권장)</span> — EMA200 15일 연속 이탈 시 전량 현금 · 1일 재매도 없음
-                </p>
-                <p className="text-xs text-gray-600 dark:text-gray-300">
-                  <span className="font-semibold text-gray-800 dark:text-gray-200">동적 인출</span> — 자산 규모에 따라 월 0.3 / 0.5 / 0.7%
-                </p>
-                <p className="text-xs text-gray-600 dark:text-gray-300">
-                  <span className="font-semibold text-gray-800 dark:text-gray-200">D10GK (최선)</span> — RSI &lt; 30 + 이격도 −10% 조기 재진입 · 중간값 3,741억
-                </p>
+              <div className="space-y-2 mb-4">
+                <div className="flex justify-between items-baseline">
+                  <span className="text-xs font-semibold text-gray-800 dark:text-gray-200">D10GK <span className="font-normal text-gray-400">수익 최선</span></span>
+                  <span className="text-xs font-mono text-green-600 dark:text-green-400">중간값 3,741억</span>
+                </div>
+                <div className="flex justify-between items-baseline">
+                  <span className="text-xs font-semibold text-gray-800 dark:text-gray-200">S0 <span className="font-normal text-gray-400">대부분 권장</span></span>
+                  <span className="text-xs font-mono text-blue-600 dark:text-blue-400">중간값 1,109억</span>
+                </div>
               </div>
-              <div className="text-xs text-gray-400 dark:text-gray-500 font-mono mb-4">
-                668가지 시작 시점 생존율 100% · S0 중간값 1,109억 · CAGR 25.9%
+              <div className="text-xs text-gray-400 dark:text-gray-500 mb-4">
+                668가지 시작 시점 · 생존율 100% · 동적 인출 월 0.3~0.7%
               </div>
               <Link
                 href="/posts/withdrawal-guide"
