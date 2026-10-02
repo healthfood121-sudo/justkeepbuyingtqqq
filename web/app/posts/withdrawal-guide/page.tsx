@@ -124,7 +124,7 @@ export default function WithdrawalGuidePage() {
             인출식 방법론: 10억 달성 후 어떻게 꺼내 쓰나
           </h1>
           <div className="flex items-center gap-3 flex-wrap">
-            <span className="text-sm text-gray-400">2026-10-01 · 최종수정 2026-10-01</span>
+            <span className="text-sm text-gray-400">2026-10-01 · 최종수정 2026-10-02</span>
             {['인출식', 'EMA200', 'MA200', '동적인출률', 'FIRE', 'TQQQ', '방법론'].map(t => <Tag key={t}>{t}</Tag>)}
           </div>
         </div>
@@ -132,10 +132,89 @@ export default function WithdrawalGuidePage() {
         <Callout color="purple">
           <strong>이 방법론은 확정이 아닙니다.</strong><br />
           백테스트를 거치며 계속 개선 중입니다.
-          현재까지 가장 좋은 결과를 내는 후보 전략을 기록하고,
-          더 나은 방법이 발견될 때마다 업데이트합니다.
-          각 설계 결정의 근거는 링크된 분석 글에서 확인할 수 있습니다.
+          더 나은 방법이 발견될 때마다 업데이트하고, 각 연구 단계의 근거는 아래 링크에서 확인할 수 있습니다.
         </Callout>
+
+        {/* ── 현재 최선 후보 ───────────────────────────────────── */}
+        <H2>현재 최선 후보</H2>
+
+        <Callout color="green">
+          <strong>RSI 과매도 조기 재진입 + 이격도 필터 + Guyton-Klinger (D10GK)</strong><br />
+          418가지 시작 시점 기준: 생존율 100% · 중간값 20년 후 <strong>3,918억</strong> · 연평균 수익률 32.4%<br />
+          2000년 3월(버블 정점) 시작: 46억 · 2003년 3월(버블 붕괴 후) 시작: 231억
+        </Callout>
+
+        <P>
+          EMA200 기반 전략에서 출발해 여러 아이디어를 테스트한 결과,
+          현재는 RSI 과매도 신호를 활용한 조기 재진입 전략이 가장 좋은 성과를 내고 있다.
+          EMA200 신호만 기다리던 기준 전략(중간값 1,176억) 대비 약 3.3배 우세하다.
+        </P>
+
+        {/* ── 연구 흐름 ────────────────────────────────────────── */}
+        <H2>연구 흐름: 어떻게 여기까지 왔나</H2>
+
+        <div className="space-y-3 mb-8">
+          {[
+            {
+              step: '1단계',
+              color: 'border-gray-300 dark:border-gray-700',
+              badge: 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400',
+              title: 'SP500 낙폭 기반 전략 (v1)',
+              result: '중간값 12.7억',
+              desc: 'SP500이 −20% 이상 하락하면 인출 중단하는 방식. 하락 중에도 TQQQ를 보유해 손실이 누적됐다.',
+              href: '/posts/withdrawal-comparison',
+              link: '비교 분석 →',
+            },
+            {
+              step: '2단계',
+              color: 'border-blue-200 dark:border-blue-800/50',
+              badge: 'bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400',
+              title: 'EMA200 연속 15일 + 동적 인출률',
+              result: '중간값 1,176억',
+              desc: '나스닥100이 EMA200 아래에서 15거래일 연속이면 전액 현금 전환. 95가지 설정값 조합에서 찾은 최선이었다.',
+              href: null,
+              link: null,
+            },
+            {
+              step: '3단계',
+              color: 'border-purple-200 dark:border-purple-800/50',
+              badge: 'bg-purple-50 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400',
+              title: '8가지 새 아이디어 테스트',
+              result: 'RSI 조기 재진입 → 중간값 3,231억',
+              desc: '골든크로스, 분할 재진입, 동적 레버리지 등 8가지를 비교. RSI가 30 미만으로 떨어지면 EMA200 신호를 기다리지 않고 즉시 재매수하는 방식이 압도적 우세.',
+              href: '/posts/withdrawal-new-ideas',
+              link: '테스트 결과 →',
+            },
+            {
+              step: '현재',
+              color: 'border-green-300 dark:border-green-700',
+              badge: 'bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-400',
+              title: 'RSI + 이격도 −10% 필터 + Guyton-Klinger (D10GK)',
+              result: '★ 중간값 3,918억',
+              desc: 'RSI 신호에 "EMA200보다 10% 이상 떨어진 상태"라는 조건을 추가해 가짜 신호를 줄였다. 자산이 많이 늘었을 때 인출을 자동으로 줄여주는 Guyton-Klinger 규칙도 결합. 과최적화 여부도 검증 완료.',
+              href: '/posts/withdrawal-new-ideas',
+              link: '상세 분석 →',
+            },
+          ].map(({ step, color, badge, title, result, desc, href, link }) => (
+            <div key={step} className={`border rounded-xl px-4 py-4 ${color}`}>
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start gap-3 flex-1">
+                  <span className={`text-xs font-bold px-2 py-0.5 rounded-full shrink-0 mt-0.5 ${badge}`}>{step}</span>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white mb-0.5">{title}</p>
+                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{result}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">{desc}</p>
+                  </div>
+                </div>
+                {href && link && (
+                  <Link href={href} className="text-xs text-blue-500 dark:text-blue-400 hover:underline whitespace-nowrap shrink-0 mt-0.5">
+                    {link}
+                  </Link>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
 
         {/* ── 1. 왜 인출식이 더 어려운가 ─────────────────────── */}
         <H2>1. 왜 인출식이 더 어려운가</H2>
@@ -151,17 +230,16 @@ export default function WithdrawalGuidePage() {
         </P>
 
         {/* ── 2. 현재 최선 후보 전략 ──────────────────────────── */}
-        <H2>2. 현재 최선 후보: EMA200 연속 신호 + 동적 인출률</H2>
+        <H2>2. EMA200 기반 전략 상세 (2단계 연구 기록)</H2>
 
-        <Callout color="yellow">
-          <strong>업데이트 (2026-10-02):</strong> 이 페이지는 EMA200 기반 전략을 설명한다.
-          이후 RSI 조기 재진입 연구에서 더 나은 조합이 발견됐다 (중앙값 3,918억).{' '}
-          <Link href="/posts/withdrawal-new-ideas" className="underline">새 아이디어 테스트 결과 →</Link>
+        <Callout color="blue">
+          아래는 현재 최선(D10GK)의 기반이 된 EMA200 전략의 설계 근거다.
+          D10GK도 EMA200 매도 신호는 그대로 사용하고, 매수 신호에만 RSI 조건을 추가한 것이다.
         </Callout>
 
         <Callout color="green">
-          <strong>418개 코호트 백테스트 결과 (초기 10억, NDX 3x, 20년)</strong><br />
-          생존율 100% · 중앙값 20년 후 <strong>1,176억</strong> · CAGR <strong>25.9%</strong> · 최솟값 1.68억 · 평균 거래 21회/20년
+          <strong>EMA200 연속15일 + 동적 인출률 — 418가지 시작 시점</strong><br />
+          생존율 100% · 중간값 20년 후 <strong>1,176억</strong> · 연평균 수익률 25.9% · 최솟값 1.68억 · 평균 매매 21회/20년
         </Callout>
 
         <H3>2-1. 하락 신호: NDX 지수이동평균(EMA200) 연속 15일 필터</H3>
@@ -175,7 +253,7 @@ export default function WithdrawalGuidePage() {
         <P>
           <strong className="text-gray-900 dark:text-white">EMA200이 SMA200보다 우세한 이유</strong>: EMA는 최근 가격에 더 높은 가중치를 부여하기 때문에
           추세 전환에 더 빠르게 반응한다. 하락 초기에 더 일찍 신호를 주고, 반등 시에도 더 빨리 재진입할 수 있다.
-          95개 조합 그리드 서치 결과, EMA200 계열이 SMA200 계열을 전체적으로 압도했다.
+          95개 조합 테스트 결과, EMA200 계열이 SMA200 계열을 전체적으로 압도했다.
         </P>
         <P>
           <strong className="text-gray-900 dark:text-white">15일 연속 필터 이유</strong>: 기준선(EMA200 교차 즉시)을 쓰면 20년에 평균 144번 거래(whipsaw).
@@ -195,7 +273,7 @@ export default function WithdrawalGuidePage() {
           고정 비율(월 1%) 대신 자산 구간별로 인출률을 다르게 적용한다.
           자산이 작을 때 덜 팔아 회복 여력을 보존하고,
           자산이 클 때 더 많이 받아가는 구조다.
-          95개 조합 그리드 서치 결과, 10억/20억 구간에 0.3/0.5/0.7% 비율이 최적으로 확인됐다.
+          95개 조합 테스트 결과, 10억/20억 구간에 0.3/0.5/0.7% 비율이 최적으로 확인됐다.
         </P>
         <FormulaBlock>
           총자산 10억 미만: 월 0.3% (연 3.6%)<br />
@@ -235,14 +313,14 @@ export default function WithdrawalGuidePage() {
         <H2>3. 주요 시나리오 비교 (초기 10억, 20년)</H2>
 
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">전략별 요약 (418개 코호트)</span>
+          <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">전략별 요약 (418가지 시작 시점)</span>
           <Link href="/posts/withdrawal-comparison/data" className="text-xs text-blue-500 dark:text-blue-400 hover:underline">
             전체 데이터 →
           </Link>
         </div>
 
         <Table
-          headers={['전략', '생존율', '중앙값', 'CAGR', '최솟값', '거래수']}
+          headers={['전략', '생존율', '중앙값', '연평균 수익률', '최솟값', '거래수']}
           rows={[
             ['SP500기반 (구 v1)',       '100%',   '12.7억',  '4.9%',  '0.002억', '–'],
             ['SMA200 기준선',           '99.8%', '203억',   '17.6%', '0억',      '144'],
@@ -275,22 +353,22 @@ export default function WithdrawalGuidePage() {
           이는 저점에서 빠른 신호 반응이 약간 일찍 매수·매도를 유발하기 때문이다.
         </P>
 
-        {/* ── 4. 파라미터 탐색 세부 결과 ───────────────────────── */}
-        <H2>4. 파라미터 탐색 — 어떻게 이 조합을 찾았나</H2>
+        {/* ── 4. 설정값 탐색 세부 결과 ───────────────────────── */}
+        <H2>4. 설정값 탐색 — 어떻게 이 조합을 찾았나</H2>
 
         <P>
-          95개 조합 그리드 서치(EMA/SMA × 연속일 × 인출률 × 구간)와
+          95가지 조합 테스트(EMA/SMA × 연속일 × 인출률 × 구간)와
           이중버퍼 구조 별도 테스트를 통해 각 설계 결정을 데이터로 검증했다.
         </P>
 
         <H3>4-1. EMA200 vs SMA200 × 연속일 필터</H3>
         <P>
-          같은 파라미터에서 EMA200이 SMA200을 일관되게 압도한다.
+          같은 설정값에서 EMA200이 SMA200을 일관되게 압도한다.
           연속일 필터는 5~20일을 테스트했고, 15일이 최적이었다.
         </P>
 
         <Table
-          headers={['이동평균', '연속일', '중앙 최종값', 'CAGR', '거래 횟수/20년', '최솟값']}
+          headers={['이동평균', '연속일', '중앙 최종값', '연평균 수익률', '거래 횟수/20년', '최솟값']}
           rows={[
             ['SMA200', '10일', '619억',   '22.1%', '26회', '1.88억'],
             ['SMA200', '15일', '665억',   '22.6%', '26회', '–'],
@@ -315,7 +393,7 @@ export default function WithdrawalGuidePage() {
         </P>
 
         <Table
-          headers={['구조', '설명', '중앙 최종값', 'CAGR']}
+          headers={['구조', '설명', '중앙 최종값', '연평균 수익률']}
           rows={[
             [<strong key="s0" className="text-green-600 dark:text-green-400">★ 단일버퍼</strong>,
               '인출 상한 1500만, 나머지 TQQQ 복리',
@@ -402,14 +480,19 @@ export default function WithdrawalGuidePage() {
           <p className="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-4">관련 분석 글</p>
           <div className="space-y-0">
             <AnalysisLink
+              href="/posts/withdrawal-new-ideas"
+              title="인출 전략 새 아이디어 8가지 — RSI 조기 재진입이 최선"
+              desc="현재 최선 D10GK의 근거. RSI 과매도 + 이격도 필터 + Guyton-Klinger 조합 분석."
+            />
+            <AnalysisLink
               href="/posts/withdrawal-comparison"
               title="인출 전략 비교: SP500 기반 vs NDX 200MA 기반"
-              desc="418코호트 비교. 두 전략의 중앙값 12.7억 vs 203억 차이가 발생하는 원인 분석."
+              desc="418가지 시작 시점 비교. 두 전략의 중앙값 12.7억 vs 203억 차이가 발생하는 원인 분석."
             />
             <AnalysisLink
               href="/posts/withdrawal-strategy"
               title="인출 전략 설계기: 버블 케이스 재진입 방법 비교 (A vs B)"
-              desc="버블 케이스를 2년 대기(Method A) vs 즉시 DCA(Method B)로 처리할 때 643가지 코호트에서 어떤 차이가 나는지 분석."
+              desc="버블 케이스를 2년 대기(Method A) vs 즉시 DCA(Method B)로 처리할 때 643가지 시작 시점에서 어떤 차이가 나는지 분석."
             />
             <AnalysisLink
               href="/posts/lump-sum-vs-split"
