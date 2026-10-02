@@ -266,6 +266,7 @@
 
 | 스크립트 | 출력 | 상태 |
 |----------|------|------|
+| `withdrawal_adaptive_test.py` | 없음 (터미널 출력) | 적응형 생활비 vs 고정 생활비 비교 (S0/T25/D10GK × 668 시작점) — 결론: 세 전략 모두 완전 동일, 적응형 규칙 미발동 확인 |
 | `vr_withdrawal_backtest.py` | 없음 (터미널 출력) | 라오어 VR 인출식 탐색용 (G값 스윕)
 | `backtest.py` | 없음 (터미널 출력) | 초기 탐색용 |
 | `split_entry_backtest.py` | 없음 | 초기 탐색용 |
