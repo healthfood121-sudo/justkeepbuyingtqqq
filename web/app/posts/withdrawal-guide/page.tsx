@@ -185,12 +185,13 @@ export default function WithdrawalGuidePage() {
                   dim: true,
                 },
                 {
-                  name: 'EMA200 15일 (S0)',
+                  name: '★ EMA200 15일 (S0) — 대부분 권장',
                   step: '2단계',
                   med: '1,109억', survival: '100%', trades: '21회',
                   post: '/posts/withdrawal-new-ideas', postLabel: '아이디어 8가지',
                   data: '/posts/withdrawal-new-ideas/data',
                   dim: false,
+                  rec: true,
                 },
                 {
                   name: 'RSI<30 조기 재진입',
@@ -214,7 +215,7 @@ export default function WithdrawalGuidePage() {
                   med: '1,064억', survival: '100%', trades: '12회',
                   post: '/posts/withdrawal-new-ideas2', postLabel: '새 아이디어',
                   data: '/posts/withdrawal-new-ideas2/data',
-                  dim: false,
+                  dim: true,
                 },
                 {
                   name: 'DLEV 레버리지 하향',
@@ -235,10 +236,10 @@ export default function WithdrawalGuidePage() {
               ].map(row => (
                 <tr key={row.name} className={`hover:bg-gray-50 dark:hover:bg-gray-800/50 ${row.dim ? 'opacity-50' : ''}`}>
                   <td className="py-2 px-3 text-gray-700 dark:text-gray-300">
-                    <span className={row.best ? 'font-bold text-green-600 dark:text-green-400' : ''}>{row.name}</span>
+                    <span className={row.best ? 'font-bold text-green-600 dark:text-green-400' : row.rec ? 'font-bold text-blue-600 dark:text-blue-400' : ''}>{row.name}</span>
                     <span className="ml-1.5 text-xs text-gray-400 dark:text-gray-600">{row.step}</span>
                   </td>
-                  <td className={`py-2 px-3 font-mono ${row.best ? 'font-bold text-green-600 dark:text-green-400' : 'text-gray-700 dark:text-gray-300'}`}>{row.med}</td>
+                  <td className={`py-2 px-3 font-mono ${row.best ? 'font-bold text-green-600 dark:text-green-400' : row.rec ? 'font-bold text-blue-600 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300'}`}>{row.med}</td>
                   <td className="py-2 px-3 text-gray-500 dark:text-gray-400">{row.survival}</td>
                   <td className="py-2 px-3 text-gray-500 dark:text-gray-400">{row.trades}</td>
                   <td className="py-2 px-3">
@@ -252,7 +253,7 @@ export default function WithdrawalGuidePage() {
             </tbody>
           </table>
         </div>
-        <p className="text-xs text-gray-400 dark:text-gray-500 mb-10">흐린 행은 현재 채택되지 않은 전략. 중앙값은 20년 완료 기준.</p>
+        <p className="text-xs text-gray-400 dark:text-gray-500 mb-10">흐린 행은 채택되지 않은 전략. <span className="text-blue-500 dark:text-blue-400">파란색</span> = 대부분 권장 · <span className="text-green-500 dark:text-green-400">초록색</span> = 수익 최선. 중앙값은 20년 완료 기준.</p>
 
         {/* ── 연구 흐름 ────────────────────────────────────────── */}
         <H2>연구 흐름: 어떻게 여기까지 왔나</H2>
