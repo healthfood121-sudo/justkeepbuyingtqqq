@@ -1,15 +1,13 @@
 'use client'
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import type { CohortResult, Instrument } from '@/lib/types'
-import type { PriceData } from '@/lib/dataLoader'
-import { runCohortDetail, summarize } from '@/lib/backtest'
-import type { CohortDetail } from '@/lib/backtest'
+import { summarize } from '@/lib/backtest'
+
 import ScatterPlot from '@/components/charts/ScatterPlot'
 import DistributionChart from '@/components/charts/DistributionChart'
 import CdfChart from '@/components/charts/CdfChart'
 import StrategySummaryRow from '@/components/StrategySummaryRow'
-import CohortModal from '@/components/simulator/CohortModal'
 import Link from 'next/link'
 
 // ─── 타입 ────────────────────────────────────────────────────
@@ -66,14 +64,13 @@ function jsonRowsToResults(rows: CohortJsonRow[], s: 'A' | 'B' | 'C'): CohortRes
 // ─── 컴포넌트 ─────────────────────────────────────────────────
 
 export default function HomeSimulator() {
-  const [priceData, setPriceData] = useState<{ ndx: PriceData; sp5: PriceData } | null>(null)
   const [cohortJson, setCohortJson] = useState<CohortJsonFile | null>(null)
   const [jsonLoading, setJsonLoading] = useState(true)
   const [show, setShow] = useState<Record<'A' | 'B' | 'C', boolean>>({ A: true, B: true, C: true })
   const [activeChart, setActiveChart] = useState<'scatter' | 'dist' | 'cdf' | 'table'>('scatter')
   const [tableSort, setTableSort] = useState<{ col: 'start' | 'yA' | 'yB' | 'yC'; dir: 1 | -1 }>({ col: 'start', dir: 1 })
-  const [modalDetail, setModalDetail] = useState<{ A: CohortDetail; B: CohortDetail; C: CohortDetail } | null>(null)
   const [instrument, setInstrument] = useState<Instrument>('ndx3x')
+  const [youtubeLinks, setYoutubeLinks] = useState<Record<string, string>>({})
 
   const toggleShow = (s: 'A' | 'B' | 'C') => setShow(prev => ({ ...prev, [s]: !prev[s] }))
 
@@ -87,9 +84,10 @@ export default function HomeSimulator() {
   }, [instrument])
 
   useEffect(() => {
-    import('@/lib/dataLoader').then(({ loadNdx, loadSp500 }) =>
-      Promise.all([loadNdx(), loadSp500()]).then(([ndx, sp5]) => setPriceData({ ndx, sp5 }))
-    )
+    fetch('/data/youtube_shorts.json')
+      .then(r => r.json())
+      .then((d: Record<string, string>) => setYoutubeLinks(d))
+      .catch(() => {})
   }, [])
 
   const results = useMemo(() => {
@@ -106,26 +104,6 @@ export default function HomeSimulator() {
     B: summarize(results.B, 'B'),
     C: summarize(results.C, 'C'),
   } : null
-
-  const openCohortDetail = useCallback((startDateStr: string) => {
-    if (!priceData) return
-    const data = instrument === 'sp500' ? priceData.sp5 : priceData.ndx
-    const { dates } = data
-    let prices: PriceData['lev1']
-    if (instrument === 'ndx1x') prices = data.lev1
-    else if (instrument === 'ndx2x') prices = data.lev2
-    else if (instrument === 'ndx3x') prices = data.lev3
-    else prices = data.lev1
-
-    const target = new Date(startDateStr).getTime()
-    let startIdx = 0
-    for (let i = 0; i < dates.length; i++) {
-      if (dates[i].getTime() >= target) { startIdx = i; break }
-    }
-    const detail = (s: 'A' | 'B' | 'C') =>
-      runCohortDetail(prices, dates, startIdx, s, PRESET.daily, PRESET.cap, PRESET.lump, PRESET.target)
-    setModalDetail({ A: detail('A'), B: detail('B'), C: detail('C') })
-  }, [priceData, instrument])
 
   return (
     <section className="max-w-7xl mx-auto px-4 py-10 flex flex-col lg:flex-row gap-6">
@@ -197,15 +175,6 @@ export default function HomeSimulator() {
       <div className="flex-1 space-y-5">
         {jsonLoading && (
           <div className="flex items-center justify-center h-64 text-gray-400">데이터 로딩 중...</div>
-        )}
-
-        {modalDetail && (
-          <CohortModal
-            details={modalDetail}
-            targetAmount={PRESET.target}
-            initialVis={show}
-            onClose={() => setModalDetail(null)}
-          />
         )}
 
         {!jsonLoading && results && summaries && (
@@ -308,8 +277,7 @@ export default function HomeSimulator() {
                 return (
                   <div>
                     <p className="text-xs text-gray-400 mb-3">
-                      행 클릭 → 진입 시점 상세 보기
-                      {!priceData && <span className="ml-2 text-gray-300">(가격 데이터 로딩 중…)</span>}
+                      상세보기: 일별 백테스트 전체 데이터 · 쇼츠: 유튜브 영상
                     </p>
                     <div className="overflow-auto max-h-[500px]">
                       <table className="w-full text-xs">
@@ -331,27 +299,50 @@ export default function HomeSimulator() {
                             {show.A && <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">A 투입·수익률</th>}
                             {show.B && <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">B 투입·수익률</th>}
                             {show.C && <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">C 투입·수익률</th>}
+                            <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">바로가기</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                          {sorted.map(r => (
-                            <tr
-                              key={r.s}
-                              onClick={() => openCohortDetail(r.s)}
-                              className="hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors cursor-pointer"
-                            >
-                              <td className="py-2 px-3 text-blue-600 dark:text-blue-400 font-mono whitespace-nowrap underline underline-offset-2">{r.s.slice(0,7)}</td>
-                              {show.A && <td className={`py-2 px-3 font-mono whitespace-nowrap ${r.sA === 'completed' ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-300 dark:text-gray-600'}`}>{fmtD(r.eA)}</td>}
-                              {show.B && <td className={`py-2 px-3 font-mono whitespace-nowrap ${r.sB === 'completed' ? 'text-yellow-500 dark:text-yellow-400' : 'text-gray-300 dark:text-gray-600'}`}>{fmtD(r.eB)}</td>}
-                              {show.C && <td className={`py-2 px-3 font-mono whitespace-nowrap ${r.sC === 'completed' ? 'text-blue-500 dark:text-blue-400' : 'text-gray-300 dark:text-gray-600'}`}>{fmtD(r.eC)}</td>}
-                              {show.A && <td className={`py-2 px-3 font-mono ${r.sA === 'completed' ? 'text-emerald-600/70 dark:text-emerald-400/70' : 'text-gray-300 dark:text-gray-600'}`}>{fmtY(r.yA)}</td>}
-                              {show.B && <td className={`py-2 px-3 font-mono ${r.sB === 'completed' ? 'text-yellow-500/70 dark:text-yellow-400/70' : 'text-gray-300 dark:text-gray-600'}`}>{fmtY(r.yB)}</td>}
-                              {show.C && <td className={`py-2 px-3 font-mono ${r.sC === 'completed' ? 'text-blue-500/70 dark:text-blue-400/70' : 'text-gray-300 dark:text-gray-600'}`}>{fmtY(r.yC)}</td>}
-                              {show.A && <td className="py-2 px-3 font-mono"><span className="text-gray-400">{fmtInv(r.iA)}</span>{fmtCagr(r.iA, r.yA) && <span className="block text-emerald-500 dark:text-emerald-400 text-[10px]">{fmtCagr(r.iA, r.yA)}</span>}</td>}
-                              {show.B && <td className="py-2 px-3 font-mono"><span className="text-gray-400">{fmtInv(r.iB)}</span>{fmtCagr(r.iB, r.yB) && <span className="block text-emerald-500 dark:text-emerald-400 text-[10px]">{fmtCagr(r.iB, r.yB)}</span>}</td>}
-                              {show.C && <td className="py-2 px-3 font-mono"><span className="text-gray-400">{fmtInv(r.iC)}</span>{fmtCagr(r.iC, r.yC) && <span className="block text-emerald-500 dark:text-emerald-400 text-[10px]">{fmtCagr(r.iC, r.yC)}</span>}</td>}
-                            </tr>
-                          ))}
+                          {sorted.map(r => {
+                            const start = r.s.slice(0, 7)
+                            const ytUrl = youtubeLinks[start]
+                            return (
+                              <tr key={r.s} className="hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors">
+                                <td className="py-2 px-3 text-gray-600 dark:text-gray-400 font-mono whitespace-nowrap">{start}</td>
+                                {show.A && <td className={`py-2 px-3 font-mono whitespace-nowrap ${r.sA === 'completed' ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-300 dark:text-gray-600'}`}>{fmtD(r.eA)}</td>}
+                                {show.B && <td className={`py-2 px-3 font-mono whitespace-nowrap ${r.sB === 'completed' ? 'text-yellow-500 dark:text-yellow-400' : 'text-gray-300 dark:text-gray-600'}`}>{fmtD(r.eB)}</td>}
+                                {show.C && <td className={`py-2 px-3 font-mono whitespace-nowrap ${r.sC === 'completed' ? 'text-blue-500 dark:text-blue-400' : 'text-gray-300 dark:text-gray-600'}`}>{fmtD(r.eC)}</td>}
+                                {show.A && <td className={`py-2 px-3 font-mono ${r.sA === 'completed' ? 'text-emerald-600/70 dark:text-emerald-400/70' : 'text-gray-300 dark:text-gray-600'}`}>{fmtY(r.yA)}</td>}
+                                {show.B && <td className={`py-2 px-3 font-mono ${r.sB === 'completed' ? 'text-yellow-500/70 dark:text-yellow-400/70' : 'text-gray-300 dark:text-gray-600'}`}>{fmtY(r.yB)}</td>}
+                                {show.C && <td className={`py-2 px-3 font-mono ${r.sC === 'completed' ? 'text-blue-500/70 dark:text-blue-400/70' : 'text-gray-300 dark:text-gray-600'}`}>{fmtY(r.yC)}</td>}
+                                {show.A && <td className="py-2 px-3 font-mono"><span className="text-gray-400">{fmtInv(r.iA)}</span>{fmtCagr(r.iA, r.yA) && <span className="block text-emerald-500 dark:text-emerald-400 text-[10px]">{fmtCagr(r.iA, r.yA)}</span>}</td>}
+                                {show.B && <td className="py-2 px-3 font-mono"><span className="text-gray-400">{fmtInv(r.iB)}</span>{fmtCagr(r.iB, r.yB) && <span className="block text-emerald-500 dark:text-emerald-400 text-[10px]">{fmtCagr(r.iB, r.yB)}</span>}</td>}
+                                {show.C && <td className="py-2 px-3 font-mono"><span className="text-gray-400">{fmtInv(r.iC)}</span>{fmtCagr(r.iC, r.yC) && <span className="block text-emerald-500 dark:text-emerald-400 text-[10px]">{fmtCagr(r.iC, r.yC)}</span>}</td>}
+                                <td className="py-2 px-2 whitespace-nowrap">
+                                  <div className="flex gap-1.5">
+                                    <Link
+                                      href={`/simulator/cohort?start=${start}&inst=${instrument}`}
+                                      className="text-[11px] px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+                                    >
+                                      상세보기
+                                    </Link>
+                                    {ytUrl ? (
+                                      <a
+                                        href={ytUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-[11px] px-2 py-0.5 rounded bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
+                                      >
+                                        쇼츠
+                                      </a>
+                                    ) : (
+                                      <span className="text-[11px] px-2 py-0.5 text-gray-300 dark:text-gray-700">쇼츠</span>
+                                    )}
+                                  </div>
+                                </td>
+                              </tr>
+                            )
+                          })}
                         </tbody>
                       </table>
                     </div>

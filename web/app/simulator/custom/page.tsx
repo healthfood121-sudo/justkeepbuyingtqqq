@@ -3,14 +3,12 @@
 import { useState, useEffect, useCallback, useTransition, Suspense } from 'react'
 import type { CohortResult, Instrument } from '@/lib/types'
 import type { PriceData } from '@/lib/dataLoader'
-import { runBacktest, runCohortDetail, summarize } from '@/lib/backtest'
-import type { CohortDetail } from '@/lib/backtest'
+import { runBacktest, summarize } from '@/lib/backtest'
 import ScatterPlot from '@/components/charts/ScatterPlot'
 import DistributionChart from '@/components/charts/DistributionChart'
 import CdfChart from '@/components/charts/CdfChart'
 import StrategySummaryRow from '@/components/StrategySummaryRow'
 import Header from '@/components/Header'
-import CohortModal from '@/components/simulator/CohortModal'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 
@@ -138,8 +136,6 @@ function CustomSimulatorInner() {
   const [show, setShow] = useState<Record<'A' | 'B' | 'C', boolean>>({ A: true, B: true, C: true })
   const [activeChart, setActiveChart] = useState<'scatter' | 'dist' | 'cdf' | 'table'>('scatter')
   const [tableSort, setTableSort] = useState<{ col: 'start' | 'yA' | 'yB' | 'yC'; dir: 1 | -1 }>({ col: 'start', dir: 1 })
-  const [modalDetail, setModalDetail] = useState<{ A: CohortDetail; B: CohortDetail; C: CohortDetail } | null>(null)
-
   const toggleShow = (s: 'A' | 'B' | 'C') =>
     setShow(prev => ({ ...prev, [s]: !prev[s] }))
 
@@ -173,29 +169,6 @@ function CustomSimulatorInner() {
       })
       setResults({ A: res.A, B: res.B, C: res.C })
     })
-  }, [priceData, instrument, dailyInvest, capInvest, lumpSum, targetAmount])
-
-  // 코호트 상세 모달
-  const openCohortDetail = useCallback((startDateStr: string) => {
-    if (!priceData) return
-    const data = instrument === 'sp500' ? priceData.sp5 : priceData.ndx
-    const { dates } = data
-
-    let prices: PriceData['lev1']
-    if (instrument === 'ndx1x') prices = data.lev1
-    else if (instrument === 'ndx2x') prices = data.lev2
-    else if (instrument === 'ndx3x') prices = data.lev3
-    else prices = data.lev1
-
-    const target = new Date(startDateStr).getTime()
-    let startIdx = 0
-    for (let i = 0; i < dates.length; i++) {
-      if (dates[i].getTime() >= target) { startIdx = i; break }
-    }
-
-    const detail = (s: 'A' | 'B' | 'C') =>
-      runCohortDetail(prices, dates, startIdx, s, dailyInvest, capInvest, lumpSum, targetAmount)
-    setModalDetail({ A: detail('A'), B: detail('B'), C: detail('C') })
   }, [priceData, instrument, dailyInvest, capInvest, lumpSum, targetAmount])
 
   const summaries = results ? {
@@ -342,15 +315,6 @@ function CustomSimulatorInner() {
             </div>
           )}
 
-          {modalDetail && (
-            <CohortModal
-              details={modalDetail}
-              targetAmount={targetAmount}
-              initialVis={show}
-              onClose={() => setModalDetail(null)}
-            />
-          )}
-
           {!isPending && results && summaries && tableRows && (
             <>
               {/* 종목/조건 요약 */}
@@ -484,27 +448,35 @@ function CustomSimulatorInner() {
                               {show.A && <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">A 투입·수익률</th>}
                               {show.B && <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">B 투입·수익률</th>}
                               {show.C && <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">C 투입·수익률</th>}
+                              <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">바로가기</th>
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                            {sorted.map((r) => (
-                              <tr
-                                key={r.s}
-                                onClick={() => openCohortDetail(r.s)}
-                                className="hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors cursor-pointer"
-                              >
-                                <td className="py-2 px-3 text-blue-600 dark:text-blue-400 font-mono whitespace-nowrap underline underline-offset-2">{r.s.slice(0,7)}</td>
-                                {show.A && <td className={`py-2 px-3 font-mono whitespace-nowrap ${r.sA === 'completed' ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-300 dark:text-gray-600'}`}>{fmtD(r.eA)}</td>}
-                                {show.B && <td className={`py-2 px-3 font-mono whitespace-nowrap ${r.sB === 'completed' ? 'text-yellow-500 dark:text-yellow-400' : 'text-gray-300 dark:text-gray-600'}`}>{fmtD(r.eB)}</td>}
-                                {show.C && <td className={`py-2 px-3 font-mono whitespace-nowrap ${r.sC === 'completed' ? 'text-blue-500 dark:text-blue-400' : 'text-gray-300 dark:text-gray-600'}`}>{fmtD(r.eC)}</td>}
-                                {show.A && <td className={`py-2 px-3 font-mono ${r.sA === 'completed' ? 'text-emerald-600/70 dark:text-emerald-400/70' : 'text-gray-300 dark:text-gray-600'}`}>{fmtY(r.yA)}</td>}
-                                {show.B && <td className={`py-2 px-3 font-mono ${r.sB === 'completed' ? 'text-yellow-500/70 dark:text-yellow-400/70' : 'text-gray-300 dark:text-gray-600'}`}>{fmtY(r.yB)}</td>}
-                                {show.C && <td className={`py-2 px-3 font-mono ${r.sC === 'completed' ? 'text-blue-500/70 dark:text-blue-400/70' : 'text-gray-300 dark:text-gray-600'}`}>{fmtY(r.yC)}</td>}
-                                {show.A && <td className="py-2 px-3 font-mono"><span className="text-gray-400">{fmtInv(r.iA)}</span>{fmtCagr(r.iA, r.yA) && <span className="block text-emerald-500 dark:text-emerald-400 text-[10px]">{fmtCagr(r.iA, r.yA)}</span>}</td>}
-                                {show.B && <td className="py-2 px-3 font-mono"><span className="text-gray-400">{fmtInv(r.iB)}</span>{fmtCagr(r.iB, r.yB) && <span className="block text-emerald-500 dark:text-emerald-400 text-[10px]">{fmtCagr(r.iB, r.yB)}</span>}</td>}
-                                {show.C && <td className="py-2 px-3 font-mono"><span className="text-gray-400">{fmtInv(r.iC)}</span>{fmtCagr(r.iC, r.yC) && <span className="block text-emerald-500 dark:text-emerald-400 text-[10px]">{fmtCagr(r.iC, r.yC)}</span>}</td>}
-                              </tr>
-                            ))}
+                            {sorted.map((r) => {
+                              const start = r.s.slice(0, 7)
+                              return (
+                                <tr key={r.s} className="hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors">
+                                  <td className="py-2 px-3 text-gray-600 dark:text-gray-400 font-mono whitespace-nowrap">{start}</td>
+                                  {show.A && <td className={`py-2 px-3 font-mono whitespace-nowrap ${r.sA === 'completed' ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-300 dark:text-gray-600'}`}>{fmtD(r.eA)}</td>}
+                                  {show.B && <td className={`py-2 px-3 font-mono whitespace-nowrap ${r.sB === 'completed' ? 'text-yellow-500 dark:text-yellow-400' : 'text-gray-300 dark:text-gray-600'}`}>{fmtD(r.eB)}</td>}
+                                  {show.C && <td className={`py-2 px-3 font-mono whitespace-nowrap ${r.sC === 'completed' ? 'text-blue-500 dark:text-blue-400' : 'text-gray-300 dark:text-gray-600'}`}>{fmtD(r.eC)}</td>}
+                                  {show.A && <td className={`py-2 px-3 font-mono ${r.sA === 'completed' ? 'text-emerald-600/70 dark:text-emerald-400/70' : 'text-gray-300 dark:text-gray-600'}`}>{fmtY(r.yA)}</td>}
+                                  {show.B && <td className={`py-2 px-3 font-mono ${r.sB === 'completed' ? 'text-yellow-500/70 dark:text-yellow-400/70' : 'text-gray-300 dark:text-gray-600'}`}>{fmtY(r.yB)}</td>}
+                                  {show.C && <td className={`py-2 px-3 font-mono ${r.sC === 'completed' ? 'text-blue-500/70 dark:text-blue-400/70' : 'text-gray-300 dark:text-gray-600'}`}>{fmtY(r.yC)}</td>}
+                                  {show.A && <td className="py-2 px-3 font-mono"><span className="text-gray-400">{fmtInv(r.iA)}</span>{fmtCagr(r.iA, r.yA) && <span className="block text-emerald-500 dark:text-emerald-400 text-[10px]">{fmtCagr(r.iA, r.yA)}</span>}</td>}
+                                  {show.B && <td className="py-2 px-3 font-mono"><span className="text-gray-400">{fmtInv(r.iB)}</span>{fmtCagr(r.iB, r.yB) && <span className="block text-emerald-500 dark:text-emerald-400 text-[10px]">{fmtCagr(r.iB, r.yB)}</span>}</td>}
+                                  {show.C && <td className="py-2 px-3 font-mono"><span className="text-gray-400">{fmtInv(r.iC)}</span>{fmtCagr(r.iC, r.yC) && <span className="block text-emerald-500 dark:text-emerald-400 text-[10px]">{fmtCagr(r.iC, r.yC)}</span>}</td>}
+                                  <td className="py-2 px-2 whitespace-nowrap">
+                                    <Link
+                                      href={`/simulator/cohort?start=${start}&inst=${instrument}`}
+                                      className="text-[11px] px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+                                    >
+                                      상세보기
+                                    </Link>
+                                  </td>
+                                </tr>
+                              )
+                            })}
                           </tbody>
                         </table>
                       </div>
