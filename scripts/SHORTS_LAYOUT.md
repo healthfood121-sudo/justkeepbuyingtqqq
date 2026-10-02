@@ -197,6 +197,42 @@ python scripts/generate_shorts.py --start 2000-01 --out output/shorts/2000-01.mp
 
 ---
 
+## 인출식 쇼츠 (generate_withdrawal_shorts.py)
+
+### 전략-렌더러 분리 원칙
+- `WSnap` 데이터클래스가 인터페이스. 전략이 바뀌어도 렌더러는 그대로.
+- 새 전략 추가: `simulate_새전략()` 함수 작성 → `STRATEGIES` dict에 등록 → `--strategy` 으로 선택
+
+### 현재 등록된 전략
+| 키 | 설명 |
+|----|------|
+| `s0`    | EMA200 15일만 — **기본값** (교육용, 설명 가능, 신뢰도 높음) |
+| `d10gk` | EMA200 15일 + RSI<30 + 이격도<-10% + Guyton-Klinger (연구용, 과최적화 의심) |
+
+### 레이아웃 (인출식 고유)
+| 구역 | Y범위 | 내용 |
+|------|-------|------|
+| 헤더 | 0~128 | "인출식 시뮬레이션" + 전략명 |
+| 날짜행 | 128~220 | 시작일 + 현재일 + elapsed |
+| 상태 배지 | 228~270 | 초록="시장 보유 중" / 주황="현금 대피 중" |
+| 잔고 | 284~420 | 총 잔고 + 초기 10억 대비 손익% |
+| 인출 정보 | 430~620 | 이번달 인출 상한 / 누적 인출 / TQQQ or 현금 |
+| 차트 | 920~1500 | 잔고 추이 + 현금 구간 파란 음영 |
+| 인출 바 | 1528~ | 누적 인출 / 초기 10억 비율 |
+
+### 출력 경로
+```
+output/withdrawal/{start_ym}.mp4
+```
+
+### 실행 방법
+```bash
+python scripts/generate_withdrawal_shorts.py --start 1978-05
+python scripts/generate_withdrawal_shorts.py --start 1978-05 --strategy s0
+```
+
+---
+
 ## 자주 있는 수정 포인트
 
 | 수정 내용 | 변경할 상수/위치 |

@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "justkeepbuyingtqqq — 레버리지 ETF 장기투자 백테스트",
+  title: "justkeepbuyingtqqq — 레버리지 ETF 장기투자",
   description: "TQQQ·QLD·QQQ·VOO 레버리지 ETF 적립식 투자의 55년 역사 데이터 기반 백테스트. 내 파라미터로 10억 목표 달성 시뮬레이션.",
 };
 

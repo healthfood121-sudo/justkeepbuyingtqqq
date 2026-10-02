@@ -1,6 +1,10 @@
 # Claude Code 개인 설정 및 메모리
 .claude/
 
+# OAuth / 인증 파일
+config/client_secret_*.json
+config/token_*.json
+
 # Python
 __pycache__/
 *.py[cod]
