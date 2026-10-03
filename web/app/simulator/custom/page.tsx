@@ -132,6 +132,7 @@ function CustomSimulatorInner() {
     return loadStorage()?.target ?? 1_000_000_000
   })
 
+  const [withCosts, setWithCosts] = useState(false)
   const [results, setResults] = useState<{ A: CohortResult[]; B: CohortResult[]; C: CohortResult[] } | null>(null)
   const [show, setShow] = useState<Record<'A' | 'B' | 'C', boolean>>({ A: true, B: true, C: true })
   const [activeChart, setActiveChart] = useState<'scatter' | 'dist' | 'cdf' | 'table'>('scatter')
@@ -161,7 +162,11 @@ function CustomSimulatorInner() {
     // 파라미터 브라우저에 저장
     saveStorage({ instrument, daily: dailyInvest, cap: capInvest, lump: lumpSum, target: targetAmount })
     setRestoredFromStorage(false)
-    const data = instrument === 'sp500' ? priceData.sp5 : priceData.ndx
+    const base = instrument === 'sp500' ? priceData.sp5 : priceData.ndx
+    // withCosts일 때 lev*c 필드로 교체 (SP500은 스왑금리 없음)
+    const data = (withCosts && instrument !== 'sp500') ? {
+      ...base, lev1: base.lev1c, lev2: base.lev2c, lev3: base.lev3c,
+    } : base
     startTransition(() => {
       const res = runBacktest(data, {
         instrument, strategy: 'A',
@@ -169,7 +174,12 @@ function CustomSimulatorInner() {
       })
       setResults({ A: res.A, B: res.B, C: res.C })
     })
-  }, [priceData, instrument, dailyInvest, capInvest, lumpSum, targetAmount])
+  }, [priceData, instrument, dailyInvest, capInvest, lumpSum, targetAmount, withCosts])
+
+  // withCosts 토글 시 이미 결과가 있으면 자동 재실행
+  useEffect(() => {
+    if (results !== null && priceData) runSim()
+  }, [withCosts]) // eslint-disable-line
 
   const summaries = results ? {
     A: summarize(results.A, 'A'),
@@ -267,6 +277,30 @@ function CustomSimulatorInner() {
             >
               {dataLoading ? '데이터 로딩 중...' : isPending ? '계산 중...' : '▶ 백테스트 실행'}
             </button>
+
+            {/* 비용 반영 토글 */}
+            <div>
+              <p className="text-xs font-medium text-gray-600 dark:text-gray-300 mb-1.5">비용 반영</p>
+              <div className="flex rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden text-xs font-medium w-full">
+                <button
+                  onClick={() => setWithCosts(false)}
+                  className={`flex-1 py-2 transition-colors ${!withCosts ? 'bg-blue-600 text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
+                >
+                  운용보수만
+                </button>
+                <button
+                  onClick={() => setWithCosts(true)}
+                  className={`flex-1 py-2 transition-colors ${withCosts ? 'bg-blue-600 text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
+                >
+                  + 스왑금리
+                </button>
+              </div>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                {withCosts
+                  ? instrument === 'sp500' ? 'S&P500은 스왑금리 없음' : '운용보수 + 스왑금리(2×기준금리) 반영'
+                  : '운용보수 반영 · 스왑금리 미반영 (이론치)'}
+              </p>
+            </div>
           </div>
 
           {/* 전략 설명 */}
@@ -488,7 +522,7 @@ function CustomSimulatorInner() {
               {/* 캐비엇 */}
               <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700/30 rounded-xl p-4 text-xs text-yellow-800 dark:text-yellow-200/70 space-y-1">
                 <p>⚠️ <strong>합성 가격 사용:</strong> TQQQ/QLD의 실제 상장 역사는 짧아, NDX 일별 수익률 × 레버리지로 합성한 이론값을 사용합니다.</p>
-                <p>⚠️ <strong>비용 미반영:</strong> 운용비용(TQQQ 0.88%/년)·추적오차는 미반영입니다.</p>
+                <p>⚠️ <strong>비용 반영:</strong> 운용보수(TQQQ 0.88%/년)는 항상 반영됩니다. {withCosts ? '스왑금리비용(2×기준금리)도 반영 중입니다.' : '스왑금리비용은 현재 미반영 (이론치). [+ 스왑금리] 버튼으로 반영 가능.'} 추적오차는 미반영입니다.</p>
                 <p>⚠️ <strong>과거 데이터 기반:</strong> 미래 수익을 보장하지 않으며, 닷컴버블(1999-2000)이 유일하게 관측된 극단적 사례입니다.</p>
               </div>
             </>
