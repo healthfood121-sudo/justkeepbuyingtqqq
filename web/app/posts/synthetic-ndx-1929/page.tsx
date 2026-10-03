@@ -414,8 +414,9 @@ export default function SyntheticNdx1929Post() {
         <P>
           NDX 기반 백테스트는 1971년 2월부터 시작하는 모든 진입 시점을 다룬다. 현재 데이터 기준 worst-case는
           닷컴버블 직전인{' '}
-          <strong className="text-gray-900 dark:text-white">1998년 6월 진입, 13.74년</strong>이다.
+          <strong className="text-gray-900 dark:text-white">1998년 6월 진입, 13.77년</strong>이다.
           여기서 인출식 현금 버퍼를 계산하는 기준인 BUFFER_REF=14가 나왔다.
+          (이 글은 매일 적립만 하는 A전략 기준이다. 현재 인출식 계산은 거치금을 5년에 나눠 넣는 C전략의 최악 8.99년을 반올림한 9를 기준값으로 쓴다.)
         </P>
         <P>
           그런데 한 가지가 찜찜하다. 1929년 대공황은 어떨까?
@@ -490,23 +491,23 @@ export default function SyntheticNdx1929Post() {
         {/* ── 4. NDX 1x 결과 ── */}
         <H2>NDX 1x 합성 백테스트 — A전략 (일 20만원, 목표 10억)</H2>
         <P>
-          먼저 레버리지 없는 1배 기준이다. 실제 NDX 1x A전략의 worst는 14.34년(1996-06)이다.
+          먼저 레버리지 없는 1배 기준이다. 실제 NDX 1x A전략의 worst는 14.44년(1996-05)이다.
           합성 구간 포함 시 어떻게 달라지는지 확인했다.
         </P>
         <Table
           headers={['베타', '전체 worst', '진입 시점', '1929-01 진입', '']}
           highlight={[1, 2]}
           rows={[
-            ['β=0.767  pre-tech',  '17.38년', '1960-07', '16.28년', <DataLink key="pt" lev="1x" beta="pre-tech" />],
-            ['β=1.138  recent',    '15.38년', '1962-07', '14.33년', <DataLink key="rc" lev="1x" beta="recent" />],
-            ['β=1.244  tech-era',  '15.37년', '1962-11', '14.40년', <DataLink key="te" lev="1x" beta="tech-era" />],
-            ['β=1.294  latest',    '17.41년', '1927-12', '16.47년', <DataLink key="lt" lev="1x" beta="latest" />],
+            ['β=0.767  pre-tech',  '17.55년', '1960-05', '16.29년', <DataLink key="pt" lev="1x" beta="pre-tech" />],
+            ['β=1.138  recent',    '15.53년', '1962-09', '14.34년', <DataLink key="rc" lev="1x" beta="recent" />],
+            ['β=1.244  tech-era',  '15.46년', '1962-06', '14.41년', <DataLink key="te" lev="1x" beta="tech-era" />],
+            ['β=1.294  latest',    '17.47년', '1927-12', '16.48년', <DataLink key="lt" lev="1x" beta="latest" />],
           ]}
         />
         <P>
           최근 베타 기준으로 1929-01 진입 시 14.3~14.4년이 나온다.
-          전체 worst는 1962년 전후(15.3~15.4년)이고, 1929년 자체가 all-time worst는 아니다.
-          pre-tech(0.767)로 가면 1929가 아니라 1960년대가 worst(17.4년)가 된다.
+          전체 worst는 1962년 전후(15.5년 안팎)이고, 1929년 자체가 all-time worst는 아니다.
+          pre-tech(0.767)로 가면 1929가 아니라 1960년대가 worst(17.6년)가 된다.
         </P>
 
         {/* ── 5. NDX 3x 결과 ── */}
@@ -518,14 +519,14 @@ export default function SyntheticNdx1929Post() {
           headers={['베타', '전체 worst', '진입 시점', '1929-01 진입', '']}
           highlight={[1, 2]}
           rows={[
-            ['β=0.767  pre-tech',  '17.32년', '1927-12', '16.31년', <DataLink key="pt" lev="3x" beta="pre-tech" />],
+            ['β=0.767  pre-tech',  '17.41년', '1927-12', '16.40년', <DataLink key="pt" lev="3x" beta="pre-tech" />],
             ['β=1.138  recent',
-              <strong key="w" className="text-green-600 dark:text-green-400">13.74년 (닷컴!)</strong>,
+              <strong key="w" className="text-green-600 dark:text-green-400">13.77년 (닷컴!)</strong>,
               '1998-06',
               <strong key="c" className="text-blue-500 dark:text-blue-400">7.76년</strong>,
               <DataLink key="rc" lev="3x" beta="recent" />],
             ['β=1.244  tech-era',
-              <strong key="w" className="text-green-600 dark:text-green-400">13.74년 (닷컴!)</strong>,
+              <strong key="w" className="text-green-600 dark:text-green-400">13.77년 (닷컴!)</strong>,
               '1998-06',
               <strong key="c" className="text-blue-500 dark:text-blue-400">7.76년</strong>,
               <DataLink key="te" lev="3x" beta="tech-era" />],
@@ -534,7 +535,7 @@ export default function SyntheticNdx1929Post() {
         />
 
         <Callout color="green">
-          <strong>최근 베타(β=1.138, β=1.244) 기준: 전체 worst는 닷컴버블 13.74년이고,
+          <strong>최근 베타(β=1.138, β=1.244) 기준: 전체 worst는 닷컴버블 13.77년이고,
           1929년 대공황 진입은 오히려 7.76년으로 훨씬 짧다.</strong>
         </Callout>
 
@@ -575,12 +576,12 @@ export default function SyntheticNdx1929Post() {
           1998년 6월 진입 시 2000년 3월까지 잠깐 급등했다가
           2002년까지 95%가 빠지고, 이후에도 2008년 금융위기가 겹친다.
           하락이 완만하게 진행되기 때문에 저가 매수 효과가 제한적으로 작동하고,
-          결국 13.74년이 걸린다.
+          결국 13.77년이 걸린다.
         </P>
         <P>
           차트에서도 확인할 수 있다. 파란 점(recent β) 기준으로 1929~1933년 진입 시점(붉은 영역)은
           모두 8년 이하에 몰려 있다. 반면 1997~2001년 진입 시점(파란 영역)은 10~14년에 분포한다.
-          노란 점(실제 NDX)의 1998-06이 전체 최고점 13.74년이다.
+          노란 점(실제 NDX)의 1998-06이 전체 최고점 13.77년이다.
         </P>
 
         {/* ── 7. 결론 ── */}
@@ -589,11 +590,11 @@ export default function SyntheticNdx1929Post() {
           {[
             {
               color: 'text-green-500 dark:text-green-400',
-              text: '최근 베타(β=1.14~1.24) 기준, NDX 3x A전략의 전체 worst는 닷컴버블(1998-06, 13.74년)이다. 1929년 대공황은 3배 레버리지에서 7~8년 수준으로 단축된다.',
+              text: '최근 베타(β=1.14~1.24) 기준, NDX 3x A전략의 전체 worst는 닷컴버블(1998-06, 13.77년)이다. 1929년 대공황은 3배 레버리지에서 7~8년 수준으로 단축된다.',
             },
             {
               color: 'text-blue-500 dark:text-blue-400',
-              text: '닷컴버블 worst 13.74년 → BUFFER_REF=14 설정 근거. 합성 데이터로 확인한 1929 시나리오(14.3~14.4년, 1x 기준)도 여유 있게 대응 가능하다.',
+              text: '닷컴버블 worst 13.77년 → BUFFER_REF=14 설정 근거. 합성 데이터로 확인한 1929 시나리오(14.3~14.4년, 1x 기준)도 여유 있게 대응 가능하다.',
             },
             {
               color: 'text-yellow-500 dark:text-yellow-400',
@@ -613,8 +614,9 @@ export default function SyntheticNdx1929Post() {
 
         <Callout color="blue">
           <strong>요약:</strong> SP500 + 베타 회귀로 가상 pre-1971 NDX를 합성해 1929년을 스트레스 테스트한 결과,
-          최근 베타 기준으로는 닷컴버블(13.74년)이 더 힘든 시나리오였다.
+          최근 베타 기준으로는 닷컴버블(13.77년)이 더 힘든 시나리오였다.
           <strong> BUFFER_REF=14는 이 모든 시나리오를 커버한다.</strong>
+          {' '}(현재 인출식 계산은 C전략 5년 분할 기준 9를 쓴다.)
         </Callout>
 
         {/* 캐비엇 */}

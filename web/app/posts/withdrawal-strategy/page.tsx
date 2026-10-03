@@ -84,10 +84,18 @@ export default function WithdrawalStrategyPost() {
             인출 전략 설계기: 버블 케이스 재진입 방법 비교 (A vs B)
           </h1>
           <div className="flex items-center gap-3 flex-wrap">
-            <span className="text-sm text-gray-400">2026-10-01</span>
+            <span className="text-sm text-gray-400">2026-10-01 · 최종수정 2026-10-03</span>
             {['인출', '백테스트', 'TQQQ', '닷컴버블'].map(t => <Tag key={t}>{t}</Tag>)}
           </div>
         </div>
+
+        <Callout color="yellow">
+          <strong>2026-10-03 재계산: 적립 구간을 지금의 C전략(거치금 5년 분할)으로 바꿨다.</strong>{' '}
+          이 글은 처음에 거치금 2.5억을 첫날 한 번에 넣는 방식으로 계산했다. 5년에 나눠 넣는 방식으로 다시 계산하면
+          1.5년 안에 10억에 닿는 &lsquo;버블 케이스&rsquo;가 <strong>112건 → 2건</strong>(1998년 9·10월 시작)으로 거의 사라지고,
+          Method A와 B의 결과 차이도 거의 없어진다. 아래 결과 표는 새 계산(운용보수·스왑금리 반영)이고,
+          1996~1999년 예시 표는 처음 설계 당시(즉시 거치) 기록으로 남겨둔다. 이 방법론은 이후 T25 전략으로 대체됐다.
+        </Callout>
 
         {/* 본문 */}
         <P>
@@ -108,9 +116,10 @@ export default function WithdrawalStrategyPost() {
           buffer_amount = buffer_years × 일적립액 × 252
         </div>
         <P>
-          NDX 3x C전략 기준 실측 최장 소요기간은 <strong className="text-gray-900 dark:text-white">12.24년</strong>
-          (1999~2001 닷컴버블 진입 시점)입니다. (이 글을 쓸 당시 기준. 현재 C전략은 거치금 5년 분할이며, 운용보수·스왑금리 반영 시 최장 8.99년)
-          그래서 기준값(BUFFER_REF_YEARS)을 13으로 설정했습니다.
+          처음 설계 당시(거치금 즉시 투입) NDX 3x 실측 최장 소요기간은 <strong className="text-gray-900 dark:text-white">12.24년</strong>
+          (1999~2001 닷컴버블 진입 시점)이라 기준값(BUFFER_REF_YEARS)을 13으로 설정했습니다.
+          지금의 C전략(거치금 5년 분할)은 운용보수·스왑금리 반영 시 최장 <strong className="text-gray-900 dark:text-white">8.99년</strong>이라,
+          재계산에서는 같은 정의로 기준값을 <strong className="text-gray-900 dark:text-white">9</strong>로 두었습니다.
         </P>
         <P>
           그런데 소요기간이 1.5년 미만인 "버블 케이스"는 다르게 처리합니다.
@@ -118,7 +127,7 @@ export default function WithdrawalStrategyPost() {
           1.5년 안에 10억을 달성했다는 건 시장이 비정상적으로 빠르게 올랐다는 신호이기 때문입니다.
         </P>
 
-        <H2>문제 발견: 1996년 10월 진입</H2>
+        <H2>문제 발견: 1996년 10월 진입 (처음 설계 당시)</H2>
         <P>
           전체 경우를 돌려보니, 최솟값이 가장 낮은 케이스가 예상 밖의 시점에서 나왔습니다.
         </P>
@@ -175,7 +184,7 @@ export default function WithdrawalStrategyPost() {
         <H2>백테스트 결과</H2>
 
         <Callout color="green">
-          두 방법 모두 643가지 경우 100% 생존 달성
+          두 방법 모두 626가지 경우(운용보수·스왑금리 반영) 100% 생존 — 운용보수만 반영해도 628가지 모두 생존
         </Callout>
 
         <div className="flex items-center justify-between mb-2">
@@ -183,27 +192,29 @@ export default function WithdrawalStrategyPost() {
           <DataLink href="/posts/withdrawal-strategy/data" />
         </div>
         <Table
-          headers={['지표', 'Method A (2년 대기+DCA)', 'Method B (즉시 DCA)']}
+          headers={['지표 (재계산 · 운용보수+스왑금리)', 'Method A (2년 대기+DCA)', 'Method B (즉시 DCA)']}
           rows={[
-            ['생존율', '643/643가지 경우 = 100%', '643/643가지 경우 = 100%'],
-            ['평균 최종값', '186억', '183억'],
-            ['평균 인출 총액', '635.7억', '639.4억'],
-            ['버블케이스 평균 최종값', '149억', '131억'],
+            ['생존율', '626/626가지 경우 = 100%', '626/626가지 경우 = 100%'],
+            ['평균 최종값', '93.5억 (운용보수만 188억)', '93.6억 (운용보수만 188억)'],
+            ['평균 인출 총액', '89.2억 (운용보수만 534억)', '89.2억 (운용보수만 534억)'],
+            ['버블 케이스', '2가지 · 평균 최종 135억', '2가지 · 평균 최종 137억'],
           ]}
         />
 
         <P>
-          전체 수치는 비슷하지만, 케이스를 세부적으로 보면 차이가 있습니다.
+          5년 분할로 바꾼 뒤에는 버블 케이스가 2가지뿐이라 두 방법의 차이가 거의 없습니다.
+          아래는 처음 설계 당시(거치금 즉시 투입, 버블 케이스 112가지) 세부 기록입니다.
+          데이터 페이지에는 재계산 결과만 있어 이 예시들은 나오지 않습니다.
         </P>
 
-        <H3>1996–1997년 진입 (닷컴버블 직전)</H3>
+        <H3>1996–1997년 진입 (닷컴버블 직전 · 처음 설계 당시)</H3>
         <Table
-          headers={['시작', '소요기간', 'Method A 최종', 'Method B 최종', '']}
+          headers={['시작', '소요기간', 'Method A 최종', 'Method B 최종']}
           rows={[
-            ['1996-01', '1.39년', '245억', '99억', <DataLink key="a" href="/posts/withdrawal-strategy/data?method=A&bubble=1" />],
-            ['1996-07', '1.09년', '244억', '99억', <DataLink key="b" href="/posts/withdrawal-strategy/data?method=A&bubble=1" />],
-            ['1996-10', '1.50년', '245억', '97억', <DataLink key="c" href="/posts/withdrawal-strategy/data?method=A&bubble=1" />],
-            ['1997-05', '1.20년', '237억', '96억', <DataLink key="d" href="/posts/withdrawal-strategy/data?method=A&bubble=1" />],
+            ['1996-01', '1.39년', '245억', '99억'],
+            ['1996-07', '1.09년', '244억', '99억'],
+            ['1996-10', '1.50년', '245억', '97억'],
+            ['1997-05', '1.20년', '237억', '96억'],
           ]}
         />
         <P>
@@ -219,13 +230,13 @@ export default function WithdrawalStrategyPost() {
           정작 중요한 바닥 구간에서 쓸 수 있는 예산이 줄어듭니다.
         </P>
 
-        <H3>1998–1999년 진입 (닷컴버블 중반)</H3>
+        <H3>1998–1999년 진입 (닷컴버블 중반 · 처음 설계 당시)</H3>
         <Table
-          headers={['시작', '소요기간', 'Method A 최종', 'Method B 최종', '']}
+          headers={['시작', '소요기간', 'Method A 최종', 'Method B 최종']}
           rows={[
-            ['1998-09', '0.36년', '244.7억', '245.6억', <DataLink key="a" href="/posts/withdrawal-strategy/data?method=B&bubble=1" />],
-            ['1999-03', '0.79년', '245.3억', '246.9억', <DataLink key="b" href="/posts/withdrawal-strategy/data?method=B&bubble=1" />],
-            ['1999-08', '0.41년', '241.0억', '243.1억', <DataLink key="c" href="/posts/withdrawal-strategy/data?method=B&bubble=1" />],
+            ['1998-09', '0.36년', '244.7억', '245.6억'],
+            ['1999-03', '0.79년', '245.3억', '246.9억'],
+            ['1999-08', '0.41년', '241.0억', '243.1억'],
           ]}
         />
         <P>
@@ -236,9 +247,10 @@ export default function WithdrawalStrategyPost() {
 
         <H2>결론과 현재 설계 방향</H2>
         <Callout color="blue">
-          <strong>전체 112개 버블 케이스 중 Method B가 80개, A가 32개에서 우세.</strong><br />
-          하지만 <strong>최악의 시나리오(닷컴 직전 진입)에서는 A가 압도적</strong>으로 안전합니다.
-          두 방법을 모두 구현해두고 계속 연구 중입니다.
+          <strong>처음 설계 당시: 전체 112개 버블 케이스 중 Method B가 80개, A가 32개에서 우세.</strong><br />
+          최악의 시나리오(닷컴 직전 진입)에서는 A가 압도적으로 안전했습니다.<br />
+          <strong>재계산 후:</strong> 거치금을 5년에 나눠 넣으면 버블 케이스 자체가 2가지로 줄어 이 규칙의 영향은 거의 없습니다.
+          인출 방법론은 이후 <Link href="/posts/withdrawal-guide" className="underline">T25 전략</Link>으로 바뀌었습니다.
         </Callout>
 
         <P>

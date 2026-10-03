@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import LegacyResearchNote from '@/components/LegacyResearchNote'
 import Header from '@/components/Header'
 
 function Tag({ children }: { children: string }) {
@@ -64,6 +65,8 @@ export default function WithdrawalSignalTestPage() {
         <div className="flex flex-wrap gap-1.5 mb-10">
           {['인출식', 'EMA200', '인출지연', 'FIRE', 'TQQQ', '백테스트'].map(t => <Tag key={t}>{t}</Tag>)}
         </div>
+
+        <LegacyResearchNote />
 
         {/* 요약 */}
         <Callout color="blue">

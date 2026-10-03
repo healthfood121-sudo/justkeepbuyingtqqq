@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import LegacyResearchNote from '@/components/LegacyResearchNote'
 import Header from '@/components/Header'
 
 function Tag({ children }: { children: string }) {
@@ -116,6 +117,8 @@ export default function WithdrawalNewIdeasPage() {
             {['RSI', '인출식', 'EMA200', 'Guyton-Klinger', 'DCA', '백테스트'].map(t => <Tag key={t}>{t}</Tag>)}
           </div>
         </div>
+
+        <LegacyResearchNote />
 
         <Callout color="green">
           <strong>핵심 발견: RSI 조기 재진입이 압도적으로 우세</strong><br />

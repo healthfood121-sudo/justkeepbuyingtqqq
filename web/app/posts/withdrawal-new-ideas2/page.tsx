@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import LegacyResearchNote from '@/components/LegacyResearchNote'
 import Header from '@/components/Header'
 
 function Tag({ children }: { children: string }) {
@@ -119,6 +120,8 @@ export default function WithdrawalNewIdeas2Page() {
             {['인출식', 'EMA200', '트레일링스탑', '백테스트'].map(t => <Tag key={t}>{t}</Tag>)}
           </div>
         </div>
+
+        <LegacyResearchNote />
 
         <Callout color="yellow">
           <strong>핵심 결론: 세 가지 모두 기존 최선보다 나쁘다</strong><br />

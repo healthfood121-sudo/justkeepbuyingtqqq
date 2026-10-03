@@ -86,10 +86,12 @@
 
 | 파일 | 크기 | 스크립트 | 내용 |
 |------|------|----------|------|
-| `withdrawal_cohorts.json` | 91 KB | `export_withdrawal_json.py` | 기본 인출 시뮬레이션 418코호트 (운용보수 포함) |
-| `withdrawal_cohorts_v2.json` | 90 KB | `export_withdrawal_json.py --v2` | 동일 + 스왑금리 2× 반영 |
+| `withdrawal_cohorts.json` | 91 KB | `export_withdrawal_json.py` | 기본 인출 시뮬레이션 628 진입 시점 (운용보수 포함) |
+| `withdrawal_cohorts_v2.json` | 90 KB | `export_withdrawal_json.py --v2` | 동일 + 스왑금리 2× 반영 (626 진입 시점) |
 
-**파라미터:** 버퍼 13개월 · 일 20만 · 거치 2.5억 · 목표 10억
+**설정값:** 적립 = C전략(일 20만 + 거치 2.5억을 60개월 월 분할) · 목표 10억 · 버퍼 기준 BUFFER_REF_YEARS=9 (C전략 비용 반영 최악 8.99년) · 인출 Method A/B 비교
+- 2026-10 재생성 (이전: 거치금 즉시 투입, BUFFER_REF 13 → 버블 케이스 112건). 재생성 후 버블 케이스(1.5년 미만 달성) 2건(1998-09, 1998-10)
+- v2 결과: 평균 최종자산 A 93.5억 / B 93.6억, 평균 누적 인출 89.2억, 버블 케이스 평균 최종자산 A 135억 / B 137억
 
 **사용처:** `/posts/withdrawal-strategy` (인출 전략 기초 포스트)
 
