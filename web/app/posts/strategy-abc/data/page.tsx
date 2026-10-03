@@ -27,10 +27,16 @@ const INSTRUMENTS = [
   { key: 'sp500',  label: 'VOO (SP500)' },
 ]
 
-const JSON_MAP: Record<string, string> = {
+const JSON_MAP_STANDARD: Record<string, string> = {
   ndx3x: '/data/cohorts_ndx3x_10b.json',
   ndx2x: '/data/cohorts_ndx2x_10b.json',
   ndx1x: '/data/cohorts_ndx1x_10b.json',
+  sp500:  '/data/cohorts_sp500_10b.json',
+}
+const JSON_MAP_COSTS: Record<string, string> = {
+  ndx3x: '/data/cohorts_ndx3x_10b_v2.json',
+  ndx2x: '/data/cohorts_ndx2x_10b_v2.json',
+  ndx1x: '/data/cohorts_ndx1x_10b_v2.json',
   sp500:  '/data/cohorts_sp500_10b.json',
 }
 
@@ -199,16 +205,19 @@ function DataPageInner() {
   const router = useRouter()
   const inst = params.get('inst') ?? 'ndx3x'
 
-  const [data, setData] = useState<JsonFile | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [data,      setData]      = useState<JsonFile | null>(null)
+  const [loading,   setLoading]   = useState(true)
+  const [withCosts, setWithCosts] = useState(false)
+
+  const jsonMap = withCosts ? JSON_MAP_COSTS : JSON_MAP_STANDARD
 
   useEffect(() => {
     setLoading(true)
     setData(null)
-    fetch(JSON_MAP[inst] ?? JSON_MAP['ndx3x'])
+    fetch(jsonMap[inst] ?? jsonMap['ndx3x'])
       .then(r => r.json())
       .then(d => { setData(d); setLoading(false) })
-  }, [inst])
+  }, [inst, withCosts])  // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-white">
@@ -225,21 +234,49 @@ function DataPageInner() {
           </p>
         </div>
 
-        {/* 종목 탭 */}
-        <div className="flex gap-1 mb-6 bg-gray-100 dark:bg-gray-800 rounded-lg p-1 w-fit">
-          {INSTRUMENTS.map(({ key, label }) => (
+        {/* 종목 탭 + 비용 모드 */}
+        <div className="flex flex-wrap items-center gap-3 mb-6">
+          <div className="flex gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+            {INSTRUMENTS.map(({ key, label }) => (
+              <button
+                key={key}
+                onClick={() => router.push(`?inst=${key}`)}
+                className={`px-4 py-1.5 rounded-md text-sm transition-colors ${
+                  inst === key
+                    ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 text-xs font-medium">
             <button
-              key={key}
-              onClick={() => router.push(`?inst=${key}`)}
-              className={`px-4 py-1.5 rounded-md text-sm transition-colors ${
-                inst === key
-                  ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
-                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+              onClick={() => setWithCosts(false)}
+              className={`px-3 py-1.5 transition-colors ${
+                !withCosts
+                  ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
+                  : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
               }`}
             >
-              {label}
+              운용보수만
             </button>
-          ))}
+            <button
+              onClick={() => setWithCosts(true)}
+              className={`px-3 py-1.5 border-l border-gray-200 dark:border-gray-700 transition-colors ${
+                withCosts
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
+              }`}
+            >
+              + 스왑금리
+            </button>
+          </div>
+          {withCosts && inst === 'sp500' && (
+            <span className="text-xs text-yellow-600 dark:text-yellow-400">SP500은 레버리지 없음 — standard와 동일</span>
+          )}
         </div>
 
         {loading && <div className="flex items-center justify-center h-40 text-gray-400">로딩 중…</div>}

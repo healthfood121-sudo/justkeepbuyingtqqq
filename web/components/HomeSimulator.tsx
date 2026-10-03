@@ -172,7 +172,6 @@ export default function HomeSimulator() {
               ? '운용보수(0.88%) + 스왑금리비용(2×연방기금금리) 반영'
               : '운용보수(0.88%/년)만 반영, 스왑금리비용 미반영'}
           </p>
-          </div>
           {withCosts && instrument === 'sp500' && (
             <p className="text-xs text-yellow-600 dark:text-yellow-400 mt-2">
               SP500은 레버리지가 없으므로 스왑비용 없음 — standard와 동일
