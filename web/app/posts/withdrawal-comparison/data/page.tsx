@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useMemo, Suspense } from 'react'
+import CostToggle from '@/components/CostToggle'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Header from '@/components/Header'
@@ -195,11 +196,12 @@ function DataPageInner() {
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'all' | 'bad_a' | 'bad_b' | 'bankrupt'>('all')
 
+  const [withCosts, setWithCosts] = useState(true)
   useEffect(() => {
-    fetch('/data/withdrawal_comparison.json')
+    fetch(`/data/withdrawal_comparison${withCosts ? '_v2' : ''}.json`)
       .then(r => r.json())
       .then(d => { setData(d); setLoading(false) })
-  }, [])
+  }, [withCosts])
 
   const filtered = useMemo(() => {
     if (!data) return []
@@ -241,6 +243,7 @@ function DataPageInner() {
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
             인출 전략 비교 — 전체 코호트 데이터
           </h1>
+          <CostToggle withCosts={withCosts} onChange={setWithCosts} />
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             초기 10억, 월 1% 인출, 20년 시뮬레이션 · A안=SP500기반 / B안=MA200기반
           </p>

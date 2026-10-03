@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState, Suspense } from 'react'
+import CostToggle from '@/components/CostToggle'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Header from '@/components/Header'
@@ -277,12 +278,13 @@ function CohortPageInner() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
+  const [withCosts, setWithCosts] = useState(true)
   useEffect(() => {
     if (!start) { setError('start 파라미터가 없습니다.'); setLoading(false); return }
 
     Promise.all([
-      fetch('/data/withdrawal_monthly.json').then(r => r.json()),
-      fetch('/data/withdrawal_comparison.json').then(r => r.json()),
+      fetch(`/data/withdrawal_monthly${withCosts ? '_v2' : ''}.json`).then(r => r.json()),
+      fetch(`/data/withdrawal_comparison${withCosts ? '_v2' : ''}.json`).then(r => r.json()),
     ]).then(([monthly_all, comp]) => {
       const m = monthly_all[start]
       if (!m) { setError(`${start} 코호트 데이터 없음`); setLoading(false); return }
@@ -295,7 +297,7 @@ function CohortPageInner() {
       setError('withdrawal_monthly.json 파일이 없습니다. Python 스크립트를 재실행해주세요.')
       setLoading(false)
     })
-  }, [start])
+  }, [start, withCosts])
 
   if (loading) {
     return (
@@ -344,6 +346,7 @@ function CohortPageInner() {
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
             코호트 상세 — {start} 시작
           </h1>
+          <CostToggle withCosts={withCosts} onChange={setWithCosts} />
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             초기 10억 · 20년 시뮬레이션 ({start} ~ {endDate})
           </p>
