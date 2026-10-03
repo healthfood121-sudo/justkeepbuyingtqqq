@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useMemo, Suspense } from 'react'
+import CostToggle from '@/components/CostToggle'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Header from '@/components/Header'
@@ -204,11 +205,12 @@ function DataPageInner() {
   const [asc, setAsc]         = useState(true)
   const [selected, setSelected] = useState<Set<string>>(new Set(ALL_STRATEGIES))
 
+  const [withCosts, setWithCosts] = useState(true)
   useEffect(() => {
-    fetch('/data/withdrawal_new_ideas.json')
+    fetch(`/data/withdrawal_new_ideas${withCosts ? '_v2' : ''}.json`)
       .then(r => r.json())
       .then((d: NewIdeasData) => { setData(d); setLoading(false) })
-  }, [])
+  }, [withCosts])
 
   const activeStrategies = useMemo(
     () => data?.meta.strategies.filter(s => selected.has(s.name)) ?? [],
@@ -270,6 +272,7 @@ function DataPageInner() {
             ← 분석 글로
           </Link>
           <h1 className="text-2xl font-bold mb-1">인출 아이디어 8가지 — 전체 시뮬레이션 결과</h1>
+          <CostToggle withCosts={withCosts} onChange={setWithCosts} />
           <p className="text-sm text-gray-500 dark:text-gray-400">
             초기 10억 · 나스닥100 3배 · 20년 시뮬레이션 · {data.meta.n_cohorts}가지 시작 시점
           </p>

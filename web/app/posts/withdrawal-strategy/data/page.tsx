@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useMemo, Suspense } from 'react'
+import CostToggle from '@/components/CostToggle'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Header from '@/components/Header'
@@ -153,11 +154,12 @@ function WithdrawalDataContent() {
   const [method,   setMethod]   = useState<'A' | 'B'>(initMethod)
   const [bubbleOnly, setBubbleOnly] = useState(initBubble)
 
+  const [withCosts, setWithCosts] = useState(true)
   useEffect(() => {
-    fetch('/data/withdrawal_cohorts.json')
+    fetch(`/data/withdrawal_cohorts${withCosts ? '_v2' : ''}.json`)
       .then(r => r.json())
       .then(d => { setData(d); setLoading(false) })
-  }, [])
+  }, [withCosts])
 
   const cohorts = useMemo(() => {
     if (!data) return []
@@ -181,6 +183,7 @@ function WithdrawalDataContent() {
             ← 분석 글로 돌아가기
           </Link>
           <h1 className="text-2xl font-black mb-2">백테스트 데이터 — 인출 전략 Method A vs B</h1>
+          <CostToggle withCosts={withCosts} onChange={setWithCosts} />
           <p className="text-sm text-gray-500 dark:text-gray-400">
             NDX 3x C전략 · 거치 2.5억 + 일 적립 20만원 · 목표 10억 달성 후 40년 인출 시뮬레이션
           </p>

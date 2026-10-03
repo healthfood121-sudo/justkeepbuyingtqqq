@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useMemo, Suspense } from 'react'
+import CostToggle from '@/components/CostToggle'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Header from '@/components/Header'
@@ -58,11 +59,12 @@ function DataViewerContent() {
   const [sortKey, setSortKey] = useState<'start' | 'final' | 'cagr'>('start')
   const [sortAsc, setSortAsc] = useState(true)
 
+  const [withCosts, setWithCosts] = useState(true)
   useEffect(() => {
-    fetch('/data/withdrawal_signal_test.json')
+    fetch(`/data/withdrawal_signal_test${withCosts ? '_v2' : ''}.json`)
       .then(r => r.json())
       .then(setData)
-  }, [])
+  }, [withCosts])
 
   const summary = useMemo(() => data?.summary.find(s => s.name === selected), [data, selected])
 
@@ -113,6 +115,7 @@ function DataViewerContent() {
           </Link>
         </div>
         <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-1">데이터 뷰어: 신호 변형 테스트</h1>
+        <CostToggle withCosts={withCosts} onChange={setWithCosts} />
         <p className="text-xs text-gray-400 dark:text-gray-500 mb-6">
           {data.meta.n_cohorts}개 진입 시점 · {data.meta.sim_years}년 시뮬레이션 · 생성: {data.meta.generated}
         </p>

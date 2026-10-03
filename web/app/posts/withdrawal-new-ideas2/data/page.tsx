@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useMemo, Suspense } from 'react'
+import CostToggle from '@/components/CostToggle'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Header from '@/components/Header'
@@ -185,11 +186,12 @@ function DataPageInner() {
   const allNames = ['S0', 'D10GK', 'T15', 'T20', 'T25', 'GRAD', 'DLEV']
   const [selected, setSelected] = useState<Set<string>>(new Set(allNames))
 
+  const [withCosts, setWithCosts] = useState(true)
   useEffect(() => {
-    fetch('/data/withdrawal_new_ideas2.json')
+    fetch(`/data/withdrawal_new_ideas2${withCosts ? '_v2' : ''}.json`)
       .then(r => r.json())
       .then((d: NewIdeas2Data) => { setData(d); setLoading(false) })
-  }, [])
+  }, [withCosts])
 
   const activeStrategies = useMemo(
     () => data?.meta.strategies.filter(s => selected.has(s.name)) ?? [],
@@ -251,6 +253,7 @@ function DataPageInner() {
             ← 분석 글로
           </Link>
           <h1 className="text-2xl font-bold">새 아이디어 2차 실험 — 전체 진입 시점별 데이터</h1>
+          <CostToggle withCosts={withCosts} onChange={setWithCosts} />
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             초기 10억 · NDX 3x · 최대 20년 시뮬레이션 · {data.meta.n_cohorts}가지 진입 시점
             · 기준선(S0) 중앙값 {fmt억(baselineRow?.med_final ?? 0)}억
