@@ -630,7 +630,7 @@ export default function SyntheticNdx1929Post() {
           </p>
           <p>
             TQQQ/QLD 가격은 NDX 일별 수익률 × 레버리지로 합성한 이론치다.
-            운용비용(TQQQ 0.88%/년)·추적오차는 미반영. 변동성 끌림은 일별 복리 계산에 자동 반영된다.
+            운용비용(TQQQ 0.88%/년)은 반영. 추적오차는 미반영. 변동성 끌림은 일별 복리 계산에 자동 반영된다.
           </p>
           <p>
             이 분석의 목적은 BUFFER_REF 설정에 쓸 worst-case 추정치를 구하는 것이다.

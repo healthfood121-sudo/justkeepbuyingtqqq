@@ -5,12 +5,18 @@ export_synthetic_chart_data.py
 출력 파일:
   web/public/data/synthetic_ndx_cohorts.json   -- 베타별 코호트 결과 (산점도)
   web/public/data/synthetic_ndx_prices.json    -- 베타별 월별 가격 히스토리 (1927~)
+
+가격 계산: 운용보수 반영 (TQQQ 0.88%/년, QQQ 0.20%/년)
 """
 
 import json
+import sys
 import numpy as np
 import pandas as pd
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent))
+from data_loader import load_ndx_prices, EXP_3X, EXP_1X
 
 DATA_DIR = "D:/justkeepbuyingtqqq/data/"
 OUT_DIR  = "D:/justkeepbuyingtqqq/web/public/data/"
@@ -28,24 +34,15 @@ BETAS = [
 
 # ── 데이터 로드 ──────────────────────────────────────────
 
-def load_ndx():
-    df = pd.read_csv(DATA_DIR + "ndx_1971_now.csv", parse_dates=["Date"])
-    df = df.sort_values("Date").reset_index(drop=True)
-    mask = df["Date"] == "1985-10-01"
-    if mask.any():
-        i = df.index[mask][0]
-        scale = df.loc[i - 1, "Close"] / df.loc[i, "Close"]
-        df.loc[i:, "Close"] *= scale
-    return df
-
 def load_sp500():
     df = pd.read_csv(DATA_DIR + "sp500_1927_now.csv", parse_dates=["Date"])
     return df.sort_values("Date").reset_index(drop=True)
 
 
-# ── Synthetic 생성 ────────────────────────────────────────
+# ── Synthetic 1x NDX (pre-1971 SP500 베타 회귀 + 실제 NDX 접합) ────────
 
-def make_synthetic(sp500_df, ndx_df, beta, alpha_daily):
+def make_synthetic_1x(sp500_df, ndx_df, beta, alpha_daily):
+    """SP500 베타 회귀로 pre-1971 NDX 합성 → 실제 NDX와 접합 (1x 원지수)"""
     ndx_start = ndx_df["Date"].iloc[0]
     sp_pre    = sp500_df[sp500_df["Date"] < ndx_start].copy()
 
@@ -62,17 +59,28 @@ def make_synthetic(sp500_df, ndx_df, beta, alpha_daily):
     return dates, prices
 
 
-# ── 레버리지 적용 ─────────────────────────────────────────
+# ── 레버리지 적용 (운용보수 포함) ──────────────────────────
 
-def apply_leverage(prices, lev):
-    ret = np.diff(prices) / prices[:-1]
-    ret = np.concatenate([[0], ret])
-    return 100.0 * np.cumprod(1.0 + ret * lev)
+def apply_3x(prices_1x: np.ndarray) -> np.ndarray:
+    """3x ETF 합성가격 — 운용보수(TQQQ 0.88%/년) 반영"""
+    ret = np.diff(prices_1x) / prices_1x[:-1]
+    ret = np.concatenate([[0.0], ret])
+    f = (1.0 + ret * 3.0) * (1.0 - EXP_3X / 252.0)
+    f[0] = 1.0
+    return 100.0 * np.cumprod(f)
+
+def apply_1x(prices_raw: np.ndarray) -> np.ndarray:
+    """1x ETF 합성가격 — 운용보수(QQQ 0.20%/년) 반영"""
+    ret = np.diff(prices_raw) / prices_raw[:-1]
+    ret = np.concatenate([[0.0], ret])
+    f = (1.0 + ret) * (1.0 - EXP_1X / 252.0)
+    f[0] = 1.0
+    return 100.0 * np.cumprod(f)
 
 
-# ── C전략 코호트 백테스트 ─────────────────────────────────
+# ── 코호트 백테스트 (일 20만원 A전략) ─────────────────────
 
-def backtest_c(dates, prices):
+def backtest_a(dates, prices):
     dates_pd = pd.Series(pd.to_datetime(dates))
     ym = dates_pd.dt.to_period("M")
     seen = {}
@@ -111,11 +119,10 @@ def backtest_c(dates, prices):
 # ── 월별 가격 다운샘플 ─────────────────────────────────────
 
 def monthly_prices(dates, prices):
-    """매월 마지막 거래일 가격 반환 (1927~2026)"""
+    """매월 마지막 거래일 가격 반환"""
     dates_pd = pd.Series(pd.to_datetime(dates))
     df = pd.DataFrame({"d": dates_pd, "p": prices})
     df["ym"] = df["d"].dt.to_period("M")
-    # 월별 마지막 행
     last = df.groupby("ym", sort=True).last().reset_index()
     return [
         {"d": str(r["ym"]), "p": round(float(r["p"]), 4)}
@@ -127,56 +134,54 @@ def monthly_prices(dates, prices):
 
 def main():
     print("로드 중...")
-    ndx_df   = load_ndx()
+    d = load_ndx_prices('standard')   # 운용보수 반영 가격
+    ndx_df   = pd.DataFrame({"Date": d["dates"], "Close": d["closes"]})
     sp500_df = load_sp500()
 
-    cohort_out = {}   # {beta_key: {"1x": [...], "3x": [...]}}
-    price_out  = {}   # {beta_key: [monthly 3x]}
-
-    # 실제 NDX 코호트 (비교 기준선)
-    ndx_ret  = ndx_df["Close"].pct_change().fillna(0).values
-    ndx1x_px = 100.0 * np.cumprod(1.0 + ndx_ret * 1)
-    ndx3x_px = 100.0 * np.cumprod(1.0 + ndx_ret * 3)
+    # 실제 NDX 코호트 (비교 기준선) — data_loader standard 가격 직접 사용
     real_cohorts = {
-        "1x": backtest_c(ndx_df["Date"].values, ndx1x_px),
-        "3x": backtest_c(ndx_df["Date"].values, ndx3x_px),
+        "1x": backtest_a(d["dates"].values, d["ndx1x"]),
+        "3x": backtest_a(d["dates"].values, d["ndx3x"]),
     }
+
+    cohort_out = {}
+    price_out  = {}
 
     for key, beta, alpha in BETAS:
         print(f"  {key} β={beta}...")
-        dates, px1x = make_synthetic(sp500_df, ndx_df, beta, alpha)
-        px3x = apply_leverage(px1x, 3.0)
+        dates, px_raw = make_synthetic_1x(sp500_df, ndx_df, beta, alpha)
+
+        px1x = apply_1x(px_raw)
+        px3x = apply_3x(px_raw)
 
         cohort_out[key] = {
-            "1x": backtest_c(dates, px1x),
-            "3x": backtest_c(dates, px3x),
+            "1x": backtest_a(dates, px1x),
+            "3x": backtest_a(dates, px3x),
         }
         price_out[key] = monthly_prices(dates, px3x)
 
     # ── 저장 ──────────────────────────────────────────────
     Path(OUT_DIR).mkdir(parents=True, exist_ok=True)
 
-    # 코호트 JSON
     cohorts_path = OUT_DIR + "synthetic_ndx_cohorts.json"
     with open(cohorts_path, "w", encoding="utf-8") as f:
         json.dump({
-            "note":   "C전략 — 베타별·레버리지별 코호트 소요기간 (일 20만원, 목표 10억)",
-            "betas":  {k: b for k, b, _ in [(k, b, a) for k, b, a in BETAS]},
-            "real":   real_cohorts,
-            "synth":  cohort_out,
+            "note":  "A전략 — 베타별·레버리지별 코호트 소요기간 (일 20만원, 목표 10억, 운용보수 반영)",
+            "betas": {k: b for k, b, _ in BETAS},
+            "real":  real_cohorts,
+            "synth": cohort_out,
         }, f, ensure_ascii=False, separators=(",", ":"))
     size = Path(cohorts_path).stat().st_size / 1024
-    print(f"  → {cohorts_path}  ({size:.1f} KB)")
+    print(f"  → synthetic_ndx_cohorts.json  ({size:.1f} KB)")
 
-    # 가격 히스토리 JSON
     prices_path = OUT_DIR + "synthetic_ndx_prices.json"
     with open(prices_path, "w", encoding="utf-8") as f:
         json.dump({
-            "note":  "NDX 3x 합성가격 월별 (1927~2026, 1927-12=100)",
+            "note":  "NDX 3x 합성가격 월별 (1927~, 1927-12=100, 운용보수 반영)",
             "synth": price_out,
         }, f, ensure_ascii=False, separators=(",", ":"))
     size = Path(prices_path).stat().st_size / 1024
-    print(f"  → {prices_path}  ({size:.1f} KB)")
+    print(f"  → synthetic_ndx_prices.json  ({size:.1f} KB)")
 
     print("완료.")
 
