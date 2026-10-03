@@ -340,7 +340,8 @@ function TradelogInner() {
               <p className="mt-1">
                 이격도 = (NDX − EMA200) ÷ EMA200 × 100. 매도 시 음수(-), 매수 시 양수(+).
               </p>
-              <p>포트폴리오 = 거래 직후 총 자산 (억 원). RP 이자 / TQQQ 스왑 비용 둘 다 미반영.</p>
+              <p>포트폴리오 = 거래 직후 총 자산 (억 원). RP 이자 미반영.
+                {withCosts ? ' TQQQ 스왑금리비용 반영.' : ' TQQQ 스왑금리비용 미반영 (위 버튼으로 전환 가능).'}</p>
             </div>
 
           </div>
