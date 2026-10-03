@@ -125,15 +125,17 @@ function LumpSumDataContent() {
   const [methodKey, setMethodKey] = useState(initMethod)
   const [fileData,  setFileData]  = useState<JsonFile | null>(null)
   const [loading,   setLoading]   = useState(false)
+  const [withCosts, setWithCosts] = useState(false)
 
-  // 종목 변경 시 JSON 로드
+  // 종목/비용모드 변경 시 JSON 로드
   useEffect(() => {
     setLoading(true)
     setFileData(null)
-    fetch(`/data/split_entry_${instKey}.json`)
+    const suffix = withCosts ? '_v2' : ''
+    fetch(`/data/split_entry_${instKey}${suffix}.json`)
       .then(r => r.json())
       .then(d => { setFileData(d); setLoading(false) })
-  }, [instKey])
+  }, [instKey, withCosts])
 
   // 유효한 methodKey 보장
   useEffect(() => {
@@ -172,21 +174,46 @@ function LumpSumDataContent() {
           </p>
         </div>
 
-        {/* 종목 탭 */}
-        <div className="flex gap-1 mb-6 bg-gray-100 dark:bg-gray-800 rounded-xl p-1 w-fit">
-          {INSTRUMENTS.map(inst => (
+        {/* 종목 탭 + 비용 모드 */}
+        <div className="flex flex-wrap items-center gap-3 mb-6">
+          <div className="flex gap-1 bg-gray-100 dark:bg-gray-800 rounded-xl p-1">
+            {INSTRUMENTS.map(inst => (
+              <button
+                key={inst.key}
+                onClick={() => setInstKey(inst.key)}
+                className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                  instKey === inst.key
+                    ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'
+                }`}
+              >
+                {inst.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 text-xs font-medium">
             <button
-              key={inst.key}
-              onClick={() => setInstKey(inst.key)}
-              className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                instKey === inst.key
-                  ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
-                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'
+              onClick={() => setWithCosts(false)}
+              className={`px-3 py-1.5 transition-colors ${
+                !withCosts
+                  ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
+                  : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
               }`}
             >
-              {inst.label}
+              운용보수만
             </button>
-          ))}
+            <button
+              onClick={() => setWithCosts(true)}
+              className={`px-3 py-1.5 border-l border-gray-200 dark:border-gray-700 transition-colors ${
+                withCosts
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
+              }`}
+            >
+              + 스왑금리
+            </button>
+          </div>
         </div>
 
         {/* 방식 선택 */}
