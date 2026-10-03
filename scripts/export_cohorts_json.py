@@ -21,8 +21,9 @@ import json
 import openpyxl
 from pathlib import Path
 
-RESULTS_DIR = Path("D:/justkeepbuyingtqqq/results")
-OUT_DIR     = Path("D:/justkeepbuyingtqqq/web/public/data")
+ROOT        = Path(__file__).resolve().parent.parent
+RESULTS_DIR = ROOT / "results"
+OUT_DIR     = ROOT / "web/public/data"
 
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -74,7 +75,7 @@ def xlsx_to_json(xlsx_path: Path, json_path: Path):
             "yB": round(raw["years_B"], 4) if raw.get("years_B") is not None else None,
             "eB": end_date_str(sd, raw.get("years_B")),
             "iB": int(raw["invested_B"]) if raw.get("invested_B") is not None else None,
-            # C전략 (3년 월 분할 거치)
+            # C전략 (5년 월 분할 거치)
             "sC": raw.get("status_C"),
             "yC": round(raw["years_C"], 4) if raw.get("years_C") is not None else None,
             "eC": end_date_str(sd, raw.get("years_C")),

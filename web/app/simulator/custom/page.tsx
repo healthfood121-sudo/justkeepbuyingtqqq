@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useTransition, Suspense } from 'react'
 import type { CohortResult, Instrument } from '@/lib/types'
 import type { PriceData } from '@/lib/dataLoader'
-import { runBacktest, summarize } from '@/lib/backtest'
+import { runBacktest, summarize, C_SPLIT_MONTHS } from '@/lib/backtest'
 import ScatterPlot from '@/components/charts/ScatterPlot'
 import DistributionChart from '@/components/charts/DistributionChart'
 import CdfChart from '@/components/charts/CdfChart'
@@ -256,11 +256,11 @@ function CustomSimulatorInner() {
             />
             <NumInput
               label="C전략 거치금"
-              sublabel="36개월에 걸쳐 균등 분할 투입할 목돈"
+              sublabel="60개월(5년)에 걸쳐 균등 분할 투입할 목돈"
               value={lumpSum}
               onChange={setLumpSum}
               min={0} step={10_000_000}
-              hint={`${(lumpSum / 1e8).toFixed(2)}억원 (월 ${(lumpSum / 36 / 1e4).toFixed(0)}만)`}
+              hint={`${(lumpSum / 1e8).toFixed(2)}억원 (월 ${(lumpSum / C_SPLIT_MONTHS / 1e4).toFixed(0)}만)`}
             />
             <NumInput
               label="목표 금액"
@@ -319,8 +319,8 @@ function CustomSimulatorInner() {
               },
               {
                 s: 'C', color: 'text-blue-500 dark:text-blue-400',
-                title: 'C전략 — 3년 분할 거치',
-                desc: `${(lumpSum/1e8).toFixed(2)}억을 36개월 균등 분할 + 매일 ${(dailyInvest/10000).toFixed(0)}만원 계속.`,
+                title: 'C전략 — 5년 분할 거치',
+                desc: `${(lumpSum/1e8).toFixed(2)}억을 60개월 균등 분할 + 매일 ${(dailyInvest/10000).toFixed(0)}만원 계속.`,
               },
             ].map(({ s, color, title, desc }) => (
               <div key={s} className="border-l-2 border-gray-200 dark:border-gray-700 pl-3">

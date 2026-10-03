@@ -32,7 +32,7 @@ const INST_LABELS: Record<string, string> = {
 }
 
 const S_COLORS = { A: '#10b981', B: '#f59e0b', C: '#3b82f6' }
-const S_LABEL  = { A: 'A전략 (계속 적립)', B: 'B전략 (매입한도)', C: 'C전략 (3년 분할)' }
+const S_LABEL  = { A: 'A전략 (계속 적립)', B: 'B전략 (매입한도)', C: 'C전략 (5년 분할)' }
 
 // ─── 유틸 ────────────────────────────────────────────────────
 

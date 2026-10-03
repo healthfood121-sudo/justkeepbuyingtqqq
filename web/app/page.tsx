@@ -69,10 +69,10 @@ export default function HomePage() {
               </div>
               <p className="text-xs text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">
                 매일 정해진 금액을 자동 적립. 시장이 오르든 내리든 멈추지 않는다.
-                목돈이 있으면 3년에 걸쳐 분할 거치 후 계속 적립.
+                목돈이 있으면 5년에 걸쳐 매달 나눠 넣으며 계속 적립.
               </p>
               <div className="text-xs text-gray-400 dark:text-gray-500 font-mono mb-4">
-                TQQQ 기준: 완료율 94.8% · 중간 3.23년 · 최악 8.82년
+                TQQQ 기준 (스왑금리 반영): 중간 4.28년 · 최악 8.99년
               </div>
               <Link
                 href="/posts/accumulation-guide"

@@ -20,6 +20,9 @@
 | `cohorts_ndx1x_10b_v2.json` | 132 KB | `export_cohorts_json.py --mode v2` | QQQ (1x — v1과 동일) | 668 |
 
 **공통 파라미터:** 일 20만원 · 거치/한도 2.5억 · 목표 10억 · 시작 1971-01 (SP500은 1928-01)
+**C전략 = 거치금 5년(60개월) 월 분할** (2026-10-03 3년 → 5년, `backtest.py C_SPLIT_MONTHS`, 웹 `lib/backtest.ts C_SPLIT_MONTHS`)
+- 재생성: `python scripts/backtest.py --mode both` → `python scripts/export_cohorts_json.py --mode both` (경로는 저장소 기준)
+- TQQQ C (스왑 반영 v2): 중간 4.28년 · 최악 8.99년 · A 6.33/13.90 · B 6.69/19.46 (운용보수만: C 3.84/8.69)
 
 **구조:** `{ meta, rows: [{ s, sA/yA/eA/iA, sB/yB/eB/iB, sC/yC/eC/iC }] }`
 - `s` = 시작일, `sX` = 완료여부(`completed`/`ongoing`), `yX` = 소요기간(년), `eX` = 달성일, `iX` = 누적투입금
@@ -73,7 +76,7 @@
 - 추가 비용 +0.25/+0.5%p에도 5~7년은 최악 9.0~9.2로 안정, 3·4년은 13년대
 - QLD(스왑 반영): 7년 분할도 10년+ 3개, 최악 12.7 — 분할로 해결 안 됨 · 나스닥100(1배): 분할할수록 오히려 나빠짐
 
-**사용처:** 적립식 권장 분할 기간 결정 대기 (기존 글들은 3년 분할 · 8.82년 기준)
+**사용처:** C전략을 5년 분할로 변경한 근거 — `/posts/lump-sum-vs-split`, `/posts/strategy-abc`, 적립식 방법론
 
 ---
 

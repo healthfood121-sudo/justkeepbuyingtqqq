@@ -109,7 +109,7 @@ export default function WithdrawalStrategyPost() {
         </div>
         <P>
           NDX 3x C전략 기준 실측 최장 소요기간은 <strong className="text-gray-900 dark:text-white">12.24년</strong>
-          (1999~2001 닷컴버블 진입 시점)입니다.
+          (1999~2001 닷컴버블 진입 시점)입니다. (이 글을 쓸 당시 기준. 현재 C전략은 거치금 5년 분할이며, 운용보수·스왑금리 반영 시 최장 8.99년)
           그래서 기준값(BUFFER_REF_YEARS)을 13으로 설정했습니다.
         </P>
         <P>

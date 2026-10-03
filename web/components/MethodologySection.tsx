@@ -75,7 +75,7 @@ function AccumSection() {
   const [daily,  setDaily]  = useState(200_000)
   const [target, setTarget] = useState(1_000_000_000)
 
-  const SPLIT_DAYS = 3 * 252
+  const SPLIT_DAYS = 5 * 252
   const dailyLump  = Math.round(lump / SPLIT_DAYS)
 
   return (
@@ -84,7 +84,7 @@ function AccumSection() {
       {lump > 0 && (
         <div className="pl-3 border-l-2 border-blue-300 dark:border-blue-800 my-1">
           <Derived
-            label="C전략: 3년 분할 거치"
+            label="C전략: 5년 분할 거치"
             value={`일 ${fmt(dailyLump)}`}
           />
           <Derived

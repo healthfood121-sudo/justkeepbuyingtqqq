@@ -1,6 +1,9 @@
 import type { BacktestParams, CohortResult, StrategyResults, BacktestSummary, DistributionBin, CdfPoint } from './types'
 import type { PriceData } from './dataLoader'
 
+// C전략 거치금 분할 기간 (개월). 2026-10 스왑금리 반영 재검증으로 36 → 60 (scripts/accumulation_split_recheck.py)
+export const C_SPLIT_MONTHS = 60
+
 // ===== 코호트 시작일 추출 (매월 첫 거래일) =====
 function getMonthlyStarts(dates: Date[]): number[] {
   const seen = new Set<string>()
@@ -35,10 +38,10 @@ function runCohort(
   let hitIdx = -1
   let hitValue = 0
 
-  // C전략: 3년(36개월) 월 분할 거치 — 매월 첫 거래일에 lumpSum/36 추가
+  // C전략: 5년(60개월) 월 분할 거치 — 매월 첫 거래일에 lumpSum/C_SPLIT_MONTHS 추가
   const seenMonths = new Set<string>()
   let splitCount = 0
-  const monthlyChunk = lumpSum / 36
+  const monthlyChunk = lumpSum / C_SPLIT_MONTHS
 
   for (let j = 0; j < n; j++) {
     const px = prices[startIdx + j]
@@ -49,10 +52,10 @@ function runCohort(
     } else if (strategy === 'B') {
       inv = j < nInvestDays ? dailyInvest : 0   // B전략: 한도 후 중단
     } else {
-      // C전략: 매일 20만원 + 매월 첫 거래일에 lumpSum/36 (36개월간)
+      // C전략: 매일 20만원 + 매월 첫 거래일에 lumpSum/C_SPLIT_MONTHS (60개월간)
       const d = dates[startIdx + j]
       const mk = `${d.getFullYear()}-${d.getMonth()}`
-      if (!seenMonths.has(mk) && splitCount < 36) {
+      if (!seenMonths.has(mk) && splitCount < C_SPLIT_MONTHS) {
         seenMonths.add(mk)
         splitCount++
         inv = dailyInvest + monthlyChunk
@@ -219,7 +222,7 @@ export function runCohortDetail(
 
   const seenMonths = new Set<string>()
   let splitCount = 0
-  const monthlyChunk = lumpSum / 36
+  const monthlyChunk = lumpSum / C_SPLIT_MONTHS
 
   const snapshots: CohortSnapshot[] = []
 
@@ -234,7 +237,7 @@ export function runCohortDetail(
       inv = j < nInvestDays ? dailyInvest : 0
     } else {
       const mk = `${d.getFullYear()}-${d.getMonth()}`
-      if (!seenMonths.has(mk) && splitCount < 36) {
+      if (!seenMonths.has(mk) && splitCount < C_SPLIT_MONTHS) {
         seenMonths.add(mk); splitCount++
         inv = dailyInvest + monthlyChunk
       } else {
