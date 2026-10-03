@@ -7,6 +7,7 @@ export interface RawRow {
 
 export interface PriceData {
   dates: Date[]
+  closes: Float64Array      // CSV 원본 종가 (화면 표시용, splice 보정 전)
   rawPrices: Float64Array   // 원본 (splice 보정된)
   lev1: Float64Array        // 운용보수만 반영
   lev2: Float64Array        // 운용보수만 반영
@@ -22,6 +23,7 @@ const EXP_2X = 0.0095
 const EXP_1X = 0.0020
 
 let ndxCache: PriceData | null = null
+let ndxPending: Promise<PriceData> | null = null  // 같은 페이지의 여러 컴포넌트가 동시에 요청해도 한 번만 로드
 let sp5Cache: PriceData | null = null
 let fedCache: Float64Array | null = null  // 날짜 인덱스별 daily fed rate (연율/100/252)
 
@@ -111,8 +113,18 @@ function makeSyntheticWithCosts(
   return synth
 }
 
-export async function loadNdx(): Promise<PriceData> {
-  if (ndxCache) return ndxCache
+export function loadNdx(): Promise<PriceData> {
+  if (ndxCache) return Promise.resolve(ndxCache)
+  if (!ndxPending) {
+    ndxPending = fetchNdx().catch(err => {
+      ndxPending = null
+      throw err
+    })
+  }
+  return ndxPending
+}
+
+async function fetchNdx(): Promise<PriceData> {
   const [{ dates, closes }, fedMap] = await Promise.all([
     loadCsv('/ndx.csv'),
     loadFedMap(),
@@ -121,6 +133,7 @@ export async function loadNdx(): Promise<PriceData> {
   const fedDaily = buildFedDaily(dates, fedMap)
   ndxCache = {
     dates,
+    closes,
     rawPrices: corrected,
     lev1:  makeSynthetic(corrected, 1, EXP_1X),
     lev2:  makeSynthetic(corrected, 2, EXP_2X),
@@ -139,6 +152,7 @@ export async function loadSp500(): Promise<PriceData> {
   const lev1 = makeSynthetic(closes, 1, EXP_1X)
   sp5Cache = {
     dates,
+    closes,
     rawPrices: closes,
     lev1,
     lev2: closes,

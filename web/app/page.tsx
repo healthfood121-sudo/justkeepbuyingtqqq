@@ -1,5 +1,6 @@
 import Header from '@/components/Header'
 import HomeSimulator from '@/components/HomeSimulator'
+import EmaSignalCard from '@/components/EmaSignalCard'
 import Link from 'next/link'
 
 const principles = [
@@ -89,13 +90,16 @@ export default function HomePage() {
               </div>
               <div className="mb-3">
                 <div className="flex justify-between items-baseline mb-1">
-                  <span className="text-xs font-bold text-blue-700 dark:text-blue-300">S0 — EMA200 15일</span>
+                  <span className="text-xs font-bold text-blue-700 dark:text-blue-300">S0 — 200일 지수이동평균 15일</span>
                   <span className="text-xs font-mono font-bold text-blue-600 dark:text-blue-400">중간값 1,109억</span>
                 </div>
                 <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-                  나스닥100이 EMA200 아래 15거래일 연속 → 전량 현금. 위 15일 연속 → 재매수.
+                  나스닥100이 200일 지수이동평균 아래 15거래일 연속 → 전량 현금. 위 15일 연속 → 재매수.
                   매수 후 1일 재매도 없음. 생존율 100%.
                 </p>
+              </div>
+              <div className="mb-3">
+                <EmaSignalCard compact />
               </div>
               <div className="text-xs text-gray-400 dark:text-gray-500 mb-4">
                 668가지 시작 시점 · 동적 인출 월 0.3~0.7%

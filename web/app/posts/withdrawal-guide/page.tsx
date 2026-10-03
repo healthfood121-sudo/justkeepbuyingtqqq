@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Header from '@/components/Header'
 import WithdrawalStats from '@/components/WithdrawalStats'
+import EmaSignalCard from '@/components/EmaSignalCard'
 
 function Tag({ children }: { children: string }) {
   return (
@@ -147,6 +148,10 @@ export default function WithdrawalGuidePage() {
             전체 거래 로그 — 668가지 시작 시점 날짜별 매수/매도 기록 →
           </Link>
         </Callout>
+
+        <div className="mb-6">
+          <EmaSignalCard />
+        </div>
 
         <P>
           EMA200 기반 전략에서 출발해 여러 아이디어를 테스트했다.
