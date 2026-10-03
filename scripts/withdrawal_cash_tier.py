@@ -1,7 +1,9 @@
 """
 withdrawal_cash_tier.py
 
-자산 규모별 현금 비중 (TQQQ + 현금) vs DLEV (TQQQ + 나스닥100) vs S0 — 스왑금리 반영 전용
+현실 기준 인출 전략 재검증 엔진 — 스왑금리 반영 + 모든 매도 과세
+  · 자산 규모별 현금 비중 (TQQQ + 현금) vs DLEV (TQQQ + 나스닥100) vs S0
+  · D10GK (RSI 조기 재진입 + Guyton-Klinger), T25 (52주 고점 -25%) 도 같은 엔진으로 재계산
 ──────────────────────────────────────────────────────────────────────────────
 신호: S0 그대로 (NDX EMA200 아래/위 15거래일 연속 → 전량 현금 / 재매수)
 투자 중에는 총자산(현금 포함)에 따라 TQQQ 목표 비중을 정하고 나머지는 현금(외화RP) 또는 나스닥100으로 보유.
@@ -12,6 +14,11 @@ withdrawal_cash_tier.py
   C100  : 같은 구조, 기준 100억 / 300억
   C50S  : 50억↑ → TQQQ ⅔ + 현금 ⅓ 한 단계만
   Q50   : DLEV와 같은 노출 — 50억↑ TQQQ ½ + 나스닥100 ½, 200억↑ 나스닥100 100%
+  D10GK : S0 + 현금 상태에서 RSI(14)<30 & EMA200 대비 -10% 이하면 즉시 재매수 + Guyton-Klinger 인출
+  T25   : 매도를 NDX 52주 고점 대비 -25%로 (재매수는 S0와 같음)
+  D10C50: D10GK + C50 현금 비중 규칙
+
+D10GK·T25 규칙은 withdrawal_new_ideas2.py와 동일하게 구현.
 
 현금 쪽 규칙:
   - 생활비는 현금에서 먼저 꺼내고, 모자라면 TQQQ(→나스닥100)를 판다
@@ -64,6 +71,10 @@ class Param:
     desc:  str
     tiers: tuple          # ((총자산 하한, TQQQ 비중), ...) 하한 오름차순
     side:  str = "cash"   # "cash" | "qqq"
+    rsi_thr:   float = 0.0     # >0: 현금 상태에서 RSI < rsi_thr & 이격 <= div_thr 이면 즉시 재매수
+    div_thr:   float = -0.10
+    use_gk:    bool  = False   # Guyton-Klinger 인출 배수
+    trail_thr: float = 0.0     # >0: NDX 52주 고점 대비 하락률로 매도
 
 
 STRATEGIES = [
@@ -73,7 +84,26 @@ STRATEGIES = [
     Param("C100", "100억↑ TQQQ⅔+현금⅓ · 300억↑ TQQQ⅓+현금⅔",         ((0, 1.0), (100 * EOK, 2 / 3), (300 * EOK, 1 / 3))),
     Param("C50S", "50억↑ TQQQ⅔+현금⅓ (한 단계만)",                    ((0, 1.0), (50 * EOK, 2 / 3))),
     Param("Q50",  "DLEV: 50억↑ TQQQ½+나스닥100½ · 200억↑ 나스닥100",   ((0, 1.0), (50 * EOK, 0.5), (200 * EOK, 0.0)), side="qqq"),
+    Param("D10GK", "RSI<30 & -10% 조기 재매수 + Guyton-Klinger",       ((0, 1.0),), rsi_thr=30, use_gk=True),
+    Param("T25",   "52주 고점 대비 -25% 매도",                          ((0, 1.0),), trail_thr=0.25),
+    Param("D10C50", "D10GK + 50억↑ TQQQ⅔+현금⅓ · 200억↑ TQQQ⅓+현금⅔",
+          ((0, 1.0), (50 * EOK, 2 / 3), (200 * EOK, 1 / 3)), rsi_thr=30, use_gk=True),
 ]
+
+
+def compute_rsi(closes, period=14):
+    n = len(closes)
+    rsi = np.full(n, np.nan)
+    d = np.diff(closes)
+    gains, losses = np.where(d > 0, d, 0.0), np.where(d < 0, -d, 0.0)
+    if n <= period + 1:
+        return rsi
+    ag, al = float(np.mean(gains[:period])), float(np.mean(losses[:period]))
+    for i in range(period, n - 1):
+        ag = (ag * (period - 1) + gains[i]) / period
+        al = (al * (period - 1) + losses[i]) / period
+        rsi[i + 1] = 100.0 if al == 0 else 100.0 - 100.0 / (1.0 + ag / al)
+    return rsi
 
 
 def load_data():
@@ -106,7 +136,9 @@ def load_data():
     # RP 일이자 (세후) — 원본 스크립트와 같이 데이터 없는 달은 3% 가정
     rp_daily = np.array([max(0.0, fed_rates.get(f"{d.year}-{d.month:02d}", 3.0) / 100 - RP_SPREAD) / 252
                          for d in dates]) * (1 - RP_TAX_R)
-    return 100 * np.cumprod(f3), 100 * np.cumprod(f1), closes, ema, dates, rp_daily
+    rsi   = compute_rsi(closes, 14)
+    peaks = pd.Series(closes).rolling(252, min_periods=1).max().values
+    return 100 * np.cumprod(f3), 100 * np.cumprod(f1), closes, ema, dates, rp_daily, rsi, peaks
 
 
 def get_monthly_starts(dates):
@@ -126,7 +158,7 @@ def target_w(p: Param, total: float) -> float:
     return w
 
 
-def run_sim(tq, qq, closes, ema, dates, rp_daily, start, p: Param, signal_tax: bool) -> dict:
+def run_sim(tq, qq, closes, ema, dates, rp_daily, rsi, peaks, start, p: Param, signal_tax: bool) -> dict:
     n       = len(closes)
     sim_len = min(n - start, SIM_YEARS * 252)
 
@@ -142,6 +174,10 @@ def run_sim(tq, qq, closes, ema, dates, rp_daily, start, p: Param, signal_tax: b
     min_val = float("inf")
     cash_w_sum = 0.0
     cash_w_n   = 0
+    # Guyton-Klinger 상태
+    gk_mult, gk_init_cap, gk_on = 1.0, 0.0, False
+    gk_yr_start = float(INITIAL)
+    cap = 0.0
 
     def val(k, ci):
         return pos[k][0] * px[k][ci]
@@ -224,6 +260,16 @@ def run_sim(tq, qq, closes, ema, dates, rp_daily, start, p: Param, signal_tax: b
                 tax_due += max(0.0, year_gain - DEDUCTION) * TAX_RATE
                 year_gain = 0.0
                 cur_year = d.year
+                if p.use_gk:
+                    now = total(ci)
+                    if gk_on and gk_init_cap > 0:
+                        yr_ret = (now - gk_yr_start) / gk_yr_start if gk_yr_start > 0 else 0.0
+                        ratio = cap / gk_init_cap
+                        if ratio > 1.20:
+                            gk_mult = max(0.50, gk_mult * 0.80)
+                        elif ratio < 0.80 and yr_ret >= 0:
+                            gk_mult = min(1.50, gk_mult * 1.10)
+                    gk_yr_start = now
             if tax_due > 0:
                 raise_cash(tax_due, ci)
                 pay = min(tax_due, cash)
@@ -234,9 +280,11 @@ def run_sim(tq, qq, closes, ema, dates, rp_daily, start, p: Param, signal_tax: b
             if j > 0:
                 tot  = total(ci)
                 rate = DYN_RATES[0] if tot < DYN_THRS[0] else DYN_RATES[1] if tot < DYN_THRS[1] else DYN_RATES[2]
-                cap  = min(tot * rate, float(LIV_MAX))
+                cap  = min(tot * rate * gk_mult, float(LIV_MAX))
                 if invested:
                     living = cap
+                    if p.use_gk and not gk_on and cap > 0:
+                        gk_init_cap, gk_on = cap, True
                 else:
                     yc = cap * 12
                     lr = (1.0 if yc <= 0 or cash / yc >= 2 else 0.7 if cash / yc >= 1
@@ -259,13 +307,20 @@ def run_sim(tq, qq, closes, ema, dates, rp_daily, start, p: Param, signal_tax: b
                 above += 1; below = 0
             else:
                 below = above = 0
-            if invested and below >= TIME_FILTER:
+            sell_sig = below >= TIME_FILTER
+            if p.trail_thr > 0:
+                sell_sig = closes[ci] < peaks[ci] * (1 - p.trail_thr)
+            buy_sig = above >= TIME_FILTER
+            if (not invested and not buy_sig and p.rsi_thr > 0 and not np.isnan(rsi[ci])
+                    and rsi[ci] < p.rsi_thr and (closes[ci] - e) / e <= p.div_thr):
+                buy_sig = True
+            if invested and sell_sig:
                 for k in ("tq", "qq"):
                     sell(k, val(k, ci), ci, taxable=signal_tax)
                 invested = False
                 trades += 1
                 below = 0
-            elif not invested and above >= TIME_FILTER:
+            elif not invested and buy_sig:
                 rebalance(ci, force=True)
                 if p.side == "qqq":
                     buy("qq", cash, ci)
@@ -298,7 +353,7 @@ _S = {}
 
 
 def _init(*args):
-    keys = ("tq", "qq", "closes", "ema", "dates", "rp", "starts")
+    keys = ("tq", "qq", "closes", "ema", "dates", "rp", "rsi", "peaks", "starts")
     _S.update(dict(zip(keys, args)))
     _S["dates"] = pd.DatetimeIndex(_S["dates"])
 
@@ -307,7 +362,7 @@ def _job(arg):
     p, signal_tax = arg
     s = _S
     return (p.name, signal_tax), [run_sim(s["tq"], s["qq"], s["closes"], s["ema"], s["dates"], s["rp"],
-                                          si, p, signal_tax) for si in s["starts"]]
+                                          s["rsi"], s["peaks"], si, p, signal_tax) for si in s["starts"]]
 
 
 def summarize(rs, base, labels):
@@ -331,6 +386,7 @@ def summarize(rs, base, labels):
         "avg_withdrawn": round(sum(r["withdrawn"] for _, r, _ in done) / nd, 2),
         "med_withdrawn": round(q(sorted(r["withdrawn"] for _, r, _ in done), 0.5), 2),
         "avg_rebals":    round(sum(r["rebals"] for _, r, _ in done) / nd, 1),
+        "avg_trades":    round(sum(r["trades"] for _, r, _ in done) / nd, 1),
         "avg_side_pct":  round(sum(r["side_pct"] for _, r, _ in done) / nd, 1),
         "win_vs_s0":     round(sum(1 for _, r, b in done if r["final"] > b["final"]) / nd * 100, 1),
         "era_median":    eras,
@@ -340,12 +396,12 @@ def summarize(rs, base, labels):
 
 def main():
     t0 = time.time()
-    tq, qq, closes, ema, dates, rp = load_data()
+    tq, qq, closes, ema, dates, rp, rsi, peaks = load_data()
     starts = get_monthly_starts(dates)
     labels = [dates[i].strftime("%Y-%m") for i in starts]
     jobs = [(p, st) for st in (True, False) for p in STRATEGIES]
     with mp.Pool(min(mp.cpu_count(), len(jobs)), initializer=_init,
-                 initargs=(tq, qq, closes, ema, dates.tolist(), rp, starts)) as pool:
+                 initargs=(tq, qq, closes, ema, dates.tolist(), rp, rsi, peaks, starts)) as pool:
         raw = dict(pool.map(_job, jobs, chunksize=1))
 
     out_summary = {}
@@ -371,7 +427,7 @@ def main():
         row = {"start": lab}
         for p in STRATEGIES:
             r = raw[(p.name, True)][k]
-            row[p.name] = {key: r[key] for key in ("final", "withdrawn", "min", "rebals", "side_pct", "ongoing")}
+            row[p.name] = {key: r[key] for key in ("final", "withdrawn", "min", "trades", "rebals", "side_pct", "ongoing")}
         cohorts.append(row)
 
     out = {

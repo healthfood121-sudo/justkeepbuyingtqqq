@@ -72,7 +72,7 @@ export default function WithdrawalStats() {
       )}
 
       <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">
-        거래 로그용 별도 계산이라 세부 처리(현금 보유 중 이자 미반영 등)가 달라 본문 중간값(266억)과 차이가 있다.
+        거래 로그용 별도 계산이라 세부 처리(현금 보유 중 이자 미반영 등)가 달라 본문 중간값(150억)과 차이가 있다.
       </p>
       <Link
         href="/posts/withdrawal-guide/tradelog"

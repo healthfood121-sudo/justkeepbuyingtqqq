@@ -90,7 +90,7 @@ export default function HomePage() {
               <div className="mb-3">
                 <div className="flex justify-between items-baseline mb-1">
                   <span className="text-xs font-bold text-blue-700 dark:text-blue-300">S0 — EMA200 15일</span>
-                  <span className="text-xs font-mono font-bold text-blue-600 dark:text-blue-400">중간값 266억</span>
+                  <span className="text-xs font-mono font-bold text-blue-600 dark:text-blue-400">중간값 150억</span>
                 </div>
                 <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
                   나스닥100이 EMA200 아래 15거래일 연속 → 전량 현금. 위 15일 연속 → 재매수.
