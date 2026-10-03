@@ -2,15 +2,21 @@
 Excel 백테스트 결과 → web/public/data/ JSON 변환 스크립트
 
 생성 파일:
-  cohorts_ndx3x_10b.json   — TQQQ A/B/C, 목표 10억
-  cohorts_ndx2x_10b.json   — QLD
-  cohorts_ndx1x_10b.json   — QQQ
-  cohorts_sp500_10b.json   — VOO/SPX
+  cohorts_ndx3x_10b.json      — TQQQ A/B/C, 목표 10억 (standard)
+  cohorts_ndx2x_10b.json      — QLD (standard)
+  cohorts_ndx1x_10b.json      — QQQ (standard)
+  cohorts_sp500_10b.json      — VOO/SPX
+  cohorts_ndx3x_10b_v2.json   — TQQQ A/B/C (with_costs)
+  cohorts_ndx2x_10b_v2.json   — QLD (with_costs)
+  cohorts_ndx1x_10b_v2.json   — QQQ (with_costs)
 
-실행: python scripts/export_cohorts_json.py
-데이터 업데이트 후 재실행하면 JSON 자동 갱신됨.
+실행:
+  python scripts/export_cohorts_json.py           # standard만
+  python scripts/export_cohorts_json.py --mode v2 # with_costs(_v2)만
+  python scripts/export_cohorts_json.py --mode both
 """
 
+import argparse
 import json
 import openpyxl
 from pathlib import Path
@@ -20,12 +26,20 @@ OUT_DIR     = Path("D:/justkeepbuyingtqqq/web/public/data")
 
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
+# (엑셀 파일명 suffix, JSON 파일명 suffix)
+MODES = {
+    "standard": ("",    ""),
+    "v2":       ("_v2", "_v2"),
+}
+
 FILES = [
-    ("mcv_3x_compare_A_B_C_10b.xlsx",      "cohorts_ndx3x_10b.json"),
-    ("mcv_2x_compare_A_B_C_10b.xlsx",      "cohorts_ndx2x_10b.json"),
-    ("mcv_1x_compare_A_B_C_10b.xlsx",      "cohorts_ndx1x_10b.json"),
-    ("mcv_spx500_1x_compare_A_B_C_10b.xlsx", "cohorts_sp500_10b.json"),
+    ("mcv_3x_compare_A_B_C_10b{s}.xlsx",       "cohorts_ndx3x_10b{s}.json"),
+    ("mcv_2x_compare_A_B_C_10b{s}.xlsx",       "cohorts_ndx2x_10b{s}.json"),
+    ("mcv_1x_compare_A_B_C_10b{s}.xlsx",       "cohorts_ndx1x_10b{s}.json"),
 ]
+
+SP500_FILE = ("mcv_spx500_1x_compare_A_B_C_10b.xlsx", "cohorts_sp500_10b.json")
+
 
 def xlsx_to_json(xlsx_path: Path, json_path: Path):
     wb = openpyxl.load_workbook(xlsx_path, data_only=True)
@@ -93,14 +107,38 @@ def xlsx_to_json(xlsx_path: Path, json_path: Path):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--mode", choices=["standard", "v2", "both"],
+                        default="standard",
+                        help="어떤 버전 JSON을 생성할지 (default: standard)")
+    args = parser.parse_args()
+
+    modes_to_run = ["standard", "v2"] if args.mode == "both" else [args.mode]
+
     print("JSON 생성 중...\n")
-    for xlsx_name, json_name in FILES:
-        xlsx_path = RESULTS_DIR / xlsx_name
-        json_path = OUT_DIR / json_name
-        if not xlsx_path.exists():
-            print(f"  ⚠ 파일 없음: {xlsx_path}")
-            continue
-        xlsx_to_json(xlsx_path, json_path)
+
+    for mode_key in modes_to_run:
+        xlsx_sfx, json_sfx = MODES[mode_key]
+        print(f"[mode={mode_key}]")
+
+        for xlsx_tmpl, json_tmpl in FILES:
+            xlsx_name = xlsx_tmpl.format(s=xlsx_sfx)
+            json_name = json_tmpl.format(s=json_sfx)
+            xlsx_path = RESULTS_DIR / xlsx_name
+            json_path = OUT_DIR / json_name
+            if not xlsx_path.exists():
+                print(f"  ⚠ 파일 없음: {xlsx_path}")
+                continue
+            xlsx_to_json(xlsx_path, json_path)
+
+        # SP500은 standard만 (SP500은 비용 모드 없음)
+        if mode_key == "standard":
+            xlsx_path = RESULTS_DIR / SP500_FILE[0]
+            json_path = OUT_DIR / SP500_FILE[1]
+            if xlsx_path.exists():
+                xlsx_to_json(xlsx_path, json_path)
+            else:
+                print(f"  ⚠ 파일 없음: {xlsx_path}")
 
     print(f"\n저장 위치: {OUT_DIR}")
     print("웹 접근 경로: /data/<파일명>.json")

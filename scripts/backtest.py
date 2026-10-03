@@ -1,13 +1,23 @@
 """
 justkeepbuyingtqqq — 백테스트 스크립트
 NDX 1x/2x/3x + SPX500 1x, A/B/C 전략, 10억/20억 목표
+
+모드:
+  standard   — 운용보수만 반영 (기존 방식)
+  with_costs — 운용보수 + 스왑금리비용 반영
 """
 
+import sys
 import numpy as np
 import pandas as pd
 import openpyxl
 import time
 import os
+from pathlib import Path
+
+# data_loader 경로 추가
+sys.path.insert(0, str(Path(__file__).parent))
+from data_loader import load_ndx_prices, load_sp500_prices, get_monthly_starts
 
 # ===== 파라미터 =====
 DAILY_INVEST  = 200_000          # 일 20만원
@@ -19,39 +29,12 @@ DATA_DIR = "D:/justkeepbuyingtqqq/data/"
 OUT_DIR  = "D:/justkeepbuyingtqqq/results/"
 
 
-# ===== 1. 데이터 로드 =====
+# ===== SP500 합성가격 (비용 없음 — 비교용) =====
 
-def load_ndx(filepath):
-    """NDX 일별 종가 로드 + 1985-10-01 스플라이스 보정"""
-    df = pd.read_csv(filepath, parse_dates=["Date"]).sort_values("Date").reset_index(drop=True)
-    # 스플라이스 보정: 1985-10-01에 가짜 -60% 급락 존재
-    mask = df["Date"] == "1985-10-01"
-    if mask.any():
-        i = df.index[mask][0]
-        scale = df.loc[i - 1, "Close"] / df.loc[i, "Close"]
-        df.loc[i:, "Close"] *= scale
-        print(f"  NDX splice 보정: index={i}, scale={scale:.4f}")
-    return df
-
-def load_sp500(filepath):
-    df = pd.read_csv(filepath, parse_dates=["Date"]).sort_values("Date").reset_index(drop=True)
-    return df
-
-def make_synthetic(df, leverage):
-    """일별 수익률 × leverage → 합성가격 (누적곱)"""
+def make_synthetic_sp500(df):
+    """SP500 단순 비용 없는 합성가격 (비교 기준용)"""
     ret = df["Close"].pct_change().fillna(0).values
-    return 100.0 * np.cumprod(1.0 + ret * leverage)
-
-def get_monthly_starts(dates_pd):
-    """매월 첫 거래일 인덱스 목록 반환"""
-    ym = dates_pd.to_period("M")
-    seen = {}
-    idxs = []
-    for i, p in enumerate(ym):
-        if p not in seen:
-            seen[p] = True
-            idxs.append(i)
-    return idxs
+    return 100.0 * np.cumprod(1.0 + ret)
 
 
 # ===== 2. 단일 코호트 백테스트 =====
@@ -217,115 +200,80 @@ def save_excel(df_data, df_dist, df_cdf, filepath):
     wb.save(filepath)
 
 
-# ===== 6. 검증: golden dataset 대조 =====
-
-def validate_golden(prices_ndx2x, dates_pd):
-    """
-    mcv_ndx_2x_monthly_10b.json (A전략, NDX 2x, 10억)과 대조
-    years_to_target 절대 오차 평균이 0.1년 미만이면 통과
-    """
-    import json
-    golden_path = DATA_DIR + "mcv_ndx_2x_monthly_10b.json"
-    if not os.path.exists(golden_path):
-        print("  [검증 SKIP] golden JSON 없음")
-        return
-
-    with open(golden_path, encoding="utf-8") as f:
-        golden = json.load(f)
-
-    golden_df = pd.DataFrame(golden)
-    golden_df["start_date"] = pd.to_datetime(golden_df["start_date"]).dt.normalize()
-    golden_df = golden_df[golden_df["status"] == "completed"].copy()
-
-    # 내 결과 재계산 (A전략, 10억)
-    TARGET = 1_000_000_000
-    cohort_idxs = get_monthly_starts(dates_pd)
-    my_rows = []
-    for ci in cohort_idxs:
-        r = backtest_cohort(prices_ndx2x, ci, "A", TARGET, dates_pd)
-        if r and r["status"] == "completed":
-            my_rows.append({
-                "start_date": dates_pd[ci].normalize(),
-                "years_my":   r["years_to_target"],
-            })
-    my_df = pd.DataFrame(my_rows)
-
-    merged = pd.merge(golden_df, my_df, on="start_date", how="inner")
-    if len(merged) == 0:
-        print("  [검증 FAIL] 매칭 코호트 없음")
-        return
-
-    merged["err"] = (merged["years_to_target"] - merged["years_my"]).abs()
-    mean_err = merged["err"].mean()
-    max_err  = merged["err"].max()
-    print(f"  [검증] {len(merged)}개 코호트 대조 → 평균 오차 {mean_err:.4f}년, 최대 오차 {max_err:.4f}년")
-    if mean_err < 0.1:
-        print("  [검증 PASS] ✓")
-    else:
-        print("  [검증 WARN] 오차 큼 — 스플라이스 보정 또는 전략 파라미터 확인 필요")
-
-
-# ===== 7. 메인 =====
+# ===== 6. 메인 =====
 
 def main():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--mode", choices=["standard", "with_costs", "both"],
+                        default="standard",
+                        help="가격 계산 모드 (default: standard)")
+    args = parser.parse_args()
+
+    modes = ["standard", "with_costs"] if args.mode == "both" else [args.mode]
+
     t0 = time.time()
-    print("=" * 50)
+    print("=" * 55)
     print("justkeepbuyingtqqq 백테스트")
-    print("=" * 50)
+    print("=" * 55)
 
-    # 데이터 로드
-    print("\n[데이터 로드]")
-    ndx_df   = load_ndx(DATA_DIR + "ndx_1971_now.csv")
-    sp5_df   = load_sp500(DATA_DIR + "sp500_1927_now.csv")
-    ndx_dates = pd.DatetimeIndex(ndx_df["Date"])
-    sp5_dates = pd.DatetimeIndex(sp5_df["Date"])
-    print(f"  NDX:   {len(ndx_df)}행, {ndx_dates[0].date()} ~ {ndx_dates[-1].date()}")
-    print(f"  SP500: {len(sp5_df)}행, {sp5_dates[0].date()} ~ {sp5_dates[-1].date()}")
+    # SP500은 모드 무관
+    sp5 = load_sp500_prices()
+    sp51x = make_synthetic_sp500(
+        pd.DataFrame({"Close": sp5["closes"]})
+    )
+    sp5_dates = sp5["dates"]
 
-    # NDX 합성가격
-    ndx1x = make_synthetic(ndx_df, 1)
-    ndx2x = make_synthetic(ndx_df, 2)
-    ndx3x = make_synthetic(ndx_df, 3)
-    sp51x = make_synthetic(sp5_df, 1)
+    for mode in modes:
+        suffix = "_v2" if mode == "with_costs" else ""
+        print(f"\n{'='*20} mode={mode} {'='*20}")
 
-    # Golden dataset 검증
-    print("\n[Golden 검증 — NDX 2x A전략 10억]")
-    validate_golden(ndx2x, ndx_dates)
+        # NDX 데이터 로드 (모드별 합성가격)
+        d = load_ndx_prices(mode)
+        ndx_dates = d["dates"]
+        ndx1x = d["ndx1x"]
+        ndx2x = d["ndx2x"]
+        ndx3x = d["ndx3x"]
 
-    # 백테스트 실행 목록
-    jobs = [
-        # (prices, dates, label,          target,        outfile)
-        (ndx1x, ndx_dates, "NDX 1x 10억",  1_000_000_000, OUT_DIR + "mcv_1x_compare_A_B_C_10b.xlsx"),
-        (ndx1x, ndx_dates, "NDX 1x 20억",  2_000_000_000, OUT_DIR + "mcv_1x_compare_A_B_C_20b.xlsx"),
-        (ndx2x, ndx_dates, "NDX 2x 10억",  1_000_000_000, OUT_DIR + "mcv_2x_compare_A_B_C_10b.xlsx"),
-        (ndx2x, ndx_dates, "NDX 2x 20억",  2_000_000_000, OUT_DIR + "mcv_2x_compare_A_B_C_20b.xlsx"),
-        (ndx3x, ndx_dates, "NDX 3x 10억",  1_000_000_000, OUT_DIR + "mcv_3x_compare_A_B_C_10b.xlsx"),
-        (ndx3x, ndx_dates, "NDX 3x 20억",  2_000_000_000, OUT_DIR + "mcv_3x_compare_A_B_C_20b.xlsx"),
-        (sp51x, sp5_dates, "SP500 1x 10억", 1_000_000_000, OUT_DIR + "mcv_spx500_1x_compare_A_B_C_10b.xlsx"),
-        (sp51x, sp5_dates, "SP500 1x 20억", 2_000_000_000, OUT_DIR + "mcv_spx500_1x_compare_A_B_C_20b.xlsx"),
-    ]
+        print(f"  NDX:   {len(ndx_dates)}거래일, {ndx_dates[0].date()} ~ {ndx_dates[-1].date()}")
+        print(f"  TQQQ 최종값: {ndx3x[-1]:.1f}  ({mode})")
 
-    for prices, dates, label, target, outfile in jobs:
-        t1 = time.time()
-        print(f"\n[{label}]")
-        df_data = run_all_cohorts(prices, dates, target)
-        df_dist = make_distribution(df_data)
-        df_cdf  = make_cdf(df_data)
-        save_excel(df_data, df_dist, df_cdf, outfile)
+        # 백테스트 실행 목록
+        jobs = [
+            (ndx1x, ndx_dates, f"NDX 1x 10억",  1_000_000_000, OUT_DIR + f"mcv_1x_compare_A_B_C_10b{suffix}.xlsx"),
+            (ndx1x, ndx_dates, f"NDX 1x 20억",  2_000_000_000, OUT_DIR + f"mcv_1x_compare_A_B_C_20b{suffix}.xlsx"),
+            (ndx2x, ndx_dates, f"NDX 2x 10억",  1_000_000_000, OUT_DIR + f"mcv_2x_compare_A_B_C_10b{suffix}.xlsx"),
+            (ndx2x, ndx_dates, f"NDX 2x 20억",  2_000_000_000, OUT_DIR + f"mcv_2x_compare_A_B_C_20b{suffix}.xlsx"),
+            (ndx3x, ndx_dates, f"NDX 3x 10억",  1_000_000_000, OUT_DIR + f"mcv_3x_compare_A_B_C_10b{suffix}.xlsx"),
+            (ndx3x, ndx_dates, f"NDX 3x 20억",  2_000_000_000, OUT_DIR + f"mcv_3x_compare_A_B_C_20b{suffix}.xlsx"),
+        ]
+        # SP500은 suffix 무관하게 한 번만
+        if mode == modes[0]:
+            jobs += [
+                (sp51x, sp5_dates, "SP500 1x 10억", 1_000_000_000, OUT_DIR + "mcv_spx500_1x_compare_A_B_C_10b.xlsx"),
+                (sp51x, sp5_dates, "SP500 1x 20억", 2_000_000_000, OUT_DIR + "mcv_spx500_1x_compare_A_B_C_20b.xlsx"),
+            ]
 
-        # 통계 출력
-        n = len(df_data)
-        for s in ["A", "B", "C"]:
-            comp = (df_data[f"status_{s}"] == "completed").sum()
-            vals = df_data[df_data[f"status_{s}"] == "completed"][f"years_{s}"].dropna()
-            if comp > 0:
-                print(f"  {s}: {comp}/{n} 완료  "
-                      f"평균 {vals.mean():.2f}년  "
-                      f"중간값 {vals.median():.2f}년  "
-                      f"최장 {vals.max():.2f}년")
-            else:
-                print(f"  {s}: 0/{n} 완료")
-        print(f"  → {outfile.split('/')[-1]}  ({time.time()-t1:.1f}초)")
+        for prices, dates, label, target, outfile in jobs:
+            t1 = time.time()
+            print(f"\n  [{label}]")
+            df_data = run_all_cohorts(prices, dates, target)
+            df_dist = make_distribution(df_data)
+            df_cdf  = make_cdf(df_data)
+            save_excel(df_data, df_dist, df_cdf, outfile)
+
+            n = len(df_data)
+            for s in ["A", "B", "C"]:
+                comp = (df_data[f"status_{s}"] == "completed").sum()
+                vals = df_data[df_data[f"status_{s}"] == "completed"][f"years_{s}"].dropna()
+                if comp > 0:
+                    print(f"    {s}: {comp}/{n} 완료  "
+                          f"평균 {vals.mean():.2f}년  "
+                          f"중간값 {vals.median():.2f}년  "
+                          f"최장 {vals.max():.2f}년")
+                else:
+                    print(f"    {s}: 0/{n} 완료")
+            print(f"    → {outfile.split('/')[-1]}  ({time.time()-t1:.1f}초)")
 
     print(f"\n=== 전체 완료 ({time.time()-t0:.1f}초) ===")
 

@@ -2,7 +2,14 @@
 export_s0_tradelog.py
 
 S0 전략 (EMA200 15일 연속 + 동적 인출률) 코호트별 거래 로그 생성
-출력: web/public/data/s0_tradelog.json
+출력:
+  web/public/data/s0_tradelog.json      — standard (운용보수만)
+  web/public/data/s0_tradelog_v2.json   — with_costs (운용보수 + 스왑금리비용)
+
+실행:
+  python scripts/export_s0_tradelog.py               # standard만
+  python scripts/export_s0_tradelog.py --mode v2     # with_costs만
+  python scripts/export_s0_tradelog.py --mode both
 
 각 코호트(시작 시점)별로 매수/매도 이벤트를 기록:
   date     - 거래 실행 날짜
@@ -14,24 +21,24 @@ S0 전략 (EMA200 15일 연속 + 동적 인출률) 코호트별 거래 로그 �
   days     - 신호 연속일 (S0는 항상 15)
 """
 
+import argparse
 import json
+import sys
 from datetime import datetime
+from pathlib import Path
 import numpy as np
 import pandas as pd
-from pathlib import Path
 
-DATA_DIR = Path("D:/justkeepbuyingtqqq/data")
-FED_PATH = Path("D:/mcv-nextjs/public/data/fed_funds_rate.json")
-OUT_PATH = Path("D:/justkeepbuyingtqqq/web/public/data/s0_tradelog.json")
+sys.path.insert(0, str(Path(__file__).parent))
+from data_loader import load_ndx_prices, get_monthly_starts
+
+OUT_DIR = Path("D:/justkeepbuyingtqqq/web/public/data")
 
 INITIAL      = 1_000_000_000   # 초기 10억
 SIM_YEARS    = 20
-EXP_3X       = 0.0088
 LIV_MAX      = 15_000_000
 TAX_RATE     = 0.22
 DEDUCTION    = 2_500_000
-RP_SPREAD    = 0.004
-RP_TAX_R     = 0.154
 FEE_RATE     = 0.0007
 DYN_RATES    = (0.003, 0.005, 0.007)
 DYN_THRS     = (1_000_000_000, 2_000_000_000)
@@ -39,58 +46,10 @@ TIME_FILTER  = 15
 
 
 # ──────────────────────────────────────────────────────────────
-# 데이터 로드
-# ──────────────────────────────────────────────────────────────
-
-def load_data():
-    ndx = pd.read_csv(DATA_DIR / "ndx_1971_now.csv",
-                      parse_dates=["Date"]).sort_values("Date").reset_index(drop=True)
-
-    # 1985-10-01 접합 보정 (기존 스크립트와 동일)
-    mask = ndx["Date"] == pd.Timestamp("1985-10-01")
-    if mask.any():
-        i = ndx.index[mask][0]
-        ndx.loc[i:, "Close"] *= ndx.loc[i - 1, "Close"] / ndx.loc[i, "Close"]
-
-    closes = ndx["Close"].values.astype(float)
-    dates  = pd.DatetimeIndex(ndx["Date"])
-    n      = len(closes)
-
-    ret  = np.diff(closes) / closes[:-1]
-    ret  = np.insert(ret, 0, 0.0)
-    f3   = (1.0 + ret * 3.0) * (1.0 - EXP_3X / 252)
-    f3[0] = 1.0
-    ndx3x = 100.0 * np.cumprod(f3)
-
-    with open(FED_PATH, encoding="utf-8") as f:
-        fed = json.load(f)
-    fed_rates = {r["date"][:7]: float(r["rate"]) for r in fed}
-
-    # EMA200
-    a200   = 2.0 / 201
-    ema200 = np.full(n, np.nan)
-    ema200[199] = float(np.mean(closes[:200]))
-    for i in range(200, n):
-        ema200[i] = closes[i] * a200 + ema200[i - 1] * (1 - a200)
-
-    return ndx3x, closes, ema200, dates, fed_rates
-
-
-def get_monthly_starts(dates):
-    seen, starts = set(), []
-    for i, d in enumerate(dates):
-        k = (d.year, d.month)
-        if k not in seen:
-            seen.add(k)
-            starts.append(i)
-    return starts
-
-
-# ──────────────────────────────────────────────────────────────
 # S0 시뮬레이션 (거래 로그 포함)
 # ──────────────────────────────────────────────────────────────
 
-def run_s0(ndx3x, closes, ema200, dates, fed_rates, start_idx: int) -> dict:
+def run_s0(ndx3x, closes, ema200, dates, start_idx: int) -> dict:
     n       = len(ndx3x)
     sim_len = min(n - start_idx, int(SIM_YEARS * 252))
     complete = (n - start_idx) >= int(SIM_YEARS * 252)
@@ -135,7 +94,6 @@ def run_s0(ndx3x, closes, ema200, dates, fed_rates, start_idx: int) -> dict:
 
         cur_date = dates[ci]
         cur_mon  = (cur_date.year, cur_date.month)
-        mon_key  = cur_date.strftime("%Y-%m")
 
         # ── 월초 처리 ──
         if cur_mon != last_mon:
@@ -281,8 +239,6 @@ def run_s0(ndx3x, closes, ema200, dates, fed_rates, start_idx: int) -> dict:
                     cash = max(0.0, cash - (living - cash_reserve))
                     cash_reserve = 0.0
 
-        # RP 이자 미반영 (스왑 비용과 쌍으로 제거 — 나중에 둘다 넣는 버전으로 통일 예정)
-
     # 최종 포트폴리오
     ci = start_idx + sim_len - 1
     if ci >= n:
@@ -309,21 +265,28 @@ def run_s0(ndx3x, closes, ema200, dates, fed_rates, start_idx: int) -> dict:
 # 메인
 # ──────────────────────────────────────────────────────────────
 
-if __name__ == "__main__":
-    print("데이터 로드 중...")
-    ndx3x, closes, ema200, dates, fed_rates = load_data()
+def run_and_save(price_mode: str):
+    """price_mode: 'standard' | 'with_costs'"""
+    suffix   = "_v2" if price_mode == "with_costs" else ""
+    out_path = OUT_DIR / f"s0_tradelog{suffix}.json"
+
+    print(f"\n[mode={price_mode}] 데이터 로드 중...")
+    d      = load_ndx_prices(price_mode)
+    ndx3x  = d["ndx3x"]
+    closes = d["closes"]
+    ema200 = d["ema200"]
+    dates  = d["dates"]
 
     starts = get_monthly_starts(dates)
     print(f"총 {len(starts)}개 시작 시점")
 
     cohorts = []
     for idx, si in enumerate(starts):
-        result = run_s0(ndx3x, closes, ema200, dates, fed_rates, si)
+        result = run_s0(ndx3x, closes, ema200, dates, si)
         cohorts.append(result)
         if (idx + 1) % 100 == 0:
             print(f"  {idx+1}/{len(starts)} 완료")
 
-    # 요약 통계
     finals   = [c["final"] for c in cohorts if c["complete"] and not c["bankrupt"]]
     n_comp   = sum(1 for c in cohorts if c["complete"])
     n_total  = len(cohorts)
@@ -332,25 +295,42 @@ if __name__ == "__main__":
 
     out = {
         "meta": {
-            "generated":  datetime.now().strftime("%Y-%m-%d"),
-            "strategy":   "S0",
-            "desc":       "EMA200 15일 연속 + 동적 인출률 0.3/0.5/0.7%",
-            "sim_years":  SIM_YEARS,
-            "n_cohorts":  n_total,
-            "n_complete": n_comp,
+            "generated":   datetime.now().strftime("%Y-%m-%d"),
+            "strategy":    "S0",
+            "price_mode":  price_mode,
+            "desc":        "EMA200 15일 연속 + 동적 인출률 0.3/0.5/0.7%",
+            "sim_years":   SIM_YEARS,
+            "n_cohorts":   n_total,
+            "n_complete":  n_comp,
             "median_final": round(median, 2),
-            "avg_trades": round(avg_trd, 1),
+            "avg_trades":  round(avg_trd, 1),
         },
         "cohorts": cohorts,
     }
 
-    OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with open(OUT_PATH, "w", encoding="utf-8") as f:
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    with open(out_path, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, separators=(",", ":"))
 
-    size_kb = OUT_PATH.stat().st_size / 1024
-    print(f"\n완료! {OUT_PATH}")
+    size_kb = out_path.stat().st_size / 1024
+    print(f"\n완료! {out_path}")
     print(f"파일 크기: {size_kb:.0f} KB")
     print(f"코호트: {n_total}개 ({n_comp}개 완료)")
     print(f"중앙값: {median:.1f}억")
     print(f"평균 거래: {avg_trd:.1f}회/20년")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--mode", choices=["standard", "v2", "both"],
+                        default="standard",
+                        help="가격 모드 (default: standard)")
+    args = parser.parse_args()
+
+    if args.mode == "both":
+        run_and_save("standard")
+        run_and_save("with_costs")
+    elif args.mode == "v2":
+        run_and_save("with_costs")
+    else:
+        run_and_save("standard")
