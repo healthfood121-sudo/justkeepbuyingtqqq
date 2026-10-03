@@ -62,17 +62,21 @@ function TradelogInner() {
   const params  = useSearchParams()
   const router  = useRouter()
 
-  const [data,    setData]    = useState<TradelogData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [search,  setSearch]  = useState('')
+  const [data,       setData]      = useState<TradelogData | null>(null)
+  const [loading,    setLoading]   = useState(true)
+  const [search,     setSearch]    = useState('')
+  const [withCosts,  setWithCosts] = useState(false)
 
   const selectedStart = params.get('start') ?? ''
 
   useEffect(() => {
-    fetch('/data/s0_tradelog.json')
+    setLoading(true)
+    setData(null)
+    const url = withCosts ? '/data/s0_tradelog_v2.json' : '/data/s0_tradelog.json'
+    fetch(url)
       .then(r => r.json())
       .then((d: TradelogData) => { setData(d); setLoading(false) })
-  }, [])
+  }, [withCosts])
 
   const filteredCohorts = useMemo(() => {
     if (!data) return []
@@ -111,12 +115,40 @@ function TradelogInner() {
             className="text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 mb-4 inline-block">
             ← 인출 방법론으로
           </Link>
-          <h1 className="text-2xl font-bold mb-1">S0 전략 — 거래 로그 전체 공개</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-            EMA200 15일 연속 + 동적 인출률 · 초기 10억 · 20년 시뮬레이션
-          </p>
+          <div className="flex items-start justify-between gap-4 flex-wrap">
+            <div>
+              <h1 className="text-2xl font-bold mb-1">S0 전략 — 거래 로그 전체 공개</h1>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                EMA200 15일 연속 + 동적 인출률 · 초기 10억 · 20년 시뮬레이션
+              </p>
+            </div>
+            {/* 스왑비용 토글 */}
+            <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 shrink-0">
+              <div>
+                <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">스왑금리비용 반영</p>
+                <p className="text-xs text-gray-400">
+                  {withCosts ? '운용보수 + 스왑금리비용' : '운용보수만 (이론치)'}
+                </p>
+              </div>
+              <button
+                onClick={() => setWithCosts(v => !v)}
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
+                  withCosts ? 'bg-blue-600' : 'bg-gray-300 dark:bg-gray-600'
+                }`}
+                role="switch"
+                aria-checked={withCosts}
+              >
+                <span className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform transition duration-200 ${
+                  withCosts ? 'translate-x-5' : 'translate-x-0'
+                }`} />
+              </button>
+            </div>
+          </div>
           <p className="text-xs text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700/40 rounded-lg px-3 py-2 inline-block">
-            ⚠ 현금 보유 중 RP 이자 미반영 · TQQQ 스왑 비용도 미반영 (두 효과 상쇄, 추후 둘 다 반영 예정)
+            {withCosts
+              ? '✅ TQQQ 스왑금리비용 반영 · RP 이자 미반영 (현금 보유 수익 미포함)'
+              : '⚠ TQQQ 스왑금리비용 미반영 · RP 이자도 미반영 (두 효과를 함께 반영하려면 위 토글 사용)'
+            }
           </p>
         </div>
 

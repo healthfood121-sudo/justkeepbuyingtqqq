@@ -11,10 +11,13 @@
 
 | 파일 | 크기 | 스크립트 | 종목 | 코호트 수 |
 |------|------|----------|------|-----------|
-| `cohorts_ndx3x_10b.json` | 132 KB | `export_cohorts_json.py` | TQQQ (NDX 3x) | 668 |
+| `cohorts_ndx3x_10b.json` | 133 KB | `export_cohorts_json.py` | TQQQ (NDX 3x) | 668 |
 | `cohorts_ndx2x_10b.json` | 132 KB | `export_cohorts_json.py` | QLD (NDX 2x) | 668 |
 | `cohorts_ndx1x_10b.json` | 132 KB | `export_cohorts_json.py` | QQQ (NDX 1x) | 668 |
-| `cohorts_sp500_10b.json` | 236 KB | `export_cohorts_json.py` | VOO (SP500) | 1,186 |
+| `cohorts_sp500_10b.json` | 237 KB | `export_cohorts_json.py` | VOO (SP500) | 1,186 |
+| `cohorts_ndx3x_10b_v2.json` | 133 KB | `export_cohorts_json.py --mode v2` | TQQQ with_costs | 668 |
+| `cohorts_ndx2x_10b_v2.json` | 132 KB | `export_cohorts_json.py --mode v2` | QLD with_costs | 668 |
+| `cohorts_ndx1x_10b_v2.json` | 132 KB | `export_cohorts_json.py --mode v2` | QQQ (1x — v1과 동일) | 668 |
 
 **공통 파라미터:** 일 20만원 · 거치/한도 2.5억 · 목표 10억 · 시작 1971-01 (SP500은 1928-01)
 
@@ -196,14 +199,16 @@
 
 | 파일 | 크기 | 스크립트 | 내용 |
 |------|------|----------|------|
-| `s0_tradelog.json` | 1,205 KB | `export_s0_tradelog.py` | S0 전략 668코호트 거래 이벤트 로그 |
+| `s0_tradelog.json` | 1,205 KB | `export_s0_tradelog.py` | S0 전략 668코호트 거래 이벤트 로그 (standard) |
+| `s0_tradelog_v2.json` | 1,201 KB | `export_s0_tradelog.py --mode v2` | S0 전략 668코호트 (with_costs: 스왑금리비용 반영) |
 
 **내용:** 각 시작 시점별 전체 매수/매도 이벤트 기록
 - 필드: date, action(BUY/SELL), ndx, ema200, div_pct, port(억), days
-- RP 이자 **미반영** · TQQQ 스왑 비용도 **미반영** (대칭 처리 — 추후 둘 다 반영 예정)
-- 중앙값 928.5억 (RP 없음 기준), 668코호트 중 428개 완료
+- RP 이자 **미반영** · TQQQ 스왑 비용 standard=미반영, with_costs=반영
+- standard 중앙값 928.5억, with_costs 중앙값 229.2억
+- 668코호트 중 428개 완료 (20년)
 
-**사용처:** `/posts/withdrawal-guide/tradelog`
+**사용처:** `/posts/withdrawal-guide/tradelog` (토글로 standard/with_costs 전환)
 
 ---
 

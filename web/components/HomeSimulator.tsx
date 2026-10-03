@@ -27,11 +27,17 @@ interface CohortJsonFile {
 
 const PRESET = { daily: 200_000, cap: 250_000_000, lump: 250_000_000, target: 1_000_000_000 }
 
-const JSON_MAP: Record<Instrument, string> = {
+const JSON_MAP_STANDARD: Record<Instrument, string> = {
   ndx3x: '/data/cohorts_ndx3x_10b.json',
   ndx2x: '/data/cohorts_ndx2x_10b.json',
   ndx1x: '/data/cohorts_ndx1x_10b.json',
   sp500: '/data/cohorts_sp500_10b.json',
+}
+const JSON_MAP_COSTS: Record<Instrument, string> = {
+  ndx3x: '/data/cohorts_ndx3x_10b_v2.json',
+  ndx2x: '/data/cohorts_ndx2x_10b_v2.json',
+  ndx1x: '/data/cohorts_ndx1x_10b_v2.json',
+  sp500: '/data/cohorts_sp500_10b.json',  // SP500은 스왑비용 없음
 }
 
 const instrumentOptions: { value: Instrument; label: string; sublabel: string }[] = [
@@ -69,18 +75,21 @@ export default function HomeSimulator() {
   const [show, setShow] = useState<Record<'A' | 'B' | 'C', boolean>>({ A: true, B: true, C: true })
   const [tableSort, setTableSort] = useState<{ col: 'start' | 'yA' | 'yB' | 'yC'; dir: 1 | -1 }>({ col: 'start', dir: 1 })
   const [instrument, setInstrument] = useState<Instrument>('ndx3x')
+  const [withCosts, setWithCosts] = useState(false)
   const [youtubeLinks, setYoutubeLinks] = useState<Record<string, string>>({})
 
   const toggleShow = (s: 'A' | 'B' | 'C') => setShow(prev => ({ ...prev, [s]: !prev[s] }))
 
+  const jsonMap = withCosts ? JSON_MAP_COSTS : JSON_MAP_STANDARD
+
   useEffect(() => {
     setJsonLoading(true)
     setCohortJson(null)
-    fetch(JSON_MAP[instrument])
+    fetch(jsonMap[instrument])
       .then(r => r.json())
       .then((data: CohortJsonFile) => { setCohortJson(data); setJsonLoading(false) })
       .catch(() => setJsonLoading(false))
-  }, [instrument])
+  }, [instrument, withCosts])  // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     fetch('/data/youtube_shorts.json')
@@ -131,6 +140,39 @@ export default function HomeSimulator() {
           >
             내 상황에 맞게 해보기 →
           </Link>
+        </div>
+
+        {/* 스왑비용 토글 */}
+        <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-5">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">스왑금리비용 반영</p>
+              <p className="text-xs text-gray-400 mt-0.5">
+                {withCosts
+                  ? '운용보수 + 스왑금리비용 포함'
+                  : '운용보수만 반영 (이론치)'}
+              </p>
+            </div>
+            <button
+              onClick={() => setWithCosts(v => !v)}
+              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${
+                withCosts ? 'bg-blue-600' : 'bg-gray-300 dark:bg-gray-600'
+              }`}
+              role="switch"
+              aria-checked={withCosts}
+            >
+              <span
+                className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition duration-200 ease-in-out ${
+                  withCosts ? 'translate-x-5' : 'translate-x-0'
+                }`}
+              />
+            </button>
+          </div>
+          {withCosts && instrument === 'sp500' && (
+            <p className="text-xs text-yellow-600 dark:text-yellow-400 mt-2">
+              SP500은 레버리지가 없으므로 스왑비용 없음 — standard와 동일
+            </p>
+          )}
         </div>
 
         {/* 종목 선택 */}
@@ -341,7 +383,10 @@ export default function HomeSimulator() {
             {/* 캐비엇 */}
             <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700/30 rounded-xl p-4 text-xs text-yellow-800 dark:text-yellow-200/70 space-y-1">
               <p>⚠️ <strong>합성 가격 사용:</strong> TQQQ/QLD의 실제 상장 역사는 짧아, NDX 일별 수익률 × 레버리지로 합성한 이론값을 사용합니다.</p>
-              <p>⚠️ <strong>비용 미반영:</strong> 운용비용(TQQQ 0.88%/년)·추적오차는 미반영입니다. 변동성 끌림은 일별 복리 계산에 자동 반영됩니다.</p>
+              {withCosts
+                ? <p>✅ <strong>스왑금리비용 포함:</strong> 운용보수(TQQQ 0.88%/년) + 스왑금리비용(2 × 연방기금금리/년)을 반영한 현실적 추정치입니다.</p>
+                : <p>⚠️ <strong>비용 일부 미반영:</strong> 운용보수(TQQQ 0.88%/년)는 반영, 스왑금리비용(레버리지 조달 비용)은 미반영입니다. 위 토글로 반영 버전을 확인할 수 있습니다.</p>
+              }
               <p>⚠️ <strong>과거 데이터 기반:</strong> 미래 수익을 보장하지 않으며, 닷컴버블(1999-2000)이 유일하게 관측된 극단적 사례입니다.</p>
             </div>
           </>
