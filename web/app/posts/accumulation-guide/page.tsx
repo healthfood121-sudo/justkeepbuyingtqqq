@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Header from '@/components/Header'
+import AccumulationStats from '@/components/AccumulationStats'
 
 function Tag({ children }: { children: string }) {
   return (
@@ -201,6 +202,8 @@ export default function AccumulationGuidePage() {
           title="거치금 2.5억, 한번에 넣을까 vs 3년에 나눠 넣을까"
           desc="668가지 시작 시점 백테스트. 3년 시간 분할이 TQQQ worst 케이스를 12.24년 → 8.82년으로 3.4년 단축. 왜 3년인지 데이터로 확인."
         />
+
+        <AccumulationStats />
 
         {/* ── 4. 종목 선택 ──────────────────────────────────── */}
         <H2>4. 종목 선택 — QQQ vs QLD vs TQQQ</H2>
