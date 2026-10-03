@@ -324,13 +324,23 @@ export default function WithdrawalGuidePage() {
               link: '검증 결과 →',
             },
             {
-              step: '현재',
+              step: '6단계',
               color: 'border-gray-300 dark:border-gray-700',
               badge: 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400',
               title: 'TQQQ 자체 신호 · 인출 시작 지연 검증',
               result: 'TQQQ 신호: 기준의 1/4 수준 열등 · 인출 2년 지연: +13%',
               desc: 'TQQQ 합성가격 기준 EMA200 신호는 레버리지 잡음으로 매매가 너무 잦아 완전히 열등. 반면 다른 수입원이 있어 인출을 1~2년 미룰 수 있는 경우, 최종 자산이 7~13% 늘어나는 효과가 있다.',
               href: '/posts/withdrawal-signal-test',
+              link: '검증 결과 →',
+            },
+            {
+              step: '현재',
+              color: 'border-gray-300 dark:border-gray-700',
+              badge: 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400',
+              title: '매도·매수 기준일 비대칭 검증 (144가지 조합)',
+              result: '매수 1~2일: 중앙값 1.5~1.7배 · 5억 아래 하락 2배 → S0 유지',
+              desc: '매도는 15일 그대로 두고 매수만 빨리 하면 20년 후 금액은 커지지만, 하락장 속 반등마다 들어갔다가 15일간 맞고 나오면서 자산이 절반 아래로 떨어지는 경우가 크게 늘어난다. 인출 단계에서는 바닥을 지키는 S0가 낫다.',
+              href: '/posts/withdrawal-asym-days',
               link: '검증 결과 →',
             },
           ].map(({ step, color, badge, title, result, desc, href, link }) => (
@@ -698,6 +708,11 @@ export default function WithdrawalGuidePage() {
               href="/posts/withdrawal-new-ideas2"
               title="더 나을 줄 알았던 전략 3가지를 테스트해봤다"
               desc="트레일링 스탑·단계적 현금화·레버리지 하향 — 668가지 진입 시점으로 모두 검증. T25가 가장 단순한 대안."
+            />
+            <AnalysisLink
+              href="/posts/withdrawal-asym-days"
+              title="팔 때는 천천히, 살 때는 빨리? — 매도·매수 기준일 비대칭 검증"
+              desc="매수 기준만 1~2일로 줄이면 중앙값은 1.5~1.7배지만 자산이 5억 아래로 떨어지는 경우가 2배. S0(15일·15일) 유지."
             />
             <AnalysisLink
               href="/posts/withdrawal-signal-test"

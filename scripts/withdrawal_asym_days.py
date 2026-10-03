@@ -324,6 +324,244 @@ def top(rows, n=10):
               f"전기 {r['med_early']}  후기 {r['med_late']}", flush=True)
 
 
+# ═══════════════════════════════════════════════════════════
+# 심리 지표 상세 (진입 시점별)
+# ═══════════════════════════════════════════════════════════
+# run_sim과 같은 규칙 + 아래 지표 추적
+#   mdd     : 총자산 최고점 대비 최대 하락률 (%)
+#   uw      : 총자산이 직전 최고점을 회복하지 못한 최장 기간 (개월)
+#   cut     : 월 생활비 한도가 직전 최고 대비 가장 많이 줄어든 비율 (%)
+#   live_lo : 20년 중 가장 적었던 월 생활비 한도 (만원)
+#   whip    : 매수 후 60거래일(약 3개월) 안에 다시 매도한 횟수
+#   regret  : 직전 매도 가격보다 비싸게 다시 산 횟수
+
+WHIP_WINDOW = 60
+
+@njit(cache=True)
+def run_detail(lev, closes, ema200, sp500, mon_id, year, rate,
+               start_idx, sell_days, buy_days):
+    n = len(lev)
+    sim_len = min(n - start_idx, SIM_YEARS * 252)
+
+    e0 = ema200[start_idx]
+    if (not np.isnan(e0)) and e0 > 0 and closes[start_idx] < e0:
+        cash = INITIAL; sh = 0.0
+    else:
+        sh = INITIAL / lev[start_idx]; cash = 0.0
+
+    avg_cost = lev[start_idx]
+    cash_reserve = 0.0; tax_reserve = 0.0; annual_gain = 0.0
+    last_tax_yr = -1; cum_wd = 0.0; voo_sh = 0.0
+    below = 0; above = 0
+    last_mon = -1; tday = 0; mon_cap = 0.0
+    trades = 0
+    peak = 0.0; mdd = 0.0; uw_days = 0; uw_max = 0
+    cap_peak = 0.0; cut = 0.0; cap_lo = 1e18
+    last_buy_j = -100000; last_sell_px = -1.0
+    whip = 0; regret = 0; min_total = 1e18
+
+    for j in range(sim_len):
+        ci = start_idx + j
+        is_tqqq = sh > 0
+
+        if mon_id[ci] != last_mon:
+            tday = 0
+            rp_mo = max(0.0, rate[ci] / 100.0 - RP_SPREAD) / 12.0
+            if cash_reserve > 0:
+                cash_reserve += cash_reserve * rp_mo * (1 - RP_TAX_R)
+            if last_tax_yr >= 0 and year[ci] > last_tax_yr:
+                actual_tax = max(0.0, annual_gain - DEDUCTION) * TAX_RATE
+                refund = tax_reserve - actual_tax
+                if refund > 0:
+                    cash_reserve += refund
+                tax_reserve = 0.0; annual_gain = 0.0
+            if last_tax_yr < 0 or year[ci] > last_tax_yr:
+                last_tax_yr = year[ci]
+            if voo_sh > 0:
+                cash_reserve += voo_sh * sp500[ci] * VOO_DIV_MO * (1 - DIV_TAX_R)
+            pv_c = sh * lev[ci] if is_tqqq else cash
+            total_c = pv_c + cash_reserve + tax_reserve + voo_sh * sp500[ci]
+            if total_c < DYN_T0:
+                br = DYN_R0
+            elif total_c < DYN_T1:
+                br = DYN_R1
+            else:
+                br = DYN_R2
+            mon_cap = min(total_c * br, LIV_MAX)
+            if j > 0:
+                if mon_cap > cap_peak:
+                    cap_peak = mon_cap
+                elif cap_peak > 0:
+                    cut = max(cut, 1.0 - mon_cap / cap_peak)
+                cap_lo = min(cap_lo, mon_cap)
+            last_mon = mon_id[ci]
+        tday += 1
+
+        e = ema200[ci]
+        eok = (not np.isnan(e)) and e > 0
+        if eok:
+            d = (closes[ci] - e) / e
+            if d < 0:
+                below += 1; above = 0
+            elif d > 0:
+                above += 1; below = 0
+            else:
+                below = 0; above = 0
+
+        if is_tqqq and eok and below >= sell_days:
+            sv = sh * lev[ci]
+            cash = sv - sv * FEE_RATE
+            sh = 0.0; below = 0; trades += 1
+            if j - last_buy_j <= WHIP_WINDOW:
+                whip += 1
+            last_sell_px = lev[ci]
+        elif (not is_tqqq) and eok and above >= buy_days:
+            sh = (cash - cash * FEE_RATE) / lev[ci]
+            avg_cost = lev[ci]; cash = 0.0; above = 0; trades += 1
+            last_buy_j = j
+            if last_sell_px > 0 and lev[ci] > last_sell_px:
+                regret += 1
+
+        if tday == 1 and j > 0 and mon_cap > 0:
+            if sh > 0:
+                pv = sh * lev[ci]
+                wd = min(mon_cap, pv)
+                sold = wd / lev[ci]
+                gain = max(0.0, wd - sold * avg_cost)
+                annual_gain += gain
+                tw = gain * TAX_RATE
+                tax_reserve += tw
+                after = wd - tw
+                sh = max(0.0, sh - sold)
+                if after >= mon_cap:
+                    cash_reserve += after - mon_cap
+                    cum_wd += mon_cap
+                else:
+                    fr = min(mon_cap - after, cash_reserve)
+                    cash_reserve -= fr
+                    cum_wd += after + fr
+            else:
+                living = min(mon_cap, cash + cash_reserve)
+                cum_wd += living
+                if cash_reserve >= living:
+                    cash_reserve -= living
+                else:
+                    cash = max(0.0, cash - (living - cash_reserve))
+                    cash_reserve = 0.0
+
+        if sh == 0 and cash > 0:
+            daily_r = max(0.0, rate[ci] / 100.0 - RP_SPREAD) / 252
+            cash += cash * daily_r * (1 - RP_TAX_R)
+
+        if sh > 0 and cash_reserve > 0 and sp500[ci] > 0:
+            ta2 = sh * lev[ci] + cash_reserve + tax_reserve + voo_sh * sp500[ci]
+            if ta2 >= VOO_THR:
+                exc = cash_reserve - mon_cap * 36
+                if exc > 0:
+                    voo_sh += exc / sp500[ci]
+                    cash_reserve -= exc
+
+        pv = sh * lev[ci] if sh > 0 else cash
+        total = pv + cash_reserve + voo_sh * sp500[ci]
+        if total < min_total:
+            min_total = total
+        if total >= peak:
+            peak = total; uw_days = 0
+        else:
+            mdd = max(mdd, 1.0 - total / peak)
+            uw_days += 1
+            if uw_days > uw_max:
+                uw_max = uw_days
+        if total <= 0:
+            break
+
+    ce = min(start_idx + sim_len - 1, n - 1)
+    pv_end = sh * lev[ce] if sh > 0 else cash
+    final = pv_end + cash_reserve + voo_sh * sp500[ce]
+    res = np.empty(11)
+    res[0] = final; res[1] = cum_wd; res[2] = trades; res[3] = mdd
+    res[4] = uw_max; res[5] = cut; res[6] = cap_lo; res[7] = whip
+    res[8] = regret; res[9] = min_total; res[10] = 0.0
+    return res
+
+
+DETAIL_STRATS = [(15, 15), (15, 1), (15, 2), (15, 3), (15, 5), (15, 10),
+                 (20, 1), (20, 2), (12, 2), (12, 1), (11, 1), (10, 1), (9, 1), (5, 1)]
+
+
+def strat_key(s, b):
+    return f"S{s}B{b}"
+
+
+def lagged(m):
+    # 신호 확인 다음 거래일 종가에 체결: ci일 매매는 ci-1일 종가 기준 신호
+    cl = np.roll(m["closes"], 1); cl[0] = cl[1]
+    em = np.roll(m["ema"], 1); em[0] = np.nan
+    return cl, em
+
+
+def pct(a, q):
+    s = np.sort(a)
+    return float(s[int(len(s) * q)])
+
+
+def detail_block(m, starts, lag):
+    cl, em = lagged(m) if lag else (m["closes"], m["ema"])
+    labels = [d.strftime("%Y-%m") for d in m["dates"][starts]]
+    summary, cohorts = [], {}
+    for s, b in DETAIL_STRATS:
+        R = np.array([run_detail(m["lev"], cl, em, m["sp500"], m["mon_id"], m["year"],
+                                 m["rate"], i, s, b) for i in starts])
+        fin = R[:, 0] / 1e8; mdd = R[:, 3] * 100; uw = R[:, 4] / 21; cut = R[:, 5] * 100
+        lo = R[:, 6] / 1e4; whip = R[:, 7]; reg = R[:, 8]; mn = R[:, 9] / 1e8
+        summary.append({
+            "key": strat_key(s, b), "sell": s, "buy": b,
+            "med": round(med(fin), 1), "p10": round(pct(fin, 0.1), 1),
+            "p25": round(pct(fin, 0.25), 1), "worst": round(float(fin.min()), 2),
+            "wd": round(float(R[:, 1].mean() / 1e8), 2),
+            "trades": round(float(R[:, 2].mean()), 1),
+            "mdd_med": round(med(mdd), 1), "mdd_worst": round(float(mdd.max()), 1),
+            "uw_med": round(med(uw), 1), "uw_worst": round(float(uw.max()), 1),
+            "cut_med": round(med(cut), 1), "cut_worst": round(float(cut.max()), 1),
+            "live_lo_worst": round(float(lo.min()), 0),
+            "min_worst": round(float(mn.min()), 2),
+            "whip_avg": round(float(whip.mean()), 2), "whip_max": int(whip.max()),
+            "regret_avg": round(float(reg.mean()), 2),
+            "min_med": round(med(mn), 2),
+            "below5": round(float(np.mean(mn < 5)) * 100, 1),
+            "below3": round(float(np.mean(mn < 3)) * 100, 1),
+        })
+        cohorts[strat_key(s, b)] = [
+            [round(float(fin[k]), 1), round(float(mdd[k]), 1), round(float(uw[k]), 1),
+             round(float(cut[k]), 1), int(lo[k]), round(float(mn[k]), 2),
+             int(R[k, 2]), int(whip[k]), int(reg[k])]
+            for k in range(len(starts))]
+    return {"starts": labels, "summary": summary, "cohorts": cohorts,
+            "fields": ["final", "mdd", "uw", "cut", "live_lo", "min", "trades", "whip", "regret"]}
+
+
+def export_detail(ndx_dates, ndx_close, sp_on_ndx, fed):
+    path = OUT_PATH.parent / "withdrawal_asym_detail.json"
+    out = {"meta": {"generated": str(ndx_dates[-1].date()), "sim_years": SIM_YEARS,
+                    "whip_window": WHIP_WINDOW}, "modes": {}}
+    for label, swap in [("standard", False), ("v2", True)]:
+        m = build_market(ndx_dates, ndx_close, sp_on_ndx, fed, EXP_TQQQ, swap)
+        starts = monthly_starts(m)
+        for lag in (0, 1):
+            key = f"{label}_{'next' if lag else 'same'}"
+            out["modes"][key] = detail_block(m, starts, lag)
+            print(f"\n[{key}]", flush=True)
+            for r in out["modes"][key]["summary"]:
+                print(f"  {r['key']:<7} 중앙 {r['med']:>7.0f} P10 {r['p10']:>6.1f} 최악 {r['worst']:>6.1f} "
+                      f"최저자산 {r['min_worst']:>5.2f} 낙폭중앙 {r['mdd_med']:>4.0f}% 최악 {r['mdd_worst']:>4.0f}% "
+                      f"회복 {r['uw_med']:>4.1f}/{r['uw_worst']:>5.1f}개월 생활비감소 {r['cut_med']:>4.0f}/{r['cut_worst']:>4.0f}% "
+                      f"최저생활비 {r['live_lo_worst']:>4.0f}만 거래 {r['trades']:>4.1f} 헛매수 {r['whip_avg']:.1f}/{r['whip_max']} "
+                      f"비싸게재매수 {r['regret_avg']:.1f} 5억미만 {r['below5']}%", flush=True)
+    with open(path, "w", encoding="utf-8") as fp:
+        json.dump(out, fp, ensure_ascii=False, separators=(",", ":"))
+    print(f"\n저장: {path} ({path.stat().st_size / 1024:.0f} KB)", flush=True)
+
+
 def main():
     t0 = time.time()
     ndx, sp5, fed = load()
@@ -356,6 +594,8 @@ def main():
         print(f"\n===== SP500 3x / {label}  시작 시점 {len(s_starts)}개 =====", flush=True)
         print_heat("SP500 " + label, s_rows, DAYS_GRID)
         top(s_rows)
+
+    export_detail(ndx_dates, ndx_close, sp_on_ndx, fed)
 
     OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     with open(OUT_PATH, "w", encoding="utf-8") as fp:
