@@ -206,7 +206,7 @@ export default function HomeSimulator() {
           {[
             { s: 'A', color: 'text-emerald-600 dark:text-emerald-400', title: 'A전략 — 계속 적립', desc: '한도 없이 매일 20만원 계속.' },
             { s: 'B', color: 'text-yellow-500 dark:text-yellow-400', title: 'B전략 — 매입액 한도', desc: '매일 20만원, 누적 2.5억 도달 시 중단 후 보유.' },
-            { s: 'C', color: 'text-blue-500 dark:text-blue-400', title: 'C전략 — 3년 분할 거치', desc: '2.5억을 36개월 균등 분할 + 매일 20만원 계속.' },
+            { s: 'C', color: 'text-blue-500 dark:text-blue-400', title: 'C전략 — 5년 분할 거치', desc: '2.5억을 60개월 균등 분할 + 매일 20만원 계속.' },
           ].map(({ s, color, title, desc }) => (
             <div key={s} className="border-l-2 border-gray-200 dark:border-gray-700 pl-3">
               <p className={`text-xs font-semibold ${color}`}>{title}</p>

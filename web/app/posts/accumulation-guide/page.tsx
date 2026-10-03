@@ -155,7 +155,7 @@ export default function AccumulationGuidePage() {
             <span className="text-gray-600 dark:text-gray-300">
               이 사이트의 이름 그대로다. 그냥 계속 산다. 장기 하락장에서 꾸준한 매수로 평균단가를 낮춘다.
               목돈이 없고 꾸준한 현금흐름만 있는 사람에게 적합.
-              TQQQ 기준 worst(닷컴버블 1998-06 진입)는 약 13.7년이다.
+              TQQQ 기준 worst(닷컴버블 직전 1998-05 진입)는 약 13.9년이다 (운용보수·스왑금리 반영).
             </span>
           </div>
         </div>
@@ -179,28 +179,29 @@ export default function AccumulationGuidePage() {
         <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl px-5 py-4 mb-6 text-sm space-y-2">
           <div className="flex gap-3">
             <span className="text-blue-500 dark:text-blue-400 font-mono shrink-0 w-12">방법</span>
-            <span className="text-gray-600 dark:text-gray-300">첫날 2.5억 거치 + 이후 매일 20만원 무한 적립.</span>
+            <span className="text-gray-600 dark:text-gray-300">거치금 2.5억을 5년(60개월) 동안 매달 나눠 넣고, 매일 20만원도 계속 적립.</span>
           </div>
           <div className="flex gap-3">
             <span className="text-blue-500 dark:text-blue-400 font-mono shrink-0 w-12">이유</span>
             <span className="text-gray-600 dark:text-gray-300">
               목돈이 있을 때 초반 복리 베이스를 크게 시작하면 달성 속도가 훨씬 빨라진다.
-              A전략에 비해 중앙값 달성기간이 수년 단축된다.
+              TQQQ 기준 중간 4.3년으로 A전략(6.3년)보다 약 2년 빠르고, 최악도 9.0년으로 가장 짧다 (운용보수·스왑금리 반영).
             </span>
           </div>
           <div className="flex gap-3">
             <span className="text-red-500 dark:text-red-400 font-mono shrink-0 w-12">주의</span>
             <span className="text-gray-600 dark:text-gray-300">
-              고점에 전액 거치하면 닷컴버블 같은 상황에서 최악이 길어진다.
-              <strong className="text-gray-800 dark:text-gray-200"> 거치금은 3년(756거래일) 균등 분할 진입을 권장한다.</strong>
+              고점에 전액 거치하면 닷컴버블 같은 상황에서 최악이 길어진다(즉시 거치 최악 12.3년).
+              3·4년 분할은 2008년 금융위기 직전에 목표에 아슬아슬하게 못 닿는 경우가 생겨 최악이 13년대로 오히려 늘어난다.
+              <strong className="text-gray-800 dark:text-gray-200"> 거치금은 5년(60개월) 월 균등 분할을 권장한다</strong> — 10년 넘게 걸리는 경우가 0번, 최악 9.0년.
             </span>
           </div>
         </div>
 
         <AnalysisLink
           href="/posts/lump-sum-vs-split"
-          title="거치금 2.5억, 한번에 넣을까 vs 3년에 나눠 넣을까"
-          desc="668가지 시작 시점 백테스트. 3년 시간 분할이 TQQQ worst 케이스를 12.24년 → 8.82년으로 3.4년 단축. 왜 3년인지 데이터로 확인."
+          title="거치금 2.5억, 한번에 넣을까 vs 5년에 나눠 넣을까"
+          desc="668가지 시작 시점 백테스트 (운용보수·스왑금리 반영). 5년 월 분할이 TQQQ 최악을 12.32년 → 8.99년으로, 10년 넘게 걸린 경우를 27번 → 0번으로 줄인다. 3년이 아닌 이유도 데이터로 확인."
         />
 
         <AccumulationStats />
@@ -309,7 +310,7 @@ export default function AccumulationGuidePage() {
           <div className="space-y-0">
             <AnalysisLink
               href="/posts/lump-sum-vs-split"
-              title="거치금 2.5억, 한번에 넣을까 vs 3년에 나눠 넣을까"
+              title="거치금 2.5억, 한번에 넣을까 vs 5년에 나눠 넣을까"
               desc="668가지 시점 백테스트. C전략 거치금 진입 방식 설계의 근거."
             />
             <AnalysisLink

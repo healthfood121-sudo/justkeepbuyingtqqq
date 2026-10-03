@@ -17,6 +17,7 @@ from pathlib import Path
 
 # data_loader 경로 추가
 sys.path.insert(0, str(Path(__file__).parent))
+import data_loader
 from data_loader import load_ndx_prices, load_sp500_prices, get_monthly_starts
 
 # ===== 파라미터 =====
@@ -24,9 +25,15 @@ DAILY_INVEST  = 200_000          # 일 20만원
 CAP_INVEST    = 250_000_000      # A전략 한도: 2.5억
 LUMP_SUM      = 250_000_000      # B전략 거치금: 2.5억
 N_INVEST_DAYS = CAP_INVEST // DAILY_INVEST  # 1250일
+# C전략 거치금 분할 기간 — 2026-10 스왑금리 반영 재검증으로 3년(36) → 5년(60)
+# (accumulation_split_recheck.py: 5년부터 10년 넘게 걸리는 경우 0, 최악 9.0년, 비용 변화에도 안정)
+C_SPLIT_MONTHS = 60
 
-DATA_DIR = "D:/justkeepbuyingtqqq/data/"
-OUT_DIR  = "D:/justkeepbuyingtqqq/results/"
+ROOT     = Path(__file__).resolve().parent.parent
+DATA_DIR = str(ROOT / "data") + "/"
+OUT_DIR  = str(ROOT / "results") + "/"
+data_loader.DATA_DIR = ROOT / "data"
+data_loader.FED_PATH = ROOT / "data/fed_funds_rate.json"
 
 
 # ===== SP500 합성가격 (비용 없음 — 비교용) =====
@@ -46,7 +53,7 @@ def backtest_cohort(prices, start_i, strategy, target, dates_pd):
     strategy: 'A', 'B', 'C'
       A — 매일 20만원, 한도 없이 계속 (JUST KEEP BUYING)
       B — 매일 20만원, 누적 투자액 2.5억 도달 시 중단
-      C — 매일 20만원 + 거치금 2.5억을 36개월 월 분할 (매월 첫 거래일에 LUMP_SUM/36 추가)
+      C — 매일 20만원 + 거치금 2.5억을 C_SPLIT_MONTHS개월(5년) 월 분할 (매월 첫 거래일에 LUMP_SUM/C_SPLIT_MONTHS 추가)
     target: 목표 금액 (예: 1_000_000_000)
     returns: dict
     """
@@ -67,11 +74,11 @@ def backtest_cohort(prices, start_i, strategy, target, dates_pd):
         inv[:k] = DAILY_INVEST
 
     else:  # C
-        # 3년 월 분할 거치: 매월 첫 거래일에 LUMP_SUM/36 추가 (36개월)
+        # 5년 월 분할 거치: 매월 첫 거래일에 LUMP_SUM/C_SPLIT_MONTHS 추가
         inv = np.full(n, float(DAILY_INVEST))
-        monthly_chunk = LUMP_SUM / 36
+        monthly_chunk = LUMP_SUM / C_SPLIT_MONTHS
         month_starts = get_monthly_starts(dates_pd[start_i : start_i + n])
-        for ms in month_starts[:36]:
+        for ms in month_starts[:C_SPLIT_MONTHS]:
             inv[ms] += monthly_chunk
 
     shares_per_day = inv / px
