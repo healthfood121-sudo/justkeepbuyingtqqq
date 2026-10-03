@@ -21,6 +21,9 @@ import numpy as np
 import pandas as pd
 from PIL import Image, ImageDraw, ImageFont
 
+sys.path.insert(0, str(Path(__file__).parent))
+from data_loader import load_ndx_prices  # noqa: E402
+
 # ════════════════════════════════════════════════════════════
 # 설정
 # ════════════════════════════════════════════════════════════
@@ -35,7 +38,7 @@ DAILY_INVEST_KRW = 200_000
 TARGET_KRW       = 1_000_000_000
 EXCHANGE_RATE    = 1_300       # KRW/USD 고정 (표시용)
 DAILY_INVEST_USD = DAILY_INVEST_KRW / EXCHANGE_RATE
-TQQQ_START_USD   = 1.0        # 1971-02-05 합성 시작가
+TQQQ_START_USD   = 100.0      # data_loader 합성 시작가 (data_loader 기준)
 
 ACCOUNT_STR = "****-**65 [위탁종합] 해리"
 
@@ -65,20 +68,16 @@ def fnt(size: int, bold: bool = False) -> ImageFont.FreeTypeFont:
 # 데이터 로드 & TQQQ 합성
 # ════════════════════════════════════════════════════════════
 
-def load_tqqq() -> pd.DataFrame:
-    df = pd.read_csv(DATA_DIR / "ndx_1971_now.csv", parse_dates=["Date"])
-    df = df.sort_values("Date").reset_index(drop=True)
-
-    # 1985-10 스플라이스 보정
-    mask = df["Date"] == "1985-10-01"
-    if mask.any():
-        i = df.index[mask][0]
-        scale = df.loc[i - 1, "Close"] / df.loc[i, "Close"]
-        df.loc[i:, "Close"] *= scale
-
-    ret = df["Close"].pct_change().fillna(0)
-    df["tqqq"] = TQQQ_START_USD * (1 + ret * 3).cumprod()
-    return df
+def load_tqqq(mode: str = 'standard') -> pd.DataFrame:
+    """
+    data_loader 통해 NDX 기반 TQQQ 합성가격 로드.
+    mode: 'standard' (운용보수만) | 'with_costs' (운용보수 + 스왑금리)
+    """
+    d = load_ndx_prices(mode)
+    return pd.DataFrame({
+        'Date': pd.Series(d['dates']),
+        'tqqq': d['ndx3x'],
+    })
 
 
 # ════════════════════════════════════════════════════════════
@@ -155,7 +154,7 @@ CHART_W    = W - PAD * 2
 RIGHT_SAFE = 130    # 오른쪽 안전여백 (YouTube 리액션 버튼 가림 방지)
 
 
-def render(snap: dict, hist_port: list[float], hist_inv: list[float], start_date) -> bytes:
+def render(snap: dict, hist_port: list[float], hist_inv: list[float], start_date, mode: str = 'standard') -> bytes:
     img  = Image.new("RGB", (W, H), BG)
     draw = ImageDraw.Draw(img, "RGBA")
 
@@ -166,7 +165,10 @@ def render(snap: dict, hist_port: list[float], hist_inv: list[float], start_date
     # ─── 헤더 ──────────────────────────────────────────────
     draw.rectangle([0, 0, W, 128], fill=PALE)
     ct(draw, "특정일잔고", W // 2, 18, fnt(52, bold=True), BLACK)
-    ct(draw, "매일 20만원 · TQQQ 적립 시뮬레이션", W // 2, 82, fnt(26), GRAY)
+    subtitle = ("매일 20만원 · TQQQ 적립 (운용비·스왑금리 반영)"
+                if mode == 'with_costs'
+                else "매일 20만원 · TQQQ 적립 시뮬레이션")
+    ct(draw, subtitle, W // 2, 82, fnt(26), GRAY)
     draw.line([0, 128, W, 128], fill=LGRAY, width=2)
 
     # ─── 계좌행 ────────────────────────────────────────────
@@ -316,9 +318,9 @@ def render(snap: dict, hist_port: list[float], hist_inv: list[float], start_date
 # 영상 생성
 # ════════════════════════════════════════════════════════════
 
-def make_video(start_ym: str, out_path: Path):
-    print(f"[1/3] 데이터 로드 중...")
-    df = load_tqqq()
+def make_video(start_ym: str, out_path: Path, mode: str = 'standard'):
+    print(f"[1/3] 데이터 로드 중... (mode={mode})")
+    df = load_tqqq(mode)
 
     print(f"[2/3] {start_ym} 시뮬레이션 중...")
     snaps = simulate(df, start_ym)
@@ -359,7 +361,7 @@ def make_video(start_ym: str, out_path: Path):
         # 히스토리는 현재 인덱스까지
         hp = [snaps[j]["port_krw"] for j in range(0, i + 1, max(1, (i + 1) // 300))]
         hi = [snaps[j]["inv_krw"]  for j in range(0, i + 1, max(1, (i + 1) // 300))]
-        frame = render(snap, hp, hi, start_date)
+        frame = render(snap, hp, hi, start_date, mode)
         proc.stdin.write(frame)
         last_frame = frame
 
@@ -383,12 +385,20 @@ def make_video(start_ym: str, out_path: Path):
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("--start", default="1971-02", help="코호트 시작월 (YYYY-MM)")
-    p.add_argument("--out",   default=None,       help="출력 MP4 경로")
+    p.add_argument("--start",  default="1971-02",   help="코호트 시작월 (YYYY-MM)")
+    p.add_argument("--out",    default=None,         help="출력 MP4 경로")
+    p.add_argument("--mode",   default="standard",   choices=["standard", "with_costs"],
+                   help="가격 모드: standard(운용보수만) | with_costs(운용보수+스왑금리)")
     args = p.parse_args()
 
-    out = Path(args.out) if args.out else OUT_DIR / f"{args.start}.mp4"
-    make_video(args.start, out)
+    if args.out:
+        out = Path(args.out)
+    elif args.mode == 'with_costs':
+        out = OUT_DIR / f"{args.start}_costs.mp4"
+    else:
+        out = OUT_DIR / f"{args.start}.mp4"
+
+    make_video(args.start, out, mode=args.mode)
 
 
 if __name__ == "__main__":
