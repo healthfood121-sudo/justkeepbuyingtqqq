@@ -257,18 +257,18 @@ function DataPageInner() {
               onClick={() => setWithCosts(false)}
               className={`px-3 py-1.5 transition-colors ${
                 !withCosts
-                  ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
-                  : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
               }`}
             >
               운용보수만
             </button>
             <button
               onClick={() => setWithCosts(true)}
-              className={`px-3 py-1.5 border-l border-gray-200 dark:border-gray-700 transition-colors ${
+              className={`px-3 py-1.5 transition-colors ${
                 withCosts
                   ? 'bg-blue-600 text-white'
-                  : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
+                  : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
               }`}
             >
               + 스왑금리
