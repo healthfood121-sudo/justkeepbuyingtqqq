@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Header from '@/components/Header'
 import WithdrawalStats from '@/components/WithdrawalStats'
+import WithdrawalExecTable from '@/components/WithdrawalExecTable'
 
 function Tag({ children }: { children: string }) {
   return (
@@ -136,52 +137,86 @@ export default function WithdrawalGuidePage() {
           더 나은 방법이 발견될 때마다 업데이트하고, 각 연구 단계의 근거는 아래 링크에서 확인할 수 있습니다.
         </Callout>
 
-        {/* ── 현재 권장 전략 ───────────────────────────────────── */}
-        <H2>현재 권장 전략</H2>
-
-        <Callout color="blue">
-          <strong>EMA200 15일 연속 + 동적 인출률 (S0) — 대부분 권장</strong><br />
-          668가지 시작 시점 · 스왑금리·양도세 모두 반영: 생존율 100% · 중간값 20년 후 <strong>150억</strong> · 연평균 수익률 14.5% (중간값 기준)<br />
-          <span className="text-xs opacity-80">(현금 전환 매도세 미반영 시 266억 · 운용보수만 반영한 이론치 1,109억)</span><br />
-          매수 후 구조적으로 1일 재매도 없음 · 평균 거래 21회/20년<br />
-          <Link href="/posts/withdrawal-guide/tradelog" className="text-blue-600 dark:text-blue-400 underline text-xs mt-1 inline-block">
-            전체 거래 로그 — 668가지 시작 시점 날짜별 매수/매도 기록 →
-          </Link>
-        </Callout>
-
-        <P>
-          EMA200 기반 전략에서 출발해 여러 아이디어를 테스트했다.
-          수익만 보면 D10GK(중간값 393억)가 압도적이지만, 대부분의 사람에게는 S0가 현실적인 선택이다.
-          S0는 매수 후 최소 15거래일 보유가 구조적으로 보장되고, 668가지 시작 시점 전체에서 1일 재매도 사례가 단 한 건도 없다.
-          T25(146억)와 수익은 비슷하고 규칙이 단순하다.
-        </P>
+        {/* ── 현재 결론 ───────────────────────────────────────── */}
+        <H2>현재 결론 — 실제로 할 수 있는 방식으로 다시 계산했다 (2026-10-03)</H2>
 
         <Callout color="yellow">
-          <strong>대표 수치는 두 가지 현실 비용을 모두 반영한 값이다.</strong><br />
-          ① <strong>스왑금리</strong>: TQQQ는 3배를 만들기 위해 돈을 빌리는 비용을 낸다. 기준금리의 2배로,
-          기준금리 3.75%(2026-09) 기준 운용보수 포함 연 8% 이상이다.<br />
-          ② <strong>현금 전환 매도 양도세</strong>: 하락 신호로 전량 팔 때도 수익분에 22%가 붙는다 (연 250만원 공제).
-          초기 연구는 이 세금을 빼고 계산했다.<br /><br />
-          둘을 빼고 계산하면 S0 중간값이 1,109억까지 올라가지만, 실제로 손에 쥘 수 있는 값은 150억 수준이다.
-          신호(나스닥100 지수)는 비용과 무관하므로 매매 날짜는 같고, S0와 D10GK의 순위도 바뀌지 않았다.
-          다만 1970년대처럼 금리가 높던 시기에 시작한 경우는 20년 뒤 원금(10억) 아래로 끝나기도 했다
-          (S0 기준 428가지 중 50가지, D10GK는 14가지).
+          <strong>초기 연구에는 실제로는 불가능한 가정이 두 가지 있었다.</strong><br />
+          ① <strong>신호가 뜬 그날 종가에 매매</strong> — 신호는 종가가 확정돼야(한국 시간 새벽 5~6시) 알 수 있으므로 그 가격에 살 수 없다.
+          이제는 <strong>신호 다음 거래일에 매매</strong>하는 것으로 계산한다.<br />
+          ② <strong>20년에서 자르기</strong> — 1970년대에 시작해 고금리기 직후에 계산이 끝난 경우들이 &lsquo;원금 미만&rsquo;으로 잡혔다.
+          30년 이상 들고 가면 모든 전략에서 원금 미만은 0가지다. 또 20년 중간값은 매매를 하루 이틀 늦게 하는 것만으로도 크게 흔들려,
+          전략 비교는 <strong>오늘(2026-09)까지 보유한 연평균 수익률</strong>을 기준으로 한다.<br /><br />
+          스왑금리(기준금리의 2배)와 하락 신호로 전량 팔 때의 양도세 22%도 모두 반영했다.
+        </Callout>
+
+        <WithdrawalExecTable />
+
+        <H3>그래서 뭘 하면 되나 — 들일 수 있는 수고에 따라 고른다</H3>
+        <div className="space-y-3 mb-6">
+          {[
+            {
+              name: 'T25 — 1년 최고 종가보다 25% 떨어지면 판다',
+              color: 'border-blue-300 dark:border-blue-700',
+              stat: '연 22.1% (중간값) · 하위 10%도 연 18.3%',
+              how: [
+                '매도: 나스닥100 종가가 최근 1년 최고 종가보다 25% 이상 낮게 끝나면 → 다음 거래일에 전량 매도',
+                '매수: 200일 평균선 위로 15거래일 연속 마감하면 → 다음 거래일에 전액 매수',
+                '확인: 일주일에 한 번 홈 화면 ‘오늘의 신호’를 본다 (1~3일 늦게 매매해도 연 21.8~22.7%)',
+                '매매: 55년 동안 매도 15번 (10년에 약 3번). 현금으로 있는 기간 13%',
+              ],
+              warn: '매수 후 5거래일 안에 다시 파는 경우가 매도 4번에 1번꼴(15번 중 4번). 큰 폭락 몇 번에 결과가 크게 좌우된다. 기준을 −30%로 해도 연 22.5%, −35%는 19.6%, −20%는 17.3%로 모두 S0보다 높아 −25%만 우연히 좋은 것은 아니다.',
+            },
+            {
+              name: 'D10GK — S0에 급락 때 조기 재매수를 더한다',
+              color: 'border-purple-300 dark:border-purple-700',
+              stat: '연 18.5% (중간값) · 하위 10% 연 12.6%',
+              how: [
+                '매도·일반 매수: S0와 같다 (다음 거래일에 매매)',
+                '조기 재매수: 현금으로 있는 동안 매일 밤, 홈 화면에 나오는 가격으로 TQQQ LOC 매수 주문을 걸어둔다',
+                '  → 나스닥100이 ‘RSI 30 미만 + 200일 평균선보다 10% 이상 아래’로 끝나는 날에만 체결된다',
+                '수고: 현금으로 있는 기간(전체의 18%)에만 매일 주문. 보유 중에는 S0와 똑같다',
+              ],
+              warn: 'LOC 주문을 하지 않고 다음날 사면 연 15.9%로 S0와 비슷해진다. LOC를 지원하는 증권사여야 한다. TQQQ는 매일 정확히 3배로 움직이지 않아 경계선 근처에서는 체결이 어긋날 수 있다.',
+            },
+            {
+              name: 'S0 — 200일 평균선 아래 15일 연속이면 판다',
+              color: 'border-gray-300 dark:border-gray-700',
+              stat: '연 15.1% (중간값) · 하위 10% 연 11.9%',
+              how: [
+                '매도: 200일 평균선 아래로 15거래일 연속 마감 → 다음 거래일에 전량 매도',
+                '매수: 200일 평균선 위로 15거래일 연속 마감 → 다음 거래일에 전액 매수',
+                '확인: 일주일에 한 번. 매수 후 곧바로 다시 파는 경우가 한 번도 없다',
+              ],
+              warn: '규칙이 가장 단순하고 심리적으로 편하지만, 같은 수고의 T25보다 수익이 낮다.',
+            },
+          ].map(c => (
+            <div key={c.name} className={`border rounded-xl px-4 py-3 ${c.color}`}>
+              <p className="text-sm font-bold text-gray-900 dark:text-white">{c.name}</p>
+              <p className="text-xs font-mono text-blue-600 dark:text-blue-400 mb-2">{c.stat} · 오늘까지 보유 · 실제로 가능한 방식</p>
+              <ul className="text-xs text-gray-600 dark:text-gray-300 space-y-1 mb-2">
+                {c.how.map(h => <li key={h} className={h.startsWith('  ') ? 'pl-3' : ''}>{h.startsWith('  ') ? h.trim() : `· ${h}`}</li>)}
+              </ul>
+              <p className="text-xs text-gray-400 dark:text-gray-500">{c.warn}</p>
+            </div>
+          ))}
+        </div>
+
+        <Callout color="blue">
+          <strong>매일 신호는 홈 화면 인출식 카드에 나온다.</strong> 매일 한국 시간 아침 7시 30분에 자동으로 갱신되며,
+          세 전략 각각의 현재 상태(TQQQ 보유/현금), 다음 거래일에 할 일, D10GK의 LOC 매수 가격을 보여준다.
+          <Link href="/" className="text-blue-600 dark:text-blue-400 underline ml-1">홈으로 →</Link><br /><br />
+          자산이 커지면 일부를 현금으로 빼두는 규칙(자산별 현금 비중)은 오래 들고 갈수록 손해였다(S0 15.1% → 12.6%).
+          장기적으로 시장이 올라 현금으로 빼둔 만큼 덜 벌었기 때문이다. 큰돈을 지키는 마음의 평화가 필요할 때만 고려할 것.
         </Callout>
 
         <WithdrawalStats />
 
-        <Callout color="green">
-          <strong>수익 극대화 옵션: RSI 과매도 조기 재진입 + 이격도 필터 + Guyton-Klinger (D10GK)</strong><br />
-          668가지 시작 시점 · 스왑금리·양도세 모두 반영: 생존율 100% · 중간값 20년 후 <strong>393억</strong> · 연평균 수익률 20.2% (중간값 기준)<br />
-          <span className="text-xs opacity-80">(현금 전환 매도세 미반영 시 841억 · 운용보수만 반영한 이론치 3,741억)</span><br />
-          S0 대비 2.6배, 시작 시점 88%에서 S0보다 낫다. 원금 미만으로 끝난 경우도 14가지로 S0(50가지)보다 적다.
-          단, 하락장에서 매수 다음날 재매도 사이클이 반복된다.
-        </Callout>
-
         {/* ── 전체 전략 비교 ───────────────────────────────────── */}
-        <H2>지금까지 테스트한 전략 전체 비교</H2>
+        <H2>지금까지 테스트한 전략 전체 비교 (초기 연구 · 20년 · 신호 당일 매매 가정)</H2>
         <P>
           1단계부터 5단계까지 연구에서 나온 모든 전략의 결과를 한 표에 정리했다.
+          이 표는 모두 &lsquo;신호 당일 종가에 매매&rsquo;라는 불가능한 가정의 수치다. 실제로 가능한 방식의 비교는 위 표를 볼 것.
           초기 자산 10억 · 668가지 시작 시점(1971~현재) · 20년 시뮬레이션 기준.
           중앙값은 스왑금리와 모든 매도 양도세를 반영한 값이다. 옆 두 열은 초기 연구의 가정(현금 전환 매도세 미반영 / 운용보수만)으로 계산한 값으로,
           현실 기준으로 다시 계산하지 않은 전략은 &lsquo;—&rsquo;로 표시했다.
@@ -215,7 +250,7 @@ export default function WithdrawalGuidePage() {
                   dim: true,
                 },
                 {
-                  name: '★ EMA200 15일 (S0) — 대부분 권장',
+                  name: 'EMA200 15일 (S0)',
                   step: '2단계',
                   med: '150억', medV2: '266억', medV1: '1,109억', survival: '100%', trades: '21회',
                   post: '/posts/withdrawal-new-ideas', postLabel: '아이디어 8가지',
@@ -232,7 +267,7 @@ export default function WithdrawalGuidePage() {
                   dim: false,
                 },
                 {
-                  name: '★ D10GK (수익 최선)',
+                  name: 'D10GK',
                   step: '4단계',
                   med: '393억', medV2: '841억', medV1: '3,741억', survival: '100%', trades: '47회',
                   post: '/posts/withdrawal-new-ideas', postLabel: '아이디어 8가지',
@@ -299,7 +334,7 @@ export default function WithdrawalGuidePage() {
             </tbody>
           </table>
         </div>
-        <p className="text-xs text-gray-400 dark:text-gray-500 mb-10">흐린 행은 채택되지 않은 전략. <span className="text-blue-500 dark:text-blue-400">파란색</span> = 대부분 권장 · <span className="text-green-500 dark:text-green-400">초록색</span> = 수익 최선. 중앙값은 20년 완료 기준.</p>
+        <p className="text-xs text-gray-400 dark:text-gray-500 mb-10">흐린 행은 채택되지 않은 전략. 색 표시는 초기 연구 당시의 권장(파란색 S0)과 수익 최선(초록색 D10GK). 중앙값은 20년 완료 기준.</p>
 
         {/* ── 연구 흐름 ────────────────────────────────────────── */}
         <H2>연구 흐름: 어떻게 여기까지 왔나</H2>
@@ -375,12 +410,20 @@ export default function WithdrawalGuidePage() {
               desc: '신호는 S0 그대로 두고, 기준금리가 높을 때만 TQQQ(3배) 대신 QLD(2배)를 들고 가는 방식. 갈아탈 때 양도세 22%까지 반영했다. 기준을 6~7%로 잡으면 중간값 354~401억으로 S0(266억, 현금 전환 매도세 미반영 기준)보다 높았지만, 4~5%에서는 172~174억으로 오히려 낮았다. 기준값을 조금만 바꿔도 결과가 뒤집혀 우연에 가깝다고 판단. 항상 QLD(2배)는 중간값 193억으로 낮지만 20년 뒤 원금 미만으로 끝난 경우가 0가지다.',
             },
             {
-              step: '현재',
-              color: 'border-blue-300 dark:border-blue-700',
-              badge: 'bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400',
+              step: '8단계',
+              color: 'border-gray-300 dark:border-gray-700',
+              badge: 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400',
               title: '현실 기준 재검증 + 자산이 커지면 일부 현금화',
               result: 'S0 150억 · D10GK 393억 · 현금 비중 규칙 S0 189억 / D10GK 309억',
               desc: '스왑금리와 모든 매도의 양도세(하락 신호로 전량 현금 전환할 때 포함)를 넣어 다시 계산했다. 순위는 그대로이고 D10GK가 S0의 2.6배. 함께 검증한 규칙: 총자산 50억 이상이면 TQQQ ⅔ + 현금 ⅓, 200억 이상이면 TQQQ ⅓ + 현금 ⅔로 매월 맞춘다. 나스닥100으로 바꿔 드는 것(DLEV 197억)과 결과가 거의 같으면서 현금이라 언제든 쓸 수 있다. S0에 붙이면 중간값이 오르고(150→189억), D10GK에 붙이면 중간값은 내려가지만(393→309억) 하위 10% 경우가 23억→35억으로 좋아진다. 단, 50억에 도달하지 못한 나쁜 시작 시점은 보호하지 못한다.',
+            },
+            {
+              step: '현재',
+              color: 'border-blue-300 dark:border-blue-700',
+              badge: 'bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400',
+              title: '실제로 가능한 매매 시점 + 오늘까지 보유로 재검증',
+              result: '연평균 T25 22.1% · D10GK(LOC) 18.5% · S0 15.1%',
+              desc: '신호는 종가가 확정돼야 알 수 있으므로 신호 다음 거래일에 매매하도록 바꿨다. D10GK의 조기 재매수만 조건을 가격으로 환산한 LOC 주문으로 당일 종가에 산다. 20년에서 자르면 결과가 매매일 하루 이틀 차이에도 크게 흔들려, 1971년 이후 매달 시작해 오늘까지 보유한 연평균 수익률로 비교했다. 이 기준에서는 순위가 T25 > D10GK > S0로 바뀌었다.',
             },
           ].map(({ step, color, badge, title, result, desc, href, link }) => (
             <div key={step} className={`border rounded-xl px-4 py-4 ${color}`}>
@@ -631,18 +674,19 @@ export default function WithdrawalGuidePage() {
         <H2>6. 어떤 전략을 선택할까</H2>
 
         <P>
-          수익만 보면 D10GK가 압도적이다. 하지만 실생활에서 꾸준히 유지할 수 있는 전략인지도 중요하다.
-          복잡한 규칙은 지키다 지쳐 포기하면 무의미하기 때문이다.
+          실생활에서 꾸준히 유지할 수 있는 전략인지가 중요하다. 복잡한 규칙은 지키다 지쳐 포기하면 무의미하기 때문이다.
+          아래 수치는 모두 실제로 가능한 방식(신호 다음 거래일 매매, D10GK 조기 재매수는 LOC 주문)으로 1971~2016년에 시작해
+          오늘까지 보유한 연평균 수익률 중간값이다. 매매 횟수는 1971~2026년 전체 신호 기록 기준.
         </P>
 
         <Table
-          headers={['전략', '평균 거래', '1일 재매도', '신호 확인', '중앙값 (스왑금리·양도세 반영)']}
+          headers={['전략', '매도 횟수 (55년)', '매수 후 5일 내 재매도', '해야 할 일', '연평균 수익률']}
           rows={[
-            [<strong key="d10gk" className="text-green-600 dark:text-green-400">D10GK</strong>,
-              '47회/20년', '있음 (하락장)', '매일 (알림 권장)', <strong key="d10gkv" className="text-green-600 dark:text-green-400">393억</strong>],
-            [<strong key="s0" className="text-blue-600 dark:text-blue-400">S0 (EMA200 15일)</strong>,
-              '21회/20년', <strong key="s0w" className="text-green-600 dark:text-green-400">없음 (구조적)</strong>, '매일 (앱 표시 가능)', <strong key="s0v" className="text-blue-600 dark:text-blue-400">150억</strong>],
-            ['T25 (트레일링 스탑)', '12회/20년', '27.6%', '주 1회', '146억'],
+            [<strong key="t25" className="text-blue-600 dark:text-blue-400">T25 (1년 고점 −25%)</strong>,
+              '15번', '4번 (27%)', '주 1회 확인', <strong key="t25v" className="text-blue-600 dark:text-blue-400">22.1%</strong>],
+            [<strong key="d10gk" className="text-purple-600 dark:text-purple-400">D10GK</strong>,
+              '72번', '18번 (25%)', '현금일 때 매일 밤 LOC 주문', <strong key="d10gkv" className="text-purple-600 dark:text-purple-400">18.5%</strong>],
+            ['S0 (EMA200 15일)', '27번', <strong key="s0w" className="text-green-600 dark:text-green-400">0번</strong>, '주 1회 확인', '15.1%'],
           ]}
         />
 
@@ -663,20 +707,23 @@ export default function WithdrawalGuidePage() {
           매수: EMA200 위 15거래일 연속 회복 → 전액 재매수
         </FormulaBlock>
         <P>
-          20년에 평균 12번으로 거래가 가장 적다. 하지만 전체 매도의 27.6%가 매수 다음날 바로 재매도다.
+          매매가 가장 적다(55년간 매도 15번). 하지만 매도 4번 중 1번꼴로 매수 직후(5거래일 안에) 다시 판다.
           이유는 52주 고점이 1년간 유지되기 때문이다. 큰 하락 이후 EMA200을 회복해 매수해도,
           1년 전 고점 기준 −25%는 이미 근접해있어 다음날 조금만 빠져도 매도 조건이 충족된다.
-          거래 12회 중 3~4회가 다음날 재매도라면 실질 유효 포지션은 8~9회로 S0(21회)와 크게 다르지 않다.
-          2009-03 같은 장기 상승장 초입에서는 D10GK(1,588억)를 앞서기도 하지만(2,675억, 운용보수만 기준),
-          그 타이밍을 미리 알 수 없다.
+          그래도 실제로 가능한 방식으로 오늘까지 들고 가면 연 22.1%로 세 전략 중 가장 높고,
+          매매를 1~3일 늦게 해도(21.8~22.7%), 기준을 −30%(22.5%)나 −35%(19.6%)로 바꿔도 S0(15.1%)보다 높다.
+          대부분의 시간을 TQQQ로 들고 있다가(현금 기간 13%) 진짜 큰 폭락에서만 빠지는 구조라,
+          장기 상승의 혜택을 가장 많이 받는다. 반대로 결과가 몇 번의 큰 폭락에 크게 좌우된다는 한계가 있다.
         </P>
 
-        <H3>D10GK — 수익 최대화 전략</H3>
+        <H3>D10GK — S0에 급락 때 조기 재매수를 더한 전략</H3>
         <P>
-          RSI와 이격도를 매일 확인해야 하는 부담이 있다. 하지만 핵심은
-          &ldquo;RSI가 30 이하로 떨어지면 알림&rdquo; 하나를 설정해두는 것이다.
-          알림 없는 날에는 신경 쓸 필요가 없고, 알림이 오면 이격도 조건까지만 확인하면 된다.
-          20년에 47번(약 5개월에 1회) 행동 기회가 생긴다.
+          조기 재매수 조건(RSI 30 미만 + 200일 평균선보다 10% 이상 아래)은 그날 종가가 정해져야 알 수 있다.
+          다음날 사면 이점이 대부분 사라진다(연 18.5% → 15.9%).
+          대신 이 조건은 어제까지의 값으로 &ldquo;오늘 나스닥100이 X 이하로 끝나면 충족&rdquo;이라는 가격으로 바꿀 수 있다.
+          그 가격을 TQQQ 가격으로 환산해 <strong className="text-gray-900 dark:text-white">LOC 매수 주문</strong>(종가가 지정가 이하일 때만 체결)을
+          걸어두면 조건을 만족한 날 그 종가에 정확히 산다. 환산식은 1971년 이후 13,626거래일에서 실제 조건과 하루도 어긋나지 않았다.
+          홈 화면에 매일 이 가격이 나온다.
         </P>
         <Callout color="yellow">
           <strong>닷컴버블 같은 장기 하락에서는 매수 다음날 재매도될 수 있다</strong><br />
@@ -688,24 +735,21 @@ export default function WithdrawalGuidePage() {
         </Callout>
 
         <Callout color="blue">
-          <strong>RSI는 종가 기준이다</strong><br />
-          RSI는 장 마감(미국 동부 오후 4시, 한국 새벽 5시)에 종가가 확정된 뒤에야 최종값이 결정된다.
-          장중 RSI는 미확정 상태이므로 참고만 할 것.
-          실제 운영은 &ldquo;새벽 5시 이후 확인 → 조건 충족 시 다음 날 개장 후 매매&rdquo; 흐름이 현실적이다.
+          <strong>매도와 200일선 매수는 LOC로 못 건다</strong><br />
+          LOC 매수는 &ldquo;종가가 지정가 이하&rdquo;일 때만 체결된다. 그래서 &ldquo;종가가 X보다 낮으면 판다&rdquo;(매도)나
+          &ldquo;종가가 X보다 높으면 산다&rdquo;(200일선 위 15일 매수)는 걸 수 없다. 이 둘은 아침에 신호를 보고 다음 거래일에 매매한다.
         </Callout>
 
         <H3>결론: 무엇을 선택할까</H3>
         <Callout color="blue">
-          <strong>대부분의 사람</strong>에게 → <strong>S0 (EMA200 15일)</strong> — 1일 재매도 없음 · 중간값 150억<br />
-          수익을 극대화하고 알림 설정을 감수할 수 있다면 → <strong>D10GK</strong> — 중간값 393억<br />
-          거래 횟수를 최소화하고 싶다면 → <strong>T25</strong> — 12회/20년 (단, 1일 재매도 27.6% 감수)
+          주 1회만 볼 수 있다면 → <strong>T25</strong> — 연 22.1% · 매도 10년에 약 3번 (매수 직후 재매도 감수)<br />
+          현금일 때 매일 밤 주문을 걸 수 있다면 → <strong>D10GK</strong> — 연 18.5%<br />
+          매수 직후 다시 파는 일이 절대 싫다면 → <strong>S0</strong> — 연 15.1%
         </Callout>
         <P>
-          솔직히 말하면, <strong className="text-gray-900 dark:text-white">대부분의 사람에게는 S0가 현실적인 선택이다.</strong>{' '}
-          D10GK의 393억은 닷컴버블 속에서 매수→다음날 재매도를 반복 실행했을 때 나오는 숫자다.
-          T25는 거래가 적어 보이지만 그 중 27.6%가 다음날 재매도로, 실제 체감은 생각보다 불안정하다.
-          S0는 매수 후 최소 15일 보유가 보장되고, 150억으로 T25(146억)와 수익이 비슷하면서 규칙이 단순하다.
-          앱에서 현재 구간을 표시해주면 신호 확인 부담도 없다.
+          초기 연구는 S0를 대부분에게 권했지만, 실제로 가능한 방식으로 다시 계산하면 같은 수고의 T25가 S0보다 꾸준히 높다.
+          D10GK의 높은 수익은 &lsquo;신호 당일 종가 매수&rsquo;에서 나온 것이어서, LOC 주문 없이는 유지되지 않는다.
+          어느 쪽이든 홈 화면의 신호를 보고 규칙대로만 하면 된다.
         </P>
 
         {/* ── 7. 아직 해결 안 된 것들 ──────────────────────────── */}

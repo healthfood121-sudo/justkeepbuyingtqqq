@@ -1,5 +1,6 @@
 import Header from '@/components/Header'
 import HomeSimulator from '@/components/HomeSimulator'
+import WithdrawalSignal from '@/components/WithdrawalSignal'
 import Link from 'next/link'
 
 const principles = [
@@ -87,18 +88,23 @@ export default function HomePage() {
                 <span className="text-xs font-bold text-purple-500 dark:text-purple-400 tracking-wide">JUST KEEP SELLING</span>
                 <span className="text-base font-bold text-gray-900 dark:text-white">인출식</span>
               </div>
-              <div className="mb-3">
-                <div className="flex justify-between items-baseline mb-1">
-                  <span className="text-xs font-bold text-blue-700 dark:text-blue-300">S0 — EMA200 15일</span>
-                  <span className="text-xs font-mono font-bold text-blue-600 dark:text-blue-400">중간값 150억</span>
-                </div>
-                <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-                  나스닥100이 EMA200 아래 15거래일 연속 → 전량 현금. 위 15일 연속 → 재매수.
-                  매수 후 1일 재매도 없음. 생존율 100%.
-                </p>
+              <WithdrawalSignal />
+              <div className="mb-3 space-y-1">
+                {[
+                  { name: 'T25',   desc: '1년 고점 −25% 매도 · 주 1회 확인',      v: '22.1%' },
+                  { name: 'D10GK', desc: '급락 때 LOC 조기 재매수 · 현금일 때 매일', v: '18.5%' },
+                  { name: 'S0',    desc: '200일선 15일 · 주 1회 확인',            v: '15.1%' },
+                ].map(r => (
+                  <div key={r.name} className="flex justify-between items-baseline gap-2">
+                    <span className="text-xs text-gray-600 dark:text-gray-300">
+                      <strong className="text-gray-800 dark:text-gray-200">{r.name}</strong> <span className="text-gray-400 dark:text-gray-500">{r.desc}</span>
+                    </span>
+                    <span className="text-xs font-mono font-bold text-purple-600 dark:text-purple-400 whitespace-nowrap">연 {r.v}</span>
+                  </div>
+                ))}
               </div>
               <div className="text-xs text-gray-400 dark:text-gray-500 mb-4">
-                668가지 시작 시점 · 동적 인출 월 0.3~0.7%
+                1971~2016년 매달 시작 · 오늘까지 보유한 연평균 수익률 중간값 · 신호 다음날 매매 · 스왑금리·양도세 반영
               </div>
               <Link
                 href="/posts/withdrawal-guide"

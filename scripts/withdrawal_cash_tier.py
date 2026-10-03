@@ -158,9 +158,17 @@ def target_w(p: Param, total: float) -> float:
     return w
 
 
-def run_sim(tq, qq, closes, ema, dates, rp_daily, rsi, peaks, start, p: Param, signal_tax: bool) -> dict:
+def run_sim(tq, qq, closes, ema, dates, rp_daily, rsi, peaks, start, p: Param, signal_tax: bool,
+            exec_mode: str = "same", horizon_days: int = 0, snaps: tuple = (), exec_delay: int = 1) -> dict:
+    """exec_mode — 신호가 확정된 종가 대비 실제 매매 시점
+         same : 신호가 뜬 그날 종가에 매매 (기존 가정. 종가가 확정돼야 신호를 알 수 있으므로 실제로는 불가능)
+         next : 종가 확정 후 아침에 확인 → 다음 거래일 종가에 매매
+         loc  : RSI 조기 재매수만 당일 종가 (조건을 가격으로 환산한 LOC 매수 주문), 나머지는 next
+       horizon_days — 0이면 SIM_YEARS, 아니면 그 거래일 수 (데이터 끝을 넘으면 끝까지)
+       snaps — 이 거래일 수가 지난 시점의 총자산을 기록 (예: 20년=5040)
+       exec_delay — next/loc에서 신호 확정 후 몇 거래일 뒤 종가에 실행할지 (기본 1)"""
     n       = len(closes)
-    sim_len = min(n - start, SIM_YEARS * 252)
+    sim_len = min(n - start, horizon_days or SIM_YEARS * 252)
 
     # 보유: [주수, 평균단가]
     pos = {"tq": [0.0, 0.0], "qq": [0.0, 0.0]}
@@ -248,6 +256,10 @@ def run_sim(tq, qq, closes, ema, dates, rp_daily, rsi, peaks, start, p: Param, s
             buy("qq", cash, start)
 
     below = above = 0
+    pend = None
+    pend_at = 0
+    cash_days = 0
+    snap_vals = {}
     last_mon = None
     for j in range(sim_len):
         ci = start + j
@@ -311,9 +323,24 @@ def run_sim(tq, qq, closes, ema, dates, rp_daily, rsi, peaks, start, p: Param, s
             if p.trail_thr > 0:
                 sell_sig = closes[ci] < peaks[ci] * (1 - p.trail_thr)
             buy_sig = above >= TIME_FILTER
+            rsi_buy = False
             if (not invested and not buy_sig and p.rsi_thr > 0 and not np.isnan(rsi[ci])
                     and rsi[ci] < p.rsi_thr and (closes[ci] - e) / e <= p.div_thr):
-                buy_sig = True
+                buy_sig = rsi_buy = True
+            if exec_mode != "same":
+                fire_sell = fire_buy = False
+                if pend is not None and j >= pend_at:
+                    fire_sell = pend == "sell" and invested
+                    fire_buy  = pend == "buy" and not invested
+                    pend = None
+                if pend is None and not (fire_sell or fire_buy):
+                    if invested and sell_sig:
+                        pend, pend_at = "sell", j + exec_delay
+                    elif not invested and rsi_buy and exec_mode == "loc":
+                        fire_buy = True
+                    elif not invested and buy_sig:
+                        pend, pend_at = "buy", j + exec_delay
+                sell_sig, buy_sig = fire_sell, fire_buy
             if invested and sell_sig:
                 for k in ("tq", "qq"):
                     sell(k, val(k, ci), ci, taxable=signal_tax)
@@ -329,7 +356,11 @@ def run_sim(tq, qq, closes, ema, dates, rp_daily, rsi, peaks, start, p: Param, s
                 above = 0
 
         cash += cash * rp_daily[ci]
+        if not invested:
+            cash_days += 1
         tot = total(ci)
+        if j + 1 in snaps:
+            snap_vals[j + 1] = round(tot / EOK, 2)
         if invested and tot > 0:
             cash_w_sum += (tot - val("tq", ci)) / tot
             cash_w_n   += 1
@@ -345,7 +376,10 @@ def run_sim(tq, qq, closes, ema, dates, rp_daily, rsi, peaks, start, p: Param, s
         "trades":    trades,
         "rebals":    rebals,
         "side_pct":  round(cash_w_sum / cash_w_n * 100, 1) if cash_w_n else 0.0,
-        "ongoing":   bool(sim_len < SIM_YEARS * 252),
+        "ongoing":   bool(sim_len < (horizon_days or SIM_YEARS * 252)),
+        "years":     round(sim_len / 252, 2),
+        "cash_days_pct": round(cash_days / sim_len * 100, 1) if sim_len else 0.0,
+        "snaps":     snap_vals,
     }
 
 
