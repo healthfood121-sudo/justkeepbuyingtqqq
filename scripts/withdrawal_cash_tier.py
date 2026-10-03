@@ -75,6 +75,8 @@ class Param:
     div_thr:   float = -0.10
     use_gk:    bool  = False   # Guyton-Klinger 인출 배수
     trail_thr: float = 0.0     # >0: NDX 52주 고점 대비 하락률로 매도
+    days:      int   = TIME_FILTER  # 200일선 아래/위 연속일 (매도·매수 신호)
+    hold:      bool  = False   # True: 신호 없이 계속 보유 (인출만)
 
 
 STRATEGIES = [
@@ -247,7 +249,7 @@ def run_sim(tq, qq, closes, ema, dates, rp_daily, rsi, peaks, start, p: Param, s
             buy("tq", -diff, ci)
         rebals += 0 if force else 1
 
-    invested = not (not np.isnan(ema[start]) and closes[start] < ema[start])
+    invested = p.hold or not (not np.isnan(ema[start]) and closes[start] < ema[start])
     if invested:
         tot = total(start)
         w = target_w(p, tot)
@@ -259,7 +261,11 @@ def run_sim(tq, qq, closes, ema, dates, rp_daily, rsi, peaks, start, p: Param, s
     pend = None
     pend_at = 0
     cash_days = 0
+    peak_tot, max_dd = float(INITIAL), 0.0
+    sells = quick = 0
+    last_buy_j = -999
     snap_vals = {}
+    snap_wd = {}
     last_mon = None
     for j in range(sim_len):
         ci = start + j
@@ -319,10 +325,12 @@ def run_sim(tq, qq, closes, ema, dates, rp_daily, rsi, peaks, start, p: Param, s
                 above += 1; below = 0
             else:
                 below = above = 0
-            sell_sig = below >= TIME_FILTER
+            sell_sig = below >= p.days
             if p.trail_thr > 0:
                 sell_sig = closes[ci] < peaks[ci] * (1 - p.trail_thr)
-            buy_sig = above >= TIME_FILTER
+            if p.hold:
+                sell_sig = False
+            buy_sig = above >= p.days
             rsi_buy = False
             if (not invested and not buy_sig and p.rsi_thr > 0 and not np.isnan(rsi[ci])
                     and rsi[ci] < p.rsi_thr and (closes[ci] - e) / e <= p.div_thr):
@@ -346,6 +354,9 @@ def run_sim(tq, qq, closes, ema, dates, rp_daily, rsi, peaks, start, p: Param, s
                     sell(k, val(k, ci), ci, taxable=signal_tax)
                 invested = False
                 trades += 1
+                sells += 1
+                if j - last_buy_j <= 5:
+                    quick += 1
                 below = 0
             elif not invested and buy_sig:
                 rebalance(ci, force=True)
@@ -353,6 +364,7 @@ def run_sim(tq, qq, closes, ema, dates, rp_daily, rsi, peaks, start, p: Param, s
                     buy("qq", cash, ci)
                 invested = True
                 trades += 1
+                last_buy_j = j
                 above = 0
 
         cash += cash * rp_daily[ci]
@@ -361,10 +373,14 @@ def run_sim(tq, qq, closes, ema, dates, rp_daily, rsi, peaks, start, p: Param, s
         tot = total(ci)
         if j + 1 in snaps:
             snap_vals[j + 1] = round(tot / EOK, 2)
+            snap_wd[j + 1] = round(withdrawn / EOK, 2)
         if invested and tot > 0:
             cash_w_sum += (tot - val("tq", ci)) / tot
             cash_w_n   += 1
         min_val = min(min_val, tot)
+        peak_tot = max(peak_tot, tot)
+        if peak_tot > 0:
+            max_dd = max(max_dd, 1 - tot / peak_tot)
         if tot <= 0:
             break
 
@@ -380,6 +396,10 @@ def run_sim(tq, qq, closes, ema, dates, rp_daily, rsi, peaks, start, p: Param, s
         "years":     round(sim_len / 252, 2),
         "cash_days_pct": round(cash_days / sim_len * 100, 1) if sim_len else 0.0,
         "snaps":     snap_vals,
+        "snaps_wd":  snap_wd,
+        "max_dd":    round(max_dd * 100, 1),
+        "sells":     sells,
+        "quick_resells": quick,
     }
 
 
