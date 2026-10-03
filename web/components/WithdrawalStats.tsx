@@ -16,7 +16,7 @@ function fmt억(v: number) {
 }
 
 export default function WithdrawalStats() {
-  const [withCosts, setWithCosts] = useState(false)
+  const [withCosts, setWithCosts] = useState(true)
   const [meta,      setMeta]      = useState<Meta | null>(null)
   const [loading,   setLoading]   = useState(true)
 
@@ -27,9 +27,8 @@ export default function WithdrawalStats() {
       .then(d => { setMeta(d.meta); setLoading(false) })
   }, [withCosts])
 
-  const survivalPct = meta
-    ? `${(meta.n_complete / meta.n_cohorts * 100).toFixed(1)}%`
-    : '—'
+  // n_complete = 20년을 다 채운 시작 시점 수 (나머지는 아직 진행 중). 생존율이 아님.
+  const completed = meta ? `${meta.n_complete} / ${meta.n_cohorts}` : '—'
 
   return (
     <div className="border border-gray-200 dark:border-gray-700 rounded-2xl p-5 mb-6">
@@ -59,7 +58,7 @@ export default function WithdrawalStats() {
       {!loading && meta && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
           {[
-            { label: '생존율',        value: survivalPct },
+            { label: '20년 완료',     value: completed },
             { label: '중간값 (20년)', value: fmt억(meta.median_final) },
             { label: '평균 거래',     value: `${Math.round(meta.avg_trades)}회/20년` },
             { label: 'TQQQ 스왑금리', value: withCosts ? '반영' : '미반영 (이론치)' },
@@ -72,6 +71,9 @@ export default function WithdrawalStats() {
         </div>
       )}
 
+      <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">
+        거래 로그용 별도 계산(신호 당일 종가 매매 가정, 현금 보유 중 이자 미반영 등)이라 본문의 실제 가능한 방식 수치와 다르다.
+      </p>
       <Link
         href="/posts/withdrawal-guide/tradelog"
         className="text-xs text-blue-500 hover:underline"

@@ -1,5 +1,6 @@
 import Header from '@/components/Header'
 import HomeSimulator from '@/components/HomeSimulator'
+import WithdrawalSignal from '@/components/WithdrawalSignal'
 import Link from 'next/link'
 
 const principles = [
@@ -89,16 +90,17 @@ export default function HomePage() {
               </div>
               <div className="mb-3">
                 <div className="flex justify-between items-baseline mb-1">
-                  <span className="text-xs font-bold text-blue-700 dark:text-blue-300">S0 — EMA200 15일</span>
-                  <span className="text-xs font-mono font-bold text-blue-600 dark:text-blue-400">중간값 1,109억</span>
+                  <span className="text-xs font-bold text-purple-700 dark:text-purple-300">권장: T25 — 1년 고점 −25%면 매도</span>
+                  <span className="text-xs font-mono font-bold text-purple-600 dark:text-purple-400 whitespace-nowrap">연 22.4%</span>
                 </div>
                 <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-                  나스닥100이 EMA200 아래 15거래일 연속 → 전량 현금. 위 15일 연속 → 재매수.
-                  매수 후 1일 재매도 없음. 생존율 100%.
+                  나스닥100 종가가 1년 최고 종가보다 25% 낮게 끝나면 다음 날 전량 현금.
+                  200일 평균선 위 15일 연속이면 다음 날 재매수. 생활비는 매달 자산의 0.3~0.7%, 상한 없음.
                 </p>
               </div>
+              <WithdrawalSignal />
               <div className="text-xs text-gray-400 dark:text-gray-500 mb-4">
-                668가지 시작 시점 · 동적 인출 월 0.3~0.7%
+                1971~2016년 매달 시작해 오늘까지 · 생활비 포함 연 수익률 중간값 (하위 10%도 17.1%) · 스왑금리·양도세 반영
               </div>
               <Link
                 href="/posts/withdrawal-guide"
