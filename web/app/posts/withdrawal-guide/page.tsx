@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Header from '@/components/Header'
+import WithdrawalStats from '@/components/WithdrawalStats'
 
 function Tag({ children }: { children: string }) {
   return (
@@ -153,6 +154,8 @@ export default function WithdrawalGuidePage() {
           S0는 매수 후 최소 15거래일 보유가 구조적으로 보장되고, 668가지 시작 시점 전체에서 1일 재매도 사례가 단 한 건도 없다.
           T25(1,064억)보다 수익도 앞서며 규칙이 단순하다.
         </P>
+
+        <WithdrawalStats />
 
         <Callout color="green">
           <strong>수익 극대화 옵션: RSI 과매도 조기 재진입 + 이격도 필터 + Guyton-Klinger (D10GK)</strong><br />
