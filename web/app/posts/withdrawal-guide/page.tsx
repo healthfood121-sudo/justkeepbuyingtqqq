@@ -125,7 +125,7 @@ export default function WithdrawalGuidePage() {
             인출식 방법론: 10억 달성 후 어떻게 꺼내 쓰나
           </h1>
           <div className="flex items-center gap-3 flex-wrap">
-            <span className="text-sm text-gray-400">2026-10-01 · 최종수정 2026-10-02</span>
+            <span className="text-sm text-gray-400">2026-10-01 · 최종수정 2026-10-03</span>
             {['인출식', 'EMA200', 'MA200', '동적인출률', 'FIRE', 'TQQQ', '방법론'].map(t => <Tag key={t}>{t}</Tag>)}
           </div>
         </div>
@@ -141,7 +141,8 @@ export default function WithdrawalGuidePage() {
 
         <Callout color="blue">
           <strong>EMA200 15일 연속 + 동적 인출률 (S0) — 대부분 권장</strong><br />
-          668가지 시작 시점 기준: 생존율 100% · 중간값 20년 후 <strong>1,109억</strong> · 연평균 수익률 25.9%<br />
+          668가지 시작 시점 · TQQQ 스왑금리 반영 기준: 생존율 100% · 중간값 20년 후 <strong>266억</strong> · 연평균 수익률 16.6%<br />
+          <span className="text-xs opacity-80">(운용보수만 반영한 이론치: 중간값 1,109억 · 연평균 25.9%)</span><br />
           매수 후 구조적으로 1일 재매도 없음 · 평균 거래 21회/20년<br />
           <Link href="/posts/withdrawal-guide/tradelog" className="text-blue-600 dark:text-blue-400 underline text-xs mt-1 inline-block">
             전체 거래 로그 — 668가지 시작 시점 날짜별 매수/매도 기록 →
@@ -150,17 +151,28 @@ export default function WithdrawalGuidePage() {
 
         <P>
           EMA200 기반 전략에서 출발해 여러 아이디어를 테스트했다.
-          수익만 보면 D10GK(중간값 3,741억)가 압도적이지만, 대부분의 사람에게는 S0가 현실적인 선택이다.
+          수익만 보면 D10GK(중간값 841억)가 압도적이지만, 대부분의 사람에게는 S0가 현실적인 선택이다.
           S0는 매수 후 최소 15거래일 보유가 구조적으로 보장되고, 668가지 시작 시점 전체에서 1일 재매도 사례가 단 한 건도 없다.
-          T25(1,064억)보다 수익도 앞서며 규칙이 단순하다.
+          T25(195억)보다 수익도 앞서며 규칙이 단순하다.
         </P>
+
+        <Callout color="yellow">
+          <strong>모든 수치는 TQQQ 스왑금리(기준금리의 2배)를 반영한 값이 기준이다.</strong><br />
+          TQQQ는 3배를 만들기 위해 돈을 빌리는 비용(스왑금리)을 낸다. 기준금리 3.75%(2026-09) 기준으로 운용보수 포함 연 8% 이상이다.
+          이 비용을 빼면 중간값이 약 4분의 1로 줄어든다. 신호(나스닥100 지수)는 비용과 무관하므로 매매 날짜는 같고,
+          전략 간 순위도 거의 바뀌지 않는다. 다만 1970년대처럼 금리가 높던 시기에 시작한 경우는
+          20년 뒤 원금(10억) 아래로 끝나기도 했다 (S0 기준 428가지 중 15가지).<br /><br />
+          <strong>아직 반영 안 된 것:</strong> 이 백테스트는 하락 신호로 전량 현금 전환할 때의 양도세(22%)를 매기지 않았다.
+          실제로는 이 매도도 과세 대상이므로 실제 결과는 위 수치보다 낮다. 재검증 예정.
+        </Callout>
 
         <WithdrawalStats />
 
         <Callout color="green">
           <strong>수익 극대화 옵션: RSI 과매도 조기 재진입 + 이격도 필터 + Guyton-Klinger (D10GK)</strong><br />
-          668가지 시작 시점 기준: 생존율 100% · 중간값 20년 후 <strong>3,741억</strong> · 연평균 수익률 32.1%<br />
-          S0 대비 3.4배 우세. 단, 하락장에서 매수 다음날 재매도 사이클이 반복된다.
+          668가지 시작 시점 · 스왑금리 반영 기준: 생존율 100% · 중간값 20년 후 <strong>841억</strong> · 연평균 수익률 22.0%<br />
+          <span className="text-xs opacity-80">(운용보수만 반영한 이론치: 중간값 3,741억)</span><br />
+          S0 대비 3.2배 우세. 단, 하락장에서 매수 다음날 재매도 사이클이 반복된다.
         </Callout>
 
         {/* ── 전체 전략 비교 ───────────────────────────────────── */}
@@ -168,13 +180,14 @@ export default function WithdrawalGuidePage() {
         <P>
           1단계부터 5단계까지 연구에서 나온 모든 전략의 결과를 한 표에 정리했다.
           초기 자산 10억 · 668가지 시작 시점(1971~현재) · 20년 시뮬레이션 기준.
+          중앙값은 스왑금리 반영 기준이고, 옆 열은 운용보수만 반영한 이론치다.
         </P>
 
         <div className="overflow-x-auto mb-3">
           <table className="w-full text-sm border-collapse">
             <thead>
               <tr className="border-b border-gray-200 dark:border-gray-700">
-                {['전략', '중앙값', '생존율', '거래/20년', '포스트', '데이터'].map(h => (
+                {['전략', '중앙값', '운용보수만', '생존율', '거래/20년', '포스트', '데이터'].map(h => (
                   <th key={h} className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">{h}</th>
                 ))}
               </tr>
@@ -184,7 +197,7 @@ export default function WithdrawalGuidePage() {
                 {
                   name: 'SP500 드로다운 v1',
                   step: '1단계',
-                  med: '12.7억', survival: '100%', trades: '—',
+                  med: '1.4억', medV1: '12.7억', survival: '100%', trades: '—',
                   post: '/posts/withdrawal-comparison', postLabel: '비교 분석',
                   data: '/posts/withdrawal-comparison/data',
                   dim: true,
@@ -192,7 +205,7 @@ export default function WithdrawalGuidePage() {
                 {
                   name: 'NDX SMA200 기준선',
                   step: '1단계',
-                  med: '203억', survival: '99.8%', trades: '144회',
+                  med: '68억', medV1: '203억', survival: '99.3%', trades: '144회',
                   post: '/posts/withdrawal-comparison', postLabel: '비교 분석',
                   data: '/posts/withdrawal-comparison/data',
                   dim: true,
@@ -200,7 +213,7 @@ export default function WithdrawalGuidePage() {
                 {
                   name: '★ EMA200 15일 (S0) — 대부분 권장',
                   step: '2단계',
-                  med: '1,109억', survival: '100%', trades: '21회',
+                  med: '266억', medV1: '1,109억', survival: '100%', trades: '21회',
                   post: '/posts/withdrawal-new-ideas', postLabel: '아이디어 8가지',
                   data: '/posts/withdrawal-new-ideas/data',
                   dim: false,
@@ -209,7 +222,7 @@ export default function WithdrawalGuidePage() {
                 {
                   name: 'RSI<30 조기 재진입',
                   step: '3단계',
-                  med: '3,231억', survival: '100%', trades: '57회',
+                  med: '724억', medV1: '3,231억', survival: '100%', trades: '57회',
                   post: '/posts/withdrawal-new-ideas', postLabel: '아이디어 8가지',
                   data: '/posts/withdrawal-new-ideas/data',
                   dim: false,
@@ -217,7 +230,7 @@ export default function WithdrawalGuidePage() {
                 {
                   name: '★ D10GK (수익 최선)',
                   step: '4단계',
-                  med: '3,741억', survival: '100%', trades: '47회',
+                  med: '841억', medV1: '3,741억', survival: '100%', trades: '47회',
                   post: '/posts/withdrawal-new-ideas', postLabel: '아이디어 8가지',
                   data: '/posts/withdrawal-new-ideas/data',
                   best: true,
@@ -225,7 +238,7 @@ export default function WithdrawalGuidePage() {
                 {
                   name: 'T25 트레일링스탑',
                   step: '5단계',
-                  med: '1,064억', survival: '100%', trades: '12회',
+                  med: '195억', medV1: '1,064억', survival: '100%', trades: '12회',
                   post: '/posts/withdrawal-new-ideas2', postLabel: '새 아이디어',
                   data: '/posts/withdrawal-new-ideas2/data',
                   dim: false,
@@ -233,7 +246,7 @@ export default function WithdrawalGuidePage() {
                 {
                   name: 'DLEV 레버리지 하향',
                   step: '5단계',
-                  med: '474억', survival: '100%', trades: '35회',
+                  med: '281억', medV1: '474억', survival: '100%', trades: '35회',
                   post: '/posts/withdrawal-new-ideas2', postLabel: '새 아이디어',
                   data: '/posts/withdrawal-new-ideas2/data',
                   dim: true,
@@ -241,7 +254,7 @@ export default function WithdrawalGuidePage() {
                 {
                   name: 'GRAD 단계적 현금화',
                   step: '5단계',
-                  med: '131억', survival: '100%', trades: '54회',
+                  med: '77억', medV1: '131억', survival: '100%', trades: '54회',
                   post: '/posts/withdrawal-new-ideas2', postLabel: '새 아이디어',
                   data: '/posts/withdrawal-new-ideas2/data',
                   dim: true,
@@ -253,6 +266,7 @@ export default function WithdrawalGuidePage() {
                     <span className="ml-1.5 text-xs text-gray-400 dark:text-gray-600">{row.step}</span>
                   </td>
                   <td className={`py-2 px-3 font-mono ${row.best ? 'font-bold text-green-600 dark:text-green-400' : row.rec ? 'font-bold text-blue-600 dark:text-blue-400' : 'text-gray-700 dark:text-gray-300'}`}>{row.med}</td>
+                  <td className="py-2 px-3 font-mono text-xs text-gray-400 dark:text-gray-500">{row.medV1}</td>
                   <td className="py-2 px-3 text-gray-500 dark:text-gray-400">{row.survival}</td>
                   <td className="py-2 px-3 text-gray-500 dark:text-gray-400">{row.trades}</td>
                   <td className="py-2 px-3">
@@ -266,7 +280,7 @@ export default function WithdrawalGuidePage() {
             </tbody>
           </table>
         </div>
-        <p className="text-xs text-gray-400 dark:text-gray-500 mb-10">흐린 행은 채택되지 않은 전략. <span className="text-blue-500 dark:text-blue-400">파란색</span> = 대부분 권장 · <span className="text-green-500 dark:text-green-400">초록색</span> = 수익 최선. 중앙값은 20년 완료 기준.</p>
+        <p className="text-xs text-gray-400 dark:text-gray-500 mb-10">흐린 행은 채택되지 않은 전략. <span className="text-blue-500 dark:text-blue-400">파란색</span> = 대부분 권장 · <span className="text-green-500 dark:text-green-400">초록색</span> = 수익 최선. 중앙값은 20년 완료 기준, 하락 신호 매도 시 양도세 미반영.</p>
 
         {/* ── 연구 흐름 ────────────────────────────────────────── */}
         <H2>연구 흐름: 어떻게 여기까지 왔나</H2>
@@ -278,7 +292,7 @@ export default function WithdrawalGuidePage() {
               color: 'border-gray-300 dark:border-gray-700',
               badge: 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400',
               title: 'SP500 낙폭 기반 전략 (v1)',
-              result: '중간값 12.7억',
+              result: '중간값 1.4억 (스왑금리 반영) · 운용보수만 12.7억',
               desc: 'SP500이 −20% 이상 하락하면 인출 중단하는 방식. 하락 중에도 TQQQ를 보유해 손실이 누적됐다.',
               href: '/posts/withdrawal-comparison',
               link: '비교 분석 →',
@@ -288,7 +302,7 @@ export default function WithdrawalGuidePage() {
               color: 'border-blue-300 dark:border-blue-700',
               badge: 'bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400',
               title: '★ EMA200 연속 15일 + 동적 인출률 (S0) — 현재 권장',
-              result: '중간값 1,109억 (668가지 기준) · 생존율 100%',
+              result: '중간값 266억 (스왑금리 반영) · 운용보수만 1,109억 · 생존율 100%',
               desc: '나스닥100이 EMA200 아래에서 15거래일 연속이면 전액 현금 전환. 95가지 설정값 조합 탐색에서 최적 조합. 매수 후 1일 재매도 사례 없음 — 구조적 안전장치.',
               href: '/posts/withdrawal-new-ideas',
               link: '아이디어 8가지 →',
@@ -298,7 +312,7 @@ export default function WithdrawalGuidePage() {
               color: 'border-purple-200 dark:border-purple-800/50',
               badge: 'bg-purple-50 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400',
               title: '8가지 새 아이디어 테스트',
-              result: 'RSI 조기 재진입 → 중간값 3,231억',
+              result: 'RSI 조기 재진입 → 중간값 724억 (스왑금리 반영) · 운용보수만 3,231억',
               desc: '골든크로스, 분할 재진입, 동적 레버리지 등 8가지를 비교. RSI가 30 미만으로 떨어지면 EMA200 신호를 기다리지 않고 즉시 재매수하는 방식이 압도적 우세.',
               href: '/posts/withdrawal-new-ideas',
               link: '테스트 결과 →',
@@ -308,7 +322,7 @@ export default function WithdrawalGuidePage() {
               color: 'border-green-300 dark:border-green-700',
               badge: 'bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-400',
               title: 'RSI + 이격도 −10% 필터 + Guyton-Klinger (D10GK)',
-              result: '★ 중간값 3,741억 (668가지 기준)',
+              result: '★ 중간값 841억 (스왑금리 반영) · 운용보수만 3,741억',
               desc: 'RSI 신호에 "EMA200보다 10% 이상 떨어진 상태"라는 조건을 추가해 가짜 신호를 줄였다. 자산이 많이 늘었을 때 인출을 자동으로 줄여주는 Guyton-Klinger 규칙도 결합. 과최적화 여부도 검증 완료.',
               href: '/posts/withdrawal-new-ideas',
               link: '상세 분석 →',
@@ -318,13 +332,13 @@ export default function WithdrawalGuidePage() {
               color: 'border-gray-300 dark:border-gray-700',
               badge: 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400',
               title: '트레일링 스탑·단계적 현금화·레버리지 하향 검증',
-              result: '추가 아이디어 3가지 — 모두 기준선 미달',
-              desc: '3가지 새 아이디어(T25/T20/T15 트레일링 스탑, 단계적 현금화 GRAD, 자산 규모별 레버리지 하향 DLEV)를 668가지 진입 시점으로 테스트. 모두 기준선을 넘지 못했다. 단, T25는 거래 12회로 가장 단순하고 장기 상승장에서 강점이 있다.',
+              result: '추가 아이디어 3가지 — 운용보수만 기준으로는 모두 기준선 미달',
+              desc: '3가지 새 아이디어(T25/T20/T15 트레일링 스탑, 단계적 현금화 GRAD, 자산 규모별 레버리지 하향 DLEV)를 668가지 진입 시점으로 테스트. 운용보수만 반영하면 모두 기준선을 넘지 못했다. 단, 스왑금리를 반영하면 DLEV(281억)가 S0(266억)를 소폭 앞선다 — 큰 자산을 스왑 비용이 없는 나스닥100(1배)으로 옮기기 때문. T25는 거래 12회로 가장 단순하다.',
               href: '/posts/withdrawal-new-ideas2',
               link: '검증 결과 →',
             },
             {
-              step: '현재',
+              step: '6단계',
               color: 'border-gray-300 dark:border-gray-700',
               badge: 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400',
               title: 'TQQQ 자체 신호 · 인출 시작 지연 검증',
@@ -332,6 +346,14 @@ export default function WithdrawalGuidePage() {
               desc: 'TQQQ 합성가격 기준 EMA200 신호는 레버리지 잡음으로 매매가 너무 잦아 완전히 열등. 반면 다른 수입원이 있어 인출을 1~2년 미룰 수 있는 경우, 최종 자산이 7~13% 늘어나는 효과가 있다.',
               href: '/posts/withdrawal-signal-test',
               link: '검증 결과 →',
+            },
+            {
+              step: '현재',
+              color: 'border-gray-300 dark:border-gray-700',
+              badge: 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400',
+              title: '금리 연동 레버리지 검증 (스왑금리 반영)',
+              result: '채택 안 함 — 기준금리 기준값에 따라 결과가 들쭉날쭉',
+              desc: '신호는 S0 그대로 두고, 기준금리가 높을 때만 TQQQ(3배) 대신 QLD(2배)를 들고 가는 방식. 갈아탈 때 양도세 22%까지 반영했다. 기준을 6~7%로 잡으면 중간값 354~401억으로 S0(266억)보다 높았지만, 4~5%에서는 172~174억으로 오히려 낮았다. 기준값을 조금만 바꿔도 결과가 뒤집혀 우연에 가깝다고 판단. 항상 QLD(2배)는 중간값 193억으로 낮지만 20년 뒤 원금 미만으로 끝난 경우가 0가지다.',
             },
           ].map(({ step, color, badge, title, result, desc, href, link }) => (
             <div key={step} className={`border rounded-xl px-4 py-4 ${color}`}>
@@ -372,7 +394,8 @@ export default function WithdrawalGuidePage() {
 
         <Callout color="blue">
           <strong>EMA200 연속15일 + 동적 인출률 (S0) — 668가지 시작 시점</strong><br />
-          생존율 100% · 중간값 20년 후 <strong>1,109억</strong> · 연평균 수익률 25.9% · 최솟값 1.68억 · 평균 매매 21회/20년
+          스왑금리 반영: 생존율 100% · 중간값 20년 후 <strong>266억</strong> · 연평균 수익률 16.6% · 최솟값 1.16억 · 평균 매매 21회/20년<br />
+          <span className="text-xs opacity-80">운용보수만: 중간값 1,109억 · 연평균 25.9% · 최솟값 1.68억</span>
         </Callout>
 
         <H3>2-1. 하락 신호: NDX 지수이동평균(EMA200) 연속 15일 필터</H3>
@@ -437,6 +460,12 @@ export default function WithdrawalGuidePage() {
           MA200 아래에서 전량 현금 전환 시에는 세금 없이 매도,
           인출(생활비 차감) 시에만 수익분 과세한다.
         </P>
+        <Callout color="red">
+          <strong>이 가정은 실제 세법과 다르다.</strong> 해외 ETF를 팔면 현금 전환 목적이라도 양도차익이 과세된다.
+          현금 전환 매도에도 22%를 매기면 S0 중간값(스왑금리 반영)은 266억에서 약 152억으로 줄고,
+          20년 뒤 원금(10억) 아래로 끝나는 경우가 15가지에서 50가지로 늘어난다 (금리 연동 레버리지 검증 스크립트로 확인).
+          전체 전략을 이 기준으로 다시 검증할 예정이다.
+        </Callout>
 
         {/* ── 3. 주요 시나리오 비교 ────────────────────────────── */}
         <H2>3. 주요 시나리오 비교 (초기 10억, 20년)</H2>
@@ -448,6 +477,7 @@ export default function WithdrawalGuidePage() {
           </Link>
         </div>
 
+        <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">아래 3·4장 표는 초기 탐색 단계 수치로, 운용보수만 반영(스왑금리 미반영)한 이론치다. 전략 간 비교용으로만 볼 것.</p>
         <Table
           headers={['전략', '생존율', '중앙값', '연평균 수익률', '최솟값', '거래수']}
           rows={[
@@ -580,13 +610,13 @@ export default function WithdrawalGuidePage() {
         </P>
 
         <Table
-          headers={['전략', '평균 거래', '1일 재매도', '신호 확인', '중앙값']}
+          headers={['전략', '평균 거래', '1일 재매도', '신호 확인', '중앙값 (스왑금리 반영)']}
           rows={[
             [<strong key="d10gk" className="text-green-600 dark:text-green-400">D10GK</strong>,
-              '47회/20년', '있음 (하락장)', '매일 (알림 권장)', <strong key="d10gkv" className="text-green-600 dark:text-green-400">3,741억</strong>],
+              '47회/20년', '있음 (하락장)', '매일 (알림 권장)', <strong key="d10gkv" className="text-green-600 dark:text-green-400">841억</strong>],
             [<strong key="s0" className="text-blue-600 dark:text-blue-400">S0 (EMA200 15일)</strong>,
-              '21회/20년', <strong key="s0w" className="text-green-600 dark:text-green-400">없음 (구조적)</strong>, '매일 (앱 표시 가능)', <strong key="s0v" className="text-blue-600 dark:text-blue-400">1,109억</strong>],
-            ['T25 (트레일링 스탑)', '12회/20년', '27.6%', '주 1회', '1,064억'],
+              '21회/20년', <strong key="s0w" className="text-green-600 dark:text-green-400">없음 (구조적)</strong>, '매일 (앱 표시 가능)', <strong key="s0v" className="text-blue-600 dark:text-blue-400">266억</strong>],
+            ['T25 (트레일링 스탑)', '12회/20년', '27.6%', '주 1회', '195억'],
           ]}
         />
 
@@ -611,7 +641,7 @@ export default function WithdrawalGuidePage() {
           이유는 52주 고점이 1년간 유지되기 때문이다. 큰 하락 이후 EMA200을 회복해 매수해도,
           1년 전 고점 기준 −25%는 이미 근접해있어 다음날 조금만 빠져도 매도 조건이 충족된다.
           거래 12회 중 3~4회가 다음날 재매도라면 실질 유효 포지션은 8~9회로 S0(21회)와 크게 다르지 않다.
-          2009-03 같은 장기 상승장 초입에서는 D10GK(1,588억)를 앞서기도 하지만(2,675억),
+          2009-03 같은 장기 상승장 초입에서는 D10GK(1,588억)를 앞서기도 하지만(2,675억, 운용보수만 기준),
           그 타이밍을 미리 알 수 없다.
         </P>
 
@@ -640,15 +670,15 @@ export default function WithdrawalGuidePage() {
 
         <H3>결론: 무엇을 선택할까</H3>
         <Callout color="blue">
-          <strong>대부분의 사람</strong>에게 → <strong>S0 (EMA200 15일)</strong> — 1일 재매도 없음 · 중간값 1,109억<br />
-          수익을 극대화하고 알림 설정을 감수할 수 있다면 → <strong>D10GK</strong> — 중간값 3,741억<br />
+          <strong>대부분의 사람</strong>에게 → <strong>S0 (EMA200 15일)</strong> — 1일 재매도 없음 · 중간값 266억<br />
+          수익을 극대화하고 알림 설정을 감수할 수 있다면 → <strong>D10GK</strong> — 중간값 841억<br />
           거래 횟수를 최소화하고 싶다면 → <strong>T25</strong> — 12회/20년 (단, 1일 재매도 27.6% 감수)
         </Callout>
         <P>
           솔직히 말하면, <strong className="text-gray-900 dark:text-white">대부분의 사람에게는 S0가 현실적인 선택이다.</strong>{' '}
-          D10GK의 3,741억은 닷컴버블 속에서 매수→다음날 재매도를 반복 실행했을 때 나오는 숫자다.
+          D10GK의 841억은 닷컴버블 속에서 매수→다음날 재매도를 반복 실행했을 때 나오는 숫자다.
           T25는 거래가 적어 보이지만 그 중 27.6%가 다음날 재매도로, 실제 체감은 생각보다 불안정하다.
-          S0는 매수 후 최소 15일 보유가 보장되고, 1,109억으로 T25(1,064억)보다 수익도 앞선다.
+          S0는 매수 후 최소 15일 보유가 보장되고, 266억으로 T25(195억)보다 수익도 앞선다 (스왑금리 반영 기준).
           앱에서 현재 구간을 표시해주면 신호 확인 부담도 없다.
         </P>
 
