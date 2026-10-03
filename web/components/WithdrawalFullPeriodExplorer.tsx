@@ -106,7 +106,7 @@ export default function WithdrawalFullPeriodExplorer() {
                     <td className="py-2 px-2">{f.n_below_init}가지</td>
                     <td className="py-2 px-2 font-mono">−{f.med_max_dd}%</td>
                     <td className="py-2 px-2">{f.cash_days_pct}%</td>
-                    <td className="py-2 px-2">{f.trades_per_10y}회</td>
+                    <td className="py-2 px-2 whitespace-nowrap">{f.trades_per_10y}회</td>
                     <td className="py-2 px-2">{f.quick_resell_pct}%</td>
                   </> : <>
                     <td className="py-2 px-2 font-mono font-bold text-gray-900 dark:text-white">{fmt(y.med_total)}</td>

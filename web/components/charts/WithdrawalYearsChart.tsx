@@ -3,7 +3,8 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList } from 'recharts'
 import { useTheme } from '@/components/ThemeProvider'
 
-export type YearStat = Record<string, number>
+// 시점별 통계 객체 (필드 이름은 metric으로 지정)
+export type YearStat = object
 export interface SeriesInput { name: string; label: string; byYear: Record<string, YearStat> }
 
 // 전략별 고정 색 (검증된 범주형 팔레트, 선택 순서와 무관하게 전략마다 고정)
@@ -35,7 +36,7 @@ export default function WithdrawalYearsChart({
     const row: Record<string, number | string> = { year: `${y}년` }
     for (const s of series) {
       const v = s.byYear[String(y)]
-      if (v) row[s.name] = Math.max(v[metric], 0.1)
+      if (v) row[s.name] = Math.max((v as Record<string, number>)[metric], 0.1)
     }
     return row
   })
