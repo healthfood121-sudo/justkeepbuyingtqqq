@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { loadNdx } from '@/lib/dataLoader'
 import { computeEmaSignal, SIGNAL_DAYS, type EmaSignal } from '@/lib/emaSignal'
+import EmaSignalChart from '@/components/charts/EmaSignalChart'
 
 function fmtNum(v: number) {
   return v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -145,6 +146,8 @@ export default function EmaSignalCard({ compact = false, showGuideLink = false }
           {s.lastSignal.action === 'BUY' ? '매수' : '매도'}
         </p>
       )}
+
+      {!compact && <EmaSignalChart history={s.history} />}
 
       {!compact && (
         <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-3 leading-relaxed">

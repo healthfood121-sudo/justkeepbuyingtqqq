@@ -127,7 +127,7 @@ export default function WithdrawalGuidePage() {
           </h1>
           <div className="flex items-center gap-3 flex-wrap">
             <span className="text-sm text-gray-400">2026-10-01 · 최종수정 2026-10-02</span>
-            {['인출식', 'EMA200', 'MA200', '동적인출률', 'FIRE', 'TQQQ', '방법론'].map(t => <Tag key={t}>{t}</Tag>)}
+            {['인출식', '200일 지수이동평균', '동적인출률', 'FIRE', 'TQQQ', '방법론'].map(t => <Tag key={t}>{t}</Tag>)}
           </div>
         </div>
 
@@ -141,7 +141,7 @@ export default function WithdrawalGuidePage() {
         <H2>현재 권장 전략</H2>
 
         <Callout color="blue">
-          <strong>EMA200 15일 연속 + 동적 인출률 (S0) — 대부분 권장</strong><br />
+          <strong>200일 지수이동평균 15일 연속 + 동적 인출률 (S0) — 대부분 권장</strong><br />
           668가지 시작 시점 기준: 생존율 100% · 중간값 20년 후 <strong>1,109억</strong> · 연평균 수익률 25.9%<br />
           매수 후 구조적으로 1일 재매도 없음 · 평균 거래 21회/20년<br />
           <Link href="/posts/withdrawal-guide/tradelog" className="text-blue-600 dark:text-blue-400 underline text-xs mt-1 inline-block">
@@ -154,7 +154,7 @@ export default function WithdrawalGuidePage() {
         </div>
 
         <P>
-          EMA200 기반 전략에서 출발해 여러 아이디어를 테스트했다.
+          200일 지수이동평균 기반 전략에서 출발해 여러 아이디어를 테스트했다.
           수익만 보면 D10GK(중간값 3,741억)가 압도적이지만, 대부분의 사람에게는 S0가 현실적인 선택이다.
           S0는 매수 후 최소 15거래일 보유가 구조적으로 보장되고, 668가지 시작 시점 전체에서 1일 재매도 사례가 단 한 건도 없다.
           T25(1,064억)보다 수익도 앞서며 규칙이 단순하다.
@@ -163,7 +163,7 @@ export default function WithdrawalGuidePage() {
         <WithdrawalStats />
 
         <Callout color="green">
-          <strong>수익 극대화 옵션: RSI 과매도 조기 재진입 + 이격도 필터 + Guyton-Klinger (D10GK)</strong><br />
+          <strong>수익 극대화 옵션: RSI 과매도 조기 재진입 + 이동평균 대비 하락폭 필터 + Guyton-Klinger (D10GK)</strong><br />
           668가지 시작 시점 기준: 생존율 100% · 중간값 20년 후 <strong>3,741억</strong> · 연평균 수익률 32.1%<br />
           S0 대비 3.4배 우세. 단, 하락장에서 매수 다음날 재매도 사이클이 반복된다.
         </Callout>
@@ -195,7 +195,7 @@ export default function WithdrawalGuidePage() {
                   dim: true,
                 },
                 {
-                  name: 'NDX SMA200 기준선',
+                  name: '나스닥100 200일 단순이동평균 기준선',
                   step: '1단계',
                   med: '203억', survival: '99.8%', trades: '144회',
                   post: '/posts/withdrawal-comparison', postLabel: '비교 분석',
@@ -203,7 +203,7 @@ export default function WithdrawalGuidePage() {
                   dim: true,
                 },
                 {
-                  name: '★ EMA200 15일 (S0) — 대부분 권장',
+                  name: '★ 200일 지수이동평균 15일 (S0) — 대부분 권장',
                   step: '2단계',
                   med: '1,109억', survival: '100%', trades: '21회',
                   post: '/posts/withdrawal-new-ideas', postLabel: '아이디어 8가지',
@@ -292,9 +292,9 @@ export default function WithdrawalGuidePage() {
               step: '2단계',
               color: 'border-blue-300 dark:border-blue-700',
               badge: 'bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400',
-              title: '★ EMA200 연속 15일 + 동적 인출률 (S0) — 현재 권장',
+              title: '★ 200일 지수이동평균 연속 15일 + 동적 인출률 (S0) — 현재 권장',
               result: '중간값 1,109억 (668가지 기준) · 생존율 100%',
-              desc: '나스닥100이 EMA200 아래에서 15거래일 연속이면 전액 현금 전환. 95가지 설정값 조합 탐색에서 최적 조합. 매수 후 1일 재매도 사례 없음 — 구조적 안전장치.',
+              desc: '나스닥100이 200일 지수이동평균 아래에서 15거래일 연속이면 전액 현금 전환. 95가지 설정값 조합 탐색에서 최적 조합. 매수 후 1일 재매도 사례 없음 — 구조적 안전장치.',
               href: '/posts/withdrawal-new-ideas',
               link: '아이디어 8가지 →',
             },
@@ -304,7 +304,7 @@ export default function WithdrawalGuidePage() {
               badge: 'bg-purple-50 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400',
               title: '8가지 새 아이디어 테스트',
               result: 'RSI 조기 재진입 → 중간값 3,231억',
-              desc: '골든크로스, 분할 재진입, 동적 레버리지 등 8가지를 비교. RSI가 30 미만으로 떨어지면 EMA200 신호를 기다리지 않고 즉시 재매수하는 방식이 압도적 우세.',
+              desc: '골든크로스, 분할 재진입, 동적 레버리지 등 8가지를 비교. RSI가 30 미만으로 떨어지면 200일 지수이동평균 신호를 기다리지 않고 즉시 재매수하는 방식이 압도적 우세.',
               href: '/posts/withdrawal-new-ideas',
               link: '테스트 결과 →',
             },
@@ -312,9 +312,9 @@ export default function WithdrawalGuidePage() {
               step: '4단계',
               color: 'border-green-300 dark:border-green-700',
               badge: 'bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-400',
-              title: 'RSI + 이격도 −10% 필터 + Guyton-Klinger (D10GK)',
+              title: 'RSI + 이동평균 대비 −10% 필터 + Guyton-Klinger (D10GK)',
               result: '★ 중간값 3,741억 (668가지 기준)',
-              desc: 'RSI 신호에 "EMA200보다 10% 이상 떨어진 상태"라는 조건을 추가해 가짜 신호를 줄였다. 자산이 많이 늘었을 때 인출을 자동으로 줄여주는 Guyton-Klinger 규칙도 결합. 과최적화 여부도 검증 완료.',
+              desc: 'RSI 신호에 "200일 지수이동평균보다 10% 이상 떨어진 상태"라는 조건을 추가해 가짜 신호를 줄였다. 자산이 많이 늘었을 때 인출을 자동으로 줄여주는 Guyton-Klinger 규칙도 결합. 과최적화 여부도 검증 완료.',
               href: '/posts/withdrawal-new-ideas',
               link: '상세 분석 →',
             },
@@ -334,7 +334,7 @@ export default function WithdrawalGuidePage() {
               badge: 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400',
               title: 'TQQQ 자체 신호 · 인출 시작 지연 검증',
               result: 'TQQQ 신호: 기준의 1/4 수준 열등 · 인출 2년 지연: +13%',
-              desc: 'TQQQ 합성가격 기준 EMA200 신호는 레버리지 잡음으로 매매가 너무 잦아 완전히 열등. 반면 다른 수입원이 있어 인출을 1~2년 미룰 수 있는 경우, 최종 자산이 7~13% 늘어나는 효과가 있다.',
+              desc: 'TQQQ 합성가격 기준 200일 지수이동평균 신호는 레버리지 잡음으로 매매가 너무 잦아 완전히 열등. 반면 다른 수입원이 있어 인출을 1~2년 미룰 수 있는 경우, 최종 자산이 7~13% 늘어나는 효과가 있다.',
               href: '/posts/withdrawal-signal-test',
               link: '검증 결과 →',
             },
@@ -376,33 +376,33 @@ export default function WithdrawalGuidePage() {
         <H2>2. S0 — 권장 전략 상세</H2>
 
         <Callout color="blue">
-          <strong>EMA200 연속15일 + 동적 인출률 (S0) — 668가지 시작 시점</strong><br />
+          <strong>200일 지수이동평균 연속15일 + 동적 인출률 (S0) — 668가지 시작 시점</strong><br />
           생존율 100% · 중간값 20년 후 <strong>1,109억</strong> · 연평균 수익률 25.9% · 최솟값 1.68억 · 평균 매매 21회/20년
         </Callout>
 
-        <H3>2-1. 하락 신호: NDX 지수이동평균(EMA200) 연속 15일 필터</H3>
+        <H3>2-1. 하락 신호: 나스닥100 200일 지수이동평균 연속 15일 필터</H3>
         <P>
-          <strong className="text-gray-900 dark:text-white">NDX(나스닥100) 지수</strong>가 200일{' '}
-          <strong className="text-gray-900 dark:text-white">지수이동평균(EMA200)</strong> 아래에서{' '}
+          <strong className="text-gray-900 dark:text-white">나스닥100 지수</strong>가{' '}
+          <strong className="text-gray-900 dark:text-white">200일 지수이동평균</strong> 아래에서{' '}
           <strong className="text-gray-900 dark:text-white">15거래일(약 3주) 연속 유지</strong>될 때
-          TQQQ 전량을 현금으로 전환한다. 반대로 EMA200 위에서 15거래일 연속이면 전액 재매수한다.
-          신호는 TQQQ 합성가격이 아닌 <strong className="text-gray-900 dark:text-white">원지수(NDX)로 판단</strong>한다.
+          TQQQ 전량을 현금으로 전환한다. 반대로 200일 지수이동평균 위에서 15거래일 연속이면 전액 재매수한다.
+          신호는 TQQQ 합성가격이 아닌 <strong className="text-gray-900 dark:text-white">원지수(나스닥100)로 판단</strong>한다.
         </P>
         <P>
-          <strong className="text-gray-900 dark:text-white">EMA200이 SMA200보다 우세한 이유</strong>: EMA는 최근 가격에 더 높은 가중치를 부여하기 때문에
+          <strong className="text-gray-900 dark:text-white">200일 지수이동평균이 200일 단순이동평균보다 우세한 이유</strong>: 지수이동평균은 최근 가격에 더 높은 가중치를 부여하기 때문에
           추세 전환에 더 빠르게 반응한다. 하락 초기에 더 일찍 신호를 주고, 반등 시에도 더 빨리 재진입할 수 있다.
-          95개 조합 테스트 결과, EMA200 계열이 SMA200 계열을 전체적으로 압도했다.
+          95개 조합 테스트 결과, 200일 지수이동평균 계열이 200일 단순이동평균 계열을 전체적으로 압도했다.
         </P>
         <P>
-          <strong className="text-gray-900 dark:text-white">15일 연속 필터 이유</strong>: 기준선(EMA200 교차 즉시)을 쓰면 20년에 평균 144번 거래(whipsaw).
+          <strong className="text-gray-900 dark:text-white">15일 연속 필터 이유</strong>: 기준선(200일 지수이동평균 교차 즉시)을 쓰면 20년에 평균 144번 거래(whipsaw).
           15일 연속 필터를 붙이면 21번으로 줄어들면서도 닷컴버블, 금융위기 같은 큰 하락은
           빠짐없이 포착한다. 10일 필터(25번 거래)보다 더 적은 거래로 더 나은 결과를 냈다.
         </P>
         <FormulaBlock>
-          EMA200 = 전날 EMA × (1 − α) + 당일 종가 × α,  α = 2/(200+1)<br />
+          200일 지수이동평균 = 전날 값 × (1 − α) + 당일 종가 × α,  α = 2/(200+1)<br />
           <br />
-          매도 조건: NDX {'<'} EMA200이 15거래일 연속 → 전량 매도 → 현금(외화RP)<br />
-          매수 조건: NDX {'>'} EMA200이 15거래일 연속 → 전액 재매수<br />
+          매도 조건: 나스닥100 종가 {'<'} 200일 지수이동평균 상태가 15거래일 연속 → 전량 매도 → 현금(외화RP)<br />
+          매수 조건: 나스닥100 종가 {'>'} 200일 지수이동평균 상태가 15거래일 연속 → 전액 재매수<br />
           중간 상태: 현재 포지션 유지 (카운터 리셋)
         </FormulaBlock>
 
@@ -422,13 +422,13 @@ export default function WithdrawalGuidePage() {
         <Callout color="blue">
           <strong>왜 동적 인출률이 효과적인가?</strong><br />
           단순 비율 인출(월 1%)과 달리, 동적 인출률은 포트폴리오가 하락해서 10억 아래로 내려가는 순간
-          인출량을 자동으로 30% 수준으로 줄인다. EMA200 현금 전환(하락 중 팔지 않음)과 결합하면
+          인출량을 자동으로 30% 수준으로 줄인다. 200일 지수이동평균 현금 전환(하락 중 팔지 않음)과 결합하면
           하락장에서 두 겹으로 자산을 보호하고, 상승 전환 후 복리 효과를 극대화한다.
         </Callout>
 
         <H3>2-3. 현금 보유 중: 외화RP 이자</H3>
         <P>
-          EMA200 아래에 있어 현금으로 전환된 기간 동안,
+          200일 지수이동평균 아래에 있어 현금으로 전환된 기간 동안,
           현금은 외화RP(연방기금금리 − 0.4%)로 이자를 받는다.
           668가지 시작 시점 어디서도 현금이 생활비 2년치 아래로 줄어드는 경우가 없었기 때문에,
           현금 잔고 기준으로 생활비를 줄이는 별도 규칙은 시뮬레이션 결과에 영향이 없었다.
@@ -439,7 +439,7 @@ export default function WithdrawalGuidePage() {
         <P>
           매도 시 수익분(매도가 − 평균매수가)에만 22% 양도세를 적용한다.
           250만원 기본공제는 연말에 일괄 정산해 환급한다.
-          MA200 아래에서 전량 현금 전환 시에는 세금 없이 매도,
+          200일 이동평균 아래에서 전량 현금 전환 시에는 세금 없이 매도,
           인출(생활비 차감) 시에만 수익분 과세한다.
         </P>
 
@@ -457,12 +457,12 @@ export default function WithdrawalGuidePage() {
           headers={['전략', '생존율', '중앙값', '연평균 수익률', '최솟값', '거래수']}
           rows={[
             ['SP500기반 (구 v1)',       '100%',   '12.7억',  '4.9%',  '0.002억', '–'],
-            ['SMA200 기준선',           '99.8%', '203억',   '17.6%', '0억',      '144'],
-            ['SMA200 ±5% 이격도',      '100%',  '251억',   '16.7%', '0.26억',   '25'],
-            ['SMA200 연속10일 (B3)',    '100%',  '328억',   '18.6%', '0.73억',   '25'],
-            ['SMA200 + 동적인출 (B3C1)', '100%', '619억',   '22.1%', '1.88억',   '25'],
-            ['EMA200 연속10일 + 동적인출', '100%', '798억',  '23.8%', '1.60억',   '29'],
-            [<strong key="best" className="text-blue-600 dark:text-blue-400">★ EMA200 연속15일 + 동적인출 (S0)</strong>,
+            ['200일 단순이동평균 기준선',           '99.8%', '203억',   '17.6%', '0억',      '144'],
+            ['200일 단순이동평균 ±5% 범위',      '100%',  '251억',   '16.7%', '0.26억',   '25'],
+            ['200일 단순이동평균 연속10일 (B3)',    '100%',  '328억',   '18.6%', '0.73억',   '25'],
+            ['200일 단순이동평균 + 동적인출 (B3C1)', '100%', '619억',   '22.1%', '1.88억',   '25'],
+            ['200일 지수이동평균 연속10일 + 동적인출', '100%', '798억',  '23.8%', '1.60억',   '29'],
+            [<strong key="best" className="text-blue-600 dark:text-blue-400">★ 200일 지수이동평균 연속15일 + 동적인출 (S0)</strong>,
               '100%', <strong key="bv" className="text-blue-600 dark:text-blue-400">1,176억</strong>,
               <strong key="bc" className="text-blue-600 dark:text-blue-400">25.9%</strong>,
               '1.68억', '21'],
@@ -470,7 +470,7 @@ export default function WithdrawalGuidePage() {
         />
 
         <Table
-          headers={['진입 시점', '상황', 'v1(SP500기반)', 'SMA200 10일+동적인출', '★ EMA200 15일+동적인출']}
+          headers={['진입 시점', '상황', 'v1(SP500기반)', '200일 단순이동평균 10일+동적인출', '★ 200일 지수이동평균 15일+동적인출']}
           rows={[
             ['1996-10', '닷컴버블 직전', '1.2억',  '502억',  '1,892억'],
             ['1999-03', '버블 상승 중',  '8.0억',  '76억',   '180억'],
@@ -481,9 +481,9 @@ export default function WithdrawalGuidePage() {
 
         <P>
           기존 방법론(v1)은 닷컴버블 정점(2000-03) 진입 시 0.04억으로 사실상 파산이었다.
-          EMA200 15일 전략으로 22.2억까지 끌어올렸고,
+          200일 지수이동평균 15일 전략으로 22.2억까지 끌어올렸고,
           버블 직전(1996-10) 진입에서는 1,892억(약 190배)을 달성한다.
-          2003-03처럼 버블 이후 저점 진입은 EMA200이 SMA200보다 소폭 낮은데,
+          2003-03처럼 버블 이후 저점 진입은 200일 지수이동평균이 200일 단순이동평균보다 소폭 낮은데,
           이는 저점에서 빠른 신호 반응이 약간 일찍 매수·매도를 유발하기 때문이다.
         </P>
 
@@ -491,33 +491,33 @@ export default function WithdrawalGuidePage() {
         <H2>4. 설정값 탐색 — 어떻게 이 조합을 찾았나</H2>
 
         <P>
-          95가지 조합 테스트(EMA/SMA × 연속일 × 인출률 × 구간)와
+          95가지 조합 테스트(지수/단순이동평균 × 연속일 × 인출률 × 구간)와
           이중버퍼 구조 별도 테스트를 통해 각 설계 결정을 데이터로 검증했다.
         </P>
 
-        <H3>4-1. EMA200 vs SMA200 × 연속일 필터</H3>
+        <H3>4-1. 200일 지수이동평균 vs 200일 단순이동평균 × 연속일 필터</H3>
         <P>
-          같은 설정값에서 EMA200이 SMA200을 일관되게 압도한다.
+          같은 설정값에서 200일 지수이동평균이 200일 단순이동평균을 일관되게 압도한다.
           연속일 필터는 5~20일을 테스트했고, 15일이 최적이었다.
         </P>
 
         <Table
           headers={['이동평균', '연속일', '중앙 최종값', '연평균 수익률', '거래 횟수/20년', '최솟값']}
           rows={[
-            ['SMA200', '10일', '619억',   '22.1%', '26회', '1.88억'],
-            ['SMA200', '15일', '665억',   '22.6%', '26회', '–'],
-            ['SMA200', '20일', '722억',   '23.3%', '19회', '1.04억'],
-            ['EMA200', '10일', '798억',   '23.8%', '29회', '1.60억'],
-            ['EMA200', '15일', <strong key="w" className="text-green-600 dark:text-green-400">1,176억</strong>,
+            ['200일 단순이동평균', '10일', '619억',   '22.1%', '26회', '1.88억'],
+            ['200일 단순이동평균', '15일', '665억',   '22.6%', '26회', '–'],
+            ['200일 단순이동평균', '20일', '722억',   '23.3%', '19회', '1.04억'],
+            ['200일 지수이동평균', '10일', '798억',   '23.8%', '29회', '1.60억'],
+            ['200일 지수이동평균', '15일', <strong key="w" className="text-green-600 dark:text-green-400">1,176억</strong>,
               <strong key="c" className="text-green-600 dark:text-green-400">25.9%</strong>, '21회', '1.68억'],
           ]}
         />
 
         <Callout color="blue">
-          <strong>왜 EMA200이 SMA200보다 우세한가?</strong><br />
-          SMA는 200일 동안 모든 날의 가중치가 동일하다. EMA는 최근 데이터에 더 높은 가중치(α=2/201≈0.01)를 부여해
+          <strong>왜 200일 지수이동평균이 200일 단순이동평균보다 우세한가?</strong><br />
+          단순이동평균은 200일 동안 모든 날의 가중치가 동일하다. 지수이동평균은 최근 데이터에 더 높은 가중치(α=2/201≈0.01)를 부여해
           추세 전환을 더 빨리 포착한다. 인출 단계에서는 하락 초기에 빨리 현금으로 전환하고,
-          반등 초기에 빨리 재진입하는 것이 유리하기 때문에 EMA200이 큰 차이를 만든다.
+          반등 초기에 빨리 재진입하는 것이 유리하기 때문에 200일 지수이동평균이 큰 차이를 만든다.
         </Callout>
 
         <H3>4-2. 인출 구조: 단일버퍼 vs 이중버퍼</H3>
@@ -541,8 +541,8 @@ export default function WithdrawalGuidePage() {
 
         <P>
           이중버퍼가 단일버퍼보다 27% 낮은 이유: 자산이 커질수록 동적 인출률(0.7%)로
-          더 많이 TQQQ를 팔아 VOO로 이동하게 되는데, VOO(1배)가 TQQQ(EMA200 보호 3배)보다
-          장기 성장이 느리기 때문이다. EMA200이 이미 하락 방어를 담당하므로
+          더 많이 TQQQ를 팔아 VOO로 이동하게 되는데, VOO(1배)가 TQQQ(200일 지수이동평균 보호 3배)보다
+          장기 성장이 느리기 때문이다. 200일 지수이동평균이 이미 하락 방어를 담당하므로
           추가 분산이 오히려 복리를 갉아먹는다.
           단, 닷컴버블 정점(2000-03) 같은 극단적 케이스에서는 이중버퍼가 22.2억 vs 24.3억으로 소폭 우세하다.
         </P>
@@ -589,16 +589,16 @@ export default function WithdrawalGuidePage() {
           rows={[
             [<strong key="d10gk" className="text-green-600 dark:text-green-400">D10GK</strong>,
               '47회/20년', '있음 (하락장)', '매일 (알림 권장)', <strong key="d10gkv" className="text-green-600 dark:text-green-400">3,741억</strong>],
-            [<strong key="s0" className="text-blue-600 dark:text-blue-400">S0 (EMA200 15일)</strong>,
+            [<strong key="s0" className="text-blue-600 dark:text-blue-400">S0 (200일 지수이동평균 15일)</strong>,
               '21회/20년', <strong key="s0w" className="text-green-600 dark:text-green-400">없음 (구조적)</strong>, '매일 (앱 표시 가능)', <strong key="s0v" className="text-blue-600 dark:text-blue-400">1,109억</strong>],
             ['T25 (트레일링 스탑)', '12회/20년', '27.6%', '주 1회', '1,064억'],
           ]}
         />
 
-        <H3>S0 — EMA200 15일, 단순하면서 안정적</H3>
+        <H3>S0 — 200일 지수이동평균 15일, 단순하면서 안정적</H3>
         <FormulaBlock>
-          매도: NDX가 EMA200 아래에서 15거래일 연속 → 전량 현금 전환<br />
-          매수: NDX가 EMA200 위에서 15거래일 연속 → 전액 재매수
+          매도: 나스닥100이 200일 지수이동평균 아래에서 15거래일 연속 → 전량 현금 전환<br />
+          매수: 나스닥100이 200일 지수이동평균 위에서 15거래일 연속 → 전액 재매수
         </FormulaBlock>
         <P>
           매수 조건과 매도 조건이 둘 다 "15일 연속"이라, 매수 직후 최소 15거래일은
@@ -609,11 +609,11 @@ export default function WithdrawalGuidePage() {
         <H3>T25 — 거래 횟수는 적지만 약점 있음</H3>
         <FormulaBlock>
           매도: 52주(약 1년) 최고가 대비 −25% 이상 하락 → 전량 현금 전환<br />
-          매수: EMA200 위 15거래일 연속 회복 → 전액 재매수
+          매수: 200일 지수이동평균 위 15거래일 연속 회복 → 전액 재매수
         </FormulaBlock>
         <P>
           20년에 평균 12번으로 거래가 가장 적다. 하지만 전체 매도의 27.6%가 매수 다음날 바로 재매도다.
-          이유는 52주 고점이 1년간 유지되기 때문이다. 큰 하락 이후 EMA200을 회복해 매수해도,
+          이유는 52주 고점이 1년간 유지되기 때문이다. 큰 하락 이후 200일 지수이동평균을 회복해 매수해도,
           1년 전 고점 기준 −25%는 이미 근접해있어 다음날 조금만 빠져도 매도 조건이 충족된다.
           거래 12회 중 3~4회가 다음날 재매도라면 실질 유효 포지션은 8~9회로 S0(21회)와 크게 다르지 않다.
           2009-03 같은 장기 상승장 초입에서는 D10GK(1,588억)를 앞서기도 하지만(2,675억),
@@ -622,14 +622,14 @@ export default function WithdrawalGuidePage() {
 
         <H3>D10GK — 수익 최대화 전략</H3>
         <P>
-          RSI와 이격도를 매일 확인해야 하는 부담이 있다. 하지만 핵심은
+          RSI와 이동평균 대비 하락폭을 매일 확인해야 하는 부담이 있다. 하지만 핵심은
           &ldquo;RSI가 30 이하로 떨어지면 알림&rdquo; 하나를 설정해두는 것이다.
-          알림 없는 날에는 신경 쓸 필요가 없고, 알림이 오면 이격도 조건까지만 확인하면 된다.
+          알림 없는 날에는 신경 쓸 필요가 없고, 알림이 오면 이동평균 대비 하락폭 조건까지만 확인하면 된다.
           20년에 47번(약 5개월에 1회) 행동 기회가 생긴다.
         </P>
         <Callout color="yellow">
           <strong>닷컴버블 같은 장기 하락에서는 매수 다음날 재매도될 수 있다</strong><br />
-          RSI 신호로 재진입했는데 시장이 계속 하락하면, EMA200 아래 연속일 조건이 즉시 충족돼
+          RSI 신호로 재진입했는데 시장이 계속 하락하면, 200일 지수이동평균 아래 연속일 조건이 즉시 충족돼
           1~2일 만에 재매도 신호가 뜬다. 2000~2002년 구간에서 이 사이클이 8번 반복됐다.<br /><br />
           이것은 의도된 구조다. &ldquo;재진입이 틀렸을 때 빠르게 손절&rdquo;하는 자동 안전장치로,
           이 동작을 제거하면 성능이 4.4배 떨어진다는 것이 검증됐다.
@@ -645,7 +645,7 @@ export default function WithdrawalGuidePage() {
 
         <H3>결론: 무엇을 선택할까</H3>
         <Callout color="blue">
-          <strong>대부분의 사람</strong>에게 → <strong>S0 (EMA200 15일)</strong> — 1일 재매도 없음 · 중간값 1,109억<br />
+          <strong>대부분의 사람</strong>에게 → <strong>S0 (200일 지수이동평균 15일)</strong> — 1일 재매도 없음 · 중간값 1,109억<br />
           수익을 극대화하고 알림 설정을 감수할 수 있다면 → <strong>D10GK</strong> — 중간값 3,741억<br />
           거래 횟수를 최소화하고 싶다면 → <strong>T25</strong> — 12회/20년 (단, 1일 재매도 27.6% 감수)
         </Callout>
@@ -663,11 +663,11 @@ export default function WithdrawalGuidePage() {
         <H3>확인된 것</H3>
         <ul className="list-none space-y-3 mb-6">
           {[
-            { q: '✅ EMA200 > SMA200', a: 'EMA200 계열이 SMA200 계열을 전 조합에서 압도. 같은 조건(연속10일, 0.3/0.5/0.7%)에서 619억 → 798억으로 상승.' },
+            { q: '✅ 200일 지수이동평균 > 200일 단순이동평균', a: '200일 지수이동평균 계열이 200일 단순이동평균 계열을 전 조합에서 압도. 같은 조건(연속10일, 0.3/0.5/0.7%)에서 619억 → 798억으로 상승.' },
             { q: '✅ 15일 연속 필터가 10일보다 우세', a: '더 적은 거래(21회 vs 29회)로 더 높은 중앙값(1,176억 vs 798억). 추가 필터링이 신호 품질을 높였다.' },
             { q: '✅ 0.3/0.5/0.7% 비율 확정 (구간: 10억/20억)', a: '95개 조합 중 이 조합이 최적. 0.2/0.4/0.6%, 0.4/0.6/0.8%, 0.3/0.6/0.9% 등보다 일관되게 우세.' },
             { q: '✅ 단일버퍼(인출 상한 1500만) > 이중버퍼(초과분 VOO 이전)', a: 'TQQQ에서 1500만만 꺼내고 나머지를 3배 레버리지로 복리하는 것이, 더 많이 꺼내 VOO로 분산하는 것보다 중앙값 기준 27% 우세.' },
-            { q: '✅ 초기 현금버퍼 불필요', a: '6개월, 12개월 초기 버퍼를 테스트했지만 EMA200 즉시 전환 방식이 더 우세. EMA200이 하락 초기에 알아서 현금 전환하므로 사전 버퍼 필요성 낮음.' },
+            { q: '✅ 초기 현금버퍼 불필요', a: '6개월, 12개월 초기 버퍼를 테스트했지만 200일 지수이동평균 즉시 전환 방식이 더 우세. 200일 지수이동평균이 하락 초기에 알아서 현금 전환하므로 사전 버퍼 필요성 낮음.' },
           ].map(({ q, a }) => (
             <li key={q} className="border border-green-200 dark:border-green-800/40 rounded-xl px-4 py-3 bg-green-50/50 dark:bg-green-900/10">
               <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1">{q}</p>
@@ -679,9 +679,9 @@ export default function WithdrawalGuidePage() {
         <H3>아직 열린 것</H3>
         <ul className="list-none space-y-3 mb-8">
           {[
-            { q: '20일+ 연속 필터 + EMA200 조합은?', a: '20일 SMA200 조합도 순위권(722억)이었지만 EMA200+15일(1,176억)보다 낮았다. EMA200+20일 이상은 미테스트 영역.' },
-            { q: '다른 EMA 기간(EMA100, EMA150, EMA250)?', a: 'EMA200 고정 상태에서만 탐색했다. 더 짧거나 긴 EMA 기간의 효과는 검증되지 않았다.' },
-            { q: '2003-03 저점 진입에서 EMA200이 SMA200보다 낮은 이유', a: '저점 반등 시 EMA200이 빠른 반응으로 조금 일찍 매수 신호를 줘 약간의 오신호가 섞인다. 저점 진입 케이스에서의 최적화 여지.' },
+            { q: '20일+ 연속 필터 + 200일 지수이동평균 조합은?', a: '200일 단순이동평균 + 20일 조합도 순위권(722억)이었지만 200일 지수이동평균+15일(1,176억)보다 낮았다. 200일 지수이동평균+20일 이상은 미테스트 영역.' },
+            { q: '다른 기간의 지수이동평균(100일·150일·250일)?', a: '200일 지수이동평균 고정 상태에서만 탐색했다. 더 짧거나 긴 기간의 효과는 검증되지 않았다.' },
+            { q: '2003-03 저점 진입에서 200일 지수이동평균이 200일 단순이동평균보다 낮은 이유', a: '저점 반등 시 200일 지수이동평균이 빠른 반응으로 조금 일찍 매수 신호를 줘 약간의 오신호가 섞인다. 저점 진입 케이스에서의 최적화 여지.' },
           ].map(({ q, a }) => (
             <li key={q} className="border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3">
               <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1">{q}</p>
@@ -697,7 +697,7 @@ export default function WithdrawalGuidePage() {
             <AnalysisLink
               href="/posts/withdrawal-new-ideas"
               title="인출 전략 새 아이디어 8가지 — S0가 대부분에게 최선"
-              desc="S0(EMA200 15일)를 기준으로 RSI 조기 재진입·골든크로스·동적 레버리지 등 8가지 비교. D10GK는 수익 극대화 옵션."
+              desc="S0(200일 지수이동평균 15일)를 기준으로 RSI 조기 재진입·골든크로스·동적 레버리지 등 8가지 비교. D10GK는 수익 극대화 옵션."
             />
             <AnalysisLink
               href="/posts/withdrawal-new-ideas2"
@@ -711,7 +711,7 @@ export default function WithdrawalGuidePage() {
             />
             <AnalysisLink
               href="/posts/withdrawal-comparison"
-              title="인출 전략 비교: SP500 기반 vs NDX 200MA 기반"
+              title="인출 전략 비교: SP500 기반 vs 나스닥100 200일 이동평균 기반"
               desc="418가지 시작 시점 비교. 두 전략의 중앙값 12.7억 vs 203억 차이가 발생하는 원인 분석."
             />
             <AnalysisLink

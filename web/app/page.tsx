@@ -1,6 +1,7 @@
 import Header from '@/components/Header'
 import HomeSimulator from '@/components/HomeSimulator'
 import EmaSignalCard from '@/components/EmaSignalCard'
+import { csvDateRange } from '@/lib/dataDates'
 import Link from 'next/link'
 
 const principles = [
@@ -25,6 +26,9 @@ const principles = [
 ]
 
 export default function HomePage() {
+  const ndxRange = csvDateRange('ndx.csv')
+  const sp5Range = csvDateRange('sp500.csv')
+
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-white">
       <Header />
@@ -131,7 +135,7 @@ export default function HomePage() {
           <p className="font-semibold text-gray-500 dark:text-gray-500">justkeepbuyingtqqq</p>
           <p>이 사이트의 모든 분석은 과거 데이터 기반이며 미래 수익을 보장하지 않습니다.</p>
           <p>TQQQ/QLD 합성 가격은 NDX 일별 수익률에 레버리지를 곱한 이론치입니다. 변동성 끌림은 일별 복리 계산에 자동 반영됩니다. 운용비용(TQQQ 0.88%/년)은 반영, 스왑금리비용(레버리지 조달 비용)은 기본 미반영이며 시뮬레이터 내 [+ 스왑금리] 버튼으로 반영 버전을 확인할 수 있습니다. 추적오차는 미반영입니다.</p>
-          <p className="mt-4">NDX 데이터: 1971-02-05~2026-09-25 | S&P500 데이터: 1927-12-30~2026-09-03</p>
+          <p className="mt-4">나스닥100 데이터: {ndxRange.first}~{ndxRange.last} | S&P500 데이터: {sp5Range.first}~{sp5Range.last}</p>
         </div>
       </footer>
     </div>

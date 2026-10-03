@@ -13,6 +13,13 @@ export interface SignalEvent {
   action: 'BUY' | 'SELL'
 }
 
+export interface SignalPoint {
+  date: string
+  close: number            // 실제 지수값
+  ema: number              // 실제 지수값 기준
+  holding: boolean         // 그날 종가 기준 S0 상태 (신호 발생일은 신호 반영 후 상태)
+}
+
 export interface EmaSignal {
   date: string             // 최신 데이터 날짜 (YYYY-MM-DD)
   close: number            // 나스닥100 종가 (실제 지수값)
@@ -25,6 +32,7 @@ export interface EmaSignal {
   counter: number          // 다음 신호까지 쌓인 연속일 (보유 중이면 아래 연속일, 현금이면 위 연속일)
   lastSignal: SignalEvent | null
   signalToday: boolean     // 최신 데이터 날짜에 신호가 발생했는지
+  history: SignalPoint[]   // 최근 historyDays 거래일 (차트·표용)
 }
 
 function ymd(d: Date): string {
@@ -45,7 +53,7 @@ export function computeEma(prices: Float64Array, period = EMA_PERIOD): Float64Ar
   return ema
 }
 
-export function computeEmaSignal(data: PriceData): EmaSignal | null {
+export function computeEmaSignal(data: PriceData, historyDays = 756): EmaSignal | null {
   // splice 보정된 가격으로 계산 → 화면 표시는 원본 지수값 단위로 환산 (비율은 동일)
   const px = data.rawPrices
   const n = px.length
@@ -60,6 +68,8 @@ export function computeEmaSignal(data: PriceData): EmaSignal | null {
   let crossIdx = -1
   let lastSignal: SignalEvent | null = null
   let lastSignalIdx = -1
+  const histStart = Math.max(EMA_PERIOD - 1, n - historyDays)
+  const holdingAt: boolean[] = []
 
   for (let i = EMA_PERIOD - 1; i < n; i++) {
     const div = px[i] - ema[i]
@@ -88,10 +98,15 @@ export function computeEmaSignal(data: PriceData): EmaSignal | null {
       lastSignal = { date: ymd(data.dates[i]), action: 'BUY' }
       lastSignalIdx = i
     }
+    if (i >= histStart) holdingAt.push(holding)
   }
 
   const last = n - 1
   const toReal = data.closes[last] / px[last]
+  const history: SignalPoint[] = holdingAt.map((h, k) => {
+    const i = histStart + k
+    return { date: ymd(data.dates[i]), close: px[i] * toReal, ema: ema[i] * toReal, holding: h }
+  })
 
   return {
     date: ymd(data.dates[last]),
@@ -105,5 +120,6 @@ export function computeEmaSignal(data: PriceData): EmaSignal | null {
     counter: holding ? below : above,
     lastSignal,
     signalToday: lastSignalIdx === last,
+    history,
   }
 }
