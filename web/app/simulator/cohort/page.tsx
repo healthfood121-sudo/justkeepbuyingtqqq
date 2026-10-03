@@ -62,11 +62,12 @@ function CohortDetailContent() {
   const inst     = (params.get('inst') ?? 'ndx3x') as Instrument
   const initM    = (params.get('m') ?? 'A') as 'A' | 'B' | 'C'
 
-  const [activeM,  setActiveM]  = useState<'A' | 'B' | 'C'>(initM)
-  const [vis,      setVis]      = useState<Record<'A'|'B'|'C', boolean>>({ A: true, B: true, C: true })
-  const [details,  setDetails]  = useState<Record<'A'|'B'|'C', CohortDetail> | null>(null)
-  const [loading,  setLoading]  = useState(true)
-  const [ytUrl,    setYtUrl]    = useState<string | null>(null)
+  const [activeM,    setActiveM]    = useState<'A' | 'B' | 'C'>(initM)
+  const [vis,        setVis]        = useState<Record<'A'|'B'|'C', boolean>>({ A: true, B: true, C: true })
+  const [details,    setDetails]    = useState<Record<'A'|'B'|'C', CohortDetail> | null>(null)
+  const [loading,    setLoading]    = useState(true)
+  const [ytUrl,      setYtUrl]      = useState<string | null>(null)
+  const [withCosts,  setWithCosts]  = useState(false)
 
   useEffect(() => {
     setLoading(true)
@@ -76,10 +77,17 @@ function CohortDetailContent() {
       const loader = inst === 'sp500' ? loadSp500() : loadNdx()
       loader.then(data => {
         let prices: Float64Array
-        if (inst === 'ndx1x')      prices = data.lev1
-        else if (inst === 'ndx2x') prices = data.lev2
-        else if (inst === 'ndx3x') prices = data.lev3
-        else                       prices = data.lev1
+        if (inst === 'sp500') {
+          prices = data.lev1
+        } else if (withCosts) {
+          if (inst === 'ndx1x')      prices = data.lev1c
+          else if (inst === 'ndx2x') prices = data.lev2c
+          else                       prices = data.lev3c
+        } else {
+          if (inst === 'ndx1x')      prices = data.lev1
+          else if (inst === 'ndx2x') prices = data.lev2
+          else                       prices = data.lev3
+        }
 
         const { dates } = data
         const target = new Date(startYm + '-01').getTime()
@@ -100,7 +108,7 @@ function CohortDetailContent() {
       .then(r => r.json())
       .then((d: Record<string, string>) => setYtUrl(d[startYm] ?? null))
       .catch(() => {})
-  }, [startYm, inst])
+  }, [startYm, inst, withCosts])
 
   // ── 차트 데이터 ─────────────────────────────────────────────
 
@@ -227,10 +235,33 @@ function CohortDetailContent() {
             </a>
           )}
         </div>
-        <p className="text-sm text-gray-400 dark:text-gray-500 mb-6">
-          {INST_LABELS[inst]} · 일 {(PRESET.daily / 1e4).toLocaleString()}만원 적립 · 목표 {PRESET.target / 1e8}억원
-        </p>
-
+        <div className="flex items-center gap-2 mb-3">
+          <p className="text-sm text-gray-400 dark:text-gray-500">
+            {INST_LABELS[inst]} · 일 {(PRESET.daily / 1e4).toLocaleString()}만원 적립 · 목표 {PRESET.target / 1e8}억원
+          </p>
+        </div>
+        <div className="flex items-center gap-3 mb-4">
+          {/* 비용 세그먼트 버튼 */}
+          <div className="flex rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden text-xs font-medium">
+            <button
+              onClick={() => setWithCosts(false)}
+              className={`px-3 py-1.5 transition-colors ${!withCosts ? 'bg-blue-600 text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'}`}
+            >
+              운용보수만
+            </button>
+            <button
+              onClick={() => setWithCosts(true)}
+              className={`px-3 py-1.5 transition-colors ${withCosts ? 'bg-blue-600 text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'}`}
+            >
+              + 스왑금리
+            </button>
+          </div>
+          <span className="text-xs text-gray-400 dark:text-gray-500">
+            {withCosts
+              ? inst === 'sp500' ? '운용보수 반영 (S&P500은 스왑금리 없음)' : '운용보수 + 스왑금리비용(2×기준금리) 반영'
+              : '운용보수 반영 · 스왑금리비용 미반영 (이론치)'}
+          </span>
+        </div>
         {loading && (
           <div className="flex items-center justify-center h-40 text-gray-400 text-sm">
             데이터 계산 중…
