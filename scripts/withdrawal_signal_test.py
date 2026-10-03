@@ -18,7 +18,7 @@ from pathlib import Path
 from dataclasses import dataclass
 
 DATA_DIR = Path("D:/justkeepbuyingtqqq/data")
-FED_PATH = Path("D:/mcv-nextjs/public/data/fed_funds_rate.json")
+FED_PATH = Path("D:/justkeepbuyingtqqq/data/fed_funds_rate.json")
 OUT_PATH = Path("D:/justkeepbuyingtqqq/web/public/data/withdrawal_signal_test.json")
 
 INITIAL     = 1_000_000_000
@@ -100,7 +100,22 @@ def load_data():
     for i in range(200, n):
         ema200_tqqq[i] = ndx3x[i] * a200 + ema200_tqqq[i - 1] * (1 - a200)
 
-    return ndx3x, closes, ema200_ndx, ema200_tqqq, dates, sp500, fed_rates
+    # TQQQ v2 (스왑금리 2× 포함)
+    fed_daily_arr = np.array([
+        fed_rates.get(f"{d.year}-{d.month:02d}", 0.0) / 100.0 / 252
+        for d in dates
+    ])
+    fv2 = (1.0 + ret * 3.0 - 2.0 * fed_daily_arr) * (1.0 - EXP_TQQQ / 252)
+    fv2[0] = 1.0
+    ndx3x_v2 = 100.0 * np.cumprod(fv2)
+
+    # v2 기반 TQQQ EMA200
+    ema200_tqqq_v2 = np.full(n, np.nan)
+    ema200_tqqq_v2[199] = np.mean(ndx3x_v2[:200])
+    for i in range(200, n):
+        ema200_tqqq_v2[i] = ndx3x_v2[i] * a200 + ema200_tqqq_v2[i - 1] * (1 - a200)
+
+    return ndx3x, ndx3x_v2, closes, ema200_ndx, ema200_tqqq, ema200_tqqq_v2, dates, sp500, fed_rates
 
 
 def get_monthly_starts(dates):
@@ -352,12 +367,23 @@ def _run_one(p: Param):
 
 
 def main():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--v2", action="store_true", help="스왑금리 포함 버전 생성")
+    args = parser.parse_args()
+    suffix = "_v2" if args.v2 else ""
+    out_path = OUT_PATH.parent / f"withdrawal_signal_test{suffix}.json"
+
     t0 = time.time()
     print("=" * 70, flush=True)
     print("신호 변형 아이디어 검증: TQQQ EMA200 신호 / 인출 지연", flush=True)
+    print(f"{'스왑금리 포함 (v2)' if args.v2 else '운용보수만 (standard)'}", flush=True)
     print("=" * 70, flush=True)
 
-    ndx3x, closes, ema200_ndx, ema200_tqqq, dates, sp500, fed_rates = load_data()
+    ndx3x, ndx3x_v2, closes, ema200_ndx, ema200_tqqq, ema200_tqqq_v2, \
+        dates, sp500, fed_rates = load_data()
+    ndx3x_use     = ndx3x_v2     if args.v2 else ndx3x
+    ema200_tqqq_use = ema200_tqqq_v2 if args.v2 else ema200_tqqq
 
     first_valid = int(np.where(~np.isnan(ema200_ndx))[0][0])
     starts = [i for i in get_monthly_starts(dates)
@@ -368,7 +394,7 @@ def main():
     with mp.Pool(
         processes=n_workers,
         initializer=_init_worker,
-        initargs=(ndx3x, closes, ema200_ndx, ema200_tqqq,
+        initargs=(ndx3x_use, closes, ema200_ndx, ema200_tqqq_use,
                   dates.tolist(), sp500, fed_rates, starts)
     ) as pool:
         raw = pool.map(_run_one, STRATEGIES, chunksize=1)
@@ -460,11 +486,11 @@ def main():
         "summary": summary_rows,
         "cohorts": cohort_rows,
     }
-    OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with open(OUT_PATH, "w", encoding="utf-8") as f:
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(out_path, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, separators=(",", ":"), cls=NpEnc)
 
-    print(f"\n저장: {OUT_PATH}  ({OUT_PATH.stat().st_size / 1024:.0f} KB)", flush=True)
+    print(f"\n저장: {out_path}  ({out_path.stat().st_size / 1024:.0f} KB)", flush=True)
     print(f"총 소요: {time.time() - t0:.1f}초", flush=True)
 
 

@@ -21,7 +21,7 @@ from pathlib import Path
 from dataclasses import dataclass
 
 DATA_DIR = Path("D:/justkeepbuyingtqqq/data")
-FED_PATH = Path("D:/mcv-nextjs/public/data/fed_funds_rate.json")
+FED_PATH = Path("D:/justkeepbuyingtqqq/data/fed_funds_rate.json")
 OUT_PATH = Path("D:/justkeepbuyingtqqq/web/public/data/withdrawal_new_ideas2.json")
 
 INITIAL    = 1_000_000_000
@@ -127,6 +127,15 @@ def load_data():
         fed = json.load(f)
     fed_rates = {r["date"][:7]: float(r["rate"]) for r in fed}
 
+    # TQQQ v2 (스왑금리 2× 포함)
+    fed_daily_arr = np.array([
+        fed_rates.get(f"{d.year}-{d.month:02d}", 0.0) / 100.0 / 252
+        for d in dates
+    ])
+    fv2 = (1.0 + ret * 3.0 - 2.0 * fed_daily_arr) * (1.0 - EXP_3X / 252)
+    fv2[0] = 1.0
+    ndx3x_v2 = 100.0 * np.cumprod(fv2)
+
     # EMA200
     a200 = 2.0 / 201
     ema200 = np.full(n, np.nan)
@@ -140,7 +149,7 @@ def load_data():
     # 트레일링 스탑용 52주(252거래일) 고점 사전 계산
     trail_peaks = pd.Series(closes).rolling(252, min_periods=1).max().values
 
-    return ndx3x, qqq, closes, ema200, rsi14, trail_peaks, dates, sp500, fed_rates
+    return ndx3x, ndx3x_v2, qqq, closes, ema200, rsi14, trail_peaks, dates, sp500, fed_rates
 
 
 def get_monthly_starts(dates):
@@ -590,13 +599,22 @@ def _run_one(p: Param):
 
 
 def main():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--v2", action="store_true", help="스왑금리 포함 버전 생성")
+    args = parser.parse_args()
+    suffix = "_v2" if args.v2 else ""
+    out_path = OUT_PATH.parent / f"withdrawal_new_ideas2{suffix}.json"
+
     t0 = time.time()
     print("=" * 70, flush=True)
     print("새 인출 아이디어 2차: 트레일링스탑 / 단계적현금화 / 자산레버리지", flush=True)
+    print(f"{'스왑금리 포함 (v2)' if args.v2 else '운용보수만 (standard)'}", flush=True)
     print("=" * 70, flush=True)
 
-    ndx3x, qqq, closes, ema200, rsi14, trail_peaks, \
+    ndx3x, ndx3x_v2, qqq, closes, ema200, rsi14, trail_peaks, \
         dates, sp500, fed_rates = load_data()
+    ndx3x_use = ndx3x_v2 if args.v2 else ndx3x
 
     starts = list(get_monthly_starts(dates))  # 1971-01부터 현재까지 모든 월별 시작점
 
@@ -606,7 +624,7 @@ def main():
     with mp.Pool(
         processes=n_workers,
         initializer=_init_worker,
-        initargs=(ndx3x, qqq, closes, ema200, rsi14, trail_peaks,
+        initargs=(ndx3x_use, qqq, closes, ema200, rsi14, trail_peaks,
                   dates.tolist(), sp500, fed_rates, starts)
     ) as pool:
         raw = pool.map(_run_one, STRATEGIES, chunksize=1)
@@ -713,11 +731,11 @@ def main():
         "summary":  summary_rows,
         "cohorts":  cohort_rows,
     }
-    OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with open(OUT_PATH, "w", encoding="utf-8") as f:
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(out_path, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, separators=(",", ":"), cls=NpEnc)
 
-    print(f"\n저장: {OUT_PATH}  ({OUT_PATH.stat().st_size / 1024:.0f} KB)", flush=True)
+    print(f"\n저장: {out_path}  ({out_path.stat().st_size / 1024:.0f} KB)", flush=True)
     print(f"소요: {time.time() - t0:.1f}초", flush=True)
 
 

@@ -13,6 +13,8 @@ from pathlib import Path
 
 DATA_DIR = "D:/justkeepbuyingtqqq/data/"
 OUT_DIR  = "D:/justkeepbuyingtqqq/web/public/data/"
+FED_PATH = "D:/justkeepbuyingtqqq/data/fed_funds_rate.json"
+EXP_3X   = 0.0088   # TQQQ 연 운용보수
 
 DAILY_INVEST           = 200_000
 CAP_INVEST             = 250_000_000
@@ -42,9 +44,29 @@ def load_ndx():
 def load_sp500():
     return pd.read_csv(DATA_DIR + "sp500_1927_now.csv", parse_dates=["Date"]).sort_values("Date").reset_index(drop=True)
 
+def load_fed_rates():
+    with open(FED_PATH, encoding="utf-8") as f:
+        fed_raw = json.load(f)
+    return {r["date"][:7]: float(r["rate"]) for r in fed_raw}
+
 def make_prices(df, lev):
+    """3x 합성가격 (운용보수 포함)"""
     ret = df["Close"].pct_change().fillna(0).values
-    return 100.0 * np.cumprod(1.0 + ret * lev)
+    factor = (1.0 + ret * lev) * (1.0 - EXP_3X / 252)
+    factor[0] = 1.0
+    return 100.0 * np.cumprod(factor)
+
+def make_prices_v2(df, fed_rates):
+    """3x 합성가격 (운용보수 + 스왑금리 2× 포함)"""
+    ret = df["Close"].pct_change().fillna(0).values
+    dates = pd.DatetimeIndex(df["Date"])
+    fed_daily = np.array([
+        fed_rates.get(f"{d.year}-{d.month:02d}", 0.0) / 100.0 / 252
+        for d in dates
+    ])
+    factor = (1.0 + ret * 3.0 - 2.0 * fed_daily) * (1.0 - EXP_3X / 252)
+    factor[0] = 1.0
+    return 100.0 * np.cumprod(factor)
 
 def align_sp500(sp5_df, target_dates):
     return sp5_df.set_index("Date")["Close"].reindex(target_dates, method="ffill").values
@@ -215,14 +237,25 @@ def run_withdrawal_one(prices, dates_pd, start_idx, port_val, years, sp500_ref, 
 # ── 메인 ───────────────────────────────────────────────
 
 def main():
-    import time
+    import time, argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--v2", action="store_true", help="스왑금리 포함 버전 생성")
+    args = parser.parse_args()
+    suffix = "_v2" if args.v2 else ""
+    out_file = OUT_DIR + f"withdrawal_cohorts{suffix}.json"
+
     t0 = time.time()
 
     print("데이터 로드...")
+    print(f"  {'스왑금리 포함 (v2)' if args.v2 else '운용보수만 (standard)'}")
     ndx_df = load_ndx()
     sp5_df = load_sp500()
     dates  = pd.DatetimeIndex(ndx_df["Date"])
-    prices = make_prices(ndx_df, 3)
+    if args.v2:
+        fed_rates = load_fed_rates()
+        prices = make_prices_v2(ndx_df, fed_rates)
+    else:
+        prices = make_prices(ndx_df, 3)
     sp500  = align_sp500(sp5_df, dates)
 
     print("적립 단계 (B전략)...")
@@ -271,11 +304,10 @@ def main():
     }
 
     Path(OUT_DIR).mkdir(parents=True, exist_ok=True)
-    path = OUT_DIR + "withdrawal_cohorts.json"
-    with open(path, "w", encoding="utf-8") as f:
+    with open(out_file, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, separators=(",", ":"))
-    size = Path(path).stat().st_size / 1024
-    print(f"\n→ {path}  ({size:.1f} KB)")
+    size = Path(out_file).stat().st_size / 1024
+    print(f"\n→ {out_file}  ({size:.1f} KB)")
     print(f"완료: {time.time()-t0:.1f}초")
 
 

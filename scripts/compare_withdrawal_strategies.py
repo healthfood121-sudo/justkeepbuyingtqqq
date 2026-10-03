@@ -35,7 +35,7 @@ from pathlib import Path
 
 # ─── 경로 ──────────────────────────────────────────────────────
 DATA_DIR = Path("D:/justkeepbuyingtqqq/data")
-FED_PATH = Path("D:/mcv-nextjs/public/data/fed_funds_rate.json")
+FED_PATH = Path("D:/justkeepbuyingtqqq/data/fed_funds_rate.json")
 OUT_PATH = Path("D:/justkeepbuyingtqqq/web/public/data/withdrawal_comparison.json")
 
 # ─── 공통 파라미터 ──────────────────────────────────────────────
@@ -101,6 +101,15 @@ def load_data():
         fed_raw = json.load(f)
     fed_rates = {r["date"][:7]: float(r["rate"]) for r in fed_raw}
 
+    # NDX 3x v2 (스왑금리 2× 포함)
+    fed_daily_arr = np.array([
+        fed_rates.get(f"{d.year}-{d.month:02d}", 0.0) / 100.0 / 252
+        for d in dates
+    ])
+    factor_v2 = (1.0 + ret * 3.0 - 2.0 * fed_daily_arr) * (1.0 - daily_drag)
+    factor_v2[0] = 1.0
+    ndx3x_v2 = 100.0 * np.cumprod(factor_v2)
+
     # MA200 미리 계산 (NDX 원가격 기준)
     n = len(ndx_closes)
     ma200 = np.full(n, np.nan)
@@ -112,7 +121,7 @@ def load_data():
         if i >= MA_N - 1:
             ma200[i] = window_sum / MA_N
 
-    return ndx3x, ndx_closes, ma200, dates, sp500, fed_rates
+    return ndx3x, ndx3x_v2, ndx_closes, ma200, dates, sp500, fed_rates
 
 
 def get_monthly_starts(dates):
@@ -494,14 +503,23 @@ def run_strategy_b(ndx3x, ndx_closes, ma200, dates, sp500, fed_rates, start_idx)
 # ═══════════════════════════════════════════════════════════════
 
 def main():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--v2", action="store_true", help="스왑금리 포함 버전 생성")
+    args = parser.parse_args()
+    suffix = "_v2" if args.v2 else ""
+    out_path = OUT_PATH.parent / f"withdrawal_comparison{suffix}.json"
+
     t0 = time.time()
     print("=" * 65)
     print("인출 전략 비교 백테스트")
     print(f"  초기자산={INITIAL/1e8:.0f}억  월인출률={RATE*100:.0f}%  기간={SIM_YEARS}년")
+    print(f"  {'스왑금리 포함 (v2)' if args.v2 else '운용보수만 (standard)'}")
     print("=" * 65)
 
     print("\n[1] 데이터 로드 ...")
-    ndx3x, ndx_closes, ma200, dates, sp500, fed_rates = load_data()
+    ndx3x, ndx3x_v2, ndx_closes, ma200, dates, sp500, fed_rates = load_data()
+    prices = ndx3x_v2 if args.v2 else ndx3x
     print(f"    NDX: {len(dates)}일  {dates[0].date()} ~ {dates[-1].date()}")
 
     # MA200 계산 가능한 첫 거래일 이후만 코호트로 사용
@@ -519,8 +537,8 @@ def main():
 
         start_label = dates[si].strftime("%Y-%m")
 
-        res_a = run_strategy_a(ndx3x, dates, sp500, si)
-        res_b = run_strategy_b(ndx3x, ndx_closes, ma200, dates, sp500, fed_rates, si)
+        res_a = run_strategy_a(prices, dates, sp500, si)
+        res_b = run_strategy_b(prices, ndx_closes, ma200, dates, sp500, fed_rates, si)
 
         cohort = {
             "start": start_label,
@@ -631,12 +649,12 @@ def main():
                 return float(obj)
             return super().default(obj)
 
-    OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with open(OUT_PATH, "w", encoding="utf-8") as f:
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(out_path, "w", encoding="utf-8") as f:
         json.dump(output, f, ensure_ascii=False, separators=(",", ":"), cls=NpEncoder)
 
-    size_kb = OUT_PATH.stat().st_size / 1024
-    print(f"\n[4] 저장 완료: {OUT_PATH}")
+    size_kb = out_path.stat().st_size / 1024
+    print(f"\n[4] 저장 완료: {out_path}")
     print(f"    파일 크기: {size_kb:.0f} KB")
 
     # ── 전체 코호트 월별 데이터 (상세 페이지용) ──
@@ -649,7 +667,7 @@ def main():
             "b": [[round(s["value"], 4), 1 if s["is_invested"] else 0] for s in c["_monthly_b"]],
         }
 
-    monthly_path = OUT_PATH.parent / "withdrawal_monthly.json"
+    monthly_path = out_path.parent / f"withdrawal_monthly{suffix}.json"
     with open(monthly_path, "w", encoding="utf-8") as f:
         json.dump(monthly_all, f, ensure_ascii=False, separators=(",", ":"), cls=NpEncoder)
 

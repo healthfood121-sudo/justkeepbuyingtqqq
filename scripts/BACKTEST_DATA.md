@@ -63,7 +63,8 @@
 
 | 파일 | 크기 | 스크립트 | 내용 |
 |------|------|----------|------|
-| `withdrawal_cohorts.json` | 91 KB | `export_withdrawal_json.py` | 기본 인출 시뮬레이션 418코호트 |
+| `withdrawal_cohorts.json` | 91 KB | `export_withdrawal_json.py` | 기본 인출 시뮬레이션 418코호트 (운용보수 포함) |
+| `withdrawal_cohorts_v2.json` | 90 KB | `export_withdrawal_json.py --v2` | 동일 + 스왑금리 2× 반영 |
 
 **파라미터:** 버퍼 13개월 · 일 20만 · 거치 2.5억 · 목표 10억
 
@@ -75,8 +76,10 @@
 
 | 파일 | 크기 | 스크립트 | 내용 |
 |------|------|----------|------|
-| `withdrawal_comparison.json` | 195 KB | `compare_withdrawal_strategies.py` | A안 vs B안 418코호트 요약 |
+| `withdrawal_comparison.json` | 195 KB | `compare_withdrawal_strategies.py` | A안 vs B안 418코호트 요약 (운용보수 포함) |
 | `withdrawal_monthly.json` | 2,347 KB | `compare_withdrawal_strategies.py` | 월별 상세 (코호트별 자산 추이) |
+| `withdrawal_comparison_v2.json` | 215 KB | `compare_withdrawal_strategies.py --v2` | 동일 + 스왑금리 2× 반영 |
+| `withdrawal_monthly_v2.json` | 2,279 KB | `compare_withdrawal_strategies.py --v2` | 월별 상세 v2 |
 
 **A안:** SP500 -20% → 인출 중단 (계속 TQQQ 보유), 월 1% 인출
 **B안:** NDX EMA200 이탈 → 전량 현금 전환, 이자로 생활 (세금 22%)
@@ -144,7 +147,8 @@
 
 | 파일 | 크기 | 스크립트 | 내용 |
 |------|------|----------|------|
-| `withdrawal_new_ideas.json` | 294 KB | `withdrawal_new_ideas.py` | 8가지 아이디어 418코호트 |
+| `withdrawal_new_ideas.json` | 294 KB | `withdrawal_new_ideas.py` | 8가지 아이디어 418코호트 (운용보수 포함) |
+| `withdrawal_new_ideas_v2.json` | 291 KB | `withdrawal_new_ideas.py --v2` | 동일 + 스왑금리 2× 반영 |
 
 **비교 전략:**
 - S0: 현재 최선 (EMA200-15일 + 동적인출 0.3/0.5/0.7%)
@@ -216,7 +220,8 @@
 
 | 파일 | 크기 | 스크립트 | 내용 |
 |------|------|----------|------|
-| `withdrawal_new_ideas2.json` | 234 KB | `withdrawal_new_ideas2.py` | 7가지 전략 418코호트 비교 |
+| `withdrawal_new_ideas2.json` | 234 KB | `withdrawal_new_ideas2.py` | 7가지 전략 418코호트 비교 (운용보수 포함) |
+| `withdrawal_new_ideas2_v2.json` | 517 KB | `withdrawal_new_ideas2.py --v2` | 동일 + 스왑금리 2× 반영 |
 
 **비교 전략:**
 - S0: 기준선 (EMA200 15일 + 동적인출)
@@ -286,7 +291,8 @@
 
 | 파일 | 크기 | 스크립트 | 내용 |
 |------|------|----------|------|
-| `withdrawal_signal_test.json` | 122 KB | `withdrawal_signal_test.py` | 4가지 변형 418코호트 비교 |
+| `withdrawal_signal_test.json` | 122 KB | `withdrawal_signal_test.py` | 4가지 변형 418코호트 비교 (운용보수 포함) |
+| `withdrawal_signal_test_v2.json` | 121 KB | `withdrawal_signal_test.py --v2` | 동일 + 스왑금리 2× 반영 |
 
 **비교 전략:**
 - S0: 기준선 (NDX EMA200-15일 + 동적인출)
