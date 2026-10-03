@@ -77,6 +77,10 @@ class Param:
     trail_thr: float = 0.0     # >0: NDX 52주 고점 대비 하락률로 매도
     days:      int   = TIME_FILTER  # 200일선 아래/위 연속일 (매도·매수 신호)
     hold:      bool  = False   # True: 신호 없이 계속 보유 (인출만)
+    liv_rule:  str   = "monthly"  # 생활비 결정: monthly(매달 자산×비율) | annual(12개월마다 정해 1년 고정) | floor75(직전 12개월 최고의 75% 아래로 안 내림)
+    rebal_annual: bool = False     # True: 투자 중 리밸런싱을 12개월에 한 번만 (생활비 정하는 달)
+    rebal_sell_only: bool = False  # True: 투자 중 리밸런싱은 TQQQ가 많을 때 파는 쪽만 (현금으로 하락장 물타기 안 함)
+    liv_max_pct: float = 0.01  # annual·floor75에서 한 달 인출이 총자산의 이 비율을 넘지 않게 하는 안전장치
 
 
 STRATEGIES = [
@@ -240,6 +244,8 @@ def run_sim(tq, qq, closes, ema, dates, rp_daily, rsi, peaks, start, p: Param, s
         if not force and abs(cw - w) <= BAND:
             return
         diff = val("tq", ci) - w * tot
+        if diff < 0 and p.rebal_sell_only and not force:
+            return
         if diff > 0:                       # TQQQ 과다 → 매도
             sell("tq", diff, ci)
             if p.side == "qqq":
@@ -268,6 +274,12 @@ def run_sim(tq, qq, closes, ema, dates, rp_daily, rsi, peaks, start, p: Param, s
     snap_vals = {}
     snap_wd = {}
     snap_liv = {}
+    annual_cap = 0.0
+    liv_months = 0
+    cap_hist = []
+    liv_peak = 0.0
+    half_months = 0
+    worst_cut = 0.0
     flows = []
     last_living = 0.0
     last_mon = None
@@ -303,6 +315,15 @@ def run_sim(tq, qq, closes, ema, dates, rp_daily, rsi, peaks, start, p: Param, s
                 tot  = total(ci)
                 rate = DYN_RATES[0] if tot < DYN_THRS[0] else DYN_RATES[1] if tot < DYN_THRS[1] else DYN_RATES[2]
                 cap  = min(tot * rate * gk_mult, float(LIV_MAX))
+                if p.liv_rule == "annual":
+                    if liv_months % 12 == 0:
+                        annual_cap = cap
+                    cap = min(annual_cap, tot * p.liv_max_pct)
+                elif p.liv_rule == "floor75":
+                    if cap_hist:
+                        cap = min(max(cap, 0.75 * max(cap_hist)), tot * p.liv_max_pct)
+                    cap_hist = (cap_hist + [cap])[-12:]
+                liv_months += 1
                 if invested:
                     living = cap
                     if p.use_gk and not gk_on and cap > 0:
@@ -317,10 +338,15 @@ def run_sim(tq, qq, closes, ema, dates, rp_daily, rsi, peaks, start, p: Param, s
                 cash -= living
                 withdrawn += living
                 last_living = living
+                liv_peak = max(liv_peak, living)
+                if liv_peak > 0:
+                    if living < 0.5 * liv_peak:
+                        half_months += 1
+                    worst_cut = max(worst_cut, 1 - living / liv_peak)
                 if collect_flows:
                     flows.append((j, living))
 
-            if invested:
+            if invested and (not p.rebal_annual or (liv_months - 1) % 12 == 0):
                 rebalance(ci)
 
         # 신호
@@ -410,6 +436,8 @@ def run_sim(tq, qq, closes, ema, dates, rp_daily, rsi, peaks, start, p: Param, s
         "max_dd":    round(max_dd * 100, 1),
         "sells":     sells,
         "quick_resells": quick,
+        "liv_half_pct":  round(half_months / liv_months * 100, 1) if liv_months else 0.0,
+        "liv_worst_cut": round(worst_cut * 100, 1),
     }
 
 
