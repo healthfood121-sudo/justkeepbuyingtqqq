@@ -1,7 +1,11 @@
 """
 export_withdrawal_json.py
-B전략 인출 백테스트 코호트별 결과를 JSON으로 저장
+초기 인출 방법론(Method A / B) 시작 시점별 결과를 JSON으로 저장
 (withdrawal_backtest.py 의 Method A / B 비교)
+
+적립 단계: C전략 — 매일 20만원 + 거치금 2.5억을 5년(60개월) 월 분할 (2026-10-03 즉시 거치 → 5년 분할)
+버퍼 기준값(BUFFER_REF_YEARS): C전략 TQQQ 최장 소요기간을 올림한 값 — 즉시 거치 시절 12.24년 → 13,
+                                5년 분할 기준 8.69년(운용보수만)·8.99년(스왑 반영) → 9
 
 출력: web/public/data/withdrawal_cohorts.json
 """
@@ -11,18 +15,20 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 
-DATA_DIR = "D:/justkeepbuyingtqqq/data/"
-OUT_DIR  = "D:/justkeepbuyingtqqq/web/public/data/"
-FED_PATH = "D:/justkeepbuyingtqqq/data/fed_funds_rate.json"
+ROOT     = Path(__file__).resolve().parent.parent
+DATA_DIR = str(ROOT / "data") + "/"
+OUT_DIR  = str(ROOT / "web/public/data") + "/"
+FED_PATH = str(ROOT / "data/fed_funds_rate.json")
 EXP_3X   = 0.0088   # TQQQ 연 운용보수
 
 DAILY_INVEST           = 200_000
 CAP_INVEST             = 250_000_000
 LUMP_SUM               = 250_000_000
+C_SPLIT_MONTHS         = 60          # 거치금 분할 개월 수 (backtest.py와 동일)
 ACCUM_TARGET           = 1_000_000_000
 WITHDRAW_THRESHOLD     = DAILY_INVEST * 4_000   # 8억
 MONTHLY_WITHDRAW_RATE  = 0.01
-BUFFER_REF_YEARS       = 13          # B전략 기준 (withdrawal_backtest.py 와 동일)
+BUFFER_REF_YEARS       = 9           # C전략(5년 분할) TQQQ 최장 8.99년 올림 (이전: 즉시 거치 12.24년 → 13)
 BUBBLE_THRESHOLD_YEARS = 1.5
 BUBBLE_WAIT_YEARS      = 2.0
 RESCUE_DURATION_DAYS   = 252
@@ -92,9 +98,11 @@ def run_accum_B(prices, dates_pd):
         cum_shares = 0.0
         hit_idx = -1
         hit_val = 0.0
+        # 거치금: 매월 첫 거래일에 LUMP_SUM / C_SPLIT_MONTHS (60개월)
+        lump_days = set(monthly_starts(dates_pd[si:si + n])[:C_SPLIT_MONTHS])
         for j in range(n):
             px = prices[si + j]
-            inv = LUMP_SUM if j == 0 else DAILY_INVEST
+            inv = DAILY_INVEST + (LUMP_SUM / C_SPLIT_MONTHS if j in lump_days else 0.0)
             cum_shares += inv / px
             port = cum_shares * px
             if port >= ACCUM_TARGET:
@@ -258,7 +266,7 @@ def main():
         prices = make_prices(ndx_df, 3)
     sp500  = align_sp500(sp5_df, dates)
 
-    print("적립 단계 (B전략)...")
+    print("적립 단계 (C전략: 거치금 5년 분할)...")
     accum = run_accum_B(prices, dates)
     completed = [r for r in accum if r["done"]]
     print(f"  완료: {len(completed)}/{len(accum)}")
@@ -296,6 +304,7 @@ def main():
             "buffer_ref": BUFFER_REF_YEARS,
             "daily": DAILY_INVEST,
             "lump":  LUMP_SUM,
+            "lump_split_months": C_SPLIT_MONTHS,
             "target": ACCUM_TARGET,
         },
         "total":       len(cohorts),

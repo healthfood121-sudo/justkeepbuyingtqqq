@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import LegacyResearchNote from '@/components/LegacyResearchNote'
 import { readFileSync } from 'fs'
 import { join } from 'path'
 import Header from '@/components/Header'
@@ -102,6 +103,13 @@ export default function WithdrawalComparisonPost() {
   const { summary } = data
   const sa = summary.a
   const sb = summary.b
+  // 시작 시점별 값은 데이터에서 직접 읽는다 (손으로 적은 숫자가 데이터와 어긋나지 않게)
+  type Side = { final: number; withdrawn: number; min: number; bankrupt: boolean }
+  const byStart: Record<string, { a: Side; b: Side }> =
+    Object.fromEntries(data.cohorts.map((c: { start: string; a: Side; b: Side }) => [c.start, c]))
+  const eok = (v: number) => `${v < 1 ? v.toFixed(2) : v.toFixed(1)}억`
+  const fin = (x: Side) => (x.bankrupt ? '파산' : eok(x.final))
+  const minE = (v: number) => `${v < 0.01 ? v.toFixed(4) : v.toFixed(2)}억`
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-white">
@@ -126,6 +134,8 @@ export default function WithdrawalComparisonPost() {
             ))}
           </div>
         </div>
+
+        <LegacyResearchNote />
 
         {/* 본문 */}
         <P>
@@ -184,11 +194,11 @@ export default function WithdrawalComparisonPost() {
         <Table
           headers={['시작', 'A안 최종', 'A안 인출총액', 'B안 최종', 'B안 인출총액', '']}
           rows={[
-            ['1996-10', '1.23억', '48.2억', '64.1억', '27.1억',
+            ['1996-10', fin(byStart['1996-10'].a), eok(byStart['1996-10'].a.withdrawn), fin(byStart['1996-10'].b), eok(byStart['1996-10'].b.withdrawn),
               <DataLink key="a" href="/posts/withdrawal-comparison/data?start=1996-10" />],
-            ['1997-06', '0.73억', '43.1억', '72.5억', '26.8억',
+            ['1997-06', fin(byStart['1997-06'].a), eok(byStart['1997-06'].a.withdrawn), fin(byStart['1997-06'].b), eok(byStart['1997-06'].b.withdrawn),
               <DataLink key="b" href="/posts/withdrawal-comparison/data?start=1997-06" />],
-            ['1998-09', '8.04억', '63.7억', '201.4억', '29.3억',
+            ['1998-09', fin(byStart['1998-09'].a), eok(byStart['1998-09'].a.withdrawn), fin(byStart['1998-09'].b), eok(byStart['1998-09'].b.withdrawn),
               <DataLink key="c" href="/posts/withdrawal-comparison/data?start=1998-09" />],
           ]}
         />
@@ -209,9 +219,9 @@ export default function WithdrawalComparisonPost() {
         <Table
           headers={['시작', 'A안 최종', 'A안 최솟값', 'B안 최종', 'B안 최솟값', '']}
           rows={[
-            ['2000-03', '0.04억', '0.0016억', '파산', '0.0억',
+            ['2000-03', fin(byStart['2000-03'].a), minE(byStart['2000-03'].a.min), fin(byStart['2000-03'].b), minE(byStart['2000-03'].b.min),
               <DataLink key="a" href="/posts/withdrawal-comparison/data?start=2000-03" />],
-            ['2001-01', '2.44억', '0.56억', '44.5억', '0.12억',
+            ['2001-01', fin(byStart['2001-01'].a), minE(byStart['2001-01'].a.min), fin(byStart['2001-01'].b), minE(byStart['2001-01'].b.min),
               <DataLink key="b" href="/posts/withdrawal-comparison/data?start=2001-01" />],
           ]}
         />
@@ -219,16 +229,16 @@ export default function WithdrawalComparisonPost() {
           닷컴버블 정점(2000-03) 진입은 두 전략 모두 극도로 위험합니다.
           B안은 이 경우 파산(잔여자산 0)에 도달했습니다.
           MA200 이탈 → 현금 전환 후 재매수 시점에 여전히 하락이 이어졌기 때문입니다.
-          A안은 극소의 잔여자산(400만원)으로 겨우 생존했습니다.
+          A안은 극소의 잔여자산({Math.round(byStart['2000-03'].a.final * 10000).toLocaleString('ko-KR')}만원)으로 겨우 생존했습니다.
         </P>
 
         <H3>버블 이후 진입 (2003년)</H3>
         <Table
           headers={['시작', 'A안 최종', 'B안 최종', '']}
           rows={[
-            ['2003-03', '198.7억', '440.0억',
+            ['2003-03', fin(byStart['2003-03'].a), fin(byStart['2003-03'].b),
               <DataLink key="a" href="/posts/withdrawal-comparison/data?start=2003-03" />],
-            ['2003-09', '286.9억', '441.3억',
+            ['2003-09', fin(byStart['2003-09'].a), fin(byStart['2003-09'].b),
               <DataLink key="b" href="/posts/withdrawal-comparison/data?start=2003-09" />],
           ]}
         />
