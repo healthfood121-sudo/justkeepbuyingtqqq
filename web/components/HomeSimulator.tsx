@@ -142,31 +142,36 @@ export default function HomeSimulator() {
           </Link>
         </div>
 
-        {/* 스왑비용 토글 */}
+        {/* 비용 모드 선택 */}
         <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-5">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">스왑금리비용 반영</p>
-              <p className="text-xs text-gray-400 mt-0.5">
-                {withCosts
-                  ? '운용보수 + 스왑금리비용 포함'
-                  : '운용보수만 반영 (이론치)'}
-              </p>
-            </div>
+          <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">비용 반영</p>
+          <div className="flex rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 text-xs font-medium">
             <button
-              onClick={() => setWithCosts(v => !v)}
-              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none ${
-                withCosts ? 'bg-blue-600' : 'bg-gray-300 dark:bg-gray-600'
+              onClick={() => setWithCosts(false)}
+              className={`flex-1 py-2 transition-colors ${
+                !withCosts
+                  ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
+                  : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
               }`}
-              role="switch"
-              aria-checked={withCosts}
             >
-              <span
-                className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition duration-200 ease-in-out ${
-                  withCosts ? 'translate-x-5' : 'translate-x-0'
-                }`}
-              />
+              운용보수만
             </button>
+            <button
+              onClick={() => setWithCosts(true)}
+              className={`flex-1 py-2 border-l border-gray-200 dark:border-gray-700 transition-colors ${
+                withCosts
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
+              }`}
+            >
+              + 스왑금리
+            </button>
+          </div>
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
+            {withCosts
+              ? '운용보수(0.88%) + 스왑금리비용(2×연방기금금리) 반영'
+              : '운용보수(0.88%/년)만 반영, 스왑금리비용 미반영'}
+          </p>
           </div>
           {withCosts && instrument === 'sp500' && (
             <p className="text-xs text-yellow-600 dark:text-yellow-400 mt-2">

@@ -122,26 +122,31 @@ function TradelogInner() {
                 EMA200 15일 연속 + 동적 인출률 · 초기 10억 · 20년 시뮬레이션
               </p>
             </div>
-            {/* 스왑비용 토글 */}
-            <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 shrink-0">
-              <div>
-                <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">스왑금리비용 반영</p>
-                <p className="text-xs text-gray-400">
-                  {withCosts ? '운용보수 + 스왑금리비용' : '운용보수만 (이론치)'}
-                </p>
+            {/* 비용 모드 선택 */}
+            <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 shrink-0">
+              <p className="text-xs text-gray-400 mb-1.5">비용 반영</p>
+              <div className="flex rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 text-xs font-medium">
+                <button
+                  onClick={() => setWithCosts(false)}
+                  className={`flex-1 px-3 py-1.5 transition-colors ${
+                    !withCosts
+                      ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
+                      : 'text-gray-400 dark:text-gray-500 hover:text-gray-600'
+                  }`}
+                >
+                  운용보수만
+                </button>
+                <button
+                  onClick={() => setWithCosts(true)}
+                  className={`flex-1 px-3 py-1.5 border-l border-gray-200 dark:border-gray-700 transition-colors ${
+                    withCosts
+                      ? 'bg-blue-600 text-white'
+                      : 'text-gray-400 dark:text-gray-500 hover:text-gray-600'
+                  }`}
+                >
+                  + 스왑금리
+                </button>
               </div>
-              <button
-                onClick={() => setWithCosts(v => !v)}
-                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
-                  withCosts ? 'bg-blue-600' : 'bg-gray-300 dark:bg-gray-600'
-                }`}
-                role="switch"
-                aria-checked={withCosts}
-              >
-                <span className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform transition duration-200 ${
-                  withCosts ? 'translate-x-5' : 'translate-x-0'
-                }`} />
-              </button>
             </div>
           </div>
           <p className="text-xs text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700/40 rounded-lg px-3 py-2 inline-block">
