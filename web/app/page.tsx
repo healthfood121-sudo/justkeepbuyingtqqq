@@ -88,23 +88,19 @@ export default function HomePage() {
                 <span className="text-xs font-bold text-purple-500 dark:text-purple-400 tracking-wide">JUST KEEP SELLING</span>
                 <span className="text-base font-bold text-gray-900 dark:text-white">인출식</span>
               </div>
-              <WithdrawalSignal />
-              <div className="mb-3 space-y-1">
-                {[
-                  { name: 'T25',   desc: '1년 고점 −25% 매도 · 주 1회 확인',      v: '22.4%' },
-                  { name: 'D10GK', desc: '급락 때 LOC 조기 재매수 · 현금일 때 매일', v: '20.7%' },
-                  { name: 'S0',    desc: '200일선 15일 · 주 1회 확인',            v: '17.5%' },
-                ].map(r => (
-                  <div key={r.name} className="flex justify-between items-baseline gap-2">
-                    <span className="text-xs text-gray-600 dark:text-gray-300">
-                      <strong className="text-gray-800 dark:text-gray-200">{r.name}</strong> <span className="text-gray-400 dark:text-gray-500">{r.desc}</span>
-                    </span>
-                    <span className="text-xs font-mono font-bold text-purple-600 dark:text-purple-400 whitespace-nowrap">연 {r.v}</span>
-                  </div>
-                ))}
+              <div className="mb-3">
+                <div className="flex justify-between items-baseline mb-1">
+                  <span className="text-xs font-bold text-purple-700 dark:text-purple-300">권장: T25 — 1년 고점 −25%면 매도</span>
+                  <span className="text-xs font-mono font-bold text-purple-600 dark:text-purple-400 whitespace-nowrap">연 22.4%</span>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                  나스닥100 종가가 1년 최고 종가보다 25% 낮게 끝나면 다음 날 전량 현금.
+                  200일 평균선 위 15일 연속이면 다음 날 재매수. 생활비는 매달 자산의 0.3~0.7%, 상한 없음.
+                </p>
               </div>
+              <WithdrawalSignal />
               <div className="text-xs text-gray-400 dark:text-gray-500 mb-4">
-                1971~2016년 매달 시작해 오늘까지 · 생활비 포함 연 수익률 중간값 · 매달 자산의 0.3~0.7% 인출 · 스왑금리·양도세 반영
+                1971~2016년 매달 시작해 오늘까지 · 생활비 포함 연 수익률 중간값 (하위 10%도 17.1%) · 스왑금리·양도세 반영
               </div>
               <Link
                 href="/posts/withdrawal-guide"

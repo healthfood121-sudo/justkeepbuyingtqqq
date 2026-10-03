@@ -60,41 +60,58 @@ export default function WithdrawalSignal() {
         200일 평균선 대비 {pct(sig.vs_ema_pct)} · 1년 최고 종가 대비 {pct(sig.vs_peak_pct)}
       </p>
 
-      <div className="space-y-2">
-        {ROWS.map(({ key, name, rule }) => {
-          const s = sig.strategies[key]
-          const urgent = s.action === '매도' || s.action === '매수'
-          return (
-            <div key={key} className="border-t border-gray-100 dark:border-gray-800 pt-2">
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="text-xs font-bold text-gray-800 dark:text-gray-200">{name}</span>
-                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold ${
-                  s.state === '보유'
-                    ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300'
-                    : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300'}`}>
-                  {s.state === '보유' ? 'TQQQ 보유' : '현금'}
-                </span>
-                <span className={`text-[10px] font-semibold ${
-                  urgent ? 'text-red-600 dark:text-red-400'
-                  : s.loc ? 'text-purple-600 dark:text-purple-300'
-                  : 'text-gray-400 dark:text-gray-500'}`}>
-                  {urgent ? `다음 거래일 ${s.action}` : s.loc ? 'LOC 매수 주문' : '할 일 없음'}
-                </span>
-              </div>
-              <p className="text-[11px] text-gray-400 dark:text-gray-500">{rule}</p>
-              {s.loc && (
-                <p className="text-[11px] text-purple-700 dark:text-purple-300 mt-0.5">
-                  {s.loc.tqqq_price
-                    ? <>TQQQ <strong>${s.loc.tqqq_price.toFixed(2)}</strong> 이하 LOC 매수</>
-                    : <>TQQQ 전일 종가 대비 <strong>{pct(s.loc.tqqq_pct)}</strong> 이하 가격으로 LOC 매수</>}
-                  {' '}(나스닥100이 {pct(s.loc.ndx_pct)} 이하로 끝나야 체결)
-                </p>
-              )}
-              {urgent && <p className="text-[11px] text-red-600 dark:text-red-400 mt-0.5">{s.detail}</p>}
+      {(() => {
+        const t = sig.strategies.T25
+        const urgent = t.action === '매도' || t.action === '매수'
+        return (
+          <div className={`rounded-lg px-3 py-2 mb-2 ${urgent ? 'bg-red-50 dark:bg-red-500/10' : 'bg-purple-50/60 dark:bg-purple-500/10'}`}>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-xs font-bold text-gray-900 dark:text-white">T25</span>
+              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold ${
+                t.state === '보유'
+                  ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300'
+                  : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300'}`}>
+                {t.state === '보유' ? 'TQQQ 보유' : '현금'}
+              </span>
+              <span className={`text-xs font-bold ${urgent ? 'text-red-600 dark:text-red-400' : 'text-gray-500 dark:text-gray-400'}`}>
+                {urgent ? `다음 거래일 전량 ${t.action}` : '할 일 없음'}
+              </span>
             </div>
-          )
-        })}
-      </div>
+            <p className={`text-[11px] mt-0.5 ${urgent ? 'text-red-600 dark:text-red-400' : 'text-gray-500 dark:text-gray-400'}`}>{t.detail}</p>
+          </div>
+        )
+      })()}
+
+      <details className="text-[11px]">
+        <summary className="cursor-pointer text-gray-400 dark:text-gray-500 select-none">다른 전략 신호 (비교용)</summary>
+        <div className="space-y-2 mt-2">
+          {ROWS.filter(r => r.key !== 'T25').map(({ key, name, rule }) => {
+            const s = sig.strategies[key]
+            const urgent = s.action === '매도' || s.action === '매수'
+            return (
+              <div key={key} className="border-t border-gray-100 dark:border-gray-800 pt-2">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="font-bold text-gray-700 dark:text-gray-300">{name}</span>
+                  <span className="text-gray-500 dark:text-gray-400">{s.state === '보유' ? 'TQQQ 보유' : '현금'}</span>
+                  <span className={urgent ? 'text-red-600 dark:text-red-400 font-semibold' : s.loc ? 'text-purple-600 dark:text-purple-300' : 'text-gray-400 dark:text-gray-500'}>
+                    {urgent ? `다음 거래일 ${s.action}` : s.loc ? 'LOC 매수 주문' : '할 일 없음'}
+                  </span>
+                </div>
+                <p className="text-gray-400 dark:text-gray-500">{rule}</p>
+                {s.loc && (
+                  <p className="text-purple-700 dark:text-purple-300 mt-0.5">
+                    {s.loc.tqqq_price
+                      ? <>TQQQ <strong>${s.loc.tqqq_price.toFixed(2)}</strong> 이하 LOC 매수</>
+                      : <>TQQQ 전일 종가 대비 <strong>{pct(s.loc.tqqq_pct)}</strong> 이하 가격으로 LOC 매수</>}
+                    {' '}(나스닥100이 {pct(s.loc.ndx_pct)} 이하로 끝나야 체결)
+                  </p>
+                )}
+                {urgent && <p className="text-red-600 dark:text-red-400 mt-0.5">{s.detail}</p>}
+              </div>
+            )
+          })}
+        </div>
+      </details>
       <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-2 leading-relaxed">
         매일 한국 시간 아침 7시 30분 자동 갱신. 투자 권유가 아닌 백테스트 규칙의 계산 결과입니다.
       </p>

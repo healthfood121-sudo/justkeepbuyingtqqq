@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Header from '@/components/Header'
 import WithdrawalFullPeriodExplorer from '@/components/WithdrawalFullPeriodExplorer'
+import T25PeriodTable from '@/components/T25PeriodTable'
 
 function H2({ children }: { children: React.ReactNode }) {
   return <h2 className="text-xl font-bold mt-14 mb-4 text-gray-900 dark:text-white">{children}</h2>
@@ -168,6 +169,30 @@ export default function WithdrawalFullPeriodPage() {
           </div>
         ))}
 
+        <H2>그래서 T25를 권장 전략으로 골랐다</H2>
+        <P>
+          비교 끝에 권장 전략은 <strong>T25 + 상한 없는 동적 인출</strong>로 정했다. 규칙이 세 줄로 끝나고(1년 고점 −25%면 매도,
+          200일선 위 15일이면 매수, 매달 자산의 0.3~0.7% 인출), 일주일에 한 번만 확인하면 된다. 근거는 두 가지다.
+        </P>
+        <h3 className="text-base font-semibold mt-6 mb-2 text-gray-700 dark:text-gray-200">① 꺼내 쓰는 돈이 가장 많다</h3>
+        <P>
+          결국 목표는 삶의 질이다. 같은 날 시작한 경우끼리 비교하면 T25는 20년 동안 S0보다 약 1.3배 많이 꺼내 쓴다.
+          D10GK는 초반 10년에 T25의 68%만 쓰고, 30년이 넘어가야 앞지른다.
+        </P>
+        <T25PeriodTable part="withdrawn" />
+        <h3 className="text-base font-semibold mt-8 mb-2 text-gray-700 dark:text-gray-200">② 닷컴버블이 아닌 구간에서도 대체로 낫다</h3>
+        <P>
+          T25의 성적이 닷컴버블 한 번 덕분인지 보려고 2000~2002년을 거치지 않는 구간만 따로 비교했다.
+          그런 10년 구간 전체에서 T25가 S0보다 나은 경우가 80%, 2003년 이후 시작은 S0·D10GK보다 전부 나았다.
+          다만 1970~80년대 10년 구간만 보면 S0와 거의 같고(9.8% vs 9.9%), 빨리 회복한 폭락(1987, 2020)에서는 신호 없이 TQQQ를 들고 있는 편이 더 나았다.
+          그 대신 신호 없는 보유는 1973~74 같은 긴 하락장에서 무너진다.
+        </P>
+        <T25PeriodTable part="periods" />
+        <P>
+          권장 전략의 실제 운영 방법과 감수해야 할 점은 <Link href="/posts/withdrawal-guide" className="text-blue-600 dark:text-blue-400 underline">인출식 방법론</Link>에,
+          매일 신호는 <Link href="/" className="text-blue-600 dark:text-blue-400 underline">홈 화면</Link>에 있다.
+        </P>
+
         <H2>주의할 점</H2>
         <ul className="space-y-2 mb-6 text-gray-600 dark:text-gray-300 text-sm leading-relaxed list-disc pl-5">
           <li><strong>생활비가 자산에 따라 크게 출렁인다.</strong> 상한이 없으므로 자산이 반토막 나면 생활비도 반토막 난다. 실제로는 월 생활비 하한·상한을 따로 정하는 것이 좋다 (다음 글에서 다룸).</li>
@@ -178,9 +203,9 @@ export default function WithdrawalFullPeriodPage() {
         </ul>
 
         <Callout color="green">
-          <strong>다음 글:</strong> 이 결과를 바탕으로 권장 전략을 새로 짠다.
-          지금 기준으로 단순함과 수익을 모두 갖춘 후보는 T25이고, 자산별 현금 비중을 붙여 낙폭과 생활비 출렁임을 줄일지,
-          생활비 하한·상한을 어떻게 둘지가 남은 문제다.
+          <strong>권장 전략: T25 + 상한 없는 동적 인출.</strong>{' '}
+          자산별 현금 비중·기본 현금 버퍼·생활비 1년 고정 같은 장치도 시험했지만, 수익을 1~2%p 낮추는 대신 낙폭을 줄이는 정도라
+          단순함을 우선해 기본 권장에서는 뺐다 (큰돈을 지키고 싶다면 T25 + 자산별 현금 비중).
           매일 신호는 <Link href="/" className="underline">홈 화면</Link>에서, 기존 방법론은 <Link href="/posts/withdrawal-guide" className="underline">인출식 방법론</Link>에서 볼 수 있다.
         </Callout>
       </main>
