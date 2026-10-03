@@ -5,10 +5,10 @@ import { useEffect, useState } from 'react'
 type Mode = 'loc' | 'next' | 'same'
 type Horizon = 'today' | 'y30' | 'y20'
 
-interface HStat { n: number; med_final: number; p10_final: number; n_below_init: number; win_vs_s0: number }
-interface TStat { n: number; med_ann_pct: number; p10_ann_pct: number; n_below_init: number; cash_days_pct: number; trades_per_10y: number }
+interface HStat { n: number; med_total: number; p10_total: number; med_final: number; n_below_init: number; win_vs_s0: number }
+interface TStat { n: number; med_irr_pct: number; p10_irr_pct: number; n_below_init: number; cash_days_pct: number; trades_per_10y: number }
 interface Row { name: string; y20: HStat; y30: HStat; today: TStat }
-interface Robust { name: string; mode: Mode; d1: { med_ann_pct: number }; d2: { med_ann_pct: number }; d3: { med_ann_pct: number }; y20_med_by_delay: number[] }
+interface Robust { name: string; mode: Mode; d1: { med_irr_pct: number }; d2: { med_irr_pct: number }; d3: { med_irr_pct: number }; y20_med_by_delay: number[] }
 interface Data { summary: Record<Mode, Row[]>; robust: Robust[] }
 
 const LABEL: Record<string, string> = {
@@ -57,12 +57,12 @@ export default function WithdrawalExecTable() {
   if (!data) return <div className="text-xs text-gray-400 py-6 text-center">불러오는 중…</div>
 
   const rows = [...data.summary[mode]].sort((a, b) =>
-    hz === 'today' ? b.today.med_ann_pct - a.today.med_ann_pct : b[hz].med_final - a[hz].med_final)
+    hz === 'today' ? b.today.med_irr_pct - a.today.med_irr_pct : b[hz].med_total - a[hz].med_total)
   const n = hz === 'today' ? rows[0].today.n : rows[0][hz].n
 
   const headers = hz === 'today'
-    ? ['전략', '연평균 수익률 (중간)', '하위 10%', '원금 미만', '현금 기간', '매매/10년']
-    : ['전략', '최종 자산 (중간)', '하위 10%', '원금 미만', 'S0보다 나은 비율']
+    ? ['전략', '인출 포함 연 수익률', '하위 10%', '남은 자산 10억 미만', '현금 기간', '매매/10년']
+    : ['전략', '꺼내 쓴 돈 + 남은 자산', '하위 10%', '남은 자산 10억 미만', 'S0보다 나은 비율']
 
   return (
     <div className="border border-gray-200 dark:border-gray-700 rounded-2xl p-4 mb-6">
@@ -75,7 +75,7 @@ export default function WithdrawalExecTable() {
         {hz === 'today'
           ? `1971~2016년 매달 시작한 ${n}가지 경우를 2026-09까지 보유 (10년 이상 보유한 경우만).`
           : `${hz === 'y30' ? 30 : 20}년을 다 채운 ${n}가지 시작 시점.`}
-        {' '}초기 10억 · 스왑금리 · 모든 매도 양도세 22% 반영.
+        {' '}초기 10억 · 매달 자산의 0.3~0.7% 인출(상한 없음) · 스왑금리 · 모든 매도 양도세 22% 반영.
       </p>
 
       <div className="overflow-x-auto">
@@ -92,13 +92,13 @@ export default function WithdrawalExecTable() {
                 <tr key={r.name}>
                   <td className="py-2 px-2 text-gray-800 dark:text-gray-200 whitespace-nowrap">{LABEL[r.name] ?? r.name}</td>
                   {h ? <>
-                    <td className="py-2 px-2 font-mono font-bold text-gray-900 dark:text-white">{h.med_final.toLocaleString('ko-KR', { maximumFractionDigits: 0 })}억</td>
-                    <td className="py-2 px-2 font-mono text-gray-600 dark:text-gray-300">{h.p10_final.toLocaleString('ko-KR', { maximumFractionDigits: 1 })}억</td>
+                    <td className="py-2 px-2 font-mono font-bold text-gray-900 dark:text-white">{h.med_total.toLocaleString('ko-KR', { maximumFractionDigits: 0 })}억</td>
+                    <td className="py-2 px-2 font-mono text-gray-600 dark:text-gray-300">{h.p10_total.toLocaleString('ko-KR', { maximumFractionDigits: 1 })}억</td>
                     <td className="py-2 px-2 text-gray-600 dark:text-gray-300">{h.n_below_init}가지</td>
                     <td className="py-2 px-2 text-gray-600 dark:text-gray-300">{r.name === 'S0' ? '—' : `${h.win_vs_s0}%`}</td>
                   </> : <>
-                    <td className="py-2 px-2 font-mono font-bold text-gray-900 dark:text-white">{t.med_ann_pct}%</td>
-                    <td className="py-2 px-2 font-mono text-gray-600 dark:text-gray-300">{t.p10_ann_pct}%</td>
+                    <td className="py-2 px-2 font-mono font-bold text-gray-900 dark:text-white">{t.med_irr_pct}%</td>
+                    <td className="py-2 px-2 font-mono text-gray-600 dark:text-gray-300">{t.p10_irr_pct}%</td>
                     <td className="py-2 px-2 text-gray-600 dark:text-gray-300">{t.n_below_init}가지</td>
                     <td className="py-2 px-2 text-gray-600 dark:text-gray-300">{t.cash_days_pct}%</td>
                     <td className="py-2 px-2 text-gray-600 dark:text-gray-300">{t.trades_per_10y}회</td>
@@ -112,14 +112,14 @@ export default function WithdrawalExecTable() {
 
       {hz === 'y20' && mode !== 'same' && (
         <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-3 leading-relaxed">
-          20년 중간값은 매매를 하루 이틀 늦게 하는 것만으로도 크게 흔들린다 (예: T25 {data.robust.find(x => x.name === 'T25')?.y20_med_by_delay.map(v => `${Math.round(v)}억`).join(' / ')} — 1·2·3일 뒤 실행).
+          20년 시점 값은 매매를 하루 이틀 늦게 하는 것만으로도 크게 흔들린다 (예: T25 {data.robust.find(x => x.name === 'T25')?.y20_med_by_delay.map(v => `${Math.round(v)}억`).join(' / ')} — 1·2·3일 뒤 실행).
           여러 시작 시점이 같은 큰 폭락을 공유하기 때문이다. 전략 비교는 &lsquo;오늘까지 보유&rsquo;를 기준으로 보는 것이 안정적이다.
         </p>
       )}
       {hz === 'today' && mode !== 'same' && (
         <p className="text-xs text-gray-400 dark:text-gray-500 mt-3 leading-relaxed">
-          매매를 1·2·3거래일 늦게 해도 연평균 수익률은 비슷하다:{' '}
-          {data.robust.map(x => `${LABEL[x.name]?.split(' —')[0] ?? x.name} ${x.d1.med_ann_pct}/${x.d2.med_ann_pct}/${x.d3.med_ann_pct}%`).join(' · ')}.
+          매매를 1·2·3거래일 늦게 해도 인출 포함 연 수익률은 비슷하다:{' '}
+          {data.robust.map(x => `${LABEL[x.name]?.split(' —')[0] ?? x.name} ${x.d1.med_irr_pct}/${x.d2.med_irr_pct}/${x.d3.med_irr_pct}%`).join(' · ')}.
           모든 금액은 물가 상승을 빼지 않은 금액이다.
         </p>
       )}

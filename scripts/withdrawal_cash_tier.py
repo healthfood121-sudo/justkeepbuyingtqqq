@@ -161,7 +161,8 @@ def target_w(p: Param, total: float) -> float:
 
 
 def run_sim(tq, qq, closes, ema, dates, rp_daily, rsi, peaks, start, p: Param, signal_tax: bool,
-            exec_mode: str = "same", horizon_days: int = 0, snaps: tuple = (), exec_delay: int = 1) -> dict:
+            exec_mode: str = "same", horizon_days: int = 0, snaps: tuple = (), exec_delay: int = 1,
+            collect_flows: bool = False) -> dict:
     """exec_mode — 신호가 확정된 종가 대비 실제 매매 시점
          same : 신호가 뜬 그날 종가에 매매 (기존 가정. 종가가 확정돼야 신호를 알 수 있으므로 실제로는 불가능)
          next : 종가 확정 후 아침에 확인 → 다음 거래일 종가에 매매
@@ -266,6 +267,9 @@ def run_sim(tq, qq, closes, ema, dates, rp_daily, rsi, peaks, start, p: Param, s
     last_buy_j = -999
     snap_vals = {}
     snap_wd = {}
+    snap_liv = {}
+    flows = []
+    last_living = 0.0
     last_mon = None
     for j in range(sim_len):
         ci = start + j
@@ -312,6 +316,9 @@ def run_sim(tq, qq, closes, ema, dates, rp_daily, rsi, peaks, start, p: Param, s
                 living = min(living, cash)
                 cash -= living
                 withdrawn += living
+                last_living = living
+                if collect_flows:
+                    flows.append((j, living))
 
             if invested:
                 rebalance(ci)
@@ -374,6 +381,7 @@ def run_sim(tq, qq, closes, ema, dates, rp_daily, rsi, peaks, start, p: Param, s
         if j + 1 in snaps:
             snap_vals[j + 1] = round(tot / EOK, 2)
             snap_wd[j + 1] = round(withdrawn / EOK, 2)
+            snap_liv[j + 1] = round(last_living / 10_000)      # 그 시점 월 생활비 (만원)
         if invested and tot > 0:
             cash_w_sum += (tot - val("tq", ci)) / tot
             cash_w_n   += 1
@@ -397,6 +405,8 @@ def run_sim(tq, qq, closes, ema, dates, rp_daily, rsi, peaks, start, p: Param, s
         "cash_days_pct": round(cash_days / sim_len * 100, 1) if sim_len else 0.0,
         "snaps":     snap_vals,
         "snaps_wd":  snap_wd,
+        "snaps_liv": snap_liv,
+        "flows":     flows,
         "max_dd":    round(max_dd * 100, 1),
         "sells":     sells,
         "quick_resells": quick,

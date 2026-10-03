@@ -3,7 +3,7 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList } from 'recharts'
 import { useTheme } from '@/components/ThemeProvider'
 
-export interface YearStat { n: number; med_final: number; p10_final: number }
+export type YearStat = Record<string, number>
 export interface SeriesInput { name: string; label: string; byYear: Record<string, YearStat> }
 
 // 전략별 고정 색 (검증된 범주형 팔레트, 선택 순서와 무관하게 전략마다 고정)
@@ -18,11 +18,14 @@ export const SERIES_COLORS: Record<string, { light: string; dark: string }> = {
   T30:   { light: '#e34948', dark: '#e66767' },
 }
 
-const fmt = (v: number) => v >= 10000 ? `${(v / 10000).toFixed(1)}조` : `${Math.round(v).toLocaleString('ko-KR')}억`
+const fmtEok = (v: number) => v >= 10000 ? `${(v / 10000).toFixed(1)}조` : `${Math.round(v).toLocaleString('ko-KR')}억`
+// 만원 단위 → 월 생활비 표기
+export const fmtMan = (v: number) => v >= 10000 ? `${(v / 10000).toFixed(v >= 100000 ? 0 : 1)}억` : `${Math.round(v).toLocaleString('ko-KR')}만`
 
 export default function WithdrawalYearsChart({
-  series, years, metric,
-}: { series: SeriesInput[]; years: number[]; metric: 'med_final' | 'p10_final' }) {
+  series, years, metric, unit = 'eok',
+}: { series: SeriesInput[]; years: number[]; metric: string; unit?: 'eok' | 'man' }) {
+  const fmt = unit === 'man' ? fmtMan : fmtEok
   const { theme } = useTheme()
   const dark = theme === 'dark'
   const grid = dark ? '#1f2937' : '#f3f4f6'

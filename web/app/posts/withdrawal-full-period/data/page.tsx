@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Header from '@/components/Header'
 
-interface Cell { f: number; a: number | null; dd: number; w: number; t: number; y: Record<string, number> }
+interface Cell { f: number; i: number | null; dd: number; w: number; t: number; y: Record<string, number>; yw: Record<string, number> }
 interface CohortRow { s: string; y: number; [k: string]: Cell | string | number }
 interface Data {
   meta: { generated: string; conditions: string; years: number[]; strategies: { name: string; desc: string; group: string }[] }
@@ -40,7 +40,7 @@ function Viewer() {
     for (const r of rows) {
       const c = r[sel[0]] as Cell
       if (!c) continue
-      const v = view === 'full' ? (r.y >= 10 ? c.a ?? Infinity : Infinity) : c.y[view]
+      const v = view === 'full' ? (r.y >= 10 ? c.i ?? Infinity : Infinity) : c.y[view] + c.yw[view]
       if (v < wv) { wv = v; worst = r.s }
     }
     return worst
@@ -83,8 +83,8 @@ function Viewer() {
               <th className="py-2 px-2 text-left font-medium">진입 시점</th>
               <th className="py-2 px-2 text-left font-medium">보유</th>
               {sel.map(n => (
-                <th key={n} className="py-2 px-2 text-left font-medium whitespace-nowrap" colSpan={view === 'full' ? 3 : 1}>
-                  {n} {view === 'full' ? '(연평균 · 최종 · 최대 낙폭)' : `(${view}년 시점 자산)`}
+                <th key={n} className="py-2 px-2 text-left font-medium whitespace-nowrap" colSpan={view === 'full' ? 4 : 2}>
+                  {n} {view === 'full' ? '(인출 포함 수익률 · 꺼내 쓴 돈 · 남은 자산 · 최대 낙폭)' : `(${view}년 시점: 꺼내 쓴 돈 · 남은 자산)`}
                 </th>
               ))}
             </tr>
@@ -98,11 +98,13 @@ function Viewer() {
                   const c = r[n] as Cell
                   if (!c) return <td key={n} />
                   return view === 'full' ? (
-                    [<td key={n + 'a'} className="py-1.5 px-2 font-mono">{c.a === null || r.y < 1 ? '—' : `${c.a}%`}</td>,
+                    [<td key={n + 'i'} className="py-1.5 px-2 font-mono">{c.i === null || r.y < 1 ? '—' : `${c.i}%`}</td>,
+                     <td key={n + 'w'} className="py-1.5 px-2 font-mono">{fmt(c.w)}</td>,
                      <td key={n + 'f'} className="py-1.5 px-2 font-mono">{fmt(c.f)}</td>,
                      <td key={n + 'd'} className="py-1.5 px-2 font-mono text-gray-400">−{c.dd}%</td>]
                   ) : (
-                    <td key={n} className="py-1.5 px-2 font-mono">{fmt(c.y[view])}</td>
+                    [<td key={n + 'w'} className="py-1.5 px-2 font-mono">{fmt(c.yw[view])}</td>,
+                     <td key={n + 'f'} className="py-1.5 px-2 font-mono">{fmt(c.y[view])}</td>]
                   )
                 })}
               </tr>
@@ -111,7 +113,8 @@ function Viewer() {
         </table>
       </div>
       <p className="text-xs text-gray-400 dark:text-gray-500 mt-3">
-        보유 10년 미만인 진입 시점은 연평균 수익률이 크게 출렁이므로 최악 표시에서 제외했다. 금액은 물가 상승을 빼지 않은 금액.
+        인출 포함 수익률 = 10억을 넣고 매달 생활비를 꺼내 쓰고 마지막 남은 자산까지 돌려받았을 때의 연 수익률.
+        보유 10년 미만인 진입 시점은 수익률이 크게 출렁이므로 최악 표시에서 제외했다. 시점별 보기의 최악은 꺼내 쓴 돈 + 남은 자산 기준. 금액은 물가 상승을 빼지 않은 금액.
       </p>
     </>
   )

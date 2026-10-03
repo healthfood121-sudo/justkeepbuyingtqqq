@@ -33,6 +33,7 @@ import pandas as pd
 from pathlib import Path
 
 import withdrawal_cash_tier as E
+from withdrawal_full_period import irr
 
 OUT_PATH = E.ROOT / "web/public/data/withdrawal_exec_horizon_v2.json"
 NAMES    = ["S0", "C50", "D10GK", "D10C50", "T25", "Q50"]
@@ -56,9 +57,14 @@ def _job(arg):
     s = _S
     p = next(x for x in E.STRATEGIES if x.name == name)
     n = len(s["closes"])
-    return arg, [E.run_sim(s["tq"], s["qq"], s["closes"], s["ema"], s["dates"], s["rp"], s["rsi"], s["peaks"],
-                           si, p, True, exec_mode=mode, horizon_days=n, snaps=(Y20, Y30),
-                           exec_delay=delay) for si in s["starts"]]
+    out = []
+    for si in s["starts"]:
+        r = E.run_sim(s["tq"], s["qq"], s["closes"], s["ema"], s["dates"], s["rp"], s["rsi"], s["peaks"],
+                      si, p, True, exec_mode=mode, horizon_days=n, snaps=(Y20, Y30),
+                      exec_delay=delay, collect_flows=True)
+        r["irr"] = irr(r.pop("flows"), r["final"], r["years"])
+        out.append(r)
+    return arg, out
 
 
 def q(xs, f):
@@ -66,20 +72,23 @@ def q(xs, f):
 
 
 def horizon_stats(rs, base, key):
-    pairs = [(r["snaps"][key], b["snaps"][key]) for r, b in zip(rs, base) if key in r["snaps"]]
-    fin = sorted(a for a, _ in pairs)
+    pairs = [(r["snaps"][key] + r["snaps_wd"][key], b["snaps"][key] + b["snaps_wd"][key], r["snaps"][key])
+             for r, b in zip(rs, base) if key in r["snaps"]]
+    tot = sorted(a for a, _, _ in pairs)
+    fin = sorted(f for _, _, f in pairs)
     return {
         "n":            len(fin),
+        "med_total":    round(q(tot, 0.5), 1),     # 꺼내 쓴 돈 + 남은 자산
+        "p10_total":    round(q(tot, 0.10), 1),
         "med_final":    round(q(fin, 0.5), 1),
-        "p10_final":    round(q(fin, 0.10), 1),
         "n_below_init": sum(1 for x in fin if x < 10),
-        "win_vs_s0":    round(sum(1 for a, b in pairs if a > b) / len(pairs) * 100, 1),
+        "win_vs_s0":    round(sum(1 for a, b, _ in pairs if a > b) / len(pairs) * 100, 1),
     }
 
 
 def today_stats(rs, labels):
     rows = [(lab, r) for lab, r in zip(labels, rs) if r["years"] >= MIN_YRS_TODAY]
-    ann = sorted(((max(r["final"], 1e-6) / 10) ** (1 / r["years"]) - 1) * 100 for _, r in rows)
+    ann = sorted(r["irr"] for _, r in rows)     # 인출 포함 연 수익률
     eras = {}
     for key, a, b in (("1970s", 1971, 1980), ("1980s", 1980, 1990), ("1990s", 1990, 2000),
                       ("2000s", 2000, 2010), ("2010s", 2010, 2017)):
@@ -88,8 +97,8 @@ def today_stats(rs, labels):
             eras[key] = round(q(xs, 0.5), 1)
     return {
         "n":              len(rows),
-        "med_ann_pct":    round(q(ann, 0.5), 1),
-        "p10_ann_pct":    round(q(ann, 0.10), 1),
+        "med_irr_pct":    round(q(ann, 0.5), 1),
+        "p10_irr_pct":    round(q(ann, 0.10), 1),
         "n_below_init":   sum(1 for _, r in rows if r["final"] < 10),
         "era_med_final":  eras,
         "cash_days_pct":  round(sum(r["cash_days_pct"] for _, r in rows) / len(rows), 1),
@@ -98,6 +107,11 @@ def today_stats(rs, labels):
 
 
 def main():
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--cap", action="store_true", help="기존 연구의 월 1,500만원 인출 상한 적용 (기본: 상한 없음)")
+    if not ap.parse_args().cap:
+        E.LIV_MAX = float("inf")
     t0 = time.time()
     tq, qq, closes, ema, dates, rp, rsi, peaks = E.load_data()
     starts = E.get_monthly_starts(dates)
@@ -127,8 +141,8 @@ def main():
               f" |{'오늘까지 연평균':>13}{'p10':>7}{'<10억':>6}{'현금기간':>8}{'매매/10년':>9}")
         for r in summary[m]:
             a, b, c = r["y20"], r["y30"], r["today"]
-            print(f"{r['name']:<7}{a['med_final']:9.1f}{a['p10_final']:7.1f}{a['n_below_init']:6}{a['win_vs_s0']:6.1f}% |"
-                  f"{b['med_final']:9.1f}{b['n_below_init']:6} |{c['med_ann_pct']:12.1f}%{c['p10_ann_pct']:6.1f}%"
+            print(f"{r['name']:<7}{a['med_total']:9.1f}{a['p10_total']:7.1f}{a['n_below_init']:6}{a['win_vs_s0']:6.1f}% |"
+                  f"{b['med_total']:9.1f}{b['n_below_init']:6} |{c['med_irr_pct']:12.1f}%{c['p10_irr_pct']:6.1f}%"
                   f"{c['n_below_init']:6}{c['cash_days_pct']:7.1f}%{c['trades_per_10y']:9.1f}")
 
     robust = []
@@ -137,10 +151,10 @@ def main():
         row = {"name": n, "mode": m}
         for d in (1,) + DELAYS:
             t = today_stats(raw[(n, m, d)], labels)
-            row[f"d{d}"] = {"med_ann_pct": t["med_ann_pct"], "p10_ann_pct": t["p10_ann_pct"]}
-        row["y20_med_by_delay"] = [horizon_stats(raw[(n, m, d)], raw[(n, m, d)], Y20)["med_final"] for d in (1,) + DELAYS]
+            row[f"d{d}"] = {"med_irr_pct": t["med_irr_pct"], "p10_irr_pct": t["p10_irr_pct"]}
+        row["y20_med_by_delay"] = [horizon_stats(raw[(n, m, d)], raw[(n, m, d)], Y20)["med_total"] for d in (1,) + DELAYS]
         robust.append(row)
-        print(f"{n:<7}{m:<5}" + "".join(f"  {d}일 {row[f'd{d}']['med_ann_pct']:5.1f}%" for d in (1,) + DELAYS)
+        print(f"{n:<7}{m:<5}" + "".join(f"  {d}일 {row[f'd{d}']['med_irr_pct']:5.1f}%" for d in (1,) + DELAYS)
               + "   20년 중간값 " + "/".join(f"{v:.0f}" for v in row["y20_med_by_delay"]))
 
     out = {
@@ -148,6 +162,8 @@ def main():
             "generated":  str(dates[-1].date()),
             "price_mode": "with_costs",
             "tax":        "모든 매도 과세 (하락 신호 매도 포함)",
+            "withdrawal": "동적 인출 월 0.3/0.5/0.7%, " + ("월 최대 1,500만" if E.LIV_MAX != float("inf") else "상한 없음"),
+            "y_metrics":  "y20·y30의 med_total = 꺼내 쓴 돈 + 남은 자산 (억)",
             "n_starts":   len(starts),
             "modes": {
                 "same": "신호 당일 종가 매매 (기존 가정, 실제로는 불가능)",
@@ -157,7 +173,7 @@ def main():
             "horizons": {
                 "y20":   "20년을 다 채운 시작 시점",
                 "y30":   "30년을 다 채운 시작 시점",
-                "today": f"데이터 끝까지 보유, {MIN_YRS_TODAY}년 이상 보유한 시작 시점 (연평균 수익률 비교)",
+                "today": f"데이터 끝까지 보유, {MIN_YRS_TODAY}년 이상 보유한 시작 시점 (인출 포함 연 수익률 비교)",
             },
             "strategies": [{"name": p.name, "desc": p.desc} for p in E.STRATEGIES if p.name in NAMES],
         },

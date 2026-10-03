@@ -8,11 +8,14 @@ withdrawal_full_period.py
   - 모든 매도에 양도세 22% (연 250만 공제, 다음 해 1월 납부) — 하락 신호 매도 포함
   - 현금은 외화RP: (기준금리 − 0.4%) 이자, 이자소득세 15.4%
   - 실행: 신호 다음 거래일 종가 (D10GK·S7 조기 재매수만 LOC 주문으로 당일 종가)
-  - 인출: 동적 인출률 월 0.3/0.5/0.7% (총자산 10억/20억 기준), 월 최대 1,500만원
+  - 인출: 동적 인출률 — 매달 총자산의 0.3/0.5/0.7% (10억/20억 기준). 기본은 상한 없음
+          (--cap: 기존 연구의 월 1,500만원 상한 적용 → withdrawal_full_period_cap.json)
   - 초기 10억, 1971-02 ~ 2026-09 매달 시작 (668개), 각자 데이터 끝까지 보유
 
-시점별 스냅샷: 시작 후 10·20·30·40·50년 총자산·누적 인출액 (그 기간을 채운 시작 시점만)
-전체 기간 지표: 연평균 수익률 = (최종자산/10억)^(1/보유연수) − 1, 10년 이상 보유한 시작 시점만
+시점별 스냅샷: 시작 후 10·20·30·40·50년 총자산·누적 인출액·그 시점 월 생활비 (그 기간을 채운 시작 시점만)
+전체 기간 지표 (10년 이상 보유한 시작 시점만):
+  인출 포함 연 수익률(IRR) — 10억을 넣고, 매달 꺼낸 생활비와 마지막 남은 자산을 돌려받은 현금흐름의 내부수익률.
+  전략마다 꺼내 쓴 돈이 다르므로 남은 자산만의 연평균보다 공정한 비교 지표.
 
 출력: web/public/data/withdrawal_full_period.json
 """
@@ -74,13 +77,32 @@ def _init(*args):
     _S["dates"] = pd.DatetimeIndex(_S["dates"])
 
 
+def irr(flows, final_eok, years):
+    """-10억(시작) · 매달 생활비 · 마지막 남은 자산 현금흐름의 연 내부수익률 (%)."""
+    t = np.array([0.0] + [j / 252 for j, _ in flows] + [years])
+    cf = np.array([-10.0] + [v / EOK for _, v in flows] + [final_eok])
+    lo, hi = -0.99, 3.0
+    for _ in range(80):
+        mid = (lo + hi) / 2
+        if (cf / (1 + mid) ** t).sum() > 0:
+            lo = mid
+        else:
+            hi = mid
+    return round(mid * 100, 2)
+
+
 def _job(idx):
     name, _, _, asset, p = STRATS[idx]
     s = _S
     n = len(s["closes"])
     tq = s["series"][asset]
-    return name, [E.run_sim(tq, s["series"]["qqq"], s["closes"], s["ema"], s["dates"], s["rp"], s["rsi"], s["peaks"],
-                            si, p, True, exec_mode="loc", horizon_days=n, snaps=SNAPS) for si in s["starts"]]
+    out = []
+    for si in s["starts"]:
+        r = E.run_sim(tq, s["series"]["qqq"], s["closes"], s["ema"], s["dates"], s["rp"], s["rsi"], s["peaks"],
+                      si, p, True, exec_mode="loc", horizon_days=n, snaps=SNAPS, collect_flows=True)
+        r["irr"] = irr(r.pop("flows"), r["final"], r["years"])
+        out.append(r)
+    return name, out
 
 
 def q(xs, f):
@@ -94,11 +116,11 @@ def ann(r):
 def main():
     import argparse
     ap = argparse.ArgumentParser()
-    ap.add_argument("--no-cap", action="store_true", help="월 1,500만원 인출 상한 없이 (총자산 × 동적 인출률 전액 인출)")
+    ap.add_argument("--cap", action="store_true", help="기존 연구의 월 1,500만원 인출 상한 적용")
     args = ap.parse_args()
-    out_path = OUT_PATH.with_name("withdrawal_full_period_nocap.json") if args.no_cap else OUT_PATH
-    if args.no_cap:
-        E.LIV_MAX = float("inf")   # fork된 워커가 그대로 물려받음
+    out_path = OUT_PATH.with_name("withdrawal_full_period_cap.json") if args.cap else OUT_PATH
+    if not args.cap:
+        E.LIV_MAX = float("inf")   # 상한 없음 — fork된 워커가 그대로 물려받음
     t0 = time.time()
     tq, qq, closes, ema, dates, rp, rsi, peaks = E.load_data()
 
@@ -123,11 +145,13 @@ def main():
         rs = raw[name]
         by_year = {}
         for y, k in zip(YEARS, SNAPS):
-            pairs = [(r["snaps"][k], r["snaps_wd"][k], b["snaps"][k]) for r, b in zip(rs, base) if k in r["snaps"]]
+            pairs = [(r["snaps"][k], r["snaps_wd"][k], b["snaps"][k] + b["snaps_wd"][k]) for r, b in zip(rs, base) if k in r["snaps"]]
             if not pairs:
                 continue
             fin = sorted(a for a, _, _ in pairs)
             wd  = sorted(w for _, w, _ in pairs)
+            tot = sorted(a + w for a, w, _ in pairs)
+            liv = sorted(r["snaps_liv"][k] for r in rs if k in r["snaps_liv"])
             by_year[str(y)] = {
                 "n":             len(fin),
                 "med_final":     round(q(fin, 0.5), 1),
@@ -136,10 +160,18 @@ def main():
                 "worst_final":   round(fin[0], 2),
                 "n_below_init":  sum(1 for x in fin if x < 10),
                 "med_withdrawn": round(q(wd, 0.5), 1),
-                "win_vs_s0":     round(sum(1 for a, _, b in pairs if a > b) / len(pairs) * 100, 1),
+                "p10_withdrawn": round(q(wd, 0.10), 1),
+                "med_total":     round(q(tot, 0.5), 1),
+                "p10_total":     round(q(tot, 0.10), 1),
+                "med_living_man": q(liv, 0.5),
+                "p10_living_man": q(liv, 0.10),
+                # 꺼내 쓴 돈 + 남은 자산 기준
+                "win_vs_s0":     round(sum(1 for a, w, b in pairs if a + w > b) / len(pairs) * 100, 1),
             }
         full = [r for r in rs if r["years"] >= MIN_YRS]
-        a = sorted(ann(r) for r in full)
+        a = sorted(r["irr"] for r in full)
+        wds = sorted(r["withdrawn"] for r in full)
+        avg_liv = sorted(r["withdrawn"] * EOK / (r["years"] * 12) / 10_000 for r in full)
         dd = sorted(r["max_dd"] for r in full)
         sells = sum(r["sells"] for r in full)
         summary.append({
@@ -147,9 +179,13 @@ def main():
             "by_year": by_year,
             "full": {
                 "n":              len(full),
-                "med_ann_pct":    round(q(a, 0.5), 1),
-                "p10_ann_pct":    round(q(a, 0.10), 1),
-                "worst_ann_pct":  round(a[0], 1),
+                "med_irr_pct":    round(q(a, 0.5), 1),
+                "p10_irr_pct":    round(q(a, 0.10), 1),
+                "worst_irr_pct":  round(a[0], 1),
+                "med_withdrawn":  round(q(wds, 0.5), 1),
+                "med_avg_living_man": round(q(avg_liv, 0.5)),
+                "p10_avg_living_man": round(q(avg_liv, 0.10)),
+                "med_ann_pct":    round(q(sorted(ann(r) for r in full), 0.5), 1),
                 "n_below_init":   sum(1 for r in full if r["final"] < 10),
                 "med_max_dd":     round(q(dd, 0.5), 1),
                 "worst_max_dd":   round(dd[-1], 1),
@@ -167,34 +203,36 @@ def main():
             row[name] = {
                 "f":  r["final"],
                 "a":  round(ann(r), 1) if r["years"] >= 1 else None,
+                "i":  r["irr"] if r["years"] >= 1 else None,
                 "dd": r["max_dd"],
                 "w":  r["withdrawn"],
                 "t":  r["trades"],
                 "y":  {str(y): r["snaps"][s] for y, s in zip(YEARS, SNAPS) if s in r["snaps"]},
+                "yw": {str(y): r["snaps_wd"][s] for y, s in zip(YEARS, SNAPS) if s in r["snaps_wd"]},
             }
         cohorts.append(row)
 
-    print(f"{'전략':<7}{'연평균':>7}{'하위10%':>8}{'최악':>7}{'<10억':>6}{'최대낙폭':>8}{'현금%':>6}{'매매/10y':>8}{'빠른재매도':>9} | "
-          + " | ".join(f"{y}년 중간(하위10%)" for y in YEARS))
+    print(f"{'전략':<7}{'IRR':>6}{'하위10%':>8}{'최악':>7}{'월생활비':>8}{'하위10%':>8}{'<10억':>6}{'낙폭':>6} | "
+          + " | ".join(f"{y}년 인출+자산 / 월생활비" for y in YEARS))
     for r in summary:
         f = r["full"]
-        yrs = " | ".join(f"{r['by_year'][str(y)]['med_final']:>8,.0f}({r['by_year'][str(y)]['p10_final']:,.0f})"
+        yrs = " | ".join(f"{r['by_year'][str(y)]['med_total']:>7,.0f} / {r['by_year'][str(y)]['med_living_man']:>6,}만"
                          if str(y) in r["by_year"] else "" for y in YEARS)
-        print(f"{r['name']:<7}{f['med_ann_pct']:6.1f}%{f['p10_ann_pct']:7.1f}%{f['worst_ann_pct']:6.1f}%{f['n_below_init']:6}"
-              f"{f['med_max_dd']:7.1f}%{f['cash_days_pct']:6.1f}{f['trades_per_10y']:8.1f}{f['quick_resell_pct']:8.1f}% | {yrs}")
+        print(f"{r['name']:<7}{f['med_irr_pct']:5.1f}%{f['p10_irr_pct']:7.1f}%{f['worst_irr_pct']:6.1f}%"
+              f"{f['med_avg_living_man']:>7,}만{f['p10_avg_living_man']:>7,}만{f['n_below_init']:6}{f['med_max_dd']:5.0f}% | {yrs}")
 
     print("\n주요 시작 시점 — 오늘까지 연평균 (최종 자산)")
     lab_idx = {lab: k for k, lab in enumerate(labels)}
     for lab, note in EPISODES:
         k = lab_idx[lab]
-        print(f"{lab} {note:<14}" + " ".join(f"{n}:{ann(raw[n][k]):5.1f}%" for n, *_ in STRATS))
+        print(f"{lab} {note:<14}" + " ".join(f"{n}:{raw[n][k]['irr']:5.1f}%" for n, *_ in STRATS))
 
     out = {
         "meta": {
             "generated":  str(dates[-1].date()),
             "conditions": "초기 10억 · 스왑금리·운용보수 · 모든 매도 양도세 22% · 현금 외화RP(기준금리−0.4%, 세후) · "
                           "신호 다음 거래일 매매(조기 재매수만 LOC 당일) · 동적 인출 월 0.3/0.5/0.7%"
-                          + ("(상한 없음)" if args.no_cap else "(월 최대 1,500만)"),
+                          + ("(월 최대 1,500만)" if args.cap else "(상한 없음)"),
             "years":      list(YEARS),
             "min_years_full": MIN_YRS,
             "strategies": [{"name": n, "desc": d, "group": g} for n, d, g, *_ in STRATS],
@@ -203,7 +241,7 @@ def main():
         "summary": summary,
         "cohorts": cohorts,
     }
-    out["meta"]["withdrawal_cap"] = None if args.no_cap else E.LIV_MAX
+    out["meta"]["withdrawal_cap"] = E.LIV_MAX if args.cap else None
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, separators=(",", ":"))
     print(f"\n저장: {out_path} ({out_path.stat().st_size / 1024:.0f} KB) · {time.time() - t0:.0f}초")

@@ -91,9 +91,9 @@ export default function HomePage() {
               <WithdrawalSignal />
               <div className="mb-3 space-y-1">
                 {[
-                  { name: 'T25',   desc: '1년 고점 −25% 매도 · 주 1회 확인',      v: '22.1%' },
-                  { name: 'D10GK', desc: '급락 때 LOC 조기 재매수 · 현금일 때 매일', v: '18.5%' },
-                  { name: 'S0',    desc: '200일선 15일 · 주 1회 확인',            v: '15.1%' },
+                  { name: 'T25',   desc: '1년 고점 −25% 매도 · 주 1회 확인',      v: '22.4%' },
+                  { name: 'D10GK', desc: '급락 때 LOC 조기 재매수 · 현금일 때 매일', v: '20.7%' },
+                  { name: 'S0',    desc: '200일선 15일 · 주 1회 확인',            v: '17.5%' },
                 ].map(r => (
                   <div key={r.name} className="flex justify-between items-baseline gap-2">
                     <span className="text-xs text-gray-600 dark:text-gray-300">
@@ -104,7 +104,7 @@ export default function HomePage() {
                 ))}
               </div>
               <div className="text-xs text-gray-400 dark:text-gray-500 mb-4">
-                1971~2016년 매달 시작 · 오늘까지 보유한 연평균 수익률 중간값 · 신호 다음날 매매 · 스왑금리·양도세 반영
+                1971~2016년 매달 시작해 오늘까지 · 생활비 포함 연 수익률 중간값 · 매달 자산의 0.3~0.7% 인출 · 스왑금리·양도세 반영
               </div>
               <Link
                 href="/posts/withdrawal-guide"
