@@ -75,7 +75,7 @@ export default function HomeSimulator() {
   const [show, setShow] = useState<Record<'A' | 'B' | 'C', boolean>>({ A: true, B: true, C: true })
   const [tableSort, setTableSort] = useState<{ col: 'start' | 'yA' | 'yB' | 'yC'; dir: 1 | -1 }>({ col: 'start', dir: 1 })
   const [instrument, setInstrument] = useState<Instrument>('ndx3x')
-  const [withCosts, setWithCosts] = useState(false)
+  const [withCosts, setWithCosts] = useState(true)
   const [youtubeLinks, setYoutubeLinks] = useState<Record<string, string>>({})
 
   const toggleShow = (s: 'A' | 'B' | 'C') => setShow(prev => ({ ...prev, [s]: !prev[s] }))

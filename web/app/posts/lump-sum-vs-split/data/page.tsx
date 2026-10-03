@@ -125,7 +125,7 @@ function LumpSumDataContent() {
   const [methodKey, setMethodKey] = useState(initMethod)
   const [fileData,  setFileData]  = useState<JsonFile | null>(null)
   const [loading,   setLoading]   = useState(false)
-  const [withCosts, setWithCosts] = useState(false)
+  const [withCosts, setWithCosts] = useState(true)
 
   // 종목/비용모드 변경 시 JSON 로드
   useEffect(() => {

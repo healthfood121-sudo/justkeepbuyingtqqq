@@ -207,7 +207,7 @@ function DataPageInner() {
 
   const [data,      setData]      = useState<JsonFile | null>(null)
   const [loading,   setLoading]   = useState(true)
-  const [withCosts, setWithCosts] = useState(false)
+  const [withCosts, setWithCosts] = useState(true)
 
   const jsonMap = withCosts ? JSON_MAP_COSTS : JSON_MAP_STANDARD
 
