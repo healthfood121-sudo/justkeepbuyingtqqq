@@ -65,7 +65,7 @@ function TradelogInner() {
   const [data,       setData]      = useState<TradelogData | null>(null)
   const [loading,    setLoading]   = useState(true)
   const [search,     setSearch]    = useState('')
-  const [withCosts,  setWithCosts] = useState(false)
+  const [withCosts,  setWithCosts] = useState(true)
 
   const selectedStart = params.get('start') ?? ''
 

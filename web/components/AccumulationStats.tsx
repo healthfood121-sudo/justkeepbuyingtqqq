@@ -52,7 +52,7 @@ const S_COLOR = {
 
 export default function AccumulationStats() {
   const [inst,      setInst]      = useState<Inst>('ndx3x')
-  const [withCosts, setWithCosts] = useState(false)
+  const [withCosts, setWithCosts] = useState(true)
   const [rows,      setRows]      = useState<CohortRow[] | null>(null)
   const [loading,   setLoading]   = useState(true)
 

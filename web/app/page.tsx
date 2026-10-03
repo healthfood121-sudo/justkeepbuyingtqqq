@@ -128,7 +128,7 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto px-6 text-center text-gray-400 dark:text-gray-600 text-xs space-y-2">
           <p className="font-semibold text-gray-500 dark:text-gray-500">justkeepbuyingtqqq</p>
           <p>이 사이트의 모든 분석은 과거 데이터 기반이며 미래 수익을 보장하지 않습니다.</p>
-          <p>TQQQ/QLD 합성 가격은 NDX 일별 수익률에 레버리지를 곱한 이론치입니다. 변동성 끌림은 일별 복리 계산에 자동 반영됩니다. 운용비용(TQQQ 0.88%/년)은 반영, 스왑금리비용(레버리지 조달 비용)은 기본 미반영이며 시뮬레이터 내 [+ 스왑금리] 버튼으로 반영 버전을 확인할 수 있습니다. 추적오차는 미반영입니다.</p>
+          <p>TQQQ/QLD 합성 가격은 NDX 일별 수익률에 레버리지를 곱한 이론치입니다. 변동성 끌림은 일별 복리 계산에 자동 반영됩니다. 운용비용(TQQQ 0.88%/년)과 스왑금리비용(레버리지 조달 비용, 기준금리 × 2/년)을 기본으로 반영하며, 시뮬레이터·데이터 페이지의 [운용보수만] 버튼으로 스왑금리를 뺀 이론치도 볼 수 있습니다. 인출식 결과는 양도세 22%와 현금(외화RP) 이자까지 반영합니다. 추적오차는 미반영입니다.</p>
           <p className="mt-4">NDX 데이터: 1971-02-05~2026-09-25 | S&P500 데이터: 1927-12-30~2026-09-03</p>
         </div>
       </footer>

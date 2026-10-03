@@ -67,7 +67,7 @@ function CohortDetailContent() {
   const [details,    setDetails]    = useState<Record<'A'|'B'|'C', CohortDetail> | null>(null)
   const [loading,    setLoading]    = useState(true)
   const [ytUrl,      setYtUrl]      = useState<string | null>(null)
-  const [withCosts,  setWithCosts]  = useState(false)
+  const [withCosts,  setWithCosts]  = useState(true)
 
   useEffect(() => {
     setLoading(true)
