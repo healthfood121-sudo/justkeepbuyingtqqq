@@ -131,13 +131,22 @@ export default function VrStrategyPage() {
           </div>
         </div>
 
+        <div className="border rounded-xl px-5 py-4 mb-8 text-sm leading-relaxed bg-gray-50 border-gray-200 text-gray-600 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-300">
+          <strong className="text-gray-800 dark:text-gray-100">초기 연구 기록입니다.</strong>{' '}
+          이 글의 수치는 운용보수만 반영(스왑금리·매도세 미반영)하고, 1971~2005년 시작 419가지 경우를 20년에서 자른 당시 계산입니다.
+          비교 대상인 S0(나스닥100 200일 지수이동평균(EMA200) 기준 현금 전환 + 동적인출)는 당시 기준 전략이며, 지금 권장 전략은 T25입니다.
+          현재 기준의 비교와 권장 전략은{' '}
+          <Link href="/posts/withdrawal-full-period" className="underline">모든 인출 전략 전체 기간 비교</Link>와{' '}
+          <Link href="/posts/withdrawal-guide" className="underline">인출식 방법론</Link>에 있습니다.
+        </div>
+
         {/* 핵심 결론 */}
         <Callout color="red">
           <strong>핵심 결론: 생존율 100% 조합 없음</strong><br />
           G값(20~100) × Pool 비율(10~80%) × 인출률(0.5~1.5%) 216가지 조합 전부를 419개
           진입 시점으로 테스트했다. 어떤 설정에서도 20년 내내 인출이 한 번도 끊기지 않는
           조합이 없었다. 최선 조합(G=100, P=80%, 월 0.5%)도 인출 유지율 23.6%.
-          반면 EMA200 동적인출은 419개 전부 생존율 100%.
+          반면 S0(EMA200 동적인출)는 419가지 경우 전부 생존율 100%.
         </Callout>
 
         {/* ──────────────────────────────────────── */}
@@ -185,11 +194,11 @@ export default function VrStrategyPage() {
         />
 
         {/* ──────────────────────────────────────── */}
-        <H2>파라미터 탐색 — 인터랙티브 히트맵</H2>
+        <H2>설정값 탐색 — 인터랙티브 히트맵</H2>
 
         <P>
           아래 히트맵에서 직접 탐색할 수 있다. 인출률 탭을 선택하고 보고 싶은 지표를 고르면
-          G(열) × Pool 비율(행) 격자에 값이 표시된다. 색상이 초록에 가까울수록 EMA200 수준에 근접.
+          G(열) × Pool 비율(행) 격자에 값이 표시된다. 색상이 초록에 가까울수록 S0(EMA200 동적인출) 수준에 근접.
         </P>
 
         <VrHeatmap />
@@ -224,7 +233,7 @@ export default function VrStrategyPage() {
         </P>
 
         {/* ──────────────────────────────────────── */}
-        <H2>EMA200 전략과 비교</H2>
+        <H2>S0(EMA200 동적인출)와 비교</H2>
 
         <P>
           같은 조건(초기 자산 10억, 시뮬레이션 기간 20년, 419개 진입 시점)에서 비교했다.
@@ -236,15 +245,15 @@ export default function VrStrategyPage() {
               <tr className="border-b-2 border-gray-200 dark:border-gray-700">
                 <th className="py-2.5 px-4 text-left text-gray-500 dark:text-gray-400 font-medium">지표</th>
                 <th className="py-2.5 px-4 text-right text-gray-500 dark:text-gray-400 font-medium">VR 최선 조합</th>
-                <th className="py-2.5 px-4 text-right text-blue-600 dark:text-blue-400 font-medium">EMA200 동적인출</th>
+                <th className="py-2.5 px-4 text-right text-blue-600 dark:text-blue-400 font-medium">S0 (EMA200 동적인출)</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-              <CompareRow label="설정" vr="G=100, P=80%, 월 0.5%" s0="지수이동평균200 + 동적인출" />
+              <CompareRow label="설정" vr="G=100, P=80%, 월 0.5%" s0="EMA200 15일 기준 + 동적인출" />
               <CompareRow label="인출 유지율" vr="23.6%" s0="100%" highlight />
               <CompareRow label="평균 인출 총액" vr="9억" s0="557억" highlight />
               <CompareRow label="중앙값 최종 자산" vr="22억" s0="829억" highlight />
-              <CompareRow label="연평균 수익률" vr="~8%" s0="24.2%" />
+              <CompareRow label="연평균 수익률" vr="6.9%" s0="24.2%" />
               <CompareRow label="진입 시점 수" vr="419" s0="419" />
             </tbody>
           </table>
@@ -254,7 +263,7 @@ export default function VrStrategyPage() {
           <strong>인출 총액 격차가 가장 크다</strong><br />
           VR 최선 조합은 월 500만원(연 6%)씩 20년 인출하면 최대 12억이다.
           하지만 실제로는 Pool 소진으로 인출이 중단되어 평균 9억만 받는다.
-          EMA200 전략은 동적 인출률로 557억을 받으면서 자산도 829억으로 불어난다.
+          S0는 동적 인출률로 557억을 받으면서 자산도 829억으로 불어난다.
         </Callout>
 
         {/* ──────────────────────────────────────── */}
@@ -272,7 +281,8 @@ export default function VrStrategyPage() {
 
         <P>
           TQQQ 인출식에서는 시장 상황에 따라 100% 현금 전환과 재진입을 반복하는
-          EMA200 기반 전략이 훨씬 안정적이고 수익도 높다.
+          신호 기반 전략이 훨씬 안정적이고 수익도 높다. 이후 전체 기간·실제 비용으로 다시 비교해
+          지금은 T25(1년 최고가 대비 25% 하락 시 현금 전환)를 권장한다.
         </P>
 
         <Callout color="green">
@@ -286,7 +296,8 @@ export default function VrStrategyPage() {
           <p className="text-xs font-bold tracking-widest text-gray-400 dark:text-gray-600 uppercase mb-4">관련 글</p>
           <div className="space-y-2">
             {[
-              { href: '/posts/withdrawal-guide', title: '인출식 방법론: 10억 달성 후 어떻게 꺼내 쓰나', desc: 'EMA200 + 동적인출률 전략의 전체 설계' },
+              { href: '/posts/withdrawal-guide', title: '인출식 방법론: 10억 달성 후 어떻게 꺼내 쓰나', desc: '권장 전략 T25 + 상한 없는 동적 인출의 전체 설계' },
+              { href: '/posts/withdrawal-full-period', title: '모든 인출 전략을 1971년부터 오늘까지', desc: '16가지 인출 전략을 실제 비용으로 끝까지 비교' },
               { href: '/posts/withdrawal-new-ideas', title: '인출 전략 새 아이디어 8가지 테스트', desc: 'RSI 조기재진입이 3,231억으로 현재 최선' },
               { href: '/posts/withdrawal-new-ideas2', title: '더 나을 줄 알았던 전략 3가지', desc: '트레일링 스탑 · 단계적 현금화 · 레버리지 하향' },
             ].map(({ href, title, desc }) => (
