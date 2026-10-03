@@ -700,6 +700,11 @@ export default function WithdrawalGuidePage() {
               desc="트레일링 스탑·단계적 현금화·레버리지 하향 — 668가지 진입 시점으로 모두 검증. T25가 가장 단순한 대안."
             />
             <AnalysisLink
+              href="/posts/withdrawal-signal-test"
+              title="10억 달성 후 바로 꺼낼까, 1~2년 더 기다릴까"
+              desc="인출 시작을 1~2년 미루면 최종 자산 +7~13%. 다른 수입원이 있는 경우에만 유효한 전략."
+            />
+            <AnalysisLink
               href="/posts/withdrawal-comparison"
               title="인출 전략 비교: SP500 기반 vs NDX 200MA 기반"
               desc="418가지 시작 시점 비교. 두 전략의 중앙값 12.7억 vs 203억 차이가 발생하는 원인 분석."
