@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import CostToggle from '@/components/CostToggle'
 
 type Mode = 'loc' | 'next' | 'same'
 type Horizon = 'today' | 'y30' | 'y20'
@@ -50,9 +51,11 @@ export default function WithdrawalExecTable() {
   const [mode, setMode] = useState<Mode>('loc')
   const [hz, setHz] = useState<Horizon>('today')
 
+  const [withCosts, setWithCosts] = useState(true)
+
   useEffect(() => {
-    fetch('/data/withdrawal_exec_horizon_v2.json').then(r => r.json()).then(setData)
-  }, [])
+    fetch(`/data/withdrawal_exec_horizon_${withCosts ? 'v2' : 'fee'}.json`).then(r => r.json()).then(setData)
+  }, [withCosts])
 
   if (!data) return <div className="text-xs text-gray-400 py-6 text-center">불러오는 중…</div>
 
@@ -66,6 +69,7 @@ export default function WithdrawalExecTable() {
 
   return (
     <div className="border border-gray-200 dark:border-gray-700 rounded-2xl p-4 mb-6">
+      <CostToggle withCosts={withCosts} onChange={setWithCosts} />
       <div className="flex flex-wrap gap-2 mb-2">
         <Seg items={MODES} value={mode} onChange={setMode} />
         <Seg items={HORIZONS} value={hz} onChange={setHz} />

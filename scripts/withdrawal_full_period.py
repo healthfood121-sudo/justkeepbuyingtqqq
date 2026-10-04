@@ -117,8 +117,12 @@ def main():
     import argparse
     ap = argparse.ArgumentParser()
     ap.add_argument("--cap", action="store_true", help="기존 연구의 월 1,500만원 인출 상한 적용")
+    ap.add_argument("--fee-only", action="store_true", help="스왑금리 없이 운용보수만 → withdrawal_full_period_fee.json")
     args = ap.parse_args()
     out_path = OUT_PATH.with_name("withdrawal_full_period_cap.json") if args.cap else OUT_PATH
+    if args.fee_only:
+        E.SWAP = False
+        out_path = out_path.with_name(out_path.stem + "_fee.json")
     if not args.cap:
         E.LIV_MAX = float("inf")   # 상한 없음 — fork된 워커가 그대로 물려받음
     t0 = time.time()
@@ -129,7 +133,7 @@ def main():
     with open(E.DATA_DIR / "fed_funds_rate.json", encoding="utf-8") as f:
         fed = {r["date"][:7]: float(r["rate"]) for r in json.load(f)}
     ffr = np.array([fed.get(f"{d.year}-{d.month:02d}", 0.0) / 100.0 for d in dates])
-    f2 = (1.0 + 2.0 * ret - ffr / 252) * (1.0 - 0.0095 / 252)
+    f2 = (1.0 + 2.0 * ret - (1.0 if E.SWAP else 0.0) * ffr / 252) * (1.0 - 0.0095 / 252)
     f2[0] = 1.0
     series = {"tq": tq, "qq": qq, "qqq": qq, "qld": 100 * np.cumprod(f2)}
 
@@ -230,7 +234,7 @@ def main():
     out = {
         "meta": {
             "generated":  str(dates[-1].date()),
-            "conditions": "초기 10억 · 스왑금리·운용보수 · 모든 매도 양도세 22% · 현금 외화RP(기준금리−0.4%, 세후) · "
+            "conditions": "초기 10억 · " + ("스왑금리·운용보수" if E.SWAP else "운용보수만(스왑금리 미반영)") + " · 모든 매도 양도세 22% · 현금 외화RP(기준금리−0.4%, 세후) · "
                           "신호 다음 거래일 매매(조기 재매수만 LOC 당일) · 동적 인출 월 0.3/0.5/0.7%"
                           + ("(월 최대 1,500만)" if args.cap else "(상한 없음)"),
             "years":      list(YEARS),

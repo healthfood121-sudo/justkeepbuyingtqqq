@@ -224,20 +224,20 @@
 
 ---
 
-### S0 거래 로그 (날짜별 매수/매도 기록)
+### 인출 전략 거래 로그 (날짜별 매수/매도 기록)
 
 | 파일 | 크기 | 스크립트 | 내용 |
 |------|------|----------|------|
-| `s0_tradelog.json` | 1,205 KB | `export_s0_tradelog.py` | S0 전략 668코호트 거래 이벤트 로그 (standard) |
-| `s0_tradelog_v2.json` | 1,201 KB | `export_s0_tradelog.py --mode v2` | S0 전략 668코호트 (with_costs: 스왑금리비용 반영) |
+| `withdrawal_tradelog_t25.json` | 554 KB | `export_withdrawal_tradelog.py` | T25 668 시작 시점 거래 로그 (스왑금리 반영) |
+| `withdrawal_tradelog_s0.json` | 909 KB | `export_withdrawal_tradelog.py` | S0 동일 |
+| `withdrawal_tradelog_t25_fee.json` | 561 KB | `export_withdrawal_tradelog.py --fee-only` | T25 (운용보수만) |
+| `withdrawal_tradelog_s0_fee.json` | 917 KB | `export_withdrawal_tradelog.py --fee-only` | S0 (운용보수만) |
 
-**내용:** 각 시작 시점별 전체 매수/매도 이벤트 기록
-- 필드: date, action(BUY/SELL), ndx, ema200, div_pct, port(억), days
-- RP 이자 **미반영** · TQQQ 스왑 비용 standard=미반영, with_costs=반영
-- standard 중앙값 928.5억, with_costs 중앙값 229.2억
-- 668코호트 중 428개 완료 (20년)
+**조건:** `withdrawal_full_period.json`과 동일 (엔진 `withdrawal_cash_tier.run_sim`, 신호 다음 거래일 매매, 모든 매도 과세, 외화RP 세후, 상한 없는 동적 인출, 오늘까지 보유)
+- 거래 1건 = [실행일, S/B, 나스닥100 종가, 200일 지수이동평균, 1년 최고 종가, 거래 직후 총자산(억)]
+- 2026-10-04 이전 `s0_tradelog(_v2).json`(S0, 20년, RP 이자 미반영)은 삭제하고 이것으로 대체
 
-**사용처:** `/posts/withdrawal-guide/tradelog` (토글로 standard/with_costs 전환)
+**사용처:** `/posts/withdrawal-guide/tradelog` (T25/S0 탭 + 비용 토글)
 
 ---
 
@@ -363,6 +363,7 @@
 | 파일 | 크기 | 스크립트 | 내용 |
 |------|------|----------|------|
 | `withdrawal_t25_periods.json` | 6 KB | `withdrawal_t25_periods.py` | T25·S0·D10GK·T25C50·HOLD3 — 시점별 누적 인출 + 7개 구간 IRR |
+| `withdrawal_t25_periods_fee.json` | 6 KB | `withdrawal_t25_periods.py --fee-only` | 동일, 운용보수만 (스왑금리 미반영 — 비용 토글용) |
 
 **누적 인출 중간값 (10/20/30년 · 오늘까지):** T25 12/74/194억·773억 · S0 10/44/133·334 (20년 T25의 76%) · D10GK 9/46/350·687 (10년 68%, 30년 135%)
 **구간 (인출 포함 연 수익률 중간값, T25 vs S0):**
@@ -400,6 +401,7 @@
 |------|------|----------|------|
 | `withdrawal_full_period.json` | 1.4 MB | `withdrawal_full_period.py` | 16전략 × 668시작점, 오늘까지 보유 + 10~50년 스냅샷, **인출 상한 없음** |
 | `withdrawal_full_period_cap.json` | 1.4 MB | `withdrawal_full_period.py --cap` | 동일, 기존 연구의 월 1,500만원 상한 적용 (비교용) |
+| `withdrawal_full_period_fee.json` | 1.4 MB | `withdrawal_full_period.py --fee-only` | 동일, 운용보수만 (TQQQ·QLD 스왑금리 미반영 — 비용 토글용) |
 
 **조건:** 엔진 `withdrawal_cash_tier.run_sim`, 실행 loc(다음 거래일, 조기 재매수만 당일 LOC), 스왑금리·모든 매도 과세·외화RP 세후,
 동적 인출 월 0.3/0.5/0.7% (상한 없음 — 2026-10-03 사용자 결정: 꺼내 쓴 돈과 남은 자산을 함께 본다)
@@ -426,6 +428,7 @@
 | 파일 | 크기 | 스크립트 | 내용 |
 |------|------|----------|------|
 | `withdrawal_exec_horizon_v2.json` | 10 KB | `withdrawal_exec_horizon.py` | 6전략 × 실행 3방식 × 기간 3종 요약 + 실행 지연 민감도 (요약만, 시작 시점별 행 없음) |
+| `withdrawal_exec_horizon_fee.json` | 10 KB | `withdrawal_exec_horizon.py --fee-only` | 동일, 운용보수만 (비용 토글용) |
 
 **엔진:** `withdrawal_cash_tier.run_sim` (스왑금리 + 모든 매도 과세) + `exec_mode`·`exec_delay`·`snaps` 인자
 - `same`: 신호 당일 종가 (기존 가정 — 종가 확정 전에는 신호를 알 수 없어 실제로는 불가능)
@@ -558,7 +561,7 @@ withdrawal_cash_tier.py         → withdrawal_cash_tier_v2.json
 - `withdrawal_rate_lev.py --tax-sells`로 S0만 확인: 중앙값 266억 → 152억 (스왑금리 반영 기준)
 - S0·D10GK·T25·DLEV는 `withdrawal_cash_tier.py`(모든 매도 과세)로 재계산 → 순위 유지, D10GK/S0 격차 3.2배 → 2.6배
 - RSI 스윕·설정값 스윕·GRAD 등 나머지 실험은 미재계산 (순위 비교용으로만 사용)
-- `export_s0_tradelog.py`는 신호 매도에 과세함 (대신 현금 RP 이자 미반영)
+- `export_s0_tradelog.py`(출력 삭제됨)는 신호 매도에 과세했지만 현금 RP 이자 미반영 → `export_withdrawal_tradelog.py`로 대체
 
 **대표 수치 기준 (2026-10-03~):** 인출 상한 없음 · 인출 포함 연 수익률(IRR) · 실제로 가능한 실행(loc) · 오늘까지 보유
 (`withdrawal_full_period.json`, 실행 방식 비교는 `withdrawal_exec_horizon_v2.json`)

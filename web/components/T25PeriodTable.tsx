@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import CostToggle from '@/components/CostToggle'
 
 interface PRow { name: string; med_irr_pct: number; p10_irr_pct: number; med_withdrawn: number; t25_better_pct: number | null; same_pct: number | null }
 interface Period { key: string; title: string; n: number; years: string; rows: PRow[] }
@@ -13,17 +14,23 @@ const LABEL: Record<string, string> = {
 }
 const ORDER = ['A', 'D', 'E', 'F', 'G', 'B', 'C']
 
-function DataLink({ s }: { s: string }) {
-  return <Link href={`/posts/withdrawal-full-period/data?s=${s}&y=full`} className="text-xs text-blue-500 dark:text-blue-400 hover:underline whitespace-nowrap">데이터 →</Link>
+function DataLink({ s, fee }: { s: string; fee?: boolean }) {
+  return <Link href={`/posts/withdrawal-full-period/data?s=${s}&y=full${fee ? '&fee=1' : ''}`} className="text-xs text-blue-500 dark:text-blue-400 hover:underline whitespace-nowrap">데이터 →</Link>
 }
 
 export default function T25PeriodTable({ part }: { part: 'withdrawn' | 'periods' }) {
   const [data, setData] = useState<Data | null>(null)
-  useEffect(() => { fetch('/data/withdrawal_t25_periods.json').then(r => r.json()).then(setData) }, [])
+  const [withCosts, setWithCosts] = useState(true)
+  useEffect(() => {
+    fetch(`/data/withdrawal_t25_periods${withCosts ? '' : '_fee'}.json`).then(r => r.json()).then(setData)
+  }, [withCosts])
   if (!data) return <div className="text-xs text-gray-400 py-6 text-center">불러오는 중…</div>
+  const toggle = <CostToggle withCosts={withCosts} onChange={setWithCosts} />
 
   if (part === 'withdrawn') {
     return (
+      <div>
+      {toggle}
       <div className="overflow-x-auto mb-2">
         <table className="w-full text-sm border-collapse">
           <thead>
@@ -48,7 +55,7 @@ export default function T25PeriodTable({ part }: { part: 'withdrawn' | 'periods'
                   )
                 })}
                 <td className="py-2 px-2 font-mono">{Math.round(w.today_med).toLocaleString('ko-KR')}억</td>
-                <td className="py-2 px-2"><DataLink s={w.name} /></td>
+                <td className="py-2 px-2"><DataLink s={w.name} fee={!withCosts} /></td>
               </tr>
             ))}
           </tbody>
@@ -57,12 +64,15 @@ export default function T25PeriodTable({ part }: { part: 'withdrawn' | 'periods'
           중간값. &lsquo;T25의 ○%&rsquo;는 같은 시작 시점끼리 비교한 비율의 중간값. 오늘까지는 10년 이상 보유한 548가지 경우.
         </p>
       </div>
+      </div>
     )
   }
 
   const periods = ORDER.map(k => data.periods.find(p => p.key === k)!).filter(Boolean)
   const names = periods[0].rows.map(r => r.name)
   return (
+    <div>
+    {toggle}
     <div className="overflow-x-auto mb-2">
       <table className="w-full text-sm border-collapse">
         <thead>
@@ -70,7 +80,7 @@ export default function T25PeriodTable({ part }: { part: 'withdrawn' | 'periods'
             <th className="py-2 px-2 text-left font-medium">구간</th>
             {names.map(n => (
               <th key={n} className="py-2 px-2 text-left font-medium whitespace-nowrap">
-                {LABEL[n]} <DataLink s={n} />
+                {LABEL[n]} <DataLink s={n} fee={!withCosts} />
               </th>
             ))}
           </tr>
@@ -97,6 +107,7 @@ export default function T25PeriodTable({ part }: { part: 'withdrawn' | 'periods'
       <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
         인출 포함 연 수익률 중간값 (구간 끝 자산까지 포함). 굵은 글씨 = 그 구간 최고. &lsquo;T25 우세&rsquo; = 같은 시작 시점에서 T25가 더 높았던 비율.
       </p>
+    </div>
     </div>
   )
 }

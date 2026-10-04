@@ -78,6 +78,11 @@ def p10(x):
 
 
 def main():
+    import sys
+    global OUT_PATH
+    if "--fee-only" in sys.argv:   # 스왑금리 없이 운용보수만
+        E.SWAP = False
+        OUT_PATH = OUT_PATH.with_name("withdrawal_t25_periods_fee.json")
     E.LIV_MAX = float("inf")
     t0 = time.time()
     tq, qq, closes, ema, dates, rp, rsi, peaks = E.load_data()
@@ -133,7 +138,7 @@ def main():
                   + ("" if r["t25_better_pct"] is None else f"  T25가 나은 경우 {r['t25_better_pct']}% (같음 {r['same_pct']}%)"))
 
     out = {"meta": {"generated": str(dates[-1].date()),
-                    "conditions": "상한 없는 동적 인출 월 0.3/0.5/0.7% · 스왑금리 · 모든 매도 양도세 · 외화RP 세후 · 신호 다음 거래일 매매",
+                    "conditions": "상한 없는 동적 인출 월 0.3/0.5/0.7% · " + ("스왑금리" if E.SWAP else "운용보수만(스왑금리 미반영)") + " · 모든 매도 양도세 · 외화RP 세후 · 신호 다음 거래일 매매",
                     "names": NAMES},
            "withdrawn": withdrawn, "periods": periods}
     with open(OUT_PATH, "w", encoding="utf-8") as f:

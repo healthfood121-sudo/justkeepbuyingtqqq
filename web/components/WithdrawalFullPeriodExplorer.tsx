@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import WithdrawalYearsChart, { SERIES_COLORS, fmtMan } from '@/components/charts/WithdrawalYearsChart'
 import { useTheme } from '@/components/ThemeProvider'
+import CostToggle from '@/components/CostToggle'
 
 interface YearStat { n: number; med_final: number; p10_final: number; worst_final: number; n_below_init: number; med_withdrawn: number; p10_withdrawn: number; med_total: number; p10_total: number; med_living_man: number; p10_living_man: number; win_vs_s0: number }
 interface Full { n: number; med_irr_pct: number; p10_irr_pct: number; worst_irr_pct: number; med_withdrawn: number; n_below_init: number; med_max_dd: number; worst_max_dd: number; cash_days_pct: number; trades_per_10y: number; quick_resell_pct: number }
@@ -26,9 +27,9 @@ export const LABELS: Record<string, string> = {
 const CHARTABLE = ['T25', 'T30', 'D10GK', 'S0', 'C50', 'DLEV', 'HOLD3', 'HOLD1']
 const fmt = (v: number) => v >= 10000 ? `${(v / 10000).toFixed(1)}조` : `${v.toLocaleString('ko-KR', { maximumFractionDigits: v < 10 ? 1 : 0 })}억`
 
-function DataLink({ s }: { s: string }) {
+function DataLink({ s, fee }: { s: string; fee?: boolean }) {
   return (
-    <Link href={`/posts/withdrawal-full-period/data?s=${s}&y=full`}
+    <Link href={`/posts/withdrawal-full-period/data?s=${s}&y=full${fee ? '&fee=1' : ''}`}
       className="text-xs text-blue-500 dark:text-blue-400 hover:underline whitespace-nowrap">데이터 →</Link>
   )
 }
@@ -40,7 +41,11 @@ export default function WithdrawalFullPeriodExplorer() {
   const [chartSel, setChartSel] = useState<string[]>(['T25', 'D10GK', 'S0', 'HOLD3'])
   const [metric, setMetric] = useState<'med_total' | 'p10_total' | 'med_living_man' | 'p10_living_man'>('med_total')
 
-  useEffect(() => { fetch('/data/withdrawal_full_period.json').then(r => r.json()).then(setData) }, [])
+  const [withCosts, setWithCosts] = useState(true)
+
+  useEffect(() => {
+    fetch(`/data/withdrawal_full_period${withCosts ? '' : '_fee'}.json`).then(r => r.json()).then(setData)
+  }, [withCosts])
   if (!data) return <div className="text-xs text-gray-400 py-10 text-center">불러오는 중…</div>
 
   const rows = [...data.summary].sort((a, b) => view === 'full'
@@ -51,6 +56,7 @@ export default function WithdrawalFullPeriodExplorer() {
 
   return (
     <div>
+      <CostToggle withCosts={withCosts} onChange={setWithCosts} />
       {/* ── 표 ── */}
       <div className="flex flex-wrap items-center gap-2 mb-2">
         <div className="flex rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 text-xs font-medium">
@@ -117,7 +123,7 @@ export default function WithdrawalFullPeriodExplorer() {
                     <td className="py-2 px-2 font-mono">{fmtMan(y.p10_living_man)}</td>
                     <td className="py-2 px-2">{r.name === 'S0' ? '—' : `${y.win_vs_s0}%`}</td>
                   </>}
-                  <td className="py-2 px-2"><DataLink s={r.name} /></td>
+                  <td className="py-2 px-2"><DataLink s={r.name} fee={!withCosts} /></td>
                 </tr>
               )
             })}

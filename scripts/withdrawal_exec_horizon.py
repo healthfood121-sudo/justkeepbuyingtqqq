@@ -110,7 +110,13 @@ def main():
     import argparse
     ap = argparse.ArgumentParser()
     ap.add_argument("--cap", action="store_true", help="기존 연구의 월 1,500만원 인출 상한 적용 (기본: 상한 없음)")
-    if not ap.parse_args().cap:
+    ap.add_argument("--fee-only", action="store_true", help="스왑금리 없이 운용보수만 → withdrawal_exec_horizon_fee.json")
+    args = ap.parse_args()
+    global OUT_PATH
+    if args.fee_only:
+        E.SWAP = False
+        OUT_PATH = OUT_PATH.with_name("withdrawal_exec_horizon_fee.json")
+    if not args.cap:
         E.LIV_MAX = float("inf")
     t0 = time.time()
     tq, qq, closes, ema, dates, rp, rsi, peaks = E.load_data()
@@ -160,7 +166,7 @@ def main():
     out = {
         "meta": {
             "generated":  str(dates[-1].date()),
-            "price_mode": "with_costs",
+            "price_mode": "with_costs" if E.SWAP else "fee_only",
             "tax":        "모든 매도 과세 (하락 신호 매도 포함)",
             "withdrawal": "동적 인출 월 0.3/0.5/0.7%, " + ("월 최대 1,500만" if E.LIV_MAX != float("inf") else "상한 없음"),
             "y_metrics":  "y20·y30의 med_total = 꺼내 쓴 돈 + 남은 자산 (억)",

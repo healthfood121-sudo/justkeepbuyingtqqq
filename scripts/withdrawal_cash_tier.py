@@ -63,6 +63,7 @@ TIME_FILTER = 15
 BAND       = 0.05
 
 EOK = 100_000_000
+SWAP = True   # False: 스왑금리 없이 운용보수만 (비교용 '운용보수만' 데이터)
 
 
 @dataclass
@@ -129,7 +130,7 @@ def load_data():
     fed_rates = {r["date"][:7]: float(r["rate"]) for r in fed}
     ffr = np.array([fed_rates.get(f"{d.year}-{d.month:02d}", 0.0) / 100.0 for d in dates])
 
-    f3 = (1.0 + 3.0 * ret - 2.0 * ffr / 252) * (1.0 - EXP_3X / 252)
+    f3 = (1.0 + 3.0 * ret - (2.0 if SWAP else 0.0) * ffr / 252) * (1.0 - EXP_3X / 252)
     f3[0] = 1.0
     f1 = (1.0 + ret) * (1.0 - EXP_1X / 252)
     f1[0] = 1.0
@@ -166,7 +167,7 @@ def target_w(p: Param, total: float) -> float:
 
 def run_sim(tq, qq, closes, ema, dates, rp_daily, rsi, peaks, start, p: Param, signal_tax: bool,
             exec_mode: str = "same", horizon_days: int = 0, snaps: tuple = (), exec_delay: int = 1,
-            collect_flows: bool = False) -> dict:
+            collect_flows: bool = False, trade_log: list | None = None) -> dict:
     """exec_mode — 신호가 확정된 종가 대비 실제 매매 시점
          same : 신호가 뜬 그날 종가에 매매 (기존 가정. 종가가 확정돼야 신호를 알 수 있으므로 실제로는 불가능)
          next : 종가 확정 후 아침에 확인 → 다음 거래일 종가에 매매
@@ -388,6 +389,8 @@ def run_sim(tq, qq, closes, ema, dates, rp_daily, rsi, peaks, start, p: Param, s
                 invested = False
                 trades += 1
                 sells += 1
+                if trade_log is not None:
+                    trade_log.append((ci, "SELL", total(ci)))
                 if j - last_buy_j <= 5:
                     quick += 1
                 below = 0
@@ -398,6 +401,8 @@ def run_sim(tq, qq, closes, ema, dates, rp_daily, rsi, peaks, start, p: Param, s
                 invested = True
                 trades += 1
                 last_buy_j = j
+                if trade_log is not None:
+                    trade_log.append((ci, "BUY", total(ci)))
                 above = 0
 
         cash += cash * rp_daily[ci]

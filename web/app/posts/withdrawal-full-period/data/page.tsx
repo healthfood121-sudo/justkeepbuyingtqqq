@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
+import CostToggle from '@/components/CostToggle'
 import Link from 'next/link'
 import Header from '@/components/Header'
 
@@ -20,10 +21,14 @@ function Viewer() {
   const [data, setData] = useState<Data | null>(null)
   const sel = (params.get('s') ?? 'T25,S0,D10GK').split(',').filter(Boolean)
   const view = params.get('y') ?? 'full'   // 'full' | '10' | '20' ...
+  const withCosts = params.get('fee') !== '1'
 
-  useEffect(() => { fetch('/data/withdrawal_full_period.json').then(r => r.json()).then(setData) }, [])
+  useEffect(() => {
+    fetch(`/data/withdrawal_full_period${withCosts ? '' : '_fee'}.json`).then(r => r.json()).then(setData)
+  }, [withCosts])
 
-  const setParam = (s: string[], y: string) => router.replace(`?s=${s.join(',')}&y=${y}`, { scroll: false })
+  const setParam = (s: string[], y: string, wc = withCosts) =>
+    router.replace(`?s=${s.join(',')}&y=${y}${wc ? '' : '&fee=1'}`, { scroll: false })
   const toggle = (n: string) => {
     const next = sel.includes(n) ? sel.filter(x => x !== n) : [...sel, n].slice(-4)
     if (next.length) setParam(next, view)
@@ -51,6 +56,7 @@ function Viewer() {
 
   return (
     <>
+      <CostToggle withCosts={withCosts} onChange={wc => setParam(sel, view, wc)} />
       <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">{data.meta.conditions}</p>
 
       <div className="mb-3">
