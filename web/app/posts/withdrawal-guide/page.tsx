@@ -145,7 +145,7 @@ export default function WithdrawalGuidePage() {
           ① <strong>매도</strong> — 나스닥100 종가가 최근 1년 최고 종가보다 25% 이상 낮게 끝나면 → 다음 거래일에 TQQQ 전량 매도, 현금(외화RP)으로 보관<br />
           ② <strong>매수</strong> — 나스닥100이 200일 평균선 위로 15거래일 연속 마감하면 → 다음 거래일에 전액 TQQQ 매수<br />
           ③ <strong>생활비</strong> — 매달 총자산의 0.3%(10억 미만) / 0.5%(10~20억) / 0.7%(20억 이상)를 꺼내 쓴다. 상한 없음<br /><br />
-          신호 확인은 일주일에 한 번 <Link href="/" className="underline">홈 화면 &lsquo;오늘의 신호&rsquo;</Link>로 충분하다. 매매는 55년 동안 매도 15번(10년에 약 3번).
+          신호 확인은 일주일에 한 번 <Link href="/" className="underline">홈 화면 &lsquo;오늘의 신호&rsquo;</Link>로 충분하다. 매매는 55년 동안 매도 15번(10년에 약 3번) — <Link href="/posts/withdrawal-guide/tradelog" className="underline">시작 시점별 거래 로그 전체 보기</Link>.
         </Callout>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
@@ -196,7 +196,7 @@ export default function WithdrawalGuidePage() {
         <ul className="space-y-2 mb-6 text-sm text-gray-600 dark:text-gray-300 leading-relaxed list-disc pl-5">
           <li><strong>T25 + 자산별 현금 비중</strong> — 총자산 50억↑ TQQQ ⅔, 200억↑ ⅓. 연 20.9%로 1.5%p 낮지만 낙폭이 −96% → −80%로 얕아진다. 큰돈을 지키고 싶을 때.</li>
           <li><strong>D10GK</strong> — 연 20.7%. 현금일 때 매일 밤 LOC 주문이 필요하고, 초반 생활비가 T25보다 적다.</li>
-          <li><strong>S0 (200일선 15일)</strong> — 연 17.5%. 매수 직후 재매도가 한 번도 없는 가장 단순한 규칙 (<Link href="/posts/withdrawal-guide/tradelog" className="underline">거래 로그</Link>).</li>
+          <li><strong>S0 (200일선 15일)</strong> — 연 17.5%. 매수 직후 재매도가 한 번도 없는 가장 단순한 규칙 (<Link href="/posts/withdrawal-guide/tradelog?st=s0" className="underline">거래 로그</Link>).</li>
         </ul>
         <P>
           16가지 전략 전체 비교와 10·20·30·40·50년 시점별 변화는{' '}
