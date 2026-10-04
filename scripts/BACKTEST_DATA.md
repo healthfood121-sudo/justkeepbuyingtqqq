@@ -228,10 +228,10 @@
 
 | 파일 | 크기 | 스크립트 | 내용 |
 |------|------|----------|------|
-| `withdrawal_tradelog_t25.json` | __T25__ | `export_withdrawal_tradelog.py` | T25 668 시작 시점 거래 로그 (스왑금리 반영) |
-| `withdrawal_tradelog_s0.json` | __S0__ | `export_withdrawal_tradelog.py` | S0 동일 |
-| `withdrawal_tradelog_t25_fee.json` | __T25F__ | `export_withdrawal_tradelog.py --fee-only` | T25 (운용보수만) |
-| `withdrawal_tradelog_s0_fee.json` | __S0F__ | `export_withdrawal_tradelog.py --fee-only` | S0 (운용보수만) |
+| `withdrawal_tradelog_t25.json` | 554 KB | `export_withdrawal_tradelog.py` | T25 668 시작 시점 거래 로그 (스왑금리 반영) |
+| `withdrawal_tradelog_s0.json` | 909 KB | `export_withdrawal_tradelog.py` | S0 동일 |
+| `withdrawal_tradelog_t25_fee.json` | 561 KB | `export_withdrawal_tradelog.py --fee-only` | T25 (운용보수만) |
+| `withdrawal_tradelog_s0_fee.json` | 917 KB | `export_withdrawal_tradelog.py --fee-only` | S0 (운용보수만) |
 
 **조건:** `withdrawal_full_period.json`과 동일 (엔진 `withdrawal_cash_tier.run_sim`, 신호 다음 거래일 매매, 모든 매도 과세, 외화RP 세후, 상한 없는 동적 인출, 오늘까지 보유)
 - 거래 1건 = [실행일, S/B, 나스닥100 종가, 200일 지수이동평균, 1년 최고 종가, 거래 직후 총자산(억)]
