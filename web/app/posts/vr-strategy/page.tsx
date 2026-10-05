@@ -298,7 +298,7 @@ export default function VrStrategyPage() {
             {[
               { href: '/posts/withdrawal-guide', title: '인출식 방법론: 10억 달성 후 어떻게 꺼내 쓰나', desc: '권장 전략 T25 + 상한 없는 동적 인출의 전체 설계' },
               { href: '/posts/withdrawal-full-period', title: '모든 인출 전략을 1971년부터 오늘까지', desc: '16가지 인출 전략을 실제 비용으로 끝까지 비교' },
-              { href: '/posts/withdrawal-new-ideas', title: '인출 전략 새 아이디어 8가지 테스트', desc: 'RSI 조기재진입이 3,231억으로 현재 최선' },
+              { href: '/posts/withdrawal-new-ideas', title: '인출 전략 새 아이디어 8가지 테스트', desc: 'RSI 조기재진입이 3,232억으로 현재 최선' },
               { href: '/posts/withdrawal-new-ideas2', title: '더 나을 줄 알았던 전략 3가지', desc: '트레일링 스탑 · 단계적 현금화 · 레버리지 하향' },
             ].map(({ href, title, desc }) => (
               <Link

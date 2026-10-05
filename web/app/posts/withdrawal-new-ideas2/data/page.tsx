@@ -85,7 +85,7 @@ function SummaryCard({ row }: { row: SummaryRow }) {
       <p className="text-xs opacity-80 mb-2 line-clamp-1">{row.desc}</p>
       <div className="grid grid-cols-3 gap-1 text-xs">
         <div><span className="opacity-60">중앙</span> <span className="font-semibold">{fmt억(row.med_final)}억</span></div>
-        <div><span className="opacity-60">CAGR</span> <span className="font-semibold">{fmtPct(row.avg_cagr)}</span></div>
+        <div><span className="opacity-60">연평균 수익률</span> <span className="font-semibold">{fmtPct(row.avg_cagr)}</span></div>
         <div><span className="opacity-60">거래</span> <span className="font-semibold">{row.avg_trades.toFixed(0)}회</span></div>
       </div>
       <div className="text-xs opacity-50 mt-1">완료 {row.n_completed}개 · 진행중 {row.n_ongoing}개</div>

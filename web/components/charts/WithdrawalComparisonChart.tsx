@@ -98,8 +98,8 @@ export default function WithdrawalComparisonChart({ data }: { data: ComparisonDa
     <div>
       {/* 탭 */}
       <div className="flex gap-2 mb-5">
-        <button className={tabClass('monthly')} onClick={() => setTab('monthly')}>주요 코호트 월별 추이</button>
-        <button className={tabClass('all')} onClick={() => setTab('all')}>전체 코호트 최종값</button>
+        <button className={tabClass('monthly')} onClick={() => setTab('monthly')}>주요 시작 시점 월별 추이</button>
+        <button className={tabClass('all')} onClick={() => setTab('all')}>전체 시작 시점 최종값</button>
       </div>
 
       {/* ── 탭 1: 월별 추이 ── */}

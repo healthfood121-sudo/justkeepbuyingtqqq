@@ -254,7 +254,7 @@ export default function WithdrawalGuidePage() {
                 {
                   name: 'RSI<30 조기 재진입',
                   step: '3단계',
-                  med: '—', medV2: '724억', medV1: '3,231억', survival: '100%', trades: '57회',
+                  med: '—', medV2: '724억', medV1: '3,232억', survival: '100%', trades: '57회',
                   post: '/posts/withdrawal-new-ideas', postLabel: '아이디어 8가지',
                   data: '/posts/withdrawal-new-ideas/data',
                   dim: false,
@@ -262,7 +262,7 @@ export default function WithdrawalGuidePage() {
                 {
                   name: 'D10GK',
                   step: '4단계',
-                  med: '393억', medV2: '841억', medV1: '3,741억', survival: '100%', trades: '47회',
+                  med: '393억', medV2: '841억', medV1: '3,741억', survival: '100%', trades: '48회',
                   post: '/posts/withdrawal-new-ideas', postLabel: '아이디어 8가지',
                   data: '/posts/withdrawal-new-ideas/data',
                   best: true,
@@ -359,7 +359,7 @@ export default function WithdrawalGuidePage() {
               color: 'border-purple-200 dark:border-purple-800/50',
               badge: 'bg-purple-50 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400',
               title: '8가지 새 아이디어 테스트',
-              result: 'RSI 조기 재진입 → 중간값 724억 (스왑금리 반영) · 운용보수만 3,231억',
+              result: 'RSI 조기 재진입 → 중간값 724억 (스왑금리 반영) · 운용보수만 3,232억',
               desc: '골든크로스, 분할 재진입, 동적 레버리지 등 8가지를 비교. RSI가 30 미만으로 떨어지면 EMA200 신호를 기다리지 않고 즉시 재매수하는 방식이 압도적 우세.',
               href: '/posts/withdrawal-new-ideas',
               link: '테스트 결과 →',
@@ -368,7 +368,7 @@ export default function WithdrawalGuidePage() {
               step: '4단계',
               color: 'border-green-300 dark:border-green-700',
               badge: 'bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-400',
-              title: 'RSI + 이격도 −10% 필터 + Guyton-Klinger (D10GK)',
+              title: 'RSI + 200일선 대비 −10% 필터 + Guyton-Klinger (D10GK)',
               result: '★ 중간값 393억 (스왑금리·양도세 반영) · 초기 계산 3,741억',
               desc: 'RSI 신호에 "EMA200보다 10% 이상 떨어진 상태"라는 조건을 추가해 가짜 신호를 줄였다. 자산이 많이 늘었을 때 인출을 자동으로 줄여주는 Guyton-Klinger 규칙도 결합. 과최적화 여부도 검증 완료.',
               href: '/posts/withdrawal-new-ideas',
@@ -543,7 +543,7 @@ export default function WithdrawalGuidePage() {
         <H2>3. 주요 시나리오 비교 (초기 10억, 20년)</H2>
 
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">전략별 요약 (668가지 시작 시점)</span>
+          <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">전략별 요약 (418가지 시작 시점)</span>
           <Link href="/posts/withdrawal-comparison/data" className="text-xs text-blue-500 dark:text-blue-400 hover:underline">
             전체 데이터 →
           </Link>
@@ -555,9 +555,9 @@ export default function WithdrawalGuidePage() {
           rows={[
             ['SP500기반 (구 v1)',       '100%',   '12.7억',  '4.9%',  '0.002억', '–'],
             ['SMA200 기준선',           '99.8%', '203억',   '17.6%', '0억',      '144'],
-            ['SMA200 ±5% 이격도',      '100%',  '251억',   '16.7%', '0.26억',   '25'],
-            ['SMA200 연속10일 (B3)',    '100%',  '328억',   '18.6%', '0.73억',   '25'],
-            ['SMA200 + 동적인출 (B3C1)', '100%', '619억',   '22.1%', '1.88억',   '25'],
+            ['SMA200 ±5% 여유폭',      '100%',  '251억',   '16.7%', '0.26억',   '25'],
+            ['SMA200 연속10일 (B3)',    '100%',  '328억',   '18.6%', '0.73억',   '26'],
+            ['SMA200 + 동적인출 (B3C1)', '100%', '619억',   '22.1%', '1.88억',   '26'],
             ['EMA200 연속10일 + 동적인출', '100%', '798억',  '23.8%', '1.60억',   '29'],
             [<strong key="best" className="text-blue-600 dark:text-blue-400">★ EMA200 연속15일 + 동적인출 (S0)</strong>,
               '100%', <strong key="bv" className="text-blue-600 dark:text-blue-400">1,176억</strong>,
@@ -569,10 +569,10 @@ export default function WithdrawalGuidePage() {
         <Table
           headers={['진입 시점', '상황', 'v1(SP500기반)', 'SMA200 10일+동적인출', '★ EMA200 15일+동적인출']}
           rows={[
-            ['1996-10', '닷컴버블 직전', '1.2억',  '502억',  '1,892억'],
-            ['1999-03', '버블 상승 중',  '8.0억',  '76억',   '180억'],
+            ['1996-10', '닷컴버블 직전', '1.2억',  '503억',  '1,892억'],
+            ['1999-03', '버블 상승 중',  '0.33억', '76억',   '180억'],
             ['2000-03', '버블 정점',     '0.04억', '11.2억', '22.2억'],
-            ['2003-03', '버블 이후',     '198억',  '441억',  '252억'],
+            ['2003-03', '버블 이후',     '75억',   '85억',   '252억'],
           ]}
         />
 
@@ -580,8 +580,7 @@ export default function WithdrawalGuidePage() {
           기존 방법론(v1)은 닷컴버블 정점(2000-03) 진입 시 0.04억으로 사실상 파산이었다.
           EMA200 15일 전략으로 22.2억까지 끌어올렸고,
           버블 직전(1996-10) 진입에서는 1,892억(약 190배)을 달성한다.
-          2003-03처럼 버블 이후 저점 진입은 EMA200이 SMA200보다 소폭 낮은데,
-          이는 저점에서 빠른 신호 반응이 약간 일찍 매수·매도를 유발하기 때문이다.
+          버블 이후 저점(2003-03) 진입에서도 EMA200 15일(252억)이 SMA200 10일(85억)보다 크게 높다.
         </P>
 
         {/* ── 4. 설정값 탐색 세부 결과 ───────────────────────── */}
@@ -594,16 +593,16 @@ export default function WithdrawalGuidePage() {
 
         <H3>4-1. EMA200 vs SMA200 × 연속일 필터</H3>
         <P>
-          같은 설정값에서 EMA200이 SMA200을 일관되게 압도한다.
-          연속일 필터는 5~20일을 테스트했고, 15일이 최적이었다.
+          같은 인출 설정(10억/20억 구간, 월 0.3/0.5/0.7%)에서 EMA200이 SMA200을 일관되게 압도한다.
+          연속일 필터는 5~20일을 테스트했고, EMA200은 15일이 가장 좋았다.
         </P>
 
         <Table
           headers={['이동평균', '연속일', '중앙 최종값', '연평균 수익률', '거래 횟수/20년', '최솟값']}
           rows={[
             ['SMA200', '10일', '619억',   '22.1%', '26회', '1.88억'],
-            ['SMA200', '15일', '665억',   '22.6%', '26회', '–'],
-            ['SMA200', '20일', '722억',   '23.3%', '19회', '1.04억'],
+            ['SMA200', '15일', '453억',   '20.4%', '21회', '1.19억'],
+            ['SMA200', '20일', '648억',   '23.3%', '19회', '1.00억'],
             ['EMA200', '10일', '798억',   '23.8%', '29회', '1.60억'],
             ['EMA200', '15일', <strong key="w" className="text-green-600 dark:text-green-400">1,176억</strong>,
               <strong key="c" className="text-green-600 dark:text-green-400">25.9%</strong>, '21회', '1.68억'],
@@ -777,9 +776,8 @@ export default function WithdrawalGuidePage() {
         <H3>아직 열린 것</H3>
         <ul className="list-none space-y-3 mb-8">
           {[
-            { q: '20일+ 연속 필터 + EMA200 조합은?', a: '20일 SMA200 조합도 순위권(722억)이었지만 EMA200+15일(1,176억)보다 낮았다. EMA200+20일 이상은 미테스트 영역.' },
+            { q: '20일+ 연속 필터 + EMA200 조합은?', a: '20일 SMA200 조합도 순위권(같은 인출 설정 648억, 인출 구간을 바꾸면 최대 821억)이었지만 EMA200+15일(1,176억)보다 낮았다. EMA200+20일 이상은 미테스트 영역.' },
             { q: '다른 EMA 기간(EMA100, EMA150, EMA250)?', a: 'EMA200 고정 상태에서만 탐색했다. 더 짧거나 긴 EMA 기간의 효과는 검증되지 않았다.' },
-            { q: '2003-03 저점 진입에서 EMA200이 SMA200보다 낮은 이유', a: '저점 반등 시 EMA200이 빠른 반응으로 조금 일찍 매수 신호를 줘 약간의 오신호가 섞인다. 저점 진입 케이스에서의 최적화 여지.' },
           ].map(({ q, a }) => (
             <li key={q} className="border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3">
               <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1">{q}</p>
