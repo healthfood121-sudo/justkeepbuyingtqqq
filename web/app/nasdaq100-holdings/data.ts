@@ -1,5 +1,5 @@
 // ⚠️  자동 생성 파일 — scripts/update_nasdaq100_holdings.py
-// 마지막 업데이트: 2026-10-04  |  기준일: 2026년 10월 3일
+// 마지막 업데이트: 2026-10-05  |  기준일: 2026년 10월 3일
 // 직접 수정 금지. 한글명·섹터·설명은 descriptions.json 에서 관리.
 
 export type HoldingType = 'stock' | 'cash' | 'futures' | 'other'
