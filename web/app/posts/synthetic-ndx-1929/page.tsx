@@ -426,7 +426,7 @@ export default function SyntheticNdx1929Post() {
         <P>
           NDX는 1971년 이전 데이터가 없으므로 직접 테스트할 방법이 없다.
           그래서 SP500과 NDX의 통계적 관계에서 베타를 뽑아내어
-          <strong className="text-gray-900 dark:text-white"> 가상의 pre-1971 NDX 수익률</strong>을 만들어봤다.
+          <strong className="text-gray-900 dark:text-white"> 1971년 이전의 가상 NDX 수익률</strong>을 만들어봤다.
         </P>
 
         {/* ── 2. 합성 방법 ── */}
@@ -613,7 +613,7 @@ export default function SyntheticNdx1929Post() {
         </ul>
 
         <Callout color="blue">
-          <strong>요약:</strong> SP500 + 베타 회귀로 가상 pre-1971 NDX를 합성해 1929년을 스트레스 테스트한 결과,
+          <strong>요약:</strong> SP500 + 베타 회귀로 1971년 이전 가상 NDX를 합성해 1929년을 스트레스 테스트한 결과,
           최근 베타 기준으로는 닷컴버블(13.77년)이 더 힘든 시나리오였다.
           <strong> BUFFER_REF=14는 이 모든 시나리오를 커버한다.</strong>
           {' '}(현재 인출식 계산은 C전략 5년 분할 기준 9를 쓴다.)

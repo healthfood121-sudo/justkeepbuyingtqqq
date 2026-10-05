@@ -19,9 +19,10 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 
-DATA_DIR = Path("D:/justkeepbuyingtqqq/data")
-FED_PATH = Path("D:/mcv-nextjs/public/data/fed_funds_rate.json")
-OUT_PATH = Path("D:/justkeepbuyingtqqq/web/public/data/withdrawal_sp500_overfit.json")
+ROOT     = Path(__file__).resolve().parent.parent
+DATA_DIR = ROOT / "data"
+FED_PATH = ROOT / "data/fed_funds_rate.json"
+OUT_PATH = ROOT / "web/public/data/withdrawal_sp500_overfit.json"
 
 INITIAL    = 1_000_000_000
 SIM_YEARS  = 20

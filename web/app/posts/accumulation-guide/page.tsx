@@ -129,7 +129,7 @@ export default function AccumulationGuidePage() {
 
         <P>
           이렇게 이어붙여도 1971년이 한계다. 1929년 대공황을 직접 테스트할 수 없다.
-          SP500과 NDX의 베타 회귀로 가상의 pre-1971 NDX를 합성해 1929년도 검증했다.
+          SP500과 NDX의 베타 회귀로 1971년 이전 가상 NDX를 합성해 1929년도 검증했다.
         </P>
         <AnalysisLink
           href="/posts/synthetic-ndx-1929"
@@ -253,11 +253,11 @@ export default function AccumulationGuidePage() {
         </Callout>
 
         {/* ── 5. 코호트 방식 ──────────────────────────────── */}
-        <H2>5. 어떻게 테스트하는가 — 코호트 방식</H2>
+        <H2>5. 어떻게 테스트하는가 — 모든 시작 시점 전수 테스트</H2>
         <P>
           백테스트 결과를 "특정 시점 1개"로 판단하면 운에 좌우된다.
           이 사이트는 1971년부터 2026년까지 <strong className="text-gray-900 dark:text-white">매월 첫 거래일</strong>을 진입 시점으로 삼아
-          가능한 모든 시작점(수백 개)을 전부 테스트한다. 이것을 코호트라고 부른다.
+          가능한 모든 시작점(수백 개)을 전부 테스트한다. 운 좋은 시점만 골라 보는 착시를 피하기 위해서다.
         </P>
         <P>
           평가 기준은 두 가지다.
@@ -265,11 +265,11 @@ export default function AccumulationGuidePage() {
         <div className="space-y-2 mb-6 text-sm">
           <div className="flex gap-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg px-4 py-3">
             <span className="text-gray-400 font-mono shrink-0 w-28">완료율</span>
-            <span className="text-gray-600 dark:text-gray-300">테스트 기간 내 목표 달성 비율. 100%가 아니면 데이터가 충분히 길지 않거나, 아직 진행 중인 코호트가 있다는 뜻.</span>
+            <span className="text-gray-600 dark:text-gray-300">테스트 기간 내 목표 달성 비율. 100%가 아니면 데이터가 충분히 길지 않거나, 아직 진행 중인 시작 시점이 있다는 뜻.</span>
           </div>
           <div className="flex gap-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg px-4 py-3">
             <span className="text-gray-400 font-mono shrink-0 w-28">worst 소요기간</span>
-            <span className="text-gray-600 dark:text-gray-300">모든 코호트 중 가장 오래 걸린 진입 시점의 달성 연수. 방법론 설계는 평균이 아닌 <strong className="text-gray-800 dark:text-gray-200">worst를 기준</strong>으로 한다. 내가 언제 시작할지 모르기 때문이다.</span>
+            <span className="text-gray-600 dark:text-gray-300">모든 시작 시점 중 가장 오래 걸린 진입 시점의 달성 연수. 방법론 설계는 평균이 아닌 <strong className="text-gray-800 dark:text-gray-200">worst를 기준</strong>으로 한다. 내가 언제 시작할지 모르기 때문이다.</span>
           </div>
         </div>
 
@@ -286,7 +286,7 @@ export default function AccumulationGuidePage() {
         <H3>절대 멈추지 않는다</H3>
         <P>
           TQQQ가 −50%든 −90%든 계속 산다. 오히려 이때 평균단가가 가장 빠르게 내려간다.
-          닷컴버블에서도, 금융위기에서도, 매수를 멈추지 않은 코호트는 결국 달성했다.
+          닷컴버블에서도, 금융위기에서도, 매수를 멈추지 않은 경우는 결국 달성했다.
           멈추는 순간 백테스트의 전제가 깨진다.
         </P>
 

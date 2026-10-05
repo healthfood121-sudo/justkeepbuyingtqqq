@@ -166,7 +166,7 @@ def main():
     cohorts_path = OUT_DIR + "synthetic_ndx_cohorts.json"
     with open(cohorts_path, "w", encoding="utf-8") as f:
         json.dump({
-            "note":  "A전략 — 베타별·레버리지별 코호트 소요기간 (일 20만원, 목표 10억, 운용보수 반영)",
+            "note":  "A전략 — 베타별·레버리지별 시작 시점 소요기간 (일 20만원, 목표 10억, 운용보수 반영)",
             "betas": {k: b for k, b, _ in BETAS},
             "real":  real_cohorts,
             "synth": cohort_out,

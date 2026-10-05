@@ -63,11 +63,11 @@ class Param:
 
 STRATEGIES = [
     Param("S0",    "기준선: EMA200-15일 + 동적인출"),
-    Param("D10GK", "현재 최선: RSI<30+이격도<-10%+GK",    rsi_thr=30, div_thr=-0.10, use_gk=True),
+    Param("D10GK", "현재 최선: RSI<30 + 200일선 대비 -10% 이하 + GK",    rsi_thr=30, div_thr=-0.10, use_gk=True),
     Param("T15",   "트레일링 스탑 -15%",                   trail_thr=0.15),
     Param("T20",   "트레일링 스탑 -20%",                   trail_thr=0.20),
     Param("T25",   "트레일링 스탑 -25%",                   trail_thr=0.25),
-    Param("GRAD",  "단계적 현금화: 이격도 -5/-10/-15%",    grad_hedge=True),
+    Param("GRAD",  "단계적 현금화: 200일선 대비 -5/-10/-15%",    grad_hedge=True),
     Param("DLEV",  "자산 연동 레버리지 하향",              wealth_delev=True),
 ]
 

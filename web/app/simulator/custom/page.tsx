@@ -338,7 +338,7 @@ function CustomSimulatorInner() {
             <div className="flex flex-col items-center justify-center h-64 gap-3 text-gray-400">
               {dataLoading
                 ? <p>가격 데이터 로딩 중...</p>
-                : <><p className="text-base">파라미터를 설정하고</p><p className="text-base font-semibold text-blue-500">▶ 백테스트 실행을 누르세요</p></>
+                : <><p className="text-base">설정값을 정하고</p><p className="text-base font-semibold text-blue-500">▶ 백테스트 실행을 누르세요</p></>
               }
             </div>
           )}

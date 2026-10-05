@@ -164,10 +164,10 @@ export default function WithdrawalComparisonPost() {
           어느 쪽이 실제로 더 나은지 데이터로 확인했습니다.
         </P>
 
-        <H2>전체 코호트 결과 요약</H2>
+        <H2>전체 시작 시점 결과 요약</H2>
 
         <Callout color="blue">
-          418개 코호트 (1971년 ~ 2006년), 각 시점에서 10억으로 인출 시작 → 20년 시뮬레이션
+          418개 시작 시점 (1971년 ~ 2006년), 각 시점에서 10억으로 인출 시작 → 20년 시뮬레이션
         </Callout>
 
         <div className="flex items-center justify-between mb-2">
@@ -177,14 +177,14 @@ export default function WithdrawalComparisonPost() {
         <Table
           headers={['지표', 'A안 (SP500기반)', 'B안 (MA200기반)']}
           rows={[
-            ['코호트 수', sa.total, sb.total],
+            ['시작 시점 수', sa.total, sb.total],
             ['파산 횟수', sa.bankrupt, sb.bankrupt],
             ['생존율', `${sa.survival_rate}%`, `${sb.survival_rate}%`],
             ['20년 후 평균 잔여자산', `${sa.avg_final}억`, `${sb.avg_final}억`],
             ['20년 후 중앙값 잔여자산', `${sa.med_final}억`, `${sb.med_final}억`],
             ['평균 누적 인출액', `${sa.avg_withdrawn}억`, `${sb.avg_withdrawn}억`],
             ['최소 최솟값 (최악 구간)', `${sa.min_of_min}억`, `${sb.min_of_min}억`],
-            ['생존 코호트 평균 CAGR', `${sa.avg_cagr}%`, `${sb.avg_cagr}%`],
+            ['생존한 경우 평균 연평균 수익률', `${sa.avg_cagr}%`, `${sb.avg_cagr}%`],
           ]}
         />
 
@@ -266,7 +266,7 @@ export default function WithdrawalComparisonPost() {
             'B안은 중앙값 최종자산이 203억으로 A안(12.7억)보다 월등히 높습니다. MA200 필터가 장기적으로 하락 구간을 효과적으로 회피합니다.',
             'A안은 인출 한도가 없어 포트폴리오가 클 때 더 많이 받아가지만, 하락장에서 주식을 그대로 보유하는 리스크를 집니다.',
             'B안의 생활비 캡(월 최대 1500만)은 자산 보존에 유리하지만, 포트폴리오가 작을 때 생활비가 부족할 수 있습니다.',
-            '두 전략 모두 닷컴버블 정점 진입 코호트(2000년 초)에서 취약합니다. 이 구간은 어떤 전략도 완전한 보호가 어렵습니다.',
+            '두 전략 모두 닷컴버블 정점 진입 시점(2000년 초)에서 취약합니다. 이 구간은 어떤 전략도 완전한 보호가 어렵습니다.',
             '현실에서는 두 전략을 결합하는 것이 유리합니다: MA200 필터 + SP500 드로다운 보조 지표를 함께 활용.',
           ].map((item, i) => (
             <li key={i} className="flex gap-3 text-gray-600 dark:text-gray-300 text-sm">
@@ -285,7 +285,7 @@ export default function WithdrawalComparisonPost() {
             href="/posts/withdrawal-comparison/data"
             className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
           >
-            전체 코호트 데이터 →
+            전체 시작 시점 데이터 →
           </Link>
         </div>
       </main>

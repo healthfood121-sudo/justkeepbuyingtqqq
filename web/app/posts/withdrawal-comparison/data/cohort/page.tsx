@@ -280,14 +280,14 @@ function CohortPageInner() {
 
   const [withCosts, setWithCosts] = useState(true)
   useEffect(() => {
-    if (!start) { setError('start 파라미터가 없습니다.'); setLoading(false); return }
+    if (!start) { setError('시작 시점이 지정되지 않았습니다.'); setLoading(false); return }
 
     Promise.all([
       fetch(`/data/withdrawal_monthly${withCosts ? '_v2' : ''}.json`).then(r => r.json()),
       fetch(`/data/withdrawal_comparison${withCosts ? '_v2' : ''}.json`).then(r => r.json()),
     ]).then(([monthly_all, comp]) => {
       const m = monthly_all[start]
-      if (!m) { setError(`${start} 코호트 데이터 없음`); setLoading(false); return }
+      if (!m) { setError(`${start} 시작 데이터 없음`); setLoading(false); return }
       const s = comp.cohorts.find((c: CohortSummary) => c.start === start)
       if (!s) { setError(`${start} 요약 데이터 없음`); setLoading(false); return }
       setMonthly(m)
@@ -341,10 +341,10 @@ function CohortPageInner() {
             href="/posts/withdrawal-comparison/data"
             className="text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors mb-4 inline-block"
           >
-            ← 전체 코호트 목록
+            ← 전체 시작 시점 목록
           </Link>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            코호트 상세 — {start} 시작
+            시작 시점 상세 — {start} 시작
           </h1>
           <CostToggle withCosts={withCosts} onChange={setWithCosts} />
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -380,7 +380,7 @@ function CohortPageInner() {
             }
           />
           <StatCompareBadge
-            label="CAGR"
+            label="연평균 수익률"
             va={`${stat.a.cagr.toFixed(1)}%`}
             vb={`${stat.b.cagr.toFixed(1)}%`}
             better={stat.b.cagr > stat.a.cagr ? 'b' : 'a'}

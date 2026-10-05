@@ -59,7 +59,7 @@ function SummaryBanner({ s, label }: { s: Summary; label: string }) {
     { label: '평균 최종값', value: fmt억(s.avg_final) },
     { label: '중앙 최종값', value: fmt억(s.med_final) },
     { label: '평균 인출액', value: fmt억(s.avg_withdrawn) },
-    { label: '평균 CAGR',  value: fmtPct(s.avg_cagr) },
+    { label: '평균 연평균 수익률',  value: fmtPct(s.avg_cagr) },
   ]
   return (
     <div>
@@ -128,11 +128,11 @@ function DataTable({ cohorts, highlightStart }: { cohorts: Cohort[]; highlightSt
             <Th k="a_final">A안 최종(억)</Th>
             <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium text-xs">A안 인출(억)</th>
             <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium text-xs">A안 최솟값(억)</th>
-            <Th k="a_cagr">A안 CAGR</Th>
+            <Th k="a_cagr">A안 연평균 수익률</Th>
             <Th k="b_final">B안 최종(억)</Th>
             <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium text-xs">B안 인출(억)</th>
             <th className="py-2 px-3 text-left text-gray-500 dark:text-gray-400 font-medium text-xs">B안 최솟값(억)</th>
-            <Th k="b_cagr">B안 CAGR</Th>
+            <Th k="b_cagr">B안 연평균 수익률</Th>
             <th className="py-2 px-3 text-gray-500 dark:text-gray-400 font-medium text-xs"></th>
           </tr>
         </thead>
@@ -241,7 +241,7 @@ function DataPageInner() {
             ← 분석 글로
           </Link>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            인출 전략 비교 — 전체 코호트 데이터
+            인출 전략 비교 — 전체 시작 시점 데이터
           </h1>
           <CostToggle withCosts={withCosts} onChange={setWithCosts} />
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -270,7 +270,7 @@ function DataPageInner() {
         </div>
 
         <div className="text-xs text-gray-400 dark:text-gray-500 mb-3">
-          헤더 클릭 → 정렬. 빨간 행 = 두 전략 중 하나가 최종값 1억 미만. 파란 행 = URL에서 선택된 코호트.
+          헤더 클릭 → 정렬. 빨간 행 = 두 전략 중 하나가 최종값 1억 미만. 파란 행 = URL에서 선택된 시작 시점.
         </div>
 
         <DataTable cohorts={filtered} highlightStart={highlightStart} />
