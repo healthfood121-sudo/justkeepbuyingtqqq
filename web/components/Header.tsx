@@ -13,15 +13,16 @@ export default function Header({ maxWidth = 'max-w-6xl', activePage }: HeaderPro
 
   return (
     <header className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 sticky top-0 z-50">
-      <div className={`${maxWidth} mx-auto px-6 py-4 flex items-center justify-between`}>
+      <div className={`${maxWidth} mx-auto px-4 sm:px-6 py-3 sm:py-4 flex flex-wrap items-center justify-between gap-y-2`}>
         <Link
           href="/"
-          className="text-sm font-bold tracking-wide text-gray-900 dark:text-white hover:opacity-75 transition-opacity"
+          className="text-sm font-bold tracking-wide text-gray-900 dark:text-white hover:opacity-75 transition-opacity whitespace-nowrap"
         >
           JUST KEEP BUYING <span className="text-blue-500 dark:text-blue-400">TQQQ</span>
         </Link>
-        <div className="flex items-center gap-3">
-          <nav className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+        <div className="contents sm:flex sm:items-center sm:gap-3">
+          {/* 휴대폰: 로고·테마 버튼 아래 한 줄로 메뉴 (줄바꿈 없이) */}
+          <nav className="order-3 w-full sm:order-none sm:w-auto flex items-center gap-5 sm:gap-4 text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap overflow-x-auto">
             <Link
               href="/simulator/custom"
               className={`transition-colors hover:text-gray-900 dark:hover:text-white ${
@@ -49,7 +50,7 @@ export default function Header({ maxWidth = 'max-w-6xl', activePage }: HeaderPro
           </nav>
           <button
             onClick={toggle}
-            className="p-2 rounded-lg text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            className="order-2 sm:order-none p-2 rounded-lg text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             aria-label={theme === 'dark' ? '라이트 모드로 전환' : '다크 모드로 전환'}
           >
             {theme === 'dark' ? (

@@ -177,6 +177,11 @@ def describe(kind, m, closes, ema, rsi, ag, al, peaks, dates, tqqq):
         "action":      "없음",
         "detail":      "",
     }
+    # 화면 게이지용: 현금일 때 200일선 위 연속일(15일이면 매수), T25 보유일 때 매도선
+    if not m["invested"]:
+        out["above_days"] = int(m["above"])
+    elif kind == "T25":
+        out["sell_line"] = round(float(peaks[t] * (1 - TRAIL)), 2)
     if m["pend"] is not None:
         act = "매도" if m["pend"][0] == "sell" else "매수"
         out["action"] = act

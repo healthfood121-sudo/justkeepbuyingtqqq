@@ -14,6 +14,8 @@ interface StrategySignal {
   action: string
   detail: string
   loc?:   Loc
+  above_days?: number   // 현금일 때 200일선 위 연속일 (15일이면 매수)
+  sell_line?:  number   // T25 보유 중 매도선 (1년 최고 종가 × 0.75)
   last_events: { date: string; action: string; how: string }[]
 }
 
@@ -23,6 +25,7 @@ interface Signal {
   ema200:      number
   vs_ema_pct:  number
   vs_peak_pct: number
+  peak_1y:     number
   rsi14:       number
   strategies:  Record<'S0' | 'T25' | 'D10GK', StrategySignal>
 }
@@ -34,6 +37,47 @@ const ROWS: { key: 'T25' | 'S0' | 'D10GK'; name: string; rule: string }[] = [
 ]
 
 const pct = (v: number) => `${v > 0 ? '+' : ''}${v.toFixed(1)}%`
+const num = (v: number) => v.toLocaleString('en-US', { maximumFractionDigits: 0 })
+
+// 매도선(−25%)까지 얼마나 내려왔는지 / 재매수(15일)까지 며칠 남았는지 막대로 표시
+function Gauge({ sig, t }: { sig: Signal; t: StrategySignal }) {
+  if (t.state === '보유') {
+    const drop = Math.max(0, -sig.vs_peak_pct)            // 최고가 대비 하락폭 (%)
+    const ratio = Math.min(1, drop / 25)
+    const line = t.sell_line ?? sig.peak_1y * 0.75
+    const bar = ratio < 0.5 ? 'bg-green-500' : ratio < 0.8 ? 'bg-amber-500' : 'bg-red-500'
+    return (
+      <div className="mt-1.5">
+        <div className="relative h-2 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
+          <div className={`absolute inset-y-0 left-0 rounded-full ${bar}`} style={{ width: `${Math.max(ratio * 100, 2)}%` }} />
+        </div>
+        <div className="flex justify-between text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">
+          <span>지금 최고가 대비 {pct(sig.vs_peak_pct)}</span>
+          <span>매도선 −25%</span>
+        </div>
+        <p className="text-[11px] text-gray-600 dark:text-gray-300 mt-1">
+          매도까지 <strong>{(25 - drop).toFixed(1)}%</strong> 더 떨어져야 함
+          <span className="text-gray-400 dark:text-gray-500"> · 나스닥100 종가 {num(line)} 아래로 끝나면 매도</span>
+        </p>
+      </div>
+    )
+  }
+  if (t.above_days === undefined) return <p className="text-[11px] mt-0.5 text-gray-500 dark:text-gray-400">{t.detail}</p>
+  const d = Math.min(15, t.above_days)
+  return (
+    <div className="mt-1.5">
+      <div className="flex gap-0.5">
+        {Array.from({ length: 15 }, (_, i) => (
+          <div key={i} className={`h-2 flex-1 rounded-sm ${i < d ? 'bg-green-500' : 'bg-gray-200 dark:bg-gray-700'}`} />
+        ))}
+      </div>
+      <p className="text-[11px] text-gray-600 dark:text-gray-300 mt-1">
+        재매수까지 <strong>15일 중 {d}일째</strong>
+        <span className="text-gray-400 dark:text-gray-500"> · 나스닥100이 200일 평균선({num(sig.ema200)}) 위로 15일 연속 마감하면 다음 날 매수{d === 0 ? ' (아래로 끝나면 0일부터 다시)' : ''}</span>
+      </p>
+    </div>
+  )
+}
 
 export default function WithdrawalSignal() {
   const [sig, setSig] = useState<Signal | null>(null)
@@ -77,7 +121,9 @@ export default function WithdrawalSignal() {
                 {urgent ? `다음 거래일 전량 ${t.action}` : '할 일 없음'}
               </span>
             </div>
-            <p className={`text-[11px] mt-0.5 ${urgent ? 'text-red-600 dark:text-red-400' : 'text-gray-500 dark:text-gray-400'}`}>{t.detail}</p>
+            {urgent
+              ? <p className="text-[11px] mt-0.5 text-red-600 dark:text-red-400">{t.detail}</p>
+              : <Gauge sig={sig} t={t} />}
           </div>
         )
       })()}

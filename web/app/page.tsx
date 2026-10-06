@@ -1,6 +1,7 @@
 import Header from '@/components/Header'
 import HomeSimulator from '@/components/HomeSimulator'
 import WithdrawalSignal from '@/components/WithdrawalSignal'
+import LivingCalc from '@/components/LivingCalc'
 import Link from 'next/link'
 
 const principles = [
@@ -71,8 +72,10 @@ export default function HomePage() {
                 매일 정해진 금액을 자동 적립. 시장이 오르든 내리든 멈추지 않는다.
                 목돈이 있으면 5년에 걸쳐 매달 나눠 넣으며 계속 적립.
               </p>
-              <div className="text-xs text-gray-400 dark:text-gray-500 font-mono mb-4">
-                TQQQ 기준 (스왑금리 반영): 중간 4.28년 · 최악 8.99년
+              <div className="text-xs text-gray-500 dark:text-gray-400 mb-4">
+                TQQQ로 10억까지 <strong className="text-gray-700 dark:text-gray-200">보통 4년 3개월</strong>,
+                가장 오래 걸린 경우 <strong className="text-gray-700 dark:text-gray-200">9년</strong>
+                <span className="text-gray-400 dark:text-gray-500"> (1971년 이후 모든 시작 시점 · 운용보수·스왑금리 반영)</span>
               </div>
               <Link
                 href="/posts/accumulation-guide"
@@ -99,6 +102,7 @@ export default function HomePage() {
                 </p>
               </div>
               <WithdrawalSignal />
+              <LivingCalc />
               <div className="text-xs text-gray-400 dark:text-gray-500 mb-4">
                 1971~2016년 매달 시작해 오늘까지 · 생활비 포함 연 수익률 중간값 (하위 10%도 17.1%) · 스왑금리·양도세 반영
               </div>
