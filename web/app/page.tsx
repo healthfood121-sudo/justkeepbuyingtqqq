@@ -68,15 +68,24 @@ export default function HomePage() {
                 <span className="text-xs font-bold text-blue-500 dark:text-blue-400 tracking-wide">JUST KEEP BUYING</span>
                 <span className="text-base font-bold text-gray-900 dark:text-white">적립식</span>
               </div>
-              <p className="text-xs text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">
-                매일 정해진 금액을 자동 적립. 시장이 오르든 내리든 멈추지 않는다.
-                목돈이 있으면 5년에 걸쳐 매달 나눠 넣으며 계속 적립.
+              <p className="text-xs font-bold text-blue-700 dark:text-blue-300 mb-3">
+                매일 같은 금액을 자동 매수 — 시장이 어떻든 멈추지 않는다
               </p>
-              <div className="text-xs text-gray-500 dark:text-gray-400 mb-4">
-                TQQQ로 10억까지 <strong className="text-gray-700 dark:text-gray-200">보통 4년 3개월</strong>,
-                가장 오래 걸린 경우 <strong className="text-gray-700 dark:text-gray-200">9년</strong>
-                <span className="text-gray-400 dark:text-gray-500"> (1971년 이후 모든 시작 시점 · 운용보수·스왑금리 반영)</span>
+              <div className="bg-white/70 dark:bg-gray-900/60 border border-blue-200 dark:border-blue-700/30 rounded-xl p-3 mb-2">
+                <p className="text-xs font-bold text-gray-800 dark:text-gray-200 mb-2">TQQQ로 10억까지 걸린 기간</p>
+                {[
+                  { who: '매일 20만원만', med: '6년 4개월', worst: '13년 11개월' },
+                  { who: '+ 목돈 2.5억 (5년 분할)', med: '4년 3개월', worst: '9년' },
+                ].map(r => (
+                  <div key={r.who} className="flex justify-between items-baseline gap-2 py-1.5 border-t first:border-t-0 border-gray-100 dark:border-gray-800 text-xs">
+                    <span className="text-gray-600 dark:text-gray-300">{r.who}</span>
+                    <span className="whitespace-nowrap text-gray-500 dark:text-gray-400">
+                      보통 <strong className="text-sm text-blue-700 dark:text-blue-300">{r.med}</strong> · 최장 {r.worst}
+                    </span>
+                  </div>
+                ))}
               </div>
+              <p className="text-[10px] text-gray-400 dark:text-gray-500 mb-4">1971년 이후 모든 시작 시점 · 비용 반영</p>
               <Link
                 href="/posts/accumulation-guide"
                 className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-semibold"
