@@ -38,7 +38,7 @@ interface TradelogData {
 }
 
 const STRATS = [
-  { key: 't25', label: '25% 룰 (권장)' },
+  { key: 'rule25', label: '25% 룰 (권장)' },
   { key: 's0',  label: 'S0 (200일선 15일)' },
 ]
 
@@ -64,7 +64,7 @@ function TradelogInner() {
   const [loading, setLoading] = useState(true)
   const [search,  setSearch]  = useState('')
 
-  const strat         = params.get('st') === 's0' ? 's0' : 't25'
+  const strat         = params.get('st') === 's0' ? 's0' : 'rule25'   // 예전 주소 st=t25 도 여기로 (s0 아니면 25% 룰)
   const withCosts     = params.get('fee') !== '1'
   const selectedStart = params.get('start') ?? ''
 
@@ -73,7 +73,7 @@ function TradelogInner() {
     const fee = o.fee ?? !withCosts
     const start = o.start ?? selectedStart
     const q = new URLSearchParams()
-    if (st !== 't25') q.set('st', st)
+    if (st !== 'rule25') q.set('st', st)
     if (fee) q.set('fee', '1')
     if (start) q.set('start', start)
     router.replace(`?${q.toString()}`, { scroll: false })
@@ -105,7 +105,7 @@ function TradelogInner() {
     )
   }
   if (!data || !activeCohort) return null
-  const isT25 = data.meta.strategy === 'T25'
+  const isRule25 = data.meta.strategy === 'RULE25'
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-white">
@@ -135,7 +135,7 @@ function TradelogInner() {
             <CostToggle withCosts={withCosts} onChange={wc => go({ fee: !wc })} />
           </div>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            <strong className="text-gray-700 dark:text-gray-200">{isT25 ? '25% 룰' : data.meta.strategy}</strong>: {data.meta.desc}
+            <strong className="text-gray-700 dark:text-gray-200">{isRule25 ? '25% 룰' : data.meta.strategy}</strong>: {data.meta.desc}
           </p>
           <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{data.meta.conditions}</p>
         </div>
@@ -271,10 +271,10 @@ function TradelogInner() {
                             </span>
                           </td>
                           <td className="py-2 px-3 font-mono text-xs text-gray-700 dark:text-gray-300 text-right">{ndx.toLocaleString()}</td>
-                          <td className={`py-2 px-3 font-mono text-xs text-right ${isT25 && isSell ? 'font-semibold text-red-500 dark:text-red-400' : 'text-gray-500 dark:text-gray-400'}`}>
+                          <td className={`py-2 px-3 font-mono text-xs text-right ${isRule25 && isSell ? 'font-semibold text-red-500 dark:text-red-400' : 'text-gray-500 dark:text-gray-400'}`}>
                             {fmtPct(vsPeak)}
                           </td>
-                          <td className={`py-2 px-3 font-mono text-xs text-right ${!isT25 || !isSell ? 'font-semibold' : ''} ${
+                          <td className={`py-2 px-3 font-mono text-xs text-right ${!isRule25 || !isSell ? 'font-semibold' : ''} ${
                             vsEma < 0 ? 'text-red-500 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
                             {fmtPct(vsEma)}
                           </td>
@@ -291,7 +291,7 @@ function TradelogInner() {
             <div className="mt-4 text-xs text-gray-400 dark:text-gray-500 space-y-1">
               <p>
                 <span className="inline-block w-2.5 h-2.5 rounded-full bg-red-400 mr-1.5 align-middle" />
-                매도 = {isT25
+                매도 = {isRule25
                   ? '나스닥100 종가가 1년 최고 종가보다 25% 이상 낮게 끝난 다음 거래일 종가에 전량 현금 전환'
                   : '나스닥100이 200일 지수이동평균 아래에서 15거래일 연속 끝난 다음 거래일 종가에 전량 현금 전환'}
               </p>

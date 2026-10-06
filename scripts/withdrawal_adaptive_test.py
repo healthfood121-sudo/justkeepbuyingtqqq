@@ -50,7 +50,7 @@ TIME_FILTER = 15
 class Param:
     name:            str
     adaptive_living: bool  = True   # False → 현금 중에도 lr=1.0 고정
-    trail_thr:       float = 0.0    # >0이면 트레일링 스탑 (T25)
+    trail_thr:       float = 0.0    # >0이면 트레일링 스탑 (RULE25)
     use_rsi:         bool  = True   # False이면 D10GK RSI 재진입 없음 (S0)
 
 
@@ -58,9 +58,9 @@ STRATEGIES = [
     # S0: EMA200 15일 기준선
     Param("S0_ADAPT",     adaptive_living=True,  use_rsi=False),
     Param("S0_FIXED",     adaptive_living=False, use_rsi=False),
-    # T25: 트레일링 스탑 -25%
-    Param("T25_ADAPT",    adaptive_living=True,  trail_thr=0.25, use_rsi=False),
-    Param("T25_FIXED",    adaptive_living=False, trail_thr=0.25, use_rsi=False),
+    # RULE25: 트레일링 스탑 -25%
+    Param("RULE25_ADAPT",    adaptive_living=True,  trail_thr=0.25, use_rsi=False),
+    Param("RULE25_FIXED",    adaptive_living=False, trail_thr=0.25, use_rsi=False),
     # D10GK: RSI<30 + 이격도<-10% + GK
     Param("D10GK_ADAPT",  adaptive_living=True),
     Param("D10GK_FIXED",  adaptive_living=False),
@@ -121,7 +121,7 @@ def load_data():
 
     rsi14 = compute_rsi(closes, 14)
 
-    # T25용 52주 고점
+    # RULE25용 52주 고점
     trail_peaks = pd.Series(closes).rolling(252, min_periods=1).max().values
 
     return ndx3x, closes, ema200, rsi14, trail_peaks, dates, sp500, fed_rates
@@ -138,7 +138,7 @@ def get_monthly_starts(dates):
 
 
 # ═══════════════════════════════════════════════════════════
-# 시뮬레이션 코어 (S0 / T25 / D10GK)
+# 시뮬레이션 코어 (S0 / RULE25 / D10GK)
 # ═══════════════════════════════════════════════════════════
 
 def run_sim(ndx3x, closes, ema200, rsi14, trail_peaks, dates, sp500,
@@ -272,7 +272,7 @@ def run_sim(ndx3x, closes, ema200, rsi14, trail_peaks, dates, sp500,
                 below_days = above_days = 0
 
         if p.trail_thr > 0:
-            # T25: 52주 고점 대비 -trail_thr% → 매도
+            # RULE25: 52주 고점 대비 -trail_thr% → 매도
             peak = trail_peaks[ci]
             sell_sig = is_invested and peak > 0 and closes[ci] < peak * (1 - p.trail_thr)
             buy_sig  = e200ok and above_days >= TIME_FILTER
@@ -484,7 +484,7 @@ def summarize(name, results, dates, starts):
 def main():
     t0 = time.time()
     print("=" * 60)
-    print("적응형 생활비 vs 고정 생활비 비교 (S0 / T25 / D10GK)")
+    print("적응형 생활비 vs 고정 생활비 비교 (S0 / RULE25 / D10GK)")
     print("=" * 60)
 
     ndx3x, closes, ema200, rsi14, trail_peaks, dates, sp500, fed_rates = load_data()
@@ -511,7 +511,7 @@ def main():
     print(f"\n{'='*60}")
     print(f"  비교 요약 (적응형 vs 고정)")
     print(f"{'='*60}")
-    for base in ["S0", "T25", "D10GK"]:
+    for base in ["S0", "RULE25", "D10GK"]:
         a = summaries.get(f"{base}_ADAPT", {})
         f = summaries.get(f"{base}_FIXED", {})
         if a and f:

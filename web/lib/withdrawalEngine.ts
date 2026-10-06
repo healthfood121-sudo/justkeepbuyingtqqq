@@ -14,9 +14,9 @@ export const DYN_THRS  = [1_000_000_000, 2_000_000_000] as const
 export const EXP_3X = 0.0088
 export const EXP_1X = 0.0020
 
-export type StratKey = 'T25' | 'S0' | 'HOLD3'
+export type StratKey = 'RULE25' | 'S0' | 'HOLD3'
 export const STRATS: Record<StratKey, { label: string; trail: number; days: number; hold: boolean }> = {
-  T25:   { label: '25% 룰 (권장)',          trail: 0.25, days: 15, hold: false },
+  RULE25:   { label: '25% 룰 (권장)',          trail: 0.25, days: 15, hold: false },
   S0:    { label: 'S0 (200일선 15일)',   trail: 0,    days: 15, hold: false },
   HOLD3: { label: 'TQQQ 계속 보유',      trail: 0,    days: 15, hold: true  },
 }

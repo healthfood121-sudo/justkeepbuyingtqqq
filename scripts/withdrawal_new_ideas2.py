@@ -6,9 +6,9 @@ withdrawal_new_ideas2.py
 S0:     기준선 — EMA200 15일, 동적인출 0.3/0.5/0.7%
 D10GK:  현재 최선 — RSI<30 + 이격도<-10% + Guyton-Klinger
 
-T15:    트레일링 스탑 -15%: NDX 52주 고점 대비 -15% → 즉시 매도
-T20:    트레일링 스탑 -20%: NDX 52주 고점 대비 -20% → 즉시 매도
-T25:    트레일링 스탑 -25%: NDX 52주 고점 대비 -25% → 즉시 매도
+RULE15:    트레일링 스탑 -15%: NDX 52주 고점 대비 -15% → 즉시 매도
+RULE20:    트레일링 스탑 -20%: NDX 52주 고점 대비 -20% → 즉시 매도
+RULE25:    트레일링 스탑 -25%: NDX 52주 고점 대비 -25% → 즉시 매도
 GRAD:   단계적 현금화 — 이격도 -5%→67%, -10%→33%, -15%→0%
 DLEV:   자산 연동 레버리지 하향 — 50억 미만:TQQQ, 50~200억:50/50, 200억+:QQQ
 """
@@ -66,9 +66,9 @@ class Param:
 STRATEGIES = [
     Param("S0",    "기준선: EMA200-15일 + 동적인출"),
     Param("D10GK", "현재 최선: RSI<30 + 200일선 대비 -10% 이하 + GK",    rsi_thr=30, div_thr=-0.10, use_gk=True),
-    Param("T15",   "트레일링 스탑 -15%",                   trail_thr=0.15),
-    Param("T20",   "트레일링 스탑 -20%",                   trail_thr=0.20),
-    Param("T25",   "트레일링 스탑 -25%",                   trail_thr=0.25),
+    Param("RULE15",   "트레일링 스탑 -15%",                   trail_thr=0.15),
+    Param("RULE20",   "트레일링 스탑 -20%",                   trail_thr=0.20),
+    Param("RULE25",   "트레일링 스탑 -25%",                   trail_thr=0.25),
     Param("GRAD",  "단계적 현금화: 200일선 대비 -5/-10/-15%",    grad_hedge=True),
     Param("DLEV",  "자산 연동 레버리지 하향",              wealth_delev=True),
 ]

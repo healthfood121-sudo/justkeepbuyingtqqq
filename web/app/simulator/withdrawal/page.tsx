@@ -10,6 +10,7 @@ import Header from '@/components/Header'
 import CostToggle from '@/components/CostToggle'
 import { useTheme } from '@/components/ThemeProvider'
 import { SERIES_COLORS } from '@/components/charts/WithdrawalYearsChart'
+import { stratName } from '@/lib/strategyNames'
 import { buildMarket, runWithdrawal, STRATS, type Market, type SimResult, type StratKey } from '@/lib/withdrawalEngine'
 
 const EOK = 1e8
@@ -69,7 +70,7 @@ function Simulator() {
     return i < 0 ? market.dates.length - 1 : i
   }, [market, start])
 
-  const keys: StratKey[] = ['T25', ...cmp]
+  const keys: StratKey[] = ['RULE25', ...cmp]
   const results = useMemo(() => {
     if (!market || startIdx < 0) return null
     return Object.fromEntries(keys.map(k => [k, runWithdrawal(market, startIdx, amt * EOK, k, withCosts)])) as Record<StratKey, SimResult>
@@ -79,13 +80,13 @@ function Simulator() {
     return <p className="text-sm text-gray-400 py-20 text-center">데이터 불러오는 중…</p>
   }
 
-  const t25 = results.T25
+  const rule25 = results.RULE25
   const firstDate = market.dates[0].slice(0, 7), lastDate = market.dates[market.dates.length - 1]
   const realStart = market.dates[startIdx]
-  const years = t25.years
+  const years = rule25.years
 
   // 그래프 데이터 (월말 총자산·그 달 생활비)
-  const rows = t25.months.map((p, i) => {
+  const rows = rule25.months.map((p, i) => {
     const r: Record<string, number | string | boolean> = { m: p.date }
     for (const k of keys) {
       const q = results[k].months[i]
@@ -145,7 +146,7 @@ function Simulator() {
               <LabelList dataKey={metric === 'total' ? k : `${k}_liv`} content={(props) => {
                 const { x, y, index } = props as { x: number; y: number; index: number }
                 if (index !== rows.length - 1) return null
-                return <text x={x + 6} y={y + 4} fontSize={11} fill={tick}>{k === 'HOLD3' ? '보유' : k === 'T25' ? '25% 룰' : k}</text>
+                return <text x={x + 6} y={y + 4} fontSize={11} fill={tick}>{k === 'HOLD3' ? '보유' : stratName(k)}</text>
               }} />
             </Line>
           ))}
@@ -224,7 +225,7 @@ function Simulator() {
                 <tr key={k} className="text-gray-700 dark:text-gray-300">
                   <td className="py-2 px-2 whitespace-nowrap">
                     <span className="inline-block w-2.5 h-2.5 rounded-full mr-1.5 align-middle" style={{ background: colorOf(k) }} />
-                    <span className={k === 'T25' ? 'font-bold text-gray-900 dark:text-white' : ''}>{STRATS[k].label}</span>
+                    <span className={k === 'RULE25' ? 'font-bold text-gray-900 dark:text-white' : ''}>{STRATS[k].label}</span>
                   </td>
                   <td className="py-2 px-2 font-semibold whitespace-nowrap">{fmtEok(r.withdrawn / EOK)}</td>
                   <td className={`py-2 px-2 whitespace-nowrap ${r.final < amt * EOK ? 'text-red-500 dark:text-red-400' : ''}`}>{fmtEok(r.final / EOK)}</td>
@@ -255,7 +256,7 @@ function Simulator() {
             <thead>
               <tr className="border-b border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400">
                 <th className="py-1.5 px-2 text-left font-medium">연말</th>
-                {keys.map(k => <th key={k} className="py-1.5 px-2 text-right font-medium whitespace-nowrap">{k === 'HOLD3' ? '보유' : k === 'T25' ? '25% 룰' : k} 자산 · 생활비</th>)}
+                {keys.map(k => <th key={k} className="py-1.5 px-2 text-right font-medium whitespace-nowrap">{k === 'HOLD3' ? '보유' : stratName(k)} 자산 · 생활비</th>)}
                 <th className="py-1.5 px-2 text-left font-medium">25% 룰 상태</th>
               </tr>
             </thead>
@@ -277,15 +278,15 @@ function Simulator() {
       </details>
 
       <details className="mt-3 text-sm">
-        <summary className="cursor-pointer text-gray-500 dark:text-gray-400 select-none">25% 룰 매매 기록 ({t25.trades.length}회)</summary>
+        <summary className="cursor-pointer text-gray-500 dark:text-gray-400 select-none">25% 룰 매매 기록 ({rule25.trades.length}회)</summary>
         <ul className="mt-2 space-y-1 text-xs font-mono text-gray-600 dark:text-gray-300">
-          {t25.trades.map((t, i) => (
+          {rule25.trades.map((t, i) => (
             <li key={i}>
               {t.date} <span className={t.action === 'S' ? 'text-red-500' : 'text-green-600 dark:text-green-400'}>{t.action === 'S' ? '매도' : '매수'}</span>
               {' '}· 거래 후 총자산 {fmtEok(t.total / EOK)}
             </li>
           ))}
-          {t25.trades.length === 0 && <li>이 기간에는 매매 신호가 없었습니다.</li>}
+          {rule25.trades.length === 0 && <li>이 기간에는 매매 신호가 없었습니다.</li>}
         </ul>
       </details>
 

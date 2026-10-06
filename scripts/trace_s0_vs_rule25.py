@@ -1,5 +1,5 @@
 """
-trace_s0_vs_t25.py — S0 vs T25 매매 패턴 비교
+trace_s0_vs_rule25.py — S0 vs RULE25 매매 패턴 비교
 닷컴버블 상세 추적 + 전체 668 시작점 whipsaw 통계
 """
 
@@ -118,7 +118,7 @@ def run_sim(start_idx, strategy='s0'):
             sell_sig = e200ok and below_days >= TIME_FILTER
             buy_sig  = e200ok and above_days >= TIME_FILTER
 
-        elif strategy == 't25':
+        elif strategy == 'rule25':
             if e200ok:
                 if div > 0: above_days += 1
                 else:        above_days  = 0
@@ -132,10 +132,10 @@ def run_sim(start_idx, strategy='s0'):
             cash = sv - fee; tqqq_sh = 0.0; is_invested = False
             trade_count += 1
             if strategy == 's0': below_days = 0
-            elif strategy == 't25': above_days = 0
+            elif strategy == 'rule25': above_days = 0
             days_held = (cur_date - last_buy_date).days if last_buy_date else None
             drop_str = (f"고점대비{(closes[ci]/trail_peaks[ci]-1)*100:.1f}%"
-                        if strategy == 't25' else
+                        if strategy == 'rule25' else
                         f"이격도{div*100:.1f}%")
             events.append({'type': '매도', 'date': str(cur_date.date()),
                            'ndx': closes[ci], 'days_held': days_held,
@@ -148,7 +148,7 @@ def run_sim(start_idx, strategy='s0'):
             tqqq_sh = net / tqqq[ci]; avg_cost = tqqq[ci]; cash = 0.0
             is_invested = True; trade_count += 1
             if strategy == 's0': above_days = 0
-            elif strategy == 't25': above_days = 0
+            elif strategy == 'rule25': above_days = 0
             events.append({'type': '매수', 'date': str(cur_date.date()),
                            'ndx': closes[ci],
                            'detail': f"이격도{div*100:+.1f}%"})
@@ -179,7 +179,7 @@ def run_sim(start_idx, strategy='s0'):
 start_date = pd.Timestamp("2000-03-01")
 start_idx  = next(i for i, d in enumerate(dates) if d >= start_date)
 
-for strat, label in [('s0', 'S0 (EMA200 15일)'), ('t25', 'T25 (트레일링 스탑 25%)')]:
+for strat, label in [('s0', 'S0 (EMA200 15일)'), ('rule25', 'RULE25 (트레일링 스탑 25%)')]:
     evs, tc, total_e = run_sim(start_idx, strat)
     print(f"\n【{label} — 닷컴버블 2000-03】")
     print(f"{'='*60}")
@@ -204,7 +204,7 @@ print(f"{'='*60}")
 
 monthly_starts = get_monthly_starts()
 
-for strat, label in [('s0', 'S0'), ('t25', 'T25')]:
+for strat, label in [('s0', 'S0'), ('rule25', 'RULE25')]:
     all_hold = []; trade_cnts = []
     for s_idx in monthly_starts:
         evs, tc2, _ = run_sim(s_idx, strat)

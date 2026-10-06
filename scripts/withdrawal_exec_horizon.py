@@ -36,11 +36,11 @@ import withdrawal_cash_tier as E
 from withdrawal_full_period import irr
 
 OUT_PATH = E.ROOT / "web/public/data/withdrawal_exec_horizon_v2.json"
-NAMES    = ["S0", "C50", "D10GK", "D10C50", "T25", "Q50"]
+NAMES    = ["S0", "C50", "D10GK", "D10C50", "RULE25", "Q50"]
 MODES    = ["same", "next", "loc"]
 Y20, Y30 = 20 * 252, 30 * 252
 MIN_YRS_TODAY = 10
-ROBUST   = [("S0", "next"), ("T25", "next"), ("D10GK", "loc"), ("C50", "next"), ("D10C50", "loc")]
+ROBUST   = [("S0", "next"), ("RULE25", "next"), ("D10GK", "loc"), ("C50", "next"), ("D10C50", "loc")]
 DELAYS   = (2, 3)
 
 _S = {}

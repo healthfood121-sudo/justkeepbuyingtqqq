@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import CostToggle from '@/components/CostToggle'
+import { stratName, legacyCode } from '@/lib/strategyNames'
 import Link from 'next/link'
 import Header from '@/components/Header'
 
@@ -19,7 +20,7 @@ function Viewer() {
   const params = useSearchParams()
   const router = useRouter()
   const [data, setData] = useState<Data | null>(null)
-  const sel = (params.get('s') ?? 'T25,S0,D10GK').split(',').filter(Boolean)
+  const sel = (params.get('s') ?? 'RULE25,S0,D10GK').split(',').filter(Boolean).map(legacyCode)
   const view = params.get('y') ?? 'full'   // 'full' | '10' | '20' ...
   const withCosts = params.get('fee') !== '1'
 
@@ -67,7 +68,7 @@ function Viewer() {
               className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${sel.includes(s.name)
                 ? 'bg-blue-600 border-blue-600 text-white'
                 : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}`}>
-              {s.name === 'T25' ? '25% 룰 (T25)' : s.name === 'T25C50' ? '25% 룰 + 현금' : s.name}
+              {stratName(s.name)}
             </button>
           ))}
         </div>
@@ -90,7 +91,7 @@ function Viewer() {
               <th className="py-2 px-2 text-left font-medium">보유</th>
               {sel.map(n => (
                 <th key={n} className="py-2 px-2 text-left font-medium whitespace-nowrap" colSpan={view === 'full' ? 4 : 2}>
-                  {n === 'T25' ? '25% 룰' : n === 'T25C50' ? '25% 룰 + 현금' : n} {view === 'full' ? '(인출 포함 수익률 · 꺼내 쓴 돈 · 남은 자산 · 최대 낙폭)' : `(${view}년 시점: 꺼내 쓴 돈 · 남은 자산)`}
+                  {stratName(n)} {view === 'full' ? '(인출 포함 수익률 · 꺼내 쓴 돈 · 남은 자산 · 최대 낙폭)' : `(${view}년 시점: 꺼내 쓴 돈 · 남은 자산)`}
                 </th>
               ))}
             </tr>

@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Header from '@/components/Header'
-import T25PeriodTable from '@/components/T25PeriodTable'
+import Rule25PeriodTable from '@/components/Rule25PeriodTable'
 import WithdrawalExecTable from '@/components/WithdrawalExecTable'
 
 function Tag({ children }: { children: string }) {
@@ -142,7 +142,6 @@ export default function WithdrawalGuidePage() {
         <H2>현재 권장 전략: 25% 룰 + 상한 없는 동적 인출</H2>
         <P>
           <strong>25% 룰</strong>은 나스닥100이 52주 최고 종가보다 25% 낮게 끝나면 TQQQ를 전부 팔고, 200일 평균선 위로 돌아오면 다시 사는 규칙이다.
-          연구 과정에서는 트레일링 스탑 −25%라는 뜻으로 T25라고 불렀다.
         </P>
 
         <Callout color="blue">
@@ -177,7 +176,7 @@ export default function WithdrawalGuidePage() {
           같은 날 시작한 경우끼리 비교하면, 25% 룰은 20년 동안 S0보다 약 1.3배 많이 꺼내 쓴다. D10GK는 30년이 넘어가야 25% 룰을 앞지른다.
           은퇴 초반의 삶의 질을 생각하면 25% 룰이 맞다.
         </P>
-        <T25PeriodTable part="withdrawn" />
+        <Rule25PeriodTable part="withdrawn" />
 
         <H3>왜 25% 룰인가 — ② 닷컴버블이 아닌 구간에서도 대체로 낫다</H3>
         <P>
@@ -186,7 +185,7 @@ export default function WithdrawalGuidePage() {
           TQQQ를 신호 없이 계속 들고 가는 쪽이 더 높은 구간(1987, 2020처럼 빨리 회복한 폭락)도 있지만,
           1973~74 같은 긴 하락장에서는 10년 연 −4.7%였고 전체 기간으로는 42%가 10억 미만으로 끝난다.
         </P>
-        <T25PeriodTable part="periods" />
+        <Rule25PeriodTable part="periods" />
 
         <Callout color="yellow">
           <strong>25% 룰을 고르면 감수해야 할 것</strong><br />
@@ -273,7 +272,7 @@ export default function WithdrawalGuidePage() {
                   best: true,
                 },
                 {
-                  name: 'T25 트레일링스탑',
+                  name: '25% 룰 (트레일링 스탑)',
                   step: '5단계',
                   med: '146억', medV2: '195억', medV1: '1,064억', survival: '100%', trades: '12회',
                   post: '/posts/withdrawal-new-ideas2', postLabel: '새 아이디어',
@@ -385,7 +384,7 @@ export default function WithdrawalGuidePage() {
               badge: 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400',
               title: '트레일링 스탑·단계적 현금화·레버리지 하향 검증',
               result: '추가 아이디어 3가지 — 운용보수만 기준으로는 모두 기준선 미달',
-              desc: '3가지 새 아이디어(T25/T20/T15 트레일링 스탑, 단계적 현금화 GRAD, 자산 규모별 레버리지 하향 DLEV)를 668가지 진입 시점으로 테스트. 운용보수만 반영하면 모두 기준선을 넘지 못했다. 단, 스왑금리·양도세를 반영하면 DLEV(197억)가 S0(150억)를 앞선다 — 큰 자산을 스왑 비용이 없는 나스닥100(1배)으로 옮기기 때문. T25는 거래 12회로 가장 단순하다.',
+              desc: '3가지 새 아이디어(25%·20%·15% 룰(트레일링 스탑), 단계적 현금화 GRAD, 자산 규모별 레버리지 하향 DLEV)를 668가지 진입 시점으로 테스트. 운용보수만 반영하면 모두 기준선을 넘지 못했다. 단, 스왑금리·양도세를 반영하면 DLEV(197억)가 S0(150억)를 앞선다 — 큰 자산을 스왑 비용이 없는 나스닥100(1배)으로 옮기기 때문. 25% 룰은 거래 12회로 가장 단순하다.',
               href: '/posts/withdrawal-new-ideas2',
               link: '검증 결과 →',
             },
@@ -427,7 +426,7 @@ export default function WithdrawalGuidePage() {
               step: '현재',
               color: 'border-blue-300 dark:border-blue-700',
               badge: 'bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400',
-              title: '★ 전체 기간 재검증 → T25(25% 룰)를 권장 전략으로',
+              title: '★ 전체 기간 재검증 → 25% 룰을 권장 전략으로',
               result: '인출 상한 없음 · 인출 포함 연 22.4% · 20년간 꺼내 쓴 돈 74억',
               desc: '16가지 전략을 오늘까지 끝까지 들고 가며 10~50년 시점을 비교했다. 월 1,500만원 인출 상한을 없애고 꺼내 쓴 돈과 남은 자산을 함께 봤다. 닷컴버블을 거치지 않는 구간에서도 25% 룰이 S0보다 대체로 나았다(10년 구간의 80%). 현금 비중·버퍼·생활비 고정 같은 장치는 수익을 낮추는 대신 낙폭을 줄이는 정도라 기본 권장에서는 뺐다.',
               href: '/posts/withdrawal-full-period',
@@ -689,8 +688,8 @@ export default function WithdrawalGuidePage() {
         <Table
           headers={['전략', '매도 횟수 (55년)', '매수 후 5일 내 재매도', '해야 할 일', '인출 포함 연 수익률']}
           rows={[
-            [<strong key="t25" className="text-blue-600 dark:text-blue-400">25% 룰 (1년 고점 −25%)</strong>,
-              '15번', '4번 (27%)', '주 1회 확인', <strong key="t25v" className="text-blue-600 dark:text-blue-400">22.4%</strong>],
+            [<strong key="rule25" className="text-blue-600 dark:text-blue-400">25% 룰 (1년 고점 −25%)</strong>,
+              '15번', '4번 (27%)', '주 1회 확인', <strong key="rule25v" className="text-blue-600 dark:text-blue-400">22.4%</strong>],
             [<strong key="d10gk" className="text-purple-600 dark:text-purple-400">D10GK</strong>,
               '72번', '18번 (25%)', '현금일 때 매일 밤 LOC 주문', <strong key="d10gkv" className="text-purple-600 dark:text-purple-400">20.7%</strong>],
             ['S0 (EMA200 15일)', '27번', <strong key="s0w" className="text-green-600 dark:text-green-400">0번</strong>, '주 1회 확인', '17.5%'],

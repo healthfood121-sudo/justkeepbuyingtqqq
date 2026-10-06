@@ -1,12 +1,12 @@
 """
-withdrawal_t25_periods.py
+withdrawal_rule25_periods.py
 
-T25 권장 근거: (1) 같은 시작 시점끼리 꺼내 쓴 돈 비교, (2) 닷컴버블 밖 구간에서도 T25가 나은가
+RULE25 권장 근거: (1) 같은 시작 시점끼리 꺼내 쓴 돈 비교, (2) 닷컴버블 밖 구간에서도 RULE25가 나은가
 ──────────────────────────────────────────────────────────────────────────────
 조건은 withdrawal_full_period.py와 동일 (상한 없는 동적 인출 월 0.3/0.5/0.7%, 스왑금리, 모든 매도 과세,
 외화RP 세후, 신호 다음 거래일 매매, 조기 재매수만 LOC 당일).
 
-비교 전략: T25 · S0 · D10GK · T25C50(T25 + 자산별 현금) · HOLD3(TQQQ 계속 보유)
+비교 전략: RULE25 · S0 · D10GK · RULE25C50(RULE25 + 자산별 현금) · HOLD3(TQQQ 계속 보유)
 
 구간 (인출 포함 연 수익률 = 기간 끝 자산까지 포함한 IRR):
   A 1971~1989년 시작, 10년 (2000년 전에 끝)
@@ -17,7 +17,7 @@ T25 권장 근거: (1) 같은 시작 시점끼리 꺼내 쓴 돈 비교, (2) 닷
   B 2003~2016년 시작, 오늘까지
   C 닷컴버블(2000~2002)을 건드리지 않는 모든 10년 구간
 
-출력: web/public/data/withdrawal_t25_periods.json
+출력: web/public/data/withdrawal_rule25_periods.json
 """
 
 import json, time
@@ -27,8 +27,8 @@ import pandas as pd
 import withdrawal_cash_tier as E
 import withdrawal_full_period as F
 
-OUT_PATH = E.ROOT / "web/public/data/withdrawal_t25_periods.json"
-NAMES = ["T25", "S0", "D10GK", "T25C50", "HOLD3"]
+OUT_PATH = E.ROOT / "web/public/data/withdrawal_rule25_periods.json"
+NAMES = ["RULE25", "S0", "D10GK", "RULE25C50", "HOLD3"]
 YEARS = (10, 20, 30)
 K10 = 10 * 252
 
@@ -82,7 +82,7 @@ def main():
     global OUT_PATH
     if "--fee-only" in sys.argv:   # 스왑금리 없이 운용보수만
         E.SWAP = False
-        OUT_PATH = OUT_PATH.with_name("withdrawal_t25_periods_fee.json")
+        OUT_PATH = OUT_PATH.with_name("withdrawal_rule25_periods_fee.json")
     E.LIV_MAX = float("inf")
     t0 = time.time()
     tq, qq, closes, ema, dates, rp, rsi, peaks = E.load_data()
@@ -91,7 +91,7 @@ def main():
                  initargs=(tq, qq, closes, ema, dates.tolist(), rp, rsi, peaks, starts)) as pool:
         raw = dict(pool.map(_job, NAMES))
     sd = [dates[i] for i in starts]
-    base = raw["T25"]
+    base = raw["RULE25"]
 
     withdrawn = []
     for nm in NAMES:
@@ -104,8 +104,8 @@ def main():
                      if k in a["snaps_wd"] and k in b["snaps_wd"] and a["snaps_wd"][k] > 0]
             row["by_year"][str(y)] = {
                 "med": round(med(vals), 1), "p10": round(p10(vals), 1),
-                "ratio_vs_t25": round(med([b / a * 100 for a, b in pairs])),
-                "t25_more_pct": round(sum(1 for a, b in pairs if a >= b) / len(pairs) * 100),
+                "ratio_vs_rule25": round(med([b / a * 100 for a, b in pairs])),
+                "rule25_more_pct": round(sum(1 for a, b in pairs if a >= b) / len(pairs) * 100),
             }
         row["today_med"] = round(med([r["withdrawn"] for r in rs if r["years"] >= 10]), 1)
         withdrawn.append(row)
@@ -123,19 +123,19 @@ def main():
                 "name": nm,
                 "med_irr_pct": round(med(v), 1), "p10_irr_pct": round(p10(v), 1),
                 "med_withdrawn": round(med(wd), 1),
-                "t25_better_pct": None if nm == "T25" else round(sum(1 for a, b in zip(tv, v) if a > b + 0.05) / len(v) * 100),
-                "same_pct":       None if nm == "T25" else round(sum(1 for a, b in zip(tv, v) if abs(a - b) <= 0.05) / len(v) * 100),
+                "rule25_better_pct": None if nm == "RULE25" else round(sum(1 for a, b in zip(tv, v) if a > b + 0.05) / len(v) * 100),
+                "same_pct":       None if nm == "RULE25" else round(sum(1 for a, b in zip(tv, v) if abs(a - b) <= 0.05) / len(v) * 100),
             })
         periods.append({"key": key, "title": title, "n": len(idx), "years": "10년" if use10 else "오늘까지", "rows": rows})
 
     for w in withdrawn:
-        print(w["name"], " | ".join(f"{y}년 {w['by_year'][str(y)]['med']:.0f}억 (T25 대비 {w['by_year'][str(y)]['ratio_vs_t25']})"
+        print(w["name"], " | ".join(f"{y}년 {w['by_year'][str(y)]['med']:.0f}억 (RULE25 대비 {w['by_year'][str(y)]['ratio_vs_rule25']})"
                                      for y in YEARS), f"| 오늘까지 {w['today_med']:.0f}억")
     for pdx in periods:
         print(f"\n{pdx['key']}. {pdx['title']} (n={pdx['n']})")
         for r in pdx["rows"]:
             print(f"  {r['name']:7}{r['med_irr_pct']:6.1f}%  하위10% {r['p10_irr_pct']:6.1f}%  꺼낸 돈 {r['med_withdrawn']:7.1f}억"
-                  + ("" if r["t25_better_pct"] is None else f"  T25가 나은 경우 {r['t25_better_pct']}% (같음 {r['same_pct']}%)"))
+                  + ("" if r["rule25_better_pct"] is None else f"  RULE25가 나은 경우 {r['rule25_better_pct']}% (같음 {r['same_pct']}%)"))
 
     out = {"meta": {"generated": str(dates[-1].date()),
                     "conditions": "상한 없는 동적 인출 월 0.3/0.5/0.7% · " + ("스왑금리" if E.SWAP else "운용보수만(스왑금리 미반영)") + " · 모든 매도 양도세 · 외화RP 세후 · 신호 다음 거래일 매매",

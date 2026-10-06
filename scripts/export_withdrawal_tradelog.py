@@ -1,6 +1,6 @@
 """
 export_withdrawal_tradelog.py
-인출 전략 거래 로그 — 시작 시점별 매수·매도 기록 (T25 권장 전략 + S0 비교)
+인출 전략 거래 로그 — 시작 시점별 매수·매도 기록 (RULE25 권장 전략 + S0 비교)
 ──────────────────────────────────────────────────────────────────────────────
 엔진·조건은 withdrawal_full_period.py와 동일:
   - 초기 10억, 1971-02 ~ 2026-09 매달 시작 (668개), 각자 데이터 끝까지 보유
@@ -8,8 +8,8 @@ export_withdrawal_tradelog.py
   - 신호 다음 거래일 종가에 매매 · 동적 인출 월 0.3/0.5/0.7% (상한 없음)
   - 기본: 스왑금리 반영 / --fee-only: 운용보수만
 출력 (전략별·비용별 4개):
-  web/public/data/withdrawal_tradelog_{t25,s0}.json       — 스왑금리 반영
-  web/public/data/withdrawal_tradelog_{t25,s0}_fee.json   — 운용보수만
+  web/public/data/withdrawal_tradelog_{rule25,s0}.json       — 스왑금리 반영
+  web/public/data/withdrawal_tradelog_{rule25,s0}_fee.json   — 운용보수만
 거래 1건 = [실행일, "S"(매도)|"B"(매수), 나스닥100 종가, 200일 지수이동평균, 1년 최고 종가, 거래 직후 총자산(억)]
 """
 import json, sys, time
@@ -20,8 +20,8 @@ import withdrawal_cash_tier as E
 
 P = E.Param
 STRATS = {
-    "t25": ("T25", "1년 최고 종가보다 25% 낮게 끝나면 다음 날 전량 매도 · 200일 지수이동평균 위 15일 연속이면 다음 날 재매수",
-            P("T25", "", ((0, 1.0),), trail_thr=0.25)),
+    "rule25": ("RULE25", "1년 최고 종가보다 25% 낮게 끝나면 다음 날 전량 매도 · 200일 지수이동평균 위 15일 연속이면 다음 날 재매수",
+            P("RULE25", "", ((0, 1.0),), trail_thr=0.25)),
     "s0":  ("S0", "200일 지수이동평균 아래 15일 연속이면 다음 날 전량 매도 · 위 15일 연속이면 다음 날 재매수",
             P("S0", "", ((0, 1.0),))),
 }

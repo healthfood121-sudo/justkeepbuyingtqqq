@@ -20,11 +20,11 @@ export const LABELS: Record<string, string> = {
   HOLD3: 'TQQQ 계속 보유', HOLD2: 'QLD 계속 보유', HOLD1: '나스닥100 계속 보유',
   E1: '200일선 1일', S0: 'S0 (200일선 15일)', S4: 'S0 + 인출 조절(GK)',
   S7: 'S0 + RSI 조기 재매수', D10GK: 'D10GK',
-  T15: 'T15 (고점 −15%)', T20: 'T20 (고점 −20%)', T25: '25% 룰 (T25 · 고점 −25%)', T30: 'T30 (고점 −30%)',
-  DLEV: 'DLEV (자산별 나스닥100)', C50: 'S0 + 자산별 현금', D10C50: 'D10GK + 자산별 현금', T25C50: '25% 룰 + 자산별 현금',
+  RULE15: '15% 룰', RULE20: '20% 룰', RULE25: '25% 룰 (권장)', RULE30: '30% 룰',
+  DLEV: 'DLEV (자산별 나스닥100)', C50: 'S0 + 자산별 현금', D10C50: 'D10GK + 자산별 현금', RULE25C50: '25% 룰 + 자산별 현금',
 }
 
-const CHARTABLE = ['T25', 'T30', 'D10GK', 'S0', 'C50', 'DLEV', 'HOLD3', 'HOLD1']
+const CHARTABLE = ['RULE25', 'RULE30', 'D10GK', 'S0', 'C50', 'DLEV', 'HOLD3', 'HOLD1']
 const fmt = (v: number) => v >= 10000 ? `${(v / 10000).toFixed(1)}조` : `${v.toLocaleString('ko-KR', { maximumFractionDigits: v < 10 ? 1 : 0 })}억`
 
 function DataLink({ s, fee }: { s: string; fee?: boolean }) {
@@ -38,7 +38,7 @@ export default function WithdrawalFullPeriodExplorer() {
   const { theme } = useTheme()
   const [data, setData] = useState<Data | null>(null)
   const [view, setView] = useState<string>('full')
-  const [chartSel, setChartSel] = useState<string[]>(['T25', 'D10GK', 'S0', 'HOLD3'])
+  const [chartSel, setChartSel] = useState<string[]>(['RULE25', 'D10GK', 'S0', 'HOLD3'])
   const [metric, setMetric] = useState<'med_total' | 'p10_total' | 'med_living_man' | 'p10_living_man'>('med_total')
 
   const [withCosts, setWithCosts] = useState(true)
@@ -175,7 +175,7 @@ export default function WithdrawalFullPeriodExplorer() {
           <thead>
             <tr className="border-b border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400">
               <th className="py-2 px-2 text-left font-medium">시작</th>
-              {['HOLD3', 'S0', 'D10GK', 'T25', 'T30', 'C50', 'T25C50'].map(s => (
+              {['HOLD3', 'S0', 'D10GK', 'RULE25', 'RULE30', 'C50', 'RULE25C50'].map(s => (
                 <th key={s} className="py-2 px-2 text-left font-medium whitespace-nowrap">{LABELS[s]}</th>
               ))}
             </tr>
@@ -183,7 +183,7 @@ export default function WithdrawalFullPeriodExplorer() {
           <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
             {data.meta.episodes.map(e => {
               const c = data.cohorts.find(x => x.s === e.start)!
-              const vals = ['HOLD3', 'S0', 'D10GK', 'T25', 'T30', 'C50', 'T25C50'].map(s => (c[s] as Cell).i ?? 0)
+              const vals = ['HOLD3', 'S0', 'D10GK', 'RULE25', 'RULE30', 'C50', 'RULE25C50'].map(s => (c[s] as Cell).i ?? 0)
               const best = Math.max(...vals)
               return (
                 <tr key={e.start} className="text-gray-700 dark:text-gray-300">

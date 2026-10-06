@@ -1,5 +1,5 @@
 """
-trace_t25_dotcom.py — T25 전체 668 시작점 매매 패턴 분석
+trace_rule25_dotcom.py — RULE25 전체 668 시작점 매매 패턴 분석
 매수 직후 얼마나 빨리 재매도가 발생하는지 확인
 """
 
@@ -25,7 +25,7 @@ DYN_RATES   = (0.003, 0.005, 0.007)
 DYN_THRS    = (1_000_000_000, 2_000_000_000)
 LIV_MAX     = 15_000_000
 TIME_FILTER = 15
-TRAIL_THR   = 0.25   # T25
+TRAIL_THR   = 0.25   # RULE25
 
 # ── 데이터 로드 ──────────────────────────────────
 ndx = pd.read_csv(DATA_DIR / "ndx_1971_now.csv",
@@ -69,7 +69,7 @@ def get_monthly_starts():
 
 
 def run_trace(start_idx, verbose=False):
-    """T25 시뮬레이션 — 매매 이벤트 추적"""
+    """RULE25 시뮬레이션 — 매매 이벤트 추적"""
     sim_len = min(n - start_idx, int(SIM_YEARS * 252))
 
     e200_init  = ema200[start_idx]
@@ -189,7 +189,7 @@ def run_trace(start_idx, verbose=False):
 start_date = pd.Timestamp("2000-03-01")
 start_idx  = next(i for i, d in enumerate(dates) if d >= start_date)
 
-print(f"【T25 닷컴버블 2000-03 추적】")
+print(f"【RULE25 닷컴버블 2000-03 추적】")
 print(f"시작일: {dates[start_idx].date()} / NDX={closes[start_idx]:.0f}\n")
 
 events, tc, total_e = run_trace(start_idx, verbose=True)
@@ -216,7 +216,7 @@ for s in sells:
 
 
 # ── 2. 전체 668 시작점 — 빠른 재매도 통계 ────────
-print(f"\n\n【T25 전체 668 시작점 — 매수 후 재매도 간격 분포】")
+print(f"\n\n【RULE25 전체 668 시작점 — 매수 후 재매도 간격 분포】")
 
 monthly_starts = get_monthly_starts()
 all_hold_days = []

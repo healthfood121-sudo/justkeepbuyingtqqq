@@ -3,7 +3,7 @@ export_withdrawal_signal.py
 
 인출식 매매 신호 — 매일 장 마감 후 실행 (GitHub Actions: update-withdrawal-signal.yml)
 ──────────────────────────────────────────────────────────────────────────────
-나스닥100 종가로 세 전략(S0 · T25 · D10GK)의 현재 상태와 "다음 거래일에 할 일"을 계산한다.
+나스닥100 종가로 세 전략(S0 · RULE25 · D10GK)의 현재 상태와 "다음 거래일에 할 일"을 계산한다.
 규칙과 실행 시점은 백테스트(withdrawal_exec_horizon.py)와 동일:
   - 200일선 15일 신호 · 1년 고점 대비 -25% 신호 → 신호가 뜬 다음 거래일에 매매
   - D10GK 조기 재매수(RSI<30 & 200일선 -10%) → 조건을 "종가 ≤ X"로 환산한 LOC 매수 주문으로 당일 종가 체결
@@ -140,7 +140,7 @@ def run_machine(kind, closes, ema, rsi, peaks, dates, start=200):
             above += 1; below = 0
         else:
             below = above = 0
-        sell_sig = (closes[t] < peaks[t] * (1 - TRAIL)) if kind == "T25" else below >= TIME_FILTER
+        sell_sig = (closes[t] < peaks[t] * (1 - TRAIL)) if kind == "RULE25" else below >= TIME_FILTER
         buy_sig = above >= TIME_FILTER
         rsi_buy = (kind == "D10GK" and not inv and not buy_sig and not np.isnan(rsi[t])
                    and rsi[t] < RSI_THR and (closes[t] - e) / e <= DIV_THR)
@@ -177,10 +177,10 @@ def describe(kind, m, closes, ema, rsi, ag, al, peaks, dates, tqqq):
         "action":      "없음",
         "detail":      "",
     }
-    # 화면 게이지용: 현금일 때 200일선 위 연속일(15일이면 매수), T25 보유일 때 매도선
+    # 화면 게이지용: 현금일 때 200일선 위 연속일(15일이면 매수), RULE25 보유일 때 매도선
     if not m["invested"]:
         out["above_days"] = int(m["above"])
-    elif kind == "T25":
+    elif kind == "RULE25":
         out["sell_line"] = round(float(peaks[t] * (1 - TRAIL)), 2)
     if m["pend"] is not None:
         act = "매도" if m["pend"][0] == "sell" else "매수"
@@ -191,7 +191,7 @@ def describe(kind, m, closes, ema, rsi, ag, al, peaks, dates, tqqq):
     if kind in ("S0", "D10GK") and m["invested"]:
         out["detail"] = (f"200일 평균선 아래 {m['below']}일째 (15일이면 매도 신호). "
                          f"다음 종가가 {e:,.0f} 아래면 {m['below'] + 1}일째")
-    elif kind == "T25" and m["invested"]:
+    elif kind == "RULE25" and m["invested"]:
         line = peaks[t] * (1 - TRAIL)
         out["detail"] = (f"1년 최고 종가 {peaks[t]:,.0f} 대비 {(c / peaks[t] - 1) * 100:+.1f}%. "
                          f"종가가 {line:,.0f} 아래로 끝나면 매도 신호")
@@ -259,7 +259,7 @@ def main():
 
     t = len(closes) - 1
     strategies = {}
-    for kind in ("S0", "T25", "D10GK"):
+    for kind in ("S0", "RULE25", "D10GK"):
         m = run_machine(kind, closes, ema, rsi, peaks, dates)
         strategies[kind] = describe(kind, m, closes, ema, rsi, ag, al, peaks, dates, tqqq)
 

@@ -4,13 +4,13 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import CostToggle from '@/components/CostToggle'
 
-interface PRow { name: string; med_irr_pct: number; p10_irr_pct: number; med_withdrawn: number; t25_better_pct: number | null; same_pct: number | null }
+interface PRow { name: string; med_irr_pct: number; p10_irr_pct: number; med_withdrawn: number; rule25_better_pct: number | null; same_pct: number | null }
 interface Period { key: string; title: string; n: number; years: string; rows: PRow[] }
-interface WRow { name: string; by_year: Record<string, { med: number; p10: number; ratio_vs_t25: number; t25_more_pct: number }>; today_med: number }
+interface WRow { name: string; by_year: Record<string, { med: number; p10: number; ratio_vs_rule25: number; rule25_more_pct: number }>; today_med: number }
 interface Data { withdrawn: WRow[]; periods: Period[] }
 
 const LABEL: Record<string, string> = {
-  T25: '25% 룰', S0: 'S0', D10GK: 'D10GK', T25C50: '25% 룰 + 자산별 현금', HOLD3: 'TQQQ 계속 보유',
+  RULE25: '25% 룰', S0: 'S0', D10GK: 'D10GK', RULE25C50: '25% 룰 + 자산별 현금', HOLD3: 'TQQQ 계속 보유',
 }
 const ORDER = ['A', 'D', 'E', 'F', 'G', 'B', 'C']
 
@@ -18,11 +18,11 @@ function DataLink({ s, fee }: { s: string; fee?: boolean }) {
   return <Link href={`/posts/withdrawal-full-period/data?s=${s}&y=full${fee ? '&fee=1' : ''}`} className="text-xs text-blue-500 dark:text-blue-400 hover:underline whitespace-nowrap">데이터 →</Link>
 }
 
-export default function T25PeriodTable({ part }: { part: 'withdrawn' | 'periods' }) {
+export default function Rule25PeriodTable({ part }: { part: 'withdrawn' | 'periods' }) {
   const [data, setData] = useState<Data | null>(null)
   const [withCosts, setWithCosts] = useState(true)
   useEffect(() => {
-    fetch(`/data/withdrawal_t25_periods${withCosts ? '' : '_fee'}.json`).then(r => r.json()).then(setData)
+    fetch(`/data/withdrawal_rule25_periods${withCosts ? '' : '_fee'}.json`).then(r => r.json()).then(setData)
   }, [withCosts])
   if (!data) return <div className="text-xs text-gray-400 py-6 text-center">불러오는 중…</div>
   const toggle = <CostToggle withCosts={withCosts} onChange={setWithCosts} />
@@ -44,13 +44,13 @@ export default function T25PeriodTable({ part }: { part: 'withdrawn' | 'periods'
           <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
             {data.withdrawn.map(w => (
               <tr key={w.name} className="text-gray-700 dark:text-gray-300">
-                <td className={`py-2 px-2 whitespace-nowrap ${w.name === 'T25' ? 'font-bold text-gray-900 dark:text-white' : ''}`}>{LABEL[w.name]}</td>
+                <td className={`py-2 px-2 whitespace-nowrap ${w.name === 'RULE25' ? 'font-bold text-gray-900 dark:text-white' : ''}`}>{LABEL[w.name]}</td>
                 {['10', '20', '30'].map(y => {
                   const b = w.by_year[y]
                   return (
                     <td key={y} className="py-2 px-2 font-mono whitespace-nowrap">
                       {Math.round(b.med).toLocaleString('ko-KR')}억
-                      {w.name !== 'T25' && <span className="text-xs text-gray-400 dark:text-gray-500"> (25% 룰의 {b.ratio_vs_t25}%)</span>}
+                      {w.name !== 'RULE25' && <span className="text-xs text-gray-400 dark:text-gray-500"> (25% 룰의 {b.ratio_vs_rule25}%)</span>}
                     </td>
                   )
                 })}
@@ -95,7 +95,7 @@ export default function T25PeriodTable({ part }: { part: 'withdrawn' | 'periods'
                   <td key={r.name} className="py-2 px-2 whitespace-nowrap">
                     <span className={`font-mono ${r.med_irr_pct === best ? 'font-bold text-gray-900 dark:text-white' : ''}`}>{r.med_irr_pct}%</span>
                     <span className="block text-[11px] text-gray-400 dark:text-gray-500">
-                      하위 10% {r.p10_irr_pct}%{r.t25_better_pct !== null && ` · 25% 룰 우세 ${r.t25_better_pct}%`}{r.same_pct ? ` · 같음 ${r.same_pct}%` : ''}
+                      하위 10% {r.p10_irr_pct}%{r.rule25_better_pct !== null && ` · 25% 룰 우세 ${r.rule25_better_pct}%`}{r.same_pct ? ` · 같음 ${r.same_pct}%` : ''}
                     </span>
                   </td>
                 ))}

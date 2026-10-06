@@ -14,7 +14,7 @@ interface Data { summary: Record<Mode, Row[]>; robust: Robust[] }
 
 const LABEL: Record<string, string> = {
   S0:     'S0 — 200일선 15일',
-  T25:    '25% 룰 — 52주 고점 −25%',
+  RULE25:    '25% 룰 — 52주 고점 −25%',
   D10GK:  'D10GK — S0 + 조기 재매수',
   C50:    'S0 + 자산별 현금 비중',
   D10C50: 'D10GK + 자산별 현금 비중',
@@ -116,7 +116,7 @@ export default function WithdrawalExecTable() {
 
       {hz === 'y20' && mode !== 'same' && (
         <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-3 leading-relaxed">
-          20년 시점 값은 매매를 하루 이틀 늦게 하는 것만으로도 크게 흔들린다 (예: T25 {data.robust.find(x => x.name === 'T25')?.y20_med_by_delay.map(v => `${Math.round(v)}억`).join(' / ')} — 1·2·3일 뒤 실행).
+          20년 시점 값은 매매를 하루 이틀 늦게 하는 것만으로도 크게 흔들린다 (예: 25% 룰 {data.robust.find(x => x.name === 'RULE25')?.y20_med_by_delay.map(v => `${Math.round(v)}억`).join(' / ')} — 1·2·3일 뒤 실행).
           여러 시작 시점이 같은 큰 폭락을 공유하기 때문이다. 전략 비교는 &lsquo;오늘까지 보유&rsquo;를 기준으로 보는 것이 안정적이다.
         </p>
       )}
