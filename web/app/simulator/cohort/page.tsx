@@ -17,6 +17,7 @@ import Header from '@/components/Header'
 import { runCohortDetail } from '@/lib/backtest'
 import type { CohortDetail } from '@/lib/backtest'
 import type { Instrument } from '@/lib/types'
+import { costLabel } from '@/lib/costText'
 
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend)
 
@@ -257,9 +258,7 @@ function CohortDetailContent() {
             </button>
           </div>
           <span className="text-xs text-gray-400 dark:text-gray-500">
-            {withCosts
-              ? inst === 'sp500' ? '운용보수 반영 (S&P500은 스왑금리 없음)' : '운용보수 + 스왑금리비용(2×기준금리) 반영'
-              : '운용보수 반영 · 스왑금리비용 미반영 (이론치)'}
+            {costLabel(inst, withCosts)}
           </span>
         </div>
         {loading && (

@@ -9,6 +9,7 @@ import DistributionChart from '@/components/charts/DistributionChart'
 import CdfChart from '@/components/charts/CdfChart'
 import StrategySummaryRow from '@/components/StrategySummaryRow'
 import Link from 'next/link'
+import { costLabel, costNote } from '@/lib/costText'
 
 // ─── 타입 ────────────────────────────────────────────────────
 
@@ -168,15 +169,8 @@ export default function HomeSimulator() {
             </button>
           </div>
           <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
-            {withCosts
-              ? '운용보수(0.88%) + 스왑금리비용(2×연방기금금리) 반영'
-              : '운용보수(0.88%/년)만 반영, 스왑금리비용 미반영'}
+            {costLabel(instrument, withCosts)}
           </p>
-          {withCosts && instrument === 'sp500' && (
-            <p className="text-xs text-yellow-600 dark:text-yellow-400 mt-2">
-              SP500은 레버리지가 없으므로 스왑비용 없음 — standard와 동일
-            </p>
-          )}
         </div>
 
         {/* 종목 선택 */}
@@ -387,10 +381,7 @@ export default function HomeSimulator() {
             {/* 캐비엇 */}
             <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700/30 rounded-xl p-4 text-xs text-yellow-800 dark:text-yellow-200/70 space-y-1">
               <p>⚠️ <strong>합성 가격 사용:</strong> TQQQ/QLD의 실제 상장 역사는 짧아, NDX 일별 수익률 × 레버리지로 합성한 이론값을 사용합니다.</p>
-              {withCosts
-                ? <p>✅ <strong>스왑금리비용 포함:</strong> 운용보수(TQQQ 0.88%/년) + 스왑금리비용(2 × 연방기금금리/년)을 반영한 현실적 추정치입니다.</p>
-                : <p>⚠️ <strong>비용 일부 미반영:</strong> 운용보수(TQQQ 0.88%/년)는 반영, 스왑금리비용(레버리지 조달 비용)은 미반영입니다. 위 토글로 반영 버전을 확인할 수 있습니다.</p>
-              }
+              <p>{withCosts ? '✅' : '⚠️'} <strong>비용 반영:</strong> {costNote(instrument, withCosts)}</p>
               <p>⚠️ <strong>과거 데이터 기반:</strong> 미래 수익을 보장하지 않으며, 닷컴버블(1999-2000)이 유일하게 관측된 극단적 사례입니다.</p>
             </div>
           </>

@@ -11,6 +11,7 @@ import StrategySummaryRow from '@/components/StrategySummaryRow'
 import Header from '@/components/Header'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
+import { costLabel, costNote } from '@/lib/costText'
 
 // ─── 타입 ────────────────────────────────────────────────────
 
@@ -296,9 +297,7 @@ function CustomSimulatorInner() {
                 </button>
               </div>
               <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                {withCosts
-                  ? instrument === 'sp500' ? 'S&P500은 스왑금리 없음' : '운용보수 + 스왑금리(2×기준금리) 반영'
-                  : '운용보수 반영 · 스왑금리 미반영 (이론치)'}
+                {costLabel(instrument, withCosts)}
               </p>
             </div>
           </div>
@@ -522,7 +521,7 @@ function CustomSimulatorInner() {
               {/* 캐비엇 */}
               <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700/30 rounded-xl p-4 text-xs text-yellow-800 dark:text-yellow-200/70 space-y-1">
                 <p>⚠️ <strong>합성 가격 사용:</strong> TQQQ/QLD의 실제 상장 역사는 짧아, NDX 일별 수익률 × 레버리지로 합성한 이론값을 사용합니다.</p>
-                <p>⚠️ <strong>비용 반영:</strong> 운용보수(TQQQ 0.88%/년)는 항상 반영됩니다. {withCosts ? '스왑금리비용(2×기준금리)도 반영 중입니다.' : '스왑금리비용은 현재 미반영 (이론치). [+ 스왑금리] 버튼으로 반영 가능.'} 추적오차는 미반영입니다.</p>
+                <p>⚠️ <strong>비용 반영:</strong> {costNote(instrument, withCosts)} 추적오차는 미반영입니다.</p>
                 <p>⚠️ <strong>과거 데이터 기반:</strong> 미래 수익을 보장하지 않으며, 닷컴버블(1999-2000)이 유일하게 관측된 극단적 사례입니다.</p>
               </div>
             </>
