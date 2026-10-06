@@ -36,6 +36,9 @@ const ROWS: { key: 'RULE25' | 'S0' | 'D10GK'; name: string; rule: string }[] = [
   { key: 'D10GK', name: 'D10GK', rule: 'S0 + 급락 때 LOC 주문으로 조기 재매수' },
 ]
 
+// 텔레그램 채널 주소 (Vercel 환경 변수 NEXT_PUBLIC_TELEGRAM_URL, 예: https://t.me/채널아이디) — 없으면 링크 숨김
+const TELEGRAM_URL = process.env.NEXT_PUBLIC_TELEGRAM_URL ?? ''
+
 const pct = (v: number) => `${v > 0 ? '+' : ''}${v.toFixed(1)}%`
 const num = (v: number) => v.toLocaleString('en-US', { maximumFractionDigits: 0 })
 
@@ -156,6 +159,14 @@ export default function WithdrawalSignal() {
       </details>
       <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-2 leading-relaxed">
         매일 아침 7시 30분 자동 갱신 · 투자 권유 아님
+        {TELEGRAM_URL && (
+          <>
+            {' · '}
+            <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="underline text-purple-600 dark:text-purple-300">
+              텔레그램으로 신호 알림 받기
+            </a>
+          </>
+        )}
       </p>
     </div>
   )
