@@ -56,8 +56,8 @@ function Gauge({ sig, t }: { sig: Signal; t: StrategySignal }) {
           <span>매도선 −25%</span>
         </div>
         <p className="text-[11px] text-gray-600 dark:text-gray-300 mt-1">
-          매도까지 <strong>{(25 - drop).toFixed(1)}%</strong> 더 떨어져야 함
-          <span className="text-gray-400 dark:text-gray-500"> · 나스닥100 종가 {num(line)} 아래로 끝나면 매도</span>
+          매도까지 <strong>{(25 - drop).toFixed(1)}%</strong> 남음
+          <span className="text-gray-400 dark:text-gray-500"> · 나스닥100 {num(line)} 아래 마감 시</span>
         </p>
       </div>
     )
@@ -73,7 +73,7 @@ function Gauge({ sig, t }: { sig: Signal; t: StrategySignal }) {
       </div>
       <p className="text-[11px] text-gray-600 dark:text-gray-300 mt-1">
         재매수까지 <strong>15일 중 {d}일째</strong>
-        <span className="text-gray-400 dark:text-gray-500"> · 나스닥100이 200일 평균선({num(sig.ema200)}) 위로 15일 연속 마감하면 다음 날 매수{d === 0 ? ' (아래로 끝나면 0일부터 다시)' : ''}</span>
+        <span className="text-gray-400 dark:text-gray-500"> · 200일 평균선 {num(sig.ema200)} 위 마감 기준</span>
       </p>
     </div>
   )
@@ -95,14 +95,10 @@ export default function WithdrawalSignal() {
 
   return (
     <div className="bg-white/70 dark:bg-gray-900/60 border border-purple-200 dark:border-purple-700/30 rounded-xl p-3 mb-3">
-      <div className="flex justify-between items-baseline mb-1.5">
+      <div className="flex justify-between items-baseline mb-2">
         <span className="text-xs font-bold text-gray-800 dark:text-gray-200">오늘의 신호</span>
         <span className="text-[11px] text-gray-400 dark:text-gray-500">{sig.asof} 미국 종가 기준</span>
       </div>
-      <p className="text-[11px] text-gray-500 dark:text-gray-400 mb-2 leading-relaxed">
-        나스닥100 {sig.ndx_close.toLocaleString('en-US', { maximumFractionDigits: 0 })} ·
-        200일 평균선 대비 {pct(sig.vs_ema_pct)} · 1년 최고 종가 대비 {pct(sig.vs_peak_pct)}
-      </p>
 
       {(() => {
         const t = sig.strategies.T25
@@ -159,7 +155,7 @@ export default function WithdrawalSignal() {
         </div>
       </details>
       <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-2 leading-relaxed">
-        매일 한국 시간 아침 7시 30분 자동 갱신. 투자 권유가 아닌 백테스트 규칙의 계산 결과입니다.
+        매일 아침 7시 30분 자동 갱신 · 투자 권유 아님
       </p>
     </div>
   )

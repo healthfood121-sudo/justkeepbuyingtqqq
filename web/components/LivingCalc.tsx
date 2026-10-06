@@ -22,15 +22,12 @@ export default function LivingCalc() {
             className="w-20 px-2 py-1 text-right bg-transparent text-gray-900 dark:text-white focus:outline-none" />
           <span className="pr-2 text-gray-400">억</span>
         </div>
-        <span className="text-gray-900 dark:text-white">이번 달 
+        <span className="text-gray-900 dark:text-white">이번 달{' '}
           <strong className="text-base text-purple-700 dark:text-purple-300">{man.toLocaleString('ko-KR')}만원</strong>
           <span className="text-gray-400 dark:text-gray-500"> (자산의 {(rate * 100).toFixed(1)}%)</span>
         </span>
       </div>
-      <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-2 leading-relaxed">
-        총자산(TQQQ + 현금) 10억 미만이면 0.3%, 10~20억 0.5%, 20억 이상 0.7%. 매달 초 그 달 자산으로 다시 계산한다.
-        자산이 늘면 생활비도 늘고, 줄면 같이 줄어든다.
-      </p>
+      <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-2">10억↓ 0.3% · 10~20억 0.5% · 20억↑ 0.7%</p>
     </div>
   )
 }
