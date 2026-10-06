@@ -91,21 +91,15 @@ export default function HomePage() {
                 <span className="text-xs font-bold text-purple-500 dark:text-purple-400 tracking-wide">JUST KEEP SELLING</span>
                 <span className="text-base font-bold text-gray-900 dark:text-white">인출식</span>
               </div>
-              <div className="mb-3">
-                <div className="flex justify-between items-baseline mb-1">
-                  <span className="text-xs font-bold text-purple-700 dark:text-purple-300">권장: T25 — 1년 고점 −25%면 매도</span>
-                  <span className="text-xs font-mono font-bold text-purple-600 dark:text-purple-400 whitespace-nowrap">연 22.4%</span>
-                </div>
-                <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-                  나스닥100 종가가 1년 최고 종가보다 25% 낮게 끝나면 다음 날 전량 현금.
-                  200일 평균선 위 15일 연속이면 다음 날 재매수. 생활비는 매달 자산의 0.3~0.7%, 상한 없음.
-                </p>
+              <div className="flex justify-between items-baseline mb-3">
+                <span className="text-xs font-bold text-purple-700 dark:text-purple-300">권장: T25 — 1년 고점 −25%면 매도</span>
+                <Link href="/posts/withdrawal-guide#recommended" title="1971년 이후 모든 시작 시점의 생활비 포함 연 수익률 중간값 — 근거 보기"
+                  className="text-xs font-mono font-bold text-purple-600 dark:text-purple-400 whitespace-nowrap underline decoration-dotted underline-offset-2">
+                  연 22.4%
+                </Link>
               </div>
               <WithdrawalSignal />
               <LivingCalc />
-              <div className="text-xs text-gray-400 dark:text-gray-500 mb-4">
-                1971~2016년 매달 시작해 오늘까지 · 생활비 포함 연 수익률 중간값 (하위 10%도 17.1%) · 스왑금리·양도세 반영
-              </div>
               <Link
                 href="/posts/withdrawal-guide"
                 className="text-xs text-purple-600 dark:text-purple-400 hover:underline font-semibold"

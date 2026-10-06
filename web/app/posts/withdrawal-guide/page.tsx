@@ -138,6 +138,7 @@ export default function WithdrawalGuidePage() {
         </Callout>
 
         {/* ── 현재 권장 전략 ───────────────────────────────────── */}
+        <div id="recommended" className="scroll-mt-28" />
         <H2>현재 권장 전략: T25 + 상한 없는 동적 인출</H2>
 
         <Callout color="blue">
