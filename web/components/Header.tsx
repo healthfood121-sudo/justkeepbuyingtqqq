@@ -5,7 +5,7 @@ import { useTheme } from './ThemeProvider'
 
 interface HeaderProps {
   maxWidth?: string
-  activePage?: 'simulator' | 'posts' | 'qqq-holdings'
+  activePage?: 'simulator' | 'withdrawal' | 'posts' | 'qqq-holdings'
 }
 
 export default function Header({ maxWidth = 'max-w-6xl', activePage }: HeaderProps) {
@@ -29,7 +29,15 @@ export default function Header({ maxWidth = 'max-w-6xl', activePage }: HeaderPro
                 activePage === 'simulator' ? 'text-gray-900 dark:text-white font-semibold' : ''
               }`}
             >
-              시뮬레이터
+              <span className="sm:hidden">적립 시뮬</span><span className="hidden sm:inline">적립 시뮬레이터</span>
+            </Link>
+            <Link
+              href="/simulator/withdrawal"
+              className={`transition-colors hover:text-gray-900 dark:hover:text-white ${
+                activePage === 'withdrawal' ? 'text-gray-900 dark:text-white font-semibold' : ''
+              }`}
+            >
+              <span className="sm:hidden">인출 시뮬</span><span className="hidden sm:inline">인출 시뮬레이터</span>
             </Link>
             <Link
               href="/posts"
@@ -37,7 +45,7 @@ export default function Header({ maxWidth = 'max-w-6xl', activePage }: HeaderPro
                 activePage === 'posts' ? 'text-gray-900 dark:text-white font-semibold' : ''
               }`}
             >
-              필독 방법론
+              <span className="sm:hidden">방법론</span><span className="hidden sm:inline">필독 방법론</span>
             </Link>
             <Link
               href="/nasdaq100-holdings"
@@ -45,7 +53,7 @@ export default function Header({ maxWidth = 'max-w-6xl', activePage }: HeaderPro
                 activePage === 'qqq-holdings' ? 'text-gray-900 dark:text-white font-semibold' : ''
               }`}
             >
-              나스닥100 구성종목
+              <span className="sm:hidden">구성종목</span><span className="hidden sm:inline">나스닥100 구성종목</span>
             </Link>
           </nav>
           <button
