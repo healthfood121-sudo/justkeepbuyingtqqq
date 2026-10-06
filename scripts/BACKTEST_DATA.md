@@ -516,6 +516,7 @@
 | `withdrawal_backtest.py` | 없음 | 초기 탐색용 |
 | `withdrawal_buffer_sweep.py` | 없음 | 초기 탐색용 |
 | `withdrawal_overfit_check.py` | `withdrawal_overfit_check.json` (미생성) | 과적합 검증용 |
+| `withdrawal_div_sweep_check.py` | 없음 (터미널 출력) | 200일선 대비 하락폭 −5~−15% 중간값 (2026-10-06): D05 3,312 · D06 3,630 · D07 3,546 · D08 3,094 · D10 3,689 · D12 3,028 · D15 3,102억 (GK 포함: 3,462/3,784/3,615/3,228/3,918/3,044/3,167). new-ideas 포스트 수치 근거 |
 | `update_nasdaq100_holdings.py` | `web/app/nasdaq100-holdings/descriptions.json` | 나스닥100 종목 설명 업데이트 |
 
 ---
