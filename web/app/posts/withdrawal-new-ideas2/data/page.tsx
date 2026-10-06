@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo, Suspense } from 'react'
 import CostToggle from '@/components/CostToggle'
+import { stratName } from '@/lib/strategyNames'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Header from '@/components/Header'
@@ -63,9 +64,9 @@ function fmtPct(v: number) { return `${v.toFixed(1)}%` }
 const COLORS: Record<string, string> = {
   S0:    'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200',
   D10GK: 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200',
-  T15:   'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200',
-  T20:   'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200',
-  T25:   'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200',
+  RULE15:   'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200',
+  RULE20:   'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200',
+  RULE25:   'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200',
   GRAD:  'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200',
   DLEV:  'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200',
 }
@@ -79,7 +80,7 @@ function SummaryCard({ row }: { row: SummaryRow }) {
   return (
     <div className={`rounded-xl border px-4 py-3 text-sm ${color}`}>
       <div className="flex items-center justify-between gap-2 mb-1">
-        <span className="font-bold font-mono">{row.name}</span>
+        <span className="font-bold font-mono">{stratName(row.name)}</span>
         <span className="text-xs opacity-70">{row.survival_rate}% 생존</span>
       </div>
       <p className="text-xs opacity-80 mb-2 line-clamp-1">{row.desc}</p>
@@ -122,7 +123,7 @@ function DataTable({
           <tr className="border-b border-gray-200 dark:border-gray-700">
             <Th k="start">시작</Th>
             {strategies.map(s => (
-              <Th key={s.name} k={s.name}>{s.name} (억)</Th>
+              <Th key={s.name} k={s.name}>{stratName(s.name)} (억)</Th>
             ))}
           </tr>
         </thead>
@@ -183,7 +184,7 @@ function DataPageInner() {
   const [sortKey, setSortKey] = useState<SortKey>('start')
   const [asc, setAsc]     = useState(true)
 
-  const allNames = ['S0', 'D10GK', 'T15', 'T20', 'T25', 'GRAD', 'DLEV']
+  const allNames = ['S0', 'D10GK', 'RULE15', 'RULE20', 'RULE25', 'GRAD', 'DLEV']
   const [selected, setSelected] = useState<Set<string>>(new Set(allNames))
 
   const [withCosts, setWithCosts] = useState(true)
@@ -279,7 +280,7 @@ function DataPageInner() {
                   : 'border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-500'
               }`}
             >
-              {s.name}
+              {stratName(s.name)}
             </button>
           ))}
         </div>

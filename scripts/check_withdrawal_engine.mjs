@@ -1,5 +1,5 @@
 // 웹 인출 시뮬레이터 엔진(web/lib/withdrawalEngine.ts) 검증 — 탐색용 (출력만)
-// 10억 시작 × 668가지 시작 시점 × T25·S0·HOLD3 × 비용 2종을 withdrawal_full_period(_fee).json 과 대조한다.
+// 10억 시작 × 668가지 시작 시점 × RULE25·S0·HOLD3 × 비용 2종을 withdrawal_full_period(_fee).json 과 대조한다.
 // 실행: node --experimental-strip-types scripts/check_withdrawal_engine.mjs
 import fs from 'node:fs'
 import path from 'node:path'
@@ -21,7 +21,7 @@ for (let i = 0, last = ''; i < m.dates.length; i++) {
 let worst = 0, n = 0
 for (const [suffix, swap] of [['', true], ['_fee', false]]) {
   const fp = JSON.parse(fs.readFileSync(path.join(ROOT, `web/public/data/withdrawal_full_period${suffix}.json`), 'utf8'))
-  for (const key of ['T25', 'S0', 'HOLD3']) {
+  for (const key of ['RULE25', 'S0', 'HOLD3']) {
     let bad = 0
     fp.cohorts.forEach((c, k) => {
       const r = runWithdrawal(m, starts[k], 1e9, key, swap)
@@ -36,8 +36,8 @@ for (const [suffix, swap] of [['', true], ['_fee', false]]) {
 }
 console.log(`전체 ${n}건 · 최대 차이 ${worst.toFixed(4)}억 (JSON 반올림 단위 0.01억)`)
 
-// 거래 날짜도 거래 로그(withdrawal_tradelog_{t25,s0}.json)와 대조
-for (const key of ['T25', 'S0']) {
+// 거래 날짜도 거래 로그(withdrawal_tradelog_{rule25,s0}.json)와 대조
+for (const key of ['RULE25', 'S0']) {
   const tl = JSON.parse(fs.readFileSync(path.join(ROOT, `web/public/data/withdrawal_tradelog_${key.toLowerCase()}.json`), 'utf8'))
   let bad = 0
   tl.cohorts.forEach((c, k) => {

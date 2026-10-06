@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import Header from '@/components/Header'
 import WithdrawalFullPeriodExplorer from '@/components/WithdrawalFullPeriodExplorer'
-import T25PeriodTable from '@/components/T25PeriodTable'
+import Rule25PeriodTable from '@/components/Rule25PeriodTable'
 
 function H2({ children }: { children: React.ReactNode }) {
   return <h2 className="text-xl font-bold mt-14 mb-4 text-gray-900 dark:text-white">{children}</h2>
@@ -71,15 +71,15 @@ const FEATURES: { group: string; items: { name: string; rule: string; good: stri
   {
     group: '1년 최고 종가 대비 하락으로 매도',
     items: [
-      { name: 'T15 · T20', data: 'T20',
+      { name: '15% · 20% 룰', data: 'RULE20',
         rule: '최근 1년 최고 종가보다 15%·20% 낮게 끝나면 판다. 매수는 200일선 위 15일.',
         good: '연 19.4%·20.0%로 S0보다 높다. 닷컴버블 정점 시작에서도 연 10.6~11.8%.',
         bad: '−15%는 매수 직후 재매도가 36%로 잦다. 보통 조정에도 팔게 된다.' },
-      { name: '25% 룰 (T25 · 고점 −25%)', data: 'T25',
+      { name: '25% 룰 (고점 −25%)', data: 'RULE25',
         rule: '최근 1년 최고 종가보다 25% 낮게 끝나면 판다. 매수는 200일선 위 15일.',
         good: '연 22.4%, 하위 10%도 연 17.1%. 10·20년 시점 생활비가 가장 많은 축(월 2,029만원 → 8,340만원). 10년에 약 5번 매매, 일주일에 한 번 확인으로 충분.',
         bad: '자산 최대 낙폭 중간값 −96% — 닷컴버블(2000~2002)을 거친 경우 거의 다 겪는다(2003년 이후 시작은 −75%). 25% 떨어진 뒤에야 팔기 때문이다. 매도 4번 중 1번은 매수 직후 재매도.' },
-      { name: 'T30 (고점 −30%)', data: 'T30',
+      { name: '30% 룰 (고점 −30%)', data: 'RULE30',
         rule: '최근 1년 최고 종가보다 30% 낮게 끝나면 판다.',
         good: '연 23.7%로 신호 전략 중 가장 높다. 10년에 3번도 안 되는 매매.',
         bad: '2022년 하락장 직전 시작은 연 10.5%로 최하위권. 큰 폭락이 아니면 거의 반응하지 않는다. 낙폭은 25% 룰과 같은 −96%.' },
@@ -92,10 +92,10 @@ const FEATURES: { group: string; items: { name: string; rule: string; good: stri
         rule: '총자산 50억 이상이면 TQQQ ⅔ + 현금(또는 나스닥100) ⅓, 200억 이상이면 TQQQ ⅓.',
         good: '연 17.9~18.0%로 S0(17.5%)와 비슷한데, 자산 최대 낙폭이 −94% → −74%로 크게 얕아진다.',
         bad: '수익을 크게 높여주지는 않는다. 50억에 못 미친 나쁜 시작 시점은 보호하지 못한다.' },
-      { name: '25% 룰 + 자산별 현금', data: 'T25C50',
-        rule: 'T25에 자산별 현금 비중을 더함.',
+      { name: '25% 룰 + 자산별 현금', data: 'RULE25C50',
+        rule: '25% 룰에 자산별 현금 비중을 더함.',
         good: '연 20.9%, 하위 10% 15.8%. 낙폭 −96% → −80%. 20년 시점 생활비 하위 10%가 월 910만원으로 모든 TQQQ 전략 중 가장 높다 — 나쁜 시기에도 생활비가 덜 끊긴다.',
-        bad: 'T25보다 연 1.5%p 낮다.' },
+        bad: '25% 룰보다 연 1.5%p 낮다.' },
       { name: 'D10GK + 자산별 현금', data: 'D10C50',
         rule: 'D10GK에 자산별 현금 비중을 더함.',
         good: '낙폭 −87% → −79%.',
@@ -141,7 +141,7 @@ export default function WithdrawalFullPeriodPage() {
         <H2>한눈에 보는 결론</H2>
         <ul className="space-y-2 mb-6 text-gray-600 dark:text-gray-300 text-sm leading-relaxed list-disc pl-5">
           <li><strong className="text-gray-900 dark:text-white">신호 있는 전략은 끝까지 들고 가면 남은 자산이 10억 미만인 경우가 0가지다.</strong> 신호 없이 TQQQ만 들고 가면 42%가 10억 미만으로 끝나고, 20년 시점 생활비 하위 10%가 월 7만원이다.</li>
-          <li><strong className="text-gray-900 dark:text-white">1년 최고 종가 대비 −25~30%에 파는 전략(25% 룰·T30)이 연 22~24%로 가장 높고, 하위 10%도 연 17%대로 가장 높다.</strong> 초반 10~20년 생활비도 가장 많다. 매매는 10년에 3~5번.</li>
+          <li><strong className="text-gray-900 dark:text-white">1년 최고 종가 대비 −25~30%에 파는 전략(25%·30% 룰)이 연 22~24%로 가장 높고, 하위 10%도 연 17%대로 가장 높다.</strong> 초반 10~20년 생활비도 가장 많다. 매매는 10년에 3~5번.</li>
           <li><strong className="text-gray-900 dark:text-white">D10GK는 초반에 덜 쓰고 후반에 크게 불어난다.</strong> 30년 시점 꺼내 쓴 돈 + 남은 자산은 가장 크지만, 10년 시점 생활비는 25% 룰의 절반 수준이다.</li>
           <li><strong className="text-gray-900 dark:text-white">자산이 크게 줄어드는 시기는 피할 수 없다.</strong> 닷컴버블을 거치면 TQQQ 전략은 자산이 최고점 대비 −87~96% 줄어든다. 자산별 현금 비중을 붙이면 −74~80%로 얕아지고, 생활비가 덜 끊긴다.</li>
         </ul>
@@ -179,7 +179,7 @@ export default function WithdrawalFullPeriodPage() {
           결국 목표는 삶의 질이다. 같은 날 시작한 경우끼리 비교하면 25% 룰은 20년 동안 S0보다 약 1.3배 많이 꺼내 쓴다.
           D10GK는 초반 10년에 25% 룰의 68%만 쓰고, 30년이 넘어가야 앞지른다.
         </P>
-        <T25PeriodTable part="withdrawn" />
+        <Rule25PeriodTable part="withdrawn" />
         <h3 className="text-base font-semibold mt-8 mb-2 text-gray-700 dark:text-gray-200">② 닷컴버블이 아닌 구간에서도 대체로 낫다</h3>
         <P>
           25% 룰의 성적이 닷컴버블 한 번 덕분인지 보려고 2000~2002년을 거치지 않는 구간만 따로 비교했다.
@@ -187,7 +187,7 @@ export default function WithdrawalFullPeriodPage() {
           다만 1970~80년대 10년 구간만 보면 S0와 거의 같고(9.8% vs 9.9%), 빨리 회복한 폭락(1987, 2020)에서는 신호 없이 TQQQ를 들고 있는 편이 더 나았다.
           그 대신 신호 없는 보유는 1973~74 같은 긴 하락장에서 무너진다.
         </P>
-        <T25PeriodTable part="periods" />
+        <Rule25PeriodTable part="periods" />
         <P>
           권장 전략의 실제 운영 방법과 감수해야 할 점은 <Link href="/posts/withdrawal-guide" className="text-blue-600 dark:text-blue-400 underline">인출식 방법론</Link>에,
           매일 신호는 <Link href="/" className="text-blue-600 dark:text-blue-400 underline">홈 화면</Link>에 있다.
@@ -197,7 +197,7 @@ export default function WithdrawalFullPeriodPage() {
         <ul className="space-y-2 mb-6 text-gray-600 dark:text-gray-300 text-sm leading-relaxed list-disc pl-5">
           <li><strong>생활비가 자산에 따라 크게 출렁인다.</strong> 상한이 없으므로 자산이 반토막 나면 생활비도 반토막 난다. 실제로는 월 생활비 하한·상한을 따로 정하는 것이 좋다 (다음 글에서 다룸).</li>
           <li><strong>인출 포함 수익률은 초반에 많이 쓴 경우를 높게 친다.</strong> TQQQ 계속 보유의 중간값이 높게 나오는 이유다. 반드시 하위 10%·최악·10억 미만 개수와 함께 볼 것.</li>
-          <li><strong>큰 폭락 몇 번에 결과가 크게 좌우된다.</strong> 55년 동안 나스닥100이 1년 고점 대비 25% 넘게 빠진 큰 하락은 열 번 남짓이다. 25% 룰·T30이 좋았던 이유도 이 몇 번을 잘 피했기 때문이고, 다음 폭락이 다른 모양이면 결과도 달라질 수 있다.</li>
+          <li><strong>큰 폭락 몇 번에 결과가 크게 좌우된다.</strong> 55년 동안 나스닥100이 1년 고점 대비 25% 넘게 빠진 큰 하락은 열 번 남짓이다. 25%·30% 룰이 좋았던 이유도 이 몇 번을 잘 피했기 때문이고, 다음 폭락이 다른 모양이면 결과도 달라질 수 있다.</li>
           <li>50년 시점은 1971~1976년 시작분 68가지뿐이다. 1985년 이전 나스닥100 값은 다른 지수로 이어 붙인 값이다.</li>
           <li>TQQQ·QLD 가격은 나스닥100 일별 수익률로 만든 이론 가격이다 (운용보수·스왑금리 반영, 추적오차 미반영).</li>
         </ul>

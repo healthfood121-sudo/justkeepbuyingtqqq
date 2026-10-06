@@ -2,6 +2,7 @@
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList } from 'recharts'
 import { useTheme } from '@/components/ThemeProvider'
+import { stratName } from '@/lib/strategyNames'
 
 // 시점별 통계 객체 (필드 이름은 metric으로 지정)
 export type YearStat = object
@@ -9,14 +10,14 @@ export interface SeriesInput { name: string; label: string; byYear: Record<strin
 
 // 전략별 고정 색 (검증된 범주형 팔레트, 선택 순서와 무관하게 전략마다 고정)
 export const SERIES_COLORS: Record<string, { light: string; dark: string }> = {
-  T25:   { light: '#2a78d6', dark: '#3987e5' },
+  RULE25:   { light: '#2a78d6', dark: '#3987e5' },
   S0:    { light: '#eb6834', dark: '#d95926' },
   D10GK: { light: '#1baf7a', dark: '#199e70' },
   HOLD3: { light: '#a23ea3', dark: '#c25fc4' },   // 주황(S0)과 구분되도록 자홍 (검증 통과)
   DLEV:  { light: '#e87ba4', dark: '#d55181' },
   HOLD1: { light: '#008300', dark: '#008300' },
   C50:   { light: '#4a3aa7', dark: '#9085e9' },
-  T30:   { light: '#e34948', dark: '#e66767' },
+  RULE30:   { light: '#e34948', dark: '#e66767' },
 }
 
 const fmtEok = (v: number) => v >= 10000 ? `${(v / 10000).toFixed(1)}조` : `${Math.round(v).toLocaleString('ko-KR')}억`
@@ -77,7 +78,7 @@ export default function WithdrawalYearsChart({
                   <LabelList dataKey={s.name} content={(props) => {
                     const { x, y, index } = props as { x: number; y: number; index: number }
                     if (index !== lastIdx) return null
-                    return <text x={x + 8} y={y + 4} fontSize={11} fill={tick}>{s.name === 'T25' ? '25% 룰' : s.name}</text>
+                    return <text x={x + 8} y={y + 4} fontSize={11} fill={tick}>{stratName(s.name)}</text>
                   }} />
                 )}
               </Line>

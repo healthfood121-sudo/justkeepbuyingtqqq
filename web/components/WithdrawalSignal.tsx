@@ -15,7 +15,7 @@ interface StrategySignal {
   detail: string
   loc?:   Loc
   above_days?: number   // 현금일 때 200일선 위 연속일 (15일이면 매수)
-  sell_line?:  number   // T25 보유 중 매도선 (1년 최고 종가 × 0.75)
+  sell_line?:  number   // RULE25 보유 중 매도선 (1년 최고 종가 × 0.75)
   last_events: { date: string; action: string; how: string }[]
 }
 
@@ -27,11 +27,11 @@ interface Signal {
   vs_peak_pct: number
   peak_1y:     number
   rsi14:       number
-  strategies:  Record<'S0' | 'T25' | 'D10GK', StrategySignal>
+  strategies:  Record<'S0' | 'RULE25' | 'D10GK', StrategySignal>
 }
 
-const ROWS: { key: 'T25' | 'S0' | 'D10GK'; name: string; rule: string }[] = [
-  { key: 'T25',   name: 'T25',   rule: '1년 최고 종가보다 25% 떨어지면 매도' },
+const ROWS: { key: 'RULE25' | 'S0' | 'D10GK'; name: string; rule: string }[] = [
+  { key: 'RULE25',   name: '25% 룰',   rule: '1년 최고 종가보다 25% 떨어지면 매도' },
   { key: 'S0',    name: 'S0',    rule: '200일 평균선 아래 15일 연속이면 매도' },
   { key: 'D10GK', name: 'D10GK', rule: 'S0 + 급락 때 LOC 주문으로 조기 재매수' },
 ]
@@ -101,7 +101,7 @@ export default function WithdrawalSignal() {
       </div>
 
       {(() => {
-        const t = sig.strategies.T25
+        const t = sig.strategies.RULE25
         const urgent = t.action === '매도' || t.action === '매수'
         return (
           <div className={`rounded-lg px-3 py-2 mb-2 ${urgent ? 'bg-red-50 dark:bg-red-500/10' : 'bg-purple-50/60 dark:bg-purple-500/10'}`}>
@@ -127,7 +127,7 @@ export default function WithdrawalSignal() {
       <details className="text-[11px]">
         <summary className="cursor-pointer text-gray-400 dark:text-gray-500 select-none">다른 전략 신호 (비교용)</summary>
         <div className="space-y-2 mt-2">
-          {ROWS.filter(r => r.key !== 'T25').map(({ key, name, rule }) => {
+          {ROWS.filter(r => r.key !== 'RULE25').map(({ key, name, rule }) => {
             const s = sig.strategies[key]
             const urgent = s.action === '매도' || s.action === '매수'
             return (
