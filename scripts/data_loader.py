@@ -27,9 +27,11 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 
+_ROOT = Path(__file__).resolve().parent.parent   # 저장소 루트
+
 # ── 경로 ──────────────────────────────────────────────────────
-DATA_DIR = Path("D:/justkeepbuyingtqqq/data")
-FED_PATH = Path("D:/justkeepbuyingtqqq/data/fed_funds_rate.json")
+DATA_DIR = (_ROOT / "data")
+FED_PATH = (_ROOT / "data/fed_funds_rate.json")
 
 # ── 운용보수 (연율) ───────────────────────────────────────────
 EXP_3X = 0.0088   # TQQQ 0.88%

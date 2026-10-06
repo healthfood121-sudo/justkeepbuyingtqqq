@@ -30,10 +30,12 @@ import multiprocessing as mp
 from pathlib import Path
 from dataclasses import dataclass
 
+_ROOT = Path(__file__).resolve().parent.parent   # 저장소 루트
+
 # ─── 경로 ──────────────────────────────────────────────────────
-DATA_DIR = Path("D:/justkeepbuyingtqqq/data")
-FED_PATH = Path("D:/mcv-nextjs/public/data/fed_funds_rate.json")
-OUT_PATH = Path("D:/justkeepbuyingtqqq/web/public/data/withdrawal_param_sweep.json")
+DATA_DIR = (_ROOT / "data")
+FED_PATH = (_ROOT / "data/fed_funds_rate.json")
+OUT_PATH = (_ROOT / "web/public/data/withdrawal_param_sweep.json")
 
 # ─── 공통 파라미터 ──────────────────────────────────────────────
 INITIAL    = 1_000_000_000

@@ -17,7 +17,10 @@ import numpy as np
 import pandas as pd
 import time
 
-DATA_DIR   = "D:/justkeepbuyingtqqq/data/"
+from pathlib import Path
+_ROOT = Path(__file__).resolve().parent.parent   # 저장소 루트
+
+DATA_DIR   = str(_ROOT / "data") + "/"
 DAILY_INV  = 200_000
 LUMP_SUM   = 250_000_000
 TARGET     = 1_000_000_000

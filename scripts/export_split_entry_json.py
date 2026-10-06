@@ -26,7 +26,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 from data_loader import load_ndx_prices, get_monthly_starts
 
-OUT_DIR = Path("D:/justkeepbuyingtqqq/web/public/data")
+_ROOT = Path(__file__).resolve().parent.parent   # 저장소 루트
+
+OUT_DIR = (_ROOT / "web/public/data")
 
 DAILY_INV = 200_000
 LUMP      = 250_000_000
