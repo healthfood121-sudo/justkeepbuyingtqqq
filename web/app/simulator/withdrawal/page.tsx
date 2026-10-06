@@ -95,7 +95,7 @@ function Simulator() {
     r.cash = !p.invested
     return r
   })
-  // T25 현금 보유 구간 (회색 배경)
+  // 25% 룰 현금 보유 구간 (회색 배경)
   const cashSpans: [string, string][] = []
   rows.forEach((r, i) => {
     if (r.cash && (i === 0 || !rows[i - 1].cash)) cashSpans.push([r.m as string, r.m as string])
@@ -145,7 +145,7 @@ function Simulator() {
               <LabelList dataKey={metric === 'total' ? k : `${k}_liv`} content={(props) => {
                 const { x, y, index } = props as { x: number; y: number; index: number }
                 if (index !== rows.length - 1) return null
-                return <text x={x + 6} y={y + 4} fontSize={11} fill={tick}>{k === 'HOLD3' ? '보유' : k}</text>
+                return <text x={x + 6} y={y + 4} fontSize={11} fill={tick}>{k === 'HOLD3' ? '보유' : k === 'T25' ? '25% 룰' : k}</text>
               }} />
             </Line>
           ))}
@@ -241,7 +241,7 @@ function Simulator() {
       </div>
 
       <h3 className="text-sm font-bold text-gray-800 dark:text-gray-200 mb-1">총자산 (월말)</h3>
-      <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">회색 배경 = T25가 현금으로 있던 기간 · 세로축은 로그 눈금</p>
+      <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">회색 배경 = 25% 룰이 현금으로 있던 기간 · 세로축은 로그 눈금</p>
       {chart('total', fmtEok)}
 
       <h3 className="text-sm font-bold text-gray-800 dark:text-gray-200 mt-6 mb-1">매달 꺼내 쓰는 생활비</h3>
@@ -255,8 +255,8 @@ function Simulator() {
             <thead>
               <tr className="border-b border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400">
                 <th className="py-1.5 px-2 text-left font-medium">연말</th>
-                {keys.map(k => <th key={k} className="py-1.5 px-2 text-right font-medium whitespace-nowrap">{k === 'HOLD3' ? '보유' : k} 자산 · 생활비</th>)}
-                <th className="py-1.5 px-2 text-left font-medium">T25 상태</th>
+                {keys.map(k => <th key={k} className="py-1.5 px-2 text-right font-medium whitespace-nowrap">{k === 'HOLD3' ? '보유' : k === 'T25' ? '25% 룰' : k} 자산 · 생활비</th>)}
+                <th className="py-1.5 px-2 text-left font-medium">25% 룰 상태</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800 font-mono">
@@ -277,7 +277,7 @@ function Simulator() {
       </details>
 
       <details className="mt-3 text-sm">
-        <summary className="cursor-pointer text-gray-500 dark:text-gray-400 select-none">T25 매매 기록 ({t25.trades.length}회)</summary>
+        <summary className="cursor-pointer text-gray-500 dark:text-gray-400 select-none">25% 룰 매매 기록 ({t25.trades.length}회)</summary>
         <ul className="mt-2 space-y-1 text-xs font-mono text-gray-600 dark:text-gray-300">
           {t25.trades.map((t, i) => (
             <li key={i}>
@@ -305,7 +305,7 @@ export default function WithdrawalSimulatorPage() {
       <main className="max-w-5xl mx-auto px-4 py-8">
         <h1 className="text-2xl font-bold mb-1">인출 시뮬레이터</h1>
         <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-          모은 돈으로 언제 인출을 시작했다면, 매달 얼마를 쓰고 자산이 어떻게 변했을까 — T25 권장 전략 기준
+          모은 돈으로 언제 인출을 시작했다면, 매달 얼마를 쓰고 자산이 어떻게 변했을까 — 25% 룰 권장 전략 기준
         </p>
         <Suspense fallback={<p className="text-sm text-gray-400 py-20 text-center">불러오는 중…</p>}>
           <Simulator />

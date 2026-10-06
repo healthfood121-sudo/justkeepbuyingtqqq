@@ -16,7 +16,7 @@ export const EXP_1X = 0.0020
 
 export type StratKey = 'T25' | 'S0' | 'HOLD3'
 export const STRATS: Record<StratKey, { label: string; trail: number; days: number; hold: boolean }> = {
-  T25:   { label: 'T25 (권장)',          trail: 0.25, days: 15, hold: false },
+  T25:   { label: '25% 룰 (권장)',          trail: 0.25, days: 15, hold: false },
   S0:    { label: 'S0 (200일선 15일)',   trail: 0,    days: 15, hold: false },
   HOLD3: { label: 'TQQQ 계속 보유',      trail: 0,    days: 15, hold: true  },
 }

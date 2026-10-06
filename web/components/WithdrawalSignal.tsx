@@ -106,7 +106,7 @@ export default function WithdrawalSignal() {
         return (
           <div className={`rounded-lg px-3 py-2 mb-2 ${urgent ? 'bg-red-50 dark:bg-red-500/10' : 'bg-purple-50/60 dark:bg-purple-500/10'}`}>
             <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="text-xs font-bold text-gray-900 dark:text-white">T25</span>
+              <span className="text-xs font-bold text-gray-900 dark:text-white">25% 룰</span>
               <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold ${
                 t.state === '보유'
                   ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300'

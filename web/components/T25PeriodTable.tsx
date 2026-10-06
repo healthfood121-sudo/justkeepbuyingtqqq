@@ -10,7 +10,7 @@ interface WRow { name: string; by_year: Record<string, { med: number; p10: numbe
 interface Data { withdrawn: WRow[]; periods: Period[] }
 
 const LABEL: Record<string, string> = {
-  T25: 'T25', S0: 'S0', D10GK: 'D10GK', T25C50: 'T25 + 자산별 현금', HOLD3: 'TQQQ 계속 보유',
+  T25: '25% 룰', S0: 'S0', D10GK: 'D10GK', T25C50: '25% 룰 + 자산별 현금', HOLD3: 'TQQQ 계속 보유',
 }
 const ORDER = ['A', 'D', 'E', 'F', 'G', 'B', 'C']
 
@@ -50,7 +50,7 @@ export default function T25PeriodTable({ part }: { part: 'withdrawn' | 'periods'
                   return (
                     <td key={y} className="py-2 px-2 font-mono whitespace-nowrap">
                       {Math.round(b.med).toLocaleString('ko-KR')}억
-                      {w.name !== 'T25' && <span className="text-xs text-gray-400 dark:text-gray-500"> (T25의 {b.ratio_vs_t25}%)</span>}
+                      {w.name !== 'T25' && <span className="text-xs text-gray-400 dark:text-gray-500"> (25% 룰의 {b.ratio_vs_t25}%)</span>}
                     </td>
                   )
                 })}
@@ -61,7 +61,7 @@ export default function T25PeriodTable({ part }: { part: 'withdrawn' | 'periods'
           </tbody>
         </table>
         <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
-          중간값. &lsquo;T25의 ○%&rsquo;는 같은 시작 시점끼리 비교한 비율의 중간값. 오늘까지는 10년 이상 보유한 548가지 경우.
+          중간값. &lsquo;25% 룰의 ○%&rsquo;는 같은 시작 시점끼리 비교한 비율의 중간값. 오늘까지는 10년 이상 보유한 548가지 경우.
         </p>
       </div>
       </div>
@@ -95,7 +95,7 @@ export default function T25PeriodTable({ part }: { part: 'withdrawn' | 'periods'
                   <td key={r.name} className="py-2 px-2 whitespace-nowrap">
                     <span className={`font-mono ${r.med_irr_pct === best ? 'font-bold text-gray-900 dark:text-white' : ''}`}>{r.med_irr_pct}%</span>
                     <span className="block text-[11px] text-gray-400 dark:text-gray-500">
-                      하위 10% {r.p10_irr_pct}%{r.t25_better_pct !== null && ` · T25 우세 ${r.t25_better_pct}%`}{r.same_pct ? ` · 같음 ${r.same_pct}%` : ''}
+                      하위 10% {r.p10_irr_pct}%{r.t25_better_pct !== null && ` · 25% 룰 우세 ${r.t25_better_pct}%`}{r.same_pct ? ` · 같음 ${r.same_pct}%` : ''}
                     </span>
                   </td>
                 ))}
@@ -105,7 +105,7 @@ export default function T25PeriodTable({ part }: { part: 'withdrawn' | 'periods'
         </tbody>
       </table>
       <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
-        인출 포함 연 수익률 중간값 (구간 끝 자산까지 포함). 굵은 글씨 = 그 구간 최고. &lsquo;T25 우세&rsquo; = 같은 시작 시점에서 T25가 더 높았던 비율.
+        인출 포함 연 수익률 중간값 (구간 끝 자산까지 포함). 굵은 글씨 = 그 구간 최고. &lsquo;25% 룰 우세&rsquo; = 같은 시작 시점에서 25% 룰이 더 높았던 비율.
       </p>
     </div>
     </div>

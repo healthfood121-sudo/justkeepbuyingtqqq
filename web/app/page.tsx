@@ -101,7 +101,7 @@ export default function HomePage() {
                 <span className="text-base font-bold text-gray-900 dark:text-white">인출식</span>
               </div>
               <div className="flex justify-between items-baseline mb-3">
-                <span className="text-xs font-bold text-purple-700 dark:text-purple-300">권장: T25 — 1년 고점 −25%면 매도</span>
+                <span className="text-xs font-bold text-purple-700 dark:text-purple-300">권장: 25% 룰 — 52주 최고가에서 25% 빠지면 매도</span>
                 <Link href="/posts/withdrawal-guide#recommended" title="1971년 이후 모든 시작 시점의 생활비 포함 연 수익률 중간값 — 근거 보기"
                   className="text-xs font-mono font-bold text-purple-600 dark:text-purple-400 whitespace-nowrap underline decoration-dotted underline-offset-2">
                   연 22.4%

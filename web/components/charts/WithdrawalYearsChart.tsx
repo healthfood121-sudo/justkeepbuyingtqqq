@@ -77,7 +77,7 @@ export default function WithdrawalYearsChart({
                   <LabelList dataKey={s.name} content={(props) => {
                     const { x, y, index } = props as { x: number; y: number; index: number }
                     if (index !== lastIdx) return null
-                    return <text x={x + 8} y={y + 4} fontSize={11} fill={tick}>{s.name}</text>
+                    return <text x={x + 8} y={y + 4} fontSize={11} fill={tick}>{s.name === 'T25' ? '25% 룰' : s.name}</text>
                   }} />
                 )}
               </Line>

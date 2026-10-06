@@ -127,7 +127,7 @@ export default function WithdrawalGuidePage() {
           </h1>
           <div className="flex items-center gap-3 flex-wrap">
             <span className="text-sm text-gray-400">2026-10-01 · 최종수정 2026-10-03</span>
-            {['인출식', 'T25', '동적인출률', 'FIRE', 'TQQQ', '방법론'].map(t => <Tag key={t}>{t}</Tag>)}
+            {['인출식', '25% 룰', '동적인출률', 'FIRE', 'TQQQ', '방법론'].map(t => <Tag key={t}>{t}</Tag>)}
           </div>
         </div>
 
@@ -139,7 +139,11 @@ export default function WithdrawalGuidePage() {
 
         {/* ── 현재 권장 전략 ───────────────────────────────────── */}
         <div id="recommended" className="scroll-mt-28" />
-        <H2>현재 권장 전략: T25 + 상한 없는 동적 인출</H2>
+        <H2>현재 권장 전략: 25% 룰 + 상한 없는 동적 인출</H2>
+        <P>
+          <strong>25% 룰</strong>은 나스닥100이 52주 최고 종가보다 25% 낮게 끝나면 TQQQ를 전부 팔고, 200일 평균선 위로 돌아오면 다시 사는 규칙이다.
+          연구 과정에서는 트레일링 스탑 −25%라는 뜻으로 T25라고 불렀다.
+        </P>
 
         <Callout color="blue">
           <strong>규칙은 세 줄이다.</strong><br /><br />
@@ -168,24 +172,24 @@ export default function WithdrawalGuidePage() {
           인출 포함 연 수익률 = 10억을 넣고 매달 생활비를 받고 마지막 남은 자산까지 돌려받았을 때의 연 수익률.
         </p>
 
-        <H3>왜 T25인가 — ① 꺼내 쓰는 돈이 가장 많다</H3>
+        <H3>왜 25% 룰인가 — ① 꺼내 쓰는 돈이 가장 많다</H3>
         <P>
-          같은 날 시작한 경우끼리 비교하면, T25는 20년 동안 S0보다 약 1.3배 많이 꺼내 쓴다. D10GK는 30년이 넘어가야 T25를 앞지른다.
-          은퇴 초반의 삶의 질을 생각하면 T25가 맞다.
+          같은 날 시작한 경우끼리 비교하면, 25% 룰은 20년 동안 S0보다 약 1.3배 많이 꺼내 쓴다. D10GK는 30년이 넘어가야 25% 룰을 앞지른다.
+          은퇴 초반의 삶의 질을 생각하면 25% 룰이 맞다.
         </P>
         <T25PeriodTable part="withdrawn" />
 
-        <H3>왜 T25인가 — ② 닷컴버블이 아닌 구간에서도 대체로 낫다</H3>
+        <H3>왜 25% 룰인가 — ② 닷컴버블이 아닌 구간에서도 대체로 낫다</H3>
         <P>
-          T25의 좋은 성적이 닷컴버블 한 번 덕분인지 확인하려고, 2000~2002년을 거치지 않는 구간만 따로 봤다.
-          닷컴버블을 건드리지 않는 모든 10년 구간에서 T25가 S0보다 나은 경우가 80%였고, 2003년 이후 시작은 S0·D10GK보다 전부 나았다.
+          25% 룰의 좋은 성적이 닷컴버블 한 번 덕분인지 확인하려고, 2000~2002년을 거치지 않는 구간만 따로 봤다.
+          닷컴버블을 건드리지 않는 모든 10년 구간에서 25% 룰이 S0보다 나은 경우가 80%였고, 2003년 이후 시작은 S0·D10GK보다 전부 나았다.
           TQQQ를 신호 없이 계속 들고 가는 쪽이 더 높은 구간(1987, 2020처럼 빨리 회복한 폭락)도 있지만,
           1973~74 같은 긴 하락장에서는 10년 연 −4.7%였고 전체 기간으로는 42%가 10억 미만으로 끝난다.
         </P>
         <T25PeriodTable part="periods" />
 
         <Callout color="yellow">
-          <strong>T25를 고르면 감수해야 할 것</strong><br />
+          <strong>25% 룰을 고르면 감수해야 할 것</strong><br />
           · <strong>자산이 크게 줄어드는 시기가 온다.</strong> 1990년 시작 예: 2000년 3월 1,099억 → 2008년 9월 47억(−96%). 닷컴버블과 금융위기가 연달아 오면서 8년 반에 걸쳐 줄었고,
           그동안 생활비로 110억을 꺼내 썼다. 나스닥100이 25% 빠져야 팔기 때문에 그때 TQQQ는 이미 60% 넘게 빠진 상태다.<br />
           · <strong>생활비도 자산 따라 줄어든다.</strong> 상한이 없는 대신 하한도 없다. 자산이 반토막 나면 생활비도 반토막이다.<br />
@@ -195,8 +199,8 @@ export default function WithdrawalGuidePage() {
 
         <H3>다른 선택지</H3>
         <ul className="space-y-2 mb-6 text-sm text-gray-600 dark:text-gray-300 leading-relaxed list-disc pl-5">
-          <li><strong>T25 + 자산별 현금 비중</strong> — 총자산 50억↑ TQQQ ⅔, 200억↑ ⅓. 연 20.9%로 1.5%p 낮지만 낙폭이 −96% → −80%로 얕아진다. 큰돈을 지키고 싶을 때.</li>
-          <li><strong>D10GK</strong> — 연 20.7%. 현금일 때 매일 밤 LOC 주문이 필요하고, 초반 생활비가 T25보다 적다.</li>
+          <li><strong>25% 룰 + 자산별 현금 비중</strong> — 총자산 50억↑ TQQQ ⅔, 200억↑ ⅓. 연 20.9%로 1.5%p 낮지만 낙폭이 −96% → −80%로 얕아진다. 큰돈을 지키고 싶을 때.</li>
+          <li><strong>D10GK</strong> — 연 20.7%. 현금일 때 매일 밤 LOC 주문이 필요하고, 초반 생활비가 25% 룰보다 적다.</li>
           <li><strong>S0 (200일선 15일)</strong> — 연 17.5%. 매수 직후 재매도가 한 번도 없는 가장 단순한 규칙 (<Link href="/posts/withdrawal-guide/tradelog?st=s0" className="underline">거래 로그</Link>).</li>
         </ul>
         <P>
@@ -416,16 +420,16 @@ export default function WithdrawalGuidePage() {
               color: 'border-gray-300 dark:border-gray-700',
               badge: 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400',
               title: '실제로 가능한 매매 시점 + 오늘까지 보유로 재검증',
-              result: '인출 포함 연 수익률 T25 22.4% · D10GK(LOC) 20.7% · S0 17.5%',
-              desc: '신호는 종가가 확정돼야 알 수 있으므로 신호 다음 거래일에 매매하도록 바꿨다. D10GK의 조기 재매수만 조건을 가격으로 환산한 LOC 주문으로 당일 종가에 산다. 20년에서 자르면 결과가 매매일 하루 이틀 차이에도 크게 흔들려, 1971년 이후 매달 시작해 오늘까지 보유한 인출 포함 연 수익률로 비교했다 (월 1,500만원 인출 상한도 없앰). 이 기준에서는 순위가 T25 > D10GK > S0로 바뀌었다.',
+              result: '인출 포함 연 수익률 25% 룰 22.4% · D10GK(LOC) 20.7% · S0 17.5%',
+              desc: '신호는 종가가 확정돼야 알 수 있으므로 신호 다음 거래일에 매매하도록 바꿨다. D10GK의 조기 재매수만 조건을 가격으로 환산한 LOC 주문으로 당일 종가에 산다. 20년에서 자르면 결과가 매매일 하루 이틀 차이에도 크게 흔들려, 1971년 이후 매달 시작해 오늘까지 보유한 인출 포함 연 수익률로 비교했다 (월 1,500만원 인출 상한도 없앰). 이 기준에서는 순위가 25% 룰 > D10GK > S0로 바뀌었다.',
             },
             {
               step: '현재',
               color: 'border-blue-300 dark:border-blue-700',
               badge: 'bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400',
-              title: '★ 전체 기간 재검증 → T25를 권장 전략으로',
+              title: '★ 전체 기간 재검증 → T25(25% 룰)를 권장 전략으로',
               result: '인출 상한 없음 · 인출 포함 연 22.4% · 20년간 꺼내 쓴 돈 74억',
-              desc: '16가지 전략을 오늘까지 끝까지 들고 가며 10~50년 시점을 비교했다. 월 1,500만원 인출 상한을 없애고 꺼내 쓴 돈과 남은 자산을 함께 봤다. 닷컴버블을 거치지 않는 구간에서도 T25가 S0보다 대체로 나았다(10년 구간의 80%). 현금 비중·버퍼·생활비 고정 같은 장치는 수익을 낮추는 대신 낙폭을 줄이는 정도라 기본 권장에서는 뺐다.',
+              desc: '16가지 전략을 오늘까지 끝까지 들고 가며 10~50년 시점을 비교했다. 월 1,500만원 인출 상한을 없애고 꺼내 쓴 돈과 남은 자산을 함께 봤다. 닷컴버블을 거치지 않는 구간에서도 25% 룰이 S0보다 대체로 나았다(10년 구간의 80%). 현금 비중·버퍼·생활비 고정 같은 장치는 수익을 낮추는 대신 낙폭을 줄이는 정도라 기본 권장에서는 뺐다.',
               href: '/posts/withdrawal-full-period',
               link: '전체 비교 →',
             },
@@ -685,7 +689,7 @@ export default function WithdrawalGuidePage() {
         <Table
           headers={['전략', '매도 횟수 (55년)', '매수 후 5일 내 재매도', '해야 할 일', '인출 포함 연 수익률']}
           rows={[
-            [<strong key="t25" className="text-blue-600 dark:text-blue-400">T25 (1년 고점 −25%)</strong>,
+            [<strong key="t25" className="text-blue-600 dark:text-blue-400">25% 룰 (1년 고점 −25%)</strong>,
               '15번', '4번 (27%)', '주 1회 확인', <strong key="t25v" className="text-blue-600 dark:text-blue-400">22.4%</strong>],
             [<strong key="d10gk" className="text-purple-600 dark:text-purple-400">D10GK</strong>,
               '72번', '18번 (25%)', '현금일 때 매일 밤 LOC 주문', <strong key="d10gkv" className="text-purple-600 dark:text-purple-400">20.7%</strong>],
@@ -704,7 +708,7 @@ export default function WithdrawalGuidePage() {
           단 한 건도 없다. 매일 확인해야 하지만 앱에서 현재 구간을 표시해주면 부담이 없다.
         </P>
 
-        <H3>T25 — 거래 횟수는 적지만 약점 있음</H3>
+        <H3>25% 룰 — 거래 횟수는 적지만 약점 있음</H3>
         <FormulaBlock>
           매도: 52주(약 1년) 최고가 대비 −25% 이상 하락 → 전량 현금 전환<br />
           매수: EMA200 위 15거래일 연속 회복 → 전액 재매수
@@ -745,12 +749,12 @@ export default function WithdrawalGuidePage() {
 
         <H3>결론: 무엇을 선택할까</H3>
         <Callout color="blue">
-          <strong>권장: T25 + 상한 없는 동적 인출</strong> — 연 22.4% · 일주일에 한 번 확인 · 매도 10년에 약 3번<br />
-          큰돈을 지키고 싶다면 → T25 + 자산별 현금 비중 — 연 20.9% · 낙폭 −80%<br />
+          <strong>권장: 25% 룰 + 상한 없는 동적 인출</strong> — 연 22.4% · 일주일에 한 번 확인 · 매도 10년에 약 3번<br />
+          큰돈을 지키고 싶다면 → 25% 룰 + 자산별 현금 비중 — 연 20.9% · 낙폭 −80%<br />
           매수 직후 다시 파는 일이 절대 싫다면 → S0 — 연 17.5%
         </Callout>
         <P>
-          초기 연구는 S0를 대부분에게 권했지만, 실제로 가능한 방식으로 다시 계산하면 같은 수고의 T25가 S0보다 꾸준히 높고,
+          초기 연구는 S0를 대부분에게 권했지만, 실제로 가능한 방식으로 다시 계산하면 같은 수고의 25% 룰이 S0보다 꾸준히 높고,
           꺼내 쓰는 돈도 더 많다. D10GK의 높은 수익은 &lsquo;신호 당일 종가 매수&rsquo;에서 나온 것이어서 LOC 주문 없이는 유지되지 않고,
           초반 생활비도 적다. 홈 화면의 신호를 보고 규칙대로만 하면 된다.
         </P>
@@ -799,7 +803,7 @@ export default function WithdrawalGuidePage() {
             <AnalysisLink
               href="/posts/withdrawal-new-ideas2"
               title="더 나을 줄 알았던 전략 3가지를 테스트해봤다"
-              desc="트레일링 스탑·단계적 현금화·레버리지 하향 — 668가지 진입 시점으로 모두 검증. T25가 가장 단순한 대안."
+              desc="트레일링 스탑·단계적 현금화·레버리지 하향 — 668가지 진입 시점으로 모두 검증. 25% 룰이 가장 단순한 대안."
             />
             <AnalysisLink
               href="/posts/withdrawal-signal-test"

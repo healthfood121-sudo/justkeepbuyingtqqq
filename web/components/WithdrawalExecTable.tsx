@@ -14,7 +14,7 @@ interface Data { summary: Record<Mode, Row[]>; robust: Robust[] }
 
 const LABEL: Record<string, string> = {
   S0:     'S0 — 200일선 15일',
-  T25:    'T25 — 1년 고점 −25%',
+  T25:    '25% 룰 — 52주 고점 −25%',
   D10GK:  'D10GK — S0 + 조기 재매수',
   C50:    'S0 + 자산별 현금 비중',
   D10C50: 'D10GK + 자산별 현금 비중',

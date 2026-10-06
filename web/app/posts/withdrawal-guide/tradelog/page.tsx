@@ -38,7 +38,7 @@ interface TradelogData {
 }
 
 const STRATS = [
-  { key: 't25', label: 'T25 (권장)' },
+  { key: 't25', label: '25% 룰 (권장)' },
   { key: 's0',  label: 'S0 (200일선 15일)' },
 ]
 
@@ -135,7 +135,7 @@ function TradelogInner() {
             <CostToggle withCosts={withCosts} onChange={wc => go({ fee: !wc })} />
           </div>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            <strong className="text-gray-700 dark:text-gray-200">{data.meta.strategy}</strong>: {data.meta.desc}
+            <strong className="text-gray-700 dark:text-gray-200">{isT25 ? '25% 룰' : data.meta.strategy}</strong>: {data.meta.desc}
           </p>
           <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{data.meta.conditions}</p>
         </div>

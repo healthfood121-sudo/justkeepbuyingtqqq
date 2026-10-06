@@ -134,7 +134,7 @@ export default function VrStrategyPage() {
         <div className="border rounded-xl px-5 py-4 mb-8 text-sm leading-relaxed bg-gray-50 border-gray-200 text-gray-600 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-300">
           <strong className="text-gray-800 dark:text-gray-100">초기 연구 기록입니다.</strong>{' '}
           이 글의 수치는 운용보수만 반영(스왑금리·매도세 미반영)하고, 1971~2005년 시작 419가지 경우를 20년에서 자른 당시 계산입니다.
-          비교 대상인 S0(나스닥100 200일 지수이동평균(EMA200) 기준 현금 전환 + 동적인출)는 당시 기준 전략이며, 지금 권장 전략은 T25입니다.
+          비교 대상인 S0(나스닥100 200일 지수이동평균(EMA200) 기준 현금 전환 + 동적인출)는 당시 기준 전략이며, 지금 권장 전략은 25% 룰입니다.
           현재 기준의 비교와 권장 전략은{' '}
           <Link href="/posts/withdrawal-full-period" className="underline">모든 인출 전략 전체 기간 비교</Link>와{' '}
           <Link href="/posts/withdrawal-guide" className="underline">인출식 방법론</Link>에 있습니다.
@@ -282,7 +282,7 @@ export default function VrStrategyPage() {
         <P>
           TQQQ 인출식에서는 시장 상황에 따라 100% 현금 전환과 재진입을 반복하는
           신호 기반 전략이 훨씬 안정적이고 수익도 높다. 이후 전체 기간·실제 비용으로 다시 비교해
-          지금은 T25(1년 최고가 대비 25% 하락 시 현금 전환)를 권장한다.
+          지금은 25% 룰(52주 최고 종가 대비 25% 하락 시 현금 전환)를 권장한다.
         </P>
 
         <Callout color="green">
@@ -296,7 +296,7 @@ export default function VrStrategyPage() {
           <p className="text-xs font-bold tracking-widest text-gray-400 dark:text-gray-600 uppercase mb-4">관련 글</p>
           <div className="space-y-2">
             {[
-              { href: '/posts/withdrawal-guide', title: '인출식 방법론: 10억 달성 후 어떻게 꺼내 쓰나', desc: '권장 전략 T25 + 상한 없는 동적 인출의 전체 설계' },
+              { href: '/posts/withdrawal-guide', title: '인출식 방법론: 10억 달성 후 어떻게 꺼내 쓰나', desc: '권장 전략 25% 룰 + 상한 없는 동적 인출의 전체 설계' },
               { href: '/posts/withdrawal-full-period', title: '모든 인출 전략을 1971년부터 오늘까지', desc: '16가지 인출 전략을 실제 비용으로 끝까지 비교' },
               { href: '/posts/withdrawal-new-ideas', title: '인출 전략 새 아이디어 8가지 테스트', desc: 'RSI 조기재진입이 3,232억으로 현재 최선' },
               { href: '/posts/withdrawal-new-ideas2', title: '더 나을 줄 알았던 전략 3가지', desc: '트레일링 스탑 · 단계적 현금화 · 레버리지 하향' },
