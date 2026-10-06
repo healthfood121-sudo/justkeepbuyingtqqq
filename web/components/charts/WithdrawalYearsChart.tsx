@@ -12,7 +12,7 @@ export const SERIES_COLORS: Record<string, { light: string; dark: string }> = {
   T25:   { light: '#2a78d6', dark: '#3987e5' },
   S0:    { light: '#eb6834', dark: '#d95926' },
   D10GK: { light: '#1baf7a', dark: '#199e70' },
-  HOLD3: { light: '#eda100', dark: '#c98500' },
+  HOLD3: { light: '#a23ea3', dark: '#c25fc4' },   // 주황(S0)과 구분되도록 자홍 (검증 통과)
   DLEV:  { light: '#e87ba4', dark: '#d55181' },
   HOLD1: { light: '#008300', dark: '#008300' },
   C50:   { light: '#4a3aa7', dark: '#9085e9' },

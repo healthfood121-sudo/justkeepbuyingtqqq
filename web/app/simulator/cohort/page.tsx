@@ -301,6 +301,23 @@ function CohortDetailContent() {
               })}
             </div>
 
+            {/* 10억 달성 → 인출 시뮬레이터로 이어보기 */}
+            {(['A', 'C'] as const).some(s => details[s].endDate) && (
+              <div className="flex flex-wrap gap-2 mb-5 text-xs">
+                {(['A', 'C'] as const).filter(s => details[s].endDate).map(s => {
+                  const d = details[s]
+                  const amt = (d.finalValue ?? 0) / 1e8
+                  const href = `/simulator/withdrawal?start=${fmtDate(d.endDate!)}&amt=${amt.toFixed(2)}&cmp=S0${withCosts ? '' : '&fee=1'}`
+                  return (
+                    <Link key={s} href={href}
+                      className="px-3 py-1.5 rounded-lg border border-purple-200 dark:border-purple-700/40 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 hover:border-purple-400">
+                      {S_LABEL[s]} {fmtDate(d.endDate!).slice(0, 7)} 달성({amt.toFixed(1)}억) → 이때부터 인출 보기
+                    </Link>
+                  )
+                })}
+              </div>
+            )}
+
             {/* 차트 */}
             <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-4 mb-6">
               <div style={{ height: 320 }}>

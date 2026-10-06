@@ -109,12 +109,20 @@ export default function HomePage() {
               </div>
               <WithdrawalSignal />
               <LivingCalc />
-              <Link
-                href="/posts/withdrawal-guide"
-                className="text-xs text-purple-600 dark:text-purple-400 hover:underline font-semibold"
-              >
-                방법론 상세 보기 →
-              </Link>
+              <div className="flex flex-wrap gap-x-4 gap-y-1">
+                <Link
+                  href="/posts/withdrawal-guide"
+                  className="text-xs text-purple-600 dark:text-purple-400 hover:underline font-semibold"
+                >
+                  방법론 상세 보기 →
+                </Link>
+                <Link
+                  href="/simulator/withdrawal"
+                  className="text-xs text-purple-600 dark:text-purple-400 hover:underline font-semibold"
+                >
+                  인출 시뮬레이터 →
+                </Link>
+              </div>
             </div>
           </div>
 
