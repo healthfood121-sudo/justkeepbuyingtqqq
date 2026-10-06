@@ -94,7 +94,7 @@ export default function WithdrawalStrategyPost() {
           이 글은 처음에 거치금 2.5억을 첫날 한 번에 넣는 방식으로 계산했다. 5년에 나눠 넣는 방식으로 다시 계산하면
           1.5년 안에 10억에 닿는 &lsquo;버블 케이스&rsquo;가 <strong>112건 → 2건</strong>(1998년 9·10월 시작)으로 거의 사라지고,
           Method A와 B의 결과 차이도 거의 없어진다. 아래 결과 표는 새 계산(운용보수·스왑금리 반영)이고,
-          1996~1999년 예시 표는 처음 설계 당시(즉시 거치) 기록으로 남겨둔다. 이 방법론은 이후 T25 전략으로 대체됐다.
+          1996~1999년 예시 표는 처음 설계 당시(즉시 거치) 기록으로 남겨둔다. 이 방법론은 이후 25% 룰 전략으로 대체됐다.
         </Callout>
 
         {/* 본문 */}
@@ -250,7 +250,7 @@ export default function WithdrawalStrategyPost() {
           <strong>처음 설계 당시: 전체 112개 버블 케이스 중 Method B가 80개, A가 32개에서 우세.</strong><br />
           최악의 시나리오(닷컴 직전 진입)에서는 A가 압도적으로 안전했습니다.<br />
           <strong>재계산 후:</strong> 거치금을 5년에 나눠 넣으면 버블 케이스 자체가 2가지로 줄어 이 규칙의 영향은 거의 없습니다.
-          인출 방법론은 이후 <Link href="/posts/withdrawal-guide" className="underline">T25 전략</Link>으로 바뀌었습니다.
+          인출 방법론은 이후 <Link href="/posts/withdrawal-guide" className="underline">25% 룰 전략</Link>으로 바뀌었습니다.
         </Callout>
 
         <P>

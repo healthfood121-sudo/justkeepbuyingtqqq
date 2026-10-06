@@ -164,7 +164,7 @@ export default function WithdrawalNewIdeas2Page() {
             <FormulaBlock>
               T15: 52주 최고점 대비 −15% 이하로 떨어지면 전량 매도<br />
               T20: 52주 최고점 대비 −20% 이하로 떨어지면 전량 매도<br />
-              T25: 52주 최고점 대비 −25% 이하로 떨어지면 전량 매도<br />
+              T25: 52주 최고점 대비 −25% 이하로 떨어지면 전량 매도 (이후 전체 기간 재검증을 거쳐 지금의 권장 전략 &lsquo;25% 룰&rsquo;이 됐다)<br />
               재매수: 공통으로 EMA200 위 15거래일 연속 (기존과 동일)
             </FormulaBlock>
           </div>
