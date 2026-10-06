@@ -40,7 +40,9 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 
-DATA_DIR = Path("D:/justkeepbuyingtqqq/data")
+_ROOT = Path(__file__).resolve().parent.parent   # 저장소 루트
+
+DATA_DIR = (_ROOT / "data")
 
 INITIAL    = 1_000_000_000   # 10억
 SIM_YEARS  = 20

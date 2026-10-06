@@ -33,10 +33,12 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 
+_ROOT = Path(__file__).resolve().parent.parent   # 저장소 루트
+
 # ─── 경로 ──────────────────────────────────────────────────────
-DATA_DIR = Path("D:/justkeepbuyingtqqq/data")
-FED_PATH = Path("D:/justkeepbuyingtqqq/data/fed_funds_rate.json")
-OUT_PATH = Path("D:/justkeepbuyingtqqq/web/public/data/withdrawal_comparison.json")
+DATA_DIR = (_ROOT / "data")
+FED_PATH = (_ROOT / "data/fed_funds_rate.json")
+OUT_PATH = (_ROOT / "web/public/data/withdrawal_comparison.json")
 
 # ─── 공통 파라미터 ──────────────────────────────────────────────
 INITIAL    = 1_000_000_000   # 10억 원

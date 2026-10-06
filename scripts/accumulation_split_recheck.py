@@ -27,7 +27,7 @@ from data_loader import load_ndx_prices, get_monthly_starts
 import export_split_entry_json as S
 
 ROOT     = Path(__file__).resolve().parent.parent
-# data_loader의 기본 경로(D:/...) 대신 저장소 기준 경로 사용
+# 저장소 기준 경로 사용 (data_loader 기본값과 같음)
 data_loader.DATA_DIR = ROOT / "data"
 data_loader.FED_PATH = ROOT / "data/fed_funds_rate.json"
 OUT_PATH = ROOT / "web/public/data/accumulation_split_recheck.json"

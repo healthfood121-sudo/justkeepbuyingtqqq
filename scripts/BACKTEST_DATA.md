@@ -2,6 +2,7 @@
 
 `web/public/data/` 에 저장된 JSON 파일 목록.
 재실행 시 해당 스크립트를 `python scripts/<script>.py` 로 실행.
+모든 스크립트는 저장소 기준 경로(`data/`, `web/public/data/`)를 쓴다 — 어느 PC·클라우드에서든 그대로 실행된다 (2026-10-06 `D:/` 경로 일괄 정리).
 
 ---
 
@@ -563,7 +564,7 @@ withdrawal_cash_tier.py         → withdrawal_cash_tier_v2.json
 - `withdrawal_rate_lev.py --tax-sells`로 S0만 확인: 중앙값 266억 → 152억 (스왑금리 반영 기준)
 - S0·D10GK·T25·DLEV는 `withdrawal_cash_tier.py`(모든 매도 과세)로 재계산 → 순위 유지, D10GK/S0 격차 3.2배 → 2.6배
 - RSI 스윕·설정값 스윕·GRAD 등 나머지 실험은 미재계산 (순위 비교용으로만 사용)
-- `export_s0_tradelog.py`(출력 삭제됨)는 신호 매도에 과세했지만 현금 RP 이자 미반영 → `export_withdrawal_tradelog.py`로 대체
+- `export_s0_tradelog.py`(2026-10-06 삭제)는 신호 매도에 과세했지만 현금 RP 이자 미반영 → `export_withdrawal_tradelog.py`로 대체
 
 **대표 수치 기준 (2026-10-03~):** 인출 상한 없음 · 인출 포함 연 수익률(IRR) · 실제로 가능한 실행(loc) · 오늘까지 보유
 (`withdrawal_full_period.json`, 실행 방식 비교는 `withdrawal_exec_horizon_v2.json`)

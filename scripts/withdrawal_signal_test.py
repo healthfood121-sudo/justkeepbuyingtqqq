@@ -17,9 +17,11 @@ import multiprocessing as mp
 from pathlib import Path
 from dataclasses import dataclass
 
-DATA_DIR = Path("D:/justkeepbuyingtqqq/data")
-FED_PATH = Path("D:/justkeepbuyingtqqq/data/fed_funds_rate.json")
-OUT_PATH = Path("D:/justkeepbuyingtqqq/web/public/data/withdrawal_signal_test.json")
+_ROOT = Path(__file__).resolve().parent.parent   # 저장소 루트
+
+DATA_DIR = (_ROOT / "data")
+FED_PATH = (_ROOT / "data/fed_funds_rate.json")
+OUT_PATH = (_ROOT / "web/public/data/withdrawal_signal_test.json")
 
 INITIAL     = 1_000_000_000
 SIM_YEARS   = 20

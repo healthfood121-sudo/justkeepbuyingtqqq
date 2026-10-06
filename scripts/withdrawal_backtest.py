@@ -24,6 +24,9 @@ import openpyxl
 from openpyxl.chart import LineChart, Reference
 import time
 
+from pathlib import Path
+_ROOT = Path(__file__).resolve().parent.parent   # 저장소 루트
+
 # ===== 공유 파라미터 =====
 DAILY_INVEST           = 200_000
 CAP_INVEST             = 250_000_000
@@ -35,8 +38,8 @@ BUFFER_REF_YEARS       = 13
 BUBBLE_THRESHOLD_YEARS = 1.5
 BUBBLE_WAIT_YEARS      = 2.0                    # Method A 대기 기간
 RESCUE_DURATION_DAYS   = 252
-DATA_DIR               = "D:/justkeepbuyingtqqq/data/"
-OUT_DIR                = "D:/justkeepbuyingtqqq/results/"
+DATA_DIR               = str(_ROOT / "data") + "/"
+OUT_DIR                = str(_ROOT / "results") + "/"
 
 
 # ===== 데이터 로드 =====

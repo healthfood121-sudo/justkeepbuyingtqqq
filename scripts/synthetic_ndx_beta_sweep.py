@@ -13,7 +13,10 @@ SP500 1927~1971 데이터에 여러 베타 값을 적용해 synthetic NDX를 만
 import numpy as np
 import pandas as pd
 
-DATA_DIR = "D:/justkeepbuyingtqqq/data/"
+from pathlib import Path
+_ROOT = Path(__file__).resolve().parent.parent   # 저장소 루트
+
+DATA_DIR = str(_ROOT / "data") + "/"
 
 DAILY_INVEST = 200_000
 TARGET       = 1_000_000_000

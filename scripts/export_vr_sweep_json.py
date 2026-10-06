@@ -30,9 +30,11 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+_ROOT = Path(__file__).resolve().parent.parent   # 저장소 루트
+
 # ─── 경로 ──────────────────────────────────────────────────────
-DATA_DIR = Path("D:/justkeepbuyingtqqq/data")
-OUT_FILE = Path("D:/justkeepbuyingtqqq/web/public/data/vr_sweep.json")
+DATA_DIR = (_ROOT / "data")
+OUT_FILE = (_ROOT / "web/public/data/vr_sweep.json")
 
 # ─── 공통 파라미터 ─────────────────────────────────────────────
 INITIAL       = 1_000_000_000

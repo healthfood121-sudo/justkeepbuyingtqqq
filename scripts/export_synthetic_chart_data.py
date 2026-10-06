@@ -18,8 +18,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 from data_loader import load_ndx_prices, EXP_3X, EXP_1X
 
-DATA_DIR = "D:/justkeepbuyingtqqq/data/"
-OUT_DIR  = "D:/justkeepbuyingtqqq/web/public/data/"
+_ROOT = Path(__file__).resolve().parent.parent   # 저장소 루트
+
+DATA_DIR = str(_ROOT / "data") + "/"
+OUT_DIR  = str(_ROOT / "web/public/data") + "/"
 
 DAILY_INVEST = 200_000
 TARGET       = 1_000_000_000

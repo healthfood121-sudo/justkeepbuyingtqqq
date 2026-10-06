@@ -17,7 +17,10 @@ B전략 기반: 거치 2.5억을 어떻게 넣느냐만 바꾸고, 일 20만원 
 import numpy as np
 import pandas as pd
 
-DATA_DIR    = "D:/justkeepbuyingtqqq/data/"
+from pathlib import Path
+_ROOT = Path(__file__).resolve().parent.parent   # 저장소 루트
+
+DATA_DIR    = str(_ROOT / "data") + "/"
 DAILY_INV   = 200_000
 LUMP        = 250_000_000
 TARGET      = 1_000_000_000
