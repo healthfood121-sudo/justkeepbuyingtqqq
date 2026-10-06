@@ -5,6 +5,11 @@ on:
     # 미국 장 마감 후 매일 KST 07:30 (UTC 22:30, 월~금 미국 거래일 기준 화~토)
     - cron: '30 22 * * 1-5'
   workflow_dispatch:  # 수동 실행 가능
+    inputs:
+      test_notify:
+        description: '텔레그램 알림 테스트 (지금 상태를 바로 한 번 보냄)'
+        type: boolean
+        default: false
 
 jobs:
   update:
@@ -27,6 +32,9 @@ jobs:
       - name: LOC 환산식 검증
         run: python scripts/export_withdrawal_signal.py --selftest --offline
 
+      - name: 직전 신호 보관 (알림 비교용)
+        run: cp web/public/data/withdrawal_signal.json /tmp/prev_signal.json || true
+
       - name: 신호 계산
         run: python scripts/export_withdrawal_signal.py
 
@@ -43,4 +51,19 @@ jobs:
             ASOF=$(python -c "import json;print(json.load(open('web/public/data/withdrawal_signal.json'))['asof'])")
             git commit -m "auto: 인출식 매매 신호 업데이트 ${ASOF}"
             git push
+          fi
+
+      # 텔레그램 알림 — 저장소 Secrets(TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID)가 없으면 아무것도 보내지 않음.
+      # 알림이 실패해도 신호 업데이트는 이미 끝났으므로 워크플로는 성공으로 둔다.
+      - name: 텔레그램 알림
+        continue-on-error: true
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          SITE_URL: ${{ vars.SITE_URL }}
+        run: |
+          if [ "${{ inputs.test_notify }}" = "true" ]; then
+            python scripts/notify_telegram.py --test
+          else
+            python scripts/notify_telegram.py --prev /tmp/prev_signal.json
           fi
