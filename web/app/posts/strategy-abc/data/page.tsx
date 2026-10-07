@@ -23,7 +23,7 @@ interface JsonFile {
 const INSTRUMENTS = [
   { key: 'ndx3x', label: 'TQQQ (NDX 3x)' },
   { key: 'ndx2x', label: 'QLD (NDX 2x)' },
-  { key: 'ndx1x', label: 'QQQ (NDX 1x)' },
+  { key: 'ndx1x', label: '나스닥100 (1x)' },
   { key: 'sp500',  label: 'VOO (SP500)' },
 ]
 

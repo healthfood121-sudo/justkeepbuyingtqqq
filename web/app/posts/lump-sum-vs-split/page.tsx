@@ -197,7 +197,7 @@ export default function LumpSumVsSplitPost() {
           편의에 따라 매월 한 번 넣든 매일 넣든 골라도 된다.
         </P>
 
-        <H2>QLD(2배), QQQ(1배): 분할 효과가 작거나 오히려 손해</H2>
+        <H2>QLD(2배), 나스닥100(1배): 분할 효과가 작거나 오히려 손해</H2>
 
         <Table
           headers={['종목', '방식', '완료율', '평균', '최장', '']}
@@ -206,7 +206,7 @@ export default function LumpSumVsSplitPost() {
             [<strong key="q" className="text-gray-900 dark:text-white">QLD (2x)</strong>, '즉시 거치 (기준선)', '94.9%', '4.45년', '12.63년 · 10년+ 25번', <DataLink inst="ndx2x" m="instant" />],
             ['', '월 분할 3년', '93.6%', '4.88년', '13.44년 · 10년+ 19번', <DataLink inst="ndx2x" m="monthly3y" />],
             ['', '월 분할 5년', '92.7%', '5.23년', '12.68년 · 10년+ 13번', <DataLink inst="ndx2x" m="monthly5y" />],
-            [<strong key="q" className="text-gray-900 dark:text-white">QQQ (1x)</strong>, '즉시 거치 (기준선)', '90.9%', '5.68년', '11.88년 · 10년+ 27번', <DataLink inst="ndx1x" m="instant" />],
+            [<strong key="q" className="text-gray-900 dark:text-white">나스닥100 (1x)</strong>, '즉시 거치 (기준선)', '90.9%', '5.68년', '11.88년 · 10년+ 27번', <DataLink inst="ndx1x" m="instant" />],
             ['', '월 분할 3년', '90.7%', '6.24년', '12.40년 · 10년+ 31번', <DataLink inst="ndx1x" m="monthly3y" />],
             ['', '월 분할 5년', '89.8%', '6.52년', '11.96년 · 10년+ 32번', <DataLink inst="ndx1x" m="monthly5y" />],
           ]}
@@ -214,7 +214,7 @@ export default function LumpSumVsSplitPost() {
 
         <Callout color="yellow">
           QLD는 5년 분할로 10년 넘게 걸리는 경우가 25번 → 13번으로 줄지만 최악(12.6년)은 그대로이고, 평균이 0.8년 늦어진다.
-          QQQ는 분할할수록 오히려 나빠진다(10년 넘게 걸린 경우 27번 → 32번).
+          나스닥100(1배)은 분할할수록 오히려 나빠진다(10년 넘게 걸린 경우 27번 → 32번).
           5년 분할이 확실히 효과를 내는 건 TQQQ뿐이다.
         </Callout>
 
@@ -248,7 +248,7 @@ export default function LumpSumVsSplitPost() {
         <ul className="list-none space-y-3 mb-8">
           {[
             { color: 'text-blue-500 dark:text-blue-400', text: 'TQQQ(3배)에 목돈을 넣을 계획이라면 — 5년(60개월)에 걸쳐 매달 나눠 넣는다. 3·4년은 2008년 금융위기 같은 시점에 걸리면 오히려 13년 넘게 걸릴 수 있다.' },
-            { color: 'text-yellow-500 dark:text-yellow-400', text: 'QQQ(1배), VOO(1배)에 목돈을 넣을 계획이라면 — 즉시 거치가 더 낫다. QLD(2배)는 5년 분할이 오래 걸리는 경우를 줄이지만 평균이 늦어져 장단이 있다.' },
+            { color: 'text-yellow-500 dark:text-yellow-400', text: '나스닥100(1배), VOO(1배)에 목돈을 넣을 계획이라면 — 즉시 거치가 더 낫다. QLD(2배)는 5년 분할이 오래 걸리는 경우를 줄이지만 평균이 늦어져 장단이 있다.' },
             { color: 'text-gray-400', text: '"하락을 기다렸다가 넣겠다"는 전략은 작동하지 않는다. 하락이 충분히 오지 않는 강세장 시나리오에서 최악의 결과를 만들어낸다.' },
           ].map((item, i) => (
             <li key={i} className="flex gap-3 text-gray-600 dark:text-gray-300 text-sm">

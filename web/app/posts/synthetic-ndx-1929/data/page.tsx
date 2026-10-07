@@ -24,7 +24,7 @@ type Stats = {
 // ── 상수 ─────────────────────────────────────────────────
 
 const LEVERAGES = [
-  { key: '1x' as const, label: 'NDX 1x (QQQ)' },
+  { key: '1x' as const, label: '나스닥100 (1x)' },
   { key: '3x' as const, label: 'NDX 3x (TQQQ)' },
 ]
 

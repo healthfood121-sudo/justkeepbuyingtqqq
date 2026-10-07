@@ -176,7 +176,7 @@ export default function StrategyAbcPage() {
             ['QLD (2x)', 'A', '88.2%', '7.25년', '14.54년'],
             ['', 'B', '87.4%', '8.22년', <span key="4" className="text-red-500">21.98년</span>],
             ['', 'C', <span key="5" className="font-semibold">92.7%</span>, <span key="6" className="font-semibold">4.96년</span>, '12.68년'],
-            ['QQQ (1x)', 'A', '85.2%', '9.16년', '14.44년'],
+            ['나스닥100 (1x)', 'A', '85.2%', '9.16년', '14.44년'],
             ['', 'B', <span key="7" className="text-red-500">82.0%</span>, '11.46년', <span key="8" className="text-red-500">21.21년</span>],
             ['', 'C', <span key="9" className="font-semibold">89.8%</span>, <span key="10" className="font-semibold">6.25년</span>, '11.96년'],
             ['VOO (SP500)', 'A', '90.2%', '11.73년', '17.34년'],
