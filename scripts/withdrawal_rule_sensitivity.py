@@ -13,7 +13,8 @@ withdrawal_rule_sensitivity.py
   sp500   : S&P500으로 같은 규칙 (3배 합성, 1955년 이후 시작 — 기준금리 자료가 1954-07부터)
             매도 기준 15~40% (2.5%p 간격) × 재매수 15일 + 비교용 S0·신호 없이 보유
 
-출력: web/public/data/withdrawal_rule_sensitivity.json
+출력: web/public/data/withdrawal_rule_sensitivity.json       요약 + 하락 구간 목록
+      web/public/data/withdrawal_rule_sensitivity_rows.json  시작 시점별 인출 포함 연 수익률·최대 낙폭 (데이터 뷰어)
   python scripts/withdrawal_rule_sensitivity.py
 """
 
@@ -90,10 +91,10 @@ def _job(task):
                       exec_mode="loc", horizon_days=len(closes), collect_flows=True)
         if r["years"] < MIN_YRS:
             continue
-        rows.append({"y": dates[si].year, "irr": irr(r["flows"], r["final"], r["years"]),
+        rows.append({"m": dates[si].strftime("%Y-%m"), "y": dates[si].year, "irr": irr(r["flows"], r["final"], r["years"]),
                      "dd": r["max_dd"], "t": r["trades"] / r["years"] * 10,
                      "s": r["sells"], "qr": r["quick_resells"], "cash": r["cash_days_pct"],
-                     "lt10": r["final"] < 10})
+                     "lt10": bool(r["final"] < 10)})
     return task[:3], rows
 
 
@@ -107,13 +108,31 @@ def summarize(rows, eras):
         "trades10": round(sum(r["t"] for r in rows) / len(rows), 1),
         "quick": round(sum(r["qr"] for r in rows) / sells * 100, 1) if sells else 0.0,
         "cash": round(sum(r["cash"] for r in rows) / len(rows), 1),
-        "lt10": sum(r["lt10"] for r in rows),
+        "lt10": int(sum(r["lt10"] for r in rows)),
         "eras": {},
     }
     for lab, y0, y1 in eras:
         e = sorted(r["irr"] for r in rows if y0 <= r["y"] <= y1)
         if e:
             out["eras"][lab] = round(q(e, 0.5), 1)
+    return out
+
+
+def drawdown_episodes(closes, dates, peaks, lo=0.15, reset=0.05):
+    """1년 최고 종가 대비 lo 넘게 빠진 하락 구간: 시작일 · 최저일 · 최저 하락률 · 최저점 1년 뒤 수익률."""
+    dd = closes / peaks - 1
+    out, s, m = [], None, None
+    for k in range(len(closes)):
+        if s is None and dd[k] < -lo:
+            s = m = k
+        if s is not None:
+            if dd[k] < dd[m]:
+                m = k
+            if dd[k] > -reset or k == len(closes) - 1:
+                j = min(m + 252, len(closes) - 1)
+                out.append({"start": str(dates[s].date()), "bottom": str(dates[m].date()),
+                            "dd": round(float(dd[m]) * 100, 1), "after1y": round(float(closes[j] / closes[m] - 1) * 100, 1)})
+                s = None
     return out
 
 
@@ -163,6 +182,19 @@ def main():
         print(f"{k:>5} {g['med']:5.1f} {g['p10']:5.1f} {g['worst']:5.1f} | " + " ".join(f"{a} {v:5.1f}" for a, v in g["eras"].items())
               + f" | 낙폭 {g['dd']:.0f} 매매 {g['trades10']} <10억 {g['lt10']}")
 
+    ndx = load_market("ndx_1971_now.csv", True, 252)
+    spm = load_market("sp500_1927_now.csv", False, 252)
+    episodes = {"ndx": drawdown_episodes(ndx[2], ndx[4], ndx[7]),
+                "sp500": [e for e in drawdown_episodes(spm[2], spm[4], spm[7]) if e["start"] >= "1955"]}
+
+    # 시작 시점별 인출 포함 연 수익률 · 최대 낙폭 (데이터 뷰어용)
+    def per_start(keys):
+        return {"starts": [r["m"] for r in res[keys[0]]],
+                "irr": {k: [r["irr"] for r in res[k]] for k in keys},
+                "dd":  {k: [r["dd"] for r in res[k]] for k in keys}}
+    rows_ndx = per_start([f"R{t}_{d}" for t in THRS for d in DAYS] + [f"S0_{d}" for d in DAYS] + ["W126", "W504"])
+    rows_sp  = per_start([f"SP{t}" for t in SP_THRS] + ["SP_S0", "SP_HOLD"])
+
     out = {
         "meta": {
             "conditions": "초기 10억 · 스왑금리·운용보수 · 모든 매도 양도세 22% · 현금 외화RP(세후) · 신호 다음 거래일 매매 · "
@@ -171,8 +203,12 @@ def main():
             "eras": [e[0] for e in ERAS], "sp_eras": [e[0] for e in SP_ERAS],
         },
         "grid": grid, "s0": s0, "window": window, "sp500": sp,
+        "episodes": episodes,
     }
     OUT_PATH.write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    rows_path = OUT_PATH.with_name("withdrawal_rule_sensitivity_rows.json")
+    rows_path.write_text(json.dumps({"ndx": rows_ndx, "sp500": rows_sp}, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    print(f"저장: {rows_path} ({rows_path.stat().st_size / 1024:.0f} KB)")
     print(f"\n저장: {OUT_PATH} ({OUT_PATH.stat().st_size / 1024:.0f} KB) · {time.time() - t0:.0f}초")
 
 
