@@ -5,7 +5,7 @@ type Inst = 'ndx3x' | 'ndx2x' | 'ndx1x' | 'sp500' | string
 const INFO: Record<string, { name: string; fee: string; swap: string | null }> = {
   ndx3x: { name: 'TQQQ', fee: '0.88%', swap: '기준금리×2' },
   ndx2x: { name: 'QLD',  fee: '0.95%', swap: '기준금리×1' },
-  ndx1x: { name: 'QQQ',  fee: '0.20%', swap: null },
+  ndx1x: { name: '나스닥100',  fee: '0.20%', swap: null },
   sp500: { name: 'S&P500', fee: '0.20%', swap: null },
 }
 

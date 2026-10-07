@@ -44,7 +44,7 @@ const JSON_MAP_COSTS: Record<Instrument, string> = {
 const instrumentOptions: { value: Instrument; label: string; sublabel: string }[] = [
   { value: 'ndx3x', label: 'TQQQ (NDX 3x)', sublabel: '나스닥100 3배 레버리지' },
   { value: 'ndx2x', label: 'QLD (NDX 2x)', sublabel: '나스닥100 2배 레버리지' },
-  { value: 'ndx1x', label: 'QQQ (NDX 1x)', sublabel: '나스닥100 1배' },
+  { value: 'ndx1x', label: '나스닥100 (NDX 1x)', sublabel: '레버리지 없음' },
   { value: 'sp500', label: 'VOO (S&P500)', sublabel: 'S&P500 1배' },
 ]
 

@@ -14,7 +14,7 @@ interface CohortRow {
 const INSTRUMENTS: { key: Inst; label: string }[] = [
   { key: 'ndx3x', label: 'TQQQ (3×)' },
   { key: 'ndx2x', label: 'QLD (2×)' },
-  { key: 'ndx1x', label: 'QQQ (1×)' },
+  { key: 'ndx1x', label: '나스닥100 (1×)' },
   { key: 'sp500', label: 'VOO (S&P500)' },
 ]
 

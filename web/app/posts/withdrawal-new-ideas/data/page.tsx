@@ -50,7 +50,7 @@ const LABEL: Record<string, { short: string; full: string; color: string }> = {
   S3: { short: 'S3 분할 6개월',   full: '분할 재진입 6개월 — 신호 후 6개월에 걸쳐 매수',      color: 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700' },
   S4: { short: 'S4 G-K 인출',     full: 'Guyton-Klinger — 인출률 120% 초과 시 감액',          color: 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 border-green-200 dark:border-green-700' },
   S5: { short: 'S5 변동성 조정',  full: '변동성 조정 인출 — 30일 변동성 높으면 인출 30% 감소', color: 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700' },
-  S6: { short: 'S6 동적 레버리지',full: '동적 레버리지 — EMA200±5% 기준 TQQQ↔QQQ 전환',      color: 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700' },
+  S6: { short: 'S6 동적 레버리지',full: '동적 레버리지 — EMA200±5% 기준 TQQQ↔나스닥100 전환',      color: 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700' },
   S7: { short: 'S7 RSI 조기 재진입', full: 'RSI<30 즉시 재매수 (D10GK의 핵심 아이디어)',       color: 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200 border-purple-200 dark:border-purple-700' },
   S8: { short: 'S8 최소 보장형',  full: 'Floor 보장형 — 최소 500만/월 보장 (파산 위험 감수)', color: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 border-yellow-200 dark:border-yellow-700' },
 }
