@@ -521,7 +521,7 @@ function CustomSimulatorInner() {
               {/* 캐비엇 */}
               <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700/30 rounded-xl p-4 text-xs text-yellow-800 dark:text-yellow-200/70 space-y-1">
                 <p>⚠️ <strong>합성 가격 사용:</strong> TQQQ/QLD의 실제 상장 역사는 짧아, NDX 일별 수익률 × 레버리지로 합성한 이론값을 사용합니다.</p>
-                <p>⚠️ <strong>비용 반영:</strong> {costNote(instrument, withCosts)} 추적오차는 미반영입니다.</p>
+                <p>⚠️ <strong>비용 반영:</strong> {costNote(instrument, withCosts)} 배당은 반영하지 않아 실제 ETF보다 조금 낮게 나옵니다 (보수적, TQQQ 기준 연 2%p 정도).</p>
                 <p>⚠️ <strong>과거 데이터 기반:</strong> 미래 수익을 보장하지 않으며, 닷컴버블(1999-2000)이 유일하게 관측된 극단적 사례입니다.</p>
               </div>
             </>

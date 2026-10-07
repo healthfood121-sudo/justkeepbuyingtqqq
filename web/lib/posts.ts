@@ -41,6 +41,15 @@ export const posts: PostMeta[] = [
     category: '인출식',
   },
   {
+    slug: 'real-vs-synthetic',
+    title: '백테스트의 TQQQ는 실제 TQQQ를 얼마나 잘 따라갔나',
+    date: '2026-10-07',
+    tags: ['검증', '합성가격', 'TQQQ', '배당'],
+    summary:
+      '2010년 상장 이후 실제 TQQQ·QLD·나스닥100 ETF와 합성 가격을 그대로 비교했다. 최대 낙폭은 −81.7%로 같고, 오래 들고 가면 실제가 연 2.2%p 더 벌었다(대부분 배당). 백테스트는 실제보다 보수적이다. 단 금리가 오른 2022년 이후로는 차이가 거의 없다.',
+    category: '적립식',
+  },
+  {
     slug: 'synthetic-ndx-1929',
     title: '1929년 대공황 시나리오는 TQQQ에서 얼마나 걸릴까',
     date: '2026-10-01',
