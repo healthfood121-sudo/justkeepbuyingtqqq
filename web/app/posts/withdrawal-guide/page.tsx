@@ -191,11 +191,13 @@ export default function WithdrawalGuidePage() {
           <strong>25% 룰을 고르면 감수해야 할 것</strong><br />
           · <strong>자산이 크게 줄어드는 시기가 온다.</strong> 1990년 시작 예: 2000년 3월 1,099억 → 2008년 9월 47억(−96%). 닷컴버블과 금융위기가 연달아 오면서 8년 반에 걸쳐 줄었고,
           그동안 생활비로 110억을 꺼내 썼다. 나스닥100이 25% 빠져야 팔기 때문에 그때 TQQQ는 이미 60% 넘게 빠진 상태다.<br />
-          · <strong>생활비도 자산 따라 줄어든다.</strong> 상한이 없는 대신 하한도 없다. 자산이 반토막 나면 생활비도 반토막이다.<br />
+          · <strong>생활비도 자산 따라 줄어든다.</strong> 상한이 없는 대신 하한도 없다. 자산이 반토막 나면 생활비도 반토막이다. 생활비를 1년에 한 번만 정하면 수익률 손해 없이 덜 흔들린다 — <Link href="/posts/living-stability" className="underline">생활비 규칙 비교</Link>.<br />
           · <strong>매도 4번 중 1번은 산 지 5거래일 안에 다시 판다.</strong> 하락장 중간 반등에서 샀다가 다시 빠지는 경우다.<br />
           · <strong>1970~80년대 같은 시장에서는 S0와 비슷하다</strong>(10년 구간 9.8% vs 9.9%). 우위가 가장 큰 건 2003년 이후 대세 상승장이다.<br />
           · <strong>성적이 몇 번의 하락에 기대고 있다.</strong> 과거의 빠른 하락 네 번이 −22~−23%에서 멈춰서 25%가 22%보다 나았다. 기준을 23~33%로 바꿔도 결과는 비슷하다 —{' '}
-          <Link href="/posts/rule25-sensitivity" className="underline">기준값을 바꿔 본 검증</Link>.
+          <Link href="/posts/rule25-sensitivity" className="underline">기준값을 바꿔 본 검증</Link>.<br />
+          · <strong>1929년 같은 폭락은 막지 못한다.</strong> 하루 −10%대가 연달아 오면 신호가 뜨기 전에 TQQQ가 대부분 녹는다. 가상 데이터로 1929년 9월에 시작하면 10억이 776만원까지 줄었다 —{' '}
+          <Link href="/posts/withdrawal-1929" className="underline">1929년 대공황 인출 시나리오</Link>.
         </Callout>
 
         <H3>다른 선택지</H3>
