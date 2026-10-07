@@ -214,7 +214,7 @@ export default function AccumulationGuidePage() {
         <AccumulationStats />
 
         {/* ── 4. 종목 선택 ──────────────────────────────────── */}
-        <H2>4. 종목 선택 — QQQ vs QLD vs TQQQ</H2>
+        <H2>4. 종목 선택 — 나스닥100 vs QLD vs TQQQ</H2>
         <P>
           세 종목 중 무엇을 선택할지는 백테스트 결과를 직접 보고 결정하길 권장한다.
           숫자만 보면 TQQQ가 항상 유리해 보이지만, worst 케이스의 고통은 숫자로 다 전달되지 않는다.
@@ -224,11 +224,11 @@ export default function AccumulationGuidePage() {
           <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl px-5 py-4">
             <div className="flex items-center gap-3 mb-2">
               <span className="font-mono text-xs text-gray-400 dark:text-gray-600">1×</span>
-              <span className="font-bold text-gray-900 dark:text-white">QQQ</span>
+              <span className="font-bold text-gray-900 dark:text-white">나스닥100</span>
             </div>
             <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
               변동성 끌림 없음. 달성 속도가 가장 느리지만 worst 케이스 소요기간도 가장 짧다.
-              레버리지가 처음이라면 QQQ부터 시작하고 데이터를 직접 본 뒤 판단하라.
+              레버리지가 처음이라면 나스닥100(1배)부터 시작하고 데이터를 직접 본 뒤 판단하라.
             </p>
           </div>
           <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl px-5 py-4">
