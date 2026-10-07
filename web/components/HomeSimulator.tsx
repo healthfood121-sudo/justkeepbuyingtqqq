@@ -372,8 +372,8 @@ export default function HomeSimulator() {
             {/* ── CDF ── */}
             <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-5">
               <div className="flex items-baseline gap-2 mb-3">
-                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">CDF</h3>
-                <span className="text-xs text-gray-400">N년 이내 달성 누적 비율 | 50%·80% 기준선</span>
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">N년 안에 달성한 비율</h3>
+                <span className="text-xs text-gray-400">몇 년 안에 목표에 닿은 시작 시점이 몇 %였나 | 50%·80% 기준선</span>
               </div>
               <CdfChart resultsA={results.A} resultsB={results.B} resultsC={results.C} showA={show.A} showB={show.B} showC={show.C} />
             </div>

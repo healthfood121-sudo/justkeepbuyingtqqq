@@ -38,12 +38,15 @@ jobs:
       - name: 신호 계산
         run: python scripts/export_withdrawal_signal.py
 
+      - name: 실제 운용 성적표에 오늘 추가
+        run: python scripts/update_live_record.py
+
       - name: 변경사항 커밋 & 푸시
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add web/public/data/withdrawal_signal.json
+          git add web/public/data/withdrawal_signal.json web/public/data/live_record.json
 
           if git diff --cached --quiet; then
             echo "변경사항 없음 — 스킵"

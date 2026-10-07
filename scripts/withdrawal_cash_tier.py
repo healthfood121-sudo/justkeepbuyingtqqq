@@ -282,6 +282,7 @@ def run_sim(tq, qq, closes, ema, dates, rp_daily, rsi, peaks, start, p: Param, s
     half_months = 0
     worst_cut = 0.0
     flows = []
+    tax_years = []      # (과세 연도, 양도세, 그해 양도차익, 납부 시점 총자산) — 세금 분석용 기록
     last_living = 0.0
     last_mon = None
     for j in range(sim_len):
@@ -292,7 +293,9 @@ def run_sim(tq, qq, closes, ema, dates, rp_daily, rsi, peaks, start, p: Param, s
             last_mon = (d.year, d.month)
             # 연초: 전년도 양도세 납부
             if d.year != cur_year:
-                tax_due += max(0.0, year_gain - DEDUCTION) * TAX_RATE
+                yt = max(0.0, year_gain - DEDUCTION) * TAX_RATE
+                tax_due += yt
+                tax_years.append((cur_year, yt, year_gain, total(ci)))
                 year_gain = 0.0
                 cur_year = d.year
                 if p.use_gk:
@@ -443,6 +446,7 @@ def run_sim(tq, qq, closes, ema, dates, rp_daily, rsi, peaks, start, p: Param, s
         "quick_resells": quick,
         "liv_half_pct":  round(half_months / liv_months * 100, 1) if liv_months else 0.0,
         "liv_worst_cut": round(worst_cut * 100, 1),
+        "tax_years": tax_years,
     }
 
 

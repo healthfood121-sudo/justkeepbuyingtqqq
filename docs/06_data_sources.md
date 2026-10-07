@@ -42,3 +42,8 @@
 6. SPX500 백테스트는 `sp500_1927_now.csv`를 동일한 방식으로 로드하여 실행.
 7. 검증이 끝나면 `02_findings_accumulation.md` ~ `05_findings_patterns.md`에 적힌 모든 결론이
    재생성된 데이터에서도 재현되는지 교차 확인 후 사이트에 반영.
+## 5. `data/extra/` — 검증용 외부 데이터 (2026-10-07 추가)
+- `scripts/fetch_market_extra.py`가 GitHub Actions(`fetch-market-extra.yml`)에서 받아 커밋한다 (작업 환경에서는 금융 사이트 접속이 막혀 있음).
+- `tqqq.csv` · `qld.csv` · `qqq.csv` · `ndx_yahoo.csv`: `Date, Close, AdjClose` — Yahoo 일별. `AdjClose`는 배당 재투자·분할 반영, `Close`는 분할만 반영.
+- 환율(DEXKOUS)·물가(CPIAUCSL, KORCPIALLMINMEI)는 FRED에서 받으려 했으나 GitHub Actions에서도 접속이 실패해 아직 없음.
+- 용도: 합성 가격 검증 (`scripts/real_vs_synthetic.py`). 백테스트 원천 데이터(`ndx_1971_now.csv`)는 그대로 둔다.
