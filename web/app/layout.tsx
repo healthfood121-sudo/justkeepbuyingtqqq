@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { SITE_URL, SITE_NAME } from "@/lib/site";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,9 +14,25 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const DESCRIPTION = "TQQQ 매일 적립으로 10억 → 25% 룰로 꺼내 쓰기. 1971년 이후 모든 시작 시점을 비용·세금까지 넣어 백테스트한 결과와 매일 갱신되는 매매 신호.";
+
 export const metadata: Metadata = {
-  title: "justkeepbuyingtqqq — 레버리지 ETF 장기투자",
-  description: "TQQQ·QLD·QQQ·VOO 레버리지 ETF 적립식 투자의 55년 역사 데이터 기반 백테스트. 내 설정값으로 10억 목표 달성 시뮬레이션.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "justkeepbuyingtqqq — TQQQ 장기 적립과 인출",
+    template: "%s | justkeepbuyingtqqq",
+  },
+  description: DESCRIPTION,
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    locale: "ko_KR",
+    title: "justkeepbuyingtqqq — TQQQ 장기 적립과 인출",
+    description: DESCRIPTION,
+    url: "/",
+  },
+  twitter: { card: "summary_large_image" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
