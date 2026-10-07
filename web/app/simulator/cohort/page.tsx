@@ -28,7 +28,7 @@ const PRESET = { daily: 200_000, cap: 250_000_000, lump: 250_000_000, target: 1_
 const INST_LABELS: Record<string, string> = {
   ndx3x: 'TQQQ (NDX 3x)',
   ndx2x: 'QLD (NDX 2x)',
-  ndx1x: 'QQQ (NDX 1x)',
+  ndx1x: '나스닥100 (NDX 1x)',
   sp500:  'VOO (S&P500)',
 }
 
