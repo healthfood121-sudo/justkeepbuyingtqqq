@@ -1,0 +1,43 @@
+name: 검증용 외부 데이터 받기 (실제 ETF 가격·환율·물가)
+
+on:
+  # 받는 스크립트가 바뀌면 그 브랜치에서 한 번 실행해 data/extra/ 를 그 브랜치에 커밋
+  push:
+    paths:
+      - 'scripts/fetch_market_extra.py'
+      - '.github/workflows/fetch-market-extra.yml'
+  workflow_dispatch:
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Python 3.12 설정
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 의존성 설치
+        run: pip install -r scripts/requirements.txt
+
+      - name: 데이터 받기
+        run: python scripts/fetch_market_extra.py
+
+      - name: 변경사항 커밋 & 푸시
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/extra
+          if git diff --cached --quiet; then
+            echo "변경사항 없음 — 스킵"
+          else
+            git commit -m "auto: 검증용 외부 데이터 갱신 $(date +'%Y-%m-%d')"
+            git push origin HEAD:${{ github.ref_name }}
+          fi
