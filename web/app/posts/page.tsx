@@ -49,6 +49,8 @@ export default function PostsPage() {
         <h1 className="text-3xl font-bold mb-2">방법론 & 분석</h1>
         <p className="text-gray-500 dark:text-gray-400 mb-6">
           백테스트 기반 설계 결정들. 방법론 두 편은 반드시 먼저 읽으세요.
+          {' '}<Link href="/changelog" className="text-sm underline text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">권장 전략 변경 이력</Link>
+          {' · '}<Link href="/start" className="text-sm underline text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">용어 풀이</Link>
         </p>
 
         {/* 필터 버튼 */}

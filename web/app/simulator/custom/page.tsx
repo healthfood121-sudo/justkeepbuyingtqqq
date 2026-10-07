@@ -379,7 +379,7 @@ function CustomSimulatorInner() {
                   {([
                     { id: 'scatter', label: '산점도' },
                     { id: 'dist',    label: '분포' },
-                    { id: 'cdf',     label: 'CDF' },
+                    { id: 'cdf',     label: 'N년 안에 달성' },
                     { id: 'table',   label: `데이터 (${results.A.length}개)` },
                   ] as const).map(({ id, label }) => (
                     <button
