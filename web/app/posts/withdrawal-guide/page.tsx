@@ -197,7 +197,9 @@ export default function WithdrawalGuidePage() {
           · <strong>성적이 몇 번의 하락에 기대고 있다.</strong> 과거의 빠른 하락 네 번이 −22~−23%에서 멈춰서 25%가 22%보다 나았다. 기준을 23~33%로 바꿔도 결과는 비슷하다 —{' '}
           <Link href="/posts/rule25-sensitivity" className="underline">기준값을 바꿔 본 검증</Link>.<br />
           · <strong>1929년 같은 폭락은 막지 못한다.</strong> 하루 −10%대가 연달아 오면 신호가 뜨기 전에 TQQQ가 대부분 녹는다. 가상 데이터로 1929년 9월에 시작하면 10억이 776만원까지 줄었다 —{' '}
-          <Link href="/posts/withdrawal-1929" className="underline">1929년 대공황 인출 시나리오</Link>.
+          <Link href="/posts/withdrawal-1929" className="underline">1929년 대공황 인출 시나리오</Link>.<br />
+          · <strong>전량 매도한 해의 세금이 크다.</strong> 쌓인 이익이 한꺼번에 실현돼 다음 해 5월 자산의 10~26%를 세금으로 낸다. 그 몫은 재매수 때 남겨 둔다 —{' '}
+          <Link href="/posts/withdrawal-tax" className="underline">세금은 얼마나, 언제 내나</Link>.
         </Callout>
 
         <H3>다른 선택지</H3>
