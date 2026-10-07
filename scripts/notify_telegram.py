@@ -4,6 +4,7 @@ notify_telegram.py — 25% 룰 신호를 텔레그램 채널로 알린다 (GitHu
 보내는 경우
   · 매도/매수 신호가 새로 뜬 날        → 즉시 알림 ("다음 거래일에 전량 매도")
   · 보유 중 52주 최고 종가 대비 −20%를 처음 넘은 날 → 주의 알림 (매도선 −25%에 가까워짐)
+  · 현금 중 200일 평균선 위 10일째가 된 날         → 재매수 임박 알림 (15일이면 매수)
   · 매주 금요일 장 마감 뒤(한국 토요일 아침) → 한 주 요약 ("할 일 없음 · 매도선까지 ○% 남음")
   · --test                               → 지금 상태를 바로 한 번 (토큰 설정 확인용)
 
@@ -29,6 +30,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SIGNAL = ROOT / "web/public/data/withdrawal_signal.json"
 KEY = "RULE25"
 WARN_DROP = 20.0   # 최고 종가 대비 이만큼(%) 빠지면 주의 알림
+REBUY_WARN = 10    # 현금 중 200일선 위 연속일이 이만큼 되면 재매수 임박 알림
 
 
 def load(path):
@@ -81,6 +83,13 @@ def build(sig, prev, weekly, test):
     drop, pdrop = -sig["vs_peak_pct"], (-prev["vs_peak_pct"] if prev else 0.0)
     if act == "없음" and r.get("state") == "보유" and drop >= WARN_DROP and pdrop < WARN_DROP:
         msgs.append("\n".join(["🟡 25% 룰 주의 — 매도선에 가까워졌습니다", "", "아직 할 일은 없습니다. 매도는 −25% 아래로 마감한 다음 날입니다.", ""]
+                              + status_lines(sig)))
+
+    # 2-2) 재매수 임박 (현금 중, 200일선 위 연속일이 처음 REBUY_WARN일에 닿은 날)
+    d, pd_ = r.get("above_days"), p.get("above_days")
+    if act == "없음" and r.get("state") == "현금" and d is not None and d >= REBUY_WARN and (pd_ is None or pd_ < REBUY_WARN):
+        msgs.append("\n".join(["🔵 25% 룰 재매수 임박", "", f"200일 평균선 위 {d}일째입니다. 15일 연속이면 다음 거래일에 전액 매수합니다.",
+                               "아직 할 일은 없습니다. 중간에 한 번이라도 평균선 아래로 마감하면 처음부터 다시 셉니다.", ""]
                               + status_lines(sig)))
 
     # 3) 주간 요약 · 테스트

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 
 interface Loc {
   ndx_price:  number
@@ -158,7 +159,8 @@ export default function WithdrawalSignal() {
         </div>
       </details>
       <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-2 leading-relaxed">
-        매일 아침 7시 30분 자동 갱신 · 투자 권유 아님
+        매일 아침 7시 30분 자동 갱신 · 투자 권유 아님 ·{' '}
+        <Link href="/live" className="underline text-purple-600 dark:text-purple-300">공개 이후 실제 성적</Link>
         {TELEGRAM_URL && (
           <>
             {' · '}
