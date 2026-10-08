@@ -70,6 +70,14 @@ export default function LivePage() {
                 </ResponsiveContainer>
               </div>
             )}
+            {rec.rows.length > 2 && (
+              <div className="flex flex-wrap gap-x-4 gap-y-1 -mt-6 mb-8 text-[11px] text-gray-500 dark:text-gray-400">
+                {SERIES.map(s => (
+                  <span key={s.k} className="flex items-center gap-1.5"><span className="inline-block w-3 h-0.5" style={{ background: dark ? s.dark : s.light }} />{s.label}</span>
+                ))}
+                <span>· 시작 = 100 · 선이 겹치면 같은 결과 (둘 다 TQQQ 보유 중)</span>
+              </div>
+            )}
 
             <h2 className="text-lg font-bold mb-3">매매 기록</h2>
             {rec.events.length === 0
@@ -95,7 +103,7 @@ export default function LivePage() {
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                   {[...rec.rows].reverse().map(r => (
                     <tr key={r.d} className="text-gray-700 dark:text-gray-300">
-                      <td className="py-1.5 px-2 font-mono">{r.d}</td>
+                      <td className="py-1.5 px-2 font-mono whitespace-nowrap">{r.d}</td>
                       <td className="py-1.5 px-2 font-mono">{r.ndx.toLocaleString('en-US', { maximumFractionDigits: 0 })}</td>
                       <td className="py-1.5 px-2 font-mono">{r.tqqq ? `$${r.tqqq.toFixed(2)}` : '—'}{r.est && <span className="text-gray-400"> (추정)</span>}</td>
                       <td className="py-1.5 px-2">{r.state.RULE25}</td>

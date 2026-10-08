@@ -64,7 +64,7 @@ function calcStats(rows: CohortJsonRow[], s: 'A' | 'B' | 'C') {
 
 // ─── 요약 배너 ───────────────────────────────────────────────
 
-function StatBanner({ label, rows, color }: { label: string; rows: CohortJsonRow[]; color: string }) {
+function StatBanner({ rows }: { rows: CohortJsonRow[] }) {
   const st = (['A', 'B', 'C'] as const).map(s => ({ s, ...calcStats(rows, s) }))
   return (
     <div className="grid grid-cols-3 gap-3 mb-6">
@@ -283,7 +283,7 @@ function DataPageInner() {
 
         {!loading && data && (
           <>
-            <StatBanner label={inst} rows={data.rows} color="" />
+            <StatBanner rows={data.rows} />
             <p className="text-xs text-gray-400 dark:text-gray-500 mb-3">
               헤더 클릭 → 정렬 · 노란 행 = B전략이 A전략보다 1년 이상 더 걸린 진입 시점
             </p>

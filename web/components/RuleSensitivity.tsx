@@ -157,12 +157,12 @@ export function SensitivityEras() {
             const g = data.grid[`${t}_15`]
             return (
               <tr key={t} className={t === 25 ? 'bg-purple-50/60 dark:bg-purple-500/10 font-semibold' : ''}>
-                <td className="py-2 px-2 font-mono text-gray-800 dark:text-gray-200">−{t}%</td>
-                <td className="py-2 px-2 font-mono text-gray-800 dark:text-gray-200">{g.med}%</td>
-                <td className="py-2 px-2 font-mono text-gray-500 dark:text-gray-400">{g.p10}%</td>
-                {data.meta.eras.map(e => <td key={e} className="py-2 px-2 font-mono text-gray-600 dark:text-gray-300">{g.eras[e]}%</td>)}
-                <td className="py-2 px-2 font-mono text-gray-500 dark:text-gray-400">{g.trades10}</td>
-                <td className="py-2 px-2 font-mono text-gray-500 dark:text-gray-400">−{g.dd}%</td>
+                <td className="py-2 px-2 font-mono whitespace-nowrap text-gray-800 dark:text-gray-200">−{t}%</td>
+                <td className="py-2 px-2 font-mono whitespace-nowrap text-gray-800 dark:text-gray-200">{g.med}%</td>
+                <td className="py-2 px-2 font-mono whitespace-nowrap text-gray-500 dark:text-gray-400">{g.p10}%</td>
+                {data.meta.eras.map(e => <td key={e} className="py-2 px-2 font-mono whitespace-nowrap text-gray-600 dark:text-gray-300">{g.eras[e]}%</td>)}
+                <td className="py-2 px-2 font-mono whitespace-nowrap text-gray-500 dark:text-gray-400">{g.trades10}</td>
+                <td className="py-2 px-2 font-mono whitespace-nowrap text-gray-500 dark:text-gray-400">−{g.dd}%</td>
                 <td className="py-2 px-2"><DataLink m="ndx" k={`R${t}_15`} /></td>
               </tr>
             )
@@ -193,10 +193,10 @@ export function SensitivityEpisodes() {
             const near = e.dd <= -20 && e.dd > -25
             return (
               <tr key={e.start} className={near ? 'bg-yellow-50 dark:bg-yellow-500/10' : ''}>
-                <td className="py-1.5 px-2 font-mono text-gray-700 dark:text-gray-300">{e.start.slice(0, 7)}</td>
-                <td className="py-1.5 px-2 font-mono text-gray-500 dark:text-gray-400">{e.bottom.slice(0, 7)}</td>
-                <td className="py-1.5 px-2 font-mono text-gray-800 dark:text-gray-200">{e.dd}%</td>
-                <td className={`py-1.5 px-2 font-mono ${e.after1y >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>{e.after1y > 0 ? '+' : ''}{e.after1y}%</td>
+                <td className="py-1.5 px-2 font-mono whitespace-nowrap text-gray-700 dark:text-gray-300">{e.start.slice(0, 7)}</td>
+                <td className="py-1.5 px-2 font-mono whitespace-nowrap text-gray-500 dark:text-gray-400">{e.bottom.slice(0, 7)}</td>
+                <td className="py-1.5 px-2 font-mono whitespace-nowrap text-gray-800 dark:text-gray-200">{e.dd}%</td>
+                <td className={`py-1.5 px-2 font-mono whitespace-nowrap ${e.after1y >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>{e.after1y > 0 ? '+' : ''}{e.after1y}%</td>
                 {cols.map(c => (
                   <td key={c} className="py-1.5 px-2 text-xs">
                     {e.dd < -c ? <span className="text-red-600 dark:text-red-400 font-semibold">매도</span> : <span className="text-gray-300 dark:text-gray-600">보유</span>}
@@ -256,12 +256,12 @@ export function SensitivitySp500() {
             return (
               <tr key={k} className={k === '25' ? 'bg-purple-50/60 dark:bg-purple-500/10 font-semibold' : k === 'S0' || k === 'HOLD' ? 'text-gray-500' : ''}>
                 <td className="py-2 px-2 whitespace-nowrap text-gray-800 dark:text-gray-200">{label(k)}</td>
-                <td className="py-2 px-2 font-mono text-gray-800 dark:text-gray-200">{g.med}%</td>
-                <td className="py-2 px-2 font-mono text-gray-600 dark:text-gray-300">{g.p10}%</td>
-                <td className="py-2 px-2 font-mono text-gray-500 dark:text-gray-400">{g.worst}%</td>
+                <td className="py-2 px-2 font-mono whitespace-nowrap text-gray-800 dark:text-gray-200">{g.med}%</td>
+                <td className="py-2 px-2 font-mono whitespace-nowrap text-gray-600 dark:text-gray-300">{g.p10}%</td>
+                <td className="py-2 px-2 font-mono whitespace-nowrap text-gray-500 dark:text-gray-400">{g.worst}%</td>
                 <td className={`py-2 px-2 font-mono ${g.lt10 > 0 ? 'text-red-600 dark:text-red-400 font-semibold' : 'text-gray-500 dark:text-gray-400'}`}>{g.lt10}/{g.n}</td>
-                {data.meta.sp_eras.map(e => <td key={e} className="py-2 px-2 font-mono text-gray-600 dark:text-gray-300">{g.eras[e]}%</td>)}
-                <td className="py-2 px-2 font-mono text-gray-500 dark:text-gray-400">{g.trades10}</td>
+                {data.meta.sp_eras.map(e => <td key={e} className="py-2 px-2 font-mono whitespace-nowrap text-gray-600 dark:text-gray-300">{g.eras[e]}%</td>)}
+                <td className="py-2 px-2 font-mono whitespace-nowrap text-gray-500 dark:text-gray-400">{g.trades10}</td>
                 <td className="py-2 px-2"><DataLink m="sp500" k={dataKey(k)} /></td>
               </tr>
             )

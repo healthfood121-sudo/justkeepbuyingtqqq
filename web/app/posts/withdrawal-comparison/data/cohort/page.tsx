@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useRef, useState, Suspense } from 'react'
+import type { TooltipItem, ScriptableLineSegmentContext } from 'chart.js'
+import { useEffect, useState, Suspense } from 'react'
 import CostToggle from '@/components/CostToggle'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
@@ -104,10 +105,6 @@ function CohortChart({ start, monthly }: { start: string; monthly: MonthlyData }
   // B안 투자/현금 구간 배경 계산
   const bInvested = monthly.b.map(row => row[1] === 1)
 
-  // Point colors for B line: blue when invested, orange when cash
-  const bPointColors = monthly.b.map(row =>
-    row[1] === 1 ? '#3b82f6' : '#f97316'
-  )
 
   const options = {
     responsive: true,
@@ -148,11 +145,11 @@ function CohortChart({ start, monthly }: { start: string; monthly: MonthlyData }
       },
       tooltip: {
         callbacks: {
-          title: (items: any[]) => {
+          title: (items: TooltipItem<'line'>[]) => {
             const idx = items[0]?.dataIndex ?? 0
             return addMonths(start, idx)
           },
-          afterBody: (items: any[]) => {
+          afterBody: (items: TooltipItem<'line'>[]) => {
             const idx = items[0]?.dataIndex ?? 0
             const aState = stateLabel(monthly.a[idx]?.[1] ?? 0)
             const bInv = monthly.b[idx]?.[1] === 1 ? '투자중' : '현금보유'
@@ -192,7 +189,7 @@ function CohortChart({ start, monthly }: { start: string; monthly: MonthlyData }
         pointHoverRadius: 4,
         tension: 0.1,
         segment: {
-          borderColor: (ctx: any) => {
+          borderColor: (ctx: ScriptableLineSegmentContext) => {
             const inv = bInvested[ctx.p0DataIndex]
             return inv ? '#3b82f6' : '#f97316'
           },

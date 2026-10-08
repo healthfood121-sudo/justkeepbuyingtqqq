@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState, Suspense } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Header from '@/components/Header'
@@ -16,7 +16,7 @@ function Viewer() {
   const s = params.get('s') ?? 'RULE25'
   useEffect(() => { fetch('/data/withdrawal_tax.json').then(r => r.json()).then(d => setRows(d.rows)) }, [])
   const list = rows?.[s] ?? []
-  const worst = useMemo(() => list.length ? list.reduce((a, b) => (b.irr0 - b.irr > a.irr0 - a.irr ? b : a)).s : '', [list])
+  const worst = list.length ? list.reduce((a, b) => (b.irr0 - b.irr > a.irr0 - a.irr ? b : a)).s : ''
   if (!rows) return <p className="text-sm text-gray-400 py-10 text-center">불러오는 중…</p>
   return (
     <>

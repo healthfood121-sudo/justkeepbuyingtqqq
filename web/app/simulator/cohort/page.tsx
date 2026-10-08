@@ -1,5 +1,6 @@
 'use client'
 
+import type { TooltipItem } from 'chart.js'
 import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
@@ -152,7 +153,7 @@ function CohortDetailContent() {
         pointRadius: 0,
         pointHoverRadius: 0,
         tension: 0.1,
-      } as any)
+      } as (typeof datasets)[number])
     }
 
     return { labels, datasets }
@@ -175,7 +176,7 @@ function CohortDetailContent() {
       legend: { labels: { color: '#6b7280', font: { size: 11 }, usePointStyle: true } },
       tooltip: {
         callbacks: {
-          title: (items: any[]) => {
+          title: (items: TooltipItem<'line'>[]) => {
             if (!details) return ''
             const idx = items[0]?.dataIndex ?? 0
             const snap = details.A.snapshots[idx] ?? details.B.snapshots[idx] ?? details.C.snapshots[idx]
@@ -184,14 +185,15 @@ function CohortDetailContent() {
             const days = Math.round((d.getTime() - details.A.startDate.getTime()) / 86400000)
             return `${fmtDate(d)} (${(days/365.25).toFixed(1)}년차)`
           },
-          label: (ctx: any) => {
-            if (ctx.dataset.label?.includes('누적')) return `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)}억`
+          label: (ctx: TooltipItem<'line'>) => {
+            const y = ctx.parsed.y ?? 0
+            if (ctx.dataset.label?.includes('누적')) return `${ctx.dataset.label}: ${y.toFixed(2)}억`
             const s = (['A','B','C'] as const).find(k => S_LABEL[k] === ctx.dataset.label)
             const det = s ? details?.[s] : null
             const snap = det?.snapshots[ctx.dataIndex]
-            if (!snap) return `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)}억`
+            if (!snap) return `${ctx.dataset.label}: ${y.toFixed(2)}억`
             const ret = snap.cumInvest > 0 ? (snap.value - snap.cumInvest) / snap.cumInvest * 100 : 0
-            return `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)}억 (투자 ${(snap.cumInvest/1e8).toFixed(2)}억 · ${ret >= 0 ? '+' : ''}${ret.toFixed(1)}%)`
+            return `${ctx.dataset.label}: ${y.toFixed(2)}억 (투자 ${(snap.cumInvest/1e8).toFixed(2)}억 · ${ret >= 0 ? '+' : ''}${ret.toFixed(1)}%)`
           },
         },
         backgroundColor: '#fff',
