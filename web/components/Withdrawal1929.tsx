@@ -37,7 +37,7 @@ function useData() {
   return d
 }
 const Loading = () => <div className="text-xs text-gray-400 py-6 text-center">불러오는 중…</div>
-const eok = (v: number) => v < 1 ? `${Math.round(v * 10000).toLocaleString('ko-KR')}만원` : `${v.toFixed(1)}억`
+const eok = (v: number) => v * 10000 < 1 ? '1만원 미만' : v < 1 ? `${Math.round(v * 10000).toLocaleString('ko-KR')}만원` : `${v.toFixed(1)}억`
 
 function VariantTabs({ v, set }: { v: V; set: (v: V) => void }) {
   return (
@@ -153,9 +153,9 @@ export function Summary1929() {
                 <tr key={k} className={k === 'RULE25' ? 'bg-purple-50/60 dark:bg-purple-500/10' : ''}>
                   <td className="py-2 px-2 font-semibold text-gray-800 dark:text-gray-200 whitespace-nowrap">{NAME[k]}</td>
                   <td className={`py-2 px-2 font-mono ${d.min_worst < 0.5 ? 'text-red-600 dark:text-red-400 font-bold' : 'text-gray-800 dark:text-gray-200'}`}>{eok(d.min_worst)}</td>
-                  <td className="py-2 px-2 font-mono text-gray-700 dark:text-gray-300">{eok(g.w10_med)}</td>
-                  <td className="py-2 px-2 font-mono text-gray-800 dark:text-gray-200">{g.med}%</td>
-                  <td className="py-2 px-2 font-mono text-gray-500 dark:text-gray-400">{g.p10}%</td>
+                  <td className="py-2 px-2 font-mono whitespace-nowrap text-gray-700 dark:text-gray-300">{eok(g.w10_med)}</td>
+                  <td className="py-2 px-2 font-mono whitespace-nowrap text-gray-800 dark:text-gray-200">{g.med}%</td>
+                  <td className="py-2 px-2 font-mono whitespace-nowrap text-gray-500 dark:text-gray-400">{g.p10}%</td>
                   <td className={`py-2 px-2 font-mono ${g.lt10 > 0 ? 'text-red-600 dark:text-red-400 font-bold' : 'text-gray-500 dark:text-gray-400'}`}>{g.lt10}/{g.n}</td>
                   <td className="py-2 px-2"><Link href={`${DATA_URL}?v=${v}&s=${k}`} className="text-xs text-blue-500 dark:text-blue-400 hover:underline whitespace-nowrap">데이터 →</Link></td>
                 </tr>
@@ -188,8 +188,8 @@ export function Leverage1929() {
             return (
               <tr key={k} className={k === 'R25W67' ? 'bg-green-50/60 dark:bg-green-500/10' : ''}>
                 <td className="py-2 px-2 font-semibold text-gray-800 dark:text-gray-200 whitespace-nowrap">{k === 'RULE25' ? '100% (지금 규칙)' : NAME[k].replace('25% 룰 · ', '')}</td>
-                <td className="py-2 px-2 font-mono text-gray-800 dark:text-gray-200">{a.med}%</td>
-                <td className="py-2 px-2 font-mono text-gray-500 dark:text-gray-400">{a.p10}%</td>
+                <td className="py-2 px-2 font-mono whitespace-nowrap text-gray-800 dark:text-gray-200">{a.med}%</td>
+                <td className="py-2 px-2 font-mono whitespace-nowrap text-gray-500 dark:text-gray-400">{a.p10}%</td>
                 {(['recent', 'pretech', 'harsh'] as V[]).map(v => (
                   <td key={v} className={`py-2 px-2 font-mono ${data.depression[v][k].min_worst < 0.5 ? 'text-red-600 dark:text-red-400' : 'text-gray-700 dark:text-gray-300'}`}>{eok(data.depression[v][k].min_worst)}</td>
                 ))}

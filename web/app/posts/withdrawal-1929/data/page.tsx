@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState, Suspense } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Header from '@/components/Header'
@@ -27,7 +27,7 @@ function Viewer() {
     if (next.length) go(v, next)
   }
   const base = sel[0] ? data?.rows[v][sel[0]] ?? [] : []
-  const worst = useMemo(() => base.length ? base.reduce((a, b) => (b[2] < a[2] ? b : a))[0] : '', [base])
+  const worst = base.length ? base.reduce((a, b) => (b[2] < a[2] ? b : a))[0] : ''
   if (!data) return <p className="text-sm text-gray-400 py-10 text-center">불러오는 중…</p>
 
   return (
@@ -82,7 +82,7 @@ function Viewer() {
       </div>
       <p className="text-xs text-gray-400 dark:text-gray-500 mt-3">
         처음 10억 · 오늘까지 보유 · 빨간 줄 = 첫 번째로 고른 전략에서 자산 최저점이 가장 낮았던 시작 시점 ·
-        1971년 이전은 S&amp;P500으로 만든 가상 나스닥100 · 실제 나스닥100은 10년 이상 보유한 시작 시점만 · 금액은 물가 상승을 빼지 않은 금액
+        1971년 이전은 S&amp;P500으로 만든 가상 나스닥100 · 금액은 물가 상승을 빼지 않은 금액
       </p>
     </>
   )
@@ -95,7 +95,7 @@ export default function Withdrawal1929DataPage() {
       <main className="max-w-6xl mx-auto px-4 py-10">
         <Link href="/posts/withdrawal-1929" className="text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 mb-4 inline-block">← 글로 돌아가기</Link>
         <h1 className="text-2xl font-black mb-2">1929년 대공황 인출 시나리오 — 시작 시점별 데이터</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">1929~1970년 매달 시작 (가상 나스닥100 4가지) + 비교용 실제 나스닥100 · 최대 3개 비교</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">1929~1970년 매달 시작 · 가상 나스닥100 4가지 · 최대 3개 비교</p>
         <Suspense fallback={null}><Viewer /></Suspense>
       </main>
     </div>

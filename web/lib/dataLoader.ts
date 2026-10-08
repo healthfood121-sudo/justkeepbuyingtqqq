@@ -23,7 +23,6 @@ const EXP_1X = 0.0020
 
 let ndxCache: PriceData | null = null
 let sp5Cache: PriceData | null = null
-let fedCache: Float64Array | null = null  // 날짜 인덱스별 daily fed rate (연율/100/252)
 
 async function loadCsv(url: string): Promise<{ dates: Date[]; closes: Float64Array }> {
   const res = await fetch(url)

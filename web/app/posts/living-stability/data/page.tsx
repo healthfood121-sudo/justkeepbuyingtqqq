@@ -22,10 +22,8 @@ function Viewer() {
     if (next.length) router.replace(`?s=${next.join(',')}`, { scroll: false })
   }
   const list = useMemo(() => (rows ?? []).filter(r => r.y >= 10), [rows])
-  const worst = useMemo(() => {
-    if (!list.length || !sel[0]) return ''
-    return list.reduce((a, b) => ((b[sel[0]] as Cell).mn < (a[sel[0]] as Cell).mn ? b : a)).s
-  }, [list, sel])
+  const worst = !list.length || !sel[0] ? ''
+    : list.reduce((a, b) => ((b[sel[0]] as Cell).mn < (a[sel[0]] as Cell).mn ? b : a)).s
   if (!rows) return <p className="text-sm text-gray-400 py-10 text-center">불러오는 중…</p>
   const name = (k: string) => DESIGNS.find(d => d.k === k)?.name ?? k
 

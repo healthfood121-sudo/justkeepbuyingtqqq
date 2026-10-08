@@ -35,11 +35,11 @@ export function TaxSummary() {
           {Object.entries(d.summary).map(([k, g]) => (
             <tr key={k} className={k === 'RULE25' ? 'bg-purple-50/60 dark:bg-purple-500/10' : ''}>
               <td className="py-2 px-2 font-semibold text-gray-800 dark:text-gray-200 whitespace-nowrap">{NAME[k]}</td>
-              <td className="py-2 px-2 font-mono text-gray-800 dark:text-gray-200">{g.irr}%</td>
-              <td className="py-2 px-2 font-mono text-gray-500 dark:text-gray-400">{g.irr0}%</td>
-              <td className="py-2 px-2 font-mono text-red-600 dark:text-red-400">−{g.irr_cost}%p</td>
-              <td className="py-2 px-2 font-mono text-gray-700 dark:text-gray-300">{g.tax_vs_wd}%</td>
-              <td className="py-2 px-2 font-mono text-gray-700 dark:text-gray-300">{k === 'HOLD3' ? '—' : `${g.max_tax_pct}%`}</td>
+              <td className="py-2 px-2 font-mono whitespace-nowrap text-gray-800 dark:text-gray-200">{g.irr}%</td>
+              <td className="py-2 px-2 font-mono whitespace-nowrap text-gray-500 dark:text-gray-400">{g.irr0}%</td>
+              <td className="py-2 px-2 font-mono whitespace-nowrap text-red-600 dark:text-red-400">−{g.irr_cost}%p</td>
+              <td className="py-2 px-2 font-mono whitespace-nowrap text-gray-700 dark:text-gray-300">{g.tax_vs_wd}%</td>
+              <td className="py-2 px-2 font-mono whitespace-nowrap text-gray-700 dark:text-gray-300">{k === 'HOLD3' ? '—' : `${g.max_tax_pct}%`}</td>
               <td className="py-2 px-2"><Link href={`/posts/withdrawal-tax/data?s=${k}`} className="text-xs text-blue-500 dark:text-blue-400 hover:underline whitespace-nowrap">데이터 →</Link></td>
             </tr>
           ))}
@@ -66,11 +66,11 @@ export function TaxExample() {
         <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
           {rows.map(e => (
             <tr key={e.y} className={e.pct >= 10 ? 'bg-red-50/60 dark:bg-red-500/10' : ''}>
-              <td className="py-1.5 px-2 font-mono text-gray-800 dark:text-gray-200">{e.y}</td>
-              <td className="py-1.5 px-2 font-mono text-gray-600 dark:text-gray-300">{eok(e.gain)}</td>
-              <td className="py-1.5 px-2 font-mono font-semibold text-gray-800 dark:text-gray-200">{eok(e.tax)}</td>
-              <td className="py-1.5 px-2 font-mono text-gray-500 dark:text-gray-400">{eok(e.total)}</td>
-              <td className={`py-1.5 px-2 font-mono ${e.pct >= 10 ? 'text-red-600 dark:text-red-400 font-bold' : 'text-gray-500 dark:text-gray-400'}`}>{e.pct}%</td>
+              <td className="py-1.5 px-2 font-mono whitespace-nowrap text-gray-800 dark:text-gray-200">{e.y}</td>
+              <td className="py-1.5 px-2 font-mono whitespace-nowrap text-gray-600 dark:text-gray-300">{eok(e.gain)}</td>
+              <td className="py-1.5 px-2 font-mono whitespace-nowrap font-semibold text-gray-800 dark:text-gray-200">{eok(e.tax)}</td>
+              <td className="py-1.5 px-2 font-mono whitespace-nowrap text-gray-500 dark:text-gray-400">{eok(e.total)}</td>
+              <td className={`py-1.5 px-2 font-mono whitespace-nowrap ${e.pct >= 10 ? 'text-red-600 dark:text-red-400 font-bold' : 'text-gray-500 dark:text-gray-400'}`}>{e.pct}%</td>
             </tr>
           ))}
         </tbody>

@@ -51,12 +51,12 @@ export default function LivingStability() {
                   <p className="font-semibold text-gray-800 dark:text-gray-200 whitespace-nowrap">{d.name}</p>
                   <p className="text-[11px] text-gray-400 dark:text-gray-500">{d.desc}</p>
                 </td>
-                <td className="py-2 px-2 font-mono text-gray-800 dark:text-gray-200 whitespace-nowrap">{r.med_irr_pct}% <span className="text-gray-400">({r.p10_irr_pct}%)</span></td>
-                <td className="py-2 px-2 font-mono text-gray-700 dark:text-gray-300">{r.liv_half_pct}%</td>
-                <td className="py-2 px-2 font-mono text-gray-700 dark:text-gray-300">{man(r.by_year['10'].p10_living_man)}</td>
-                <td className="py-2 px-2 font-mono text-gray-700 dark:text-gray-300">{man(r.by_year['20'].p10_living_man)}</td>
-                <td className="py-2 px-2 font-mono text-gray-700 dark:text-gray-300">{r.p10_min_eok}억</td>
-                <td className="py-2 px-2 font-mono text-gray-500 dark:text-gray-400">−{r.med_max_dd}%</td>
+                <td className="py-2 px-2 font-mono whitespace-nowrap text-gray-800 dark:text-gray-200 whitespace-nowrap">{r.med_irr_pct}% <span className="text-gray-400">({r.p10_irr_pct}%)</span></td>
+                <td className="py-2 px-2 font-mono whitespace-nowrap text-gray-700 dark:text-gray-300">{r.liv_half_pct}%</td>
+                <td className="py-2 px-2 font-mono whitespace-nowrap text-gray-700 dark:text-gray-300">{man(r.by_year['10'].p10_living_man)}</td>
+                <td className="py-2 px-2 font-mono whitespace-nowrap text-gray-700 dark:text-gray-300">{man(r.by_year['20'].p10_living_man)}</td>
+                <td className="py-2 px-2 font-mono whitespace-nowrap text-gray-700 dark:text-gray-300">{r.p10_min_eok}억</td>
+                <td className="py-2 px-2 font-mono whitespace-nowrap text-gray-500 dark:text-gray-400">−{r.med_max_dd}%</td>
                 <td className="py-2 px-2">
                   <Link href={`${DATA_URL}?s=${d.k}`} className="text-xs text-blue-500 dark:text-blue-400 hover:underline whitespace-nowrap">데이터 →</Link>
                 </td>

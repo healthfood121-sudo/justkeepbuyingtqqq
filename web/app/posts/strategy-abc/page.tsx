@@ -188,7 +188,7 @@ export default function StrategyAbcPage() {
         <Callout color="red">
           <strong>VOO B전략의 최장 31년:</strong> S&P500을 매수하다 2.5억에서 멈추고 보유만 하면,
           닷컴버블 진입 시 31년이 걸린다. A전략(17.34년)보다 13.6년 더 오래 걸리는 셈이다.
-          레버리지가 낮을수록 "계속 사는" 효과가 더 크다.
+          레버리지가 낮을수록 &ldquo;계속 사는&rdquo; 효과가 더 크다.
         </Callout>
 
         {/* 4. 결론 */}
@@ -212,7 +212,7 @@ export default function StrategyAbcPage() {
         <P>
           결국 이 분석이 보여주는 건 하나다.
           <strong className="text-gray-900 dark:text-white"> 멈추지 않는 게 중요하다.</strong> 하락장에 싸게 살 기회를 포기하는 순간,
-          worst case가 급격히 나빠진다. 거치금 여부와 무관하게 "계속 사는" 행동만으로도 리스크가 크게 줄어든다.
+          worst case가 급격히 나빠진다. 거치금 여부와 무관하게 &ldquo;계속 사는&rdquo; 행동만으로도 리스크가 크게 줄어든다.
         </P>
 
         {/* 관련 링크 */}

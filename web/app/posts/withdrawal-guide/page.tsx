@@ -59,28 +59,6 @@ function AnalysisLink({ href, title, desc }: { href: string; title: string; desc
   )
 }
 
-function StepCard({
-  num, color, title, children,
-}: {
-  num: string; color: 'blue' | 'yellow' | 'red' | 'purple'; title: string; children: React.ReactNode
-}) {
-  const colors = {
-    blue:   'text-blue-500 dark:text-blue-400 border-blue-200 dark:border-blue-500/30',
-    yellow: 'text-yellow-500 dark:text-yellow-400 border-yellow-200 dark:border-yellow-500/30',
-    red:    'text-red-500 dark:text-red-400 border-red-200 dark:border-red-500/30',
-    purple: 'text-purple-500 dark:text-purple-400 border-purple-200 dark:border-purple-500/30',
-  }
-  return (
-    <div className={`border rounded-xl px-5 py-4 mb-4 bg-gray-50 dark:bg-gray-900 ${colors[color].split(' ')[2]} ${colors[color].split(' ')[3]}`}>
-      <div className="flex items-center gap-2 mb-2">
-        <span className={`font-mono text-sm font-bold ${colors[color].split(' ')[0]} ${colors[color].split(' ')[1]}`}>{num}</span>
-        <span className="text-sm font-bold text-gray-900 dark:text-white">{title}</span>
-      </div>
-      <div className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed pl-7">{children}</div>
-    </div>
-  )
-}
-
 function Table({ headers, rows }: { headers: string[]; rows: (string | number | React.ReactNode)[][] }) {
   return (
     <div className="overflow-x-auto mb-8">
@@ -628,8 +606,8 @@ export default function WithdrawalGuidePage() {
 
         <H3>4-2. 인출 구조: 단일버퍼 vs 이중버퍼</H3>
         <P>
-          "매달 동적 비율 전체 인출 → 생활비 쓰고 남는 건 별도 버퍼 → VOO 매수" 구조(이중버퍼)와
-          "인출 상한 1500만, 나머지는 TQQQ에 그대로" 구조(단일버퍼)를 비교했다.
+          &ldquo;매달 동적 비율 전체 인출 → 생활비 쓰고 남는 건 별도 버퍼 → VOO 매수&rdquo; 구조(이중버퍼)와
+          &ldquo;인출 상한 1500만, 나머지는 TQQQ에 그대로&rdquo; 구조(단일버퍼)를 비교했다.
         </P>
 
         <Table
@@ -708,7 +686,7 @@ export default function WithdrawalGuidePage() {
           매수: NDX가 EMA200 위에서 15거래일 연속 → 전액 재매수
         </FormulaBlock>
         <P>
-          매수 조건과 매도 조건이 둘 다 "15일 연속"이라, 매수 직후 최소 15거래일은
+          매수 조건과 매도 조건이 둘 다 &ldquo;15일 연속&rdquo;이라, 매수 직후 최소 15거래일은
           구조적으로 보유가 보장된다. 668가지 시작 시점 전체에서 매수 다음날 재매도된 사례가
           단 한 건도 없다. 매일 확인해야 하지만 앱에서 현재 구간을 표시해주면 부담이 없다.
         </P>

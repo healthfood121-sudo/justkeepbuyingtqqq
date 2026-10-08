@@ -106,11 +106,11 @@ export default function LumpSumVsSplitPost() {
           바로 다음 질문이 따라온다.
         </P>
         <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-6 py-4 mb-6 text-gray-600 dark:text-gray-200 italic text-sm leading-relaxed">
-          "2.5억을 오늘 하루에 다 넣어야 하나, 아니면 몇 년에 걸쳐 나눠 넣어야 하나?"
+          &ldquo;2.5억을 오늘 하루에 다 넣어야 하나, 아니면 몇 년에 걸쳐 나눠 넣어야 하나?&rdquo;
         </div>
         <P>
           특히 몇 년째 강세장이 이어진 뒤라면 이 질문은 더 절실해진다.
-          "오늘 넣었는데 다음 달에 반토막 나면 어떡하지"라는 두려움은 누구나 한 번쯤 해본다.
+          &ldquo;오늘 넣었는데 다음 달에 반토막 나면 어떡하지&rdquo;라는 두려움은 누구나 한 번쯤 해본다.
           그래서 1971~2026년 역사 데이터로 직접 테스트해봤다.
         </P>
 
@@ -156,16 +156,16 @@ export default function LumpSumVsSplitPost() {
           headers={['방식', '완료율', '평균', '중앙값', '최장', '10년 넘게 걸린 경우', '']}
           highlight={[0, 6]}
           rows={[
-            ['기준선 — 즉시 거치', '95.5%', '3.76년', '3.08년', <strong key="max" className="text-yellow-500 dark:text-yellow-300">12.32년</strong>, '27번', <DataLink inst="ndx3x" m="instant" />],
-            ['하락 −15% 후 1년 분산', '94.8%', '4.04년', '3.44년', '12.82년', '26번', <DataLink inst="ndx3x" m="dip15" />],
-            ['하락 −20% 후 1년 분산', '94.8%', '4.06년', '3.50년', '12.82년', '26번', <DataLink inst="ndx3x" m="dip20" />],
-            ['하락 −30% 후 1년 분산', '94.5%', '4.08년', '3.52년', '12.90년', '27번', <DataLink inst="ndx3x" m="dip30" />],
-            ['월 분할 3년 (36개월)', '94.5%', '4.26년', '3.70년', '13.32년', '14번', <DataLink inst="ndx3x" m="monthly3y" />],
-            ['월 분할 4년 (48개월)', '94.0%', '4.41년', '4.02년', '13.36년', '5번', <DataLink inst="ndx3x" m="monthly4y" />],
-            [<strong key="m5">월 분할 5년 (60개월) ★</strong>, '93.7%', '4.57년', '4.28년', <strong key="max" className="text-green-600 dark:text-green-300">8.99년</strong>, <strong key="t" className="text-green-600 dark:text-green-300">0번</strong>, <DataLink inst="ndx3x" m="monthly5y" />],
-            ['일 분할 1년 (252일)', '95.1%', '3.94년', '3.33년', '12.74년', '25번', <DataLink inst="ndx3x" m="daily1y" />],
-            ['일 분할 2년 (504일)', '94.8%', '4.10년', '3.47년', '13.15년', '20번', <DataLink inst="ndx3x" m="daily2y" />],
-            ['일 분할 3년 (756일)', '94.3%', '4.26년', '3.71년', '13.32년', '13번', <DataLink inst="ndx3x" m="daily3y" />],
+            ['기준선 — 즉시 거치', '95.5%', '3.76년', '3.08년', <strong key="max" className="text-yellow-500 dark:text-yellow-300">12.32년</strong>, '27번', <DataLink key="d" inst="ndx3x" m="instant" />],
+            ['하락 −15% 후 1년 분산', '94.8%', '4.04년', '3.44년', '12.82년', '26번', <DataLink key="d" inst="ndx3x" m="dip15" />],
+            ['하락 −20% 후 1년 분산', '94.8%', '4.06년', '3.50년', '12.82년', '26번', <DataLink key="d" inst="ndx3x" m="dip20" />],
+            ['하락 −30% 후 1년 분산', '94.5%', '4.08년', '3.52년', '12.90년', '27번', <DataLink key="d" inst="ndx3x" m="dip30" />],
+            ['월 분할 3년 (36개월)', '94.5%', '4.26년', '3.70년', '13.32년', '14번', <DataLink key="d" inst="ndx3x" m="monthly3y" />],
+            ['월 분할 4년 (48개월)', '94.0%', '4.41년', '4.02년', '13.36년', '5번', <DataLink key="d" inst="ndx3x" m="monthly4y" />],
+            [<strong key="m5">월 분할 5년 (60개월) ★</strong>, '93.7%', '4.57년', '4.28년', <strong key="max" className="text-green-600 dark:text-green-300">8.99년</strong>, <strong key="t" className="text-green-600 dark:text-green-300">0번</strong>, <DataLink key="d" inst="ndx3x" m="monthly5y" />],
+            ['일 분할 1년 (252일)', '95.1%', '3.94년', '3.33년', '12.74년', '25번', <DataLink key="d" inst="ndx3x" m="daily1y" />],
+            ['일 분할 2년 (504일)', '94.8%', '4.10년', '3.47년', '13.15년', '20번', <DataLink key="d" inst="ndx3x" m="daily2y" />],
+            ['일 분할 3년 (756일)', '94.3%', '4.26년', '3.71년', '13.32년', '13번', <DataLink key="d" inst="ndx3x" m="daily3y" />],
           ]}
         />
 
@@ -203,12 +203,12 @@ export default function LumpSumVsSplitPost() {
           headers={['종목', '방식', '완료율', '평균', '최장', '']}
           highlight={[0, 3]}
           rows={[
-            [<strong key="q" className="text-gray-900 dark:text-white">QLD (2x)</strong>, '즉시 거치 (기준선)', '94.9%', '4.45년', '12.63년 · 10년+ 25번', <DataLink inst="ndx2x" m="instant" />],
-            ['', '월 분할 3년', '93.6%', '4.88년', '13.44년 · 10년+ 19번', <DataLink inst="ndx2x" m="monthly3y" />],
-            ['', '월 분할 5년', '92.7%', '5.23년', '12.68년 · 10년+ 13번', <DataLink inst="ndx2x" m="monthly5y" />],
-            [<strong key="q" className="text-gray-900 dark:text-white">나스닥100 (1x)</strong>, '즉시 거치 (기준선)', '90.9%', '5.68년', '11.88년 · 10년+ 27번', <DataLink inst="ndx1x" m="instant" />],
-            ['', '월 분할 3년', '90.7%', '6.24년', '12.40년 · 10년+ 31번', <DataLink inst="ndx1x" m="monthly3y" />],
-            ['', '월 분할 5년', '89.8%', '6.52년', '11.96년 · 10년+ 32번', <DataLink inst="ndx1x" m="monthly5y" />],
+            [<strong key="q" className="text-gray-900 dark:text-white">QLD (2x)</strong>, '즉시 거치 (기준선)', '94.9%', '4.45년', '12.63년 · 10년+ 25번', <DataLink key="d" inst="ndx2x" m="instant" />],
+            ['', '월 분할 3년', '93.6%', '4.88년', '13.44년 · 10년+ 19번', <DataLink key="d" inst="ndx2x" m="monthly3y" />],
+            ['', '월 분할 5년', '92.7%', '5.23년', '12.68년 · 10년+ 13번', <DataLink key="d" inst="ndx2x" m="monthly5y" />],
+            [<strong key="q" className="text-gray-900 dark:text-white">나스닥100 (1x)</strong>, '즉시 거치 (기준선)', '90.9%', '5.68년', '11.88년 · 10년+ 27번', <DataLink key="d" inst="ndx1x" m="instant" />],
+            ['', '월 분할 3년', '90.7%', '6.24년', '12.40년 · 10년+ 31번', <DataLink key="d" inst="ndx1x" m="monthly3y" />],
+            ['', '월 분할 5년', '89.8%', '6.52년', '11.96년 · 10년+ 32번', <DataLink key="d" inst="ndx1x" m="monthly5y" />],
           ]}
         />
 
@@ -225,13 +225,13 @@ export default function LumpSumVsSplitPost() {
           (−99%+). 2000~2002년 닷컴버블이 실제로 그랬다.
         </P>
         <P>
-          이 말은 3배 자산이 크게 빠졌을 때 "싸게 사는" 효과가 1배·2배와 비교할 수 없이 크다는 뜻이다.
+          이 말은 3배 자산이 크게 빠졌을 때 &ldquo;싸게 사는&rdquo; 효과가 1배·2배와 비교할 수 없이 크다는 뜻이다.
           5년에 걸쳐 분산 매수를 하면, 하락 전에 산 주식은 비싸지만 하락 중·이후에 산 주식이
           극도로 싼 가격에 들어가 전체 평균 매입단가를 낮춘다.
         </P>
         <P>
           1배·2배 자산은 드로다운 깊이가 상대적으로 얕아서 이 역전이 일어나지 않는다.
-          분산으로 인한 <strong className="text-gray-900 dark:text-white">"기회비용(지연 비용)"</strong>이
+          분산으로 인한 <strong className="text-gray-900 dark:text-white">&ldquo;기회비용(지연 비용)&rdquo;</strong>이
           저가 매수 이득보다 크기 때문에, 나눠 넣는 것이 오히려 손해다.
         </P>
 
@@ -239,7 +239,7 @@ export default function LumpSumVsSplitPost() {
         <P>
           초기 구현에서는 하락 조건을 계산할 때 역사상 전체 최고점을 기준으로 삼는 버그가 있었다.
           나스닥100 3배 합성자산의 역사적 최고점은 아직도 2000년 3월 닷컴버블 피크다.
-          그래서 2000년 이후 시작한 거의 모든 진입 시점이 "이미 −90% 넘게 하락한 상태"로 잘못 계산됐다.
+          그래서 2000년 이후 시작한 거의 모든 진입 시점이 &ldquo;이미 −90% 넘게 하락한 상태&rdquo;로 잘못 계산됐다.
           이를 <strong className="text-gray-900 dark:text-white">각 투자자가 투자를 시작한 시점 이후의 최고점</strong> 기준으로 수정한 뒤에도
           분할의 효과는 그대로 유지됐다.
         </P>

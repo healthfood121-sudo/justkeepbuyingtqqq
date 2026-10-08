@@ -4,7 +4,7 @@ export_experience.py
 '−96%를 견딜 수 있나' 체험 페이지 데이터 — 1990년 1월에 10억으로 25% 룰 인출을 시작한 한 경우를 달마다 따라간다.
 ──────────────────────────────────────────────────────────────────────────────
 엔진: withdrawal_cash_tier.run_sim (withdrawal_full_period.py와 같은 조건 — 인출 가이드의 1990년 예시와 같은 경우)
-달마다: 월말 총자산 · 그달 생활비 · 월말 상태(보유/현금) · 나스닥100 월말 값 · 그달 매매 · 그달 최저 총자산 · 그때 있었던 일
+달마다: 월말 총자산 · 그달 최저/최고 총자산 · 그달 생활비 · 월말 상태(보유/현금) · 나스닥100 월말 값 · 그달 매매 · 그달 최저 총자산 · 그때 있었던 일
 
 출력: web/public/data/experience_1990.json
   python scripts/export_experience.py
@@ -71,7 +71,7 @@ def main():
             state = "현금" if t["a"] == "매도" else "보유"
         peak = max(peak, float(tot[mi].max()))
         rows.append({
-            "m": m, "total": round(float(tot[k]), 2), "low": round(float(tot[mi].min()), 2),
+            "m": m, "total": round(float(tot[k]), 2), "low": round(float(tot[mi].min()), 2), "high": round(float(tot[mi].max()), 2),
             "living": int(liv[k]), "state": state, "ndx": round(float(closes[si + days[k] - 1]), 1),
             "vs_peak": round((float(tot[k]) / peak - 1) * 100, 1),
             "trades": trades.get(m, []), "note": NOTES.get(m, ""),

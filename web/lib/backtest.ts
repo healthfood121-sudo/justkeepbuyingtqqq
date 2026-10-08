@@ -107,7 +107,7 @@ export function runBacktest(
   priceData: PriceData,
   params: BacktestParams
 ): StrategyResults {
-  const { instrument, strategy, dailyInvest, capInvest, lumpSum, targetAmount } = params
+  const { instrument, dailyInvest, capInvest, lumpSum, targetAmount } = params
 
   let prices: Float64Array
   if (instrument === 'ndx1x') prices = priceData.lev1

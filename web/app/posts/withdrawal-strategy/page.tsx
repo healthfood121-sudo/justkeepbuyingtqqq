@@ -107,8 +107,8 @@ export default function WithdrawalStrategyPost() {
 
         <H2>버블 케이스란?</H2>
         <P>
-          인출 전략의 핵심 아이디어는 "적립에 오래 걸렸으면 그만큼 험한 시장을 겪은 것이고,
-          인출 초기에도 어려울 수 있으니 현금 버퍼를 두자"입니다.
+          인출 전략의 핵심 아이디어는 &ldquo;적립에 오래 걸렸으면 그만큼 험한 시장을 겪은 것이고,
+          인출 초기에도 어려울 수 있으니 현금 버퍼를 두자&rdquo;입니다.
           공식으로 표현하면:
         </P>
         <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl px-6 py-4 mb-6 font-mono text-sm text-blue-600 dark:text-blue-300">
@@ -122,7 +122,7 @@ export default function WithdrawalStrategyPost() {
           재계산에서는 같은 정의로 기준값을 <strong className="text-gray-900 dark:text-white">9</strong>로 두었습니다.
         </P>
         <P>
-          그런데 소요기간이 1.5년 미만인 "버블 케이스"는 다르게 처리합니다.
+          그런데 소요기간이 1.5년 미만인 &ldquo;버블 케이스&rdquo;는 다르게 처리합니다.
           버퍼를 현금으로 쌓는 게 아니라, <strong className="text-gray-900 dark:text-white">전량 매도 후 대기</strong>합니다.
           1.5년 안에 10억을 달성했다는 건 시장이 비정상적으로 빠르게 올랐다는 신호이기 때문입니다.
         </P>
@@ -164,7 +164,7 @@ export default function WithdrawalStrategyPost() {
 
         <H2>두 가지 개선안 비교</H2>
         <P>
-          "2년 대기 후 lump-sum 재진입"의 문제는 시장 상황을 전혀 고려하지 않는다는 점입니다.
+          &ldquo;2년 대기 후 lump-sum 재진입&rdquo;의 문제는 시장 상황을 전혀 고려하지 않는다는 점입니다.
           이를 해결하기 위해 두 가지 방법을 비교했습니다.
         </P>
 

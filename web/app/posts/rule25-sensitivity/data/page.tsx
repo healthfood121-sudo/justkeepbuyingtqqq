@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState, Suspense } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Header from '@/components/Header'
@@ -37,14 +37,10 @@ function Viewer() {
   const base = m === 'ndx' ? 'R25_15' : 'SP25'
   const k = params.get('k') ?? base
   const cmp = params.get('c') ?? (k === base ? (m === 'ndx' ? 'S0_15' : 'SP_S0') : base)
-  const [thr, setThr] = useState('25')
-  const [days, setDays] = useState('15')
+  const km = k.match(/^R(\d+)_(\d+)$/)
+  const thr = km?.[1] ?? '25', days = km?.[2] ?? '15'
 
   useEffect(() => { fetch('/data/withdrawal_rule_sensitivity_rows.json').then(r => r.json()).then(setRows) }, [])
-  useEffect(() => {
-    const mm = k.match(/^R(\d+)_(\d+)$/)
-    if (mm) { setThr(mm[1]); setDays(mm[2]) }
-  }, [k])
 
   const go = (o: { m?: M; k?: string; c?: string }) => {
     const nm = o.m ?? m
@@ -54,11 +50,7 @@ function Viewer() {
   }
 
   const mk = rows?.[m]
-  const worst = useMemo(() => {
-    if (!mk?.irr[k]) return -1
-    const a = mk.irr[k]
-    return a.indexOf(Math.min(...a))
-  }, [mk, k])
+  const worst = mk?.irr[k] ? mk.irr[k].indexOf(Math.min(...mk.irr[k])) : -1
 
   if (!rows || !mk) return <p className="text-sm text-gray-400 py-10 text-center">불러오는 중…</p>
   if (!mk.irr[k]) return <p className="text-sm text-gray-400 py-10 text-center">없는 설정값입니다.</p>

@@ -149,7 +149,7 @@ def summ(rows):
         "med": round(q(a, 0.5), 1), "p10": round(q(a, 0.1), 1), "worst": round(a[0], 1),
         "worst_start": min(rows, key=lambda r: r["i"])["s"],
         "dd": round(q(dd, 0.5), 1), "dd_max": round(dd[-1], 1),
-        "min_med": round(q(mins, 0.5), 2), "min_worst": round(mins[0], 2),
+        "min_med": round(q(mins, 0.5), 4), "min_worst": round(mins[0], 4),
         "lt10": sum(1 for r in rows if r["f"] < 10),
         "w10_med": round(q(w10, 0.5), 1), "w10_p10": round(q(w10, 0.1), 1),
     }

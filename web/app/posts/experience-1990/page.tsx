@@ -6,7 +6,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Refe
 import Header from '@/components/Header'
 import { useTheme } from '@/components/ThemeProvider'
 
-interface Row { m: string; total: number; low: number; living: number; state: '보유' | '현금'; ndx: number; vs_peak: number; trades: { d: string; a: string }[]; note: string }
+interface Row { m: string; total: number; low: number; high: number; living: number; state: '보유' | '현금'; ndx: number; vs_peak: number; trades: { d: string; a: string }[]; note: string }
 interface Data { start: string; rows: Row[]; max_dd: number; withdrawn: number; final: number }
 
 const STOPS: [string, string][] = [
@@ -27,11 +27,13 @@ export default function Experience1990Page() {
   const stats = useMemo(() => {
     if (!data) return null
     const rows = data.rows.slice(0, i + 1)
-    const peak = rows.reduce((a, b) => (b.total > a.total ? b : a))
+    // 최고점: 시작 금액(10억)과 그달 장중 최고 총자산까지 포함 (최고점 대비 %와 같은 기준)
+    const top = rows.reduce((a, b) => (b.high > a.high ? b : a))
+    const peak = top.high > 10 ? { total: top.high, m: top.m } : { total: 10, m: `${data.start} 시작` }
     const peakLiv = Math.max(...rows.map(r => r.living))
     const withdrawn = rows.reduce((s, r) => s + r.living, 0)
     let since = 0
-    for (let k = i; k >= 0 && data.rows[k].total < peak.total; k--) since++
+    for (let k = i; k >= 0 && data.rows[k].high < peak.total; k--) since++
     return { peak, peakLiv, withdrawn, since }
   }, [data, i])
 
@@ -76,7 +78,7 @@ export default function Experience1990Page() {
 
               <div className="rounded-2xl border border-purple-200 dark:border-purple-500/30 bg-purple-50/50 dark:bg-purple-500/5 p-5 mb-4">
                 <div className="flex items-baseline justify-between mb-3">
-                  <span className="text-2xl font-black font-mono">{r.m.replace('-', '년 ')}월</span>
+                  <span className="text-2xl font-black">{r.m.slice(0, 4)}년 {Number(r.m.slice(5))}월</span>
                   <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${r.state === '보유' ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300' : 'bg-gray-200 text-gray-700 dark:bg-gray-800 dark:text-gray-300'}`}>
                     {r.state === '보유' ? 'TQQQ 보유 중' : '현금 보유 중'}
                   </span>
@@ -100,11 +102,11 @@ export default function Experience1990Page() {
               </div>
 
               <div className="flex items-center gap-2 mb-4">
-                <button onClick={() => setI(Math.max(0, i - 12))} className="text-xs px-2 py-1 rounded border border-gray-200 dark:border-gray-700">−1년</button>
-                <button onClick={() => setI(Math.max(0, i - 1))} className="text-xs px-2 py-1 rounded border border-gray-200 dark:border-gray-700">← 한 달</button>
-                <input type="range" min={0} max={data.rows.length - 1} value={i} onChange={e => setI(Number(e.target.value))} className="flex-1 accent-purple-600" aria-label="달 선택" />
-                <button onClick={() => setI(Math.min(data.rows.length - 1, i + 1))} className="text-xs px-2 py-1 rounded border border-gray-200 dark:border-gray-700">한 달 →</button>
-                <button onClick={() => setI(Math.min(data.rows.length - 1, i + 12))} className="text-xs px-2 py-1 rounded border border-gray-200 dark:border-gray-700">+1년</button>
+                <button onClick={() => setI(Math.max(0, i - 12))} className="text-xs px-2 py-1 rounded border border-gray-200 dark:border-gray-700 whitespace-nowrap" aria-label="1년 전">«</button>
+                <button onClick={() => setI(Math.max(0, i - 1))} className="text-xs px-2 py-1 rounded border border-gray-200 dark:border-gray-700 whitespace-nowrap" aria-label="한 달 전">‹ 한 달</button>
+                <input type="range" min={0} max={data.rows.length - 1} value={i} onChange={e => setI(Number(e.target.value))} className="flex-1 min-w-0 accent-purple-600" aria-label="달 선택" />
+                <button onClick={() => setI(Math.min(data.rows.length - 1, i + 1))} className="text-xs px-2 py-1 rounded border border-gray-200 dark:border-gray-700 whitespace-nowrap" aria-label="한 달 뒤">한 달 ›</button>
+                <button onClick={() => setI(Math.min(data.rows.length - 1, i + 12))} className="text-xs px-2 py-1 rounded border border-gray-200 dark:border-gray-700 whitespace-nowrap" aria-label="1년 뒤">»</button>
               </div>
 
               <div className="h-56 w-full mb-2">

@@ -257,8 +257,8 @@ export default function WithdrawalComparisonPost() {
         <Callout color="green">
           <strong>장기 중앙값 기준으로는 B안이 압도적 우세.</strong><br />
           하지만 <strong>닷컴버블 정점 진입 시에는 두 전략 모두 취약</strong>합니다.
-          유일한 차이는 A안이 "주식을 계속 보유"하는 데 반해,
-          B안은 "현금 전환 후 재매수 타이밍"이 결과를 좌우한다는 점입니다.
+          유일한 차이는 A안이 &ldquo;주식을 계속 보유&rdquo;하는 데 반해,
+          B안은 &ldquo;현금 전환 후 재매수 타이밍&rdquo;이 결과를 좌우한다는 점입니다.
         </Callout>
 
         <ul className="list-none space-y-3 mb-8">

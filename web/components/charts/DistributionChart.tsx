@@ -14,13 +14,15 @@ interface Props {
   showC?: boolean
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+type TipProps = { active?: boolean; payload?: { name?: string; dataKey?: string | number; value?: number; stroke?: string; fill?: string }[]; label?: string | number }
+
+const CustomTooltip = ({ active, payload, label }: TipProps) => {
   if (!active || !payload?.length) return null
   return (
     <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded px-3 py-2 text-sm shadow-md">
       <p className="text-gray-500 dark:text-gray-400 mb-1">{label}년 구간</p>
-      {payload.map((p: any) => (
-        <p key={p.name} style={{ color: p.fill }}>{p.name}: {p.value.toFixed(1)}%</p>
+      {payload.map(p => (
+        <p key={p.name} style={{ color: p.fill }}>{p.name}: {p.value?.toFixed(1)}%</p>
       ))}
     </div>
   )

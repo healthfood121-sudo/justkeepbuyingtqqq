@@ -23,12 +23,14 @@ const COHORT_LABELS: Record<string, string> = {
   '1989-05': '일본버블 직전 (1989-05)',
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+type TipProps = { active?: boolean; payload?: { name?: string; dataKey?: string | number; value?: number; stroke?: string }[]; label?: string | number }
+
+const CustomTooltip = ({ active, payload, label }: TipProps) => {
   if (!active || !payload?.length) return null
   return (
     <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded px-3 py-2 text-xs shadow-md">
       <p className="text-gray-400 mb-1">{label}</p>
-      {payload.map((p: any) => (
+      {payload.map(p => (
         <p key={p.dataKey} style={{ color: p.stroke }}>
           {p.name}: {typeof p.value === 'number' ? p.value.toFixed(2) + '억' : '–'}
         </p>
@@ -37,12 +39,12 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   )
 }
 
-const AllTooltip = ({ active, payload, label }: any) => {
+const AllTooltip = ({ active, payload, label }: TipProps) => {
   if (!active || !payload?.length) return null
   return (
     <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded px-3 py-2 text-xs shadow-md">
       <p className="text-gray-400 mb-1">{label} 진입</p>
-      {payload.map((p: any) => (
+      {payload.map(p => (
         <p key={p.dataKey} style={{ color: p.stroke }}>
           {p.name}: {typeof p.value === 'number' ? p.value.toFixed(1) + '억' : '파산'}
         </p>

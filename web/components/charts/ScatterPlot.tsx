@@ -1,5 +1,6 @@
 'use client'
 
+import type { TooltipItem } from 'chart.js'
 import { useEffect, useRef, useState } from 'react'
 import {
   Chart as ChartJS,
@@ -121,8 +122,8 @@ export default function ScatterPlot({ resultsA, resultsB, resultsC, showA = true
       },
       tooltip: {
         callbacks: {
-          label: (ctx: any) => {
-            const x = ctx.parsed.x
+          label: (ctx: TooltipItem<'scatter'>) => {
+            const x = ctx.parsed.x ?? 0
             const yr = Math.floor(x)
             const mo = Math.round((x - yr) * 12) + 1
             return `시작: ${yr}년 ${mo}월 / 소요: ${ctx.parsed.y}년`
