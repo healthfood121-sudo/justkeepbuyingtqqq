@@ -47,3 +47,7 @@
 - `tqqq.csv` · `qld.csv` · `qqq.csv` · `ndx_yahoo.csv`: `Date, Close, AdjClose` — Yahoo 일별. `AdjClose`는 배당 재투자·분할 반영, `Close`는 분할만 반영.
 - 환율(DEXKOUS)·물가(CPIAUCSL, KORCPIALLMINMEI)는 FRED에서 받으려 했으나 GitHub Actions에서도 접속이 실패해 아직 없음.
 - 용도: 합성 가격 검증 (`scripts/real_vs_synthetic.py`). 백테스트 원천 데이터(`ndx_1971_now.csv`)는 그대로 둔다.
+
+## 6. 시뮬레이터용 사본 (`web/public/ndx.csv`, `sp500.csv`, `data/fed_funds_rate.json`) — 2026-10-08~
+- `scripts/update_web_prices.py`가 매달(Actions `update-web-prices.yml`) Yahoo 종가와 13주 국채 금리(^IRX)로 사본만 늘린다.
+- 그래서 사본은 `data/` 원본보다 길다. 분석 글 숫자는 원본(2026-09 기준), 시뮬레이터는 최신 종가 기준.

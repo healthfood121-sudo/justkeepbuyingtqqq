@@ -1,0 +1,46 @@
+name: 시뮬레이터 가격 데이터 최신화 (매달)
+
+on:
+  schedule:
+    # 매달 2일 KST 09:00 (UTC 00:00) — 전달 말까지의 종가와 금리를 반영
+    - cron: '0 0 2 * *'
+  push:
+    branches: [master]
+    paths:
+      - 'scripts/update_web_prices.py'
+      - '.github/workflows/update-web-prices.yml'
+  workflow_dispatch:  # 수동 실행 가능
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Python 3.12 설정
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 의존성 설치
+        run: pip install -r scripts/requirements.txt
+
+      - name: 가격·금리 덧붙이기 (data/ 원본은 그대로, web/public 사본만)
+        run: python scripts/update_web_prices.py
+
+      - name: 변경사항 커밋 & 푸시
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add web/public/ndx.csv web/public/sp500.csv web/public/data/fed_funds_rate.json
+          if git diff --cached --quiet; then
+            echo "변경사항 없음 — 스킵"
+          else
+            git commit -m "auto: 시뮬레이터 가격 데이터 최신화 $(date +'%Y-%m-%d')"
+            git pull --rebase origin ${{ github.ref_name }}
+            git push origin HEAD:${{ github.ref_name }}
+          fi

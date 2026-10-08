@@ -7,6 +7,17 @@
 
 ---
 
+## 데이터 갱신 정책 (2026-10-08~)
+
+- **분석 글·홈 결과표:** `data/` 원본(나스닥100 ~2026-09-25, S&P500 ~2026-09-03, 기준금리 ~2026-09)으로 계산한 **고정값**. 본문에 숫자가 직접 쓰여 있으므로 JSON만 자동으로 바꾸지 않는다.
+  **1년에 한 번** `data/`를 늘리고 대표 스크립트(`withdrawal_full_period.py`, `withdrawal_exec_horizon.py`, `withdrawal_rule25_periods.py`, `backtest.py` 등)를 다시 돌린 뒤 본문 숫자까지 함께 고친다.
+- **시뮬레이터(적립·인출·진입 시점 상세):** 브라우저가 `web/public/ndx.csv`·`sp500.csv`·`data/fed_funds_rate.json` 사본으로 바로 계산 →
+  `update_web_prices.py`(Actions `update-web-prices.yml`, 매달 2일)가 사본만 최신 종가까지 늘린다. `data/` 원본은 건드리지 않는다.
+  기준금리는 FRED 원본 마지막 달 이후를 Yahoo ^IRX(미국 13주 국채) 월평균으로 채움(`"src": "IRX"`) — 없으면 스왑금리가 0으로 계산돼 결과가 좋게 나온다.
+- **매일:** 신호(`withdrawal_signal.json`)와 실제 운용 성적표(`live_record.json`).
+
+---
+
 ## 적립식 (Accumulation)
 
 ### A·B·C 전략 비교 — 종목별
