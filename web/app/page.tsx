@@ -136,7 +136,7 @@ export default function HomePage() {
       <div className="border-t border-gray-200 dark:border-gray-800">
         <div className="max-w-7xl mx-auto px-4 pt-6 pb-2">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">백테스트 결과</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">내 투자 설정 기준 · 1971년~현재 전체 진입 시점</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">내 투자 설정 기준 · 1971년~2026년 9월 전체 진입 시점</p>
         </div>
         <HomeSimulator />
       </div>
@@ -152,7 +152,7 @@ export default function HomePage() {
           </p>
           <p>이 사이트의 모든 분석은 과거 데이터 기반이며 미래 수익을 보장하지 않습니다.</p>
           <p>TQQQ/QLD 합성 가격은 NDX 일별 수익률에 레버리지를 곱한 이론치입니다. 변동성 끌림은 일별 복리 계산에 자동 반영됩니다. 운용비용(TQQQ 0.88%/년)과 스왑금리비용(레버리지 조달 비용, 기준금리 × 2/년)을 기본으로 반영하며, 시뮬레이터·데이터 페이지의 [운용보수만] 버튼으로 스왑금리를 뺀 이론치도 볼 수 있습니다. 인출식 결과는 양도세 22%와 현금(외화RP) 이자까지 반영합니다. 배당은 반영하지 않아, 2010년 이후 실제 TQQQ보다 연 2%p 정도 낮게 나옵니다 (<Link href="/posts/real-vs-synthetic" className="underline">실제 가격과 비교</Link>).</p>
-          <p className="mt-4">NDX 데이터: 1971-02-05~2026-09-25 | S&P500 데이터: 1927-12-30~2026-09-03</p>
+          <p className="mt-4">분석 글·홈 결과표: 나스닥100 1971-02-05~2026-09-25 · S&P500 1927-12-30~2026-09-03 기준 (1년에 한 번 다시 계산) | 적립·인출 시뮬레이터: 매달 최신 종가까지 자동 반영</p>
         </div>
       </footer>
     </div>

@@ -299,6 +299,10 @@ function CustomSimulatorInner() {
               <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
                 {costLabel(instrument, withCosts)}
               </p>
+              {priceData && (() => {
+                const ds = (instrument === 'sp500' ? priceData.sp5 : priceData.ndx).dates
+                return <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">가격 데이터 {ds[0].toISOString().slice(0, 10)} ~ {ds[ds.length - 1].toISOString().slice(0, 10)} · 매달 자동 갱신</p>
+              })()}
             </div>
           </div>
 
