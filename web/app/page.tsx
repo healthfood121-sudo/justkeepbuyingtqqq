@@ -103,11 +103,14 @@ export default function HomePage() {
                 <span className="text-xs font-bold text-purple-500 dark:text-purple-400 tracking-wide">JUST KEEP SELLING</span>
                 <span className="text-base font-bold text-gray-900 dark:text-white">인출식</span>
               </div>
-              <div className="flex justify-between items-baseline mb-3">
-                <span className="text-xs font-bold text-purple-700 dark:text-purple-300">권장: 25% 룰 — 52주 최고가에서 25% 빠지면 매도</span>
+              {/* 휴대폰에서 규칙 문장과 수익률이 한 줄에 겹치지 않도록 두 줄로 나눈다 */}
+              <div className="mb-3">
+                <p className="text-xs text-purple-700 dark:text-purple-300 break-keep">
+                  <strong>권장: 25% 룰</strong> — 52주 최고가에서 25% 빠지면 매도
+                </p>
                 <Link href="/posts/withdrawal-guide#recommended" title="1971년 이후 모든 시작 시점의 생활비 포함 연 수익률 중간값 — 근거 보기"
-                  className="text-xs font-mono font-bold text-purple-600 dark:text-purple-400 whitespace-nowrap underline decoration-dotted underline-offset-2">
-                  연 22.4%
+                  className="inline-block mt-1 text-[11px] text-purple-600 dark:text-purple-400 underline decoration-dotted underline-offset-2 break-keep">
+                  1971년 이후 인출 포함 연 <strong className="font-mono">22.4%</strong> (중간값) · 근거 보기
                 </Link>
               </div>
               <WithdrawalSignal />
