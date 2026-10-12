@@ -87,18 +87,10 @@ export default function LumpSumVsSplitPost() {
             거치금 2.5억, 한번에 넣을까 vs 5년에 나눠 넣을까
           </h1>
           <div className="flex items-center gap-3 flex-wrap">
-            <span className="text-sm text-gray-400">2026-10-01 · 최종수정 2026-10-03</span>
+            <span className="text-sm text-gray-400">2026-10-01</span>
             {['C전략', '거치', '분할매수', 'TQQQ', '백테스트'].map(t => <Tag key={t}>{t}</Tag>)}
           </div>
         </div>
-
-        <Callout color="yellow">
-          <strong>2026-10-03 수정: 결론이 3년 → 5년 분할로 바뀌었다.</strong>{' '}
-          처음 글은 운용보수·스왑금리비용을 넣기 전 계산으로 &ldquo;3년 분할이 최악을 12.24년 → 8.82년으로 줄인다&rdquo;였다.
-          비용(TQQQ 운용보수 0.88% + 스왑금리 기준금리 × 2)을 넣고 다시 계산하면, 3년 분할의 최악은 오히려 13.3년으로 늘어난다.
-          1999년 초에 시작한 경우가 2008년 금융위기 직전에 10억을 아슬아슬하게 못 넘기고 2012년까지 기다리게 되기 때문이다.
-          5년으로 나누면 이런 경우가 사라진다. 아래 수치는 모두 비용을 반영한 값이다.
-        </Callout>
 
         {/* 본문 */}
         <P>
@@ -106,11 +98,11 @@ export default function LumpSumVsSplitPost() {
           바로 다음 질문이 따라온다.
         </P>
         <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-6 py-4 mb-6 text-gray-600 dark:text-gray-200 italic text-sm leading-relaxed">
-          &ldquo;2.5억을 오늘 하루에 다 넣어야 하나, 아니면 몇 년에 걸쳐 나눠 넣어야 하나?&rdquo;
+          "2.5억을 오늘 하루에 다 넣어야 하나, 아니면 몇 년에 걸쳐 나눠 넣어야 하나?"
         </div>
         <P>
           특히 몇 년째 강세장이 이어진 뒤라면 이 질문은 더 절실해진다.
-          &ldquo;오늘 넣었는데 다음 달에 반토막 나면 어떡하지&rdquo;라는 두려움은 누구나 한 번쯤 해본다.
+          "오늘 넣었는데 다음 달에 반토막 나면 어떡하지"라는 두려움은 누구나 한 번쯤 해본다.
           그래서 1971~2026년 역사 데이터로 직접 테스트해봤다.
         </P>
 
@@ -124,7 +116,7 @@ export default function LumpSumVsSplitPost() {
         <div className="space-y-3 mb-8">
           <div className="flex gap-3 text-sm">
             <span className="text-yellow-500 dark:text-yellow-400 font-mono shrink-0">기준선</span>
-            <span className="text-gray-600 dark:text-gray-300">첫날 2.5억 전액 즉시 거치</span>
+            <span className="text-gray-600 dark:text-gray-300">첫날 2.5억 전액 즉시 거치 (기존 C전략)</span>
           </div>
           <div className="flex gap-3 text-sm">
             <span className="text-blue-500 dark:text-blue-400 font-mono shrink-0">하락 대기</span>
@@ -144,37 +136,34 @@ export default function LumpSumVsSplitPost() {
 
         <P>
           1971년부터 2026년까지 매월 시작할 수 있는 모든 시점(668가지 경우)에 각 방식을 적용했다.
-          평가 기준은 완료율, 평균 소요기간, <strong className="text-gray-900 dark:text-white">최악의 경우(최장 소요기간)</strong>,
-          그리고 <strong className="text-gray-900 dark:text-white">10년 넘게 걸린 경우의 수</strong>다.
-          최악 1건은 &lsquo;목표에 아슬아슬하게 닿았느냐&rsquo;에 따라 몇 년씩 튀기 때문에, 10년 넘게 걸린 경우가 몇 번인지도 함께 본다
-          (충분히 지켜볼 수 있는 2011년까지 시작한 경우 기준).
+          평가 기준은 완료율, 평균 소요기간, 그리고 <strong className="text-gray-900 dark:text-white">최악의 경우(최장 소요기간)</strong>.
         </P>
 
-        <H2>결과: TQQQ(3배) 전체 수치 (운용보수 + 스왑금리 반영)</H2>
+        <H2>결과: TQQQ(3배) 전체 수치</H2>
 
         <Table
-          headers={['방식', '완료율', '평균', '중앙값', '최장', '10년 넘게 걸린 경우', '']}
-          highlight={[0, 6]}
+          headers={['방식', '완료율', '평균', '중앙값', '최단', '최장', '']}
+          highlight={[0, 5, 6]}
           rows={[
-            ['기준선 — 즉시 거치', '95.5%', '3.76년', '3.08년', <strong key="max" className="text-yellow-500 dark:text-yellow-300">12.32년</strong>, '27번', <DataLink key="d" inst="ndx3x" m="instant" />],
-            ['하락 −15% 후 1년 분산', '94.8%', '4.04년', '3.44년', '12.82년', '26번', <DataLink key="d" inst="ndx3x" m="dip15" />],
-            ['하락 −20% 후 1년 분산', '94.8%', '4.06년', '3.50년', '12.82년', '26번', <DataLink key="d" inst="ndx3x" m="dip20" />],
-            ['하락 −30% 후 1년 분산', '94.5%', '4.08년', '3.52년', '12.90년', '27번', <DataLink key="d" inst="ndx3x" m="dip30" />],
-            ['월 분할 3년 (36개월)', '94.5%', '4.26년', '3.70년', '13.32년', '14번', <DataLink key="d" inst="ndx3x" m="monthly3y" />],
-            ['월 분할 4년 (48개월)', '94.0%', '4.41년', '4.02년', '13.36년', '5번', <DataLink key="d" inst="ndx3x" m="monthly4y" />],
-            [<strong key="m5">월 분할 5년 (60개월) ★</strong>, '93.7%', '4.57년', '4.28년', <strong key="max" className="text-green-600 dark:text-green-300">8.99년</strong>, <strong key="t" className="text-green-600 dark:text-green-300">0번</strong>, <DataLink key="d" inst="ndx3x" m="monthly5y" />],
-            ['일 분할 1년 (252일)', '95.1%', '3.94년', '3.33년', '12.74년', '25번', <DataLink key="d" inst="ndx3x" m="daily1y" />],
-            ['일 분할 2년 (504일)', '94.8%', '4.10년', '3.47년', '13.15년', '20번', <DataLink key="d" inst="ndx3x" m="daily2y" />],
-            ['일 분할 3년 (756일)', '94.3%', '4.26년', '3.71년', '13.32년', '13번', <DataLink key="d" inst="ndx3x" m="daily3y" />],
+            ['기준선 — 즉시 거치', '96.3%', '3.08년', '2.48년', '0.33년', <strong key="max" className="text-yellow-500 dark:text-yellow-300">12.27년</strong>, <DataLink inst="ndx3x" m="instant" />],
+            ['하락 −15% 후 1년 분산', '95.7%', '3.43년', '2.92년', '0.85년', '12.75년', <DataLink inst="ndx3x" m="dip15" />],
+            ['하락 −20% 후 1년 분산', '95.5%', '3.49년', '3.05년', '0.85년', '12.75년', <DataLink inst="ndx3x" m="dip20" />],
+            ['하락 −30% 후 1년 분산', '95.2%', '3.54년', '3.12년', '0.90년', '12.83년', <DataLink inst="ndx3x" m="dip30" />],
+            ['월 분할 3년 (36개월)', '94.8%', '3.71년', '3.26년', '1.27년', <strong key="max" className="text-red-500 dark:text-red-400">13.15년</strong>, <DataLink inst="ndx3x" m="monthly3y" />],
+            ['월 분할 4년 (48개월)', '94.3%', '3.94년', '3.59년', '1.35년', <strong key="max" className="text-green-600 dark:text-green-300">8.83년</strong>, <DataLink inst="ndx3x" m="monthly4y" />],
+            ['월 분할 5년 (60개월)', '94.0%', '4.14년', '3.84년', '1.42년', <strong key="max" className="text-green-600 dark:text-green-300">8.69년</strong>, <DataLink inst="ndx3x" m="monthly5y" />],
+            ['일 분할 1년 (252일)', '95.7%', '3.33년', '2.80년', '0.77년', '12.67년', <DataLink inst="ndx3x" m="daily1y" />],
+            ['일 분할 2년 (504일)', '95.2%', '3.53년', '3.04년', '1.10년', '13.00년', <DataLink inst="ndx3x" m="daily2y" />],
+            ['일 분할 3년 (756일)', '94.8%', '3.72년', '3.28년', '1.31년', <strong key="max" className="text-red-500 dark:text-red-400">13.15년</strong>, <DataLink inst="ndx3x" m="daily3y" />],
           ]}
         />
 
         <Callout color="green">
-          <strong>5년(60개월) 월 분할이 10년 넘게 걸리는 경우를 27번 → 0번으로 없애고, 최악을 12.32년 → 8.99년으로 줄인다.</strong>
+          <strong>월 분할 4년(48개월) 이상이 최악의 케이스를 12.27년 → 8.83년으로 약 3.4년 단축.</strong>
           <br />
-          3·4년 분할은 10년 넘게 걸리는 경우를 줄이긴 하지만 최악은 오히려 13년대다. 대가는 중앙값으로, 즉시 거치보다 약 1.2년 늦다(3.08 → 4.28년).
-          6·7년으로 늘려도 최악은 9.0~9.1년으로 더 나아지지 않아 5년이 효율적인 지점이다.
-          비용을 연 0.25~0.5%p 더 얹어도 5년 분할의 최악은 9.0~9.2년으로 흔들리지 않았다.
+          3년 분할(월·일 모두)은 오히려 13.15년으로 즉시 거치(12.27년)보다 나빠진다.
+          4년이 효과가 나타나는 임계점이다. 5년(60개월)이면 8.69년으로 소폭 추가 개선.
+          스왑금리비용까지 포함하면 4년도 13.36년으로 효과가 없고, 5년 이상이어야 8.99년이 된다.
         </Callout>
 
         <H3>하락 대기형은 왜 효과가 없나</H3>
@@ -189,33 +178,33 @@ export default function LumpSumVsSplitPost() {
           가장 비싼 가격에 한번에 사게 되거나 아예 못 사게 된다.
         </P>
 
-        <H3>월 단위 vs 일 단위: 차이 없다</H3>
+        <H3>월 단위 vs 일 단위: 빈도보다 기간이 중요</H3>
         <P>
-          3년 시간 분할의 경우 월 단위(36개월)와 일 단위(756일) 결과가 거의 같았다(최장 13.32년, 10년 넘게 걸린 경우 14번 vs 13번).
+          3년 분할에서 월 단위(36개월)와 일 단위(756일) 결과가 동일하다(둘 다 13.15년).
           즉, 얼마나 잘게 쪼개느냐는 중요하지 않다.
-          <strong className="text-gray-900 dark:text-white"> 총 몇 년에 걸쳐 분산하느냐</strong>만 결과를 결정한다.
-          편의에 따라 매월 한 번 넣든 매일 넣든 골라도 된다.
+          <strong className="text-gray-900 dark:text-white"> 총 몇 년에 걸쳐 분산하느냐</strong>가 결과를 결정하며,
+          4년 이상이어야 worst 케이스가 단축된다. 편의에 따라 매월 한 번 넣는 방식으로 충분하다.
         </P>
 
-        <H2>QLD(2배), 나스닥100(1배): 분할 효과가 작거나 오히려 손해</H2>
+        <H2>QLD(2배), QQQ(1배): 분할이 오히려 손해</H2>
 
         <Table
           headers={['종목', '방식', '완료율', '평균', '최장', '']}
           highlight={[0, 3]}
           rows={[
-            [<strong key="q" className="text-gray-900 dark:text-white">QLD (2x)</strong>, '즉시 거치 (기준선)', '94.9%', '4.45년', '12.63년 · 10년+ 25번', <DataLink key="d" inst="ndx2x" m="instant" />],
-            ['', '월 분할 3년', '93.6%', '4.88년', '13.44년 · 10년+ 19번', <DataLink key="d" inst="ndx2x" m="monthly3y" />],
-            ['', '월 분할 5년', '92.7%', '5.23년', '12.68년 · 10년+ 13번', <DataLink key="d" inst="ndx2x" m="monthly5y" />],
-            [<strong key="q" className="text-gray-900 dark:text-white">나스닥100 (1x)</strong>, '즉시 거치 (기준선)', '90.9%', '5.68년', '11.88년 · 10년+ 27번', <DataLink key="d" inst="ndx1x" m="instant" />],
-            ['', '월 분할 3년', '90.7%', '6.24년', '12.40년 · 10년+ 31번', <DataLink key="d" inst="ndx1x" m="monthly3y" />],
-            ['', '월 분할 5년', '89.8%', '6.52년', '11.96년 · 10년+ 32번', <DataLink key="d" inst="ndx1x" m="monthly5y" />],
+            [<strong key="q" className="text-gray-900 dark:text-white">QLD (2x)</strong>, '즉시 거치 (기준선)', '95.1%', '3.95년', '12.40년', <DataLink inst="ndx2x" m="instant" />],
+            ['', '월 분할 3년', '93.9%', '4.48년', '12.46년', <DataLink inst="ndx2x" m="monthly3y" />],
+            ['', '월 분할 5년', '93.1%', '4.82년', '9.34년', <DataLink inst="ndx2x" m="monthly5y" />],
+            [<strong key="q" className="text-gray-900 dark:text-white">QQQ (1x)</strong>, '즉시 거치 (기준선)', '90.9%', '5.68년', '11.88년', <DataLink inst="ndx1x" m="instant" />],
+            ['', '월 분할 3년', '90.7%', '6.24년', '12.40년', <DataLink inst="ndx1x" m="monthly3y" />],
+            ['', '월 분할 5년', '89.8%', '6.52년', '11.96년', <DataLink inst="ndx1x" m="monthly5y" />],
           ]}
         />
 
         <Callout color="yellow">
-          QLD는 5년 분할로 10년 넘게 걸리는 경우가 25번 → 13번으로 줄지만 최악(12.6년)은 그대로이고, 평균이 0.8년 늦어진다.
-          나스닥100(1배)은 분할할수록 오히려 나빠진다(10년 넘게 걸린 경우 27번 → 32번).
-          5년 분할이 확실히 효과를 내는 건 TQQQ뿐이다.
+          QQQ(1배)에서 분할매수는 전략적 이점이 없다. 3년·5년 분할 모두 즉시 거치보다 최장 기간이 길어진다.
+          QLD(2배)는 5년 분할 시 12.40년 → 9.34년으로 개선되지만, 3년 분할은 오히려 12.46년으로 악화한다.
+          분할 효과는 변동성이 극단적인 3배 자산에서 가장 확실하게 나타난다.
         </Callout>
 
         <H2>왜 3배에서만 이런 일이 벌어질까</H2>
@@ -225,13 +214,13 @@ export default function LumpSumVsSplitPost() {
           (−99%+). 2000~2002년 닷컴버블이 실제로 그랬다.
         </P>
         <P>
-          이 말은 3배 자산이 크게 빠졌을 때 &ldquo;싸게 사는&rdquo; 효과가 1배·2배와 비교할 수 없이 크다는 뜻이다.
-          5년에 걸쳐 분산 매수를 하면, 하락 전에 산 주식은 비싸지만 하락 중·이후에 산 주식이
+          이 말은 3배 자산이 크게 빠졌을 때 "싸게 사는" 효과가 1배·2배와 비교할 수 없이 크다는 뜻이다.
+          3년에 걸쳐 분산 매수를 하면, 하락 전에 산 주식은 비싸지만 하락 중·이후에 산 주식이
           극도로 싼 가격에 들어가 전체 평균 매입단가를 낮춘다.
         </P>
         <P>
           1배·2배 자산은 드로다운 깊이가 상대적으로 얕아서 이 역전이 일어나지 않는다.
-          분산으로 인한 <strong className="text-gray-900 dark:text-white">&ldquo;기회비용(지연 비용)&rdquo;</strong>이
+          분산으로 인한 <strong className="text-gray-900 dark:text-white">"기회비용(지연 비용)"</strong>이
           저가 매수 이득보다 크기 때문에, 나눠 넣는 것이 오히려 손해다.
         </P>
 
@@ -239,16 +228,16 @@ export default function LumpSumVsSplitPost() {
         <P>
           초기 구현에서는 하락 조건을 계산할 때 역사상 전체 최고점을 기준으로 삼는 버그가 있었다.
           나스닥100 3배 합성자산의 역사적 최고점은 아직도 2000년 3월 닷컴버블 피크다.
-          그래서 2000년 이후 시작한 거의 모든 진입 시점이 &ldquo;이미 −90% 넘게 하락한 상태&rdquo;로 잘못 계산됐다.
+          그래서 2000년 이후 시작한 거의 모든 진입 시점이 "이미 −90% 넘게 하락한 상태"로 잘못 계산됐다.
           이를 <strong className="text-gray-900 dark:text-white">각 투자자가 투자를 시작한 시점 이후의 최고점</strong> 기준으로 수정한 뒤에도
-          분할의 효과는 그대로 유지됐다.
+          3년 분할의 효과는 그대로 유지됐다.
         </P>
 
         <H2>실전 적용 요약</H2>
         <ul className="list-none space-y-3 mb-8">
           {[
-            { color: 'text-blue-500 dark:text-blue-400', text: 'TQQQ(3배)에 목돈을 넣을 계획이라면 — 5년(60개월)에 걸쳐 매달 나눠 넣는다. 3·4년은 2008년 금융위기 같은 시점에 걸리면 오히려 13년 넘게 걸릴 수 있다.' },
-            { color: 'text-yellow-500 dark:text-yellow-400', text: '나스닥100(1배), VOO(1배)에 목돈을 넣을 계획이라면 — 즉시 거치가 더 낫다. QLD(2배)는 5년 분할이 오래 걸리는 경우를 줄이지만 평균이 늦어져 장단이 있다.' },
+            { color: 'text-blue-500 dark:text-blue-400', text: 'TQQQ(3배)에 목돈을 넣을 계획이라면 — 5년(60개월)에 걸쳐 나눠 넣는 것을 고려할 가치가 있다. 4년도 운용보수만 기준에서 유효하지만, 스왑금리까지 감안하면 5년이 안정적. 빈도(매월/매일)는 편의에 따라 선택. 결과 차이 없음.' },
+            { color: 'text-yellow-500 dark:text-yellow-400', text: 'QLD(2배), QQQ(1배), VOO(1배)에 목돈을 넣을 계획이라면 — 분할보다 즉시 거치가 통계적으로 더 낫다. 두려워서 나눠 넣는 게 오히려 손해일 수 있다.' },
             { color: 'text-gray-400', text: '"하락을 기다렸다가 넣겠다"는 전략은 작동하지 않는다. 하락이 충분히 오지 않는 강세장 시나리오에서 최악의 결과를 만들어낸다.' },
           ].map((item, i) => (
             <li key={i} className="flex gap-3 text-gray-600 dark:text-gray-300 text-sm">
@@ -263,7 +252,7 @@ export default function LumpSumVsSplitPost() {
           <p className="font-semibold text-gray-700 dark:text-gray-300">캐비엇</p>
           <p>
             여기서 쓰인 TQQQ/QLD 가격은 NDX 일별 수익률 × 레버리지로 합성한 이론치다.
-            운용비용(TQQQ 0.88%/년)과 스왑금리비용(기준금리 × 2/년, QLD는 × 1)을 반영했다. 데이터 페이지의 [운용보수만] 버튼으로 스왑금리를 뺀 이론치도 볼 수 있다. 배당은 미반영 (실제 TQQQ보다 연 2%p 정도 보수적). 변동성 끌림은 일별 복리 계산에 자동 반영된다.
+            운용비용(TQQQ 0.88%/년)은 반영. 스왑금리비용은 기본 미반영이며 데이터 페이지의 [+ 스왑금리] 버튼으로 확인 가능. 추적오차는 미반영. 변동성 끌림은 일별 복리 계산에 자동 반영된다.
           </p>
           <p>
             분석 기간(1971~2026) 중 진짜로 위험했던 극단적 구간은 1999~2000년 닷컴버블 단 한 번이다.

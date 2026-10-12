@@ -1,51 +1,82 @@
 'use client'
 
-import { useEffect, useState, useMemo, Suspense } from 'react'
+import { useEffect, useState, useMemo, useRef, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Header from '@/components/Header'
-import CostToggle from '@/components/CostToggle'
 
 // ─── 타입 ────────────────────────────────────────────────────
 
-// [실행일, 'S'(매도)|'B'(매수), 나스닥100 종가, 200일 지수이동평균, 1년 최고 종가, 거래 직후 총자산(억)]
-type Trade = [string, 'S' | 'B', number, number, number, number]
+// daily 행 형식: [date, ndx, ema200, div_pct, port, pos, act]
+type DailyRow = [string, number, number|null, number|null, number, 0|1, 'B'|'S'|null]
 
-interface CohortData {
-  s:     string
-  inv:   boolean
-  final: number
-  wd:    number
-  yrs:   number
-  dd:    number
-  t:     Trade[]
+interface MetaCohort {
+  start:        string
+  end:          string
+  complete:     boolean
+  actual_years: number
+  initial:      'INVESTED' | 'CASH'
+  final:        number
+  withdrawn:    number
+  bankrupt:     boolean
 }
 
 interface Meta {
-  generated:        string
-  strategy:         string
-  desc:             string
-  conditions:       string
-  n_cohorts:        number
-  median_final_10y: number
-  median_wd_10y:    number
-  avg_trades:       number
+  generated:    string
+  strategy:     string
+  price_mode:   string
+  with_rp:      boolean
+  is_open:      boolean
+  desc:         string
+  cost_label:   string
+  sim_years:    number | null
+  n_cohorts:    number
+  n_complete:   number
+  median_final: number
 }
 
-interface TradelogData {
+interface MetaData {
   meta:    Meta
-  cohorts: CohortData[]
+  cohorts: MetaCohort[]
 }
 
-const STRATS = [
-  { key: 'rule25', label: '25% 룰 (권장)' },
-  { key: 's0',  label: 'S0 (200일선 15일)' },
+interface CohortDetail {
+  start:        string
+  end:          string
+  complete:     boolean
+  actual_years: number
+  initial:      'INVESTED' | 'CASH'
+  final:        number
+  withdrawn:    number
+  bankrupt:     boolean
+  daily:        DailyRow[]
+}
+
+// ─── 상수 ────────────────────────────────────────────────────
+
+const PAGE_SIZE = 200
+
+const COST_MODES = [
+  { label: '운용보수만',          suffix: '',    desc: 'TQQQ 스왑금리비용 미반영 · RP 이자 미반영' },
+  { label: '+ 스왑금리',          suffix: '_v2', desc: 'TQQQ 스왑금리비용 반영 · RP 이자 미반영' },
+  { label: '+ 스왑금리 + RP이자',  suffix: '_v3', desc: 'TQQQ 스왑금리비용 반영 · 현금 RP 이자 반영 (이자소득세 15.4% 차감)' },
 ]
+
+function getUrls(costMode: number, isOpen: boolean) {
+  const c = COST_MODES[costMode].suffix           // '', '_v2', '_v3'
+  const o = isOpen ? '_open' : ''                  // '', '_open'
+  return {
+    metaUrl:   `/data/s0_daily_meta${o}${c}.json`,
+    folderUrl: `/data/s0_daily${o}${c}`,
+  }
+}
 
 // ─── 유틸 ────────────────────────────────────────────────────
 
 function fmt억(v: number) {
-  if (v >= 10000) return `${(v / 10000).toFixed(1)}조`
+  if (v < 0) return '파산'
+  if (v >= 100000) return `${(v / 10000).toFixed(0)}조`
+  if (v >= 10000)  return `${(v / 10000).toFixed(1)}조`
   return `${v.toFixed(1)}억`
 }
 
@@ -60,52 +91,101 @@ function TradelogInner() {
   const params  = useSearchParams()
   const router  = useRouter()
 
-  const [data,    setData]    = useState<TradelogData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [search,  setSearch]  = useState('')
+  const [metaData,      setMetaData]      = useState<MetaData | null>(null)
+  const [detail,        setDetail]        = useState<CohortDetail | null>(null)
+  const [metaLoading,   setMetaLoading]   = useState(true)
+  const [detailLoading, setDetailLoading] = useState(false)
+  const [search,        setSearch]        = useState('')
+  const [costMode,      setCostMode]      = useState(0)   // 0/1/2
+  const [isOpen,        setIsOpen]        = useState(false) // false=20년, true=전체기간
+  const [page,          setPage]          = useState(0)
+  const [jumpTarget,    setJumpTarget]    = useState<string | null>(null)
 
-  const strat         = params.get('st') === 's0' ? 's0' : 'rule25'   // 예전 주소 st=t25 도 여기로 (s0 아니면 25% 룰)
-  const withCosts     = params.get('fee') !== '1'
   const selectedStart = params.get('start') ?? ''
+  const tableRef = useRef<HTMLDivElement>(null)
 
-  const go = (o: { st?: string; fee?: boolean; start?: string }) => {
-    const st = o.st ?? strat
-    const fee = o.fee ?? !withCosts
-    const start = o.start ?? selectedStart
-    const q = new URLSearchParams()
-    if (st !== 'rule25') q.set('st', st)
-    if (fee) q.set('fee', '1')
-    if (start) q.set('start', start)
-    router.replace(`?${q.toString()}`, { scroll: false })
-  }
-
+  // ── 메타 데이터 로드 ──
   useEffect(() => {
-    setLoading(true)
-    fetch(`/data/withdrawal_tradelog_${strat}${withCosts ? '' : '_fee'}.json`)
+    setMetaLoading(true)
+    setMetaData(null)
+    setDetail(null)
+    const { metaUrl } = getUrls(costMode, isOpen)
+    fetch(metaUrl)
       .then(r => r.json())
-      .then((d: TradelogData) => { setData(d); setLoading(false) })
-  }, [strat, withCosts])
+      .then((d: MetaData) => {
+        setMetaData(d)
+        setMetaLoading(false)
+      })
+  }, [costMode, isOpen])
 
+  // ── 코호트 상세 로드 ──
+  useEffect(() => {
+    if (!metaData) return
+    const start = selectedStart || metaData.cohorts[0]?.start
+    if (!start) return
+
+    setDetailLoading(true)
+    setDetail(null)
+    setPage(0)
+    const { folderUrl } = getUrls(costMode, isOpen)
+    fetch(`${folderUrl}/${start}.json`)
+      .then(r => r.json())
+      .then((d: CohortDetail) => {
+        setDetail(d)
+        setDetailLoading(false)
+      })
+  }, [metaData, selectedStart, costMode, isOpen])
+
+  // ── 점프 처리 ──
+  useEffect(() => {
+    if (!jumpTarget || !detail) return
+    const rowIdx = detail.daily.findIndex(r => r[0] === jumpTarget)
+    if (rowIdx < 0) return
+    const targetPage = Math.floor(rowIdx / PAGE_SIZE)
+    if (page !== targetPage) {
+      setPage(targetPage)
+      setTimeout(() => {
+        document.getElementById(`row-${jumpTarget}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        setJumpTarget(null)
+      }, 100)
+    } else {
+      document.getElementById(`row-${jumpTarget}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      setJumpTarget(null)
+    }
+  }, [jumpTarget, detail, page])
+
+  // ── 파생 데이터 ──
   const filteredCohorts = useMemo(() => {
-    if (!data) return []
-    if (!search.trim()) return data.cohorts
-    return data.cohorts.filter(c => c.s.includes(search.trim()))
-  }, [data, search])
+    if (!metaData) return []
+    if (!search.trim()) return metaData.cohorts
+    return metaData.cohorts.filter(c => c.start.includes(search.trim()))
+  }, [metaData, search])
 
-  const activeCohort = useMemo(
-    () => data?.cohorts.find(c => c.s === selectedStart) ?? data?.cohorts[0] ?? null,
-    [data, selectedStart]
+  const activeMeta = useMemo(
+    () => metaData?.cohorts.find(c => c.start === (selectedStart || metaData?.cohorts[0]?.start)) ?? null,
+    [metaData, selectedStart]
   )
 
-  if (loading && !data) {
+  const trades = useMemo(
+    () => detail ? detail.daily.filter(r => r[6] !== null) : [],
+    [detail]
+  )
+
+  const pagedRows = useMemo(() => {
+    if (!detail) return []
+    return detail.daily.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE)
+  }, [detail, page])
+
+  const totalPages = detail ? Math.ceil(detail.daily.length / PAGE_SIZE) : 0
+
+  if (metaLoading) {
     return (
       <div className="min-h-screen bg-white dark:bg-gray-950 flex items-center justify-center">
         <p className="text-gray-400">데이터 로딩 중…</p>
       </div>
     )
   }
-  if (!data || !activeCohort) return null
-  const isRule25 = data.meta.strategy === 'RULE25'
+  if (!metaData || !activeMeta) return null
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-white">
@@ -119,25 +199,71 @@ function TradelogInner() {
             className="text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 mb-4 inline-block">
             ← 인출 방법론으로
           </Link>
-          <h1 className="text-2xl font-bold mb-1">인출 전략 거래 로그 전체 공개</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
-            초기 10억 · 1971년 이후 매달 시작한 {data.meta.n_cohorts}가지 경우 · 시작부터 오늘까지 보유
-          </p>
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 text-xs font-medium">
-              {STRATS.map(s => (
-                <button key={s.key} onClick={() => go({ st: s.key })}
-                  className={`px-3 py-1.5 transition-colors ${strat === s.key ? 'bg-blue-600 text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}>
-                  {s.label}
-                </button>
-              ))}
+          <div className="flex items-start justify-between gap-4 flex-wrap">
+            <div>
+              <h1 className="text-2xl font-bold mb-1">S0 전략 — 날짜별 전체 데이터 공개</h1>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                EMA200 15일 연속 + 동적 인출률 · 초기 10억
+                {isOpen ? ' · 데이터 끝까지 (최대 약 55년)' : ' · 20년 시뮬레이션'}
+              </p>
             </div>
-            <CostToggle withCosts={withCosts} onChange={wc => go({ fee: !wc })} />
+
+            {/* 토글 묶음 */}
+            <div className="flex flex-col gap-2 shrink-0">
+
+              {/* 시뮬레이션 기간 */}
+              <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3">
+                <p className="text-xs text-gray-400 mb-1.5">시뮬레이션 기간</p>
+                <div className="flex rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 text-xs font-medium">
+                  <button
+                    onClick={() => setIsOpen(false)}
+                    className={`px-4 py-1.5 transition-colors whitespace-nowrap ${
+                      !isOpen
+                        ? 'bg-indigo-600 text-white'
+                        : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                    }`}
+                  >
+                    20년
+                  </button>
+                  <button
+                    onClick={() => setIsOpen(true)}
+                    className={`px-4 py-1.5 transition-colors whitespace-nowrap ${
+                      isOpen
+                        ? 'bg-indigo-600 text-white'
+                        : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                    }`}
+                  >
+                    전체 기간
+                  </button>
+                </div>
+              </div>
+
+              {/* 비용 모드 */}
+              <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3">
+                <p className="text-xs text-gray-400 mb-1.5">비용/수익 반영</p>
+                <div className="flex rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 text-xs font-medium">
+                  {COST_MODES.map((m, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setCostMode(i)}
+                      className={`px-3 py-1.5 transition-colors whitespace-nowrap ${
+                        costMode === i
+                          ? 'bg-blue-600 text-white'
+                          : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                      }`}
+                    >
+                      {m.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+            </div>
           </div>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            <strong className="text-gray-700 dark:text-gray-200">{isRule25 ? '25% 룰' : data.meta.strategy}</strong>: {data.meta.desc}
+
+          <p className="text-xs text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700/40 rounded-lg px-3 py-2 inline-block">
+            ℹ {COST_MODES[costMode].desc}
           </p>
-          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{data.meta.conditions}</p>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-6">
@@ -146,7 +272,7 @@ function TradelogInner() {
           <div className="lg:w-52 shrink-0">
             <div className="sticky top-4">
               <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">
-                시작 시점 선택 ({data.meta.n_cohorts}개)
+                시작 시점 선택 ({metaData.meta.n_cohorts}개)
               </p>
               <input
                 type="text"
@@ -158,19 +284,25 @@ function TradelogInner() {
               <div className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
                 <div className="overflow-y-auto max-h-[calc(100vh-280px)]">
                   {filteredCohorts.map(c => {
-                    const isActive = c.s === activeCohort.s
+                    const isActive = c.start === activeMeta.start
                     return (
                       <button
-                        key={c.s}
-                        onClick={() => go({ start: c.s })}
+                        key={c.start}
+                        onClick={() => router.push(`?start=${c.start}`, { scroll: false })}
                         className={`w-full text-left px-3 py-2 text-xs font-mono border-b border-gray-100 dark:border-gray-800 last:border-0 transition-colors ${
                           isActive
                             ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold'
                             : 'hover:bg-gray-50 dark:hover:bg-gray-800/50 text-gray-600 dark:text-gray-400'
                         }`}
                       >
-                        <span>{c.s}</span>
-                        <span className="ml-1 text-[10px] text-gray-400 dark:text-gray-600">{c.yrs.toFixed(0)}년</span>
+                        <span>{c.start}</span>
+                        {isOpen ? (
+                          <span className="ml-1 text-[10px] text-gray-400 dark:text-gray-500">
+                            {c.actual_years}년
+                          </span>
+                        ) : !c.complete ? (
+                          <span className="ml-1 text-[10px] text-gray-400 dark:text-gray-600">진행중</span>
+                        ) : null}
                       </button>
                     )
                   })}
@@ -179,132 +311,267 @@ function TradelogInner() {
             </div>
           </div>
 
-          {/* 오른쪽: 거래 로그 */}
+          {/* 오른쪽: 상세 */}
           <div className="flex-1 min-w-0">
 
-            {/* 시작 시점 요약 */}
-            <div className="bg-gray-50 dark:bg-gray-900 rounded-xl px-5 py-4 mb-5 border border-gray-200 dark:border-gray-700">
+            {/* 코호트 요약 */}
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-xl px-5 py-4 mb-4 border border-gray-200 dark:border-gray-700">
               <div className="flex items-center gap-3 flex-wrap mb-3">
                 <span className="font-mono text-lg font-bold text-gray-900 dark:text-white">
-                  {activeCohort.s} 시작
+                  {activeMeta.start} 시작
                 </span>
-                <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
-                  {activeCohort.yrs.toFixed(1)}년 보유 (오늘까지)
-                </span>
+                {isOpen ? (
+                  <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300">
+                    {activeMeta.actual_years}년 진행 ({activeMeta.start} → {activeMeta.end})
+                  </span>
+                ) : (
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                    activeMeta.complete
+                      ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
+                      : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300'
+                  }`}>
+                    {activeMeta.complete ? '20년 완료' : '진행 중'}
+                  </span>
+                )}
                 <span className={`text-xs px-2 py-0.5 rounded-full ${
-                  !activeCohort.inv
+                  activeMeta.initial === 'CASH'
                     ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400'
                     : 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
                 }`}>
-                  시작 포지션: {activeCohort.inv ? '투자 (200일선 위)' : '현금 (200일선 아래)'}
+                  시작 포지션: {activeMeta.initial === 'CASH' ? '현금 (NDX < EMA200)' : '투자 (NDX ≥ EMA200)'}
                 </span>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 text-sm">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
                 <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">남은 자산</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">
+                    최종 자산 {isOpen ? `(${activeMeta.end} 기준)` : ''}
+                  </p>
                   <p className={`font-bold text-base ${
-                    activeCohort.final < 10 ? 'text-red-500' :
-                    activeCohort.final >= 1000 ? 'text-green-600 dark:text-green-400' :
+                    activeMeta.bankrupt ? 'text-red-500' :
+                    activeMeta.final >= 1000 ? 'text-green-600 dark:text-green-400' :
                     'text-gray-900 dark:text-white'
                   }`}>
-                    {fmt억(activeCohort.final)}
+                    {fmt억(activeMeta.final)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">꺼내 쓴 돈</p>
-                  <p className="font-semibold text-base text-gray-900 dark:text-white">{fmt억(activeCohort.wd)}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">총 인출액</p>
+                  <p className="font-semibold text-base text-gray-900 dark:text-white">
+                    {fmt억(activeMeta.withdrawn)}
+                  </p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">매매 횟수</p>
-                  <p className="font-semibold text-base text-gray-900 dark:text-white">{activeCohort.t.length}회</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">거래 횟수</p>
+                  <p className="font-semibold text-base text-gray-900 dark:text-white">
+                    {detailLoading ? '…' : `${trades.length}회`}
+                  </p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">최대 낙폭</p>
-                  <p className="font-semibold text-base text-gray-900 dark:text-white">−{activeCohort.dd.toFixed(0)}%</p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">남은 자산 중간값</p>
-                  <p className="font-semibold text-base text-blue-600 dark:text-blue-400" title="10년 이상 보유한 경우 기준">
-                    {fmt억(data.meta.median_final_10y)}
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">전체 중앙값</p>
+                  <p className="font-semibold text-base text-blue-600 dark:text-blue-400">
+                    {fmt억(metaData.meta.median_final)}
                   </p>
                 </div>
               </div>
             </div>
 
-            {activeCohort.t.length === 0 && (
-              <div className="text-sm text-gray-400 dark:text-gray-500 py-8 text-center border border-gray-100 dark:border-gray-800 rounded-xl">
-                이 시작 시점에서는 오늘까지 매수/매도 신호가 발생하지 않았습니다.
+            {/* 거래 이벤트 요약 */}
+            {!detailLoading && trades.length > 0 && (
+              <div className="mb-4 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3">
+                <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">
+                  거래 이벤트 ({trades.length}회) — 클릭하면 해당 날짜로 이동
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {trades.map((t, i) => {
+                    const isSell = t[6] === 'S'
+                    return (
+                      <button
+                        key={i}
+                        onClick={() => setJumpTarget(t[0])}
+                        className={`text-[11px] font-mono px-2 py-1 rounded-md border transition-colors ${
+                          isSell
+                            ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700/40 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40'
+                            : 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-700/40 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/40'
+                        }`}
+                      >
+                        {isSell ? '▼' : '▲'} {t[0]}
+                      </button>
+                    )
+                  })}
+                </div>
               </div>
             )}
 
-            {activeCohort.t.length > 0 && (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm border-collapse">
-                  <thead>
-                    <tr className="border-b border-gray-200 dark:border-gray-700">
-                      {['#', '실행일', '신호', '나스닥100 종가', '1년 최고 종가 대비', '200일선 대비', '거래 후 총자산'].map(h => (
-                        <th key={h} className="py-2 px-3 text-left text-xs text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">
-                          {h}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                    {activeCohort.t.map(([date, act, ndx, ema, peak, port], i) => {
-                      const isSell = act === 'S'
-                      const vsPeak = (ndx / peak - 1) * 100
-                      const vsEma  = (ndx / ema - 1) * 100
-                      return (
-                        <tr key={i} className={isSell
-                          ? 'bg-red-50/60 dark:bg-red-900/10 hover:bg-red-50 dark:hover:bg-red-900/20'
-                          : 'bg-green-50/60 dark:bg-green-900/10 hover:bg-green-50 dark:hover:bg-green-900/20'}>
-                          <td className="py-2 px-3 text-xs text-gray-400 dark:text-gray-600 font-mono">{i + 1}</td>
-                          <td className="py-2 px-3 font-mono text-xs text-gray-700 dark:text-gray-300 whitespace-nowrap">{date}</td>
-                          <td className="py-2 px-3">
-                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-                              isSell
-                                ? 'bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400'
-                                : 'bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400'
-                            }`}>
-                              {isSell ? '매도' : '매수'}
-                            </span>
-                          </td>
-                          <td className="py-2 px-3 font-mono text-xs text-gray-700 dark:text-gray-300 text-right">{ndx.toLocaleString()}</td>
-                          <td className={`py-2 px-3 font-mono text-xs text-right ${isRule25 && isSell ? 'font-semibold text-red-500 dark:text-red-400' : 'text-gray-500 dark:text-gray-400'}`}>
-                            {fmtPct(vsPeak)}
-                          </td>
-                          <td className={`py-2 px-3 font-mono text-xs text-right ${!isRule25 || !isSell ? 'font-semibold' : ''} ${
-                            vsEma < 0 ? 'text-red-500 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
-                            {fmtPct(vsEma)}
-                          </td>
-                          <td className="py-2 px-3 font-mono text-xs text-right font-semibold text-gray-800 dark:text-gray-200">{fmt억(port)}</td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
+            {/* 로딩 */}
+            {detailLoading && (
+              <div className="py-12 text-center text-gray-400 text-sm border border-gray-100 dark:border-gray-800 rounded-xl">
+                데이터 로딩 중…
               </div>
+            )}
+
+            {/* 전체 일별 테이블 */}
+            {!detailLoading && detail && (
+              <>
+                {/* 페이지네이션 상단 */}
+                <div className="flex items-center justify-between mb-2 px-1">
+                  <p className="text-xs text-gray-400 dark:text-gray-500">
+                    총 {detail.daily.length.toLocaleString()}거래일 ·&nbsp;
+                    {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, detail.daily.length)}행 표시
+                  </p>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => { setPage(0); tableRef.current?.scrollTo(0, 0) }}
+                      disabled={page === 0}
+                      className="px-2 py-1 text-xs rounded border border-gray-200 dark:border-gray-700 disabled:opacity-30 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    >처음</button>
+                    <button
+                      onClick={() => { setPage(p => Math.max(0, p - 1)); tableRef.current?.scrollTo(0, 0) }}
+                      disabled={page === 0}
+                      className="px-2 py-1 text-xs rounded border border-gray-200 dark:border-gray-700 disabled:opacity-30 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    >‹</button>
+                    <span className="px-2 text-xs text-gray-500 dark:text-gray-400">
+                      {page + 1} / {totalPages}
+                    </span>
+                    <button
+                      onClick={() => { setPage(p => Math.min(totalPages - 1, p + 1)); tableRef.current?.scrollTo(0, 0) }}
+                      disabled={page >= totalPages - 1}
+                      className="px-2 py-1 text-xs rounded border border-gray-200 dark:border-gray-700 disabled:opacity-30 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    >›</button>
+                    <button
+                      onClick={() => { setPage(totalPages - 1); tableRef.current?.scrollTo(0, 0) }}
+                      disabled={page >= totalPages - 1}
+                      className="px-2 py-1 text-xs rounded border border-gray-200 dark:border-gray-700 disabled:opacity-30 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    >끝</button>
+                  </div>
+                </div>
+
+                <div ref={tableRef} className="overflow-x-auto">
+                  <table className="w-full text-sm border-collapse">
+                    <thead>
+                      <tr className="border-b-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+                        {['날짜', 'NDX 종가', 'EMA200', '이격도', '포트폴리오', '포지션', '신호'].map(h => (
+                          <th key={h} className="py-2 px-3 text-left text-xs text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">
+                            {h}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100 dark:divide-gray-800/60">
+                      {pagedRows.map((row) => {
+                        const [date, ndx, ema, div, port, pos, act] = row
+                        const isSell     = act === 'S'
+                        const isBuy      = act === 'B'
+                        const isTrade    = isSell || isBuy
+                        const isInvested = pos === 1
+
+                        return (
+                          <tr
+                            id={`row-${date}`}
+                            key={date}
+                            className={`${
+                              isSell    ? 'bg-red-50 dark:bg-red-900/15' :
+                              isBuy     ? 'bg-green-50 dark:bg-green-900/15' :
+                              !isInvested ? 'bg-gray-50/50 dark:bg-gray-800/20' : ''
+                            } ${isTrade ? 'font-semibold' : ''}`}
+                          >
+                            <td className={`py-1.5 px-3 font-mono text-xs whitespace-nowrap ${
+                              isTrade ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-400'
+                            }`}>
+                              {date}
+                            </td>
+                            <td className="py-1.5 px-3 font-mono text-xs text-right text-gray-700 dark:text-gray-300">
+                              {ndx.toLocaleString()}
+                            </td>
+                            <td className="py-1.5 px-3 font-mono text-xs text-right text-gray-500 dark:text-gray-400">
+                              {ema !== null ? ema.toLocaleString() : '—'}
+                            </td>
+                            <td className={`py-1.5 px-3 font-mono text-xs text-right ${
+                              div === null ? 'text-gray-300 dark:text-gray-600' :
+                              div < 0      ? 'text-red-500 dark:text-red-400' :
+                                             'text-green-600 dark:text-green-400'
+                            }`}>
+                              {div !== null ? fmtPct(div) : '—'}
+                            </td>
+                            <td className="py-1.5 px-3 font-mono text-xs text-right font-semibold text-gray-800 dark:text-gray-200">
+                              {fmt억(port)}
+                            </td>
+                            <td className="py-1.5 px-3 text-xs text-center">
+                              <span className={`inline-block w-2 h-2 rounded-full ${
+                                isInvested ? 'bg-blue-400 dark:bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'
+                              }`} />
+                              <span className={`ml-1 text-[10px] ${
+                                isInvested ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400'
+                              }`}>
+                                {isInvested ? '투자' : '현금'}
+                              </span>
+                            </td>
+                            <td className="py-1.5 px-3 text-xs text-center">
+                              {isTrade ? (
+                                <span className={`font-bold px-2 py-0.5 rounded-full text-[11px] ${
+                                  isSell
+                                    ? 'bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400'
+                                    : 'bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400'
+                                }`}>
+                                  {isSell ? '매도' : '매수'}
+                                </span>
+                              ) : (
+                                <span className="text-gray-200 dark:text-gray-700">—</span>
+                              )}
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* 페이지네이션 하단 */}
+                <div className="flex items-center justify-center gap-2 mt-3">
+                  <button
+                    onClick={() => { setPage(p => Math.max(0, p - 1)); window.scrollTo(0, document.body.scrollHeight) }}
+                    disabled={page === 0}
+                    className="px-3 py-1.5 text-xs rounded border border-gray-200 dark:border-gray-700 disabled:opacity-30 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  >
+                    ‹ 이전 {PAGE_SIZE}행
+                  </button>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    {page + 1} / {totalPages} 페이지
+                  </span>
+                  <button
+                    onClick={() => { setPage(p => Math.min(totalPages - 1, p + 1)); window.scrollTo(0, document.body.scrollHeight) }}
+                    disabled={page >= totalPages - 1}
+                    className="px-3 py-1.5 text-xs rounded border border-gray-200 dark:border-gray-700 disabled:opacity-30 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  >
+                    다음 {PAGE_SIZE}행 ›
+                  </button>
+                </div>
+              </>
             )}
 
             {/* 범례 */}
-            <div className="mt-4 text-xs text-gray-400 dark:text-gray-500 space-y-1">
-              <p>
-                <span className="inline-block w-2.5 h-2.5 rounded-full bg-red-400 mr-1.5 align-middle" />
-                매도 = {isRule25
-                  ? '나스닥100 종가가 1년 최고 종가보다 25% 이상 낮게 끝난 다음 거래일 종가에 전량 현금 전환'
-                  : '나스닥100이 200일 지수이동평균 아래에서 15거래일 연속 끝난 다음 거래일 종가에 전량 현금 전환'}
-              </p>
-              <p>
-                <span className="inline-block w-2.5 h-2.5 rounded-full bg-green-400 mr-1.5 align-middle" />
-                매수 = 나스닥100이 200일 지수이동평균 위에서 15거래일 연속 끝난 다음 거래일 종가에 전액 재매수
-              </p>
-              <p className="mt-1">
-                &lsquo;1년 최고 종가 대비&rsquo;·&lsquo;200일선 대비&rsquo; = 실행일 종가가 각 기준보다 몇 % 높거나 낮은지.
-                신호는 전날 종가로 확정되므로 실행일 값은 기준선을 조금 넘나들 수 있다.
-              </p>
-              <p>거래 후 총자산 = 매매 직후 TQQQ + 현금(외화RP) 합계 (억 원). 생활비 인출·양도세 납부 후 금액.</p>
-            </div>
+            {!detailLoading && detail && (
+              <div className="mt-5 text-xs text-gray-400 dark:text-gray-500 space-y-1 border-t border-gray-100 dark:border-gray-800 pt-4">
+                <p>
+                  <span className="inline-block w-2.5 h-2.5 rounded-full bg-red-400 mr-1.5 align-middle" />
+                  <strong>매도</strong> = NDX가 EMA200 아래에서 15거래일 연속 → 전량 현금 전환
+                </p>
+                <p>
+                  <span className="inline-block w-2.5 h-2.5 rounded-full bg-green-400 mr-1.5 align-middle" />
+                  <strong>매수</strong> = NDX가 EMA200 위에서 15거래일 연속 → 전액 재매수
+                </p>
+                <p>
+                  <span className="inline-block w-2.5 h-2.5 rounded-full bg-blue-400 mr-1.5 align-middle" />
+                  파란색 = 투자 상태 · 회색 = 현금 상태 (매도 후 대기)
+                </p>
+                <p>이격도 = (NDX − EMA200) ÷ EMA200 × 100. 매도 시 음수(−), 매수 시 양수(+).</p>
+                <p>
+                  포트폴리오 = 해당 날짜 기준 총 자산 (억 원).
+                  {costMode === 2 ? ' 스왑금리비용 + RP이자 반영.' :
+                   costMode === 1 ? ' 스왑금리비용 반영.' : ' 운용보수만 반영.'}
+                </p>
+              </div>
+            )}
 
           </div>
         </div>

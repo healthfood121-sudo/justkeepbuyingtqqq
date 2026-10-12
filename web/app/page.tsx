@@ -2,6 +2,7 @@ import Header from '@/components/Header'
 import HomeSimulator from '@/components/HomeSimulator'
 import WithdrawalSignal from '@/components/WithdrawalSignal'
 import LivingCalc from '@/components/LivingCalc'
+import LifeCountdown from '@/components/LifeCountdown'
 import Link from 'next/link'
 
 const principles = [
@@ -38,6 +39,9 @@ export default function HomePage() {
         <Link href="/start" className="inline-block mt-5 text-sm text-blue-200 hover:text-white underline underline-offset-4">
           처음 오셨나요? 어디서부터 읽을지 안내 →
         </Link>
+        <div className="max-w-2xl mx-auto mt-6 px-6">
+          <LifeCountdown />
+        </div>
       </section>
 
       {/* 원칙 + 방법론 */}

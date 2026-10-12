@@ -76,22 +76,13 @@ export default function StrategyAbcPage() {
             A·B·C 전략 비교: 거치금이 없다면, 있다면, 멈춘다면
           </h1>
           <div className="flex items-center gap-3 flex-wrap">
-            <span className="text-sm text-gray-400">2026-10-02 · 최종수정 2026-10-03</span>
+            <span className="text-sm text-gray-400">2026-10-02</span>
             {['A전략', 'B전략', 'C전략', 'TQQQ', '비교', '백테스트'].map(t => <Tag key={t}>{t}</Tag>)}
           </div>
         </div>
 
         <Callout color="blue">
-          <strong>백테스트 조건:</strong> 일 20만원 적립 · 거치금(B/C) 2.5억 · 목표 10억 · 1971년 이후 매달 시작한 모든 경우 ·
-          TQQQ/QLD 운용보수 + 스왑금리비용(기준금리 × 2/년, QLD는 × 1) 반영
-        </Callout>
-
-        <Callout color="yellow">
-          <strong>2026-10-03 수정: C전략 거치 기간 3년 → 5년.</strong>{' '}
-          처음 결론(3년 분할로 TQQQ 최악 8.82년)은 운용보수·스왑금리비용을 넣기 전 계산이었다.
-          비용을 넣으면 3년 분할은 1999년 초 시작 경우가 2008년 금융위기 직전에 10억을 못 넘겨 최악 13.3년으로 늘어난다.
-          5년으로 나누면 10년 넘게 걸리는 경우가 사라지고(최악 9.0년), 비용이 조금 달라져도 결과가 흔들리지 않는다.
-          자세한 비교는 <Link href="/posts/lump-sum-vs-split" className="underline">거치금 분할 글</Link>에 있다.
+          <strong>백테스트 조건:</strong> 일 20만원 적립 · 거치금(B/C) 2.5억 · 목표 10억 · 1971~2025년 전체 코호트
         </Callout>
 
         {/* 1. 세 전략 */}
@@ -109,7 +100,7 @@ export default function StrategyAbcPage() {
           </div>
           <div className="border-l-4 border-blue-400 pl-4 py-1">
             <p className="text-sm font-bold text-blue-600 dark:text-blue-400 mb-1">C전략 — 5년 분할 거치</p>
-            <p className="text-sm text-gray-600 dark:text-gray-300">매일 20만원 + 거치금 2.5억을 60개월(5년)에 걸쳐 월 균등 분할 투입. 목돈이 있고 한 번에 넣기 두려운 경우.</p>
+            <p className="text-sm text-gray-600 dark:text-gray-300">매일 20만원 + 거치금 2.5억을 60개월에 걸쳐 월 균등 분할 투입. 목돈이 있고 한 번에 넣기 두려운 경우.</p>
           </div>
         </div>
 
@@ -117,8 +108,8 @@ export default function StrategyAbcPage() {
         <H2>2. TQQQ(나스닥100 3배) 백테스트 결과</H2>
 
         <Callout color="green">
-          <strong>핵심 요약 (TQQQ 기준):</strong> C전략이 가장 빠르고 가장 안정적이다. 중간값 4.28년으로 A전략보다 약 2년 빠르고, 최악도 9.0년으로 가장 짧다.
-          B전략은 A전략과 비슷해 보이지만, 최악의 경우 A보다 5.6년 더 걸린다.
+          <strong>핵심 요약 (TQQQ 기준):</strong> C전략이 압도적으로 빠르다. 중간값 기준 A전략의 약 60% 수준으로 단축된다.
+          B전략은 A전략과 비슷해 보이지만, 최악의 경우 A보다 약 5년 더 걸린다.
         </Callout>
 
         <Table
@@ -126,19 +117,19 @@ export default function StrategyAbcPage() {
           rows={[
             [
               <span key="a" className="font-semibold text-emerald-600 dark:text-emerald-400">A전략 (계속 적립)</span>,
-              '90.0%', '6.33년', '6.75년', '13.90년',
+              '92.4%', '5.38년', '5.90년', '13.77년',
               <DataLink key="a" inst="ndx3x" />,
             ],
             [
               <span key="b" className="font-semibold text-yellow-600 dark:text-yellow-400">B전략 (매입액 한도)</span>,
-              '89.5%', '6.69년', '7.58년', <span key="bw" className="text-red-500 font-semibold">19.46년</span>,
+              '92.4%', '5.42년', '6.28년', <span key="bw" className="text-red-500 font-semibold">18.69년</span>,
               <DataLink key="b" inst="ndx3x" />,
             ],
             [
               <span key="c" className="font-semibold text-blue-600 dark:text-blue-400">C전략 (5년 분할 거치)</span>,
-              <span key="cr" className="font-semibold">93.7%</span>,
-              <span key="cm" className="font-semibold">4.28년</span>,
-              '4.57년', '8.99년',
+              <span key="cr" className="font-semibold">94.8%</span>,
+              <span key="cm" className="font-semibold">3.22년</span>,
+              '3.46년', '8.30년',
               <DataLink key="c" inst="ndx3x" />,
             ],
           ]}
@@ -146,21 +137,21 @@ export default function StrategyAbcPage() {
 
         <H3>B전략의 함정: 중간값은 비슷하지만 최장이 다르다</H3>
         <P>
-          완료율(90.0% vs 89.5%)과 중간값(6.33 vs 6.69년)만 보면 A전략과 B전략이 비슷해 보인다.
-          하지만 최장 소요기간이 <strong className="text-gray-900 dark:text-white">13.90년 vs 19.46년</strong>으로 5.6년 차이가 난다.
+          완료율(92.4%)과 중간값(5.32 vs 5.33년)만 보면 A전략과 B전략이 사실상 동일해 보인다.
+          하지만 최장 소요기간이 <strong className="text-gray-900 dark:text-white">13.74년 vs 18.55년</strong>으로 4.8년 차이가 난다.
         </P>
         <P>
           이유는 단순하다. A전략은 시장이 하락할수록 더 많은 주식을 싸게 살 수 있다.
           B전략은 2.5억 한도에 도달하는 순간 매수를 멈추기 때문에, 그 이후 시장이 무너지면
-          바닥에서 추가 매수할 기회를 잃는다. <strong className="text-gray-900 dark:text-white">닷컴버블 직전에 한도를 채운 경우</strong>가
+          바닥에서 추가 매수할 기회를 잃는다. <strong className="text-gray-900 dark:text-white">닷컴버블 직전에 한도를 채운 코호트</strong>가
           가장 오래 걸린 케이스다.
         </P>
 
         <H3>C전략이 빠른 이유: 초기 자본의 복리 효과</H3>
         <P>
-          C전략은 시작부터 매달 거치금(2.5억 ÷ 60 ≈ 417만원)이 추가로 들어온다.
+          C전략은 시작부터 매달 거치금(2.5억 ÷ 36 ≈ 694만원)이 추가로 들어온다.
           일 20만원만으로 시작하는 A전략보다 초기 주식 수가 훨씬 빠르게 쌓인다.
-          이 초기 주식들이 이후 상승장에서 복리로 불어나기 때문에 소요기간이 약 ⅓ 줄어든다.
+          이 초기 주식들이 이후 상승장에서 복리로 불어나기 때문에 소요기간이 절반 이하로 줄어든다.
         </P>
 
         {/* 3. 전 종목 비교 */}
@@ -170,25 +161,25 @@ export default function StrategyAbcPage() {
         <Table
           headers={['종목', '전략', '완료율', '중간값', '최장']}
           rows={[
-            ['TQQQ (3x)', 'A', '90.0%', '6.33년', '13.90년'],
-            ['', 'B', '89.5%', '6.69년', <span key="1" className="text-red-500">19.46년</span>],
-            ['', 'C', <span key="2" className="font-semibold">93.7%</span>, <span key="3" className="font-semibold">4.28년</span>, '8.99년'],
-            ['QLD (2x)', 'A', '88.2%', '7.25년', '14.54년'],
-            ['', 'B', '87.4%', '8.22년', <span key="4" className="text-red-500">21.98년</span>],
-            ['', 'C', <span key="5" className="font-semibold">92.7%</span>, <span key="6" className="font-semibold">4.96년</span>, '12.68년'],
-            ['나스닥100 (1x)', 'A', '85.2%', '9.16년', '14.44년'],
-            ['', 'B', <span key="7" className="text-red-500">82.0%</span>, '11.46년', <span key="8" className="text-red-500">21.21년</span>],
-            ['', 'C', <span key="9" className="font-semibold">89.8%</span>, <span key="10" className="font-semibold">6.25년</span>, '11.96년'],
+            ['TQQQ (3x)', 'A', '92.4%', '5.32년', '13.74년'],
+            ['', 'B', '92.4%', '5.33년', <span key="1" className="text-red-500">18.55년</span>],
+            ['', 'C', <span key="2" className="font-semibold">94.8%</span>, <span key="3" className="font-semibold">3.23년</span>, '8.82년'],
+            ['QLD (2x)', 'A', '88.9%', '6.54년', '13.37년'],
+            ['', 'B', '88.5%', '6.87년', <span key="4" className="text-red-500">19.58년</span>],
+            ['', 'C', <span key="5" className="font-semibold">93.9%</span>, <span key="6" className="font-semibold">4.05년</span>, '12.38년'],
+            ['QQQ (1x)', 'A', '85.2%', '9.10년', '14.34년'],
+            ['', 'B', <span key="7" className="text-red-500">82.2%</span>, '11.37년', <span key="8" className="text-red-500">21.04년</span>],
+            ['', 'C', <span key="9" className="font-semibold">90.7%</span>, <span key="10" className="font-semibold">5.86년</span>, '12.31년'],
             ['VOO (SP500)', 'A', '90.2%', '11.73년', '17.34년'],
             ['', 'B', <span key="11" className="text-red-500">85.9%</span>, '19.73년', <span key="12" className="text-red-500">31.00년</span>],
-            ['', 'C', <span key="13" className="font-semibold">93.5%</span>, <span key="14" className="font-semibold">7.95년</span>, '13.59년'],
+            ['', 'C', <span key="13" className="font-semibold">93.7%</span>, <span key="14" className="font-semibold">7.75년</span>, '16.31년'],
           ]}
         />
 
         <Callout color="red">
           <strong>VOO B전략의 최장 31년:</strong> S&P500을 매수하다 2.5억에서 멈추고 보유만 하면,
           닷컴버블 진입 시 31년이 걸린다. A전략(17.34년)보다 13.6년 더 오래 걸리는 셈이다.
-          레버리지가 낮을수록 &ldquo;계속 사는&rdquo; 효과가 더 크다.
+          레버리지가 낮을수록 "계속 사는" 효과가 더 크다.
         </Callout>
 
         {/* 4. 결론 */}
@@ -201,7 +192,7 @@ export default function StrategyAbcPage() {
           </div>
           <div className="border border-blue-200 dark:border-blue-800/40 rounded-xl px-5 py-4 bg-blue-50/50 dark:bg-blue-900/10">
             <p className="text-sm font-bold text-blue-700 dark:text-blue-400 mb-1">거치금이 있다면 → C전략</p>
-            <p className="text-sm text-gray-600 dark:text-gray-300">목돈을 5년(60개월)에 나눠 넣으면서 매일 20만원도 계속. 소요기간이 약 ⅓ 줄고, TQQQ 기준 최악도 9년으로 가장 짧다.</p>
+            <p className="text-sm text-gray-600 dark:text-gray-300">목돈을 3년에 나눠 넣으면서 매일 20만원도 계속. 소요기간이 절반 가까이 줄어든다.</p>
           </div>
           <div className="border border-yellow-200 dark:border-yellow-800/40 rounded-xl px-5 py-4 bg-yellow-50/50 dark:bg-yellow-900/10">
             <p className="text-sm font-bold text-yellow-700 dark:text-yellow-400 mb-1">B전략은 언제?</p>
@@ -212,7 +203,7 @@ export default function StrategyAbcPage() {
         <P>
           결국 이 분석이 보여주는 건 하나다.
           <strong className="text-gray-900 dark:text-white"> 멈추지 않는 게 중요하다.</strong> 하락장에 싸게 살 기회를 포기하는 순간,
-          worst case가 급격히 나빠진다. 거치금 여부와 무관하게 &ldquo;계속 사는&rdquo; 행동만으로도 리스크가 크게 줄어든다.
+          worst case가 급격히 나빠진다. 거치금 여부와 무관하게 "계속 사는" 행동만으로도 리스크가 크게 줄어든다.
         </P>
 
         {/* 관련 링크 */}
@@ -220,7 +211,7 @@ export default function StrategyAbcPage() {
           <p className="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-4">관련 글</p>
           <div className="space-y-2">
             {[
-              { href: '/posts/lump-sum-vs-split', title: '거치금 2.5억, 한번에 넣을까 vs 5년에 나눠 넣을까', desc: 'C전략의 거치 방식을 더 깊이 분석' },
+              { href: '/posts/lump-sum-vs-split', title: '거치금 2.5억, 한번에 넣을까 vs 3년에 나눠 넣을까', desc: 'C전략의 거치 방식을 더 깊이 분석' },
               { href: '/posts/accumulation-guide', title: '적립식 방법론 전체 설계도', desc: '종목 선택부터 전략까지' },
             ].map(({ href, title, desc }) => (
               <Link

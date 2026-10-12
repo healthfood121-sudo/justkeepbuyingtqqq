@@ -117,15 +117,8 @@ export default function AccumulationGuidePage() {
         </FormulaBlock>
         <P>
           변동성 끌림은 이 누적 곱셈에 자동 반영된다. 운용비용(TQQQ 0.88%/년)은 반영된다.
-          스왑금리비용(기준금리 × 2/년)도 기본으로 반영하며, 시뮬레이터의 [운용보수만] 버튼으로 스왑금리를 뺀 이론치도 볼 수 있다.
-          배당은 넣지 않았다 — 실제 TQQQ와 비교하면 합성 가격이 연 2%p 정도 낮게 나오는, 보수적인 계산이다.
+          스왑금리비용은 기본 미반영이며 시뮬레이터의 [+ 스왑금리] 버튼으로 반영 버전을 확인할 수 있다. 추적오차는 미반영.
         </P>
-
-        <AnalysisLink
-          href="/posts/real-vs-synthetic"
-          title="백테스트의 TQQQ는 실제 TQQQ를 얼마나 잘 따라갔나"
-          desc="2010년 이후 실제 가격과 비교: 최대 낙폭은 같고, 장기 수익은 실제가 연 2.2%p 높았다 (대부분 배당)."
-        />
 
         <Callout color="yellow">
           <strong>기반 데이터: 나스닥 종합지수 + 나스닥100 이어붙임.</strong>{' '}
@@ -136,7 +129,7 @@ export default function AccumulationGuidePage() {
 
         <P>
           이렇게 이어붙여도 1971년이 한계다. 1929년 대공황을 직접 테스트할 수 없다.
-          SP500과 NDX의 베타 회귀로 1971년 이전 가상 NDX를 합성해 1929년도 검증했다.
+          SP500과 NDX의 베타 회귀로 가상의 pre-1971 NDX를 합성해 1929년도 검증했다.
         </P>
         <AnalysisLink
           href="/posts/synthetic-ndx-1929"
@@ -162,7 +155,7 @@ export default function AccumulationGuidePage() {
             <span className="text-gray-600 dark:text-gray-300">
               이 사이트의 이름 그대로다. 그냥 계속 산다. 장기 하락장에서 꾸준한 매수로 평균단가를 낮춘다.
               목돈이 없고 꾸준한 현금흐름만 있는 사람에게 적합.
-              TQQQ 기준 worst(닷컴버블 직전 1998-05 진입)는 약 13.9년이다 (운용보수·스왑금리 반영).
+              TQQQ 기준 worst(닷컴버블 1998-06 진입)는 약 13.7년이다.
             </span>
           </div>
         </div>
@@ -186,21 +179,21 @@ export default function AccumulationGuidePage() {
         <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl px-5 py-4 mb-6 text-sm space-y-2">
           <div className="flex gap-3">
             <span className="text-blue-500 dark:text-blue-400 font-mono shrink-0 w-12">방법</span>
-            <span className="text-gray-600 dark:text-gray-300">거치금 2.5억을 5년(60개월) 동안 매달 나눠 넣고, 매일 20만원도 계속 적립.</span>
+            <span className="text-gray-600 dark:text-gray-300">매일 20만원 적립 + 거치금 2.5억을 60개월(5년)에 걸쳐 월 약 694만원씩 추가 납입.</span>
           </div>
           <div className="flex gap-3">
             <span className="text-blue-500 dark:text-blue-400 font-mono shrink-0 w-12">이유</span>
             <span className="text-gray-600 dark:text-gray-300">
               목돈이 있을 때 초반 복리 베이스를 크게 시작하면 달성 속도가 훨씬 빨라진다.
-              TQQQ 기준 중간 4.3년으로 A전략(6.3년)보다 약 2년 빠르고, 최악도 9.0년으로 가장 짧다 (운용보수·스왑금리 반영).
+              A전략에 비해 중앙값 달성기간이 수년 단축된다.
             </span>
           </div>
           <div className="flex gap-3">
             <span className="text-red-500 dark:text-red-400 font-mono shrink-0 w-12">주의</span>
             <span className="text-gray-600 dark:text-gray-300">
-              고점에 전액 거치하면 닷컴버블 같은 상황에서 최악이 길어진다(즉시 거치 최악 12.3년).
-              3·4년 분할은 2008년 금융위기 직전에 목표에 아슬아슬하게 못 닿는 경우가 생겨 최악이 13년대로 오히려 늘어난다.
-              <strong className="text-gray-800 dark:text-gray-200"> 거치금은 5년(60개월) 월 균등 분할을 권장한다</strong> — 10년 넘게 걸리는 경우가 0번, 최악 9.0년.
+              고점에 전액 거치하면 닷컴버블 같은 상황에서 최악이 길어진다.
+              <strong className="text-gray-800 dark:text-gray-200"> 거치금은 5년(60개월) 균등 분할 진입을 권장한다.</strong>
+              3년·4년 분할은 운용보수+스왑금리 기준으로 효과가 없고 오히려 즉시 거치보다 나빠진다.
             </span>
           </div>
         </div>
@@ -208,13 +201,13 @@ export default function AccumulationGuidePage() {
         <AnalysisLink
           href="/posts/lump-sum-vs-split"
           title="거치금 2.5억, 한번에 넣을까 vs 5년에 나눠 넣을까"
-          desc="668가지 시작 시점 백테스트 (운용보수·스왑금리 반영). 5년 월 분할이 TQQQ 최악을 12.32년 → 8.99년으로, 10년 넘게 걸린 경우를 27번 → 0번으로 줄인다. 3년이 아닌 이유도 데이터로 확인."
+          desc="668가지 시작 시점 백테스트. 5년(60개월) 월 분할이 TQQQ worst 케이스를 12.27년 → 8.69년으로 단축. 3년·4년 분할 효과가 없는 이유와 5년이 임계점인 데이터 확인."
         />
 
         <AccumulationStats />
 
         {/* ── 4. 종목 선택 ──────────────────────────────────── */}
-        <H2>4. 종목 선택 — 나스닥100 vs QLD vs TQQQ</H2>
+        <H2>4. 종목 선택 — QQQ vs QLD vs TQQQ</H2>
         <P>
           세 종목 중 무엇을 선택할지는 백테스트 결과를 직접 보고 결정하길 권장한다.
           숫자만 보면 TQQQ가 항상 유리해 보이지만, worst 케이스의 고통은 숫자로 다 전달되지 않는다.
@@ -224,11 +217,11 @@ export default function AccumulationGuidePage() {
           <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl px-5 py-4">
             <div className="flex items-center gap-3 mb-2">
               <span className="font-mono text-xs text-gray-400 dark:text-gray-600">1×</span>
-              <span className="font-bold text-gray-900 dark:text-white">나스닥100</span>
+              <span className="font-bold text-gray-900 dark:text-white">QQQ</span>
             </div>
             <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
               변동성 끌림 없음. 달성 속도가 가장 느리지만 worst 케이스 소요기간도 가장 짧다.
-              레버리지가 처음이라면 나스닥100(1배)부터 시작하고 데이터를 직접 본 뒤 판단하라.
+              레버리지가 처음이라면 QQQ부터 시작하고 데이터를 직접 본 뒤 판단하라.
             </p>
           </div>
           <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl px-5 py-4">
@@ -246,7 +239,7 @@ export default function AccumulationGuidePage() {
               <span className="font-bold text-gray-900 dark:text-white">TQQQ</span>
             </div>
             <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-              중앙값 달성 속도가 가장 빠르다. 하지만 닷컴버블 고점 진입 시 C전략 기준 약 12년,
+              중앙값 달성 속도가 가장 빠르다. 하지만 닷컴버블 고점 진입 시 C전략(5년 분할) 기준 약 8.7년,
               A전략 기준 약 14년을 버텨야 한다. 그 기간 동안 −90% 이상 구간을 지나칠 수 있다.
               TQQQ를 선택한다는 것은 이 시나리오를 받아들인다는 뜻이다.
             </p>
@@ -255,16 +248,16 @@ export default function AccumulationGuidePage() {
 
         <Callout color="yellow">
           <strong>합성가격 비용 반영.</strong> 운용보수(TQQQ 0.88%/년)는 반영됩니다.
-          스왑금리비용(레버리지 조달 비용, 기준금리 × 2/년)도 기본으로 반영하며, 시뮬레이터의 [운용보수만] 버튼으로 스왑금리를 뺀 이론치도 볼 수 있습니다.
-          배당은 반영하지 않아 실제 TQQQ보다 연 2%p 정도 낮게 나옵니다 (보수적).
+          스왑금리비용(레버리지 조달 비용)은 기본 미반영이며, 시뮬레이터의 [+ 스왑금리] 버튼으로 반영 버전을 확인할 수 있습니다.
+          추적오차는 미반영입니다.
         </Callout>
 
         {/* ── 5. 코호트 방식 ──────────────────────────────── */}
-        <H2>5. 어떻게 테스트하는가 — 모든 시작 시점 전수 테스트</H2>
+        <H2>5. 어떻게 테스트하는가 — 코호트 방식</H2>
         <P>
-          백테스트 결과를 &ldquo;특정 시점 1개&rdquo;로 판단하면 운에 좌우된다.
+          백테스트 결과를 "특정 시점 1개"로 판단하면 운에 좌우된다.
           이 사이트는 1971년부터 2026년까지 <strong className="text-gray-900 dark:text-white">매월 첫 거래일</strong>을 진입 시점으로 삼아
-          가능한 모든 시작점(수백 개)을 전부 테스트한다. 운 좋은 시점만 골라 보는 착시를 피하기 위해서다.
+          가능한 모든 시작점(수백 개)을 전부 테스트한다. 이것을 코호트라고 부른다.
         </P>
         <P>
           평가 기준은 두 가지다.
@@ -272,11 +265,11 @@ export default function AccumulationGuidePage() {
         <div className="space-y-2 mb-6 text-sm">
           <div className="flex gap-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg px-4 py-3">
             <span className="text-gray-400 font-mono shrink-0 w-28">완료율</span>
-            <span className="text-gray-600 dark:text-gray-300">테스트 기간 내 목표 달성 비율. 100%가 아니면 데이터가 충분히 길지 않거나, 아직 진행 중인 시작 시점이 있다는 뜻.</span>
+            <span className="text-gray-600 dark:text-gray-300">테스트 기간 내 목표 달성 비율. 100%가 아니면 데이터가 충분히 길지 않거나, 아직 진행 중인 코호트가 있다는 뜻.</span>
           </div>
           <div className="flex gap-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg px-4 py-3">
             <span className="text-gray-400 font-mono shrink-0 w-28">worst 소요기간</span>
-            <span className="text-gray-600 dark:text-gray-300">모든 시작 시점 중 가장 오래 걸린 진입 시점의 달성 연수. 방법론 설계는 평균이 아닌 <strong className="text-gray-800 dark:text-gray-200">worst를 기준</strong>으로 한다. 내가 언제 시작할지 모르기 때문이다.</span>
+            <span className="text-gray-600 dark:text-gray-300">모든 코호트 중 가장 오래 걸린 진입 시점의 달성 연수. 방법론 설계는 평균이 아닌 <strong className="text-gray-800 dark:text-gray-200">worst를 기준</strong>으로 한다. 내가 언제 시작할지 모르기 때문이다.</span>
           </div>
         </div>
 
@@ -293,7 +286,7 @@ export default function AccumulationGuidePage() {
         <H3>절대 멈추지 않는다</H3>
         <P>
           TQQQ가 −50%든 −90%든 계속 산다. 오히려 이때 평균단가가 가장 빠르게 내려간다.
-          닷컴버블에서도, 금융위기에서도, 매수를 멈추지 않은 경우는 결국 달성했다.
+          닷컴버블에서도, 금융위기에서도, 매수를 멈추지 않은 코호트는 결국 달성했다.
           멈추는 순간 백테스트의 전제가 깨진다.
         </P>
 

@@ -109,7 +109,7 @@ def run_sweep(prices, dates, mode_label: str):
         if yrs:
             med  = yrs[len(yrs) // 2]
             wrst = yrs[-1]
-            mark = " ★" if n_years == 3 else ""
+            mark = " ★" if n_years == 5 else ""
             print(f"  C {n_years}년치{mark}   "
                   f"{len(comp):>4}/{n_tot}  {med:>5.1f}년  {wrst:>5.1f}년  "
                   f"(총거치 {total_lump/1e8:.2f}억)")
