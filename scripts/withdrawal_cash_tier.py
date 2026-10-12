@@ -167,7 +167,9 @@ def target_w(p: Param, total: float) -> float:
 
 def run_sim(tq, qq, closes, ema, dates, rp_daily, rsi, peaks, start, p: Param, signal_tax: bool,
             exec_mode: str = "same", horizon_days: int = 0, snaps: tuple = (), exec_delay: int = 1,
-            collect_flows: bool = False, trade_log: list | None = None) -> dict:
+            collect_flows: bool = False, trade_log: list | None = None,
+            daily_snap: list | None = None) -> dict:
+    """daily_snap이 list로 전달되면 매 거래일 [date, ndx, ema200, peak52w, port억, pos, act] 스냅샷 수집."""
     """exec_mode — 신호가 확정된 종가 대비 실제 매매 시점
          same : 신호가 뜬 그날 종가에 매매 (기존 가정. 종가가 확정돼야 신호를 알 수 있으므로 실제로는 불가능)
          next : 종가 확정 후 아침에 확인 → 다음 거래일 종가에 매매
@@ -288,6 +290,7 @@ def run_sim(tq, qq, closes, ema, dates, rp_daily, rsi, peaks, start, p: Param, s
     for j in range(sim_len):
         ci = start + j
         d  = dates[ci]
+        action_today = None
 
         if (d.year, d.month) != last_mon:
             last_mon = (d.year, d.month)
@@ -397,6 +400,7 @@ def run_sim(tq, qq, closes, ema, dates, rp_daily, rsi, peaks, start, p: Param, s
                 if j - last_buy_j <= 5:
                     quick += 1
                 below = 0
+                action_today = "S"
             elif not invested and buy_sig:
                 rebalance(ci, force=True)
                 if p.side == "qqq":
@@ -407,8 +411,20 @@ def run_sim(tq, qq, closes, ema, dates, rp_daily, rsi, peaks, start, p: Param, s
                 if trade_log is not None:
                     trade_log.append((ci, "BUY", total(ci)))
                 above = 0
+                action_today = "B"
 
         cash += cash * rp_daily[ci]
+        if daily_snap is not None:
+            e_val = float(ema[ci])
+            daily_snap.append([
+                d.strftime("%Y-%m-%d"),
+                round(float(closes[ci]), 1),
+                round(e_val, 1) if not np.isnan(e_val) and e_val > 0 else None,
+                round(float(peaks[ci]), 1),
+                round(total(ci) / EOK, 2),
+                1 if invested else 0,
+                action_today,
+            ])
         if not invested:
             cash_days += 1
         tot = total(ci)

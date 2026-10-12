@@ -7,69 +7,33 @@ import Header from '@/components/Header'
 
 // ─── 타입 ────────────────────────────────────────────────────
 
-// daily 행 형식: [date, ndx, ema200, div_pct, port, pos, act]
-type DailyRow = [string, number, number|null, number|null, number, 0|1, 'B'|'S'|null]
+// daily 행 형식: [date, ndx, ema200, peak52w, port, pos, act]
+type DailyRow = [string, number, number|null, number, number, 0|1, 'B'|'S'|null]
 
 interface MetaCohort {
-  start:        string
-  end:          string
-  complete:     boolean
-  actual_years: number
-  initial:      'INVESTED' | 'CASH'
-  final:        number
-  withdrawn:    number
-  bankrupt:     boolean
+  s:        string  // "YYYY-MM"
+  end:      string  // "YYYY-MM-DD"
+  inv:      boolean
+  final:    number
+  wd:       number
+  yrs:      number
+  dd:       number
+  n_trades: number
 }
 
-interface Meta {
-  generated:    string
-  strategy:     string
-  price_mode:   string
-  with_rp:      boolean
-  is_open:      boolean
-  desc:         string
-  cost_label:   string
-  sim_years:    number | null
-  n_cohorts:    number
-  n_complete:   number
-  median_final: number
-}
-
-interface MetaData {
-  meta:    Meta
-  cohorts: MetaCohort[]
-}
-
-interface CohortDetail {
-  start:        string
-  end:          string
-  complete:     boolean
-  actual_years: number
-  initial:      'INVESTED' | 'CASH'
-  final:        number
-  withdrawn:    number
-  bankrupt:     boolean
-  daily:        DailyRow[]
+interface MetaFile {
+  generated: string
+  strategy:  string
+  desc:      string
+  n_cohorts: number
+  cohorts:   MetaCohort[]
 }
 
 // ─── 상수 ────────────────────────────────────────────────────
 
 const PAGE_SIZE = 200
-
-const COST_MODES = [
-  { label: '운용보수만',          suffix: '',    desc: 'TQQQ 스왑금리비용 미반영 · RP 이자 미반영' },
-  { label: '+ 스왑금리',          suffix: '_v2', desc: 'TQQQ 스왑금리비용 반영 · RP 이자 미반영' },
-  { label: '+ 스왑금리 + RP이자',  suffix: '_v3', desc: 'TQQQ 스왑금리비용 반영 · 현금 RP 이자 반영 (이자소득세 15.4% 차감)' },
-]
-
-function getUrls(costMode: number, isOpen: boolean) {
-  const c = COST_MODES[costMode].suffix           // '', '_v2', '_v3'
-  const o = isOpen ? '_open' : ''                  // '', '_open'
-  return {
-    metaUrl:   `/data/s0_daily_meta${o}${c}.json`,
-    folderUrl: `/data/s0_daily${o}${c}`,
-  }
-}
+const META_URL  = '/data/withdrawal_daily_rule25_meta.json'
+const DATA_DIR  = '/data/withdrawal_daily_rule25'
 
 // ─── 유틸 ────────────────────────────────────────────────────
 
@@ -91,13 +55,11 @@ function TradelogInner() {
   const params  = useSearchParams()
   const router  = useRouter()
 
-  const [metaData,      setMetaData]      = useState<MetaData | null>(null)
-  const [detail,        setDetail]        = useState<CohortDetail | null>(null)
+  const [metaData,      setMetaData]      = useState<MetaFile | null>(null)
+  const [dailyRows,     setDailyRows]     = useState<DailyRow[] | null>(null)
   const [metaLoading,   setMetaLoading]   = useState(true)
   const [detailLoading, setDetailLoading] = useState(false)
   const [search,        setSearch]        = useState('')
-  const [costMode,      setCostMode]      = useState(0)   // 0/1/2
-  const [isOpen,        setIsOpen]        = useState(false) // false=20년, true=전체기간
   const [page,          setPage]          = useState(0)
   const [jumpTarget,    setJumpTarget]    = useState<string | null>(null)
 
@@ -107,39 +69,35 @@ function TradelogInner() {
   // ── 메타 데이터 로드 ──
   useEffect(() => {
     setMetaLoading(true)
-    setMetaData(null)
-    setDetail(null)
-    const { metaUrl } = getUrls(costMode, isOpen)
-    fetch(metaUrl)
+    fetch(META_URL)
       .then(r => r.json())
-      .then((d: MetaData) => {
+      .then((d: MetaFile) => {
         setMetaData(d)
         setMetaLoading(false)
       })
-  }, [costMode, isOpen])
+  }, [])
 
   // ── 코호트 상세 로드 ──
   useEffect(() => {
     if (!metaData) return
-    const start = selectedStart || metaData.cohorts[0]?.start
+    const start = selectedStart || metaData.cohorts[0]?.s
     if (!start) return
 
     setDetailLoading(true)
-    setDetail(null)
+    setDailyRows(null)
     setPage(0)
-    const { folderUrl } = getUrls(costMode, isOpen)
-    fetch(`${folderUrl}/${start}.json`)
+    fetch(`${DATA_DIR}/${start}.json`)
       .then(r => r.json())
-      .then((d: CohortDetail) => {
-        setDetail(d)
+      .then((rows: DailyRow[]) => {
+        setDailyRows(rows)
         setDetailLoading(false)
       })
-  }, [metaData, selectedStart, costMode, isOpen])
+  }, [metaData, selectedStart])
 
   // ── 점프 처리 ──
   useEffect(() => {
-    if (!jumpTarget || !detail) return
-    const rowIdx = detail.daily.findIndex(r => r[0] === jumpTarget)
+    if (!jumpTarget || !dailyRows) return
+    const rowIdx = dailyRows.findIndex(r => r[0] === jumpTarget)
     if (rowIdx < 0) return
     const targetPage = Math.floor(rowIdx / PAGE_SIZE)
     if (page !== targetPage) {
@@ -152,31 +110,38 @@ function TradelogInner() {
       document.getElementById(`row-${jumpTarget}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
       setJumpTarget(null)
     }
-  }, [jumpTarget, detail, page])
+  }, [jumpTarget, dailyRows, page])
 
   // ── 파생 데이터 ──
   const filteredCohorts = useMemo(() => {
     if (!metaData) return []
     if (!search.trim()) return metaData.cohorts
-    return metaData.cohorts.filter(c => c.start.includes(search.trim()))
+    return metaData.cohorts.filter(c => c.s.includes(search.trim()))
   }, [metaData, search])
 
   const activeMeta = useMemo(
-    () => metaData?.cohorts.find(c => c.start === (selectedStart || metaData?.cohorts[0]?.start)) ?? null,
+    () => metaData?.cohorts.find(c => c.s === (selectedStart || metaData?.cohorts[0]?.s)) ?? null,
     [metaData, selectedStart]
   )
 
   const trades = useMemo(
-    () => detail ? detail.daily.filter(r => r[6] !== null) : [],
-    [detail]
+    () => dailyRows ? dailyRows.filter(r => r[6] !== null) : [],
+    [dailyRows]
   )
 
   const pagedRows = useMemo(() => {
-    if (!detail) return []
-    return detail.daily.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE)
-  }, [detail, page])
+    if (!dailyRows) return []
+    return dailyRows.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE)
+  }, [dailyRows, page])
 
-  const totalPages = detail ? Math.ceil(detail.daily.length / PAGE_SIZE) : 0
+  const totalPages = dailyRows ? Math.ceil(dailyRows.length / PAGE_SIZE) : 0
+
+  const medianFinal = useMemo(() => {
+    if (!metaData) return 0
+    const vals = [...metaData.cohorts.map(c => c.final)].sort((a, b) => a - b)
+    const mid = Math.floor(vals.length / 2)
+    return vals.length % 2 === 0 ? (vals[mid - 1] + vals[mid]) / 2 : vals[mid]
+  }, [metaData])
 
   if (metaLoading) {
     return (
@@ -199,70 +164,12 @@ function TradelogInner() {
             className="text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 mb-4 inline-block">
             ← 인출 방법론으로
           </Link>
-          <div className="flex items-start justify-between gap-4 flex-wrap">
-            <div>
-              <h1 className="text-2xl font-bold mb-1">S0 전략 — 날짜별 전체 데이터 공개</h1>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-                EMA200 15일 연속 + 동적 인출률 · 초기 10억
-                {isOpen ? ' · 데이터 끝까지 (최대 약 55년)' : ' · 20년 시뮬레이션'}
-              </p>
-            </div>
-
-            {/* 토글 묶음 */}
-            <div className="flex flex-col gap-2 shrink-0">
-
-              {/* 시뮬레이션 기간 */}
-              <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3">
-                <p className="text-xs text-gray-400 mb-1.5">시뮬레이션 기간</p>
-                <div className="flex rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 text-xs font-medium">
-                  <button
-                    onClick={() => setIsOpen(false)}
-                    className={`px-4 py-1.5 transition-colors whitespace-nowrap ${
-                      !isOpen
-                        ? 'bg-indigo-600 text-white'
-                        : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
-                    }`}
-                  >
-                    20년
-                  </button>
-                  <button
-                    onClick={() => setIsOpen(true)}
-                    className={`px-4 py-1.5 transition-colors whitespace-nowrap ${
-                      isOpen
-                        ? 'bg-indigo-600 text-white'
-                        : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
-                    }`}
-                  >
-                    전체 기간
-                  </button>
-                </div>
-              </div>
-
-              {/* 비용 모드 */}
-              <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3">
-                <p className="text-xs text-gray-400 mb-1.5">비용/수익 반영</p>
-                <div className="flex rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 text-xs font-medium">
-                  {COST_MODES.map((m, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setCostMode(i)}
-                      className={`px-3 py-1.5 transition-colors whitespace-nowrap ${
-                        costMode === i
-                          ? 'bg-blue-600 text-white'
-                          : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
-                      }`}
-                    >
-                      {m.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-            </div>
-          </div>
-
+          <h1 className="text-2xl font-bold mb-1">25% 룰 — 날짜별 전체 데이터 공개</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
+            52주 고점 −25% 매도 · 지수이동평균(200일) 위 15일 연속 재매수 · 동적 인출률 · 초기 10억 · 시작 시점부터 데이터 끝까지
+          </p>
           <p className="text-xs text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700/40 rounded-lg px-3 py-2 inline-block">
-            ℹ {COST_MODES[costMode].desc}
+            ℹ 스왑금리비용 + 현금 RP 이자(이자소득세 15.4% 차감) + 모든 매도 양도차익세 22% 반영
           </p>
         </div>
 
@@ -272,7 +179,7 @@ function TradelogInner() {
           <div className="lg:w-52 shrink-0">
             <div className="sticky top-4">
               <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-2">
-                시작 시점 선택 ({metaData.meta.n_cohorts}개)
+                시작 시점 선택 ({metaData.n_cohorts}개)
               </p>
               <input
                 type="text"
@@ -284,25 +191,21 @@ function TradelogInner() {
               <div className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
                 <div className="overflow-y-auto max-h-[calc(100vh-280px)]">
                   {filteredCohorts.map(c => {
-                    const isActive = c.start === activeMeta.start
+                    const isActive = c.s === activeMeta.s
                     return (
                       <button
-                        key={c.start}
-                        onClick={() => router.push(`?start=${c.start}`, { scroll: false })}
+                        key={c.s}
+                        onClick={() => router.push(`?start=${c.s}`, { scroll: false })}
                         className={`w-full text-left px-3 py-2 text-xs font-mono border-b border-gray-100 dark:border-gray-800 last:border-0 transition-colors ${
                           isActive
                             ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold'
                             : 'hover:bg-gray-50 dark:hover:bg-gray-800/50 text-gray-600 dark:text-gray-400'
                         }`}
                       >
-                        <span>{c.start}</span>
-                        {isOpen ? (
-                          <span className="ml-1 text-[10px] text-gray-400 dark:text-gray-500">
-                            {c.actual_years}년
-                          </span>
-                        ) : !c.complete ? (
-                          <span className="ml-1 text-[10px] text-gray-400 dark:text-gray-600">진행중</span>
-                        ) : null}
+                        <span>{c.s}</span>
+                        <span className="ml-1 text-[10px] text-gray-400 dark:text-gray-500">
+                          {c.yrs.toFixed(0)}년
+                        </span>
                       </button>
                     )
                   })}
@@ -318,37 +221,24 @@ function TradelogInner() {
             <div className="bg-gray-50 dark:bg-gray-900 rounded-xl px-5 py-4 mb-4 border border-gray-200 dark:border-gray-700">
               <div className="flex items-center gap-3 flex-wrap mb-3">
                 <span className="font-mono text-lg font-bold text-gray-900 dark:text-white">
-                  {activeMeta.start} 시작
+                  {activeMeta.s} 시작
                 </span>
-                {isOpen ? (
-                  <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300">
-                    {activeMeta.actual_years}년 진행 ({activeMeta.start} → {activeMeta.end})
-                  </span>
-                ) : (
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                    activeMeta.complete
-                      ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
-                      : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300'
-                  }`}>
-                    {activeMeta.complete ? '20년 완료' : '진행 중'}
-                  </span>
-                )}
+                <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300">
+                  {activeMeta.yrs.toFixed(1)}년 진행 ({activeMeta.s} → {activeMeta.end})
+                </span>
                 <span className={`text-xs px-2 py-0.5 rounded-full ${
-                  activeMeta.initial === 'CASH'
-                    ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400'
-                    : 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                  activeMeta.inv
+                    ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                    : 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400'
                 }`}>
-                  시작 포지션: {activeMeta.initial === 'CASH' ? '현금 (NDX < EMA200)' : '투자 (NDX ≥ EMA200)'}
+                  시작 포지션: {activeMeta.inv ? '투자 (NDX ≥ EMA200)' : '현금 (NDX < EMA200)'}
                 </span>
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
                 <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">
-                    최종 자산 {isOpen ? `(${activeMeta.end} 기준)` : ''}
-                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">최종 자산 ({activeMeta.end} 기준)</p>
                   <p className={`font-bold text-base ${
-                    activeMeta.bankrupt ? 'text-red-500' :
                     activeMeta.final >= 1000 ? 'text-green-600 dark:text-green-400' :
                     'text-gray-900 dark:text-white'
                   }`}>
@@ -358,7 +248,7 @@ function TradelogInner() {
                 <div>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">총 인출액</p>
                   <p className="font-semibold text-base text-gray-900 dark:text-white">
-                    {fmt억(activeMeta.withdrawn)}
+                    {fmt억(activeMeta.wd)}
                   </p>
                 </div>
                 <div>
@@ -370,7 +260,7 @@ function TradelogInner() {
                 <div>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">전체 중앙값</p>
                   <p className="font-semibold text-base text-blue-600 dark:text-blue-400">
-                    {fmt억(metaData.meta.median_final)}
+                    {fmt억(medianFinal)}
                   </p>
                 </div>
               </div>
@@ -411,13 +301,13 @@ function TradelogInner() {
             )}
 
             {/* 전체 일별 테이블 */}
-            {!detailLoading && detail && (
+            {!detailLoading && dailyRows && (
               <>
                 {/* 페이지네이션 상단 */}
                 <div className="flex items-center justify-between mb-2 px-1">
                   <p className="text-xs text-gray-400 dark:text-gray-500">
-                    총 {detail.daily.length.toLocaleString()}거래일 ·&nbsp;
-                    {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, detail.daily.length)}행 표시
+                    총 {dailyRows.length.toLocaleString()}거래일 ·&nbsp;
+                    {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, dailyRows.length)}행 표시
                   </p>
                   <div className="flex items-center gap-1">
                     <button
@@ -450,7 +340,7 @@ function TradelogInner() {
                   <table className="w-full text-sm border-collapse">
                     <thead>
                       <tr className="border-b-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
-                        {['날짜', 'NDX 종가', 'EMA200', '이격도', '포트폴리오', '포지션', '신호'].map(h => (
+                        {['날짜', 'NDX 종가', 'EMA200', '52주 고점 대비', '포트폴리오', '포지션', '신호'].map(h => (
                           <th key={h} className="py-2 px-3 text-left text-xs text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">
                             {h}
                           </th>
@@ -459,19 +349,20 @@ function TradelogInner() {
                     </thead>
                     <tbody className="divide-y divide-gray-100 dark:divide-gray-800/60">
                       {pagedRows.map((row) => {
-                        const [date, ndx, ema, div, port, pos, act] = row
+                        const [date, ndx, ema, peak52w, port, pos, act] = row
                         const isSell     = act === 'S'
                         const isBuy      = act === 'B'
                         const isTrade    = isSell || isBuy
                         const isInvested = pos === 1
+                        const fromPeak   = peak52w > 0 ? (ndx - peak52w) / peak52w * 100 : null
 
                         return (
                           <tr
                             id={`row-${date}`}
                             key={date}
                             className={`${
-                              isSell    ? 'bg-red-50 dark:bg-red-900/15' :
-                              isBuy     ? 'bg-green-50 dark:bg-green-900/15' :
+                              isSell      ? 'bg-red-50 dark:bg-red-900/15' :
+                              isBuy       ? 'bg-green-50 dark:bg-green-900/15' :
                               !isInvested ? 'bg-gray-50/50 dark:bg-gray-800/20' : ''
                             } ${isTrade ? 'font-semibold' : ''}`}
                           >
@@ -487,11 +378,12 @@ function TradelogInner() {
                               {ema !== null ? ema.toLocaleString() : '—'}
                             </td>
                             <td className={`py-1.5 px-3 font-mono text-xs text-right ${
-                              div === null ? 'text-gray-300 dark:text-gray-600' :
-                              div < 0      ? 'text-red-500 dark:text-red-400' :
-                                             'text-green-600 dark:text-green-400'
+                              fromPeak === null  ? 'text-gray-300 dark:text-gray-600' :
+                              fromPeak <= -25    ? 'text-red-600 dark:text-red-400 font-bold' :
+                              fromPeak < 0       ? 'text-red-500 dark:text-red-400' :
+                                                   'text-gray-500 dark:text-gray-400'
                             }`}>
-                              {div !== null ? fmtPct(div) : '—'}
+                              {fromPeak !== null ? fmtPct(fromPeak) : '—'}
                             </td>
                             <td className="py-1.5 px-3 font-mono text-xs text-right font-semibold text-gray-800 dark:text-gray-200">
                               {fmt억(port)}
@@ -550,26 +442,22 @@ function TradelogInner() {
             )}
 
             {/* 범례 */}
-            {!detailLoading && detail && (
+            {!detailLoading && dailyRows && (
               <div className="mt-5 text-xs text-gray-400 dark:text-gray-500 space-y-1 border-t border-gray-100 dark:border-gray-800 pt-4">
                 <p>
                   <span className="inline-block w-2.5 h-2.5 rounded-full bg-red-400 mr-1.5 align-middle" />
-                  <strong>매도</strong> = NDX가 EMA200 아래에서 15거래일 연속 → 전량 현금 전환
+                  <strong>매도</strong> = NDX가 52주 고점보다 25% 이상 낮게 마감 → 다음 거래일 전량 현금 전환
                 </p>
                 <p>
                   <span className="inline-block w-2.5 h-2.5 rounded-full bg-green-400 mr-1.5 align-middle" />
-                  <strong>매수</strong> = NDX가 EMA200 위에서 15거래일 연속 → 전액 재매수
+                  <strong>매수</strong> = NDX가 지수이동평균(200일) 위에서 15거래일 연속 → 다음 거래일 전액 재매수
                 </p>
                 <p>
                   <span className="inline-block w-2.5 h-2.5 rounded-full bg-blue-400 mr-1.5 align-middle" />
                   파란색 = 투자 상태 · 회색 = 현금 상태 (매도 후 대기)
                 </p>
-                <p>이격도 = (NDX − EMA200) ÷ EMA200 × 100. 매도 시 음수(−), 매수 시 양수(+).</p>
-                <p>
-                  포트폴리오 = 해당 날짜 기준 총 자산 (억 원).
-                  {costMode === 2 ? ' 스왑금리비용 + RP이자 반영.' :
-                   costMode === 1 ? ' 스왑금리비용 반영.' : ' 운용보수만 반영.'}
-                </p>
+                <p>52주 고점 대비 = (NDX − 52주 최고 종가) ÷ 52주 최고 종가 × 100. −25% 이하이면 빨간 강조.</p>
+                <p>포트폴리오 = 해당 날짜 기준 총 자산 (억 원). 스왑금리비용 + RP 이자 + 양도차익세 모두 반영.</p>
               </div>
             )}
 

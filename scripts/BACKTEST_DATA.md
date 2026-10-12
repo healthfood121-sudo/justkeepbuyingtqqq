@@ -224,9 +224,29 @@
 - 668코호트 전체 (데이터 끝인 2026-09까지), 최장 코호트 13,798 거래일 (54.8년)
 - 재실행: `python scripts/export_s0_tradelog.py --mode open_all`
 
-**사용처:** `/posts/withdrawal-guide/tradelog`
-- "시뮬레이션 기간" 토글: 20년 / 전체 기간
-- "비용/수익 반영" 토글: 운용보수만 / +스왑금리 / +스왑금리+RP이자
+**사용처:** `/posts/withdrawal-guide/tradelog` (구버전, 현재는 RULE25 데이터로 교체됨)
+
+---
+
+### RULE25 날짜별 전체 데이터 (코호트별 일별 분리 파일) ← 현재 사용 중
+
+| 파일/폴더 | 크기 | 스크립트 | 내용 |
+|-----------|------|----------|------|
+| `withdrawal_daily_rule25_meta.json` | 71 KB | `export_withdrawal_tradelog.py` | RULE25 코호트 인덱스 (시작일·종료일·요약 통계) |
+| `withdrawal_daily_rule25/<start>.json` | 0.9~668 KB each | `export_withdrawal_tradelog.py` | RULE25 코호트별 일별 전체 데이터 (668개, 총 226MB) |
+
+**일별 데이터 형식 (배열 각 행):** `[date, ndx, ema200, peak52w, port, pos, act]`
+- date: "YYYY-MM-DD", ndx/ema200/peak52w: float 소수점 1자리
+- port: 억 원 (소수점 2자리), pos: 0=현금/1=투자, act: null/"B"/"S"
+
+**메타 코호트 필드:** `{s, end, inv, final, wd, yrs, dd, n_trades}`
+
+**결과:**
+- 668코호트 전체 (데이터 끝인 2026-09까지), 최장 코호트 14,027 거래일 (55.66년)
+- 평균 거래 15.5회 · 10년 이상 보유 최종자산 중간값 23,021억
+- 재실행: `python scripts/export_withdrawal_tradelog.py`
+
+**사용처:** `/posts/withdrawal-guide/tradelog` (25% 룰 날짜별 전체 데이터 공개 페이지)
 
 ---
 
@@ -368,9 +388,10 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
     (M6 인출중단 +1% 개선 외 전부 열등 → D10GK 최종 확정)
 ```
 
-**권장 전략 (2026-10):** S0 — EMA200-15일 연속 + 동적인출률 0.3/0.5/0.7%
-- 668 시작 시점 생존율 100%, 중앙값 1,109억
-- 구조적으로 매수 후 최소 15거래일 보유 보장 → 장기 하락 시에도 심리적 유지 가능
+**권장 전략 (2026-10):** RULE25 — 52주 고점 -25% 매도 + EMA200-15일 연속 재매수 + 동적인출률 0.3/0.5/0.7%
+- 668 시작 시점, 10년 이상 보유 최종자산 중간값 23,021억
+- S0(EMA200-15일) 대비 매도 타이밍이 더 명확(가격 기준)하여 투자자 이해도 높음
+- tradelog 페이지에서 날짜별 전체 데이터 공개
 
 **수익 극대화 옵션:** D10GK — EMA200-15일 + RSI<30 & 이격도<-10% + GK인출
 - 668 시작 시점 생존율 100%, 중앙값 3,741억

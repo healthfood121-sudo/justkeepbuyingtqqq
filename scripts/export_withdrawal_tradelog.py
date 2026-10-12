@@ -10,13 +10,18 @@ export_withdrawal_tradelog.py
 출력 (전략별·비용별 4개):
   web/public/data/withdrawal_tradelog_{rule25,s0}.json       — 스왑금리 반영
   web/public/data/withdrawal_tradelog_{rule25,s0}_fee.json   — 운용보수만
+추가 출력 (RULE25 일별 전체 데이터):
+  web/public/data/withdrawal_daily_rule25/<start>.json       — 코호트별 일별 스냅샷
+  web/public/data/withdrawal_daily_rule25_meta.json          — 메타 인덱스
 거래 1건 = [실행일, "S"(매도)|"B"(매수), 나스닥100 종가, 200일 지수이동평균, 1년 최고 종가, 거래 직후 총자산(억)]
+일별 스냅샷 1행 = [날짜, 나스닥100 종가, EMA200, 52주 고점, 총자산(억), 투자여부(1/0), 거래("S"/"B"/null)]
 """
-import json, sys, time
+import json, os, sys, time
 import multiprocessing as mp
 import numpy as np
 import pandas as pd
 import withdrawal_cash_tier as E
+from pathlib import Path
 
 P = E.Param
 STRATS = {
@@ -29,7 +34,7 @@ _S = {}
 
 
 def _init(*args):
-    keys = ("tq", "qq", "closes", "ema", "dates", "rp", "rsi", "peaks")
+    keys = ("tq", "qq", "closes", "ema", "dates", "rp", "rsi", "peaks", "daily_dir")
     _S.update(dict(zip(keys, args)))
     _S["dates"] = pd.DatetimeIndex(_S["dates"])
 
@@ -39,14 +44,26 @@ def _job(arg):
     s = _S
     n = len(s["closes"]) - si
     log = []
+    snap = [] if key == "rule25" else None
     r = E.run_sim(s["tq"], s["qq"], s["closes"], s["ema"], s["dates"], s["rp"], s["rsi"], s["peaks"],
-                  si, STRATS[key][2], True, exec_mode="loc", horizon_days=n, trade_log=log)
+                  si, STRATS[key][2], True, exec_mode="loc", horizon_days=n, trade_log=log,
+                  daily_snap=snap)
     e0 = s["ema"][si]
+    start_str = s["dates"][si].strftime("%Y-%m")
+    end_str = s["dates"][si + n - 1].strftime("%Y-%m-%d")
     trades = [[s["dates"][ci].strftime("%Y-%m-%d"), a[0], round(float(s["closes"][ci]), 2),
                round(float(s["ema"][ci]), 2), round(float(s["peaks"][ci]), 2), round(tot / E.EOK, 2)]
               for ci, a, tot in log]
+
+    # RULE25: 코호트별 일별 파일 저장
+    if snap is not None and s.get("daily_dir"):
+        daily_path = Path(s["daily_dir"]) / f"{start_str}.json"
+        with open(daily_path, "w", encoding="utf-8") as f:
+            json.dump(snap, f, ensure_ascii=False, separators=(",", ":"))
+
     return {
-        "s": s["dates"][si].strftime("%Y-%m"),
+        "s": start_str,
+        "end": end_str,
         "inv": bool(np.isnan(e0) or s["closes"][si] >= e0),
         "final": r["final"], "wd": r["withdrawn"], "yrs": r["years"], "dd": r["max_dd"],
         "t": trades,
@@ -61,8 +78,13 @@ def main():
     t0 = time.time()
     tq, qq, closes, ema, dates, rp, rsi, peaks = E.load_data()
     starts = E.get_monthly_starts(dates)
+
+    # RULE25 일별 출력 디렉터리
+    daily_dir = E.ROOT / "web/public/data/withdrawal_daily_rule25"
+    daily_dir.mkdir(parents=True, exist_ok=True)
+
     with mp.Pool(mp.cpu_count(), initializer=_init,
-                 initargs=(tq, qq, closes, ema, dates.tolist(), rp, rsi, peaks)) as pool:
+                 initargs=(tq, qq, closes, ema, dates.tolist(), rp, rsi, peaks, str(daily_dir))) as pool:
         for key, (name, desc, _) in STRATS.items():
             rows = pool.map(_job, [(key, si) for si in starts], chunksize=8)
             long = [r for r in rows if r["yrs"] >= 10]
@@ -81,11 +103,36 @@ def main():
                 },
                 "cohorts": rows,
             }
-            path = E.ROOT / f"web/public/data/withdrawal_tradelog_{key}{'_fee' if fee else ''}.json"
+            suffix = "_fee" if fee else ""
+            path = E.ROOT / f"web/public/data/withdrawal_tradelog_{key}{suffix}.json"
             with open(path, "w", encoding="utf-8") as f:
                 json.dump(out, f, ensure_ascii=False, separators=(",", ":"))
             print(f"{name}: {path.name} ({path.stat().st_size / 1024:.0f} KB) · 평균 거래 {out['meta']['avg_trades']}회"
                   f" · 10년 이상 보유 최종자산 중간값 {out['meta']['median_final_10y']}억")
+
+            # RULE25: 메타 인덱스 파일 저장
+            if key == "rule25" and not fee:
+                meta_rows = [
+                    {
+                        "s": r["s"], "end": r["end"],
+                        "inv": r["inv"],
+                        "final": r["final"], "wd": r["wd"],
+                        "yrs": r["yrs"], "dd": r["dd"],
+                        "n_trades": len(r["t"]),
+                    }
+                    for r in rows
+                ]
+                meta_path = E.ROOT / "web/public/data/withdrawal_daily_rule25_meta.json"
+                with open(meta_path, "w", encoding="utf-8") as f:
+                    json.dump({
+                        "generated": str(dates[-1].date()),
+                        "strategy": name, "desc": desc,
+                        "n_cohorts": len(rows),
+                        "cohorts": meta_rows,
+                    }, f, ensure_ascii=False, separators=(",", ":"))
+                print(f"  → 일별 메타: {meta_path.name} ({meta_path.stat().st_size / 1024:.0f} KB)")
+                print(f"  → 일별 파일: {daily_dir} ({len(list(daily_dir.glob('*.json')))}개)")
+
     print(f"{time.time() - t0:.0f}초")
 
 
