@@ -57,11 +57,25 @@ export default function HomePage() {
                     <span className="text-xs text-blue-500 dark:text-blue-400">{p.sub}</span>
                   </div>
                   <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed pl-6">{p.desc}</p>
+                  {p.num === '01' && (
+                    <div className="mt-2 pl-6">
+                      <Link href="/posts/why-index" className="text-xs text-blue-500 dark:text-blue-400 hover:underline">
+                        왜 개별주가 아니라 시장지수인가 →
+                      </Link>
+                    </div>
+                  )}
                   {p.num === '02' && (
                     <div className="mt-3 pl-6">
                       <LifeCountdown />
                       <Link href="/posts/time-is-equal" className="inline-block mt-2 text-xs text-blue-500 dark:text-blue-400 hover:underline">
                         남은 여름이 몇 번인지 세어봤다 →
+                      </Link>
+                    </div>
+                  )}
+                  {p.num === '03' && (
+                    <div className="mt-2 pl-6">
+                      <Link href="/posts/trust-the-method" className="text-xs text-blue-500 dark:text-blue-400 hover:underline">
+                        뉴스를 보지 말고 방법론을 지켜라 →
                       </Link>
                     </div>
                   )}
