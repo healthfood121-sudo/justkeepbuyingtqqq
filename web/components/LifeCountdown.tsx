@@ -76,8 +76,7 @@ export default function LifeCountdown() {
   }, [])
 
   const totalSec = Math.floor(ms / 1000)
-  const years   = Math.floor(totalSec / (365.25 * 24 * 3600))
-  const days    = Math.floor((totalSec % (365.25 * 24 * 3600)) / (24 * 3600))
+  const totalDays = Math.floor(totalSec / (24 * 3600))
   const hours   = Math.floor((totalSec % (24 * 3600)) / 3600)
   const minutes = Math.floor((totalSec % 3600) / 60)
   const secs    = totalSec % 60
@@ -124,7 +123,7 @@ export default function LifeCountdown() {
 
         {/* 카운트다운 */}
         <span className="font-mono text-sm font-bold text-red-300 tabular-nums select-none">
-          {pad(years, 3)}년 {pad(days, 3)}일 {pad(hours)}:{pad(minutes)}:{pad(secs)}<span className="text-white/25">.{tenths}</span>
+          {totalDays.toLocaleString()}일 {pad(hours)}:{pad(minutes)}:{pad(secs)}<span className="text-white/25">.{tenths}</span>
         </span>
 
         {/* 기대 사망 나이 */}
@@ -133,12 +132,15 @@ export default function LifeCountdown() {
         </span>
       </div>
 
-      {/* 진행 바 */}
-      <div className="mt-3 w-full h-px bg-white/10 rounded-full overflow-hidden">
-        <div
-          className="h-full bg-white/25 rounded-full"
-          style={{ width: `${usedPct}%` }}
-        />
+      {/* 진행 바 + 진행률 */}
+      <div className="mt-3 flex items-center gap-2">
+        <div className="flex-1 h-px bg-white/10 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-white/25 rounded-full"
+            style={{ width: `${usedPct}%` }}
+          />
+        </div>
+        <span className="text-[11px] text-white/40 tabular-nums whitespace-nowrap">{usedPct.toFixed(1)}% 소진</span>
       </div>
 
       {/* 체감 통계 */}
