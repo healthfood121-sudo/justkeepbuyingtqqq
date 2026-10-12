@@ -94,7 +94,7 @@ export default function LifeCountdown() {
   ]
 
   return (
-    <div className="text-white">
+    <div className="bg-gray-800 dark:bg-gray-900/80 rounded-xl px-4 py-3 text-white">
       {/* 한 줄: 제목 + 입력 + 카운트다운 */}
       <div className="flex items-center justify-center gap-3 flex-wrap">
         <span className="text-xs text-blue-200/50 whitespace-nowrap">남은 시간</span>
