@@ -87,9 +87,12 @@ export default function LifeCountdown() {
   const usedPct = (age / (age + remainingYears)) * 100
 
   const stats = [
-    { label: '남은 주말',    value: Math.round(remainingYears * 52).toLocaleString() + '번' },
-    { label: '남은 여름',    value: Math.round(remainingYears) + '번' },
-    { label: '남은 설날',    value: Math.round(remainingYears) + '번' },
+    { label: '남은 주말',        value: Math.round(remainingYears * 52).toLocaleString() + '번' },
+    { label: '남은 여름',        value: Math.round(remainingYears) + '번' },
+    { label: '남은 설날',        value: Math.round(remainingYears) + '번' },
+    { label: '잠으로 보낼 시간', value: Math.round(remainingYears / 3) + '년' },
+    { label: '남은 크리스마스',  value: Math.round(remainingYears) + '번' },
+    { label: '남은 아침',        value: Math.round(remainingYears * 365.25).toLocaleString() + '번' },
   ]
 
   return (
@@ -144,9 +147,9 @@ export default function LifeCountdown() {
       </div>
 
       {/* 체감 통계 */}
-      <div className="mt-3 flex justify-center gap-4">
+      <div className="mt-3 flex flex-wrap justify-center gap-x-4 gap-y-3">
         {stats.map(s => (
-          <div key={s.label} className="text-center">
+          <div key={s.label} className="text-center min-w-[60px]">
             <div className="text-base font-bold text-white/80 font-mono tabular-nums">{s.value}</div>
             <div className="text-[10px] text-blue-200/40 mt-0.5">{s.label}</div>
           </div>
