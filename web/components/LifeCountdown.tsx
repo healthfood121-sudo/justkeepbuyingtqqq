@@ -94,10 +94,10 @@ export default function LifeCountdown() {
   ]
 
   return (
-    <div className="text-gray-900 dark:text-white">
+    <div className="text-white">
       {/* 한 줄: 제목 + 입력 + 카운트다운 */}
-      <div className="flex items-center gap-2 flex-wrap">
-        <span className="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">남은 시간</span>
+      <div className="flex items-center justify-center gap-3 flex-wrap">
+        <span className="text-xs text-blue-200/50 whitespace-nowrap">남은 시간</span>
 
         {/* 나이 입력 */}
         <input
@@ -106,47 +106,47 @@ export default function LifeCountdown() {
           max={110}
           value={age}
           onChange={e => setAge(Math.max(1, Math.min(110, Number(e.target.value))))}
-          className="w-14 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-xs text-gray-900 dark:text-white text-center focus:outline-none focus:border-blue-400"
+          className="w-14 bg-white/10 border border-white/20 rounded px-2 py-1 text-xs text-white text-center focus:outline-none focus:border-blue-400 placeholder-white/30"
         />
-        <span className="text-xs text-gray-400 dark:text-gray-500 -ml-1">세</span>
+        <span className="text-xs text-blue-200/50 -ml-2">세</span>
 
         {/* 성별 */}
-        <div className="flex rounded overflow-hidden border border-gray-300 dark:border-gray-600 text-xs">
+        <div className="flex rounded overflow-hidden border border-white/20 text-xs">
           <button
             onClick={() => setGender('M')}
-            className={`px-2 py-1 transition-colors ${gender === 'M' ? 'bg-blue-500 text-white' : 'bg-transparent text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
+            className={`px-2 py-1 transition-colors ${gender === 'M' ? 'bg-blue-500/60 text-white' : 'bg-transparent text-white/40 hover:text-white/70'}`}
           >남</button>
           <button
             onClick={() => setGender('F')}
-            className={`px-2 py-1 transition-colors ${gender === 'F' ? 'bg-pink-500 text-white' : 'bg-transparent text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
+            className={`px-2 py-1 transition-colors ${gender === 'F' ? 'bg-pink-500/60 text-white' : 'bg-transparent text-white/40 hover:text-white/70'}`}
           >여</button>
         </div>
 
         {/* 카운트다운 */}
-        <span className="font-mono text-sm font-bold text-red-500 dark:text-red-400 tabular-nums select-none">
-          {pad(years, 3)}년 {pad(days, 3)}일 {pad(hours)}:{pad(minutes)}:{pad(secs)}<span className="text-gray-300 dark:text-gray-600">.{tenths}</span>
+        <span className="font-mono text-sm font-bold text-red-300 tabular-nums select-none">
+          {pad(years, 3)}년 {pad(days, 3)}일 {pad(hours)}:{pad(minutes)}:{pad(secs)}<span className="text-white/25">.{tenths}</span>
         </span>
 
         {/* 기대 사망 나이 */}
-        <span className="text-[11px] text-gray-400 dark:text-gray-500 whitespace-nowrap">
+        <span className="text-[11px] text-blue-200/40 whitespace-nowrap">
           기대 사망 {expectedDeathAge}세 · 통계청 2024
         </span>
       </div>
 
       {/* 진행 바 */}
-      <div className="mt-3 w-full h-px bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+      <div className="mt-3 w-full h-px bg-white/10 rounded-full overflow-hidden">
         <div
-          className="h-full bg-gray-400 dark:bg-gray-500 rounded-full"
+          className="h-full bg-white/25 rounded-full"
           style={{ width: `${usedPct}%` }}
         />
       </div>
 
       {/* 체감 통계 */}
-      <div className="mt-3 flex gap-4">
+      <div className="mt-3 flex justify-center gap-4">
         {stats.map(s => (
           <div key={s.label} className="text-center">
-            <div className="text-base font-bold text-gray-800 dark:text-gray-200 font-mono tabular-nums">{s.value}</div>
-            <div className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">{s.label}</div>
+            <div className="text-base font-bold text-white/80 font-mono tabular-nums">{s.value}</div>
+            <div className="text-[10px] text-blue-200/40 mt-0.5">{s.label}</div>
           </div>
         ))}
       </div>
