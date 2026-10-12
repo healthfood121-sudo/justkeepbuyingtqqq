@@ -58,9 +58,12 @@ export default function HomePage() {
                   </div>
                   <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed pl-6">{p.desc}</p>
                   {p.num === '01' && (
-                    <div className="mt-2 pl-6">
+                    <div className="mt-2 pl-6 flex flex-col gap-1">
                       <Link href="/posts/why-index" className="text-xs text-blue-500 dark:text-blue-400 hover:underline">
                         왜 개별주가 아니라 시장지수인가 →
+                      </Link>
+                      <Link href="/posts/why-market-rises" className="text-xs text-blue-500 dark:text-blue-400 hover:underline">
+                        시장지수는 왜 장기적으로 우상향하는가 →
                       </Link>
                     </div>
                   )}
