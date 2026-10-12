@@ -39,9 +39,6 @@ export default function HomePage() {
         <Link href="/start" className="inline-block mt-5 text-sm text-blue-200 hover:text-white underline underline-offset-4">
           처음 오셨나요? 어디서부터 읽을지 안내 →
         </Link>
-        <div className="max-w-2xl mx-auto mt-6 px-6">
-          <LifeCountdown />
-        </div>
       </section>
 
       {/* 원칙 + 방법론 */}
@@ -60,6 +57,11 @@ export default function HomePage() {
                     <span className="text-xs text-blue-500 dark:text-blue-400">{p.sub}</span>
                   </div>
                   <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed pl-6">{p.desc}</p>
+                  {p.num === '02' && (
+                    <div className="mt-3 pl-6">
+                      <LifeCountdown />
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
