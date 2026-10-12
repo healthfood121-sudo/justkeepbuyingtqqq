@@ -87,6 +87,12 @@ export default function LifeCountdown() {
   const expectedDeathAge = (age + remainingYears).toFixed(1)
   const usedPct = (age / (age + remainingYears)) * 100
 
+  const stats = [
+    { label: '남은 주말',    value: Math.round(remainingYears * 52).toLocaleString() + '번' },
+    { label: '남은 여름',    value: Math.round(remainingYears) + '번' },
+    { label: '남은 설날',    value: Math.round(remainingYears) + '번' },
+  ]
+
   return (
     <div className="text-white">
       {/* 한 줄: 제목 + 입력 + 카운트다운 */}
@@ -133,6 +139,16 @@ export default function LifeCountdown() {
           className="h-full bg-white/25 rounded-full"
           style={{ width: `${usedPct}%` }}
         />
+      </div>
+
+      {/* 체감 통계 */}
+      <div className="mt-3 flex justify-center gap-4">
+        {stats.map(s => (
+          <div key={s.label} className="text-center">
+            <div className="text-base font-bold text-white/80 font-mono tabular-nums">{s.value}</div>
+            <div className="text-[10px] text-blue-200/40 mt-0.5">{s.label}</div>
+          </div>
+        ))}
       </div>
     </div>
   )
