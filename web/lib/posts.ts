@@ -12,6 +12,15 @@ export type PostMeta = {
 
 export const posts: PostMeta[] = [
   {
+    slug: 'time-is-equal',
+    title: '남은 여름이 몇 번인지 세어봤다',
+    date: '2026-10-12',
+    tags: ['원칙', '시간', '기대여명', '자동매수'],
+    summary:
+      '시간은 모두에게 평등한 자원이다. 35세 남성의 기대여명 기준 남은 여름은 47번. 통계청 생명표로 남은 시간을 직접 세어보고, 왜 투자공부 대신 자동매수를 선택했는지 설명한다.',
+    category: '적립식',
+  },
+  {
     slug: 'accumulation-guide',
     title: '적립식 방법론: 어떤 종목을, 얼마씩, 어떻게 매수하나',
     date: '2026-10-01',

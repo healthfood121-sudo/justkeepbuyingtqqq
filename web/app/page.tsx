@@ -60,6 +60,9 @@ export default function HomePage() {
                   {p.num === '02' && (
                     <div className="mt-3 pl-6">
                       <LifeCountdown />
+                      <Link href="/posts/time-is-equal" className="inline-block mt-2 text-xs text-blue-500 dark:text-blue-400 hover:underline">
+                        남은 여름이 몇 번인지 세어봤다 →
+                      </Link>
                     </div>
                   )}
                 </div>

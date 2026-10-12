@@ -128,7 +128,7 @@ export default function LifeCountdown() {
 
         {/* 기대 사망 나이 */}
         <span className="text-[11px] text-blue-200/40 whitespace-nowrap">
-          기대 사망 {expectedDeathAge}세 · 통계청 2024
+          기대 사망 {expectedDeathAge}세 · 통계청 생명표
         </span>
       </div>
 
