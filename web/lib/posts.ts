@@ -12,6 +12,15 @@ export type PostMeta = {
 
 export const posts: PostMeta[] = [
   {
+    slug: 'why-market-rises',
+    title: '시장지수는 왜 장기적으로 우상향하는가',
+    date: '2026-10-12',
+    tags: ['원칙', '인구', '생산성', '복리', '인플레이션'],
+    summary:
+      '인구 증가(소비자 증가), 기술 생산성 향상, 기업 이익의 복리 성장, 인플레이션 — 네 가지 구조적 이유. 실시간 세계 인구 카운터와 함께. 이 네 가지가 동시에 영구적으로 반전되려면 문명 자체가 후퇴해야 한다.',
+    category: '적립식',
+  },
+  {
     slug: 'why-index',
     title: '왜 개별주가 아니라 시장지수인가',
     date: '2026-10-12',
