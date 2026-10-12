@@ -18,6 +18,7 @@ export const SERIES_COLORS: Record<string, { light: string; dark: string }> = {
   HOLD1: { light: '#008300', dark: '#008300' },
   C50:   { light: '#4a3aa7', dark: '#9085e9' },
   RULE30:   { light: '#e34948', dark: '#e66767' },
+  QLD:   { light: '#0891b2', dark: '#06b6d4' },
 }
 
 const fmtEok = (v: number) => v >= 10000 ? `${(v / 10000).toFixed(1)}조` : `${Math.round(v).toLocaleString('ko-KR')}억`

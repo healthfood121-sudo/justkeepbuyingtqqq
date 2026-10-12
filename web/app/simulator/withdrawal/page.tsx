@@ -14,7 +14,7 @@ import { stratName } from '@/lib/strategyNames'
 import { buildMarket, runWithdrawal, STRATS, type Market, type SimResult, type StratKey } from '@/lib/withdrawalEngine'
 
 const EOK = 1e8
-const COMPARE: StratKey[] = ['S0', 'HOLD3']
+const COMPARE: StratKey[] = ['S0', 'D10GK', 'HOLD3', 'QLD']
 
 const fmtEok = (v: number) =>
   v >= 10000 ? `${(v / 10000).toLocaleString('ko-KR', { maximumFractionDigits: 1 })}조`
@@ -146,7 +146,7 @@ function Simulator() {
               <LabelList dataKey={metric === 'total' ? k : `${k}_liv`} content={(props) => {
                 const { x, y, index } = props as { x: number; y: number; index: number }
                 if (index !== rows.length - 1) return null
-                return <text x={x + 6} y={y + 4} fontSize={11} fill={tick}>{k === 'HOLD3' ? '보유' : stratName(k)}</text>
+                return <text x={x + 6} y={y + 4} fontSize={11} fill={tick}>{STRATS[k].label.split(' ')[0]}</text>
               }} />
             </Line>
           ))}
