@@ -63,7 +63,8 @@ TIME_FILTER = 15
 BAND       = 0.05
 
 EOK = 100_000_000
-SWAP = True   # False: 스왑금리 없이 운용보수만 (비교용 '운용보수만' 데이터)
+SWAP = True        # False: 스왑금리 없이 운용보수만 (비교용 '운용보수만' 데이터)
+SWAP_SPREAD = 0.005  # SOFR 위에 붙는 스왑 스프레드 ≈ 50bps (JPMorgan 424B2 기준)
 
 
 @dataclass
@@ -130,7 +131,7 @@ def load_data():
     fed_rates = {r["date"][:7]: float(r["rate"]) for r in fed}
     ffr = np.array([fed_rates.get(f"{d.year}-{d.month:02d}", 0.0) / 100.0 for d in dates])
 
-    f3 = (1.0 + 3.0 * ret - (2.0 if SWAP else 0.0) * ffr / 252) * (1.0 - EXP_3X / 252)
+    f3 = (1.0 + 3.0 * ret - (2.0 if SWAP else 0.0) * (ffr + SWAP_SPREAD) / 252) * (1.0 - EXP_3X / 252)
     f3[0] = 1.0
     f1 = (1.0 + ret) * (1.0 - EXP_1X / 252)
     f1[0] = 1.0
