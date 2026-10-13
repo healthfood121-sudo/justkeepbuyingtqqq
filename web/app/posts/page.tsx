@@ -37,7 +37,7 @@ export default function PostsPage() {
 
   const filtered  = posts.filter(p => filter === '전체' || p.category === filter)
   const pinned    = filtered.filter(p => p.pinned)
-  const rest      = filtered.filter(p => !p.pinned)
+  const rest      = filtered.filter(p => !p.pinned).sort((a, b) => b.date.localeCompare(a.date))
 
   const filters: Filter[] = ['전체', '적립식', '인출식']
 
