@@ -11,15 +11,17 @@ PRICE_MODE:
                  (스왑/파이낸싱 비용 미반영)
 
   'with_costs' — 정밀 버전 (현실 반영)
-                 TQQQ: 운용보수 0.88% + 스왑 비용(2 × 연방기금금리)/년
-                 QLD:  운용보수 0.95% + 스왑 비용(1 × 연방기금금리)/년
+                 TQQQ: 운용보수 0.88% + 스왑 비용(2 × (SOFR + 0.5%))/년
+                 QLD:  운용보수 0.95% + 스왑 비용(1 × (SOFR + 0.5%))/년
                  QQQ:  운용보수 0.20% (레버리지 없으므로 스왑 비용 없음)
 
 스왑 비용 공식 근거:
-  3x ETF는 2x 추가 레버리지를 스왑 계약으로 조달 → 비용 = 2 × SOFR ≈ 2 × 연방기금금리
-  일별 적용: daily_swap = (leverage - 1) × fed_rate_annual / 100 / 252
-  f_3x[i] = (1 + 3*ret[i] - 2*fed_daily[i]) * (1 - EXP_3X/252)
-  f_2x[i] = (1 + 2*ret[i] - 1*fed_daily[i]) * (1 - EXP_2X/252)
+  3x ETF는 2x 추가 레버리지를 스왑 계약으로 조달.
+  JPMorgan 424B2에서 확인: 조달 금리 = SOFR + 0.50%/년 (스프레드 포함)
+  SOFR ≈ 연방기금금리, SWAP_SPREAD = 0.005 (0.50%/년)
+  일별 적용: daily_swap = (leverage - 1) × (ffr + SWAP_SPREAD) / 252
+  f_3x[i] = (1 + 3*ret[i] - 2*(fed_daily[i] + SWAP_SPREAD/252)) * (1 - EXP_3X/252)
+  f_2x[i] = (1 + 2*ret[i] - 1*(fed_daily[i] + SWAP_SPREAD/252)) * (1 - EXP_2X/252)
 """
 
 import json
@@ -37,6 +39,9 @@ FED_PATH = (_ROOT / "data/fed_funds_rate.json")
 EXP_3X = 0.0088   # TQQQ 0.88%
 EXP_2X = 0.0095   # QLD  0.95%
 EXP_1X = 0.0020   # QQQ  0.20%
+
+# ── 스왑 스프레드 (JPMorgan 424B2: SOFR + 0.50%/년) ──────────
+SWAP_SPREAD = 0.005   # 0.50%/년
 
 # ── 허용 모드 ─────────────────────────────────────────────────
 PRICE_MODES = {
@@ -69,7 +74,7 @@ def make_synthetic_3x(ret: np.ndarray,
     fed_daily: 일별 연방기금금리 (연율/252). mode='standard'이면 None 가능.
     """
     if mode == 'with_costs' and fed_daily is not None:
-        f = (1.0 + ret * 3.0 - 2.0 * fed_daily) * (1.0 - EXP_3X / 252.0)
+        f = (1.0 + ret * 3.0 - 2.0 * (fed_daily + SWAP_SPREAD / 252.0)) * (1.0 - EXP_3X / 252.0)
     else:
         f = (1.0 + ret * 3.0) * (1.0 - EXP_3X / 252.0)
     f[0] = 1.0
@@ -81,7 +86,7 @@ def make_synthetic_2x(ret: np.ndarray,
                        mode: str) -> np.ndarray:
     """QLD(2x) 합성가격 계산."""
     if mode == 'with_costs' and fed_daily is not None:
-        f = (1.0 + ret * 2.0 - 1.0 * fed_daily) * (1.0 - EXP_2X / 252.0)
+        f = (1.0 + ret * 2.0 - 1.0 * (fed_daily + SWAP_SPREAD / 252.0)) * (1.0 - EXP_2X / 252.0)
     else:
         f = (1.0 + ret * 2.0) * (1.0 - EXP_2X / 252.0)
     f[0] = 1.0

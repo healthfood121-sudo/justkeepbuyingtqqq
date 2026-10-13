@@ -48,7 +48,7 @@ export default function Experience1990Page() {
         <Link href="/posts" className="text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors mb-6 inline-block">← 목록으로</Link>
         <h1 className="text-3xl font-black leading-tight mb-4">−96%를 견딜 수 있나 — 1990년 은퇴자의 36년을 한 달씩</h1>
         <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
-          1990년 1월, 10억으로 은퇴해 25% 룰로 꺼내 쓰기 시작했다고 하자. 숫자로 보면 &lsquo;연 22.4%&rsquo;지만, 그 안에서 사는 사람은 매달 통장을 본다.
+          1990년 1월, 10억으로 은퇴해 25% 룰로 꺼내 쓰기 시작했다고 하자. 숫자로 보면 &lsquo;연 22.9%&rsquo;지만, 그 안에서 사는 사람은 매달 통장을 본다.
           아래 버튼으로 한 달씩 넘기며 그때 총자산과 생활비가 어땠는지, 그리고 그때 규칙을 계속 지킬 수 있었을지 생각해 보자.
         </p>
         <p className="text-xs text-gray-400 dark:text-gray-500 mb-8">

@@ -20,6 +20,7 @@ DATA_DIR = str(ROOT / "data") + "/"
 OUT_DIR  = str(ROOT / "web/public/data") + "/"
 FED_PATH = str(ROOT / "data/fed_funds_rate.json")
 EXP_3X   = 0.0088   # TQQQ 연 운용보수
+SWAP_SPREAD = 0.005  # JPMorgan 424B2: SOFR + 0.50%/년
 
 DAILY_INVEST           = 200_000
 CAP_INVEST             = 250_000_000
@@ -70,7 +71,7 @@ def make_prices_v2(df, fed_rates):
         fed_rates.get(f"{d.year}-{d.month:02d}", 0.0) / 100.0 / 252
         for d in dates
     ])
-    factor = (1.0 + ret * 3.0 - 2.0 * fed_daily) * (1.0 - EXP_3X / 252)
+    factor = (1.0 + ret * 3.0 - 2.0 * (fed_daily + SWAP_SPREAD / 252.0)) * (1.0 - EXP_3X / 252)
     factor[0] = 1.0
     return 100.0 * np.cumprod(factor)
 

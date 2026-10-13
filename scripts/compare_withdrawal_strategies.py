@@ -45,6 +45,7 @@ INITIAL    = 1_000_000_000   # 10억 원
 RATE       = 0.01            # 월 1% 인출
 SIM_YEARS  = 20
 EXP_RATIO  = 0.0088          # TQQQ 연 운용보수
+SWAP_SPREAD = 0.005          # JPMorgan 424B2: SOFR + 0.50%/년
 
 # A안 파라미터
 SP_STOP_DD = -0.20   # SP500 -20%: 인출 중단
@@ -108,7 +109,7 @@ def load_data():
         fed_rates.get(f"{d.year}-{d.month:02d}", 0.0) / 100.0 / 252
         for d in dates
     ])
-    factor_v2 = (1.0 + ret * 3.0 - 2.0 * fed_daily_arr) * (1.0 - daily_drag)
+    factor_v2 = (1.0 + ret * 3.0 - 2.0 * (fed_daily_arr + SWAP_SPREAD / 252.0)) * (1.0 - daily_drag)
     factor_v2[0] = 1.0
     ndx3x_v2 = 100.0 * np.cumprod(factor_v2)
 

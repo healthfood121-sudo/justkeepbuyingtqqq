@@ -31,6 +31,7 @@ INITIAL       = 1_000_000_000
 SIM_YEARS     = 20
 TQQQ_EXP      = 0.0088
 QQQ_EXP       = 0.0020
+SWAP_SPREAD   = 0.005   # JPMorgan 424B2: SOFR + 0.50%/년
 LIV_MAX       = 15_000_000
 LIV_MIN       = 5_000_000
 TAX_RATE      = 0.22
@@ -113,7 +114,7 @@ def load_data():
         fed_rates.get(f"{d.year}-{d.month:02d}", 0.0) / 100.0 / 252
         for d in dates
     ])
-    fv2 = (1.0 + ret * 3.0 - 2.0 * fed_daily_arr) * (1.0 - TQQQ_EXP / 252)
+    fv2 = (1.0 + ret * 3.0 - 2.0 * (fed_daily_arr + SWAP_SPREAD / 252.0)) * (1.0 - TQQQ_EXP / 252)
     fv2[0] = 1.0
     tqqq_v2 = 100.0 * np.cumprod(fv2)
 

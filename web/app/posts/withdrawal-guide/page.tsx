@@ -104,7 +104,7 @@ export default function WithdrawalGuidePage() {
             인출식 방법론: 10억 달성 후 어떻게 꺼내 쓰나
           </h1>
           <div className="flex items-center gap-3 flex-wrap">
-            <span className="text-sm text-gray-400">2026-10-01 · 최종수정 2026-10-03</span>
+            <span className="text-sm text-gray-400">2026-10-01 · 최종수정 2026-10-12</span>
             {['인출식', '25% 룰', '동적인출률', 'FIRE', 'TQQQ', '방법론'].map(t => <Tag key={t}>{t}</Tag>)}
           </div>
         </div>
@@ -132,8 +132,8 @@ export default function WithdrawalGuidePage() {
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
           {[
-            { label: '인출 포함 연 수익률', value: '22.4%', sub: '하위 10%도 17.1%' },
-            { label: '20년간 꺼내 쓴 돈', value: '74억', sub: 'S0 44억 · D10GK 46억' },
+            { label: '인출 포함 연 수익률', value: '22.9%', sub: '하위 10%도 18.8%' },
+            { label: '20년간 꺼내 쓴 돈', value: '22억', sub: 'S0 20억 · D10GK 19억' },
             { label: '남은 자산 10억 미만', value: '0가지', sub: '548가지 중' },
             { label: '현금으로 있는 기간', value: '13%', sub: '나머지는 TQQQ 보유' },
           ].map(c => (
@@ -145,7 +145,7 @@ export default function WithdrawalGuidePage() {
           ))}
         </div>
         <p className="text-xs text-gray-400 dark:text-gray-500 mb-8">
-          초기 10억 · 1971~2016년 매달 시작해 2026-09까지 보유 · 스왑금리 · 모든 매도 양도세 22% · 현금 외화RP 이자(세후) · 신호 다음 거래일 매매 반영.
+          초기 10억 · 1971~2016년 매달 시작해 2026-10까지 보유 · <Link href="/posts/tqqq-cost" className="underline hover:text-blue-500">스왑금리</Link> · 모든 매도 양도세 22% · 현금 외화RP 이자(세후) · 신호 다음 거래일 매매 반영.
           인출 포함 연 수익률 = 10억을 넣고 매달 생활비를 받고 마지막 남은 자산까지 돌려받았을 때의 연 수익률.
         </p>
 
@@ -182,9 +182,9 @@ export default function WithdrawalGuidePage() {
 
         <H3>다른 선택지</H3>
         <ul className="space-y-2 mb-6 text-sm text-gray-600 dark:text-gray-300 leading-relaxed list-disc pl-5">
-          <li><strong>25% 룰 + 자산별 현금 비중</strong> — 총자산 50억↑ TQQQ ⅔, 200억↑ ⅓. 연 20.9%로 1.5%p 낮지만 낙폭이 −96% → −80%로 얕아진다. 큰돈을 지키고 싶을 때.</li>
-          <li><strong>D10GK</strong> — 연 20.7%. 현금일 때 매일 밤 LOC 주문이 필요하고, 초반 생활비가 25% 룰보다 적다.</li>
-          <li><strong>S0 (200일선 15일)</strong> — 연 17.5%. 매수 직후 재매도가 한 번도 없는 가장 단순한 규칙 (<Link href="/posts/withdrawal-guide/tradelog?st=s0" className="underline">거래 로그</Link>).</li>
+          <li><strong>25% 룰 + 자산별 현금 비중</strong> — 총자산 50억↑ TQQQ ⅔, 200억↑ ⅓. 연 18.2%로 4.7%p 낮지만 낙폭이 −96% → −80%로 얕아진다. 큰돈을 지키고 싶을 때.</li>
+          <li><strong>D10GK</strong> — 연 19.7%. 현금일 때 매일 밤 LOC 주문이 필요하고, 초반 생활비가 25% 룰보다 적다.</li>
+          <li><strong>S0 (200일선 15일)</strong> — 연 16.7%. 매수 직후 재매도가 한 번도 없는 가장 단순한 규칙 (<Link href="/posts/withdrawal-guide/tradelog?st=s0" className="underline">거래 로그</Link>).</li>
         </ul>
         <P>
           16가지 전략 전체 비교와 10·20·30·40·50년 시점별 변화는{' '}
@@ -233,7 +233,7 @@ export default function WithdrawalGuidePage() {
                 {
                   name: 'EMA200 15일 (S0)',
                   step: '2단계',
-                  med: '150억', medV2: '266억', medV1: '1,109억', survival: '100%', trades: '21회',
+                  med: '130억', medV2: '211억', medV1: '1,109억', survival: '100%', trades: '21회',
                   post: '/posts/withdrawal-new-ideas', postLabel: '아이디어 8가지',
                   data: '/posts/withdrawal-new-ideas/data',
                   dim: false,
@@ -250,7 +250,7 @@ export default function WithdrawalGuidePage() {
                 {
                   name: 'D10GK',
                   step: '4단계',
-                  med: '393억', medV2: '841억', medV1: '3,741억', survival: '100%', trades: '48회',
+                  med: '332억', medV2: '680억', medV1: '3,741억', survival: '100%', trades: '48회',
                   post: '/posts/withdrawal-new-ideas', postLabel: '아이디어 8가지',
                   data: '/posts/withdrawal-new-ideas/data',
                   best: true,
@@ -258,7 +258,7 @@ export default function WithdrawalGuidePage() {
                 {
                   name: '25% 룰 (트레일링 스탑)',
                   step: '5단계',
-                  med: '146억', medV2: '195억', medV1: '1,064억', survival: '100%', trades: '12회',
+                  med: '122억', medV2: '148억', medV1: '1,064억', survival: '100%', trades: '12회',
                   post: '/posts/withdrawal-new-ideas2', postLabel: '새 아이디어',
                   data: '/posts/withdrawal-new-ideas2/data',
                   dim: false,
@@ -266,7 +266,7 @@ export default function WithdrawalGuidePage() {
                 {
                   name: 'DLEV 레버리지 하향',
                   step: '5단계',
-                  med: '197억', medV2: '281억', medV1: '474억', survival: '100%', trades: '35회',
+                  med: '160억', medV2: '215억', medV1: '474억', survival: '100%', trades: '35회',
                   post: '/posts/withdrawal-new-ideas2', postLabel: '새 아이디어',
                   data: '/posts/withdrawal-new-ideas2/data',
                   dim: true,
@@ -282,14 +282,14 @@ export default function WithdrawalGuidePage() {
                 {
                   name: 'S0 + 자산별 현금 비중',
                   step: '현재',
-                  med: '189억', medV2: '—', medV1: '—', survival: '100%', trades: '21회',
+                  med: '148억', medV2: '—', medV1: '—', survival: '100%', trades: '21회',
                   post: '', postLabel: '', data: '',
                   dim: false,
                 },
                 {
                   name: 'D10GK + 자산별 현금 비중',
                   step: '현재',
-                  med: '309억', medV2: '—', medV1: '—', survival: '100%', trades: '—',
+                  med: '295억', medV2: '—', medV1: '—', survival: '100%', trades: '—',
                   post: '', postLabel: '', data: '',
                   dim: false,
                 },
@@ -337,7 +337,7 @@ export default function WithdrawalGuidePage() {
               color: 'border-blue-300 dark:border-blue-700',
               badge: 'bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400',
               title: '★ EMA200 연속 15일 + 동적 인출률 (S0) — 현재 권장',
-              result: '중간값 150억 (스왑금리·양도세 반영) · 초기 계산 1,109억 · 생존율 100%',
+              result: '중간값 130억 (스왑금리·양도세 반영) · 초기 계산 1,109억 · 생존율 100%',
               desc: '나스닥100이 EMA200 아래에서 15거래일 연속이면 전액 현금 전환. 95가지 설정값 조합 탐색에서 최적 조합. 매수 후 1일 재매도 사례 없음 — 구조적 안전장치.',
               href: '/posts/withdrawal-new-ideas',
               link: '아이디어 8가지 →',
@@ -357,7 +357,7 @@ export default function WithdrawalGuidePage() {
               color: 'border-green-300 dark:border-green-700',
               badge: 'bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-400',
               title: 'RSI + 200일선 대비 −10% 필터 + Guyton-Klinger (D10GK)',
-              result: '★ 중간값 393억 (스왑금리·양도세 반영) · 초기 계산 3,741억',
+              result: '★ 중간값 332억 (스왑금리·양도세 반영) · 초기 계산 3,741억',
               desc: 'RSI 신호에 "EMA200보다 10% 이상 떨어진 상태"라는 조건을 추가해 가짜 신호를 줄였다. 자산이 많이 늘었을 때 인출을 자동으로 줄여주는 Guyton-Klinger 규칙도 결합. 과최적화 여부도 검증 완료.',
               href: '/posts/withdrawal-new-ideas',
               link: '상세 분석 →',
@@ -368,7 +368,7 @@ export default function WithdrawalGuidePage() {
               badge: 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400',
               title: '트레일링 스탑·단계적 현금화·레버리지 하향 검증',
               result: '추가 아이디어 3가지 — 운용보수만 기준으로는 모두 기준선 미달',
-              desc: '3가지 새 아이디어(25%·20%·15% 룰(트레일링 스탑), 단계적 현금화 GRAD, 자산 규모별 레버리지 하향 DLEV)를 668가지 진입 시점으로 테스트. 운용보수만 반영하면 모두 기준선을 넘지 못했다. 단, 스왑금리·양도세를 반영하면 DLEV(197억)가 S0(150억)를 앞선다 — 큰 자산을 스왑 비용이 없는 나스닥100(1배)으로 옮기기 때문. 25% 룰은 거래 12회로 가장 단순하다.',
+              desc: '3가지 새 아이디어(25%·20%·15% 룰(트레일링 스탑), 단계적 현금화 GRAD, 자산 규모별 레버리지 하향 DLEV)를 668가지 진입 시점으로 테스트. 운용보수만 반영하면 모두 기준선을 넘지 못했다. 단, 스왑금리·양도세를 반영하면 DLEV(160억)가 S0(130억)를 앞선다 — 큰 자산을 스왑 비용이 없는 나스닥100(1배)으로 옮기기 때문. 25% 룰은 거래 12회로 가장 단순하다.',
               href: '/posts/withdrawal-new-ideas2',
               link: '검증 결과 →',
             },
@@ -388,22 +388,22 @@ export default function WithdrawalGuidePage() {
               badge: 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400',
               title: '금리 연동 레버리지 검증 (스왑금리 반영)',
               result: '채택 안 함 — 기준금리 기준값에 따라 결과가 들쭉날쭉',
-              desc: '신호는 S0 그대로 두고, 기준금리가 높을 때만 TQQQ(3배) 대신 QLD(2배)를 들고 가는 방식. 갈아탈 때 양도세 22%까지 반영했다. 기준을 6~7%로 잡으면 중간값 354~401억으로 S0(266억, 현금 전환 매도세 미반영 기준)보다 높았지만, 4~5%에서는 172~174억으로 오히려 낮았다. 기준값을 조금만 바꿔도 결과가 뒤집혀 우연에 가깝다고 판단. 항상 QLD(2배)는 중간값 193억으로 낮지만 20년 뒤 원금 미만으로 끝난 경우가 0가지다.',
+              desc: '신호는 S0 그대로 두고, 기준금리가 높을 때만 TQQQ(3배) 대신 QLD(2배)를 들고 가는 방식. 갈아탈 때 양도세 22%까지 반영했다. 기준을 6~7%로 잡으면 중간값 311~350억으로 S0(226억, 현금 전환 매도세 미반영 기준)보다 높았지만, 4~5%에서는 153~155억으로 오히려 낮았다. 기준값을 조금만 바꿔도 결과가 뒤집혀 우연에 가깝다고 판단. 항상 QLD(2배)는 중간값 177억으로 낮지만 20년 뒤 원금 미만으로 끝난 경우가 0가지다.',
             },
             {
               step: '8단계',
               color: 'border-gray-300 dark:border-gray-700',
               badge: 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400',
               title: '현실 기준 재검증 + 자산이 커지면 일부 현금화',
-              result: 'S0 150억 · D10GK 393억 · 현금 비중 규칙 S0 189억 / D10GK 309억',
-              desc: '스왑금리와 모든 매도의 양도세(하락 신호로 전량 현금 전환할 때 포함)를 넣어 다시 계산했다. 순위는 그대로이고 D10GK가 S0의 2.6배. 함께 검증한 규칙: 총자산 50억 이상이면 TQQQ ⅔ + 현금 ⅓, 200억 이상이면 TQQQ ⅓ + 현금 ⅔로 매월 맞춘다. 나스닥100으로 바꿔 드는 것(DLEV 197억)과 결과가 거의 같으면서 현금이라 언제든 쓸 수 있다. S0에 붙이면 중간값이 오르고(150→189억), D10GK에 붙이면 중간값은 내려가지만(393→309억) 하위 10% 경우가 23억→35억으로 좋아진다. 단, 50억에 도달하지 못한 나쁜 시작 시점은 보호하지 못한다.',
+              result: 'S0 130억 · D10GK 332억 · 현금 비중 규칙 S0 148억 / D10GK 295억',
+              desc: '스왑금리와 모든 매도의 양도세(하락 신호로 전량 현금 전환할 때 포함)를 넣어 다시 계산했다. 순위는 그대로이고 D10GK가 S0의 2.6배. 함께 검증한 규칙: 총자산 50억 이상이면 TQQQ ⅔ + 현금 ⅓, 200억 이상이면 TQQQ ⅓ + 현금 ⅔로 매월 맞춘다. 나스닥100으로 바꿔 드는 것(DLEV 160억)과 결과가 거의 같으면서 현금이라 언제든 쓸 수 있다. S0에 붙이면 중간값이 오르고(130→148억), D10GK에 붙이면 중간값은 내려가지만(332→295억) 하위 10% 경우가 20억→30억으로 좋아진다. 단, 50억에 도달하지 못한 나쁜 시작 시점은 보호하지 못한다.',
             },
             {
               step: '9단계',
               color: 'border-gray-300 dark:border-gray-700',
               badge: 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400',
               title: '실제로 가능한 매매 시점 + 오늘까지 보유로 재검증',
-              result: '인출 포함 연 수익률 25% 룰 22.4% · D10GK(LOC) 20.7% · S0 17.5%',
+              result: '인출 포함 연 수익률 25% 룰 22.9% · D10GK(LOC) 19.7% · S0 16.7%',
               desc: '신호는 종가가 확정돼야 알 수 있으므로 신호 다음 거래일에 매매하도록 바꿨다. D10GK의 조기 재매수만 조건을 가격으로 환산한 LOC 주문으로 당일 종가에 산다. 20년에서 자르면 결과가 매매일 하루 이틀 차이에도 크게 흔들려, 1971년 이후 매달 시작해 오늘까지 보유한 인출 포함 연 수익률로 비교했다 (월 1,500만원 인출 상한도 없앰). 이 기준에서는 순위가 25% 룰 > D10GK > S0로 바뀌었다.',
             },
             {
@@ -411,7 +411,7 @@ export default function WithdrawalGuidePage() {
               color: 'border-blue-300 dark:border-blue-700',
               badge: 'bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400',
               title: '★ 전체 기간 재검증 → 25% 룰을 권장 전략으로',
-              result: '인출 상한 없음 · 인출 포함 연 22.4% · 20년간 꺼내 쓴 돈 74억',
+              result: '인출 상한 없음 · 인출 포함 연 22.9% · 20년간 꺼내 쓴 돈 22억',
               desc: '16가지 전략을 오늘까지 끝까지 들고 가며 10~50년 시점을 비교했다. 월 1,500만원 인출 상한을 없애고 꺼내 쓴 돈과 남은 자산을 함께 봤다. 닷컴버블을 거치지 않는 구간에서도 25% 룰이 S0보다 대체로 나았다(10년 구간의 80%). 현금 비중·버퍼·생활비 고정 같은 장치는 수익을 낮추는 대신 낙폭을 줄이는 정도라 기본 권장에서는 뺐다.',
               href: '/posts/withdrawal-full-period',
               link: '전체 비교 →',
@@ -455,7 +455,7 @@ export default function WithdrawalGuidePage() {
 
         <Callout color="blue">
           <strong>EMA200 연속15일 + 동적 인출률 (S0) — 668가지 시작 시점</strong><br />
-          스왑금리·양도세 반영: 생존율 100% · 중간값 20년 후 <strong>150억</strong> · 연평균 수익률 14.5% (중간값 기준) · 최솟값 1.16억 · 평균 매매 21회/20년<br />
+          스왑금리·양도세 반영: 생존율 100% · 중간값 20년 후 <strong>130억</strong> · 연평균 수익률 14.2% (중간값 기준) · 최솟값 1.13억 · 평균 매매 21회/20년<br />
           <span className="text-xs opacity-80">초기 계산(운용보수만, 현금 전환 매도세 미반영): 중간값 1,109억 · 최솟값 1.68억</span>
         </Callout>
 
@@ -523,8 +523,8 @@ export default function WithdrawalGuidePage() {
         </P>
         <Callout color="yellow">
           초기 연구(3·4장 표 포함)는 현금 전환 매도에 세금을 매기지 않았다. 실제 세법상 해외 ETF 매도는 목적과 무관하게 과세되므로
-          대표 수치는 이 세금을 넣어 다시 계산했다. 같은 계산 방식에서 이 세금 하나로 S0 중간값이 약 248억에서 150억으로,
-          20년 뒤 원금 미만으로 끝나는 경우가 25가지에서 50가지로 바뀐다.
+          대표 수치는 이 세금을 넣어 다시 계산했다. 같은 계산 방식에서 이 세금 하나로 S0 중간값이 약 211억에서 130억으로,
+          20년 뒤 원금 미만으로 끝나는 경우가 38가지에서 55가지로 바뀐다.
         </Callout>
 
         {/* ── 3. 주요 시나리오 비교 ────────────────────────────── */}
@@ -673,10 +673,10 @@ export default function WithdrawalGuidePage() {
           headers={['전략', '매도 횟수 (55년)', '매수 후 5일 내 재매도', '해야 할 일', '인출 포함 연 수익률']}
           rows={[
             [<strong key="rule25" className="text-blue-600 dark:text-blue-400">25% 룰 (1년 고점 −25%)</strong>,
-              '15번', '4번 (27%)', '주 1회 확인', <strong key="rule25v" className="text-blue-600 dark:text-blue-400">22.4%</strong>],
+              '15번', '4번 (27%)', '주 1회 확인', <strong key="rule25v" className="text-blue-600 dark:text-blue-400">22.9%</strong>],
             [<strong key="d10gk" className="text-purple-600 dark:text-purple-400">D10GK</strong>,
-              '72번', '18번 (25%)', '현금일 때 매일 밤 LOC 주문', <strong key="d10gkv" className="text-purple-600 dark:text-purple-400">20.7%</strong>],
-            ['S0 (EMA200 15일)', '27번', <strong key="s0w" className="text-green-600 dark:text-green-400">0번</strong>, '주 1회 확인', '17.5%'],
+              '72번', '18번 (25%)', '현금일 때 매일 밤 LOC 주문', <strong key="d10gkv" className="text-purple-600 dark:text-purple-400">19.7%</strong>],
+            ['S0 (EMA200 15일)', '27번', <strong key="s0w" className="text-green-600 dark:text-green-400">0번</strong>, '주 1회 확인', '16.7%'],
           ]}
         />
 
@@ -700,8 +700,8 @@ export default function WithdrawalGuidePage() {
           매매가 가장 적다(55년간 매도 15번). 하지만 매도 4번 중 1번꼴로 매수 직후(5거래일 안에) 다시 판다.
           이유는 52주 고점이 1년간 유지되기 때문이다. 큰 하락 이후 EMA200을 회복해 매수해도,
           1년 전 고점 기준 −25%는 이미 근접해있어 다음날 조금만 빠져도 매도 조건이 충족된다.
-          그래도 실제로 가능한 방식으로 오늘까지 들고 가면 연 22.4%로 세 전략 중 가장 높고,
-          매매를 1~3일 늦게 해도(22.4~25.1%), 기준을 −20%(20.0%)나 −30%(23.7%)로 바꿔도 S0(17.5%)보다 높다.
+          그래도 실제로 가능한 방식으로 오늘까지 들고 가면 연 22.9%로 세 전략 중 가장 높고,
+          매매를 1~3일 늦게 해도(22.7~23.8%), 기준을 −20%(19.7%)나 −30%(23.8%)로 바꿔도 S0(16.7%)보다 높다.
           대부분의 시간을 TQQQ로 들고 있다가(현금 기간 13%) 진짜 큰 폭락에서만 빠지는 구조라,
           장기 상승의 혜택을 가장 많이 받는다. 반대로 결과가 몇 번의 큰 폭락에 크게 좌우된다는 한계가 있다.
         </P>
@@ -709,7 +709,7 @@ export default function WithdrawalGuidePage() {
         <H3>D10GK — S0에 급락 때 조기 재매수를 더한 전략</H3>
         <P>
           조기 재매수 조건(RSI 30 미만 + 200일 평균선보다 10% 이상 아래)은 그날 종가가 정해져야 알 수 있다.
-          다음날 사면 이점이 상당 부분 사라진다(연 20.7% → 18.5%).
+          다음날 사면 이점이 상당 부분 사라진다(연 19.7% → 18.9%).
           대신 이 조건은 어제까지의 값으로 &ldquo;오늘 나스닥100이 X 이하로 끝나면 충족&rdquo;이라는 가격으로 바꿀 수 있다.
           그 가격을 TQQQ 가격으로 환산해 <strong className="text-gray-900 dark:text-white">LOC 매수 주문</strong>(종가가 지정가 이하일 때만 체결)을
           걸어두면 조건을 만족한 날 그 종가에 정확히 산다. 환산식은 1971년 이후 13,626거래일에서 실제 조건과 하루도 어긋나지 않았다.
@@ -732,9 +732,9 @@ export default function WithdrawalGuidePage() {
 
         <H3>결론: 무엇을 선택할까</H3>
         <Callout color="blue">
-          <strong>권장: 25% 룰 + 상한 없는 동적 인출</strong> — 연 22.4% · 일주일에 한 번 확인 · 매도 10년에 약 3번<br />
-          큰돈을 지키고 싶다면 → 25% 룰 + 자산별 현금 비중 — 연 20.9% · 낙폭 −80%<br />
-          매수 직후 다시 파는 일이 절대 싫다면 → S0 — 연 17.5%
+          <strong>권장: 25% 룰 + 상한 없는 동적 인출</strong> — 연 22.9% · 일주일에 한 번 확인 · 매도 10년에 약 3번<br />
+          큰돈을 지키고 싶다면 → 25% 룰 + 자산별 현금 비중 — 연 18.2% · 낙폭 −80%<br />
+          매수 직후 다시 파는 일이 절대 싫다면 → S0 — 연 16.7%
         </Callout>
         <P>
           초기 연구는 S0를 대부분에게 권했지만, 실제로 가능한 방식으로 다시 계산하면 같은 수고의 25% 룰이 S0보다 꾸준히 높고,
@@ -792,6 +792,11 @@ export default function WithdrawalGuidePage() {
               href="/posts/withdrawal-signal-test"
               title="10억 달성 후 바로 꺼낼까, 1~2년 더 기다릴까"
               desc="인출 시작을 1~2년 미루면 최종 자산 +7~13%. 다른 수입원이 있는 경우에만 유효한 전략."
+            />
+            <AnalysisLink
+              href="/posts/tqqq-cost"
+              title="TQQQ 비용 구조: 운용보수 0.82% + 스왑 파이낸싱"
+              desc="3배 레버리지의 실제 비용 — 스왑 스프레드(SOFR+0.5%) 포함 총비용 계산. 스프레드 반영 전후 시뮬레이션 결과 비교."
             />
             <AnalysisLink
               href="/posts/withdrawal-comparison"

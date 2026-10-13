@@ -16,8 +16,8 @@ S0 신호(NDX EMA200 15일 연속 + 동적인출 0.3/0.5/0.7%)는 그대로 두�
   - 현금 상태에서 재진입할 때는 그 시점 금리 기준으로 종목 선택
 
 가격 모델 (data_loader with_costs 와 동일):
-  TQQQ: (1 + 3r − 2×FFR/252) × (1 − 0.88%/252)
-  QLD : (1 + 2r − 1×FFR/252) × (1 − 0.95%/252)
+  TQQQ: (1 + 3r − 2×(FFR+0.5%)/252) × (1 − 0.88%/252)
+  QLD : (1 + 2r − 1×(FFR+0.5%)/252) × (1 − 0.95%/252)
 
 나머지(세금·RP 이자·VOO 편입·인출 규칙)는 withdrawal_new_ideas2.py의 S0 로직과 동일.
 
@@ -40,6 +40,7 @@ INITIAL    = 1_000_000_000
 SIM_YEARS  = 20
 EXP_3X     = 0.0088
 EXP_2X     = 0.0095
+SWAP_SPREAD = 0.005   # JPMorgan 424B2: SOFR + 0.50%/년
 LIV_MAX    = 15_000_000
 TAX_RATE   = 0.22
 DEDUCTION  = 2_500_000
@@ -102,11 +103,11 @@ def load_data():
     fed_daily = np.array([fed_rates.get(f"{d.year}-{d.month:02d}", 0.0) / 100.0 / 252
                           for d in dates])
 
-    f3 = (1.0 + ret * 3.0 - 2.0 * fed_daily) * (1.0 - EXP_3X / 252)
+    f3 = (1.0 + ret * 3.0 - 2.0 * (fed_daily + SWAP_SPREAD / 252.0)) * (1.0 - EXP_3X / 252)
     f3[0] = 1.0
     tqqq = 100.0 * np.cumprod(f3)
 
-    f2 = (1.0 + ret * 2.0 - 1.0 * fed_daily) * (1.0 - EXP_2X / 252)
+    f2 = (1.0 + ret * 2.0 - 1.0 * (fed_daily + SWAP_SPREAD / 252.0)) * (1.0 - EXP_2X / 252)
     f2[0] = 1.0
     qld = 100.0 * np.cumprod(f2)
 
