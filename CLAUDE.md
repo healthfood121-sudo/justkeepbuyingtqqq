@@ -8,6 +8,11 @@
 - 새 JSON을 생성했으면 `scripts/BACKTEST_DATA.md`에 항목을 추가한다 (파일명, 크기, 스크립트, 파라미터, 사용처).
 - 탐색용 스크립트(터미널 출력만)와 데이터 생성 스크립트를 구분해서 기록한다.
 
+## Git / 배포
+
+- 브랜치 나누지 말고 **master에 직접 커밋·푸시**한다.
+- Vercel은 master만 Production으로 배포한다.
+
 ## 웹 작업
 
 웹 관련 규칙은 `web/CLAUDE.md` 참고.
