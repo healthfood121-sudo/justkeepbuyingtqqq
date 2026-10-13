@@ -14,9 +14,10 @@ export const FEE_RATE  = 0.0007
 export const BAND      = 0.05
 export const DYN_RATES = [0.003, 0.005, 0.007] as const
 export const DYN_THRS  = [1_000_000_000, 2_000_000_000] as const
-export const EXP_3X = 0.0088
-export const EXP_2X = 0.0095  // QLD expense ratio
-export const EXP_1X = 0.0020
+export const EXP_3X  = 0.0088
+export const EXP_2X  = 0.0095  // QLD expense ratio
+export const EXP_1X  = 0.0020
+export const EXP_SPX = 0.0003  // VOO/SPY 운용보수 0.03%/년
 
 export type StratKey = 'RULE25' | 'S0' | 'HOLD3' | 'D10GK' | 'QLD'
 
@@ -50,10 +51,14 @@ export interface Market {
   qlSwap: Float64Array    // QLD 합성가 (운용보수 + 스왑금리)
   qlFee:  Float64Array    // QLD 합성가 (운용보수만)
   rsi:    Float64Array    // RSI(14) Wilder — 앞 13일 NaN
+  spx:    Float64Array    // S&P500 종가 (VOO 추적용, 없으면 NaN)
 }
 
 // ndx.csv 종가 + 월별 기준금리(%) 로 시장 데이터 구성 — withdrawal_cash_tier.load_data 와 동일
-export function buildMarket(dates: string[], rawCloses: number[], fed: Record<string, number>): Market {
+export function buildMarket(
+  dates: string[], rawCloses: number[], fed: Record<string, number>,
+  spxMap?: Record<string, number>,  // date → S&P500 종가
+): Market {
   const n = rawCloses.length
   const closes = Float64Array.from(rawCloses)
   const si = dates.indexOf('1985-10-01')
@@ -111,17 +116,32 @@ export function buildMarket(dates: string[], rawCloses: number[], fed: Record<st
       rsi[i] = al < 1e-10 ? 100 : 100 - 100 / (1 + ag / al)
     }
   }
-  return { dates, closes, ema, peaks, rp, tqSwap, tqFee, qlSwap, qlFee, rsi }
+  // S&P500: 날짜 맵으로 매핑 후 forward-fill
+  const spx = new Float64Array(n).fill(NaN)
+  if (spxMap) {
+    for (let i = 0; i < n; i++) spx[i] = spxMap[dates[i]] ?? NaN
+    let last = NaN
+    for (let i = 0; i < n; i++) {
+      if (!isNaN(spx[i])) last = spx[i]
+      else if (!isNaN(last)) spx[i] = last
+    }
+  }
+  return { dates, closes, ema, peaks, rp, tqSwap, tqFee, qlSwap, qlFee, rsi, spx }
 }
 
-export interface MonthPoint { date: string; total: number; living: number; invested: boolean }
+export interface MonthPoint { date: string; total: number; living: number; invested: boolean; voo: number }
 export interface Trade { date: string; action: 'S' | 'B'; total: number }
 export interface SimResult {
   final: number; withdrawn: number; maxDD: number; years: number
   months: MonthPoint[]; trades: Trade[]
 }
 
-export function runWithdrawal(m: Market, start: number, initial: number, key: StratKey, withSwap = true): SimResult {
+// VOO 자동투입: 총자산 >= 기준액일 때 현금 3년치 초과분을 S&P500 지수에 투입
+// spx 배열 없이도 동작하도록 단순 지수 추적 (비율 누적)
+export const VOO_THRESHOLD   = 2_000_000_000  // 20억
+export const VOO_CASH_MONTHS = 36             // 현금으로 남겨둘 생활비 개월 수
+
+export function runWithdrawal(m: Market, start: number, initial: number, key: StratKey, withSwap = true, enableVoo = false): SimResult {
   const p = STRATS[key]
   const tq = p.useQld
     ? (withSwap ? m.qlSwap : m.qlFee)
@@ -137,6 +157,10 @@ export function runWithdrawal(m: Market, start: number, initial: number, key: St
   let peakTot = initial, maxDD = 0
   const months: MonthPoint[] = []
   const trades: Trade[] = []
+
+  // VOO 자동투입 상태 (나스닥100 지수 비율로 추적 — SPX 데이터 없이도 동작)
+  let vooUnits = 0       // 보유 VOO 지수 단위 (초기 매수가 = 1.0 기준)
+  let vooBase  = 0       // 매수 시점 지수값 (비율 계산용)
 
   // Guyton-Klinger 상태
   let gkMult = 1.0, gkInitCap = 0, gkOn = false
@@ -165,6 +189,11 @@ export function runWithdrawal(m: Market, start: number, initial: number, key: St
   const raiseCash = (need: number, ci: number) => {
     const short = need - cash
     if (short > 0) sell(short / (1 - FEE_RATE), ci)
+  }
+  const vooVal = (ci: number): number => {
+    if (vooBase === 0) return 0
+    const spxNow = m.spx[ci]
+    return isNaN(spxNow) ? 0 : vooUnits * spxNow / vooBase
   }
   const rebalance = (ci: number, force: boolean) => {
     const tot = total(ci)
@@ -238,6 +267,30 @@ export function runWithdrawal(m: Market, start: number, initial: number, key: St
         withdrawn += living
       }
       if (invested) rebalance(ci, false)
+
+      // VOO(S&P500) 자동투입: 총자산 20억 이상이면 생활비 3년치 규모 목표로 TQQQ 일부를 S&P500으로 분산
+      if (enableVoo && j > 0 && invested) {
+        const spxNow = m.spx[ci]
+        if (!isNaN(spxNow) && spxNow > 0) {
+          const totAll = total(ci) + vooVal(ci)
+          if (totAll >= VOO_THRESHOLD) {
+            const rate = totAll < DYN_THRS[0] ? DYN_RATES[0] : totAll < DYN_THRS[1] ? DYN_RATES[1] : DYN_RATES[2]
+            const targetVoo = totAll * rate * VOO_CASH_MONTHS
+            const curVoo = vooVal(ci)
+            const needed = targetVoo - curVoo
+            if (needed > 10_000) {
+              const sellAmt = Math.min(needed, val(ci) * 0.20) // 한 번에 최대 20%씩 전환
+              if (sellAmt > 10_000) {
+                sell(sellAmt, ci)
+                const buyAmt = Math.min(sellAmt * (1 - FEE_RATE), cash)
+                if (vooBase === 0) vooBase = spxNow
+                vooUnits += buyAmt / spxNow * vooBase
+                cash -= buyAmt
+              }
+            }
+          }
+        }
+      }
     }
 
     const e = m.ema[ci]
@@ -280,13 +333,15 @@ export function runWithdrawal(m: Market, start: number, initial: number, key: St
     }
 
     cash += cash * m.rp[ci]
-    const tot = total(ci)
+    if (vooUnits > 0) vooUnits *= (1 - EXP_SPX / 252)
+    const tot = total(ci) + vooVal(ci)
     // 월말 총자산과 그 달 생활비 기록 (그래프용)
-    if (mon !== (m.dates[ci + 1] ?? '').slice(0, 7)) months.push({ date: mon, total: tot, living, invested })
+    if (mon !== (m.dates[ci + 1] ?? '').slice(0, 7)) months.push({ date: mon, total: tot, living, invested, voo: vooVal(ci) })
     peakTot = Math.max(peakTot, tot)
     if (peakTot > 0) maxDD = Math.max(maxDD, 1 - tot / peakTot)
     if (tot <= 0) break
   }
 
-  return { final: total(start + simLen - 1), withdrawn, maxDD, years: simLen / 252, months, trades }
+  const lastIdx = start + simLen - 1
+  return { final: total(lastIdx) + vooVal(lastIdx), withdrawn, maxDD, years: simLen / 252, months, trades }
 }

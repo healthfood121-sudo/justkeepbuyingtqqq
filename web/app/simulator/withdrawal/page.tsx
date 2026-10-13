@@ -4,14 +4,15 @@ import { useEffect, useMemo, useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceArea, LabelList,
+  LineChart, Line, BarChart, Bar,
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceArea, LabelList,
 } from 'recharts'
 import Header from '@/components/Header'
 import CostToggle from '@/components/CostToggle'
 import { useTheme } from '@/components/ThemeProvider'
 import { SERIES_COLORS } from '@/components/charts/WithdrawalYearsChart'
 import { stratName } from '@/lib/strategyNames'
-import { buildMarket, runWithdrawal, STRATS, type Market, type SimResult, type StratKey } from '@/lib/withdrawalEngine'
+import { buildMarket, runWithdrawal, STRATS, VOO_THRESHOLD, type Market, type SimResult, type StratKey } from '@/lib/withdrawalEngine'
 
 const EOK = 1e8
 const COMPARE: StratKey[] = ['S0', 'D10GK', 'HOLD3', 'QLD']
@@ -23,9 +24,10 @@ const fmtMan = (v: number) =>
   v >= 10000 ? `${(v / 10000).toFixed(v >= 100000 ? 0 : 1)}억` : `${Math.round(v).toLocaleString('ko-KR')}만`
 
 async function loadMarket(): Promise<Market> {
-  const [csv, fedRows] = await Promise.all([
+  const [csv, fedRows, spxCsv] = await Promise.all([
     fetch('/ndx.csv').then(r => r.text()),
     fetch('/data/fed_funds_rate.json').then(r => r.json()) as Promise<{ date: string; rate: number }[]>,
+    fetch('/sp500.csv').then(r => r.text()),
   ])
   const dates: string[] = [], closes: number[] = []
   for (const line of csv.trim().split('\n').slice(1)) {
@@ -33,7 +35,12 @@ async function loadMarket(): Promise<Market> {
     if (d && c) { dates.push(d); closes.push(Number(c)) }
   }
   const fed = Object.fromEntries(fedRows.map(r => [r.date.slice(0, 7), Number(r.rate)]))
-  return buildMarket(dates, closes, fed)
+  const spxMap: Record<string, number> = {}
+  for (const line of spxCsv.trim().split('\n').slice(1)) {
+    const [d, c] = line.split(',')
+    if (d && c) spxMap[d] = Number(c)
+  }
+  return buildMarket(dates, closes, fed, spxMap)
 }
 
 function Simulator() {
@@ -52,6 +59,7 @@ function Simulator() {
   const cmp = (params.get('cmp') ?? 'S0').split(',').filter((k): k is StratKey => COMPARE.includes(k as StratKey))
   const [amtInput, setAmtInput] = useState(String(amt))
   useEffect(() => { setAmtInput(String(amt)) }, [amt])
+  const [useVoo, setUseVoo] = useState(false)
 
   const go = (o: { start?: string; amt?: number; fee?: boolean; cmp?: StratKey[] }) => {
     const q = new URLSearchParams()
@@ -73,8 +81,8 @@ function Simulator() {
   const keys: StratKey[] = ['RULE25', ...cmp]
   const results = useMemo(() => {
     if (!market || startIdx < 0) return null
-    return Object.fromEntries(keys.map(k => [k, runWithdrawal(market, startIdx, amt * EOK, k, withCosts)])) as Record<StratKey, SimResult>
-  }, [market, startIdx, amt, withCosts, cmp.join(',')]) // eslint-disable-line react-hooks/exhaustive-deps
+    return Object.fromEntries(keys.map(k => [k, runWithdrawal(market, startIdx, amt * EOK, k, withCosts, useVoo)])) as Record<StratKey, SimResult>
+  }, [market, startIdx, amt, withCosts, cmp.join(','), useVoo]) // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!market || !results) {
     return <p className="text-sm text-gray-400 py-20 text-center">데이터 불러오는 중…</p>
@@ -96,6 +104,18 @@ function Simulator() {
     r.cash = !p.invested
     return r
   })
+  // 자산 구성 스택 바 차트 데이터 (RULE25 기준)
+  const stackRows = rule25.months.map(p => {
+    const nonVoo = p.total - p.voo
+    return {
+      m: p.date,
+      stock:  p.invested ? nonVoo / EOK : 0,
+      cashRp: p.invested ? 0 : nonVoo / EOK,
+      voo:    p.voo / EOK,
+      living: p.living / EOK,
+    }
+  })
+
   // 25% 룰 현금 보유 구간 (회색 배경)
   const cashSpans: [string, string][] = []
   rows.forEach((r, i) => {
@@ -244,6 +264,56 @@ function Simulator() {
       <h3 className="text-sm font-bold text-gray-800 dark:text-gray-200 mb-1">총자산 (월말)</h3>
       <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">회색 배경 = 25% 룰이 현금으로 있던 기간 · 세로축은 로그 눈금</p>
       {chart('total', fmtEok)}
+
+      <h3 className="text-sm font-bold text-gray-800 dark:text-gray-200 mt-6 mb-1">자산 구성 (25% 룰 기준)</h3>
+      <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">
+        <span className="inline-block w-2.5 h-2.5 rounded-sm bg-blue-600 mr-1 align-middle" />주식 ·&nbsp;
+        <span className="inline-block w-2.5 h-2.5 rounded-sm bg-emerald-600 mr-1 align-middle" />현금(RP) ·&nbsp;
+        {useVoo && <><span className="inline-block w-2.5 h-2.5 rounded-sm bg-purple-600 mr-1 align-middle" />S&P500 ·&nbsp;</>}
+        <span className="inline-block w-2.5 h-2.5 rounded-sm bg-orange-500 mr-1 align-middle" />생활비
+      </p>
+      <div className="h-64 w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={stackRows} margin={{ top: 10, right: 64, bottom: 0, left: 4 }} barCategoryGap="0%">
+            <CartesianGrid stroke={grid} vertical={false} />
+            <XAxis dataKey="m" tick={{ fill: tick, fontSize: 11 }} axisLine={{ stroke: grid }} tickLine={false}
+                   tickFormatter={(v: string) => v.slice(0, 4)} minTickGap={40} />
+            <YAxis tickFormatter={fmtEok} tick={{ fill: tick, fontSize: 11 }} axisLine={false} tickLine={false} width={56} />
+            <Tooltip
+              cursor={{ fill: dark ? '#374151' : '#f3f4f6', fillOpacity: 0.6 }}
+              content={({ active, payload, label }) => {
+                if (!active || !payload?.length) return null
+                const items = [
+                  { key: 'stock',  label: '주식',           fill: '#2563eb' },
+                  { key: 'cashRp', label: '현금(RP)',       fill: '#059669' },
+                  { key: 'voo',    label: 'S&P500', fill: '#9333ea' },
+                  { key: 'living', label: '생활비',         fill: '#f97316' },
+                ] as const
+                return (
+                  <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-xs shadow-md">
+                    <p className="text-gray-500 dark:text-gray-400 mb-1">{label}</p>
+                    {items.map(({ key, label: name, fill }) => {
+                      const entry = payload.find(p => p.dataKey === key)
+                      if (!entry || (entry.value as number) <= 0) return null
+                      return (
+                        <p key={key} className="flex items-center gap-2 text-gray-800 dark:text-gray-200">
+                          <span className="inline-block w-2.5 h-2.5 rounded-sm" style={{ background: fill }} />
+                          {name}
+                          <strong className="ml-auto pl-3">{fmtEok(entry.value as number)}</strong>
+                        </p>
+                      )
+                    })}
+                  </div>
+                )
+              }}
+            />
+            <Bar dataKey="stock"  stackId="a" fill="#2563eb" name="주식"           isAnimationActive={false} />
+            <Bar dataKey="cashRp" stackId="a" fill="#059669" name="현금(RP)"       isAnimationActive={false} />
+            <Bar dataKey="voo"    stackId="a" fill="#9333ea" name="S&P500" isAnimationActive={false} />
+            <Bar dataKey="living" stackId="a" fill="#f97316" name="생활비"         isAnimationActive={false} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
 
       <h3 className="text-sm font-bold text-gray-800 dark:text-gray-200 mt-6 mb-1">매달 꺼내 쓰는 생활비</h3>
       <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">단위 만원 · 세로축은 로그 눈금</p>
