@@ -114,7 +114,7 @@ export default function HomePage() {
                   </div>
                 ))}
               </div>
-              <p className="text-[10px] text-gray-400 dark:text-gray-500 mb-4">1971년 이후 모든 시작 시점 · 비용 반영</p>
+              <p className="text-[10px] text-gray-400 dark:text-gray-500 mb-4">1971년 이후 모든 시작 시점 · 운용보수·스왑금리 반영</p>
               <Link
                 href="/posts/accumulation-guide"
                 className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-semibold"

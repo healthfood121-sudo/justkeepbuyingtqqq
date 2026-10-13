@@ -133,9 +133,9 @@ export default function LifeCountdown() {
           {totalDays.toLocaleString()}일 {pad(hours)}:{pad(minutes)}:{pad(secs)}<span className="text-white/25">.{tenths}</span>
         </span>
 
-        {/* 기대 사망 나이 */}
+        {/*기대 수명 나이 */}
         <span className="text-[11px] text-blue-200/40 whitespace-nowrap">
-          기대 사망 {expectedDeathAge}세 · 통계청 생명표
+        기대 수명 {expectedDeathAge}세 · 통계청 생명표
         </span>
       </div>
 

@@ -82,7 +82,7 @@ def make_metadata(start_ym: str) -> dict:
         f"{year}년 {month_ko}부터 매일 20만원씩 TQQQ에 적립했을 때 10억 달성까지의 시뮬레이션입니다.\n\n"
         f"📊 일별 상세 데이터: https://justkeepbuyingtqqq.com/simulator/cohort?start={start_ym}&inst=ndx3x\n\n"
         f"⚠️ 본 영상은 과거 데이터 기반 백테스트 시뮬레이션이며, 투자 권유가 아닙니다.\n"
-        f"합성 가격(NDX 수익률×3배) 사용, 비용 미반영.\n\n"
+        f"합성 가격(NDX 수익률×3배) 사용, 운용보수(0.88%/년) 및 스왑금리비용 반영.\n\n"
         f"#TQQQ #나스닥100 #장기투자 #레버리지ETF #적립식투자 #쇼츠"
     )
 
@@ -95,8 +95,13 @@ def make_metadata(start_ym: str) -> dict:
 
 
 def find_video(start_ym: str) -> Path:
-    """output/shorts/{start_ym}.mp4 찾기 (여러 형식 대응)"""
-    # 정확한 이름
+    """output/shorts/{start_ym}_costs.mp4 우선 탐색 (with_costs가 공식 버전)"""
+    # with_costs 버전 우선
+    costs = OUTPUT_DIR / f"{start_ym}_costs.mp4"
+    if costs.exists():
+        return costs
+
+    # fallback: standard 버전
     exact = OUTPUT_DIR / f"{start_ym}.mp4"
     if exact.exists():
         return exact
