@@ -86,13 +86,17 @@ export default function LifeCountdown() {
   const expectedDeathAge = (age + remainingYears).toFixed(1)
   const usedPct = (age / (age + remainingYears)) * 100
 
-  const stats = [
-    { label: '남은 주말',        value: Math.round(remainingYears * 52).toLocaleString() + '번' },
-    { label: '남은 여름',        value: Math.round(remainingYears) + '번' },
-    { label: '남은 설날',        value: Math.round(remainingYears) + '번' },
-    { label: '잠으로 보낼 시간', value: Math.round(remainingYears / 3) + '년' },
-    { label: '남은 크리스마스',  value: Math.round(remainingYears) + '번' },
-    { label: '남은 아침',        value: Math.round(remainingYears * 365.25).toLocaleString() + '번' },
+  const eventStats = [
+    { label: '남은 주말',           value: Math.round(remainingYears * 52).toLocaleString() + '번' },
+    { label: '남은 명절 (설·추석)', value: Math.round(remainingYears * 2).toLocaleString() + '번' },
+  ]
+
+  const timeStats = [
+    { label: '수면',         value: Math.round(remainingYears * 365.25 * 8   / 24).toLocaleString() + '일', highlight: false },
+    { label: '식사',         value: Math.round(remainingYears * 365.25 * 1.5 / 24).toLocaleString() + '일', highlight: false },
+    { label: '직장·통근',   value: Math.round(remainingYears * 365.25 * 7   / 24).toLocaleString() + '일', highlight: false },
+    { label: '가사·위생',   value: Math.round(remainingYears * 365.25 * 2   / 24).toLocaleString() + '일', highlight: false },
+    { label: '진짜 내 시간', value: Math.round(remainingYears * 365.25 * 5.5 / 24).toLocaleString() + '일', highlight: true  },
   ]
 
   return (
@@ -146,12 +150,24 @@ export default function LifeCountdown() {
         <span className="text-[11px] text-white/40 tabular-nums whitespace-nowrap">{usedPct.toFixed(1)}% 소진</span>
       </div>
 
-      {/* 체감 통계 */}
+      {/* 체감 이벤트 */}
       <div className="mt-3 flex flex-wrap justify-center gap-x-4 gap-y-3">
-        {stats.map(s => (
+        {eventStats.map(s => (
           <div key={s.label} className="text-center min-w-[60px]">
             <div className="text-base font-bold text-white/80 font-mono tabular-nums">{s.value}</div>
             <div className="text-[10px] text-blue-200/40 mt-0.5">{s.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* 시간 배분 */}
+      <div className="mt-3 pt-3 border-t border-white/10 flex flex-wrap justify-center gap-x-4 gap-y-3">
+        {timeStats.map(s => (
+          <div key={s.label} className="text-center min-w-[60px]">
+            <div className={`text-base font-bold font-mono tabular-nums ${s.highlight ? 'text-red-300' : 'text-white/50'}`}>
+              {s.highlight ? '' : '−'}{s.value}
+            </div>
+            <div className={`text-[10px] mt-0.5 ${s.highlight ? 'text-red-300/60' : 'text-blue-200/40'}`}>{s.label}</div>
           </div>
         ))}
       </div>

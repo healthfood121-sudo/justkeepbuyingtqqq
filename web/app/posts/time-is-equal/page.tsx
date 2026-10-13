@@ -4,8 +4,8 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: '남은 여름이 몇 번인지 세어봤다',
-  description: '시간은 모두에게 평등한 자원이다. 35세 남성의 통계청 기대여명 기준 남은 여름은 47번. 이 숫자가 투자공부 대신 자동매수를 선택한 이유다.',
+  title: '수면·식사·직장 다 빼면 진짜 내 시간이 얼마나 남을까',
+  description: '기대여명 전체에서 수면·식사·직장·가사를 빼면 진짜 내 마음대로 쓸 수 있는 시간이 나온다. 그 숫자는 생각보다 훨씬 작다.',
 }
 
 function H2({ children }: { children: React.ReactNode }) {
@@ -43,6 +43,11 @@ const LIFE_TABLE = [
   { age: 90, male:  3.2, female:  5.0 },
 ]
 
+// 수면 8h + 식사 1.5h + 직장·통근 7h + 가사·위생 2h = 18.5h 소비 → 자유 5.5h/일
+function freeTime(years: number) {
+  return Math.round(years * 365.25 * 5.5 / 24).toLocaleString()
+}
+
 export default function TimeIsEqualPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-white">
@@ -56,15 +61,18 @@ export default function TimeIsEqualPage() {
             <span className="text-xs bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-full font-medium">적립식</span>
             <span className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 px-2 py-0.5 rounded-full">원칙 02</span>
           </div>
-          <h1 className="text-3xl font-bold leading-tight mb-3">남은 여름이 몇 번인지 세어봤다</h1>
+          <h1 className="text-3xl font-bold leading-tight mb-3">수면·식사·직장 다 빼면 진짜 내 시간이 얼마나 남을까</h1>
           <p className="text-gray-500 dark:text-gray-400 text-sm">2026-10-12</p>
         </div>
 
         {/* 리드 */}
         <P>
-          돈은 잃으면 다시 벌 수 있다. 시간은 그렇지 않다. 지나간 1초는 어떤 방법으로도 되돌아오지 않는다.
-          그런데도 우리는 수익률 0.1%p를 더 짜내려고 차트를 들여다보고, 뉴스를 읽고, 종목 리포트를 뒤진다.
-          그 시간이 얼마인지 한 번도 계산해본 적이 없으면서.
+          돈은 잃으면 다시 벌 수 있다. 시간은 그렇지 않다. 그런데 시간이 '얼마나' 남았는지
+          제대로 계산해본 사람은 드물다. 기대여명을 날수로 바꾸면 꽤 많아 보인다.
+        </P>
+        <P>
+          그런데 거기서 자는 시간, 밥 먹는 시간, 직장에 쓰는 시간, 집안일 하는 시간을 빼면 어떻게 될까.
+          아래 위젯에 나이와 성별을 입력해 보자. 진짜 내 마음대로 쓸 수 있는 시간이 나온다.
         </P>
 
         {/* 위젯 */}
@@ -76,6 +84,34 @@ export default function TimeIsEqualPage() {
           나이와 성별을 바꿔 보면 자신의 숫자가 나온다. 기준은 통계청 생명표 — 같은 나이, 같은 성별의
           사람이 평균적으로 얼마나 더 사는지를 집계한 공식 자료다.
         </P>
+
+        <H2>수면·식사·직장을 빼면</H2>
+
+        <P>
+          하루 24시간에서 다음 항목을 빼봤다.
+        </P>
+
+        <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-5 py-4 mb-6 text-sm">
+          <div className="space-y-2 text-gray-700 dark:text-gray-300">
+            <div className="flex justify-between"><span>수면</span><span className="font-mono">8시간</span></div>
+            <div className="flex justify-between"><span>식사</span><span className="font-mono">1.5시간</span></div>
+            <div className="flex justify-between"><span>직장 + 통근 (평일 기준 일 평균)</span><span className="font-mono">7시간</span></div>
+            <div className="flex justify-between"><span>가사 + 개인위생</span><span className="font-mono">2시간</span></div>
+            <div className="border-t border-gray-200 dark:border-gray-700 pt-2 flex justify-between font-bold text-gray-900 dark:text-white">
+              <span>진짜 내 시간</span><span className="font-mono text-red-500 dark:text-red-400">5.5시간</span>
+            </div>
+          </div>
+        </div>
+
+        <P>
+          하루에 5.5시간이다. 이걸 기대여명 전체에 곱하면 진짜 내 시간이 나온다.
+          위 위젯에서 확인한 숫자가 그것이다. 생각보다 훨씬 작다.
+        </P>
+
+        <Callout color="yellow">
+          <strong>체감이 안 된다면</strong> — 위 위젯의 나이를 바꿔 보자.
+          부모님 나이를 넣으면 다른 이야기가 된다.
+        </Callout>
 
         <H2>통계청이 말하는 기대여명</H2>
 
@@ -92,8 +128,8 @@ export default function TimeIsEqualPage() {
                 <th className="text-left py-2 px-3 font-semibold text-gray-500 dark:text-gray-400">나이</th>
                 <th className="text-right py-2 px-3 font-semibold text-gray-500 dark:text-gray-400">남자 기대여명</th>
                 <th className="text-right py-2 px-3 font-semibold text-gray-500 dark:text-gray-400">여자 기대여명</th>
-                <th className="text-right py-2 px-3 font-semibold text-gray-500 dark:text-gray-400">남자 남은 여름</th>
-                <th className="text-right py-2 px-3 font-semibold text-gray-500 dark:text-gray-400">여자 남은 여름</th>
+                <th className="text-right py-2 px-3 font-semibold text-gray-500 dark:text-gray-400">남자 진짜 내 시간</th>
+                <th className="text-right py-2 px-3 font-semibold text-gray-500 dark:text-gray-400">여자 진짜 내 시간</th>
               </tr>
             </thead>
             <tbody>
@@ -102,24 +138,19 @@ export default function TimeIsEqualPage() {
                   <td className="py-2 px-3 font-mono font-bold text-gray-900 dark:text-white">{row.age}세</td>
                   <td className="py-2 px-3 text-right text-gray-600 dark:text-gray-300">{row.male}년</td>
                   <td className="py-2 px-3 text-right text-gray-600 dark:text-gray-300">{row.female}년</td>
-                  <td className="py-2 px-3 text-right font-bold text-blue-600 dark:text-blue-400">{Math.round(row.male)}번</td>
-                  <td className="py-2 px-3 text-right font-bold text-pink-600 dark:text-pink-400">{Math.round(row.female)}번</td>
+                  <td className="py-2 px-3 text-right font-bold text-blue-600 dark:text-blue-400">{freeTime(row.male)}일</td>
+                  <td className="py-2 px-3 text-right font-bold text-pink-600 dark:text-pink-400">{freeTime(row.female)}일</td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">출처: 통계청 생명표 (2024년 기준)</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">출처: 통계청 생명표 (2024년 기준) · 진짜 내 시간 = 수면·식사·직장·가사 제외 기준</p>
         </div>
 
         <P>
-          40세 남성의 남은 여름은 42번이다. 50세가 되면 32번. 한 해에 여름은 단 한 번뿐이다.
-          그 여름을 몇 번이나 더 즐길 수 있는지, 대부분의 사람은 한 번도 숫자로 세어본 적이 없다.
+          50세 남성의 진짜 내 시간은 2,727일. 70세가 되면 1,300일이다.
+          그 시간 안에 하고 싶었던 일을 다 할 수 있을까.
         </P>
-
-        <Callout color="yellow">
-          <strong>숫자가 체감되지 않는다면</strong> — 위 위젯의 나이를 바꿔 보자.
-          부모님 나이를 넣으면 다른 이야기가 된다.
-        </Callout>
 
         <H2>시간을 낭비하는 두 가지 방법</H2>
 
@@ -159,7 +190,7 @@ export default function TimeIsEqualPage() {
         </P>
 
         <P>
-          남은 여름이 47번인 사람이 매년 여름을 차트 앞에서 보낼 이유는 없다.
+          진짜 내 시간이 그것뿐인 사람이 그중 며칠을 차트 앞에서 보낼 이유는 없다.
         </P>
 
         <H2>그래서 원칙 02번이다</H2>

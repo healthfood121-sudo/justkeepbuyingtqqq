@@ -71,7 +71,7 @@ export default function HomePage() {
                     <div className="mt-3 pl-6">
                       <LifeCountdown />
                       <Link href="/posts/time-is-equal" className="inline-block mt-2 text-xs text-blue-500 dark:text-blue-400 hover:underline">
-                        남은 여름이 몇 번인지 세어봤다 →
+                        수면·식사·직장 다 빼면 진짜 내 시간이 얼마나 남을까 →
                       </Link>
                     </div>
                   )}
