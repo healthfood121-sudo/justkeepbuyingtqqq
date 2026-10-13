@@ -74,7 +74,7 @@ export const HOLDINGS: Holding[] = [
   { rank:  50, ticker: 'ADBE', name: '어도비', weight: 0.40, sector: '소프트웨어/크리에이티브', products: 'Photoshop, Illustrator, Premiere Pro, Acrobat, Firefly AI', type: 'stock' },
   { rank:  51, ticker: 'MELI', name: '메르카도리브레', weight: 0.39, sector: '이커머스/핀테크', products: '라틴아메리카 최대 이커머스 플랫폼, MercadoPago 결제', type: 'stock' },
   { rank:  52, ticker: 'MAR', name: '메리어트 인터내셔널', weight: 0.39, sector: '숙박/호텔', products: 'Marriott, Sheraton, Westin, W Hotels, Ritz-Carlton 등 호텔 브랜드', type: 'stock' },
-  { rank:  53, ticker: 'MRNA', name: 'Moderna, Inc.', weight: 0.37, sector: '', products: '', type: 'stock' },
+  { rank:  53, ticker: 'MRNA', name: '모더나', weight: 0.37, sector: '바이오의약품', products: 'mRNA 기술 기반 의약품 — 코로나19 백신(Spikevax), RSV 백신, 독감·조류독감 백신 파이프라인', type: 'stock' },
   { rank:  54, ticker: 'CSX', name: 'CSX 코퍼레이션', weight: 0.36, sector: '철도 물류', products: '미국 동부 화물 철도 운송 — 석탄·자동차·농산물·컨테이너', type: 'stock' },
   { rank:  55, ticker: 'MNST', name: '몬스터 비버리지', weight: 0.35, sector: '식음료', products: 'Monster Energy 에너지 드링크, Reign, NOS', type: 'stock' },
   { rank:  56, ticker: 'APP', name: 'AppLovin', weight: 0.35, sector: '앱/광고 기술', products: '모바일 앱 광고·마케팅 플랫폼(AXON AI) — 2025.6 게임 스튜디오 사업 전체를 Tripledot에 매각, 현재 순수 애드테크 기업', type: 'stock' },
