@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState, Suspense } from 'react'
+import { useCallback, useEffect, useMemo, useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
@@ -115,6 +115,23 @@ function Simulator() {
       living: p.living / EOK,
     }
   })
+
+  // 자산 구성 차트 마우스 휠 줌
+  const [brushRange, setBrushRange] = useState<{ start: number; end: number } | null>(null)
+  const totalPoints = stackRows.length
+  useEffect(() => { setBrushRange(null) }, [totalPoints])
+  const handleWheel = useCallback((e: React.WheelEvent) => {
+    e.preventDefault()
+    const start = brushRange?.start ?? 0
+    const end   = brushRange?.end   ?? totalPoints - 1
+    const len    = end - start
+    const center = (start + end) / 2
+    const factor = e.deltaY > 0 ? 1.2 : 0.8   // 아래 = 줌아웃, 위 = 줌인
+    const newLen   = Math.round(Math.max(6, Math.min(totalPoints, len * factor)))
+    const newStart = Math.max(0, Math.round(center - newLen / 2))
+    const newEnd   = Math.min(totalPoints - 1, newStart + newLen - 1)
+    setBrushRange({ start: newStart, end: newEnd })
+  }, [brushRange, totalPoints])
 
   // 25% 룰 현금 보유 구간 (회색 배경)
   const cashSpans: [string, string][] = []
@@ -272,7 +289,7 @@ function Simulator() {
         {useVoo && <><span className="inline-block w-2.5 h-2.5 rounded-sm bg-purple-600 mr-1 align-middle" />S&P500 ·&nbsp;</>}
         <span className="inline-block w-2.5 h-2.5 rounded-sm bg-orange-500 mr-1 align-middle" />생활비
       </p>
-      <div className="h-72 w-full">
+      <div className="h-72 w-full" onWheel={handleWheel} style={{ touchAction: 'none' }}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={stackRows} margin={{ top: 10, right: 64, bottom: 0, left: 4 }} barCategoryGap="0%">
             <CartesianGrid stroke={grid} vertical={false} />
@@ -312,6 +329,12 @@ function Simulator() {
             <Bar dataKey="voo"    stackId="a" fill="#9333ea" name="S&P500"   isAnimationActive={false} />
             <Bar dataKey="living" stackId="a" fill="#f97316" name="생활비"   isAnimationActive={false} />
             <Brush dataKey="m" height={20} travellerWidth={6}
+              startIndex={brushRange?.start ?? 0}
+              endIndex={brushRange?.end ?? totalPoints - 1}
+              onChange={(r) => {
+                if (r.startIndex !== undefined && r.endIndex !== undefined)
+                  setBrushRange({ start: r.startIndex, end: r.endIndex })
+              }}
               stroke={dark ? '#374151' : '#d1d5db'}
               fill={dark ? '#111827' : '#f9fafb'}
               tickFormatter={(v: string) => v.slice(0, 4)} />
