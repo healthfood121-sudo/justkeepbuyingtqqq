@@ -1,12 +1,13 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState, Suspense } from 'react'
+import { useEffect, useMemo, useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
-  LineChart, Line, BarChart, Bar, Brush,
+  LineChart, Line,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceArea, LabelList,
 } from 'recharts'
+import AssetStackChart from '@/components/charts/AssetStackChart'
 import Header from '@/components/Header'
 import CostToggle from '@/components/CostToggle'
 import { useTheme } from '@/components/ThemeProvider'
@@ -83,23 +84,6 @@ function Simulator() {
     if (!market || startIdx < 0) return null
     return Object.fromEntries(keys.map(k => [k, runWithdrawal(market, startIdx, amt * EOK, k, withCosts, useVoo)])) as Record<StratKey, SimResult>
   }, [market, startIdx, amt, withCosts, cmp.join(','), useVoo]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  // 자산 구성 차트 마우스 휠 줌 — 조기 return 전에 선언해야 Rules of Hooks 위반 없음
-  const totalPoints = results?.RULE25?.months?.length ?? 0
-  const [brushRange, setBrushRange] = useState<{ start: number; end: number } | null>(null)
-  useEffect(() => { setBrushRange(null) }, [totalPoints])
-  const handleWheel = useCallback((e: React.WheelEvent) => {
-    e.preventDefault()
-    const s = brushRange?.start ?? 0
-    const en = brushRange?.end ?? totalPoints - 1
-    const len = en - s
-    const center = (s + en) / 2
-    const factor = e.deltaY > 0 ? 1.2 : 0.8
-    const newLen   = Math.round(Math.max(6, Math.min(totalPoints, len * factor)))
-    const newStart = Math.max(0, Math.round(center - newLen / 2))
-    const newEnd   = Math.min(totalPoints - 1, newStart + newLen - 1)
-    setBrushRange({ start: newStart, end: newEnd })
-  }, [brushRange, totalPoints])
 
   if (!market || !results) {
     return <p className="text-sm text-gray-400 py-20 text-center">데이터 불러오는 중…</p>
@@ -283,64 +267,7 @@ function Simulator() {
       {chart('total', fmtEok)}
 
       <h3 className="text-sm font-bold text-gray-800 dark:text-gray-200 mt-6 mb-1">자산 구성 (25% 룰 기준)</h3>
-      <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">
-        <span className="inline-block w-2.5 h-2.5 rounded-sm bg-blue-600 mr-1 align-middle" />주식 ·&nbsp;
-        <span className="inline-block w-2.5 h-2.5 rounded-sm bg-emerald-600 mr-1 align-middle" />현금(RP) ·&nbsp;
-        {useVoo && <><span className="inline-block w-2.5 h-2.5 rounded-sm bg-purple-600 mr-1 align-middle" />S&P500 ·&nbsp;</>}
-        <span className="inline-block w-2.5 h-2.5 rounded-sm bg-orange-500 mr-1 align-middle" />생활비
-      </p>
-      <div className="h-72 w-full" onWheel={handleWheel} style={{ touchAction: 'none' }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={stackRows} margin={{ top: 10, right: 64, bottom: 0, left: 4 }} barCategoryGap="0%">
-            <CartesianGrid stroke={grid} vertical={false} />
-            <XAxis dataKey="m" tick={{ fill: tick, fontSize: 11 }} axisLine={{ stroke: grid }} tickLine={false}
-                   tickFormatter={(v: string) => v.slice(0, 4)} minTickGap={40} />
-            <YAxis tickFormatter={fmtEok} tick={{ fill: tick, fontSize: 11 }} axisLine={false} tickLine={false} width={56} />
-            <Tooltip
-              cursor={{ fill: dark ? '#374151' : '#f3f4f6', fillOpacity: 0.6 }}
-              content={({ active, payload, label }) => {
-                if (!active || !payload?.length) return null
-                const items = [
-                  { key: 'stock',  label: '주식',           fill: '#2563eb' },
-                  { key: 'cashRp', label: '현금(RP)',       fill: '#059669' },
-                  { key: 'voo',    label: 'S&P500', fill: '#9333ea' },
-                  { key: 'living', label: '생활비',         fill: '#f97316' },
-                ] as const
-                return (
-                  <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-xs shadow-md">
-                    <p className="text-gray-500 dark:text-gray-400 mb-1">{label}</p>
-                    {items.map(({ key, label: name, fill }) => {
-                      const entry = payload.find(p => p.dataKey === key)
-                      if (!entry || (entry.value as number) <= 0) return null
-                      return (
-                        <p key={key} className="flex items-center gap-2 text-gray-800 dark:text-gray-200">
-                          <span className="inline-block w-2.5 h-2.5 rounded-sm" style={{ background: fill }} />
-                          {name}
-                          <strong className="ml-auto pl-3">{fmtEok(entry.value as number)}</strong>
-                        </p>
-                      )
-                    })}
-                  </div>
-                )
-              }}
-            />
-            <Bar dataKey="stock"  stackId="a" fill="#2563eb" name="주식"     isAnimationActive={false} />
-            <Bar dataKey="cashRp" stackId="a" fill="#059669" name="현금(RP)" isAnimationActive={false} />
-            <Bar dataKey="voo"    stackId="a" fill="#9333ea" name="S&P500"   isAnimationActive={false} />
-            <Bar dataKey="living" stackId="a" fill="#f97316" name="생활비"   isAnimationActive={false} />
-            <Brush dataKey="m" height={20} travellerWidth={6}
-              startIndex={brushRange?.start ?? 0}
-              endIndex={brushRange?.end ?? totalPoints - 1}
-              onChange={(r) => {
-                if (r.startIndex !== undefined && r.endIndex !== undefined)
-                  setBrushRange({ start: r.startIndex, end: r.endIndex })
-              }}
-              stroke={dark ? '#374151' : '#d1d5db'}
-              fill={dark ? '#111827' : '#f9fafb'}
-              tickFormatter={(v: string) => v.slice(0, 4)} />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+      <AssetStackChart data={stackRows} />
 
       <h3 className="text-sm font-bold text-gray-800 dark:text-gray-200 mt-6 mb-1">매달 꺼내 쓰는 생활비</h3>
       <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">단위 만원 · 세로축은 로그 눈금</p>
