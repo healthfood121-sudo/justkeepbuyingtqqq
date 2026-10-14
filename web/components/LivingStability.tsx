@@ -13,8 +13,8 @@ interface Sum {
 
 // 포스트에서 보여 줄 설계 (withdrawal_recommend.json의 이름) — 화면 이름과 한 줄 설명
 export const DESIGNS: { k: string; name: string; desc: string }[] = [
-  { k: 'RULE25', name: '25% 룰 (지금 권장)', desc: '매달 그때 자산 × 0.3/0.5/0.7%' },
-  { k: 'RULE25_annual', name: '생활비 1년 고정', desc: '12개월마다 한 번 정하고 1년 동안 같은 금액' },
+  { k: 'RULE25', name: '25% 룰 (매달 인출, 비교용)', desc: '매달 그때 자산 × 0.3/0.5/0.7%' },
+  { k: 'RULE25_annual', name: '생활비 1년 고정 (권장)', desc: '12개월마다 한 번 정하고 1년 동안 같은 금액' },
   { k: 'RULE25_floor75', name: '생활비 하한', desc: '직전 12개월 최고 생활비의 75% 아래로 안 내림' },
   { k: 'A5_20', name: '자산 커지면 현금', desc: '50억↑ TQQQ ⅔ · 200억↑ ⅓, 나머지 현금' },
   { k: 'R20', name: '기본 현금 20% + 1년 점검', desc: '처음부터 현금 20%, 생활비·비중은 1년에 한 번' },

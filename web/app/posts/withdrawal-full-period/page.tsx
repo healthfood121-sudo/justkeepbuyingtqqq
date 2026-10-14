@@ -203,8 +203,8 @@ export default function WithdrawalFullPeriodPage() {
         </ul>
 
         <Callout color="green">
-          <strong>권장 전략: 25% 룰 + 상한 없는 동적 인출.</strong>{' '}
-          자산별 현금 비중·기본 현금 버퍼·생활비 1년 고정 같은 장치도 시험했지만, 수익을 낮추는 대신 낙폭을 줄이는 정도라
+          <strong>권장 전략: 25% 룰 + 동적 인출 + 생활비 1년 고정.</strong>{' '}
+          자산별 현금 비중·기본 현금 버퍼 같은 장치도 시험했지만, 수익을 낮추는 대신 낙폭을 줄이는 정도라
           단순함을 우선해 기본 권장에서는 뺐다 (큰돈을 지키고 싶다면 25% 룰 + 자산별 현금 비중).
           매일 신호는 <Link href="/" className="underline">홈 화면</Link>에서, 기존 방법론은 <Link href="/posts/withdrawal-guide" className="underline">인출식 방법론</Link>에서 볼 수 있다.
         </Callout>

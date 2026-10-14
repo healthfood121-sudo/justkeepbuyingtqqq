@@ -117,16 +117,17 @@ export default function WithdrawalGuidePage() {
 
         {/* ── 현재 권장 전략 ───────────────────────────────────── */}
         <div id="recommended" className="scroll-mt-28" />
-        <H2>현재 권장 전략: 25% 룰 + 상한 없는 동적 인출</H2>
+        <H2>현재 권장 전략: 25% 룰 + 동적 인출 + 생활비 1년 고정</H2>
         <P>
           <strong>25% 룰</strong>은 나스닥100이 52주 최고 종가보다 25% 낮게 끝나면 TQQQ를 전부 팔고, 200일 평균선 위로 돌아오면 다시 사는 규칙이다.
         </P>
 
         <Callout color="blue">
-          <strong>규칙은 세 줄이다.</strong><br /><br />
+          <strong>규칙은 네 줄이다.</strong><br /><br />
           ① <strong>매도</strong> — 나스닥100 종가가 최근 1년 최고 종가보다 25% 이상 낮게 끝나면 → 다음 거래일에 TQQQ 전량 매도, 현금(외화RP)으로 보관<br />
           ② <strong>매수</strong> — 나스닥100이 200일 평균선 위로 15거래일 연속 마감하면 → 다음 거래일에 전액 TQQQ 매수<br />
-          ③ <strong>생활비</strong> — 매달 총자산의 0.3%(10억 미만) / 0.5%(10~20억) / 0.7%(20억 이상)를 꺼내 쓴다. 상한 없음<br /><br />
+          ③ <strong>생활비</strong> — 총자산의 0.3%(10억 미만) / 0.5%(10~20억) / 0.7%(20억 이상). 상한 없음<br />
+          ④ <strong>1년 고정</strong> — 매년 같은 달에 그때 자산 기준으로 비율을 적용해 1년치 월 생활비를 정하고, 이후 12개월 동안 바꾸지 않는다<br /><br />
           신호 확인은 일주일에 한 번 <Link href="/" className="underline">홈 화면 &lsquo;오늘의 신호&rsquo;</Link>로 충분하다. 매매는 55년 동안 매도 15번(10년에 약 3번) — <Link href="/posts/withdrawal-guide/tradelog" className="underline">시작 시점별 거래 로그 전체 보기</Link>.
         </Callout>
 
@@ -167,9 +168,9 @@ export default function WithdrawalGuidePage() {
 
         <Callout color="yellow">
           <strong>25% 룰을 고르면 감수해야 할 것</strong><br />
-          · <strong>자산이 크게 줄어드는 시기가 온다.</strong> 1990년 시작 예: 2000년 3월 1,099억 → 2008년 9월 47억(−96%). 닷컴버블과 금융위기가 연달아 오면서 8년 반에 걸쳐 줄었고,
+          · <strong>자산이 크게 줄어드는 시기가 온다.</strong> 1990년 시작 예: 2000년 3월 999억 → 2008년 9월 45억(−95%). 닷컴버블과 금융위기가 연달아 오면서 8년 반에 걸쳐 줄었고,
           그동안 생활비로 110억을 꺼내 썼다. <Link href="/posts/experience-1990" className="underline">이 36년을 한 달씩 넘겨 보기</Link>. 나스닥100이 25% 빠져야 팔기 때문에 그때 TQQQ는 이미 60% 넘게 빠진 상태다.<br />
-          · <strong>생활비도 자산 따라 줄어든다.</strong> 상한이 없는 대신 하한도 없다. 자산이 반토막 나면 생활비도 반토막이다. 생활비를 1년에 한 번만 정하면 수익률 손해 없이 덜 흔들린다 — <Link href="/posts/living-stability" className="underline">생활비 규칙 비교</Link>.<br />
+          · <strong>생활비도 자산 따라 줄어든다.</strong> 1년 고정으로 몇 달짜리 급락엔 생활비가 바로 따라 내려가지 않는다. 하지만 1년 단위로는 여전히 바뀐다 — <Link href="/posts/living-stability" className="underline">생활비 규칙 비교</Link>.<br />
           · <strong>매도 4번 중 1번은 산 지 5거래일 안에 다시 판다.</strong> 하락장 중간 반등에서 샀다가 다시 빠지는 경우다.<br />
           · <strong>1970~80년대 같은 시장에서는 S0와 비슷하다</strong>(10년 구간 9.8% vs 9.9%). 우위가 가장 큰 건 2003년 이후 대세 상승장이다.<br />
           · <strong>성적이 몇 번의 하락에 기대고 있다.</strong> 과거의 빠른 하락 네 번이 −22~−23%에서 멈춰서 25%가 22%보다 나았다. 기준을 23~33%로 바꿔도 결과는 비슷하다 —{' '}
@@ -741,7 +742,7 @@ export default function WithdrawalGuidePage() {
 
         <H3>결론: 무엇을 선택할까</H3>
         <Callout color="blue">
-          <strong>권장: 25% 룰 + 상한 없는 동적 인출</strong> — 연 21.5% · 일주일에 한 번 확인 · 매도 10년에 약 3번<br />
+          <strong>권장: 25% 룰 + 동적 인출 + 생활비 1년 고정</strong> — 연 21.5% · 일주일에 한 번 확인 · 매도 10년에 약 3번<br />
           큰돈을 지키고 싶다면 → 25% 룰 + 자산별 현금 비중 — 연 20.2% · 낙폭 −80%<br />
           매수 직후 다시 파는 일이 절대 싫다면 → S0 — 연 16.7%
         </Callout>
