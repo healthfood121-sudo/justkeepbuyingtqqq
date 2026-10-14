@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
-  LineChart, Line, BarChart, Bar,
+  LineChart, Line, BarChart, Bar, Brush,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceArea, LabelList,
 } from 'recharts'
 import Header from '@/components/Header'
@@ -272,7 +272,7 @@ function Simulator() {
         {useVoo && <><span className="inline-block w-2.5 h-2.5 rounded-sm bg-purple-600 mr-1 align-middle" />S&P500 ·&nbsp;</>}
         <span className="inline-block w-2.5 h-2.5 rounded-sm bg-orange-500 mr-1 align-middle" />생활비
       </p>
-      <div className="h-64 w-full">
+      <div className="h-72 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={stackRows} margin={{ top: 10, right: 64, bottom: 0, left: 4 }} barCategoryGap="0%">
             <CartesianGrid stroke={grid} vertical={false} />
@@ -307,10 +307,14 @@ function Simulator() {
                 )
               }}
             />
-            <Bar dataKey="stock"  stackId="a" fill="#2563eb" name="주식"           isAnimationActive={false} />
-            <Bar dataKey="cashRp" stackId="a" fill="#059669" name="현금(RP)"       isAnimationActive={false} />
-            <Bar dataKey="voo"    stackId="a" fill="#9333ea" name="S&P500" isAnimationActive={false} />
-            <Bar dataKey="living" stackId="a" fill="#f97316" name="생활비"         isAnimationActive={false} />
+            <Bar dataKey="stock"  stackId="a" fill="#2563eb" name="주식"     isAnimationActive={false} />
+            <Bar dataKey="cashRp" stackId="a" fill="#059669" name="현금(RP)" isAnimationActive={false} />
+            <Bar dataKey="voo"    stackId="a" fill="#9333ea" name="S&P500"   isAnimationActive={false} />
+            <Bar dataKey="living" stackId="a" fill="#f97316" name="생활비"   isAnimationActive={false} />
+            <Brush dataKey="m" height={20} travellerWidth={6}
+              stroke={dark ? '#374151' : '#d1d5db'}
+              fill={dark ? '#111827' : '#f9fafb'}
+              tickFormatter={(v: string) => v.slice(0, 4)} />
           </BarChart>
         </ResponsiveContainer>
       </div>
