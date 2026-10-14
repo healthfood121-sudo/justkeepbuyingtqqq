@@ -31,7 +31,9 @@ DATA_DIR = Path(__file__).parent.parent / "data"
 OUT_DIR  = Path(__file__).parent.parent / "output" / "shorts"
 
 W, H             = 1080, 1920
-MAX_SEC          = 65          # 최대 영상 길이 (마지막 5초 고정 포함)
+TARGET_SEC       = 60          # 정확한 영상 길이 (BGM 1분에 맞춤)
+OUTRO_SEC        = 5           # 마지막 고정 프레임 시간
+ANIM_SEC         = TARGET_SEC - OUTRO_SEC   # 애니메이션 구간 (55초)
 BASE_FPS         = 30
 
 DAILY_INVEST_KRW = 200_000
@@ -148,7 +150,7 @@ def ct(draw: ImageDraw.ImageDraw, text: str, x: int, y: int, f, fill):
 # ════════════════════════════════════════════════════════════
 
 CHART_TOP  = 880    # 차트 시작 Y
-CHART_BOT  = 1500   # 차트 끝 Y  (YouTube 하단 안전영역 고려)
+CHART_BOT  = 1420   # 차트 끝 Y  (YouTube 채널명 가림 방지로 위로 올림)
 CHART_H    = CHART_BOT - CHART_TOP
 CHART_W    = W - PAD * 2
 RIGHT_SAFE = 130    # 오른쪽 안전여백 (YouTube 리액션 버튼 가림 방지)
@@ -164,11 +166,10 @@ def render(snap: dict, hist_port: list[float], hist_inv: list[float], start_date
 
     # ─── 헤더 ──────────────────────────────────────────────
     draw.rectangle([0, 0, W, 128], fill=PALE)
-    ct(draw, "특정일잔고", W // 2, 18, fnt(52, bold=True), BLACK)
-    subtitle = ("매일 20만원 · TQQQ 적립 (운용비·스왑금리 반영)"
-                if mode == 'with_costs'
-                else "매일 20만원 · TQQQ 적립 시뮬레이션")
-    ct(draw, subtitle, W // 2, 82, fnt(26), GRAY)
+    ct(draw, "특정일잔고", W // 2, 24, fnt(48, bold=True), BLACK)
+    ct(draw, "매일 20만원 · TQQQ 적립 시뮬레이션", W // 2, 78, fnt(22), GRAY)
+    if mode == 'with_costs':
+        ct(draw, "운용비·스왑금리 반영 · 환율 1,300원 고정", W // 2, 104, fnt(20), GRAY)
     draw.line([0, 128, W, 128], fill=LGRAY, width=2)
 
     # ─── 계좌행 ────────────────────────────────────────────
@@ -277,7 +278,7 @@ def render(snap: dict, hist_port: list[float], hist_inv: list[float], start_date
         # 목표선
         ty = px_y(TARGET_KRW)
         draw.line([PAD, ty, W - PAD, ty], fill=(*CTARGET, 160), width=2)
-        rt(draw, "목표 10억", W - PAD - 8, ty - 34, fnt(24), CTARGET)
+        ct(draw, "목표 10억", W // 2, ty - 34, fnt(24), CTARGET)
 
         # Y축 눈금
         for val in [2e8, 5e8, 10e8]:
@@ -315,6 +316,36 @@ def render(snap: dict, hist_port: list[float], hist_inv: list[float], start_date
 
 
 # ════════════════════════════════════════════════════════════
+# 마지막 프레임 오버레이
+# ════════════════════════════════════════════════════════════
+
+def render_final(snap: dict, hp: list, hi: list, start_date, mode: str, total_days: int) -> bytes:
+    """마지막 프레임에 소요기간 오버레이를 얹어 반환."""
+    base = render(snap, hp, hi, start_date, mode)
+    img  = Image.open(BytesIO(base)).convert("RGB")
+    draw = ImageDraw.Draw(img, "RGBA")
+
+    years   = total_days / 252
+    inv_eok = snap["inv_krw"] / 1e8
+    line1 = "10억 달성 완료"
+    line2 = f"총 {years:.1f}년 소요"
+    line3 = f"투입 원금  {inv_eok:.1f}억원"
+
+    # 오버레이 박스 (차트 중앙, y=1020~1240)
+    bx, by, bw, bh = 140, 1010, 800, 240
+    draw.rounded_rectangle([bx, by, bx + bw, by + bh], radius=20,
+                           fill=(26, 26, 26, 210))
+
+    ct(draw, line1, W // 2, by + 18,  fnt(46, bold=True), (255, 255, 255))
+    ct(draw, line2, W // 2, by + 82,  fnt(58, bold=True), (255, 220, 80))
+    ct(draw, line3, W // 2, by + 158, fnt(58, bold=True), (255, 220, 80))
+
+    buf = BytesIO()
+    img.save(buf, format="PNG")
+    return buf.getvalue()
+
+
+# ════════════════════════════════════════════════════════════
 # 영상 생성
 # ════════════════════════════════════════════════════════════
 
@@ -327,12 +358,13 @@ def make_video(start_ym: str, out_path: Path, mode: str = 'standard'):
     total = len(snaps)
     print(f"      → {total}거래일 ({total/250:.1f}년)")
 
-    # FPS 결정: 최대 MAX_SEC초 안에 담기
-    fps = max(BASE_FPS, math.ceil(total / MAX_SEC))
-    step = max(1, math.ceil(total / (MAX_SEC * fps)))
+    # FPS 결정: 애니메이션 ANIM_SEC초 안에 담기
+    fps = max(BASE_FPS, math.ceil(total / ANIM_SEC))
+    step = max(1, math.ceil(total / (ANIM_SEC * fps)))
     frames_to_render = list(range(0, total, step))
-    duration = len(frames_to_render) / fps
-    print(f"      → FPS={fps}, step={step}, 예상길이={duration:.1f}초")
+    # 정확히 TARGET_SEC초가 되도록 아웃트로 프레임 수 역산
+    outro_frames = TARGET_SEC * fps - len(frames_to_render)
+    print(f"      → FPS={fps}, step={step}, 총길이={TARGET_SEC}초 (애니={len(frames_to_render)/fps:.1f}s + 아웃트로={outro_frames/fps:.1f}s)")
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -369,10 +401,13 @@ def make_video(start_ym: str, out_path: Path, mode: str = 'standard'):
             pct = (idx + 1) / len(frames_to_render) * 100
             print(f"      {pct:5.1f}%  {snap['date'].strftime('%Y-%m-%d')}", end="\r")
 
-    # 마지막 프레임 5초 고정
-    if last_frame is not None:
-        for _ in range(int(5 * fps)):
-            proc.stdin.write(last_frame)
+    # 아웃트로: 정확히 TARGET_SEC초가 되도록 역산된 프레임 수만큼 고정
+    last_snap = snaps[-1]
+    hp_last = [snaps[j]["port_krw"] for j in range(0, total, max(1, total // 300))]
+    hi_last = [snaps[j]["inv_krw"]  for j in range(0, total, max(1, total // 300))]
+    final_frame = render_final(last_snap, hp_last, hi_last, start_date, mode, total)
+    for _ in range(outro_frames):
+        proc.stdin.write(final_frame)
 
     proc.stdin.close()
     proc.wait()
