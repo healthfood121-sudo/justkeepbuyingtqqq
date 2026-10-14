@@ -56,7 +56,7 @@ function Simulator() {
   const start = params.get('start') ?? '2000-03'
   const amt = Math.max(0.1, Number(params.get('amt')) || 10)
   const withCosts = params.get('fee') !== '1'
-  const cmp = (params.get('cmp') ?? 'S0').split(',').filter((k): k is StratKey => COMPARE.includes(k as StratKey))
+  const cmp = (params.get('cmp') ?? '').split(',').filter((k): k is StratKey => COMPARE.includes(k as StratKey))
   const [amtInput, setAmtInput] = useState(String(amt))
   useEffect(() => { setAmtInput(String(amt)) }, [amt])
   const [useVoo, setUseVoo] = useState(false)
