@@ -126,9 +126,12 @@ export default function WithdrawalGuidePage() {
           <strong>규칙은 세 줄이다.</strong><br /><br />
           ① <strong>매도</strong> — 나스닥100 종가가 최근 1년 최고 종가보다 25% 이상 낮게 끝나면 → 다음 거래일에 TQQQ 전량 매도, 현금(외화RP)으로 보관<br />
           ② <strong>매수</strong> — 나스닥100이 200일 평균선 위로 15거래일 연속 마감하면 → 다음 거래일에 전액 TQQQ 매수<br />
-          ③ <strong>생활비</strong> — 매달 꺼낸다. 금액은 연 1회만 재계산한다 — 매년 같은 달에 그때 총자산의 0.3%(10억 미만) / 0.5%(10~20억) / 0.7%(20억 이상)로 다음 12개월치 월 생활비를 정하고, 그 금액을 12개월 동안 유지한다. 상한 없음<br /><br />
+          ③ <strong>생활비</strong> — 매달 총자산의 0.3%(10억 미만) / 0.5%(10~20억) / 0.7%(20억 이상)를 꺼낸다. 상한 없음<br /><br />
           신호 확인은 일주일에 한 번 <Link href="/" className="underline">홈 화면 &lsquo;오늘의 신호&rsquo;</Link>로 충분하다. 매매는 55년 동안 매도 15번(10년에 약 3번) — <Link href="/posts/withdrawal-guide/tradelog" className="underline">시작 시점별 거래 로그 전체 보기</Link>.
         </Callout>
+        <p className="text-xs text-gray-500 dark:text-gray-400 -mt-4 mb-6 px-1">
+          💡 <strong>생활비 안정 팁:</strong> ③을 매달 계산하는 대신, 매년 한 번만 계산해 12개월 동안 고정하면 수익률 손해 없이 생활비 변동이 줄어든다 — <Link href="/posts/living-stability" className="underline">비교 →</Link>
+        </p>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
           {[
