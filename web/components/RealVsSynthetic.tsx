@@ -1,8 +1,19 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { useEffect, useRef, useState } from 'react'
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LogarithmicScale,
+  LineElement,
+  PointElement,
+  Tooltip,
+  Legend,
+} from 'chart.js'
+import { Line } from 'react-chartjs-2'
 import { useTheme } from '@/components/ThemeProvider'
+
+ChartJS.register(CategoryScale, LogarithmicScale, LineElement, PointElement, Tooltip, Legend)
 
 interface Yearly { year: number; real: number; cost: number; fee: number; partial: boolean }
 interface Etf {
@@ -34,6 +45,15 @@ export default function RealVsSynthetic({ part }: { part: 'summary' | 'chart' | 
   const { theme } = useTheme()
   const dark = theme === 'dark'
   useEffect(() => { fetch('/data/real_vs_synthetic.json').then(r => r.json()).then(setData) }, [])
+  const chartRef = useRef<ChartJS<'line'> | null>(null)
+  const [pluginLoaded, setPluginLoaded] = useState(false)
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    import('chartjs-plugin-zoom').then(({ default: zoomPlugin }) => {
+      ChartJS.register(zoomPlugin)
+      setPluginLoaded(true)
+    })
+  }, [])
   if (!data) return <div className="text-xs text-gray-400 py-6 text-center">불러오는 중…</div>
 
   if (part === 'summary') {
@@ -92,38 +112,87 @@ export default function RealVsSynthetic({ part }: { part: 'summary' | 'chart' | 
           {' · '}합성(사이트 기본) <strong className="text-blue-600 dark:text-blue-400">{mult(e.final.cost)}</strong>
           {' · '}합성(운용보수만) {mult(e.final.fee)}
         </p>
-        <div className="h-72 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={e.monthly} margin={{ top: 10, right: 12, bottom: 0, left: 4 }}>
-              <CartesianGrid stroke={grid} vertical={false} />
-              <XAxis dataKey="m" tick={{ fill: tick, fontSize: 11 }} axisLine={{ stroke: grid }} tickLine={false}
-                     tickFormatter={(v: string) => v.slice(0, 4)} minTickGap={40} />
-              <YAxis scale="log" domain={['auto', 'auto']} allowDataOverflow width={52}
-                     tickFormatter={(v: number) => mult(v)} tick={{ fill: tick, fontSize: 11 }} axisLine={false} tickLine={false} />
-              <Tooltip
-                cursor={{ stroke: tick, strokeDasharray: '3 3' }}
-                content={({ active, payload, label }) => {
-                  if (!active || !payload?.length) return null
-                  return (
-                    <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-xs shadow-md">
-                      <p className="text-gray-500 dark:text-gray-400 mb-1">{label}</p>
-                      {payload.map(p => (
-                        <p key={String(p.dataKey)} className="flex items-center gap-2 text-gray-800 dark:text-gray-200">
-                          <span className="inline-block w-2.5 h-0.5" style={{ background: p.stroke as string }} />
-                          {SERIES.find(s => s.k === p.dataKey)?.label}
-                          <strong className="ml-auto pl-3">{mult(p.value as number)}</strong>
-                        </p>
-                      ))}
-                    </div>
-                  )
-                }}
-              />
-              {SERIES.map(s => (
-                <Line key={s.k} dataKey={s.k} stroke={dark ? s.dark : s.light} strokeWidth={s.k === 'real' ? 2.5 : 1.75}
-                      strokeDasharray={s.k === 'fee' ? '4 3' : undefined} dot={false} activeDot={{ r: 3 }} isAnimationActive={false} />
-              ))}
-            </LineChart>
-          </ResponsiveContainer>
+        <div className="relative">
+          <button
+            onClick={() => chartRef.current?.resetZoom()}
+            className="absolute top-0 right-0 z-10 text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+          >
+            줌 초기화
+          </button>
+          <div style={{ height: 288 }}>
+            <Line
+              ref={chartRef}
+              data={{
+                labels: e.monthly.map(m => m.m),
+                datasets: SERIES.map(s => ({
+                  label: s.label,
+                  data: e.monthly.map(m => m[s.k]),
+                  borderColor: dark ? s.dark : s.light,
+                  backgroundColor: dark ? s.dark : s.light,
+                  borderWidth: s.k === 'real' ? 2.5 : 1.75,
+                  borderDash: s.k === 'fee' ? [4, 3] : [],
+                  pointRadius: 0,
+                  tension: 0,
+                })),
+              }}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: false as const,
+                scales: {
+                  x: {
+                    ticks: {
+                      color: tick,
+                      font: { size: 11 },
+                      callback: (_: unknown, i: number) => e.monthly[i]?.m.slice(0, 4) ?? '',
+                      maxTicksLimit: 12,
+                      autoSkip: true,
+                    },
+                    grid: { color: grid },
+                    border: { color: grid },
+                  },
+                  y: {
+                    type: 'logarithmic' as const,
+                    ticks: {
+                      color: tick,
+                      font: { size: 11 },
+                      callback: (v: number | string) => mult(Number(v)),
+                      maxTicksLimit: 6,
+                    },
+                    grid: { color: grid },
+                    border: { display: false },
+                  },
+                },
+                plugins: {
+                  legend: { display: false },
+                  tooltip: {
+                    backgroundColor: dark ? '#111827' : '#ffffff',
+                    borderColor: dark ? '#374151' : '#e5e7eb',
+                    borderWidth: 1,
+                    titleColor: tick,
+                    bodyColor: dark ? '#f9fafb' : '#111827',
+                    padding: 8,
+                    callbacks: {
+                      title: (items: Array<{ label: string }>) => items[0]?.label ?? '',
+                      label: (ctx: { datasetIndex: number; parsed: { y: number } }) => {
+                        const s = SERIES[ctx.datasetIndex]
+                        return `${s?.label}: ${mult(ctx.parsed.y)}`
+                      },
+                    },
+                  },
+                  ...(pluginLoaded ? {
+                    zoom: {
+                      pan: { enabled: true, mode: 'x' as const },
+                      zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' as const },
+                    },
+                  } : {}),
+                },
+              } as Parameters<typeof Line>[0]['options']}
+            />
+          </div>
+          <p className="text-xs text-gray-400 dark:text-gray-600 text-right mt-1">
+            휠: 확대/축소 &nbsp;|&nbsp; 드래그: 이동
+          </p>
         </div>
         <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-[11px] text-gray-500 dark:text-gray-400">
           {SERIES.map(s => (

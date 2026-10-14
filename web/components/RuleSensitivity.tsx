@@ -1,9 +1,20 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, ReferenceArea } from 'recharts'
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  LineElement,
+  PointElement,
+  Tooltip,
+  Legend,
+} from 'chart.js'
+import { Line } from 'react-chartjs-2'
 import { useTheme } from '@/components/ThemeProvider'
+
+ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Tooltip, Legend)
 
 interface Sum {
   n: number; med: number; p10: number; worst: number; dd: number
@@ -93,6 +104,15 @@ export function SensitivityChart() {
   const data = useData()
   const { theme } = useTheme()
   const dark = theme === 'dark'
+  const chartRef = useRef<ChartJS<'line'> | null>(null)
+  const [pluginLoaded, setPluginLoaded] = useState(false)
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    import('chartjs-plugin-zoom').then(({ default: zoomPlugin }) => {
+      ChartJS.register(zoomPlugin)
+      setPluginLoaded(true)
+    })
+  }, [])
   if (!data) return <Loading />
   const rows = data.meta.thrs.map(t => ({ t, med: data.grid[`${t}_15`].med, p10: data.grid[`${t}_15`].p10 }))
   const grid = dark ? '#1f2937' : '#f3f4f6'
@@ -100,32 +120,155 @@ export function SensitivityChart() {
   const s0 = data.s0['15']
   return (
     <div className="mb-6">
-      <div className="h-64 w-full">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={rows} margin={{ top: 10, right: 16, bottom: 0, left: 0 }}>
-            <CartesianGrid stroke={grid} vertical={false} />
-            <ReferenceArea x1={23} x2={33} fill={dark ? '#6d28d9' : '#ede9fe'} fillOpacity={dark ? 0.15 : 0.6} stroke="none" />
-            <XAxis dataKey="t" tickFormatter={(v: number) => `−${v}%`} tick={{ fill: tick, fontSize: 11 }} axisLine={{ stroke: grid }} tickLine={false} />
-            <YAxis domain={[10, 'auto']} tickFormatter={(v: number) => `${v}%`} tick={{ fill: tick, fontSize: 11 }} axisLine={false} tickLine={false} width={40} />
-            <ReferenceLine x={25} stroke="#8b5cf6" strokeDasharray="3 3" />
-            <ReferenceLine y={s0.med} stroke={tick} strokeDasharray="4 3" label={{ value: `S0 ${s0.med}%`, fill: tick, fontSize: 10, position: 'insideBottomLeft' }} />
-            <Tooltip
-              content={({ active, payload, label }) => {
-                if (!active || !payload?.length) return null
-                const g = data.grid[`${label}_15`]
-                return (
-                  <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-xs shadow-md">
-                    <p className="font-semibold text-gray-800 dark:text-gray-200 mb-1">매도 기준 −{label}%</p>
-                    <p className="text-gray-600 dark:text-gray-300">중간 {g.med}% · 하위 10% {g.p10}%</p>
-                    <p className="text-gray-400">매매 10년에 {g.trades10}번 · 최대 낙폭 중간 −{g.dd}%</p>
-                  </div>
-                )
-              }}
-            />
-            <Line dataKey="med" stroke={dark ? '#60a5fa' : '#2563eb'} strokeWidth={2} dot={{ r: 2 }} isAnimationActive={false} />
-            <Line dataKey="p10" stroke={dark ? '#f87171' : '#dc2626'} strokeWidth={1.5} dot={{ r: 2 }} isAnimationActive={false} />
-          </LineChart>
-        </ResponsiveContainer>
+      <div className="relative">
+        <button
+          onClick={() => chartRef.current?.resetZoom()}
+          className="absolute top-0 right-0 z-10 text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+        >
+          줌 초기화
+        </button>
+        <div style={{ height: 256 }}>
+          <Line
+            ref={chartRef}
+            data={{
+              labels: rows.map(r => String(r.t)),
+              datasets: [
+                {
+                  label: '중간값',
+                  data: rows.map(r => r.med),
+                  borderColor: dark ? '#60a5fa' : '#2563eb',
+                  backgroundColor: dark ? '#60a5fa' : '#2563eb',
+                  borderWidth: 2,
+                  pointRadius: 2,
+                  tension: 0,
+                },
+                {
+                  label: '하위 10%',
+                  data: rows.map(r => r.p10),
+                  borderColor: dark ? '#f87171' : '#dc2626',
+                  backgroundColor: dark ? '#f87171' : '#dc2626',
+                  borderWidth: 1.5,
+                  pointRadius: 2,
+                  tension: 0,
+                },
+              ],
+            }}
+            options={{
+              responsive: true,
+              maintainAspectRatio: false,
+              animation: false as const,
+              scales: {
+                x: {
+                  ticks: {
+                    color: tick,
+                    font: { size: 11 },
+                    callback: (_: unknown, i: number) => `−${rows[i]?.t ?? ''}%`,
+                  },
+                  grid: { color: grid },
+                  border: { color: grid },
+                },
+                y: {
+                  min: 10,
+                  ticks: {
+                    color: tick,
+                    font: { size: 11 },
+                    callback: (v: number | string) => `${v}%`,
+                  },
+                  grid: { color: grid },
+                  border: { display: false },
+                },
+              },
+              plugins: {
+                legend: { display: false },
+                tooltip: {
+                  backgroundColor: dark ? '#111827' : '#ffffff',
+                  borderColor: dark ? '#374151' : '#e5e7eb',
+                  borderWidth: 1,
+                  titleColor: tick,
+                  bodyColor: dark ? '#f9fafb' : '#111827',
+                  padding: 8,
+                  callbacks: {
+                    title: (items: Array<{ dataIndex: number }>) => {
+                      const t = rows[items[0]?.dataIndex ?? 0]?.t
+                      return `매도 기준 −${t ?? ''}%`
+                    },
+                    label: (ctx: { dataIndex: number }) => {
+                      const t = rows[ctx.dataIndex]?.t
+                      if (!t) return ''
+                      const g = data.grid[`${t}_15`]
+                      return [`중간 ${g.med}% · 하위 10% ${g.p10}%`, `매매 10년에 ${g.trades10}번 · 최대 낙폭 중간 −${g.dd}%`]
+                    },
+                  },
+                },
+                ...(pluginLoaded ? {
+                  zoom: {
+                    pan: { enabled: true, mode: 'x' as const },
+                    zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' as const },
+                  },
+                } : {}),
+              },
+            } as Parameters<typeof Line>[0]['options']}
+            plugins={[{
+              id: 'sensitivityOverlay',
+              beforeDatasetsDraw(chart: ChartJS) {
+                const ctx = chart.ctx
+                const xScale = chart.scales.x
+                if (!xScale) return
+                const zoneStartI = rows.findIndex(r => r.t >= 23)
+                let zoneEndI = rows.length - 1
+                for (let i = rows.length - 1; i >= 0; i--) { if (rows[i].t <= 33) { zoneEndI = i; break } }
+                if (zoneStartI < 0 || zoneEndI < 0) return
+                const step = rows.length > 1 ? Math.abs(xScale.getPixelForValue(1) - xScale.getPixelForValue(0)) : 20
+                const x1 = xScale.getPixelForValue(zoneStartI) - step * 0.5
+                const x2 = xScale.getPixelForValue(zoneEndI) + step * 0.5
+                ctx.save()
+                ctx.fillStyle = dark ? 'rgba(109,40,217,0.15)' : 'rgba(237,233,254,0.6)'
+                ctx.fillRect(x1, chart.chartArea.top, x2 - x1, chart.chartArea.bottom - chart.chartArea.top)
+                ctx.restore()
+              },
+              afterDraw(chart: ChartJS) {
+                const ctx = chart.ctx
+                const xScale = chart.scales.x
+                const yScale = chart.scales.y
+                if (!xScale || !yScale) return
+                // 세로 기준선 x=25
+                const refXI = rows.findIndex(r => r.t === 25)
+                if (refXI >= 0) {
+                  const xPos = xScale.getPixelForValue(refXI)
+                  ctx.save()
+                  ctx.beginPath()
+                  ctx.moveTo(xPos, chart.chartArea.top)
+                  ctx.lineTo(xPos, chart.chartArea.bottom)
+                  ctx.strokeStyle = '#8b5cf6'
+                  ctx.setLineDash([3, 3])
+                  ctx.lineWidth = 1
+                  ctx.stroke()
+                  ctx.setLineDash([])
+                  ctx.restore()
+                }
+                // 가로 기준선 y=s0.med
+                const yPos = yScale.getPixelForValue(s0.med)
+                ctx.save()
+                ctx.beginPath()
+                ctx.moveTo(xScale.left, yPos)
+                ctx.lineTo(xScale.right, yPos)
+                ctx.strokeStyle = tick
+                ctx.setLineDash([4, 3])
+                ctx.lineWidth = 1
+                ctx.stroke()
+                ctx.setLineDash([])
+                ctx.fillStyle = tick
+                ctx.font = '10px sans-serif'
+                ctx.textAlign = 'left'
+                ctx.fillText(`S0 ${s0.med}%`, xScale.left + 4, yPos - 2)
+                ctx.restore()
+              },
+            }]}
+          />
+        </div>
+        <p className="text-xs text-gray-400 dark:text-gray-600 text-right mt-1">
+          휠: 확대/축소 &nbsp;|&nbsp; 드래그: 이동
+        </p>
       </div>
       <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-[11px] text-gray-500 dark:text-gray-400">
         <span className="flex items-center gap-1.5"><span className="inline-block w-3 h-0.5 bg-blue-600 dark:bg-blue-400" />중간값</span>

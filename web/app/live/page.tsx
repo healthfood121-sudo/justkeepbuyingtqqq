@@ -1,10 +1,21 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  LineElement,
+  PointElement,
+  Tooltip,
+  Legend,
+} from 'chart.js'
+import { Line } from 'react-chartjs-2'
 import Header from '@/components/Header'
 import { useTheme } from '@/components/ThemeProvider'
+
+ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Tooltip, Legend)
 
 type Key = 'RULE25' | 'S0' | 'HOLD3' | 'HOLD1'
 interface Row { d: string; ndx: number; tqqq: number | null; state: Record<'RULE25' | 'S0', '보유' | '현금'>; v: Record<Key, number>; est?: boolean }
@@ -23,8 +34,67 @@ export default function LivePage() {
   const { theme } = useTheme()
   const dark = theme === 'dark'
   useEffect(() => { fetch('/data/live_record.json').then(r => r.json()).then(setRec) }, [])
+  const liveChartRef = useRef<ChartJS<'line'> | null>(null)
+  const [pluginLoaded, setPluginLoaded] = useState(false)
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    import('chartjs-plugin-zoom').then(({ default: zoomPlugin }) => {
+      ChartJS.register(zoomPlugin)
+      setPluginLoaded(true)
+    })
+  }, [])
   const grid = dark ? '#1f2937' : '#f3f4f6'
   const tick = dark ? '#9ca3af' : '#6b7280'
+
+  const liveOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: false as const,
+    scales: {
+      x: {
+        ticks: { color: tick, font: { size: 11 }, maxTicksLimit: 12, autoSkip: true },
+        grid: { color: grid },
+        border: { color: grid },
+      },
+      y: {
+        ticks: {
+          color: tick,
+          font: { size: 11 },
+          callback: (v: number | string) => {
+            const d = Number(v) - 100
+            return `${d >= 0 ? '+' : ''}${d.toFixed(0)}%`
+          },
+        },
+        grid: { color: grid },
+        border: { display: false },
+      },
+    },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: dark ? '#111827' : '#ffffff',
+        borderColor: dark ? '#374151' : '#e5e7eb',
+        borderWidth: 1,
+        titleColor: tick,
+        bodyColor: dark ? '#f9fafb' : '#111827',
+        padding: 8,
+        callbacks: {
+          title: (items: Array<{ label: string }>) => items[0]?.label ?? '',
+          label: (ctx: { dataset: { label?: string }; parsed: { y: number } }) => {
+            const v = ctx.parsed.y
+            const pct = (v - 100).toFixed(2)
+            return `${ctx.dataset.label}: ${v >= 100 ? '+' : ''}${pct}%`
+          },
+        },
+      },
+      ...(pluginLoaded ? {
+        zoom: {
+          pan: { enabled: true, mode: 'x' as const },
+          zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' as const },
+        },
+      } : {}),
+    },
+  } as Parameters<typeof Line>[0]['options']
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-white">
@@ -56,18 +126,34 @@ export default function LivePage() {
             </p>
 
             {rec.rows.length > 2 && (
-              <div className="h-64 w-full mb-8">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={rec.rows.map(r => ({ d: r.d, ...r.v }))} margin={{ top: 10, right: 12, bottom: 0, left: 0 }}>
-                    <CartesianGrid stroke={grid} vertical={false} />
-                    <XAxis dataKey="d" tick={{ fill: tick, fontSize: 11 }} axisLine={{ stroke: grid }} tickLine={false} minTickGap={40} />
-                    <YAxis domain={['auto', 'auto']} tick={{ fill: tick, fontSize: 11 }} axisLine={false} tickLine={false} width={40} />
-                    <Tooltip contentStyle={{ fontSize: 12 }} formatter={(v) => (Number(v) - 100).toFixed(2) + '%'} />
-                    {SERIES.map(s => (
-                      <Line key={s.k} dataKey={s.k} name={s.label} stroke={dark ? s.dark : s.light} strokeWidth={s.k === 'RULE25' ? 2.5 : 1.5} dot={false} isAnimationActive={false} />
-                    ))}
-                  </LineChart>
-                </ResponsiveContainer>
+              <div className="relative mb-8">
+                <button
+                  onClick={() => liveChartRef.current?.resetZoom()}
+                  className="absolute top-0 right-0 z-10 text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                >
+                  줌 초기화
+                </button>
+                <div style={{ height: 256 }}>
+                  <Line
+                    ref={liveChartRef}
+                    data={{
+                      labels: rec.rows.map(r => r.d),
+                      datasets: SERIES.map(s => ({
+                        label: s.label,
+                        data: rec.rows.map(r => r.v[s.k]),
+                        borderColor: dark ? s.dark : s.light,
+                        backgroundColor: dark ? s.dark : s.light,
+                        borderWidth: s.k === 'RULE25' ? 2.5 : 1.5,
+                        pointRadius: 0,
+                        tension: 0,
+                      })),
+                    }}
+                    options={liveOptions}
+                  />
+                </div>
+                <p className="text-xs text-gray-400 dark:text-gray-600 text-right mt-1">
+                  휠: 확대/축소 &nbsp;|&nbsp; 드래그: 이동
+                </p>
               </div>
             )}
             {rec.rows.length > 2 && (

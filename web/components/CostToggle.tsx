@@ -11,7 +11,7 @@ export default function CostToggle({ withCosts, onChange }: { withCosts: boolean
         <button onClick={() => onChange(true)} className={btn(withCosts)}>+ 스왑금리</button>
       </div>
       <span className="text-xs text-gray-400 dark:text-gray-500">
-        {withCosts ? 'TQQQ 운용보수 + 스왑금리비용(기준금리 × 2) 반영' : '운용보수만 반영 · 스왑금리비용 미반영 (이론치)'}
+        {withCosts ? 'TQQQ 운용보수 + 스왑금리비용((기준금리 + 0.5%)×2) 반영' : '운용보수만 반영 · 스왑금리비용 미반영 (이론치)'}
       </span>
     </div>
   )

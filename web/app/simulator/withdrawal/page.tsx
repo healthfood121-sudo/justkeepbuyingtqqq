@@ -1,12 +1,18 @@
 'use client'
 
-import { useEffect, useMemo, useState, Suspense } from 'react'
+import { useEffect, useMemo, useRef, useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
-  LineChart, Line,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceArea, LabelList,
-} from 'recharts'
+  Chart as ChartJS,
+  CategoryScale,
+  LogarithmicScale,
+  LineElement,
+  PointElement,
+  Tooltip,
+  Legend,
+} from 'chart.js'
+import { Line } from 'react-chartjs-2'
 import AssetStackChart from '@/components/charts/AssetStackChart'
 import Header from '@/components/Header'
 import CostToggle from '@/components/CostToggle'
@@ -14,6 +20,8 @@ import { useTheme } from '@/components/ThemeProvider'
 import { SERIES_COLORS } from '@/components/charts/WithdrawalYearsChart'
 import { stratName } from '@/lib/strategyNames'
 import { buildMarket, runWithdrawal, STRATS, VOO_THRESHOLD, type Market, type SimResult, type StratKey } from '@/lib/withdrawalEngine'
+
+ChartJS.register(CategoryScale, LogarithmicScale, LineElement, PointElement, Tooltip, Legend)
 
 const EOK = 1e8
 const COMPARE: StratKey[] = ['S0', 'D10GK', 'HOLD3', 'QLD']
@@ -54,13 +62,23 @@ function Simulator() {
   useEffect(() => { loadMarket().then(setMarket) }, [])
 
   // URL: ?start=YYYY-MM(-DD)&amt=억&fee=1&cmp=S0,HOLD3
-  const start = params.get('start') ?? '2000-03'
+  const start = params.get('start') ?? '1971-02'
   const amt = Math.max(0.1, Number(params.get('amt')) || 10)
   const withCosts = params.get('fee') !== '1'
   const cmp = (params.get('cmp') ?? '').split(',').filter((k): k is StratKey => COMPARE.includes(k as StratKey))
   const [amtInput, setAmtInput] = useState(String(amt))
   useEffect(() => { setAmtInput(String(amt)) }, [amt])
   const [useVoo, setUseVoo] = useState(false)
+  const totalRef = useRef<ChartJS<'line'> | null>(null)
+  const livRef = useRef<ChartJS<'line'> | null>(null)
+  const [withdrawalPluginLoaded, setWithdrawalPluginLoaded] = useState(false)
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    import('chartjs-plugin-zoom').then(({ default: zoomPlugin }) => {
+      ChartJS.register(zoomPlugin)
+      setWithdrawalPluginLoaded(true)
+    })
+  }, [])
 
   const go = (o: { start?: string; amt?: number; fee?: boolean; cmp?: StratKey[] }) => {
     const q = new URLSearchParams()
@@ -129,52 +147,147 @@ function Simulator() {
   const colorOf = (k: StratKey) => SERIES_COLORS[k][dark ? 'dark' : 'light']
   const btn = (on: boolean) => `px-3 py-1.5 transition-colors ${on ? 'bg-blue-600 text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`
 
-  const chart = (metric: 'total' | 'liv', fmt: (v: number) => string) => (
-    <div className="h-72 w-full">
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={rows} margin={{ top: 10, right: 64, bottom: 0, left: 4 }}>
-          <CartesianGrid stroke={grid} vertical={false} />
-          {metric === 'total' && cashSpans.map(([a, b]) => (
-            <ReferenceArea key={a} x1={a} x2={b} fill={dark ? '#374151' : '#e5e7eb'} fillOpacity={0.5} stroke="none" />
-          ))}
-          <XAxis dataKey="m" tick={{ fill: tick, fontSize: 11 }} axisLine={{ stroke: grid }} tickLine={false}
-                 tickFormatter={(v: string) => v.slice(0, 4)} minTickGap={40} />
-          <YAxis scale="log" domain={['auto', 'auto']} allowDataOverflow tickFormatter={fmt}
-                 tick={{ fill: tick, fontSize: 11 }} axisLine={false} tickLine={false} width={56} />
-          <Tooltip
-            cursor={{ stroke: tick, strokeDasharray: '3 3' }}
-            content={({ active, payload, label }) => {
-              if (!active || !payload?.length) return null
-              return (
-                <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-xs shadow-md">
-                  <p className="text-gray-500 dark:text-gray-400 mb-1">{label}</p>
-                  {payload.map(p => {
-                    const k = String(p.dataKey).replace('_liv', '') as StratKey
-                    return (
-                      <p key={k} className="flex items-center gap-2 text-gray-800 dark:text-gray-200">
-                        <span className="inline-block w-2.5 h-0.5" style={{ background: p.stroke as string }} />
-                        {STRATS[k].label} <strong className="ml-auto pl-3">{fmt(p.value as number)}</strong>
-                      </p>
-                    )
-                  })}
-                </div>
-              )
+  const chart = (metric: 'total' | 'liv', fmt: (v: number) => string) => {
+    const ref = metric === 'total' ? totalRef : livRef
+    const chartLabels = rows.map(r => r.m as string)
+    const chartPlugin = {
+      id: `simChart_${metric}`,
+      beforeDatasetsDraw(c: ChartJS) {
+        if (metric !== 'total') return
+        const xScale = c.scales.x
+        if (!xScale) return
+        const { top, bottom } = c.chartArea
+        const ctx = c.ctx
+        const barW = chartLabels.length > 1
+          ? xScale.getPixelForValue(1) - xScale.getPixelForValue(0)
+          : 4
+        ctx.save()
+        ctx.fillStyle = dark ? 'rgba(55,65,81,0.5)' : 'rgba(229,231,235,0.5)'
+        cashSpans.forEach(([startM, endM]) => {
+          const si = chartLabels.indexOf(startM)
+          const ei = chartLabels.indexOf(endM)
+          if (si < 0 || ei < 0) return
+          const x1 = xScale.getPixelForValue(si)
+          const x2 = xScale.getPixelForValue(ei) + barW
+          ctx.fillRect(x1, top, Math.max(x2 - x1, barW), bottom - top)
+        })
+        ctx.restore()
+      },
+      afterDraw(c: ChartJS) {
+        const ctx = c.ctx
+        ctx.save()
+        ctx.font = '11px sans-serif'
+        ctx.textAlign = 'left'
+        ctx.textBaseline = 'middle'
+        keys.forEach((k, i) => {
+          const ds = c.data.datasets[i]
+          const dataArr = ds?.data as (number | null)[]
+          if (!dataArr) return
+          let lastIdx = -1
+          for (let j = dataArr.length - 1; j >= 0; j--) {
+            if (dataArr[j] != null) { lastIdx = j; break }
+          }
+          if (lastIdx < 0) return
+          const meta = c.getDatasetMeta(i)
+          const pt = meta.data[lastIdx]
+          if (!pt) return
+          ctx.fillStyle = tick
+          ctx.fillText(STRATS[k]!.label.split(' ')[0], pt.x + 6, pt.y)
+        })
+        ctx.restore()
+      },
+    }
+    return (
+      <div className="relative">
+        <button
+          onClick={() => ref.current?.resetZoom()}
+          className="absolute top-0 right-0 z-10 text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+        >
+          줌 초기화
+        </button>
+        <div style={{ height: 288 }}>
+          <Line
+            ref={ref}
+            data={{
+              labels: chartLabels,
+              datasets: keys.map(k => ({
+                label: STRATS[k].label,
+                data: rows.map(r => {
+                  const v = r[metric === 'total' ? k : `${k}_liv`]
+                  return v !== undefined ? (v as number) : null
+                }),
+                borderColor: colorOf(k),
+                backgroundColor: colorOf(k),
+                borderWidth: k === 'RULE25' ? 2.5 : 1.5,
+                pointRadius: 0,
+                spanGaps: false,
+                tension: 0,
+              })),
             }}
+            options={{
+              responsive: true,
+              maintainAspectRatio: false,
+              animation: false as const,
+              layout: { padding: { right: 64 } },
+              scales: {
+                x: {
+                  ticks: {
+                    color: tick,
+                    font: { size: 11 },
+                    callback: (_: unknown, i: number) => (chartLabels[i] ?? '').slice(0, 4),
+                    maxTicksLimit: 10,
+                    autoSkip: true,
+                  },
+                  grid: { color: grid },
+                  border: { color: grid },
+                },
+                y: {
+                  type: 'logarithmic' as const,
+                  ticks: {
+                    color: tick,
+                    font: { size: 11 },
+                    callback: (v: number | string) => fmt(Number(v)),
+                    maxTicksLimit: 6,
+                  },
+                  grid: { color: grid },
+                  border: { display: false },
+                },
+              },
+              plugins: {
+                legend: { display: false },
+                tooltip: {
+                  backgroundColor: dark ? '#111827' : '#ffffff',
+                  borderColor: dark ? '#374151' : '#e5e7eb',
+                  borderWidth: 1,
+                  titleColor: tick,
+                  bodyColor: dark ? '#f9fafb' : '#111827',
+                  padding: 8,
+                  callbacks: {
+                    title: (items: Array<{ label: string }>) => items[0]?.label ?? '',
+                    label: (ctx: { datasetIndex: number; parsed: { y: number } }) => {
+                      const k = keys[ctx.datasetIndex]
+                      if (!k) return ''
+                      return `${STRATS[k].label}: ${fmt(ctx.parsed.y)}`
+                    },
+                  },
+                },
+                ...(withdrawalPluginLoaded ? {
+                  zoom: {
+                    pan: { enabled: true, mode: 'x' as const },
+                    zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' as const },
+                  },
+                } : {}),
+              },
+            } as Parameters<typeof Line>[0]['options']}
+            plugins={[chartPlugin]}
           />
-          {keys.map(k => (
-            <Line key={k} dataKey={metric === 'total' ? k : `${k}_liv`} stroke={colorOf(k)} strokeWidth={2}
-                  dot={false} activeDot={{ r: 4 }} isAnimationActive={false} connectNulls>
-              <LabelList dataKey={metric === 'total' ? k : `${k}_liv`} content={(props) => {
-                const { x, y, index } = props as { x: number; y: number; index: number }
-                if (index !== rows.length - 1) return null
-                return <text x={x + 6} y={y + 4} fontSize={11} fill={tick}>{STRATS[k].label.split(' ')[0]}</text>
-              }} />
-            </Line>
-          ))}
-        </LineChart>
-      </ResponsiveContainer>
-    </div>
-  )
+        </div>
+        <p className="text-xs text-gray-400 dark:text-gray-600 text-right mt-1">
+          휠: 확대/축소 &nbsp;|&nbsp; 드래그: 이동
+        </p>
+      </div>
+    )
+  }
 
   // 연도별 표 (각 해 마지막 달)
   const yearRows = rows.filter((r, i) => i === rows.length - 1 || (rows[i + 1].m as string).slice(0, 4) !== (r.m as string).slice(0, 4))

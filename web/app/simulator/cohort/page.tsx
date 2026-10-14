@@ -1,7 +1,7 @@
 'use client'
 
 import type { TooltipItem } from 'chart.js'
-import { useEffect, useState, Suspense } from 'react'
+import { useEffect, useRef, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import {
@@ -70,6 +70,16 @@ function CohortDetailContent() {
   const [loading,    setLoading]    = useState(true)
   const [ytUrl,      setYtUrl]      = useState<string | null>(null)
   const [withCosts,  setWithCosts]  = useState(true)
+  const chartRef = useRef<ChartJS<'line'> | null>(null)
+  const [pluginLoaded, setPluginLoaded] = useState(false)
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    import('chartjs-plugin-zoom').then(({ default: zoomPlugin }) => {
+      ChartJS.register(zoomPlugin)
+      setPluginLoaded(true)
+    })
+  }, [])
 
   useEffect(() => {
     setLoading(true)
@@ -174,6 +184,16 @@ function CohortDetailContent() {
     },
     plugins: {
       legend: { labels: { color: '#6b7280', font: { size: 11 }, usePointStyle: true } },
+      ...(pluginLoaded ? {
+        zoom: {
+          pan: { enabled: true, mode: 'x' as const },
+          zoom: {
+            wheel: { enabled: true },
+            pinch: { enabled: true },
+            mode: 'x' as const,
+          },
+        },
+      } : {}),
       tooltip: {
         callbacks: {
           title: (items: TooltipItem<'line'>[]) => {
@@ -322,11 +342,19 @@ function CohortDetailContent() {
 
             {/* 차트 */}
             <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-4 mb-6">
-              <div style={{ height: 320 }}>
-                {chartData && <Line data={chartData} options={chartOptions} />}
+              <div className="relative">
+                <button
+                  onClick={() => chartRef.current?.resetZoom()}
+                  className="absolute top-0 right-0 z-10 text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                >
+                  줌 초기화
+                </button>
+                <div style={{ height: 320 }}>
+                  {chartData && <Line ref={chartRef} data={chartData} options={chartOptions} />}
+                </div>
               </div>
               <p className="text-xs text-gray-400 dark:text-gray-600 text-right mt-1">
-                회색 점선: 누적 투자금 · 목표 달성 시 해당 전략 선 종료
+                휠: 확대/축소 &nbsp;|&nbsp; 드래그: 이동 &nbsp;|&nbsp; 회색 점선: 누적 투자금 · 목표 달성 시 해당 전략 선 종료
               </p>
             </div>
 

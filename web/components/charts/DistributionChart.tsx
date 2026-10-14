@@ -1,9 +1,20 @@
 'use client'
 
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
+import { useEffect, useRef, useState } from 'react'
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Tooltip,
+  Legend,
+} from 'chart.js'
+import { Bar } from 'react-chartjs-2'
 import { makeDistribution } from '@/lib/backtest'
 import type { CohortResult } from '@/lib/types'
 import { useTheme } from '@/components/ThemeProvider'
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend)
 
 interface Props {
   resultsA: CohortResult[]
@@ -14,27 +25,23 @@ interface Props {
   showC?: boolean
 }
 
-type TipProps = { active?: boolean; payload?: { name?: string; dataKey?: string | number; value?: number; stroke?: string; fill?: string }[]; label?: string | number }
-
-const CustomTooltip = ({ active, payload, label }: TipProps) => {
-  if (!active || !payload?.length) return null
-  return (
-    <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded px-3 py-2 text-sm shadow-md">
-      <p className="text-gray-500 dark:text-gray-400 mb-1">{label}년 구간</p>
-      {payload.map(p => (
-        <p key={p.name} style={{ color: p.fill }}>{p.name}: {p.value?.toFixed(1)}%</p>
-      ))}
-    </div>
-  )
-}
-
 export default function DistributionChart({ resultsA, resultsB, resultsC, showA = true, showB = true, showC = true }: Props) {
   const { theme } = useTheme()
   const isDark = theme === 'dark'
+  const chartRef = useRef<ChartJS<'bar'> | null>(null)
+  const [pluginLoaded, setPluginLoaded] = useState(false)
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    import('chartjs-plugin-zoom').then(({ default: zoomPlugin }) => {
+      ChartJS.register(zoomPlugin)
+      setPluginLoaded(true)
+    })
+  }, [])
 
   const gridColor = isDark ? '#374151' : '#e5e7eb'
-  const axisColor = isDark ? '#6b7280' : '#9ca3af'
   const tickColor = isDark ? '#9ca3af' : '#6b7280'
+  const axisColor = isDark ? '#6b7280' : '#9ca3af'
 
   const distA = makeDistribution(resultsA)
   const distB = makeDistribution(resultsB)
@@ -46,41 +53,124 @@ export default function DistributionChart({ resultsA, resultsB, resultsC, showA 
     distC.at(-1)?.yearsBin ?? 0,
   )
 
-  const data: { bin: string; A?: number; B?: number; C?: number }[] = []
+  const bins: { bin: string; A: number; B: number; C: number }[] = []
   for (let b = 0; b <= maxBin + 0.5; b += 0.5) {
     const key = Math.round(b * 10) / 10
-    data.push({
+    bins.push({
       bin: key.toFixed(1),
-      ...(showA ? { A: distA.find(d => d.yearsBin === key)?.pct ?? 0 } : {}),
-      ...(showB ? { B: distB.find(d => d.yearsBin === key)?.pct ?? 0 } : {}),
-      ...(showC ? { C: distC.find(d => d.yearsBin === key)?.pct ?? 0 } : {}),
+      A: distA.find(d => d.yearsBin === key)?.pct ?? 0,
+      B: distB.find(d => d.yearsBin === key)?.pct ?? 0,
+      C: distC.find(d => d.yearsBin === key)?.pct ?? 0,
     })
   }
 
+  const labels = bins.map(b => b.bin)
+  const datasets = [
+    ...(showA ? [{
+      label: 'A전략',
+      data: bins.map(b => b.A),
+      backgroundColor: '#10b981cc',
+      borderWidth: 0,
+    }] : []),
+    ...(showB ? [{
+      label: 'B전략',
+      data: bins.map(b => b.B),
+      backgroundColor: '#f59e0bcc',
+      borderWidth: 0,
+    }] : []),
+    ...(showC ? [{
+      label: 'C전략',
+      data: bins.map(b => b.C),
+      backgroundColor: '#3b82f6cc',
+      borderWidth: 0,
+    }] : []),
+  ]
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: false as const,
+    scales: {
+      x: {
+        ticks: {
+          color: tickColor,
+          font: { size: 10 },
+          maxTicksLimit: 20,
+        },
+        grid: { color: gridColor },
+        border: { color: gridColor },
+        title: {
+          display: true,
+          text: '소요기간(년)',
+          color: axisColor,
+          font: { size: 12 },
+          padding: { top: 8 },
+        },
+      },
+      y: {
+        ticks: {
+          color: tickColor,
+          font: { size: 11 },
+          callback: (v: number | string) => `${v}%`,
+        },
+        grid: { color: gridColor },
+        border: { display: false },
+      },
+    },
+    plugins: {
+      legend: {
+        labels: {
+          color: tickColor,
+          font: { size: 11 },
+          usePointStyle: true,
+          pointStyleWidth: 8,
+          boxHeight: 8,
+        },
+      },
+      tooltip: {
+        backgroundColor: isDark ? '#111827' : '#ffffff',
+        borderColor: isDark ? '#374151' : '#e5e7eb',
+        borderWidth: 1,
+        titleColor: tickColor,
+        bodyColor: isDark ? '#f9fafb' : '#111827',
+        padding: 8,
+        callbacks: {
+          title: (items: Array<{ label: string }>) => `${items[0]?.label ?? ''}년 구간`,
+          label: (ctx: { dataset: { label?: string }; parsed: { y: number } }) =>
+            `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}%`,
+        },
+      },
+      ...(pluginLoaded ? {
+        zoom: {
+          pan: { enabled: true, mode: 'x' as const },
+          zoom: {
+            wheel: { enabled: true },
+            pinch: { enabled: true },
+            mode: 'x' as const,
+          },
+        },
+      } : {}),
+    },
+  }
+
   return (
-    <ResponsiveContainer width="100%" height={280}>
-      <BarChart data={data} margin={{ top: 10, right: 20, bottom: 20, left: 10 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-        <XAxis
-          dataKey="bin"
-          tick={{ fill: tickColor, fontSize: 10 }}
-          stroke={axisColor}
-          label={{ value: '소요기간(년)', position: 'insideBottom', offset: -12, fill: axisColor, fontSize: 12 }}
+    <div className="relative">
+      <button
+        onClick={() => chartRef.current?.resetZoom()}
+        className="absolute top-0 right-0 z-10 text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+      >
+        줌 초기화
+      </button>
+      <div style={{ height: 280 }}>
+        <Bar
+          ref={chartRef}
+          data={{ labels, datasets }}
+          options={options as Parameters<typeof Bar>[0]['options']}
         />
-        <YAxis
-          tick={{ fill: tickColor, fontSize: 11 }}
-          stroke={axisColor}
-          tickFormatter={v => `${v}%`}
-        />
-        <Tooltip content={<CustomTooltip />} />
-        <Legend
-          wrapperStyle={{ paddingTop: 8 }}
-          formatter={v => <span className="text-sm" style={{ color: tickColor }}>{v}전략</span>}
-        />
-        {showA && <Bar dataKey="A" fill="#10b981" opacity={0.8} name="A" />}
-        {showB && <Bar dataKey="B" fill="#f59e0b" opacity={0.8} name="B" />}
-        {showC && <Bar dataKey="C" fill="#3b82f6" opacity={0.8} name="C" />}
-      </BarChart>
-    </ResponsiveContainer>
+      </div>
+      <p className="text-xs text-gray-400 dark:text-gray-600 text-right mt-1">
+        휠: 확대/축소 &nbsp;|&nbsp; 드래그: 이동
+      </p>
+    </div>
   )
 }

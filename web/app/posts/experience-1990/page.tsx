@@ -1,10 +1,21 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, ReferenceLine } from 'recharts'
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LogarithmicScale,
+  LineElement,
+  PointElement,
+  Tooltip,
+  Legend,
+} from 'chart.js'
+import { Line } from 'react-chartjs-2'
 import Header from '@/components/Header'
 import { useTheme } from '@/components/ThemeProvider'
+
+ChartJS.register(CategoryScale, LogarithmicScale, LineElement, PointElement, Tooltip, Legend)
 
 interface Row { m: string; total: number; low: number; high: number; living: number; state: '보유' | '현금'; ndx: number; vs_peak: number; trades: { d: string; a: string }[]; note: string }
 interface Data { start: string; rows: Row[]; max_dd: number; withdrawn: number; final: number }
@@ -22,7 +33,16 @@ export default function Experience1990Page() {
   const [i, setI] = useState(0)
   const { theme } = useTheme()
   const dark = theme === 'dark'
+  const chartRef = useRef<ChartJS<'line'> | null>(null)
+  const [pluginLoaded, setPluginLoaded] = useState(false)
   useEffect(() => { fetch('/data/experience_1990.json').then(r => r.json()).then(setData) }, [])
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    import('chartjs-plugin-zoom').then(({ default: zoomPlugin }) => {
+      ChartJS.register(zoomPlugin)
+      setPluginLoaded(true)
+    })
+  }, [])
 
   const stats = useMemo(() => {
     if (!data) return null
@@ -109,18 +129,125 @@ export default function Experience1990Page() {
                 <button onClick={() => setI(Math.min(data.rows.length - 1, i + 12))} className="text-xs px-2 py-1 rounded border border-gray-200 dark:border-gray-700 whitespace-nowrap" aria-label="1년 뒤">»</button>
               </div>
 
-              <div className="h-56 w-full mb-2">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={chart} margin={{ top: 5, right: 8, bottom: 0, left: 0 }}>
-                    <CartesianGrid stroke={grid} vertical={false} />
-                    <XAxis dataKey="m" tick={{ fill: tick, fontSize: 10 }} tickFormatter={(x: string) => x.slice(0, 4)} minTickGap={40} axisLine={{ stroke: grid }} tickLine={false} />
-                    <YAxis scale="log" domain={['auto', 'auto']} tickFormatter={(x: number) => eok(x)} tick={{ fill: tick, fontSize: 10 }} axisLine={false} tickLine={false} width={50} />
-                    <ReferenceLine x={r.m} stroke={line} strokeDasharray="3 3" />
-                    <Line dataKey="v" stroke={dark ? '#374151' : '#e5e7eb'} strokeWidth={1.5} dot={false} isAnimationActive={false} />
-                    <Line dataKey="f" stroke={line} strokeWidth={2} dot={false} isAnimationActive={false} connectNulls={false} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
+              {(() => {
+                const chartLabels = chart.map(p => p.m)
+                const refLinePlugin = {
+                  id: 'exp1990RefLine',
+                  afterDraw(c: ChartJS) {
+                    const xIdx = chartLabels.indexOf(r.m)
+                    if (xIdx < 0) return
+                    const xScale = c.scales.x
+                    if (!xScale) return
+                    const xPx = xScale.getPixelForValue(xIdx)
+                    const { top, bottom } = c.chartArea
+                    const ctx = c.ctx
+                    ctx.save()
+                    ctx.strokeStyle = line
+                    ctx.setLineDash([3, 3])
+                    ctx.lineWidth = 1.5
+                    ctx.beginPath()
+                    ctx.moveTo(xPx, top)
+                    ctx.lineTo(xPx, bottom)
+                    ctx.stroke()
+                    ctx.restore()
+                  },
+                }
+                return (
+                  <div className="relative mb-2">
+                    <button
+                      onClick={() => chartRef.current?.resetZoom()}
+                      className="absolute top-0 right-0 z-10 text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                    >
+                      줌 초기화
+                    </button>
+                    <div style={{ height: 224 }}>
+                      <Line
+                        ref={chartRef}
+                        data={{
+                          labels: chartLabels,
+                          datasets: [
+                            {
+                              label: '전체',
+                              data: chart.map(p => p.v),
+                              borderColor: dark ? '#374151' : '#e5e7eb',
+                              backgroundColor: dark ? '#374151' : '#e5e7eb',
+                              borderWidth: 1.5,
+                              pointRadius: 0,
+                              tension: 0,
+                            },
+                            {
+                              label: '현재까지',
+                              data: chart.map(p => p.f),
+                              borderColor: line,
+                              backgroundColor: line,
+                              borderWidth: 2,
+                              pointRadius: 0,
+                              spanGaps: false,
+                              tension: 0,
+                            },
+                          ],
+                        }}
+                        options={{
+                          responsive: true,
+                          maintainAspectRatio: false,
+                          animation: false as const,
+                          scales: {
+                            x: {
+                              ticks: {
+                                color: tick,
+                                font: { size: 10 },
+                                callback: (_: unknown, idx: number) => (chartLabels[idx] ?? '').slice(0, 4),
+                                maxTicksLimit: 10,
+                                autoSkip: true,
+                              },
+                              grid: { color: grid },
+                              border: { color: grid },
+                            },
+                            y: {
+                              type: 'logarithmic' as const,
+                              ticks: {
+                                color: tick,
+                                font: { size: 10 },
+                                callback: (v: number | string) => eok(Number(v)),
+                                maxTicksLimit: 5,
+                              },
+                              grid: { color: grid },
+                              border: { display: false },
+                            },
+                          },
+                          plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                              backgroundColor: dark ? '#111827' : '#ffffff',
+                              borderColor: dark ? '#374151' : '#e5e7eb',
+                              borderWidth: 1,
+                              titleColor: tick,
+                              bodyColor: dark ? '#f9fafb' : '#111827',
+                              padding: 8,
+                              callbacks: {
+                                title: (items: Array<{ label: string }>) => items[0]?.label ?? '',
+                                label: (ctx: { datasetIndex: number; parsed: { y: number } }) =>
+                                  ctx.datasetIndex === 0 ? '' : eok(ctx.parsed.y),
+                                filter: (item: { datasetIndex: number }) => item.datasetIndex !== 0,
+                              },
+                            },
+                            ...(pluginLoaded ? {
+                              zoom: {
+                                pan: { enabled: true, mode: 'x' as const },
+                                zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' as const },
+                              },
+                            } : {}),
+                          },
+                        } as Parameters<typeof Line>[0]['options']}
+                        plugins={[refLinePlugin]}
+                      />
+                    </div>
+                    <p className="text-xs text-gray-400 dark:text-gray-600 text-right mt-1">
+                      휠: 확대/축소 &nbsp;|&nbsp; 드래그: 이동
+                    </p>
+                  </div>
+                )
+              })()}
               <p className="text-[11px] text-gray-400 dark:text-gray-500 mb-10">월말 총자산 · 세로축 로그 눈금</p>
             </>
           )
@@ -129,9 +256,9 @@ export default function Experience1990Page() {
         <h2 className="text-xl font-bold mt-6 mb-4">이 36년에서 봐야 할 것</h2>
         <ul className="space-y-3 mb-8 text-sm text-gray-600 dark:text-gray-300 leading-relaxed list-disc pl-5">
           <li><strong>시작 7개월 만에 10억이 4억대가 됐다(1990년 8월).</strong> 은퇴 첫해에 자산이 절반 넘게 사라지는 경험을 먼저 한다.</li>
-          <li><strong>2000년 3월 한때 1,099억이었다가 2008년 9월 47억이 됐다.</strong> 8년 반 동안 −96%. 그 사이 매도 신호에 팔고, 반등에 사고, 다시 팔기를 반복했다(2000년 한 해에만 매매 7번).</li>
-          <li><strong>생활비는 한때 월 6억을 넘었다가 2009년 월 3,500만원이 됐다.</strong> 처음 생활비(월 200만원대)보다는 많지만, 익숙해진 생활에서 95%를 줄이는 일이다.</li>
-          <li><strong>2000년 3월 월말 자산을 다시 넘기까지 18년이 넘게 걸렸다(2018년 8월).</strong> 그 기간 내내 규칙을 의심하지 않고 지키는 게 이 방법론의 진짜 조건이다.</li>
+          <li><strong>2000년 3월 한때 999억이었다가 2008년 9월 45억이 됐다.</strong> 8년 반 동안 −96%. 그 사이 매도 신호에 팔고, 반등에 사고, 다시 팔기를 반복했다(2000년 한 해에만 매매 7번).</li>
+          <li><strong>생활비는 한때 월 5.7억에 달했다가 2009년 월 약 3,000만원이 됐다.</strong> 처음 생활비(월 200만원대)보다는 많지만, 익숙해진 생활에서 95%를 줄이는 일이다.</li>
+          <li><strong>2000년 3월 월말 자산을 다시 넘기까지 20년이 넘게 걸렸다(2020년 8월).</strong> 그 기간 내내 규칙을 의심하지 않고 지키는 게 이 방법론의 진짜 조건이다.</li>
         </ul>
         <div className="bg-yellow-50 dark:bg-yellow-500/10 border border-yellow-200 dark:border-yellow-500/30 rounded-xl px-5 py-4 text-sm text-yellow-800 dark:text-yellow-200 leading-relaxed">
           흔들림을 줄이는 방법(생활비 1년 고정, 현금 버퍼, 자산이 커지면 비중 낮추기)은{' '}

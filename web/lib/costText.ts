@@ -1,10 +1,10 @@
 // 종목별 비용 안내 문구 — 계산(lib/dataLoader.ts)과 같은 값
-// 운용보수: TQQQ 0.88% · QLD 0.95% · QQQ·S&P500 0.20% / 스왑금리: 3배 기준금리×2 · 2배 ×1 · 1배 없음
+// 운용보수: TQQQ 0.88% · QLD 0.95% · QQQ·S&P500 0.20% / 스왑금리: 3배 (기준금리+0.5%)×2 · 2배 (기준금리+0.5%)×1 · 0.5%는 은행 스프레드
 type Inst = 'ndx3x' | 'ndx2x' | 'ndx1x' | 'sp500' | string
 
 const INFO: Record<string, { name: string; fee: string; swap: string | null }> = {
-  ndx3x: { name: 'TQQQ', fee: '0.88%', swap: '기준금리×2' },
-  ndx2x: { name: 'QLD',  fee: '0.95%', swap: '기준금리×1' },
+  ndx3x: { name: 'TQQQ', fee: '0.88%', swap: '(기준금리 + 0.5%)×2' },
+  ndx2x: { name: 'QLD',  fee: '0.95%', swap: '(기준금리 + 0.5%)×1' },
   ndx1x: { name: '나스닥100',  fee: '0.20%', swap: null },
   sp500: { name: 'S&P500', fee: '0.20%', swap: null },
 }

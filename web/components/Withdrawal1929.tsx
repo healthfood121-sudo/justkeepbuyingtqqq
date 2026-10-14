@@ -1,9 +1,20 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LogarithmicScale,
+  LineElement,
+  PointElement,
+  Tooltip,
+  Legend,
+} from 'chart.js'
+import { Line } from 'react-chartjs-2'
 import { useTheme } from '@/components/ThemeProvider'
+
+ChartJS.register(CategoryScale, LogarithmicScale, LineElement, PointElement, Tooltip, Legend)
 
 interface Sum {
   n: number; med: number; p10: number; worst: number; worst_start: string; dd: number; dd_max: number
@@ -61,6 +72,15 @@ export function Path1929() {
   const [start, setStart] = useState('1929-09')
   const { theme } = useTheme()
   const dark = theme === 'dark'
+  const chartRef = useRef<ChartJS<'line'> | null>(null)
+  const [pluginLoaded, setPluginLoaded] = useState(false)
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    import('chartjs-plugin-zoom').then(({ default: zoomPlugin }) => {
+      ChartJS.register(zoomPlugin)
+      setPluginLoaded(true)
+    })
+  }, [])
   if (!data) return <Loading />
   const keys = ['RULE25', 'R25W67', 'HOLD1', 'S0', 'HOLD3']
   const color: Record<string, [string, string]> = {
@@ -86,36 +106,93 @@ export function Path1929() {
             className={`px-2.5 py-1 rounded-lg ${start === s ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}>{l}</button>
         ))}
       </div>
-      <div className="h-72 w-full">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={rows} margin={{ top: 10, right: 12, bottom: 0, left: 4 }}>
-            <CartesianGrid stroke={grid} vertical={false} />
-            <XAxis dataKey="m" tick={{ fill: tick, fontSize: 11 }} axisLine={{ stroke: grid }} tickLine={false} tickFormatter={(x: string) => x.slice(0, 4)} minTickGap={40} />
-            <YAxis scale="log" domain={[0.005, 'auto']} allowDataOverflow tickFormatter={(x: number) => eok(x)} tick={{ fill: tick, fontSize: 10 }} axisLine={false} tickLine={false} width={60} />
-            <Tooltip
-              content={({ active, payload, label }) => {
-                if (!active || !payload?.length) return null
-                const r = payload[0].payload as Record<string, number>
-                return (
-                  <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-xs shadow-md">
-                    <p className="text-gray-500 dark:text-gray-400 mb-1">{label} · 총자산 / 그달 생활비</p>
-                    {keys.filter(k => r[k] !== undefined).map(k => (
-                      <p key={k} className="flex items-center gap-2 text-gray-800 dark:text-gray-200">
-                        <span className="inline-block w-2.5 h-0.5" style={{ background: color[k][dark ? 1 : 0] }} />
-                        {NAME[k]} <strong className="ml-auto pl-3">{eok(r[k])}</strong>
-                        <span className="text-gray-400">{Math.round(r[`${k}_l`]).toLocaleString('ko-KR')}만</span>
-                      </p>
-                    ))}
-                  </div>
-                )
-              }}
-            />
-            {keys.map(k => (
-              <Line key={k} dataKey={k} stroke={color[k][dark ? 1 : 0]} strokeWidth={k === 'RULE25' ? 2.5 : 1.5}
-                    strokeDasharray={k === 'HOLD3' ? '4 3' : undefined} dot={false} isAnimationActive={false} />
-            ))}
-          </LineChart>
-        </ResponsiveContainer>
+      <div className="relative">
+        <button
+          onClick={() => chartRef.current?.resetZoom()}
+          className="absolute top-0 right-0 z-10 text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+        >
+          줌 초기화
+        </button>
+        <div style={{ height: 288 }}>
+          <Line
+            ref={chartRef}
+            data={{
+              labels: rows.map(r => r.m as string),
+              datasets: keys.map(k => ({
+                label: NAME[k],
+                data: rows.map(r => r[k] !== undefined ? r[k] as number : null),
+                borderColor: color[k][dark ? 1 : 0],
+                backgroundColor: color[k][dark ? 1 : 0],
+                borderWidth: k === 'RULE25' ? 2.5 : 1.5,
+                borderDash: k === 'HOLD3' ? [4, 3] : [],
+                pointRadius: 0,
+                spanGaps: false,
+                tension: 0,
+              })),
+            }}
+            options={{
+              responsive: true,
+              maintainAspectRatio: false,
+              animation: false as const,
+              scales: {
+                x: {
+                  ticks: {
+                    color: tick,
+                    font: { size: 11 },
+                    callback: (_: unknown, i: number) => (rows[i]?.m as string | undefined)?.slice(0, 4) ?? '',
+                    maxTicksLimit: 12,
+                    autoSkip: true,
+                  },
+                  grid: { color: grid },
+                  border: { color: grid },
+                },
+                y: {
+                  type: 'logarithmic' as const,
+                  min: 0.005,
+                  ticks: {
+                    color: tick,
+                    font: { size: 10 },
+                    callback: (v: number | string) => eok(Number(v)),
+                    maxTicksLimit: 6,
+                  },
+                  grid: { color: grid },
+                  border: { display: false },
+                },
+              },
+              plugins: {
+                legend: { display: false },
+                tooltip: {
+                  backgroundColor: dark ? '#111827' : '#ffffff',
+                  borderColor: dark ? '#374151' : '#e5e7eb',
+                  borderWidth: 1,
+                  titleColor: tick,
+                  bodyColor: dark ? '#f9fafb' : '#111827',
+                  padding: 8,
+                  callbacks: {
+                    title: (items: Array<{ label: string }>) => `${items[0]?.label ?? ''} · 총자산 / 그달 생활비`,
+                    label: (ctx: { datasetIndex: number; dataIndex: number }) => {
+                      const k = keys[ctx.datasetIndex]
+                      const row = rows[ctx.dataIndex]
+                      if (!row || row[k] === undefined) return ''
+                      const total = row[k] as number
+                      const living = row[`${k}_l`] as number | undefined
+                      return `${NAME[k]}  ${eok(total)}${living !== undefined ? `  ·  ${Math.round(living).toLocaleString('ko-KR')}만` : ''}`
+                    },
+                  },
+                },
+                ...(pluginLoaded ? {
+                  zoom: {
+                    pan: { enabled: true, mode: 'x' as const },
+                    zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' as const },
+                  },
+                } : {}),
+              },
+            } as Parameters<typeof Line>[0]['options']}
+          />
+        </div>
+        <p className="text-xs text-gray-400 dark:text-gray-600 text-right mt-1">
+          휠: 확대/축소 &nbsp;|&nbsp; 드래그: 이동
+        </p>
       </div>
       <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-[11px] text-gray-500 dark:text-gray-400">
         {keys.map(k => (

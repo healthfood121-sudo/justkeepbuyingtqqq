@@ -3,6 +3,19 @@
 import { useEffect, useState, useMemo } from 'react'
 import Link from 'next/link'
 import Header from '@/components/Header'
+import {
+  Chart as ChartJS,
+  LinearScale,
+  LogarithmicScale,
+  LineElement,
+  PointElement,
+  ScatterController,
+  Tooltip,
+  Legend,
+} from 'chart.js'
+import { Line, Scatter } from 'react-chartjs-2'
+
+ChartJS.register(LinearScale, LogarithmicScale, LineElement, PointElement, ScatterController, Tooltip, Legend)
 
 function DataLink({ lev, beta }: { lev: '1x' | '3x'; beta: string }) {
   return (
@@ -14,11 +27,6 @@ function DataLink({ lev, beta }: { lev: '1x' | '3x'; beta: string }) {
     </Link>
   )
 }
-import {
-  LineChart, Line, XAxis, YAxis, Tooltip as ReTooltip,
-  Legend, ReferenceLine, ReferenceArea, ResponsiveContainer,
-  ScatterChart, Scatter, CartesianGrid, ZAxis,
-} from 'recharts'
 
 // ── 타입 ─────────────────────────────────────────────────
 
@@ -140,6 +148,48 @@ const PRICE_COLORS = {
   rc: '#3b82f6',   // blue    — recent (highlight)
 }
 
+const PRICE_SERIES = [
+  { k: 'pt' as const, label: 'β=0.767 pre-tech', width: 1.5 },
+  { k: 'te' as const, label: 'β=1.244 tech-era', width: 1.5 },
+  { k: 'lt' as const, label: 'β=1.294 latest',   width: 1.5 },
+  { k: 'rc' as const, label: 'β=1.138 recent',    width: 2.5 },
+] as const
+
+const priceRefPlugin = {
+  id: 'priceRefAreas',
+  beforeDatasetsDraw(chart: ChartJS) {
+    const xScale = chart.scales.x
+    if (!xScale) return
+    const { top, bottom } = chart.chartArea
+    const ctx = chart.ctx
+    ctx.save()
+    ctx.fillStyle = 'rgba(239,68,68,0.08)'
+    ctx.fillRect(xScale.getPixelForValue(1929), top, xScale.getPixelForValue(1933) - xScale.getPixelForValue(1929), bottom - top)
+    ctx.fillStyle = 'rgba(59,130,246,0.08)'
+    ctx.fillRect(xScale.getPixelForValue(1999), top, xScale.getPixelForValue(2003) - xScale.getPixelForValue(1999), bottom - top)
+    ctx.restore()
+  },
+  afterDraw(chart: ChartJS) {
+    const xScale = chart.scales.x
+    if (!xScale) return
+    const { top, bottom } = chart.chartArea
+    const ctx = chart.ctx
+    ctx.save()
+    const xPx = xScale.getPixelForValue(1971)
+    ctx.strokeStyle = '#6b7280'
+    ctx.setLineDash([4, 3])
+    ctx.lineWidth = 1
+    ctx.beginPath(); ctx.moveTo(xPx, top); ctx.lineTo(xPx, bottom); ctx.stroke()
+    ctx.setLineDash([])
+    ctx.fillStyle = '#6b7280'
+    ctx.font = '10px sans-serif'
+    ctx.textAlign = 'left'
+    ctx.textBaseline = 'top'
+    ctx.fillText('NDX 실측 →', xPx + 4, top + 4)
+    ctx.restore()
+  },
+}
+
 function PriceHistoryChart({ chartData }: { chartData: PricePoint[] }) {
   if (!chartData.length) return (
     <div className="h-72 flex items-center justify-center text-sm text-gray-400">로딩 중...</div>
@@ -149,95 +199,112 @@ function PriceHistoryChart({ chartData }: { chartData: PricePoint[] }) {
       <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 font-medium">
         NDX 3x 합성 가격 지수 — 로그 스케일 (1927-12 = 100)
       </p>
-      <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={chartData} margin={{ left: 8, right: 8, top: 4, bottom: 4 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" strokeOpacity={0.6} />
-          <XAxis
-            dataKey="x"
-            type="number"
-            domain={[1927, 2027]}
-            tickCount={11}
-            tick={{ fontSize: 11, fill: '#9ca3af' }}
-            tickFormatter={String}
-          />
-          <YAxis
-            scale="log"
-            domain={['auto', 'auto']}
-            tickFormatter={fmtPrice}
-            tick={{ fontSize: 11, fill: '#9ca3af' }}
-            width={48}
-          />
-          <ReTooltip
-            formatter={(v, name) => {
-              const label: Record<string, string> = {
-                pt: 'β=0.767 pre-tech',
-                rc: 'β=1.138 recent',
-                te: 'β=1.244 tech-era',
-                lt: 'β=1.294 latest',
-              }
-              return [fmtPrice(v as number), label[name as string] ?? name]
-            }}
-            labelFormatter={v => `${v}년`}
-            contentStyle={{
-              background: '#1f2937',
-              border: '1px solid #374151',
-              borderRadius: '8px',
-              fontSize: '12px',
-              color: '#f3f4f6',
-            }}
-          />
-          <Legend
-            formatter={v => {
-              const label: Record<string, string> = {
-                pt: 'β=0.767 pre-tech',
-                rc: 'β=1.138 recent',
-                te: 'β=1.244 tech-era',
-                lt: 'β=1.294 latest',
-              }
-              return <span style={{ fontSize: 11 }}>{label[v] ?? v}</span>
-            }}
-          />
-          {/* 1929 대공황 */}
-          <ReferenceArea x1={1929} x2={1933} fill="#ef4444" fillOpacity={0.08} />
-          {/* 닷컴버블 */}
-          <ReferenceArea x1={1999} x2={2003} fill="#3b82f6" fillOpacity={0.08} />
-          {/* NDX 실측 시작 */}
-          <ReferenceLine
-            x={1971}
-            stroke="#6b7280"
-            strokeDasharray="4 3"
-            label={{ value: '← NDX 실측', position: 'insideTopRight', fontSize: 10, fill: '#6b7280' }}
-          />
-          <Line dataKey="pt" stroke={PRICE_COLORS.pt} strokeWidth={1.5} dot={false} name="pt" />
-          <Line dataKey="te" stroke={PRICE_COLORS.te} strokeWidth={1.5} dot={false} name="te" />
-          <Line dataKey="lt" stroke={PRICE_COLORS.lt} strokeWidth={1.5} dot={false} name="lt" />
-          <Line dataKey="rc" stroke={PRICE_COLORS.rc} strokeWidth={2.5} dot={false} name="rc" />
-        </LineChart>
-      </ResponsiveContainer>
+      <div style={{ height: 300 }}>
+        <Line
+          data={{
+            datasets: PRICE_SERIES.map(s => ({
+              label: s.label,
+              data: chartData.map(p => ({ x: p.x, y: p[s.k] })),
+              borderColor: PRICE_COLORS[s.k],
+              backgroundColor: PRICE_COLORS[s.k],
+              borderWidth: s.width,
+              pointRadius: 0,
+              tension: 0,
+            })),
+          }}
+          options={{
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: false as const,
+            scales: {
+              x: {
+                type: 'linear' as const,
+                min: 1927, max: 2027,
+                ticks: { color: '#9ca3af', font: { size: 11 }, stepSize: 10 },
+                grid: { color: '#374151' },
+                border: { color: '#374151' },
+              },
+              y: {
+                type: 'logarithmic' as const,
+                ticks: {
+                  color: '#9ca3af',
+                  font: { size: 11 },
+                  callback: (v: number | string) => fmtPrice(Number(v)),
+                  maxTicksLimit: 6,
+                },
+                grid: { color: '#374151' },
+                border: { display: false },
+              },
+            },
+            plugins: {
+              legend: {
+                display: true,
+                labels: { color: '#9ca3af', font: { size: 11 }, boxWidth: 16, padding: 10 },
+              },
+              tooltip: {
+                backgroundColor: '#1f2937',
+                borderColor: '#374151',
+                borderWidth: 1,
+                titleColor: '#9ca3af',
+                bodyColor: '#f3f4f6',
+                padding: 8,
+                callbacks: {
+                  title: (items: Array<{ parsed: { x: number } }>) => `${items[0]?.parsed.x ?? ''}년`,
+                  label: (ctx: { dataset: { label?: string }; parsed: { y: number } }) =>
+                    `${ctx.dataset.label}: ${fmtPrice(ctx.parsed.y)}`,
+                },
+              },
+            },
+          } as Parameters<typeof Line>[0]['options']}
+          plugins={[priceRefPlugin]}
+        />
+      </div>
     </div>
   )
 }
 
 // ── 차트 2: 코호트 소요기간 산점도 ───────────────────────
 
-function CohortTooltip({
-  active, payload,
-}: {
-  active?: boolean
-  payload?: Array<{ payload: ScatterDot; name: string; color: string }>
-}) {
-  if (!active || !payload?.length) return null
-  const d = payload[0].payload
-  return (
-    <div className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-xs text-gray-100">
-      <p className="text-gray-400 mb-1">{decimalToYM(d.x)} 진입</p>
-      {payload.map((p, i) => (
-        <p key={i} style={{ color: p.color }}>
-          {p.name}: {typeof p.payload.y === 'number' ? p.payload.y.toFixed(2) : '—'}년
-        </p>
-      ))}
-    </div>
-  )
+const cohortRefPlugin = {
+  id: 'cohortRefLines',
+  beforeDatasetsDraw(chart: ChartJS) {
+    const xScale = chart.scales.x
+    if (!xScale) return
+    const { top, bottom } = chart.chartArea
+    const ctx = chart.ctx
+    ctx.save()
+    ctx.fillStyle = 'rgba(239,68,68,0.1)'
+    ctx.fillRect(xScale.getPixelForValue(1929), top, xScale.getPixelForValue(1933) - xScale.getPixelForValue(1929), bottom - top)
+    ctx.fillStyle = 'rgba(59,130,246,0.1)'
+    ctx.fillRect(xScale.getPixelForValue(1997), top, xScale.getPixelForValue(2001) - xScale.getPixelForValue(1997), bottom - top)
+    ctx.restore()
+  },
+  afterDraw(chart: ChartJS) {
+    const xScale = chart.scales.x
+    const yScale = chart.scales.y
+    if (!xScale || !yScale) return
+    const { top, left, right } = chart.chartArea
+    const ctx = chart.ctx
+    ctx.save()
+    ctx.font = '10px sans-serif'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'top'
+    ctx.fillStyle = '#ef4444'
+    ctx.fillText('대공황', (xScale.getPixelForValue(1929) + xScale.getPixelForValue(1933)) / 2, top + 4)
+    ctx.fillStyle = '#3b82f6'
+    ctx.fillText('닷컴', (xScale.getPixelForValue(1997) + xScale.getPixelForValue(2001)) / 2, top + 4)
+    const yPx = yScale.getPixelForValue(14)
+    ctx.strokeStyle = '#f59e0b'
+    ctx.setLineDash([6, 3])
+    ctx.lineWidth = 1.5
+    ctx.beginPath(); ctx.moveTo(left, yPx); ctx.lineTo(right, yPx); ctx.stroke()
+    ctx.setLineDash([])
+    ctx.fillStyle = '#f59e0b'
+    ctx.textAlign = 'right'
+    ctx.textBaseline = 'bottom'
+    ctx.fillText('BUFFER=14', right - 4, yPx - 2)
+    ctx.restore()
+  },
 }
 
 function CohortScatterChart({
@@ -255,71 +322,84 @@ function CohortScatterChart({
       <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 font-medium">
         진입 시점별 목표 달성 소요기간 — NDX 3x A전략 (일 20만원, 목표 10억)
       </p>
-      <ResponsiveContainer width="100%" height={300}>
-        <ScatterChart margin={{ left: 8, right: 8, top: 4, bottom: 4 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" strokeOpacity={0.6} />
-          <XAxis
-            dataKey="x"
-            type="number"
-            domain={[1927, 2027]}
-            ticks={[1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010, 2020]}
-            tick={{ fontSize: 11, fill: '#9ca3af' }}
-            tickFormatter={String}
-            name="진입년도"
-          />
-          <YAxis
-            dataKey="y"
-            type="number"
-            domain={[0, 20]}
-            ticks={[0, 4, 8, 12, 16, 20]}
-            tick={{ fontSize: 11, fill: '#9ca3af' }}
-            tickFormatter={v => `${v}년`}
-            width={40}
-            name="소요기간"
-          />
-          <ZAxis range={[16, 16]} />
-          <ReTooltip content={<CohortTooltip />} />
-          <Legend wrapperStyle={{ fontSize: 11 }} />
-          {/* 1929 대공황 */}
-          <ReferenceArea
-            x1={1929} x2={1933}
-            fill="#ef4444" fillOpacity={0.1}
-            label={{ value: '대공황', position: 'insideTop', fontSize: 10, fill: '#ef4444' }}
-          />
-          {/* 닷컴버블 */}
-          <ReferenceArea
-            x1={1997} x2={2001}
-            fill="#3b82f6" fillOpacity={0.1}
-            label={{ value: '닷컴', position: 'insideTop', fontSize: 10, fill: '#3b82f6' }}
-          />
-          {/* BUFFER_REF=14 */}
-          <ReferenceLine
-            y={14}
-            stroke="#f59e0b"
-            strokeDasharray="6 3"
-            strokeWidth={1.5}
-            label={{ value: 'BUFFER=14', position: 'insideTopRight', fontSize: 10, fill: '#f59e0b' }}
-          />
-          <Scatter
-            name="β=0.767 pre-tech (합성)"
-            data={pretechDots}
-            fill="#9ca3af"
-            fillOpacity={0.35}
-          />
-          <Scatter
-            name="β=1.138 recent (합성)"
-            data={recentDots}
-            fill="#3b82f6"
-            fillOpacity={0.65}
-          />
-          <Scatter
-            name="실제 NDX 3x (1971~)"
-            data={realDots}
-            fill="#f59e0b"
-            fillOpacity={0.9}
-          />
-        </ScatterChart>
-      </ResponsiveContainer>
+      <div style={{ height: 300 }}>
+        <Scatter
+          data={{
+            datasets: [
+              {
+                label: 'β=0.767 pre-tech (합성)',
+                data: pretechDots,
+                backgroundColor: 'rgba(156,163,175,0.35)',
+                pointRadius: 4,
+              },
+              {
+                label: 'β=1.138 recent (합성)',
+                data: recentDots,
+                backgroundColor: 'rgba(59,130,246,0.65)',
+                pointRadius: 4,
+              },
+              {
+                label: '실제 NDX 3x (1971~)',
+                data: realDots,
+                backgroundColor: 'rgba(245,158,11,0.9)',
+                pointRadius: 4,
+              },
+            ],
+          }}
+          options={{
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: false as const,
+            scales: {
+              x: {
+                type: 'linear' as const,
+                min: 1927, max: 2027,
+                ticks: {
+                  color: '#9ca3af',
+                  font: { size: 11 },
+                  stepSize: 10,
+                  callback: (v: number | string) => String(Math.round(Number(v))),
+                },
+                grid: { color: '#374151' },
+                border: { color: '#374151' },
+              },
+              y: {
+                type: 'linear' as const,
+                min: 0, max: 20,
+                ticks: {
+                  color: '#9ca3af',
+                  font: { size: 11 },
+                  stepSize: 4,
+                  callback: (v: number | string) => `${v}년`,
+                },
+                grid: { color: '#374151' },
+                border: { display: false },
+              },
+            },
+            plugins: {
+              legend: {
+                display: true,
+                labels: { color: '#9ca3af', font: { size: 11 }, boxWidth: 12, padding: 10 },
+              },
+              tooltip: {
+                backgroundColor: '#1f2937',
+                borderColor: '#374151',
+                borderWidth: 1,
+                titleColor: '#9ca3af',
+                bodyColor: '#f3f4f6',
+                padding: 8,
+                callbacks: {
+                  title: (items: Array<{ parsed: { x: number } }>) =>
+                    `${decimalToYM(items[0]?.parsed.x ?? 0)} 진입`,
+                  label: (ctx: { dataset: { label?: string }; parsed: { y: number } }) =>
+                    `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)}년`,
+                },
+              },
+            },
+          } as Parameters<typeof Scatter>[0]['options']}
+          plugins={[cohortRefPlugin]}
+        />
+      </div>
     </div>
   )
 }
@@ -632,7 +712,7 @@ export default function SyntheticNdx1929Post() {
           </p>
           <p>
             TQQQ/QLD 가격은 NDX 일별 수익률 × 레버리지로 합성한 이론치다.
-            운용비용(TQQQ 0.88%/년)은 반영. 이 분석은 스왑금리비용(기준금리 × 2/년)을 반영하지 않았다 (기준금리 자료가 1954년부터라 1929년 구간에 적용할 수 없음). 배당은 미반영 (실제 TQQQ보다 연 2%p 정도 보수적). 변동성 끌림은 일별 복리 계산에 자동 반영된다.
+            운용비용(TQQQ 0.88%/년)은 반영. 이 분석은 스왑금리비용((기준금리 + 0.5%)×2)을 반영하지 않았다 (기준금리 자료가 1954년부터라 1929년 구간에 적용할 수 없음). 배당은 미반영 (실제 TQQQ보다 연 2%p 정도 보수적). 변동성 끌림은 일별 복리 계산에 자동 반영된다.
           </p>
           <p>
             이 분석의 목적은 BUFFER_REF 설정에 쓸 worst-case 추정치를 구하는 것이다.

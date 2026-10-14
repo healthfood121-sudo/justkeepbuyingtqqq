@@ -11,6 +11,50 @@
 - `npx tsc --noEmit` 등 타입 검사도 사용자가 명시적으로 요청할 때만 실행한다.
 - git push 및 배포 작업은 별도 확인 없이 진행해도 된다.
 
+## 차트
+
+새 차트를 만들 때는 **반드시 Chart.js + react-chartjs-2**를 사용한다. Recharts는 이 프로젝트에서 완전히 제거됐다.
+
+**표준 패턴 (모든 라인 차트 공통):**
+```tsx
+import {
+  Chart as ChartJS,
+  CategoryScale,   // 문자열 X축 (월별 등)
+  // LinearScale,  // 숫자 X축 (연도 등)
+  // LogarithmicScale, // 로그 Y축
+  LineElement, PointElement, Tooltip, Legend,
+} from 'chart.js'
+import { Line } from 'react-chartjs-2'
+
+ChartJS.register(/* 위 목록 */)
+```
+
+**줌/팬 (chartjs-plugin-zoom):**
+- SSR-safe: `useEffect` 안에서 dynamic import, `useState`로 `pluginLoaded` 관리
+- `useRef<ChartJS<'line'> | null>(null)` → 줌 초기화 버튼
+- 모든 차트에 아래 세트를 붙인다:
+  ```tsx
+  // 컴포넌트 상단 (early return 이전)
+  const chartRef = useRef<ChartJS<'line'> | null>(null)
+  const [pluginLoaded, setPluginLoaded] = useState(false)
+  useEffect(() => {
+    import('chartjs-plugin-zoom').then(({ default: z }) => { ChartJS.register(z); setPluginLoaded(true) })
+  }, [])
+
+  // 차트 감싸는 div
+  <div className="relative">
+    <button onClick={() => chartRef.current?.resetZoom()} className="absolute top-0 right-0 z-10 ...">줌 초기화</button>
+    <div style={{ height: NNN }}><Line ref={chartRef} ... /></div>
+    <p className="text-xs text-gray-400 dark:text-gray-600 text-right mt-1">휠: 확대/축소 &nbsp;|&nbsp; 드래그: 이동</p>
+  </div>
+  ```
+
+**ReferenceArea / ReferenceLine 대체:** 커스텀 인라인 플러그인으로 구현
+- `beforeDatasetsDraw` → 배경 영역(fillRect)
+- `afterDraw` → 수직/수평 선, 레이블 텍스트
+
+**산점도:** `ScatterController`, `LinearScale`, `PointElement` 등록 후 `Scatter` 컴포넌트 사용
+
 ## 백테스트 데이터
 
 포스트나 시뮬레이터에 데이터를 연결할 때, 새 JSON을 생성하기 전에 **`../scripts/BACKTEST_DATA.md`를 먼저 읽어라.**

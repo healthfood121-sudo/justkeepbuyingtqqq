@@ -34,9 +34,10 @@ _S = {}
 
 
 def _init(*args):
-    keys = ("tq", "qq", "closes", "ema", "dates", "rp", "rsi", "peaks", "daily_dir")
+    keys = ("tq", "qq", "closes", "ema", "dates", "rp", "rsi", "peaks", "daily_dir", "liv_max")
     _S.update(dict(zip(keys, args)))
     _S["dates"] = pd.DatetimeIndex(_S["dates"])
+    E.LIV_MAX = _S["liv_max"]
 
 
 def _job(arg):
@@ -84,7 +85,7 @@ def main():
     daily_dir.mkdir(parents=True, exist_ok=True)
 
     with mp.Pool(mp.cpu_count(), initializer=_init,
-                 initargs=(tq, qq, closes, ema, dates.tolist(), rp, rsi, peaks, str(daily_dir))) as pool:
+                 initargs=(tq, qq, closes, ema, dates.tolist(), rp, rsi, peaks, str(daily_dir), E.LIV_MAX)) as pool:
         for key, (name, desc, _) in STRATS.items():
             rows = pool.map(_job, [(key, si) for si in starts], chunksize=8)
             long = [r for r in rows if r["yrs"] >= 10]

@@ -137,8 +137,8 @@ export default function StrategyAbcPage() {
 
         <H3>B전략의 함정: 중간값은 비슷하지만 최장이 다르다</H3>
         <P>
-          완료율(92.4%)과 중간값(5.32 vs 5.33년)만 보면 A전략과 B전략이 사실상 동일해 보인다.
-          하지만 최장 소요기간이 <strong className="text-gray-900 dark:text-white">13.74년 vs 18.55년</strong>으로 4.8년 차이가 난다.
+          완료율(92.4%)과 중간값(5.38 vs 5.42년)만 보면 A전략과 B전략이 사실상 동일해 보인다.
+          하지만 최장 소요기간이 <strong className="text-gray-900 dark:text-white">13.77년 vs 18.69년</strong>으로 4.9년 차이가 난다.
         </P>
         <P>
           이유는 단순하다. A전략은 시장이 하락할수록 더 많은 주식을 싸게 살 수 있다.
@@ -149,7 +149,7 @@ export default function StrategyAbcPage() {
 
         <H3>C전략이 빠른 이유: 초기 자본의 복리 효과</H3>
         <P>
-          C전략은 시작부터 매달 거치금(2.5억 ÷ 36 ≈ 694만원)이 추가로 들어온다.
+          C전략은 시작부터 매달 거치금(2.5억 ÷ 60 ≈ 417만원)이 추가로 들어온다.
           일 20만원만으로 시작하는 A전략보다 초기 주식 수가 훨씬 빠르게 쌓인다.
           이 초기 주식들이 이후 상승장에서 복리로 불어나기 때문에 소요기간이 절반 이하로 줄어든다.
         </P>
@@ -161,18 +161,18 @@ export default function StrategyAbcPage() {
         <Table
           headers={['종목', '전략', '완료율', '중간값', '최장']}
           rows={[
-            ['TQQQ (3x)', 'A', '92.4%', '5.32년', '13.74년'],
-            ['', 'B', '92.4%', '5.33년', <span key="1" className="text-red-500">18.55년</span>],
-            ['', 'C', <span key="2" className="font-semibold">94.8%</span>, <span key="3" className="font-semibold">3.23년</span>, '8.82년'],
-            ['QLD (2x)', 'A', '88.9%', '6.54년', '13.37년'],
-            ['', 'B', '88.5%', '6.87년', <span key="4" className="text-red-500">19.58년</span>],
-            ['', 'C', <span key="5" className="font-semibold">93.9%</span>, <span key="6" className="font-semibold">4.05년</span>, '12.38년'],
-            ['QQQ (1x)', 'A', '85.2%', '9.10년', '14.34년'],
-            ['', 'B', <span key="7" className="text-red-500">82.2%</span>, '11.37년', <span key="8" className="text-red-500">21.04년</span>],
-            ['', 'C', <span key="9" className="font-semibold">90.7%</span>, <span key="10" className="font-semibold">5.86년</span>, '12.31년'],
+            ['TQQQ (3x)', 'A', '92.4%', '5.38년', '13.77년'],
+            ['', 'B', '92.4%', '5.42년', <span key="1" className="text-red-500">18.69년</span>],
+            ['', 'C', <span key="2" className="font-semibold">94.8%</span>, <span key="3" className="font-semibold">3.22년</span>, '8.30년'],
+            ['QLD (2x)', 'A', '88.8%', '6.67년', '14.40년'],
+            ['', 'B', '88.3%', '7.03년', <span key="4" className="text-red-500">20.18년</span>],
+            ['', 'C', <span key="5" className="font-semibold">93.9%</span>, <span key="6" className="font-semibold">3.88년</span>, '8.76년'],
+            ['QQQ (1x)', 'A', '85.2%', '9.16년', '14.44년'],
+            ['', 'B', <span key="7" className="text-red-500">82.0%</span>, '11.46년', <span key="8" className="text-red-500">21.21년</span>],
+            ['', 'C', <span key="9" className="font-semibold">92.4%</span>, <span key="10" className="font-semibold">4.92년</span>, '9.30년'],
             ['VOO (SP500)', 'A', '90.2%', '11.73년', '17.34년'],
             ['', 'B', <span key="11" className="text-red-500">85.9%</span>, '19.73년', <span key="12" className="text-red-500">31.00년</span>],
-            ['', 'C', <span key="13" className="font-semibold">93.7%</span>, <span key="14" className="font-semibold">7.75년</span>, '16.31년'],
+            ['', 'C', <span key="13" className="font-semibold">95.0%</span>, <span key="14" className="font-semibold">6.04년</span>, '10.76년'],
           ]}
         />
 

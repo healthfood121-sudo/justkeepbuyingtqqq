@@ -232,6 +232,8 @@
 
 | 파일/폴더 | 크기 | 스크립트 | 내용 |
 |-----------|------|----------|------|
+| `withdrawal_tradelog_rule25.json` | 567 KB | `export_withdrawal_tradelog.py` | RULE25 코호트 요약 (IRR·최종자산·인출액) |
+| `withdrawal_tradelog_s0.json` | 920 KB | `export_withdrawal_tradelog.py` | S0 코호트 요약 (IRR·최종자산·인출액) |
 | `withdrawal_daily_rule25_meta.json` | 71 KB | `export_withdrawal_tradelog.py` | RULE25 코호트 인덱스 (시작일·종료일·요약 통계) |
 | `withdrawal_daily_rule25/<start>.json` | 0.9~668 KB each | `export_withdrawal_tradelog.py` | RULE25 코호트별 일별 전체 데이터 (668개, 총 226MB) |
 
@@ -243,7 +245,8 @@
 
 **결과:**
 - 668코호트 전체 (데이터 끝인 2026-09까지), 최장 코호트 14,027 거래일 (55.66년)
-- 평균 거래 15.5회 · 10년 이상 보유 최종자산 중간값 16,499억 (스왑 스프레드 50bps 반영)
+- RULE25: 평균 거래 15.5회 · 10년 이상 보유 최종자산 중간값 1,358.66억 (스왑 스프레드 50bps 반영)
+- S0: 평균 거래 26.8회 · 10년 이상 보유 최종자산 중간값 309.32억
 - 재실행: `python scripts/export_withdrawal_tradelog.py`
 
 **사용처:** `/posts/withdrawal-guide/tradelog` (25% 룰 날짜별 전체 데이터 공개 페이지)
@@ -719,7 +722,7 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 ```
 
 **권장 전략 (2026-10):** RULE25 — 52주 고점 -25% 매도 + EMA200-15일 연속 재매수 + 동적인출률 0.3/0.5/0.7%
-- 668 시작 시점, 10년 이상 보유 최종자산 중간값 23,021억
+- 668 시작 시점, 10년 이상 보유 최종자산 중간값 1,358.66억
 - S0(EMA200-15일) 대비 매도 타이밍이 더 명확(가격 기준)하여 투자자 이해도 높음
 - tradelog 페이지에서 날짜별 전체 데이터 공개
 

@@ -179,7 +179,7 @@ export default function AccumulationGuidePage() {
         <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl px-5 py-4 mb-6 text-sm space-y-2">
           <div className="flex gap-3">
             <span className="text-blue-500 dark:text-blue-400 font-mono shrink-0 w-12">방법</span>
-            <span className="text-gray-600 dark:text-gray-300">매일 20만원 적립 + 거치금 2.5억을 60개월(5년)에 걸쳐 월 약 694만원씩 추가 납입.</span>
+            <span className="text-gray-600 dark:text-gray-300">매일 20만원 적립 + 거치금 2.5억을 60개월(5년)에 걸쳐 월 약 417만원씩 추가 납입.</span>
           </div>
           <div className="flex gap-3">
             <span className="text-blue-500 dark:text-blue-400 font-mono shrink-0 w-12">이유</span>
