@@ -171,8 +171,8 @@ export default function WithdrawalFullPeriodPage() {
 
         <H2>그래서 25% 룰을 권장 전략으로 골랐다</H2>
         <P>
-          비교 끝에 권장 전략은 <strong>25% 룰 + 동적 인출 + 생활비 1년 고정</strong>으로 정했다. 규칙이 세 줄로 끝나고(1년 고점 −25%면 매도,
-          200일선 위 15일이면 매수, 자산의 0.3~0.7%를 연 1회 확정해 매달 인출), 일주일에 한 번만 확인하면 된다. 근거는 두 가지다.
+          비교 끝에 권장 전략은 <strong>25% 룰 + 동적 인출</strong>으로 정했다. 규칙이 세 줄로 끝나고(1년 고점 −25%면 매도,
+          200일선 위 15일이면 매수, 매달 총자산의 0.3~0.7%를 꺼낸다), 일주일에 한 번만 확인하면 된다. 근거는 두 가지다.
         </P>
         <h3 className="text-base font-semibold mt-6 mb-2 text-gray-700 dark:text-gray-200">① 꺼내 쓰는 돈이 가장 많다</h3>
         <P>
@@ -203,8 +203,8 @@ export default function WithdrawalFullPeriodPage() {
         </ul>
 
         <Callout color="green">
-          <strong>권장 전략: 25% 룰 + 동적 인출 + 생활비 1년 고정.</strong>{' '}
-          자산별 현금 비중·기본 현금 버퍼 같은 장치도 시험했지만, 수익을 낮추는 대신 낙폭을 줄이는 정도라
+          <strong>권장 전략: 25% 룰 + 동적 인출.</strong>{' '}
+          자산별 현금 비중·기본 현금 버퍼·생활비 1년 고정 같은 장치도 시험했지만, 수익을 낮추는 대신 낙폭을 줄이는 정도라
           단순함을 우선해 기본 권장에서는 뺐다 (큰돈을 지키고 싶다면 25% 룰 + 자산별 현금 비중).
           매일 신호는 <Link href="/" className="underline">홈 화면</Link>에서, 기존 방법론은 <Link href="/posts/withdrawal-guide" className="underline">인출식 방법론</Link>에서 볼 수 있다.
         </Callout>

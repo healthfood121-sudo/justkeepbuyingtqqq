@@ -92,7 +92,7 @@ export default function WithdrawalSignalTestPage() {
         <H2>1. TQQQ 자체 신호: 왜 나쁜가</H2>
 
         <P>
-          현재 권장 전략(S0)은 <strong className="text-gray-900 dark:text-white">나스닥100 원지수</strong>가
+          당시 기준 전략(S0)은 <strong className="text-gray-900 dark:text-white">나스닥100 원지수</strong>가
           200일 지수이동평균(EMA200) 아래에서 15거래일 연속이면 전량 현금 전환한다.
           이번에 테스트한 것은 같은 조건을 <strong className="text-gray-900 dark:text-white">TQQQ 합성가격</strong>에 적용하는 방식이다.
         </P>
