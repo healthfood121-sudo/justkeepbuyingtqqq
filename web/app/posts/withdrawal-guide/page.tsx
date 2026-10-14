@@ -141,7 +141,7 @@ export default function WithdrawalGuidePage() {
           <strong>25% 룰을 고르면 감수해야 할 것</strong><br />
           · <strong>자산이 크게 줄어드는 시기가 온다.</strong> 1990년 시작 예: 2000년 3월 999억 → 2008년 9월 45억(−95%). 닷컴버블과 금융위기가 연달아 오면서 8년 반에 걸쳐 줄었고,
           그동안 생활비로 110억을 꺼내 썼다. <Link href="/posts/experience-1990" className="underline">이 36년을 한 달씩 넘겨 보기</Link>. 나스닥100이 25% 빠져야 팔기 때문에 그때 TQQQ는 이미 60% 넘게 빠진 상태다.<br />
-          · <strong>생활비도 자산 따라 줄어든다.</strong> 1년 고정으로 몇 달짜리 급락엔 생활비가 바로 따라 내려가지 않는다. 하지만 1년 단위로는 여전히 바뀐다 — <Link href="/posts/living-stability" className="underline">생활비 규칙 비교</Link>.<br />
+          · <strong>생활비도 자산 따라 줄어든다.</strong> 매달 그 시점 자산 기준으로 계산하기 때문에, 자산이 빠지면 생활비도 바로 따라 줄어든다 — <Link href="/posts/living-stability" className="underline">생활비 규칙 비교</Link>.<br />
           · <strong>매도 4번 중 1번은 산 지 5거래일 안에 다시 판다.</strong> 하락장 중간 반등에서 샀다가 다시 빠지는 경우다.<br />
           · <strong>1970~80년대 같은 시장에서는 S0와 비슷하다</strong>(10년 구간 9.8% vs 9.9%). 우위가 가장 큰 건 2003년 이후 대세 상승장이다.<br />
           · <strong>성적이 몇 번의 하락에 기대고 있다.</strong> 과거의 빠른 하락 네 번이 −22~−23%에서 멈춰서 25%가 22%보다 나았다. 기준을 23~33%로 바꿔도 결과는 비슷하다 —{' '}
