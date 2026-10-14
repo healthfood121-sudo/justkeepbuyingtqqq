@@ -34,3 +34,13 @@ desktop.ini
 .idea/
 *.swp
 *.swo
+
+.vercel
+
+# 대용량 백테스트 데이터 (1.3 GB, 배포 스토리지 한계 초과 방지)
+web/public/data/s0_daily/
+web/public/data/s0_daily_v2/
+web/public/data/s0_daily_v3/
+web/public/data/s0_daily_open/
+web/public/data/s0_daily_open_v2/
+web/public/data/s0_daily_open_v3/
