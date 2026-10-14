@@ -84,6 +84,23 @@ function Simulator() {
     return Object.fromEntries(keys.map(k => [k, runWithdrawal(market, startIdx, amt * EOK, k, withCosts, useVoo)])) as Record<StratKey, SimResult>
   }, [market, startIdx, amt, withCosts, cmp.join(','), useVoo]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // 자산 구성 차트 마우스 휠 줌 — 조기 return 전에 선언해야 Rules of Hooks 위반 없음
+  const totalPoints = results?.RULE25?.months?.length ?? 0
+  const [brushRange, setBrushRange] = useState<{ start: number; end: number } | null>(null)
+  useEffect(() => { setBrushRange(null) }, [totalPoints])
+  const handleWheel = useCallback((e: React.WheelEvent) => {
+    e.preventDefault()
+    const s = brushRange?.start ?? 0
+    const en = brushRange?.end ?? totalPoints - 1
+    const len = en - s
+    const center = (s + en) / 2
+    const factor = e.deltaY > 0 ? 1.2 : 0.8
+    const newLen   = Math.round(Math.max(6, Math.min(totalPoints, len * factor)))
+    const newStart = Math.max(0, Math.round(center - newLen / 2))
+    const newEnd   = Math.min(totalPoints - 1, newStart + newLen - 1)
+    setBrushRange({ start: newStart, end: newEnd })
+  }, [brushRange, totalPoints])
+
   if (!market || !results) {
     return <p className="text-sm text-gray-400 py-20 text-center">데이터 불러오는 중…</p>
   }
@@ -115,23 +132,6 @@ function Simulator() {
       living: p.living / EOK,
     }
   })
-
-  // 자산 구성 차트 마우스 휠 줌
-  const [brushRange, setBrushRange] = useState<{ start: number; end: number } | null>(null)
-  const totalPoints = stackRows.length
-  useEffect(() => { setBrushRange(null) }, [totalPoints])
-  const handleWheel = useCallback((e: React.WheelEvent) => {
-    e.preventDefault()
-    const start = brushRange?.start ?? 0
-    const end   = brushRange?.end   ?? totalPoints - 1
-    const len    = end - start
-    const center = (start + end) / 2
-    const factor = e.deltaY > 0 ? 1.2 : 0.8   // 아래 = 줌아웃, 위 = 줌인
-    const newLen   = Math.round(Math.max(6, Math.min(totalPoints, len * factor)))
-    const newStart = Math.max(0, Math.round(center - newLen / 2))
-    const newEnd   = Math.min(totalPoints - 1, newStart + newLen - 1)
-    setBrushRange({ start: newStart, end: newEnd })
-  }, [brushRange, totalPoints])
 
   // 25% 룰 현금 보유 구간 (회색 배경)
   const cashSpans: [string, string][] = []
