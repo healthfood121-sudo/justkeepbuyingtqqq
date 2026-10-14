@@ -104,7 +104,7 @@ export default function WithdrawalGuidePage() {
             인출식 방법론: 10억 달성 후 어떻게 꺼내 쓰나
           </h1>
           <div className="flex items-center gap-3 flex-wrap">
-            <span className="text-sm text-gray-400">2026-10-01 · 최종수정 2026-10-12</span>
+            <span className="text-sm text-gray-400">2026-10-01 · 최종수정 2026-10-14</span>
             {['인출식', '25% 룰', '동적인출률', 'FIRE', 'TQQQ', '방법론'].map(t => <Tag key={t}>{t}</Tag>)}
           </div>
         </div>
@@ -132,9 +132,9 @@ export default function WithdrawalGuidePage() {
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
           {[
-            { label: '인출 포함 연 수익률', value: '22.9%', sub: '하위 10%도 18.8%' },
-            { label: '20년간 꺼내 쓴 돈', value: '22억', sub: 'S0 20억 · D10GK 19억' },
-            { label: '남은 자산 10억 미만', value: '0가지', sub: '548가지 중' },
+            { label: '인출 포함 연 수익률', value: '21.5%', sub: '하위 10%도 16.2%' },
+            { label: '20년간 꺼내 쓴 돈', value: '65.8억', sub: 'S0 40억 · D10GK 41억' },
+            { label: '남은 자산 10억 미만', value: '41가지', sub: '548가지 중' },
             { label: '현금으로 있는 기간', value: '13%', sub: '나머지는 TQQQ 보유' },
           ].map(c => (
             <div key={c.label} className="bg-gray-50 dark:bg-gray-900 rounded-xl px-3 py-3 text-center">
@@ -182,8 +182,8 @@ export default function WithdrawalGuidePage() {
 
         <H3>다른 선택지</H3>
         <ul className="space-y-2 mb-6 text-sm text-gray-600 dark:text-gray-300 leading-relaxed list-disc pl-5">
-          <li><strong>25% 룰 + 자산별 현금 비중</strong> — 총자산 50억↑ TQQQ ⅔, 200억↑ ⅓. 연 18.2%로 4.7%p 낮지만 낙폭이 −96% → −80%로 얕아진다. 큰돈을 지키고 싶을 때.</li>
-          <li><strong>D10GK</strong> — 연 19.7%. 현금일 때 매일 밤 LOC 주문이 필요하고, 초반 생활비가 25% 룰보다 적다.</li>
+          <li><strong>25% 룰 + 자산별 현금 비중</strong> — 총자산 50억↑ TQQQ ⅔, 200억↑ ⅓. 연 20.2%로 1.3%p 낮지만 낙폭이 −96% → −80%로 얕아진다. 큰돈을 지키고 싶을 때.</li>
+          <li><strong>D10GK</strong> — 연 19.8%. 현금일 때 매일 밤 LOC 주문이 필요하고, 초반 생활비가 25% 룰보다 적다.</li>
           <li><strong>S0 (200일선 15일)</strong> — 연 16.7%. 매수 직후 재매도가 한 번도 없는 가장 단순한 규칙 (<Link href="/posts/withdrawal-guide/tradelog?st=s0" className="underline">거래 로그</Link>).</li>
         </ul>
         <P>
@@ -403,15 +403,23 @@ export default function WithdrawalGuidePage() {
               color: 'border-gray-300 dark:border-gray-700',
               badge: 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400',
               title: '실제로 가능한 매매 시점 + 오늘까지 보유로 재검증',
-              result: '인출 포함 연 수익률 25% 룰 22.9% · D10GK(LOC) 19.7% · S0 16.7%',
+              result: '인출 포함 연 수익률 25% 룰 21.5% · D10GK(LOC) 19.8% · S0 16.7%',
               desc: '신호는 종가가 확정돼야 알 수 있으므로 신호 다음 거래일에 매매하도록 바꿨다. D10GK의 조기 재매수만 조건을 가격으로 환산한 LOC 주문으로 당일 종가에 산다. 20년에서 자르면 결과가 매매일 하루 이틀 차이에도 크게 흔들려, 1971년 이후 매달 시작해 오늘까지 보유한 인출 포함 연 수익률로 비교했다 (월 1,500만원 인출 상한도 없앰). 이 기준에서는 순위가 25% 룰 > D10GK > S0로 바뀌었다.',
+            },
+            {
+              step: '10단계',
+              color: 'border-gray-300 dark:border-gray-700',
+              badge: 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400',
+              title: '초기 현금버퍼 체계적 실험 — EARLY24 발견',
+              result: '6·12개월 버퍼 효과 없음 · 24개월 버퍼(처음 5년) IRR +0.8%p · 별도 RP/VOO 버퍼는 오히려 악화',
+              desc: '하락장 진입 시 생활비를 위해 포트에 현금을 미리 쌓아두는 버퍼 전략을 체계적으로 테스트했다. 6·12개월 버퍼는 EMA200이 이미 하락 방어를 담당하므로 추가 효과가 없었다. 단 한 가지 예외: 처음 5년간 24개월치를 포트폴리오 내 현금으로 유지하는 방식(EARLY24)은 IRR 21.1%→21.9%로 +0.8%p 개선이 확인됐다. 반면 별도 RP 계좌로 꺼내두거나(IRR 16.6%), VOO로 분산하는 방식(15.6%)은 TQQQ 복리를 이탈해 오히려 성적이 크게 낮아진다.',
             },
             {
               step: '현재',
               color: 'border-blue-300 dark:border-blue-700',
               badge: 'bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400',
               title: '★ 전체 기간 재검증 → 25% 룰을 권장 전략으로',
-              result: '인출 상한 없음 · 인출 포함 연 22.9% · 20년간 꺼내 쓴 돈 22억',
+              result: '인출 상한 없음 · 인출 포함 연 21.5% · 20년간 꺼내 쓴 돈 65.8억',
               desc: '16가지 전략을 오늘까지 끝까지 들고 가며 10~50년 시점을 비교했다. 월 1,500만원 인출 상한을 없애고 꺼내 쓴 돈과 남은 자산을 함께 봤다. 닷컴버블을 거치지 않는 구간에서도 25% 룰이 S0보다 대체로 나았다(10년 구간의 80%). 현금 비중·버퍼·생활비 고정 같은 장치는 수익을 낮추는 대신 낙폭을 줄이는 정도라 기본 권장에서는 뺐다.',
               href: '/posts/withdrawal-full-period',
               link: '전체 비교 →',
@@ -512,6 +520,7 @@ export default function WithdrawalGuidePage() {
           668가지 시작 시점 어디서도 현금이 생활비 2년치 아래로 줄어드는 경우가 없었기 때문에,
           현금 잔고 기준으로 생활비를 줄이는 별도 규칙은 시뮬레이션 결과에 영향이 없었다.
           현금이 있는 한 정상적으로 생활비를 쓰면 된다.
+          선택적 강화: 처음 5년간 24개월치 생활비를 포트폴리오 내 현금으로 미리 유지하는 방식(EARLY24)은 IRR +0.8%p 개선이 확인됐다. 별도 계좌에 빼두는 것이 아니라 포트폴리오 총자산 안에 현금 비중으로 포함하는 방식이다.
         </P>
 
         <H3>2-4. 세금 처리</H3>
@@ -673,9 +682,9 @@ export default function WithdrawalGuidePage() {
           headers={['전략', '매도 횟수 (55년)', '매수 후 5일 내 재매도', '해야 할 일', '인출 포함 연 수익률']}
           rows={[
             [<strong key="rule25" className="text-blue-600 dark:text-blue-400">25% 룰 (1년 고점 −25%)</strong>,
-              '15번', '4번 (27%)', '주 1회 확인', <strong key="rule25v" className="text-blue-600 dark:text-blue-400">22.9%</strong>],
+              '15번', '4번 (27%)', '주 1회 확인', <strong key="rule25v" className="text-blue-600 dark:text-blue-400">21.5%</strong>],
             [<strong key="d10gk" className="text-purple-600 dark:text-purple-400">D10GK</strong>,
-              '72번', '18번 (25%)', '현금일 때 매일 밤 LOC 주문', <strong key="d10gkv" className="text-purple-600 dark:text-purple-400">19.7%</strong>],
+              '72번', '18번 (25%)', '현금일 때 매일 밤 LOC 주문', <strong key="d10gkv" className="text-purple-600 dark:text-purple-400">19.8%</strong>],
             ['S0 (EMA200 15일)', '27번', <strong key="s0w" className="text-green-600 dark:text-green-400">0번</strong>, '주 1회 확인', '16.7%'],
           ]}
         />
@@ -700,8 +709,8 @@ export default function WithdrawalGuidePage() {
           매매가 가장 적다(55년간 매도 15번). 하지만 매도 4번 중 1번꼴로 매수 직후(5거래일 안에) 다시 판다.
           이유는 52주 고점이 1년간 유지되기 때문이다. 큰 하락 이후 EMA200을 회복해 매수해도,
           1년 전 고점 기준 −25%는 이미 근접해있어 다음날 조금만 빠져도 매도 조건이 충족된다.
-          그래도 실제로 가능한 방식으로 오늘까지 들고 가면 연 22.9%로 세 전략 중 가장 높고,
-          매매를 1~3일 늦게 해도(22.7~23.8%), 기준을 −20%(19.7%)나 −30%(23.8%)로 바꿔도 S0(16.7%)보다 높다.
+          그래도 실제로 가능한 방식으로 오늘까지 들고 가면 연 21.5%로 세 전략 중 가장 높고,
+          매매를 1~3일 늦게 해도(21.5~24.2%), 기준을 −20%(19.1%)나 −30%(22.6%)로 바꿔도 S0(16.7%)보다 높다.
           대부분의 시간을 TQQQ로 들고 있다가(현금 기간 13%) 진짜 큰 폭락에서만 빠지는 구조라,
           장기 상승의 혜택을 가장 많이 받는다. 반대로 결과가 몇 번의 큰 폭락에 크게 좌우된다는 한계가 있다.
         </P>
@@ -709,7 +718,7 @@ export default function WithdrawalGuidePage() {
         <H3>D10GK — S0에 급락 때 조기 재매수를 더한 전략</H3>
         <P>
           조기 재매수 조건(RSI 30 미만 + 200일 평균선보다 10% 이상 아래)은 그날 종가가 정해져야 알 수 있다.
-          다음날 사면 이점이 상당 부분 사라진다(연 19.7% → 18.9%).
+          다음날 사면 이점이 상당 부분 사라진다(연 19.8% → 17.7%).
           대신 이 조건은 어제까지의 값으로 &ldquo;오늘 나스닥100이 X 이하로 끝나면 충족&rdquo;이라는 가격으로 바꿀 수 있다.
           그 가격을 TQQQ 가격으로 환산해 <strong className="text-gray-900 dark:text-white">LOC 매수 주문</strong>(종가가 지정가 이하일 때만 체결)을
           걸어두면 조건을 만족한 날 그 종가에 정확히 산다. 환산식은 1971년 이후 13,626거래일에서 실제 조건과 하루도 어긋나지 않았다.
@@ -732,8 +741,8 @@ export default function WithdrawalGuidePage() {
 
         <H3>결론: 무엇을 선택할까</H3>
         <Callout color="blue">
-          <strong>권장: 25% 룰 + 상한 없는 동적 인출</strong> — 연 22.9% · 일주일에 한 번 확인 · 매도 10년에 약 3번<br />
-          큰돈을 지키고 싶다면 → 25% 룰 + 자산별 현금 비중 — 연 18.2% · 낙폭 −80%<br />
+          <strong>권장: 25% 룰 + 상한 없는 동적 인출</strong> — 연 21.5% · 일주일에 한 번 확인 · 매도 10년에 약 3번<br />
+          큰돈을 지키고 싶다면 → 25% 룰 + 자산별 현금 비중 — 연 20.2% · 낙폭 −80%<br />
           매수 직후 다시 파는 일이 절대 싫다면 → S0 — 연 16.7%
         </Callout>
         <P>
@@ -752,7 +761,7 @@ export default function WithdrawalGuidePage() {
             { q: '✅ 15일 연속 필터가 10일보다 우세', a: '더 적은 거래(21회 vs 29회)로 더 높은 중앙값(1,176억 vs 798억). 추가 필터링이 신호 품질을 높였다.' },
             { q: '✅ 0.3/0.5/0.7% 비율 확정 (구간: 10억/20억)', a: '95개 조합 중 이 조합이 최적. 0.2/0.4/0.6%, 0.4/0.6/0.8%, 0.3/0.6/0.9% 등보다 일관되게 우세.' },
             { q: '✅ 단일버퍼(인출 상한 1500만) > 이중버퍼(초과분 VOO 이전)', a: 'TQQQ에서 1500만만 꺼내고 나머지를 3배 레버리지로 복리하는 것이, 더 많이 꺼내 VOO로 분산하는 것보다 중앙값 기준 27% 우세.' },
-            { q: '✅ 초기 현금버퍼 불필요', a: '6개월, 12개월 초기 버퍼를 테스트했지만 EMA200 즉시 전환 방식이 더 우세. EMA200이 하락 초기에 알아서 현금 전환하므로 사전 버퍼 필요성 낮음.' },
+            { q: '✅ 초기 24개월 버퍼(처음 5년) +0.8%p', a: '6·12개월 버퍼는 EMA200이 이미 하락 방어를 담당하므로 효과 없거나 미미하다. 단, 처음 5년간 24개월치 생활비를 포트폴리오 내 현금으로 유지하는 방식(EARLY24)은 IRR +0.8%p(21.1%→21.9%) 개선이 확인됐다. 별도 RP 계좌 버퍼나 VOO 분산은 TQQQ 복리를 이탈해 오히려 IRR 15~17%로 악화된다.' },
           ].map(({ q, a }) => (
             <li key={q} className="border border-green-200 dark:border-green-800/40 rounded-xl px-4 py-3 bg-green-50/50 dark:bg-green-900/10">
               <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1">{q}</p>

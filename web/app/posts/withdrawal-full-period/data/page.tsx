@@ -86,13 +86,24 @@ function Viewer() {
       <div className="overflow-x-auto">
         <table className="w-full text-xs border-collapse">
           <thead>
-            <tr className="border-b border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400">
-              <th className="py-2 px-2 text-left font-medium">진입 시점</th>
-              <th className="py-2 px-2 text-left font-medium">보유</th>
+            <tr className="text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-gray-800">
+              <th className="py-1.5 px-2 text-left font-medium" rowSpan={2}>진입 시점</th>
+              <th className="py-1.5 px-2 text-left font-medium" rowSpan={2}>보유</th>
               {sel.map(n => (
-                <th key={n} className="py-2 px-2 text-left font-medium whitespace-nowrap" colSpan={view === 'full' ? 4 : 2}>
-                  {stratName(n)} {view === 'full' ? '(인출 포함 수익률 · 꺼내 쓴 돈 · 남은 자산 · 최대 낙폭)' : `(${view}년 시점: 꺼내 쓴 돈 · 남은 자산)`}
+                <th key={n} className="py-1.5 px-2 text-left font-semibold whitespace-nowrap border-l border-gray-100 dark:border-gray-800" colSpan={view === 'full' ? 4 : 2}>
+                  {stratName(n)}
                 </th>
+              ))}
+            </tr>
+            <tr className="border-b border-gray-200 dark:border-gray-700 text-gray-400 dark:text-gray-500">
+              {sel.map(n => view === 'full' ? (
+                [<th key={n+'i'} className="py-1 px-2 text-right font-normal border-l border-gray-100 dark:border-gray-800">수익률</th>,
+                 <th key={n+'w'} className="py-1 px-2 text-right font-normal">꺼내쓴돈</th>,
+                 <th key={n+'f'} className="py-1 px-2 text-right font-normal">남은자산</th>,
+                 <th key={n+'d'} className="py-1 px-2 text-right font-normal">낙폭</th>]
+              ) : (
+                [<th key={n+'w'} className="py-1 px-2 text-right font-normal border-l border-gray-100 dark:border-gray-800">꺼내쓴돈</th>,
+                 <th key={n+'f'} className="py-1 px-2 text-right font-normal">남은자산</th>]
               ))}
             </tr>
           </thead>
@@ -105,13 +116,13 @@ function Viewer() {
                   const c = r[n] as Cell
                   if (!c) return <td key={n} />
                   return view === 'full' ? (
-                    [<td key={n + 'i'} className="py-1.5 px-2 font-mono">{c.i === null || r.y < 1 ? '—' : `${c.i}%`}</td>,
-                     <td key={n + 'w'} className="py-1.5 px-2 font-mono">{fmt(c.w)}</td>,
-                     <td key={n + 'f'} className="py-1.5 px-2 font-mono">{fmt(c.f)}</td>,
-                     <td key={n + 'd'} className="py-1.5 px-2 font-mono text-gray-400">−{c.dd}%</td>]
+                    [<td key={n + 'i'} className="py-1.5 px-2 font-mono text-right border-l border-gray-100 dark:border-gray-800">{c.i === null || r.y < 1 ? '—' : `${c.i}%`}</td>,
+                     <td key={n + 'w'} className="py-1.5 px-2 font-mono text-right">{fmt(c.w)}</td>,
+                     <td key={n + 'f'} className="py-1.5 px-2 font-mono text-right">{fmt(c.f)}</td>,
+                     <td key={n + 'd'} className="py-1.5 px-2 font-mono text-right text-gray-400">−{c.dd}%</td>]
                   ) : (
-                    [<td key={n + 'w'} className="py-1.5 px-2 font-mono">{fmt(c.yw[view])}</td>,
-                     <td key={n + 'f'} className="py-1.5 px-2 font-mono">{fmt(c.y[view])}</td>]
+                    [<td key={n + 'w'} className="py-1.5 px-2 font-mono text-right border-l border-gray-100 dark:border-gray-800">{fmt(c.yw[view])}</td>,
+                     <td key={n + 'f'} className="py-1.5 px-2 font-mono text-right">{fmt(c.y[view])}</td>]
                   )
                 })}
               </tr>

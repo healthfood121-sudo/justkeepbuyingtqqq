@@ -46,9 +46,10 @@ _S = {}
 
 
 def _init(*args):
-    keys = ("tq", "qq", "closes", "ema", "dates", "rp", "rsi", "peaks", "starts")
+    keys = ("tq", "qq", "closes", "ema", "dates", "rp", "rsi", "peaks", "starts", "liv_max")
     _S.update(dict(zip(keys, args)))
     _S["dates"] = pd.DatetimeIndex(_S["dates"])
+    E.LIV_MAX = _S["liv_max"]  # Windows spawn 방식 대응
 
 
 def _job(name):
@@ -88,7 +89,7 @@ def main():
     tq, qq, closes, ema, dates, rp, rsi, peaks = E.load_data()
     starts = E.get_monthly_starts(dates)
     with mp.Pool(min(mp.cpu_count(), len(NAMES)), initializer=_init,
-                 initargs=(tq, qq, closes, ema, dates.tolist(), rp, rsi, peaks, starts)) as pool:
+                 initargs=(tq, qq, closes, ema, dates.tolist(), rp, rsi, peaks, starts, E.LIV_MAX)) as pool:
         raw = dict(pool.map(_job, NAMES))
     sd = [dates[i] for i in starts]
     base = raw["RULE25"]

@@ -72,9 +72,10 @@ _S = {}
 
 
 def _init(*args):
-    keys = ("series", "closes", "ema", "dates", "rp", "rsi", "peaks", "starts")
+    keys = ("series", "closes", "ema", "dates", "rp", "rsi", "peaks", "starts", "liv_max")
     _S.update(dict(zip(keys, args)))
     _S["dates"] = pd.DatetimeIndex(_S["dates"])
+    E.LIV_MAX = _S["liv_max"]  # Windows spawn 방식에서 부모 설정이 전달되지 않아 직접 설정
 
 
 def irr(flows, final_eok, years):
@@ -124,7 +125,7 @@ def main():
         E.SWAP = False
         out_path = out_path.with_name(out_path.stem + "_fee.json")
     if not args.cap:
-        E.LIV_MAX = float("inf")   # 상한 없음 — fork된 워커가 그대로 물려받음
+        E.LIV_MAX = float("inf")   # 상한 없음 — initargs로 워커에 전달 (Windows spawn 방식 대응)
     t0 = time.time()
     tq, qq, closes, ema, dates, rp, rsi, peaks = E.load_data()
 
@@ -140,7 +141,7 @@ def main():
     starts = E.get_monthly_starts(dates)
     labels = [dates[i].strftime("%Y-%m") for i in starts]
     with mp.Pool(min(mp.cpu_count(), len(STRATS)), initializer=_init,
-                 initargs=(series, closes, ema, dates.tolist(), rp, rsi, peaks, starts)) as pool:
+                 initargs=(series, closes, ema, dates.tolist(), rp, rsi, peaks, starts, E.LIV_MAX)) as pool:
         raw = dict(pool.map(_job, range(len(STRATS)), chunksize=1))
 
     base = raw["S0"]
