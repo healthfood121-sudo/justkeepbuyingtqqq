@@ -87,7 +87,7 @@ export default function LivingStabilityPage() {
 
         <H2>정리</H2>
         <P>
-          권장 전략은 그대로 두되, 생활비는 1년에 한 번 정하는 쪽을 권한다. 비용이 없고 덜 흔들린다.
+          생활비 1년 고정은 이제 기본 권장에 포함됐다. 비용이 없어 쓰지 않을 이유가 없다.
           자산 최저점을 더 지키고 싶다면 기본 현금 20%를 떼어 두는 방법이 있고, 그 대가는 연 2%p 남짓이다.
           시작 시점별 결과는 <Link href="/posts/living-stability/data" className="text-blue-600 dark:text-blue-400 underline">데이터 페이지</Link>에 있다.
         </P>
