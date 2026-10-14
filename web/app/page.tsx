@@ -129,16 +129,31 @@ export default function HomePage() {
                 <span className="text-xs font-bold text-purple-500 dark:text-purple-400 tracking-wide">JUST KEEP SELLING</span>
                 <span className="text-base font-bold text-gray-900 dark:text-white">인출식</span>
               </div>
-              {/* 휴대폰에서 규칙 문장과 수익률이 한 줄에 겹치지 않도록 두 줄로 나눈다 */}
-              <div className="mb-3">
-                <p className="text-xs text-purple-700 dark:text-purple-300 break-keep">
-                  <strong>권장: 25% 룰</strong> — 52주 최고가에서 25% 빠지면 매도
-                </p>
-                <Link href="/posts/withdrawal-guide#recommended" title="1971년 이후 모든 시작 시점의 생활비 포함 연 수익률 중간값 — 근거 보기"
-                  className="inline-block mt-1 text-[11px] text-purple-600 dark:text-purple-400 underline decoration-dotted underline-offset-2 break-keep">
-                  1971년 이후 인출 포함 연 <strong className="font-mono">22.9%</strong> (중간값) · 근거 보기
-                </Link>
+
+              {/* 규칙 ①②③ */}
+              <div className="bg-white/70 dark:bg-gray-900/60 border border-purple-200 dark:border-purple-700/30 rounded-xl px-3 py-3 mb-2">
+                <div className="space-y-1.5 text-xs text-gray-700 dark:text-gray-300">
+                  <div className="flex gap-2">
+                    <span className="font-bold text-purple-600 dark:text-purple-400 shrink-0">①</span>
+                    <span><strong className="text-gray-900 dark:text-white">매도</strong> — 52주 최고가에서 25% 빠지면 TQQQ 전량 매도</span>
+                  </div>
+                  <div className="flex gap-2">
+                    <span className="font-bold text-purple-600 dark:text-purple-400 shrink-0">②</span>
+                    <span><strong className="text-gray-900 dark:text-white">매수</strong> — 200일 평균선 위 15일 연속이면 전액 재매수</span>
+                  </div>
+                  <div className="flex gap-2">
+                    <span className="font-bold text-purple-600 dark:text-purple-400 shrink-0">③</span>
+                    <span><strong className="text-gray-900 dark:text-white">생활비</strong> — 매달 총자산의 0.3~0.7% 인출</span>
+                  </div>
+                </div>
               </div>
+
+              <Link href="/posts/withdrawal-guide#recommended"
+                title="1971년 이후 모든 시작 시점의 생활비 포함 연 수익률 중간값 — 근거 보기"
+                className="inline-block mb-3 text-[11px] text-purple-600 dark:text-purple-400 underline decoration-dotted underline-offset-2 break-keep">
+                1971년 이후 인출 포함 연 <strong className="font-mono">21.5%</strong> (중간값) · 근거 보기
+              </Link>
+
               <WithdrawalSignal />
               <LivingCalc />
               <div className="flex flex-wrap gap-x-4 gap-y-1">
