@@ -220,8 +220,8 @@ export default function SyntheticDataPage() {
                   <tr className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
                     <th className="py-2.5 px-4 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">날짜</th>
                     <th className="py-2.5 px-4 text-right text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">
-                      NDX 지수
-                      <span className="block text-[10px] font-normal text-gray-400 dark:text-gray-500">합성가격 계산에 쓰인 원지수</span>
+                      나스닥 원지수
+                      <span className="block text-[10px] font-normal text-gray-400 dark:text-gray-500">~1985: 종합지수 · 1985~: NDX100</span>
                     </th>
                     <th className="py-2.5 px-4 text-right text-blue-600 dark:text-blue-400 font-medium whitespace-nowrap">
                       TQQQ 합성
@@ -302,7 +302,7 @@ export default function SyntheticDataPage() {
             {/* 컬럼 설명 */}
             <div className="mt-10 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 px-5 py-4 text-xs text-gray-500 dark:text-gray-400 space-y-1">
               <p className="font-semibold text-gray-700 dark:text-gray-300 mb-2">컬럼 설명</p>
-              <p><span className="font-mono text-gray-600 dark:text-gray-300">NDX 지수</span> — 나스닥100 원지수 (스플라이스 보정 후 연속값, 1985-10-01 이전은 나스닥 종합지수 비율보정)</p>
+              <p><span className="font-mono text-gray-600 dark:text-gray-300">나스닥 원지수</span> — 1985-10-01 이전: 나스닥 종합지수(Composite), 이후: NDX(나스닥100). 전환 시점에서 스플라이스 비율보정 적용해 연속값으로 만든 것.</p>
               <p><span className="font-mono text-blue-600 dark:text-blue-400">TQQQ 합성</span> — 운용보수 0.88% + 스왑 차입 이자(기준금리+0.50%) × 2 반영. 1971-02-05 = 100</p>
               <p><span className="font-mono text-gray-600 dark:text-gray-300">QLD 합성</span> — 운용보수 0.95% + 스왑 차입 이자(기준금리+0.50%) × 1 반영. 1971-02-05 = 100</p>
               <p><span className="font-mono text-gray-600 dark:text-gray-300">나스닥100 합성</span> — 운용보수 0.20% 반영. 차입 이자 없음. 1971-02-05 = 100</p>
