@@ -128,14 +128,15 @@ export default function HomePage() {
               <div className="flex items-baseline gap-2 mb-3">
                 <span className="text-xs font-bold text-purple-500 dark:text-purple-400 tracking-wide">JUST KEEP SELLING</span>
                 <span className="text-base font-bold text-gray-900 dark:text-white">인출식</span>
+                <span className="text-sm font-bold text-purple-600 dark:text-purple-300">나스닥100 25% 룰</span>
               </div>
 
-              {/* 규칙 ①②③ */}
-              <div className="bg-white/70 dark:bg-gray-900/60 border border-purple-200 dark:border-purple-700/30 rounded-xl px-3 py-3 mb-2">
+              {/* 규칙 ①②③ + 수익률 */}
+              <div className="bg-white/70 dark:bg-gray-900/60 border border-purple-200 dark:border-purple-700/30 rounded-xl px-3 py-3 mb-3">
                 <div className="space-y-1.5 text-xs text-gray-700 dark:text-gray-300">
                   <div className="flex gap-2">
                     <span className="font-bold text-purple-600 dark:text-purple-400 shrink-0">①</span>
-                    <span><strong className="text-gray-900 dark:text-white">매도</strong> — 52주 최고가에서 25% 빠지면 TQQQ 전량 매도</span>
+                    <span><strong className="text-gray-900 dark:text-white">매도</strong> — 나스닥100이 52주 최고가에서 25% 빠지면 TQQQ 전량 매도</span>
                   </div>
                   <div className="flex gap-2">
                     <span className="font-bold text-purple-600 dark:text-purple-400 shrink-0">②</span>
@@ -146,11 +147,10 @@ export default function HomePage() {
                     <span><strong className="text-gray-900 dark:text-white">생활비</strong> — 매달 총자산의 0.3~0.7% 인출</span>
                   </div>
                 </div>
+                <p className="text-right text-[10px] text-purple-500 dark:text-purple-400 mt-2">
+                  1971년 이후 인출 포함 연 <strong>21.5%</strong> (중간값)
+                </p>
               </div>
-
-              <p className="mb-3 text-[11px] text-purple-600 dark:text-purple-400 break-keep">
-                1971년 이후 인출 포함 연 <strong className="font-mono">21.5%</strong> (중간값)
-              </p>
 
               <WithdrawalSignal />
               <LivingCalc />
