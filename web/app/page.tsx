@@ -180,7 +180,10 @@ export default function HomePage() {
       <div className="border-t border-gray-200 dark:border-gray-800">
         <div className="max-w-7xl mx-auto px-4 pt-6 pb-2">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">백테스트 결과</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">내 투자 설정 기준 · 1971년~2026년 9월 전체 진입 시점</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            내 투자 설정 기준 · 1971년~2026년 9월 전체 진입 시점 ·{' '}
+            <Link href="/posts/synthetic-methodology" className="text-blue-400 dark:text-blue-500 hover:underline">합성가격 계산법</Link>
+          </p>
         </div>
         <HomeSimulator />
       </div>
