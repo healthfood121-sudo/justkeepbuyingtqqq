@@ -156,7 +156,7 @@ export default function HomePage() {
                   href="/posts/withdrawal-guide"
                   className="text-xs text-purple-600 dark:text-purple-400 hover:underline font-semibold"
                 >
-                  1971년 이후 인출 포함 연 <strong>21.5%</strong> (중간값) — 방법론 상세 보기 →
+                  방법론 상세 보기 — 1971년 이후 인출 포함 연 <strong>21.5%</strong> (중간값) →
                 </Link>
                 <Link
                   href="/simulator/withdrawal"
