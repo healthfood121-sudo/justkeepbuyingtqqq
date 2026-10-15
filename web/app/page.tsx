@@ -148,11 +148,9 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <Link href="/posts/withdrawal-guide#recommended"
-                title="1971년 이후 모든 시작 시점의 생활비 포함 연 수익률 중간값 — 근거 보기"
-                className="inline-block mb-3 text-[11px] text-purple-600 dark:text-purple-400 underline decoration-dotted underline-offset-2 break-keep">
-                1971년 이후 인출 포함 연 <strong className="font-mono">21.5%</strong> (중간값) · 근거 보기
-              </Link>
+              <p className="mb-3 text-[11px] text-purple-600 dark:text-purple-400 break-keep">
+                1971년 이후 인출 포함 연 <strong className="font-mono">21.5%</strong> (중간값)
+              </p>
 
               <WithdrawalSignal />
               <LivingCalc />
