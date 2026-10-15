@@ -184,7 +184,7 @@ export default function WithdrawalGuidePage() {
               step: '2단계',
               color: 'border-blue-300 dark:border-blue-700',
               badge: 'bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400',
-              title: '★ EMA200 연속 15일 + 동적 인출률 (S0) — 현재 권장',
+              title: '★ EMA200 연속 15일 + 동적 인출률 (S0) — 당시 채택',
               result: '중간값 130억 (스왑금리·양도세 반영) · 초기 계산 1,109억 · 생존율 100%',
               desc: '나스닥100이 EMA200 아래에서 15거래일 연속이면 전액 현금 전환. 95가지 설정값 조합 탐색에서 최적 조합. 매수 후 1일 재매도 사례 없음 — 구조적 안전장치.',
               href: '/posts/withdrawal-new-ideas',
@@ -299,7 +299,7 @@ export default function WithdrawalGuidePage() {
           <div className="space-y-0">
             <AnalysisLink
               href="/posts/withdrawal-new-ideas"
-              title="인출 전략 새 아이디어 8가지 — S0가 대부분에게 최선"
+              title="인출 전략 새 아이디어 8가지 테스트"
               desc="S0(EMA200 15일)를 기준으로 RSI 조기 재진입·골든크로스·동적 레버리지 등 8가지 비교. D10GK는 수익 극대화 옵션."
             />
             <AnalysisLink
