@@ -98,7 +98,7 @@ export default function SyntheticMethodologyPage() {
         <Callout color="green">
           <strong>이 글의 목적:</strong> 이 사이트의 모든 백테스트가 사용하는 합성 가격이 어떤 수식으로,
           어떤 입력 데이터를 써서 만들어졌는지 공개한다.
-          수식과 파라미터를 직접 확인하고 싶거나, 데이터를 직접 내려받아
+          수식과 설정값을 직접 확인하고 싶거나, 데이터를 직접 내려받아
           검증하고 싶은 분을 위한 문서다.
         </Callout>
 
@@ -191,8 +191,8 @@ export default function SyntheticMethodologyPage() {
           252는 연간 거래일 수로 이자와 보수를 하루치로 환산하는 데 쓴다.
         </P>
 
-        {/* 4. 파라미터 출처 */}
-        <H2>파라미터 값과 출처</H2>
+        {/* 4. 설정값 출처 */}
+        <H2>설정값과 출처</H2>
 
         <Table
           headers={['항목', '값', '출처']}

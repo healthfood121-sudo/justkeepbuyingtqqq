@@ -180,7 +180,7 @@ function CohortChart({ start, monthly }: { start: string; monthly: MonthlyData }
         tension: 0.1,
       },
       {
-        label: 'B안 (MA200기반)',
+        label: 'B안 (200일 평균선 기반)',
         data: bValues,
         borderColor: '#3b82f6',
         backgroundColor: 'transparent',

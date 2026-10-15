@@ -328,7 +328,7 @@ export default function WithdrawalGuidePage() {
             />
             <AnalysisLink
               href="/posts/withdrawal-comparison"
-              title="인출 전략 비교: SP500 기반 vs NDX 200MA 기반"
+              title="인출 전략 비교: SP500 기반 vs NDX 200일 평균선 기반"
               desc="418가지 시작 시점 비교. 두 전략의 중앙값 12.7억 vs 203억 차이가 발생하는 원인 분석."
             />
             <AnalysisLink

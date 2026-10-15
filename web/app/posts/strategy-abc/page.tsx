@@ -82,7 +82,7 @@ export default function StrategyAbcPage() {
         </div>
 
         <Callout color="blue">
-          <strong>백테스트 조건:</strong> 일 20만원 적립 · 거치금(B/C) 2.5억 · 목표 10억 · 1971~2025년 전체 코호트
+          <strong>백테스트 조건:</strong> 일 20만원 적립 · 거치금(B/C) 2.5억 · 목표 10억 · 1971~2025년 전체 진입 시점
         </Callout>
 
         {/* 1. 세 전략 */}
@@ -143,7 +143,7 @@ export default function StrategyAbcPage() {
         <P>
           이유는 단순하다. A전략은 시장이 하락할수록 더 많은 주식을 싸게 살 수 있다.
           B전략은 2.5억 한도에 도달하는 순간 매수를 멈추기 때문에, 그 이후 시장이 무너지면
-          바닥에서 추가 매수할 기회를 잃는다. <strong className="text-gray-900 dark:text-white">닷컴버블 직전에 한도를 채운 코호트</strong>가
+          바닥에서 추가 매수할 기회를 잃는다. <strong className="text-gray-900 dark:text-white">닷컴버블 직전에 한도를 채운 경우</strong>가
           가장 오래 걸린 케이스다.
         </P>
 

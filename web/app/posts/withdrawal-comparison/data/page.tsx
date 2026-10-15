@@ -245,12 +245,12 @@ function DataPageInner() {
           </h1>
           <CostToggle withCosts={withCosts} onChange={setWithCosts} />
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            초기 10억, 월 1% 인출, 20년 시뮬레이션 · A안=SP500기반 / B안=MA200기반
+            초기 10억, 월 1% 인출, 20년 시뮬레이션 · A안=SP500기반 / B안=200일 평균선 기반
           </p>
         </div>
 
         <SummaryBanner s={data.summary.a} label="A안 (SP500 드로다운 기반)" />
-        <SummaryBanner s={data.summary.b} label="B안 (NDX MA200 기반)" />
+        <SummaryBanner s={data.summary.b} label="B안 (NDX 200일 평균선 기반)" />
 
         {/* 필터 */}
         <div className="flex flex-wrap gap-2 mb-4">

@@ -125,11 +125,11 @@ export default function WithdrawalComparisonPost() {
             ← 목록으로
           </Link>
           <h1 className="text-3xl font-black leading-tight mb-4">
-            인출 전략 비교: SP500 드로다운 기반 vs NDX 200MA 기반
+            인출 전략 비교: SP500 드로다운 기반 vs NDX 200일 평균선 기반
           </h1>
           <div className="flex items-center gap-3 flex-wrap">
             <span className="text-sm text-gray-400">2026-10-01</span>
-            {['인출', '백테스트', 'TQQQ', '200MA', '비교'].map((t) => (
+            {['인출', '백테스트', 'TQQQ', '200일 평균선', '비교'].map((t) => (
               <Tag key={t}>{t}</Tag>
             ))}
           </div>
@@ -147,12 +147,12 @@ export default function WithdrawalComparisonPost() {
         <H2>두 전략의 핵심 차이</H2>
 
         <Table
-          headers={['', 'A안 (SP500 드로다운 기반)', 'B안 (NDX 200MA 기반)']}
+          headers={['', 'A안 (SP500 드로다운 기반)', 'B안 (NDX 200일 평균선 기반)']}
           rows={[
-            ['인출 중단 신호', 'SP500 고점 대비 −20% 하락', 'NDX 200일 이동평균선 이탈'],
+            ['인출 중단 신호', 'SP500 고점 대비 −20% 하락', 'NDX 200일 이동평균선(MA200) 이탈'],
             ['중단 방식', '주식 그대로 보유 + 인출만 중단', '전량 매도 → 현금 전환'],
             ['하락장 생활비', '인출 중단 (현금 없음)', '현금/외화RP에서 충당'],
-            ['재매수 신호', 'SP500 회복 (−20% 이상)', 'NDX가 MA200 이상 회복'],
+            ['재매수 신호', 'SP500 회복 (−20% 이상)', 'NDX가 200일 평균선 이상 회복'],
             ['인출 한도', '없음 (포트폴리오 × 1%)', '생활비 캡 (월 최대 1500만)'],
             ['세금 처리', '없음 (단순 비율 인출)', '수익분 22%, 250만원 기본공제'],
           ]}
@@ -160,7 +160,7 @@ export default function WithdrawalComparisonPost() {
 
         <P>
           A안은 단순합니다. 시장이 나쁘면 인출을 멈추고 기다립니다.
-          B안은 더 복잡합니다. MA200 아래면 전량 현금으로 바꾸고, 현금에서 이자를 받으면서 생활비를 충당합니다.
+          B안은 더 복잡합니다. 200일 평균선 아래면 전량 현금으로 바꾸고, 현금에서 이자를 받으면서 생활비를 충당합니다.
           어느 쪽이 실제로 더 나은지 데이터로 확인했습니다.
         </P>
 
@@ -175,7 +175,7 @@ export default function WithdrawalComparisonPost() {
           <DataLink href="/posts/withdrawal-comparison/data" />
         </div>
         <Table
-          headers={['지표', 'A안 (SP500기반)', 'B안 (MA200기반)']}
+          headers={['지표', 'A안 (SP500기반)', 'B안 (200일 평균선 기반)']}
           rows={[
             ['시작 시점 수', sa.total, sb.total],
             ['파산 횟수', sa.bankrupt, sb.bankrupt],
@@ -207,7 +207,7 @@ export default function WithdrawalComparisonPost() {
           닷컴버블로 TQQQ 합성가격이 99% 이상 폭락하는 구간에서{' '}
           <strong className="text-gray-900 dark:text-white">주식을 그대로 보유</strong>하면서
           인출만 중단했기 때문입니다.
-          반면 B안은 MA200 아래에서 전량 현금으로 전환하여 붕괴 구간을 피했습니다.
+          반면 B안은 200일 평균선 아래에서 전량 현금으로 전환하여 붕괴 구간을 피했습니다.
         </P>
         <P>
           A안이 인출 총액이 많아 보이지만, 이는 버블 정점에서 10억이 단기간에 수백억으로
@@ -228,7 +228,7 @@ export default function WithdrawalComparisonPost() {
         <P>
           닷컴버블 정점(2000-03) 진입은 두 전략 모두 극도로 위험합니다.
           B안은 이 경우 파산(잔여자산 0)에 도달했습니다.
-          MA200 이탈 → 현금 전환 후 재매수 시점에 여전히 하락이 이어졌기 때문입니다.
+          200일 평균선 이탈 → 현금 전환 후 재매수 시점에 여전히 하락이 이어졌기 때문입니다.
           A안은 극소의 잔여자산({Math.round(byStart['2000-03'].a.final * 10000).toLocaleString('ko-KR')}만원)으로 겨우 생존했습니다.
         </P>
 
@@ -244,7 +244,7 @@ export default function WithdrawalComparisonPost() {
         />
         <P>
           바닥 이후 진입하면 두 전략 모두 크게 성장합니다. B안이 더 우세합니다.
-          MA200 필터 덕분에 2008년 금융위기 구간을 피하고, 회복 후 재매수하여 수익을 극대화합니다.
+          200일 평균선 필터 덕분에 2008년 금융위기 구간을 피하고, 회복 후 재매수하여 수익을 극대화합니다.
         </P>
 
         <H2>인터랙티브 차트</H2>
@@ -263,11 +263,11 @@ export default function WithdrawalComparisonPost() {
 
         <ul className="list-none space-y-3 mb-8">
           {[
-            'B안은 중앙값 최종자산이 203억으로 A안(12.7억)보다 월등히 높습니다. MA200 필터가 장기적으로 하락 구간을 효과적으로 회피합니다.',
+            'B안은 중앙값 최종자산이 203억으로 A안(12.7억)보다 월등히 높습니다. 200일 평균선 필터가 장기적으로 하락 구간을 효과적으로 회피합니다.',
             'A안은 인출 한도가 없어 포트폴리오가 클 때 더 많이 받아가지만, 하락장에서 주식을 그대로 보유하는 리스크를 집니다.',
             'B안의 생활비 캡(월 최대 1500만)은 자산 보존에 유리하지만, 포트폴리오가 작을 때 생활비가 부족할 수 있습니다.',
             '두 전략 모두 닷컴버블 정점 진입 시점(2000년 초)에서 취약합니다. 이 구간은 어떤 전략도 완전한 보호가 어렵습니다.',
-            '현실에서는 두 전략을 결합하는 것이 유리합니다: MA200 필터 + SP500 드로다운 보조 지표를 함께 활용.',
+            '현실에서는 두 전략을 결합하는 것이 유리합니다: 200일 평균선 필터 + SP500 드로다운 보조 지표를 함께 활용.',
           ].map((item, i) => (
             <li key={i} className="flex gap-3 text-gray-600 dark:text-gray-300 text-sm">
               <span className="text-blue-500 dark:text-blue-400 mt-0.5 shrink-0">→</span>

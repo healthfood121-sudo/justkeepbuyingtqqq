@@ -481,7 +481,7 @@ export default function SyntheticNdx1929Post() {
           </h1>
           <p className="text-base text-gray-500 dark:text-gray-400 leading-relaxed mb-4">
             NDX 데이터는 1971년부터만 존재한다. 대공황을 테스트하려면 SP500으로 가상 NDX를 만들어야 한다.
-            베타를 어떻게 잡느냐에 따라 결과가 크게 달라지는데, 그 과정 전체를 기록한다.
+            NDX가 SP500보다 얼마나 크게 움직이는지(베타)를 어떻게 잡느냐에 따라 결과가 크게 달라지는데, 그 과정 전체를 기록한다.
           </p>
           <div className="flex items-center gap-3 flex-wrap">
             <span className="text-sm text-gray-400">2026-10-01</span>
@@ -517,12 +517,12 @@ export default function SyntheticNdx1929Post() {
         <div className="bg-gray-50 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-700 rounded-xl px-5 py-4 mb-6 font-mono text-sm text-gray-700 dark:text-gray-200 space-y-1">
           <div>NDX_daily_ret = β × SP500_daily_ret + α</div>
           <div className="text-gray-400 dark:text-gray-500 text-xs mt-2">
-            β : NDX 수익률이 SP500 대비 얼마나 증폭되는가 (OLS 기울기)<br />
-            α : SP500과 무관한 NDX 고유의 일별 초과수익 (OLS 절편)
+            β : NDX 수익률이 SP500 대비 얼마나 증폭되는가 (선형 회귀의 기울기)<br />
+            α : SP500과 무관한 NDX 고유의 일별 초과수익 (선형 회귀의 절편)
           </div>
         </div>
         <P>
-          β와 α를 실측 기간(1971~2026)의 일별 데이터로 OLS 회귀해서 구했다.
+          β와 α를 실측 기간(1971~2026)의 일별 데이터로 선형 회귀(OLS)해서 구했다.
           이 계수를 1971년 이전 SP500 일별 수익률에 적용해 가상 NDX를 만들고,
           실제 NDX가 시작되는 1971년 2월 5일 시점에서 자연스럽게 접합했다.
         </P>
