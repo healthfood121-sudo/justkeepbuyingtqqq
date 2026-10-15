@@ -115,10 +115,12 @@ export default function AccumulationGuidePage() {
           합성가격₀ = 100<br />
           합성가격ₜ = 합성가격ₜ₋₁ × (1 + 나스닥 일수익률 × 레버리지)
         </FormulaBlock>
-        <P>
-          변동성 끌림은 이 누적 곱셈에 자동 반영된다. 운용비용(TQQQ 0.88%/년)은 반영된다.
-          스왑금리비용은 기본 미반영이며 시뮬레이터의 [+ 스왑금리] 버튼으로 반영 버전을 확인할 수 있다. 추적오차는 미반영.
-        </P>
+        <ul className="list-none space-y-1 mb-6 text-sm text-gray-600 dark:text-gray-300 ml-1">
+          <li>· 변동성 끌림: 누적 곱셈에 자동 반영</li>
+          <li>· 운용비용 (0.88%/년): 반영</li>
+          <li>· 스왑금리비용: 기본 미반영 — 시뮬레이터의 [+ 스왑금리] 버튼으로 반영 버전 확인 가능</li>
+          <li>· 추적오차: 미반영</li>
+        </ul>
 
         <Callout color="yellow">
           <strong>기반 데이터: 나스닥 종합지수 + 나스닥100 이어붙임.</strong>{' '}
