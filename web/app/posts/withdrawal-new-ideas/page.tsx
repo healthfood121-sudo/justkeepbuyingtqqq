@@ -121,7 +121,7 @@ export default function WithdrawalNewIdeasPage() {
         <LegacyResearchNote />
 
         <Callout color="green">
-          <strong>핵심 발견: RSI 조기 재진입이 압도적으로 우세</strong><br />
+          <strong>핵심 발견: 상대강도지수(RSI) 조기 재진입이 압도적으로 우세</strong><br />
           418가지 시작 시점 기준 중앙값 <strong>3,232억</strong> (현재 최선 200일 지수이동평균(EMA200) 15일 기준 대비 +175%). 생존율 100%.
           RSI 14일 지수가 30 미만으로 떨어질 때 EMA200 조건 전이라도 즉시 재매수하는 방식이 검증됐다.
         </Callout>

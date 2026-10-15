@@ -204,7 +204,7 @@ export default function WithdrawalGuidePage() {
                 badge: 'bg-purple-50 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400',
                 title: '8가지 새 아이디어 테스트',
                 result: 'RSI 조기 재진입 → 중간값 724억 (스왑금리 반영)',
-                desc: '8가지 비교. RSI 30 미만이면 EMA200을 기다리지 않고 즉시 재매수하는 방식이 압도적 우세.',
+                desc: '8가지 비교. 상대강도지수(RSI) 30 미만이면 EMA200을 기다리지 않고 즉시 재매수하는 방식이 압도적 우세.',
                 href: '/posts/withdrawal-new-ideas',
                 link: '테스트 결과 →',
               },
