@@ -33,6 +33,8 @@ OUT_DIR  = Path(__file__).parent.parent / "output" / "shorts"
 W, H             = 1080, 1920
 TARGET_SEC       = 60          # 정확한 영상 길이 (BGM 1분에 맞춤)
 OUTRO_SEC        = 5           # 마지막 고정 프레임 시간
+INTRO_HOLD_SEC   = 5           # 인트로 텍스트 불투명 유지 시간
+INTRO_FADE_SEC   = 3           # 인트로 텍스트 fade out 시간
 ANIM_SEC         = TARGET_SEC - OUTRO_SEC   # 애니메이션 구간 (55초)
 BASE_FPS         = 30
 
@@ -156,7 +158,31 @@ CHART_W    = W - PAD * 2
 RIGHT_SAFE = 130    # 오른쪽 안전여백 (YouTube 리액션 버튼 가림 방지)
 
 
-def render(snap: dict, hist_port: list[float], hist_inv: list[float], start_date, mode: str = 'standard') -> bytes:
+def render_intro_overlay(draw: ImageDraw.ImageDraw, start_ym: str, alpha: int):
+    """인트로 텍스트 오버레이 (차트 위에 fade out)."""
+    if alpha <= 0:
+        return
+
+    yr, mo = start_ym.split("-")
+    mo_kr = ["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"][int(mo)-1]
+
+    # 반투명 박스
+    bx, by, bw, bh = 60, 860, W - 120, 380
+    draw.rounded_rectangle([bx, by, bx + bw, by + bh], radius=24,
+                           fill=(10, 10, 10, int(alpha * 0.82)))
+
+    # 텍스트 3줄
+    line1 = f"TQQQ {yr}년 {mo_kr}부터"
+    line2 = "매일 20만 원 투자"
+    line3 = "10억까지 얼마나 걸릴까?"
+
+    cy = by + 46
+    ct(draw, line1, W // 2, cy,        fnt(54, bold=True), (255, 255, 255, alpha))
+    ct(draw, line2, W // 2, cy + 88,   fnt(72, bold=True), (255, 220,  80, alpha))
+    ct(draw, line3, W // 2, cy + 178,  fnt(52, bold=True), (255, 255, 255, alpha))
+
+
+def render(snap: dict, hist_port: list[float], hist_inv: list[float], start_date, mode: str = 'standard', intro_alpha: int = 0) -> bytes:
     img  = Image.new("RGB", (W, H), BG)
     draw = ImageDraw.Draw(img, "RGBA")
 
@@ -197,7 +223,7 @@ def render(snap: dict, hist_port: list[float], hist_inv: list[float], start_date
     draw.text((PAD + 24, Y + 38), "총 평가손익", font=fnt(34, bold=True), fill=BLACK)
     pnl_str = f"{sign}{fmt_krw(snap['pnl_krw'])}"
     ct(draw, pnl_str, W // 2, Y + 30, fnt(46, bold=True), color)
-    pct_str = f"{sign}{abs(snap['pnl_pct']):.2f}%  {arr}"
+    pct_str = f"{sign}{abs(snap['pnl_pct']):.2f}%"
     rt(draw, pct_str, W - PAD - 24, Y + 38, fnt(34, bold=True), color)
 
     # 구분선
@@ -310,6 +336,10 @@ def render(snap: dict, hist_port: list[float], hist_inv: list[float], start_date
     draw.rounded_rectangle([PAD, BY, PAD + fill_w, BY + 22], radius=11, fill=CBLUE)
     ct(draw, f"목표 달성 {progress * 100:.1f}%", W // 2, BY + 38, fnt(26), DGRAY)
 
+    # ─── 인트로 오버레이 (fade out) ───────────────────────────
+    start_ym = start_date.strftime("%Y-%m")
+    render_intro_overlay(draw, start_ym, intro_alpha)
+
     buf = BytesIO()
     img.save(buf, format="PNG")
     return buf.getvalue()
@@ -364,6 +394,11 @@ def make_video(start_ym: str, out_path: Path, mode: str = 'standard'):
     frames_to_render = list(range(0, total, step))
     # 정확히 TARGET_SEC초가 되도록 아웃트로 프레임 수 역산
     outro_frames = TARGET_SEC * fps - len(frames_to_render)
+
+    # 인트로 fade 프레임 수
+    intro_hold_f = int(INTRO_HOLD_SEC * fps)
+    intro_fade_f = int(INTRO_FADE_SEC * fps)
+
     print(f"      → FPS={fps}, step={step}, 총길이={TARGET_SEC}초 (애니={len(frames_to_render)/fps:.1f}s + 아웃트로={outro_frames/fps:.1f}s)")
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -393,7 +428,17 @@ def make_video(start_ym: str, out_path: Path, mode: str = 'standard'):
         # 히스토리는 현재 인덱스까지
         hp = [snaps[j]["port_krw"] for j in range(0, i + 1, max(1, (i + 1) // 300))]
         hi = [snaps[j]["inv_krw"]  for j in range(0, i + 1, max(1, (i + 1) // 300))]
-        frame = render(snap, hp, hi, start_date, mode)
+
+        # 인트로 alpha 계산
+        if idx < intro_hold_f:
+            intro_alpha = 255
+        elif idx < intro_hold_f + intro_fade_f:
+            ratio = (idx - intro_hold_f) / intro_fade_f
+            intro_alpha = int(255 * (1.0 - ratio))
+        else:
+            intro_alpha = 0
+
+        frame = render(snap, hp, hi, start_date, mode, intro_alpha=intro_alpha)
         proc.stdin.write(frame)
         last_frame = frame
 
