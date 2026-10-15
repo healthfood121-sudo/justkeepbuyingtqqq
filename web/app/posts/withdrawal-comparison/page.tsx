@@ -183,8 +183,8 @@ export default function WithdrawalComparisonPost() {
             ['20년 후 평균 잔여자산', `${sa.avg_final}억`, `${sb.avg_final}억`],
             ['20년 후 중앙값 잔여자산', `${sa.med_final}억`, `${sb.med_final}억`],
             ['평균 누적 인출액', `${sa.avg_withdrawn}억`, `${sb.avg_withdrawn}억`],
-            ['최소 최솟값 (최악 구간)', `${sa.min_of_min}억`, `${sb.min_of_min}억`],
-            ['생존한 경우 평균 연평균 수익률', `${sa.avg_cagr}%`, `${sb.avg_cagr}%`],
+            ['전 기간 최저 잔액 (최악 시점)', `${sa.min_of_min}억`, `${sb.min_of_min}억`],
+            ['연평균 수익률 (생존한 경우 평균)', `${sa.avg_cagr}%`, `${sb.avg_cagr}%`],
           ]}
         />
 

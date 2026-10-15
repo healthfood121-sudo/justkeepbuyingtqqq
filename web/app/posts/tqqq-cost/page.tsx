@@ -190,11 +190,11 @@ export default function TqqCostPage() {
         <Table
           headers={['시기', 'SOFR', '스왑 차입 비용', '운용보수', '연간 총 비용']}
           rows={[
-            ['2020~2021 (제로금리)',  '0.05%', '(0.05+0.5)×2 = 1.1%', '0.82%', <strong className="text-orange-600 dark:text-orange-400">1.92%</strong>],
-            ['2022 (금리 인상 초)',  '1.50%', '(1.5+0.5)×2 = 4.0%',  '0.82%', <strong className="text-orange-600 dark:text-orange-400">4.82%</strong>],
-            ['2023 (고금리 정점)',   '5.33%', '(5.33+0.5)×2 = 11.7%', '0.82%', <strong className="text-red-600 dark:text-red-400">12.5%</strong>],
-            ['2024',                 '5.08%', '(5.08+0.5)×2 = 11.2%', '0.82%', <strong className="text-red-600 dark:text-red-400">12.0%</strong>],
-            ['2026년 현재',          '4.00%', '(4.0+0.5)×2 = 9.0%',  '0.82%', <strong className="text-orange-600 dark:text-orange-400">9.82%</strong>],
+            ['2020~2021 (제로금리)',  '0.05%', '1.1%', '0.82%', <strong className="text-orange-600 dark:text-orange-400">1.92%</strong>],
+            ['2022 (금리 인상 초)',  '1.50%', '4.0%',  '0.82%', <strong className="text-orange-600 dark:text-orange-400">4.82%</strong>],
+            ['2023 (고금리 정점)',   '5.33%', '11.7%', '0.82%', <strong className="text-red-600 dark:text-red-400">12.5%</strong>],
+            ['2024',                 '5.08%', '11.2%', '0.82%', <strong className="text-red-600 dark:text-red-400">12.0%</strong>],
+            ['2026년 현재',          '4.00%', '9.0%',  '0.82%', <strong className="text-orange-600 dark:text-orange-400">9.82%</strong>],
           ]}
           note="스왑 차입 비용은 NAV 대비 연간 기준. 일별 복리 계산 시 실제 연간 수치는 소폭 다를 수 있음."
         />

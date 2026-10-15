@@ -29,10 +29,10 @@ const LEVERAGES = [
 ]
 
 const BETAS = [
-  { key: 'pre-tech', label: 'β=0.767  pre-tech (1971~1990)', color: '#9ca3af' },
-  { key: 'recent',   label: 'β=1.138  recent (2011~2026)',   color: '#3b82f6' },
-  { key: 'tech-era', label: 'β=1.244  tech-era (1991~2026)', color: '#10b981' },
-  { key: 'latest',   label: 'β=1.294  latest (2021~2026)',   color: '#a855f7' },
+  { key: 'pre-tech', label: 'β=0.767  기술주 이전 (1971~1990)', color: '#9ca3af' },
+  { key: 'recent',   label: 'β=1.138  최근 15년 (2011~2026)',   color: '#3b82f6' },
+  { key: 'tech-era', label: 'β=1.244  기술주 시대 (1991~2026)', color: '#10b981' },
+  { key: 'latest',   label: 'β=1.294  최근 5년 (2021~2026)',   color: '#a855f7' },
   { key: 'real',     label: '실제 NDX (1971~ 실측)',          color: '#f59e0b' },
 ]
 
@@ -66,7 +66,7 @@ function StatsBanner({ stats }: { stats: Stats }) {
     { label: '평균',     value: stats.avg    != null ? `${stats.avg}년`    : '—' },
     { label: '중앙값',   value: stats.median != null ? `${stats.median}년` : '—' },
     { label: '최단',     value: stats.min    != null ? `${stats.min}년`    : '—' },
-    { label: '최장 (worst)', value: stats.max != null
+    { label: '최장 소요기간', value: stats.max != null
       ? <strong className="text-red-500 dark:text-red-400">{stats.max}년</strong>
       : '—' },
   ]
@@ -234,7 +234,7 @@ function SyntheticDataContent() {
                 {LEVERAGES.find(l => l.key === lev)?.label} — {betaInfo?.label}
               </h2>
               <span className="text-xs text-gray-400 dark:text-gray-500">
-                빨간 행 = worst-case ({worstY}년)
+                빨간 행 = 최장 소요기간 ({worstY}년)
               </span>
             </div>
 

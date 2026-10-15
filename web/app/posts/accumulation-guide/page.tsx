@@ -155,7 +155,7 @@ export default function AccumulationGuidePage() {
             <span className="text-gray-600 dark:text-gray-300">
               이 사이트의 이름 그대로다. 그냥 계속 산다. 장기 하락장에서 꾸준한 매수로 평균단가를 낮춘다.
               목돈이 없고 꾸준한 현금흐름만 있는 사람에게 적합.
-              TQQQ 기준 worst(닷컴버블 1998-06 진입)는 약 13.7년이다.
+              TQQQ 기준 최장 소요기간(닷컴버블 1998-06 진입)은 약 13.7년이다.
             </span>
           </div>
         </div>
@@ -201,7 +201,7 @@ export default function AccumulationGuidePage() {
         <AnalysisLink
           href="/posts/lump-sum-vs-split"
           title="거치금 2.5억, 한번에 넣을까 vs 5년에 나눠 넣을까"
-          desc="668가지 시작 시점 백테스트. 5년(60개월) 월 분할이 TQQQ worst 케이스를 12.27년 → 8.69년으로 단축. 3년·4년 분할 효과가 없는 이유와 5년이 임계점인 데이터 확인."
+          desc="668가지 시작 시점 백테스트. 5년(60개월) 월 분할이 TQQQ 최장 소요기간을 12.27년 → 8.69년으로 단축. 3년·4년 분할 효과가 없는 이유와 5년이 임계점인 데이터 확인."
         />
 
         <AccumulationStats />
@@ -210,7 +210,7 @@ export default function AccumulationGuidePage() {
         <H2>4. 종목 선택 — QQQ vs QLD vs TQQQ</H2>
         <P>
           세 종목 중 무엇을 선택할지는 백테스트 결과를 직접 보고 결정하길 권장한다.
-          숫자만 보면 TQQQ가 항상 유리해 보이지만, worst 케이스의 고통은 숫자로 다 전달되지 않는다.
+          숫자만 보면 TQQQ가 항상 유리해 보이지만, 최악의 경우가 주는 고통은 숫자로 다 전달되지 않는다.
         </P>
 
         <div className="space-y-3 mb-6">
@@ -220,7 +220,7 @@ export default function AccumulationGuidePage() {
               <span className="font-bold text-gray-900 dark:text-white">QQQ</span>
             </div>
             <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-              변동성 끌림 없음. 달성 속도가 가장 느리지만 worst 케이스 소요기간도 가장 짧다.
+              변동성 끌림 없음. 달성 속도가 가장 느리지만 최장 소요기간도 가장 짧다.
               레버리지가 처음이라면 QQQ부터 시작하고 데이터를 직접 본 뒤 판단하라.
             </p>
           </div>
@@ -268,8 +268,8 @@ export default function AccumulationGuidePage() {
             <span className="text-gray-600 dark:text-gray-300">테스트 기간 내 목표 달성 비율. 100%가 아니면 데이터가 충분히 길지 않거나, 아직 진행 중인 진입 시점이 있다는 뜻.</span>
           </div>
           <div className="flex gap-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg px-4 py-3">
-            <span className="text-gray-400 font-mono shrink-0 w-28">worst 소요기간</span>
-            <span className="text-gray-600 dark:text-gray-300">모든 진입 시점 중 가장 오래 걸린 경우의 달성 연수. 방법론 설계는 평균이 아닌 <strong className="text-gray-800 dark:text-gray-200">worst를 기준</strong>으로 한다. 내가 언제 시작할지 모르기 때문이다.</span>
+            <span className="text-gray-400 font-mono shrink-0 w-28">최장 소요기간</span>
+            <span className="text-gray-600 dark:text-gray-300">모든 진입 시점 중 가장 오래 걸린 경우의 달성 연수. 방법론 설계는 평균이 아닌 <strong className="text-gray-800 dark:text-gray-200">최악의 경우를 기준</strong>으로 한다. 내가 언제 시작할지 모르기 때문이다.</span>
           </div>
         </div>
 
@@ -280,7 +280,7 @@ export default function AccumulationGuidePage() {
         <P>
           백테스트 안에는 이미 모든 뉴스가 들어 있다. 전쟁, 인플레이션, 금리 인상, 테러, 팬데믹.
           나스닥100은 그 모든 것을 겪고도 우상향했다. 뉴스 때문에 매수를 멈추면
-          worst 케이스를 자기 손으로 만드는 것이다.
+          최악의 경우를 자기 손으로 만드는 것이다.
         </P>
 
         <H3>절대 멈추지 않는다</H3>
@@ -316,7 +316,7 @@ export default function AccumulationGuidePage() {
             <AnalysisLink
               href="/posts/synthetic-ndx-1929"
               title="1929년 대공황 시나리오는 TQQQ에서 얼마나 걸릴까"
-              desc="합성 NDX로 1929년 포함 스트레스 테스트. worst 케이스가 닷컴버블인 이유."
+              desc="합성 NDX로 1929년 포함 스트레스 테스트. 최장 소요기간이 닷컴버블인 이유."
             />
             <AnalysisLink
               href="/posts/withdrawal-strategy"

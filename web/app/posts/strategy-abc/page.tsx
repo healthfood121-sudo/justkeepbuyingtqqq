@@ -113,7 +113,7 @@ export default function StrategyAbcPage() {
         </Callout>
 
         <Table
-          headers={['전략', '완료율', '중간값', '평균', '최장(worst)', '데이터']}
+          headers={['전략', '완료율', '중간값', '평균', '최장 소요기간', '데이터']}
           rows={[
             [
               <span key="a" className="font-semibold text-emerald-600 dark:text-emerald-400">A전략 (계속 적립)</span>,
@@ -203,7 +203,7 @@ export default function StrategyAbcPage() {
         <P>
           결국 이 분석이 보여주는 건 하나다.
           <strong className="text-gray-900 dark:text-white"> 멈추지 않는 게 중요하다.</strong> 하락장에 싸게 살 기회를 포기하는 순간,
-          worst case가 급격히 나빠진다. 거치금 여부와 무관하게 "계속 사는" 행동만으로도 리스크가 크게 줄어든다.
+          최악의 경우가 급격히 나빠진다. 거치금 여부와 무관하게 "계속 사는" 행동만으로도 리스크가 크게 줄어든다.
         </P>
 
         {/* 관련 링크 */}
