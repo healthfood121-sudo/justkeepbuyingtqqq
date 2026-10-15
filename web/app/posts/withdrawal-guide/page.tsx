@@ -73,7 +73,7 @@ export default function WithdrawalGuidePage() {
             인출식 방법론: 10억 달성 후 어떻게 꺼내 쓰나
           </h1>
           <div className="flex items-center gap-3 flex-wrap">
-            <span className="text-sm text-gray-400">2026-10-01 · 최종수정 2026-10-14</span>
+            <span className="text-sm text-gray-400">2026-10-01 · 최종수정 2026-10-15</span>
             {['인출식', '25% 룰', '동적인출률', 'FIRE', 'TQQQ', '방법론'].map(t => <Tag key={t}>{t}</Tag>)}
           </div>
         </div>
@@ -166,132 +166,136 @@ export default function WithdrawalGuidePage() {
         <WithdrawalExecTable />
 
         {/* ── 연구 흐름 ────────────────────────────────────────── */}
-        <H2>연구 흐름: 어떻게 여기까지 왔나</H2>
+        <details className="mt-14">
+          <summary className="cursor-pointer select-none text-xl font-bold mb-4 text-gray-900 dark:text-white">
+            연구 흐름: 어떻게 여기까지 왔나
+          </summary>
 
-        <div className="space-y-3 mb-8">
-          {[
-            {
-              step: '1단계',
-              color: 'border-gray-300 dark:border-gray-700',
-              badge: 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400',
-              title: 'SP500 낙폭 기반 전략 (v1)',
-              result: '중간값 1.4억 (스왑금리 반영) · 운용보수만 12.7억',
-              desc: 'SP500이 −20% 이상 하락하면 인출 중단하는 방식. 하락 중에도 TQQQ를 보유해 손실이 누적됐다.',
-              href: '/posts/withdrawal-comparison',
-              link: '비교 분석 →',
-            },
-            {
-              step: '2단계',
-              color: 'border-blue-300 dark:border-blue-700',
-              badge: 'bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400',
-              title: '★ EMA200 연속 15일 + 동적 인출률 (S0) — 당시 채택',
-              result: '중간값 130억 (스왑금리·양도세 반영) · 초기 계산 1,109억 · 생존율 100%',
-              desc: '나스닥100이 EMA200 아래에서 15거래일 연속이면 전액 현금 전환. 95가지 설정값 조합 탐색에서 최적 조합. 매수 후 1일 재매도 사례 없음 — 구조적 안전장치.',
-              href: '/posts/withdrawal-new-ideas',
-              link: '아이디어 8가지 →',
-            },
-            {
-              step: '3단계',
-              color: 'border-purple-200 dark:border-purple-800/50',
-              badge: 'bg-purple-50 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400',
-              title: '8가지 새 아이디어 테스트',
-              result: 'RSI 조기 재진입 → 중간값 724억 (스왑금리 반영) · 운용보수만 3,232억',
-              desc: '골든크로스, 분할 재진입, 동적 레버리지 등 8가지를 비교. RSI가 30 미만으로 떨어지면 EMA200 신호를 기다리지 않고 즉시 재매수하는 방식이 압도적 우세.',
-              href: '/posts/withdrawal-new-ideas',
-              link: '테스트 결과 →',
-            },
-            {
-              step: '4단계',
-              color: 'border-green-300 dark:border-green-700',
-              badge: 'bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-400',
-              title: 'RSI + 200일선 대비 −10% 필터 + Guyton-Klinger (D10GK)',
-              result: '당시 최선 · 중간값 332억 (스왑금리·양도세 반영) · 초기 계산 3,741억',
-              desc: 'RSI 신호에 "EMA200보다 10% 이상 떨어진 상태"라는 조건을 추가해 가짜 신호를 줄였다. 자산이 많이 늘었을 때 인출을 자동으로 줄여주는 Guyton-Klinger 규칙도 결합. 과최적화 여부도 검증 완료.',
-              href: '/posts/withdrawal-new-ideas',
-              link: '상세 분석 →',
-            },
-            {
-              step: '5단계',
-              color: 'border-gray-300 dark:border-gray-700',
-              badge: 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400',
-              title: '트레일링 스탑·단계적 현금화·레버리지 하향 검증',
-              result: '추가 아이디어 3가지 — 운용보수만 기준으로는 모두 기준선 미달',
-              desc: '3가지 새 아이디어(25%·20%·15% 룰(트레일링 스탑), 단계적 현금화 GRAD, 자산 규모별 레버리지 하향 DLEV)를 668가지 진입 시점으로 테스트. 운용보수만 반영하면 모두 기준선을 넘지 못했다. 단, 스왑금리·양도세를 반영하면 DLEV(160억)가 S0(130억)를 앞선다 — 큰 자산을 스왑 비용이 없는 나스닥100(1배)으로 옮기기 때문. 트레일링 스탑 25% 룰은 거래 12회로 가장 단순하다.',
-              href: '/posts/withdrawal-new-ideas2',
-              link: '검증 결과 →',
-            },
-            {
-              step: '6단계',
-              color: 'border-gray-300 dark:border-gray-700',
-              badge: 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400',
-              title: 'TQQQ 자체 신호 · 인출 시작 지연 검증',
-              result: 'TQQQ 신호: 기준의 1/4 수준 열등 · 인출 2년 지연: +13%',
-              desc: 'TQQQ 합성가격 기준 EMA200 신호는 레버리지 잡음으로 매매가 너무 잦아 완전히 열등. 반면 다른 수입원이 있어 인출을 1~2년 미룰 수 있는 경우, 최종 자산이 7~13% 늘어나는 효과가 있다.',
-              href: '/posts/withdrawal-signal-test',
-              link: '검증 결과 →',
-            },
-            {
-              step: '7단계',
-              color: 'border-gray-300 dark:border-gray-700',
-              badge: 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400',
-              title: '금리 연동 레버리지 검증 (스왑금리 반영)',
-              result: '채택 안 함 — 기준금리 기준값에 따라 결과가 들쭉날쭉',
-              desc: '신호는 S0 그대로 두고, 기준금리가 높을 때만 TQQQ(3배) 대신 QLD(2배)를 들고 가는 방식. 갈아탈 때 양도세 22%까지 반영했다. 기준을 6~7%로 잡으면 중간값 311~350억으로 S0(226억, 현금 전환 매도세 미반영 기준)보다 높았지만, 4~5%에서는 153~155억으로 오히려 낮았다. 기준값을 조금만 바꿔도 결과가 뒤집혀 우연에 가깝다고 판단. 항상 QLD(2배)는 중간값 177억으로 낮지만 20년 뒤 원금 미만으로 끝난 경우가 0가지다.',
-            },
-            {
-              step: '8단계',
-              color: 'border-gray-300 dark:border-gray-700',
-              badge: 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400',
-              title: '현실 기준 재검증 + 자산이 커지면 일부 현금화',
-              result: 'S0 130억 · D10GK 332억 · 현금 비중 규칙 S0 148억 / D10GK 295억',
-              desc: '스왑금리와 모든 매도의 양도세(하락 신호로 전량 현금 전환할 때 포함)를 넣어 다시 계산했다. 순위는 그대로이고 D10GK가 S0의 2.6배. 함께 검증한 규칙: 총자산 50억 이상이면 TQQQ ⅔ + 현금 ⅓, 200억 이상이면 TQQQ ⅓ + 현금 ⅔로 매월 맞춘다. 나스닥100으로 바꿔 드는 것(DLEV 160억)과 결과가 거의 같으면서 현금이라 언제든 쓸 수 있다. S0에 붙이면 중간값이 오르고(130→148억), D10GK에 붙이면 중간값은 내려가지만(332→295억) 하위 10% 경우가 20억→30억으로 좋아진다. 단, 50억에 도달하지 못한 나쁜 시작 시점은 보호하지 못한다.',
-            },
-            {
-              step: '9단계',
-              color: 'border-gray-300 dark:border-gray-700',
-              badge: 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400',
-              title: '실제로 가능한 매매 시점 + 오늘까지 보유로 재검증',
-              result: '인출 포함 연 수익률 25% 룰 21.5% · D10GK(LOC) 19.8% · S0 16.7%',
-              desc: '신호는 종가가 확정돼야 알 수 있으므로 신호 다음 거래일에 매매하도록 바꿨다. D10GK의 조기 재매수만 조건을 가격으로 환산한 LOC 주문으로 당일 종가에 산다. 20년에서 자르면 결과가 매매일 하루 이틀 차이에도 크게 흔들려, 1971년 이후 매달 시작해 오늘까지 보유한 인출 포함 연 수익률로 비교했다 (월 1,500만원 인출 상한도 없앰). 이 기준에서는 순위가 25% 룰 > D10GK > S0로 바뀌었다.',
-            },
-            {
-              step: '10단계',
-              color: 'border-gray-300 dark:border-gray-700',
-              badge: 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400',
-              title: '초기 현금버퍼 체계적 실험 — EARLY24 발견',
-              result: '6·12개월 버퍼 효과 없음 · 24개월 버퍼(처음 5년) IRR +0.8%p · 별도 RP/VOO 버퍼는 오히려 악화',
-              desc: '하락장 진입 시 생활비를 위해 포트에 현금을 미리 쌓아두는 버퍼 전략을 체계적으로 테스트했다. 6·12개월 버퍼는 25% 룰이 이미 하락 방어를 담당하므로 추가 효과가 없었다. 단 한 가지 예외: 처음 5년간 24개월치를 포트폴리오 내 현금으로 유지하는 방식(EARLY24)은 IRR 21.1%→21.9%로 +0.8%p 개선이 확인됐다. 반면 별도 RP 계좌로 꺼내두거나(IRR 16.6%), VOO로 분산하는 방식(15.6%)은 TQQQ 복리를 이탈해 오히려 성적이 크게 낮아진다.',
-            },
-            {
-              step: '현재',
-              color: 'border-blue-300 dark:border-blue-700',
-              badge: 'bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400',
-              title: '★ 전체 기간 재검증 → 25% 룰을 권장 전략으로',
-              result: '인출 상한 없음 · 인출 포함 연 21.5% · 20년간 꺼내 쓴 돈 65.8억',
-              desc: '16가지 전략을 오늘까지 끝까지 들고 가며 10~50년 시점을 비교했다. 월 1,500만원 인출 상한을 없애고 꺼내 쓴 돈과 남은 자산을 함께 봤다. 닷컴버블을 거치지 않는 구간에서도 25% 룰이 S0보다 대체로 나았다(10년 구간의 80%). 현금 비중·버퍼 같은 장치는 수익을 낮추는 대신 낙폭을 줄이는 정도라 기본 권장에서는 뺐다.',
-              href: '/posts/withdrawal-full-period',
-              link: '전체 비교 →',
-            },
-          ].map(({ step, color, badge, title, result, desc, href, link }) => (
-            <div key={step} className={`border rounded-xl px-4 py-4 ${color}`}>
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex items-start gap-3 flex-1">
-                  <span className={`text-xs font-bold px-2 py-0.5 rounded-full shrink-0 mt-0.5 ${badge}`}>{step}</span>
-                  <div>
-                    <p className="text-sm font-semibold text-gray-900 dark:text-white mb-0.5">{title}</p>
-                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{result}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">{desc}</p>
+          <div className="space-y-3 mb-8 mt-4">
+            {[
+              {
+                step: '1단계',
+                color: 'border-gray-300 dark:border-gray-700',
+                badge: 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400',
+                title: 'SP500 낙폭 기반 전략 (v1)',
+                result: '중간값 1.4억 (스왑금리 반영) · 운용보수만 12.7억',
+                desc: 'SP500이 −20% 이상 하락하면 인출 중단하는 방식. 하락 중에도 TQQQ를 보유해 손실이 누적됐다.',
+                href: '/posts/withdrawal-comparison',
+                link: '비교 분석 →',
+              },
+              {
+                step: '2단계',
+                color: 'border-blue-300 dark:border-blue-700',
+                badge: 'bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400',
+                title: '★ EMA200 연속 15일 + 동적 인출률 (S0) — 당시 채택',
+                result: '중간값 130억 (스왑금리·양도세 반영)',
+                desc: '95가지 설정값 탐색에서 최적 조합으로 도출. 매수 직후 재매도가 없는 구조적 특성.',
+                href: '/posts/withdrawal-new-ideas',
+                link: '아이디어 8가지 →',
+              },
+              {
+                step: '3단계',
+                color: 'border-purple-200 dark:border-purple-800/50',
+                badge: 'bg-purple-50 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400',
+                title: '8가지 새 아이디어 테스트',
+                result: 'RSI 조기 재진입 → 중간값 724억 (스왑금리 반영)',
+                desc: '8가지 비교. RSI 30 미만이면 EMA200을 기다리지 않고 즉시 재매수하는 방식이 압도적 우세.',
+                href: '/posts/withdrawal-new-ideas',
+                link: '테스트 결과 →',
+              },
+              {
+                step: '4단계',
+                color: 'border-green-300 dark:border-green-700',
+                badge: 'bg-green-50 dark:bg-green-500/20 text-green-700 dark:text-green-400',
+                title: 'RSI + 200일선 대비 −10% 필터 + Guyton-Klinger (D10GK)',
+                result: '당시 최선 · 중간값 332억 (스왑금리·양도세 반영)',
+                desc: 'RSI 신호에 EMA200 −10% 조건을 추가해 가짜 신호 감소. Guyton-Klinger 인출 조절 결합. 과최적화 검증 완료.',
+                href: '/posts/withdrawal-new-ideas',
+                link: '상세 분석 →',
+              },
+              {
+                step: '5단계',
+                color: 'border-gray-300 dark:border-gray-700',
+                badge: 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400',
+                title: '트레일링 스탑·단계적 현금화·레버리지 하향 검증',
+                result: '추가 아이디어 3가지 — 운용보수만 기준으로는 모두 기준선 미달',
+                desc: '운용보수만 기준으론 모두 기준선 미달. 스왑금리·양도세 반영 시 DLEV(나스닥100 전환)만 S0를 소폭 앞섬.',
+                href: '/posts/withdrawal-new-ideas2',
+                link: '검증 결과 →',
+              },
+              {
+                step: '6단계',
+                color: 'border-gray-300 dark:border-gray-700',
+                badge: 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400',
+                title: 'TQQQ 자체 신호 · 인출 시작 지연 검증',
+                result: 'TQQQ 신호: 기준의 1/4 수준 열등 · 인출 2년 지연: +13%',
+                desc: 'TQQQ 자체 신호는 레버리지 잡음으로 완전히 열등. 인출 1~2년 지연 시 최종 자산 +7~13% 효과.',
+                href: '/posts/withdrawal-signal-test',
+                link: '검증 결과 →',
+              },
+              {
+                step: '7단계',
+                color: 'border-gray-300 dark:border-gray-700',
+                badge: 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400',
+                title: '금리 연동 레버리지 검증 (스왑금리 반영)',
+                result: '채택 안 함 — 기준금리 기준값에 따라 결과가 들쭉날쭉',
+                desc: '기준금리 높을 때 QLD(2배)로 전환하는 방식. 기준값 조금만 바꿔도 결과가 뒤집혀 채택 안 함.',
+              },
+              {
+                step: '8단계',
+                color: 'border-gray-300 dark:border-gray-700',
+                badge: 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400',
+                title: '현실 기준 재검증 + 자산이 커지면 일부 현금화',
+                result: 'S0 130억 · D10GK 332억 · 현금 비중 규칙 S0 148억 / D10GK 295억',
+                desc: '스왑금리+전량 매도 양도세 반영 재계산. 자산별 현금 비중 규칙으로 낙폭 완화 효과 확인. S0에 붙이면 중간값↑, D10GK에 붙이면 하위 10% 개선.',
+              },
+              {
+                step: '9단계',
+                color: 'border-gray-300 dark:border-gray-700',
+                badge: 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400',
+                title: '실제로 가능한 매매 시점 + 오늘까지 보유로 재검증',
+                result: '인출 포함 연 수익률 25% 룰 21.5% · D10GK(LOC) 19.8% · S0 16.7%',
+                desc: '신호 다음 거래일 매매로 변경. 20년 단면보다 흔들림이 적은 전체 기간 IRR로 비교. 이 기준에서 25% 룰 > D10GK > S0 순위 확정.',
+              },
+              {
+                step: '10단계',
+                color: 'border-gray-300 dark:border-gray-700',
+                badge: 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400',
+                title: '초기 현금버퍼 체계적 실험 — EARLY24 발견',
+                result: '6·12개월 버퍼 효과 없음 · 24개월 버퍼(처음 5년) IRR +0.8%p · 별도 RP/VOO 버퍼는 오히려 악화',
+                desc: '6·12개월 버퍼는 효과 없음. 처음 5년 24개월 버퍼(EARLY24)만 IRR +0.8%p 개선. 별도 RP/VOO 분산은 TQQQ 복리를 이탈해 크게 낮아짐.',
+              },
+              {
+                step: '현재',
+                color: 'border-blue-300 dark:border-blue-700',
+                badge: 'bg-blue-50 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400',
+                title: '★ 전체 기간 재검증 → 25% 룰을 권장 전략으로',
+                result: '인출 상한 없음 · 인출 포함 연 21.5% · 20년간 꺼내 쓴 돈 65.8억',
+                desc: '16가지 전략을 오늘까지 끝까지 들고 가며 10~50년 시점을 비교했다. 닷컴버블을 거치지 않는 구간에서도 25% 룰이 S0보다 대체로 나았다(10년 구간의 80%). 현금 비중·버퍼 같은 장치는 수익을 낮추는 대신 낙폭을 줄이는 정도라 기본 권장에서는 뺐다.',
+                href: '/posts/withdrawal-full-period',
+                link: '전체 비교 →',
+              },
+            ].map(({ step, color, badge, title, result, desc, href, link }) => (
+              <div key={step} className={`border rounded-xl px-4 py-4 ${color}`}>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-start gap-3 flex-1">
+                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full shrink-0 mt-0.5 ${badge}`}>{step}</span>
+                    <div>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-white mb-0.5">{title}</p>
+                      <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{result}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">{desc}</p>
+                    </div>
                   </div>
+                  {href && link && (
+                    <Link href={href} className="text-xs text-blue-500 dark:text-blue-400 hover:underline whitespace-nowrap shrink-0 mt-0.5">
+                      {link}
+                    </Link>
+                  )}
                 </div>
-                {href && link && (
-                  <Link href={href} className="text-xs text-blue-500 dark:text-blue-400 hover:underline whitespace-nowrap shrink-0 mt-0.5">
-                    {link}
-                  </Link>
-                )}
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </details>
 
         {/* ── 다음 단계 ──────────────────────────────────────── */}
         <div className="mt-14 pt-8 border-t border-gray-200 dark:border-gray-800">
