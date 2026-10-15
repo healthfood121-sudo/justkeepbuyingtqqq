@@ -69,45 +69,49 @@ export default function Rule25PeriodTable({ part }: { part: 'withdrawn' | 'perio
   }
 
   const periods = ORDER.map(k => data.periods.find(p => p.key === k)!).filter(Boolean)
-  const names = periods[0].rows.map(r => r.name)
   return (
     <div>
     {toggle}
-    <div className="overflow-x-auto mb-2">
-      <table className="w-full text-sm border-collapse">
-        <thead>
-          <tr className="border-b border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400">
-            <th className="py-2 px-2 text-left font-medium">구간</th>
-            {names.map(n => (
-              <th key={n} className="py-2 px-2 text-left font-medium whitespace-nowrap">
-                {LABEL[n]} <DataLink s={n} fee={!withCosts} />
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-          {periods.map(p => {
-            const best = Math.max(...p.rows.map(r => r.med_irr_pct))
-            return (
-              <tr key={p.key} className={`text-gray-700 dark:text-gray-300 ${p.key === 'C' ? 'bg-blue-50/50 dark:bg-blue-500/5' : ''}`}>
-                <td className="py-2 px-2 text-xs">{p.title} <span className="text-gray-400">· {p.n}가지</span></td>
+    <div className="space-y-5 mb-2">
+      {periods.map(p => {
+        const best = Math.max(...p.rows.map(r => r.med_irr_pct))
+        return (
+          <div key={p.key} className={`rounded-xl overflow-hidden border ${p.key === 'C' ? 'border-blue-200 dark:border-blue-700/40' : 'border-gray-200 dark:border-gray-800'}`}>
+            <div className={`px-3 py-2 text-xs font-semibold ${p.key === 'C' ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300' : 'bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-400'}`}>
+              {p.title} <span className="font-normal opacity-70">· {p.n}가지</span>
+            </div>
+            <table className="w-full text-xs border-collapse">
+              <thead>
+                <tr className="border-b border-gray-200 dark:border-gray-700 text-gray-400 dark:text-gray-500">
+                  <th className="py-1.5 px-3 text-left font-medium">전략</th>
+                  <th className="py-1.5 px-3 text-right font-medium">수익률</th>
+                  <th className="py-1.5 px-3 text-right font-medium">하위 10%</th>
+                  <th className="py-1.5 px-3 text-right font-medium">25% 룰 우세</th>
+                  <th />
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                 {p.rows.map(r => (
-                  <td key={r.name} className="py-2 px-2 whitespace-nowrap">
-                    <span className={`font-mono ${r.med_irr_pct === best ? 'font-bold text-gray-900 dark:text-white' : ''}`}>{r.med_irr_pct}%</span>
-                    <span className="block text-[11px] text-gray-400 dark:text-gray-500">
-                      하위 10% {r.p10_irr_pct}%{r.rule25_better_pct !== null && ` · 25% 룰 우세 ${r.rule25_better_pct}%`}{r.same_pct ? ` · 같음 ${r.same_pct}%` : ''}
-                    </span>
-                  </td>
+                  <tr key={r.name} className={r.name === 'RULE25' ? 'bg-gray-50/60 dark:bg-gray-900/40' : ''}>
+                    <td className={`py-1.5 px-3 whitespace-nowrap ${r.name === 'RULE25' ? 'font-bold text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300'}`}>{LABEL[r.name]}</td>
+                    <td className={`py-1.5 px-3 text-right font-mono ${r.med_irr_pct === best ? 'font-bold text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300'}`}>{r.med_irr_pct}%</td>
+                    <td className="py-1.5 px-3 text-right font-mono text-gray-500 dark:text-gray-400">{r.p10_irr_pct}%</td>
+                    <td className="py-1.5 px-3 text-right font-mono text-gray-500 dark:text-gray-400">
+                      {r.rule25_better_pct !== null ? `${r.rule25_better_pct}%` : '—'}
+                      {r.same_pct ? <span className="text-[10px] ml-1 opacity-60">(같음 {r.same_pct}%)</span> : null}
+                    </td>
+                    <td className="py-1.5 px-3"><DataLink s={r.name} fee={!withCosts} /></td>
+                  </tr>
                 ))}
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
-      <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
-        인출 포함 연 수익률 중간값 (구간 끝 자산까지 포함). 굵은 글씨 = 그 구간 최고. &lsquo;25% 룰 우세&rsquo; = 같은 시작 시점에서 25% 룰이 더 높았던 비율.
-      </p>
+              </tbody>
+            </table>
+          </div>
+        )
+      })}
     </div>
+    <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
+      인출 포함 연 수익률 중간값. 굵은 글씨 = 그 구간 최고. &lsquo;25% 룰 우세&rsquo; = 같은 시작 시점에서 25% 룰이 더 높았던 비율.
+    </p>
     </div>
   )
 }
