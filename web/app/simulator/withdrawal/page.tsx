@@ -228,6 +228,7 @@ function Simulator() {
               responsive: true,
               maintainAspectRatio: false,
               animation: false as const,
+              interaction: { mode: 'index' as const, intersect: false },
               layout: { padding: { right: 64 } },
               scales: {
                 x: {
