@@ -219,11 +219,26 @@ export default function SyntheticDataPage() {
                 <thead>
                   <tr className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
                     <th className="py-2.5 px-4 text-left text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">날짜</th>
-                    <th className="py-2.5 px-4 text-right text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">NDX 지수</th>
-                    <th className="py-2.5 px-4 text-right text-blue-600 dark:text-blue-400 font-medium whitespace-nowrap">TQQQ 합성</th>
-                    <th className="py-2.5 px-4 text-right text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">QLD 합성</th>
-                    <th className="py-2.5 px-4 text-right text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">나스닥100 합성</th>
-                    <th className="py-2.5 px-4 text-right text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">기준금리</th>
+                    <th className="py-2.5 px-4 text-right text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">
+                      NDX 지수
+                      <span className="block text-[10px] font-normal text-gray-400 dark:text-gray-500">합성가격 계산에 쓰인 원지수</span>
+                    </th>
+                    <th className="py-2.5 px-4 text-right text-blue-600 dark:text-blue-400 font-medium whitespace-nowrap">
+                      TQQQ 합성
+                      <span className="block text-[10px] font-normal text-blue-400/70 dark:text-blue-500/70">3배 · 운용보수+스왑금리 반영</span>
+                    </th>
+                    <th className="py-2.5 px-4 text-right text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">
+                      QLD 합성
+                      <span className="block text-[10px] font-normal text-gray-400 dark:text-gray-500">2배 · 운용보수+스왑금리 반영</span>
+                    </th>
+                    <th className="py-2.5 px-4 text-right text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">
+                      나스닥100 합성
+                      <span className="block text-[10px] font-normal text-gray-400 dark:text-gray-500">1배 · 운용보수만 반영 (QQQ 근사)</span>
+                    </th>
+                    <th className="py-2.5 px-4 text-right text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">
+                      기준금리
+                      <span className="block text-[10px] font-normal text-gray-400 dark:text-gray-500">FFR 연율 %</span>
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
