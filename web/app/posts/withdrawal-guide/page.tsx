@@ -166,9 +166,14 @@ export default function WithdrawalGuidePage() {
         <WithdrawalExecTable />
 
         {/* ── 연구 흐름 ────────────────────────────────────────── */}
-        <details className="mt-14">
-          <summary className="cursor-pointer select-none text-xl font-bold mb-4 text-gray-900 dark:text-white">
-            연구 흐름: 어떻게 여기까지 왔나
+        <details className="mt-14 group">
+          <summary className="cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden flex items-center justify-between bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-5 py-4 mb-4 hover:border-blue-300 dark:hover:border-blue-600 transition-colors">
+            <div>
+              <span className="text-base font-bold text-gray-900 dark:text-white">연구 흐름: 어떻게 여기까지 왔나</span>
+              <span className="ml-2 text-xs text-gray-400 dark:text-gray-500 group-open:hidden">— 클릭해서 펼치기</span>
+              <span className="ml-2 text-xs text-gray-400 dark:text-gray-500 hidden group-open:inline">— 클릭해서 접기</span>
+            </div>
+            <span className="text-gray-400 dark:text-gray-500 transition-transform duration-200 group-open:rotate-180 inline-block">▼</span>
           </summary>
 
           <div className="space-y-3 mb-8 mt-4">
