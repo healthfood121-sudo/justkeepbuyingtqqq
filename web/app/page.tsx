@@ -147,19 +147,16 @@ export default function HomePage() {
                     <span><strong className="text-gray-900 dark:text-white">생활비</strong> — 매달 총자산의 0.3~0.7% 인출</span>
                   </div>
                 </div>
-                <p className="text-right text-[10px] text-purple-500 dark:text-purple-400 mt-2">
-                  1971년 이후 인출 포함 연 <strong>21.5%</strong> (중간값)
-                </p>
               </div>
 
               <WithdrawalSignal />
               <LivingCalc />
-              <div className="flex flex-wrap gap-x-4 gap-y-1">
+              <div className="flex flex-col gap-1">
                 <Link
                   href="/posts/withdrawal-guide"
                   className="text-xs text-purple-600 dark:text-purple-400 hover:underline font-semibold"
                 >
-                  방법론 상세 보기 →
+                  1971년 이후 인출 포함 연 <strong>21.5%</strong> (중간값) — 방법론 상세 보기 →
                 </Link>
                 <Link
                   href="/simulator/withdrawal"
