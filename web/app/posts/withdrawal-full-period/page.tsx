@@ -59,7 +59,7 @@ const FEATURES: { group: string; items: { name: string; rule: string; good: stri
     group: '급락 때 조기 재매수',
     items: [
       { name: 'S0 + RSI 조기 재매수', data: 'S7',
-        rule: '현금일 때 RSI가 30 아래로 떨어지면 LOC 주문으로 그날 종가에 산다.',
+        rule: '현금일 때 상대강도지수(RSI)가 30 아래로 떨어지면 LOC 주문으로 그날 종가에 산다.',
         good: '연 19.4%.',
         bad: '하위 10%가 연 12.0%로 S0보다 낮다. 하락 중간에 너무 일찍 사는 경우가 많다.' },
       { name: 'D10GK', data: 'D10GK',

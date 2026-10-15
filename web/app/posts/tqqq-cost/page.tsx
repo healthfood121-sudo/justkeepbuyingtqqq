@@ -263,7 +263,7 @@ export default function TqqCostPage() {
               <span className="text-red-500 dark:text-red-400">−28%</span>,
             ],
             [
-              'S0 (EMA200-15일)',
+              'S0 (200일 지수이동평균(EMA200) 15일 연속)',
               '4,348억',
               <strong className="text-blue-600 dark:text-blue-400">3,155억</strong>,
               <span className="text-red-500 dark:text-red-400">−27%</span>,

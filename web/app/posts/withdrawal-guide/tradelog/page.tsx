@@ -166,7 +166,7 @@ function TradelogInner() {
           </Link>
           <h1 className="text-2xl font-bold mb-1">25% 룰 — 날짜별 전체 데이터 공개</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
-            52주 고점 −25% 매도 · 지수이동평균(200일) 위 15일 연속 재매수 · 동적 인출률 · 초기 10억 · 시작 시점부터 데이터 끝까지
+            52주 고점 −25% 매도 · 200일 지수이동평균(EMA200) 위 15일 연속 재매수 · 동적 인출률 · 초기 10억 · 시작 시점부터 데이터 끝까지
           </p>
           <p className="text-xs text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700/40 rounded-lg px-3 py-2 inline-block">
             ℹ 스왑금리비용 + 현금 RP 이자(이자소득세 15.4% 차감) + 모든 매도 양도차익세 22% 반영
