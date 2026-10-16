@@ -18,7 +18,6 @@ import argparse
 import json
 import re
 import sys
-import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -42,11 +41,8 @@ VANGUARD_API_URLS = [
 VANGUARD_API_HEADER_SETS = [
     {"User-Agent": _BROWSER_UA, "Accept": "application/json, text/plain, */*",
      "Origin": "https://investor.vanguard.com", "Referer": "https://investor.vanguard.com/"},
-    {"User-Agent": _BROWSER_UA, "Accept": "application/json",
-     "Accept-Language": "en-US,en;q=0.9"},
-    {},  # requests 기본 헤더
 ]
-VANGUARD_ROUNDS = 4
+VANGUARD_ROUNDS = 1
 
 # ── Slickcharts S&P 500 fallback (Vanguard 차단 시) ────
 SLICKCHARTS_URL = "https://www.slickcharts.com/sp500"
@@ -110,19 +106,14 @@ def fetch_via_vanguard_api() -> tuple[str, list[dict]]:
     """Vanguard 공식 holdings JSON API"""
     last_err: Exception | None = None
     attempts = [
-        (n, url, h)
-        for n in range(1, VANGUARD_ROUNDS + 1)
+        (url, h)
         for url in VANGUARD_API_URLS
         for h in VANGUARD_API_HEADER_SETS
     ]
-    prev_round = 1
-    for n, url, headers in attempts:
-        if n != prev_round:
-            prev_round = n
-            time.sleep(30)
-        print(f"Vanguard API 조회 (라운드 {n}/{VANGUARD_ROUNDS}): {url}")
+    for url, headers in attempts:
+        print(f"Vanguard API 조회: {url}")
         try:
-            resp = requests.get(url, headers=headers, timeout=30)
+            resp = requests.get(url, headers=headers, timeout=15)
             resp.raise_for_status()
             data = resp.json()
         except Exception as e:  # noqa: BLE001
@@ -363,6 +354,7 @@ def main():
         return
 
     # 보유내역 (Vanguard 공식 → Slickcharts fallback)
+    source = "Vanguard"
     try:
         as_of_kr, holdings = fetch_via_vanguard_api()
     except Exception as e:  # noqa: BLE001
@@ -371,6 +363,7 @@ def main():
 
     if len(holdings) < MIN_HOLDINGS:
         print("Slickcharts fallback 시도...")
+        source = "Slickcharts"
         try:
             as_of_kr, holdings = fetch_via_slickcharts()
         except Exception as e:  # noqa: BLE001
@@ -384,7 +377,6 @@ def main():
             sys.exit(1)
         return
 
-    source = "Vanguard"
     total = sum(h["weight"] for h in holdings)
     print(f"기준일: {as_of_kr}  |  종목 수: {len(holdings)}  |  비중 합계: {total:.2f}%")
     if not 95 <= total <= 105:
