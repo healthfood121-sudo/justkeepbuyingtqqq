@@ -10,7 +10,12 @@ type Filter = '전체' | Category
 const CATEGORY_STYLE = {
   '적립식': {
     badge:      'bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300',
-    pinnedBg:   'bg-blue-50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/30 hover:border-blue-400 dark:hover:border-blue-400/60',
+    methodBg:   'bg-blue-50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/30 hover:border-blue-400 dark:hover:border-blue-400/60',
+    methodText: 'text-blue-900 dark:text-blue-100',
+    methodSub:  'text-blue-700 dark:text-blue-300',
+    methodTag:  'bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300',
+    methodDate: 'text-blue-400 dark:text-blue-500',
+    pinnedBg:   'bg-blue-50/60 dark:bg-blue-500/5 border-blue-200 dark:border-blue-500/30 hover:border-blue-400 dark:hover:border-blue-400/60',
     pinnedText: 'text-blue-900 dark:text-blue-100',
     pinnedSub:  'text-blue-700 dark:text-blue-300',
     pinnedTag:  'bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300',
@@ -21,7 +26,12 @@ const CATEGORY_STYLE = {
   },
   '인출식': {
     badge:      'bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300',
-    pinnedBg:   'bg-purple-50 dark:bg-purple-500/10 border-purple-200 dark:border-purple-500/30 hover:border-purple-400 dark:hover:border-purple-400/60',
+    methodBg:   'bg-purple-50 dark:bg-purple-500/10 border-purple-200 dark:border-purple-500/30 hover:border-purple-400 dark:hover:border-purple-400/60',
+    methodText: 'text-purple-900 dark:text-purple-100',
+    methodSub:  'text-purple-700 dark:text-purple-300',
+    methodTag:  'bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300',
+    methodDate: 'text-purple-400 dark:text-purple-500',
+    pinnedBg:   'bg-purple-50/60 dark:bg-purple-500/5 border-purple-200 dark:border-purple-500/30 hover:border-purple-400 dark:hover:border-purple-400/60',
     pinnedText: 'text-purple-900 dark:text-purple-100',
     pinnedSub:  'text-purple-700 dark:text-purple-300',
     pinnedTag:  'bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300',
@@ -35,9 +45,10 @@ const CATEGORY_STYLE = {
 export default function PostsPage() {
   const [filter, setFilter] = useState<Filter>('전체')
 
-  const filtered  = posts.filter(p => filter === '전체' || p.category === filter)
-  const pinned    = filtered.filter(p => p.pinned)
-  const rest      = filtered.filter(p => !p.pinned).sort((a, b) => b.date.localeCompare(a.date))
+  const filtered    = posts.filter(p => filter === '전체' || p.category === filter)
+  const methodology = filtered.filter(p => p.methodology)
+  const pinned      = filtered.filter(p => p.pinned && !p.methodology)
+  const rest        = filtered.filter(p => !p.pinned && !p.methodology).sort((a, b) => b.date.localeCompare(a.date))
 
   const filters: Filter[] = ['전체', '적립식', '인출식']
 
@@ -82,13 +93,59 @@ export default function PostsPage() {
           })}
         </div>
 
-        {/* 필독 방법론 */}
-        {pinned.length > 0 && (
+        {/* 방법론 */}
+        {methodology.length > 0 && (
           <>
+            <div className="mb-4">
+              <span className="text-xs font-bold tracking-widest text-gray-400 uppercase">방법론</span>
+            </div>
+            <div className="space-y-3 mb-12">
+              {methodology.map((post) => {
+                const s = CATEGORY_STYLE[post.category]
+                return (
+                  <Link
+                    key={post.slug}
+                    href={`/posts/${post.slug}`}
+                    className={`block border rounded-2xl p-6 transition-colors group ${s.methodBg}`}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <div className="flex items-center gap-2 mb-2 flex-wrap">
+                          <span className="text-xs font-bold bg-gray-800 dark:bg-white text-white dark:text-gray-900 px-2 py-0.5 rounded-full">방법론</span>
+                          <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${s.badge}`}>
+                            {post.category}
+                          </span>
+                          <h2 className={`text-lg font-bold transition-colors ${s.methodText} group-hover:opacity-80`}>
+                            {post.title}
+                          </h2>
+                        </div>
+                        <p className={`text-sm leading-relaxed mb-3 ${s.methodSub}`}>
+                          {post.summary}
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {post.tags.map((tag) => (
+                            <span key={tag} className={`text-xs px-2 py-0.5 rounded-full ${s.methodTag}`}>
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <span className={`text-xs whitespace-nowrap ${s.methodDate}`}>{post.date}</span>
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
+          </>
+        )}
+
+        {/* 필독 */}
+        {pinned.length > 0 && (
+          <div className={methodology.length > 0 ? 'border-t border-gray-200 dark:border-gray-800 pt-10 mb-12' : 'mb-12'}>
             <div className="mb-4">
               <span className="text-xs font-bold tracking-widest text-gray-400 uppercase">필독</span>
             </div>
-            <div className="space-y-3 mb-12">
+            <div className="space-y-3">
               {pinned.map((post) => {
                 const s = CATEGORY_STYLE[post.category]
                 return (
@@ -100,11 +157,10 @@ export default function PostsPage() {
                     <div className="flex items-start justify-between gap-4">
                       <div>
                         <div className="flex items-center gap-2 mb-2 flex-wrap">
-                          <span className="text-xs font-bold bg-gray-800 dark:bg-white text-white dark:text-gray-900 px-2 py-0.5 rounded-full">필독</span>
                           <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${s.badge}`}>
                             {post.category}
                           </span>
-                          <h2 className={`text-lg font-bold transition-colors ${s.pinnedText} group-hover:opacity-80`}>
+                          <h2 className={`text-base font-bold transition-colors ${s.pinnedText} group-hover:opacity-80`}>
                             {post.title}
                           </h2>
                         </div>
@@ -125,12 +181,12 @@ export default function PostsPage() {
                 )
               })}
             </div>
-          </>
+          </div>
         )}
 
-        {/* 분석 글 */}
+        {/* 분석 */}
         {rest.length > 0 && (
-          <div className={pinned.length > 0 ? 'border-t border-gray-200 dark:border-gray-800 pt-10' : ''}>
+          <div className={(methodology.length > 0 || pinned.length > 0) ? 'border-t border-gray-200 dark:border-gray-800 pt-10' : ''}>
             <div className="mb-4">
               <span className="text-xs font-bold tracking-widest text-gray-400 uppercase">분석</span>
             </div>

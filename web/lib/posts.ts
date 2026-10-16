@@ -6,6 +6,7 @@ export type PostMeta = {
   date: string
   tags: string[]
   summary: string
+  methodology?: boolean
   pinned?: boolean
   category: Category
 }
@@ -18,6 +19,7 @@ export const posts: PostMeta[] = [
     tags: ['원칙', '인구', '생산성', '복리', '인플레이션'],
     summary:
       '인구 증가(소비자 증가), 기술 생산성 향상, 기업 이익의 복리 성장, 인플레이션 — 네 가지 구조적 이유. 실시간 세계 인구 카운터와 함께. 이 네 가지가 동시에 영구적으로 반전되려면 문명 자체가 후퇴해야 한다.',
+    pinned: true,
     category: '적립식',
   },
   {
@@ -27,6 +29,7 @@ export const posts: PostMeta[] = [
     tags: ['원칙', '시장지수', '생존 편향', 'TQQQ', '레버리지'],
     summary:
       '개별주 투자를 금지한 이유. 상위 4% 종목이 전체 수익을 만든다는 생존 편향, 지수의 자동 구성 재조정, 레버리지 지수와 개별주 레버리지의 결정적 차이(0이 될 수 있느냐)를 정리한다.',
+    pinned: true,
     category: '적립식',
   },
   {
@@ -36,6 +39,7 @@ export const posts: PostMeta[] = [
     tags: ['원칙', '행동 편향', '뉴스', '백테스트', '방법론'],
     summary:
       '백테스트 안에는 이미 전쟁, 공황, 금리 충격, 팬데믹이 모두 들어있다. 그 모든 것을 겪고도 시장지수는 우상향했다. 뉴스에 반응한 개인 투자자의 실제 수익률이 지수 절반에도 못 미치는 이유.',
+    pinned: true,
     category: '적립식',
   },
   {
@@ -45,6 +49,7 @@ export const posts: PostMeta[] = [
     tags: ['원칙', '시간', '기대여명', '자동매수'],
     summary:
       '시간은 모두에게 평등한 자원이다. 35세 남성의 기대여명 기준 남은 여름은 47번. 통계청 생명표로 남은 시간을 직접 세어보고, 왜 투자공부 대신 자동매수를 선택했는지 설명한다.',
+    pinned: true,
     category: '적립식',
   },
   {
@@ -54,7 +59,7 @@ export const posts: PostMeta[] = [
     tags: ['적립식', 'TQQQ', '방법론', '자동적립'],
     summary:
       'TQQQ 장기 적립의 전체 설계도. 매일 자동 적립이 핵심 — 시장 방향에 관계없이 멈추지 않는다. 종목 선택(나스닥100/QLD/TQQQ), 목돈 분할 거치 방법, 합성가격의 의미까지 정리한다.',
-    pinned: true,
+    methodology: true,
     category: '적립식',
   },
   {
@@ -64,7 +69,7 @@ export const posts: PostMeta[] = [
     tags: ['인출식', '25% 룰', 'FIRE', 'TQQQ', '방법론'],
     summary:
       '권장 전략: 25% 룰 — 나스닥100이 1년 최고 종가보다 25% 낮게 끝나면 다음 날 전량 현금, 200일 평균선 위 15일 연속이면 재매수. 생활비는 매달 자산의 0.3~0.7%(상한 없음). 1971년 이후 오늘까지 인출 포함 연 22.4%, 20년간 꺼내 쓴 돈 74억(S0 44억). 일주일에 한 번 홈 화면 신호만 확인.',
-    pinned: true,
+    methodology: true,
     category: '인출식',
   },
   {
@@ -74,6 +79,7 @@ export const posts: PostMeta[] = [
     tags: ['인출식', '세금', '양도세', '25% 룰'],
     summary:
       '양도세는 25% 룰의 연 수익률을 2.1%p 깎는다(S0 3.3%p, D10GK 4.3%p). 낸 세금은 꺼내 쓴 생활비의 약 3분의 1. 전량 매도한 해에는 이익이 한꺼번에 실현돼 다음 해 자산의 10~26%가 세금으로 나간다. 매도한 해의 세금 몫은 재매수 때 남겨 둬야 한다.',
+    pinned: true,
     category: '인출식',
   },
   {
@@ -83,6 +89,7 @@ export const posts: PostMeta[] = [
     tags: ['인출식', '25% 룰', '체험', '닷컴버블'],
     summary:
       '1990년 1월 10억으로 25% 룰 인출을 시작한 경우를 한 달씩 넘겨 본다. 7개월 만에 4억대, 2000년 3월 1,099억, 2008년 9월 47억. 생활비는 월 6억에서 3,500만원이 됐다. 숫자 뒤에 있는 견뎌야 할 시간을 직접 겪어 보는 페이지.',
+    pinned: true,
     category: '인출식',
   },
   {
@@ -128,6 +135,7 @@ export const posts: PostMeta[] = [
     tags: ['검증', '합성가격', 'TQQQ', '배당'],
     summary:
       '2010년 상장 이후 실제 TQQQ·QLD·나스닥100 ETF와 합성 가격을 그대로 비교했다. 최대 낙폭은 −81.7%로 같고, 오래 들고 가면 실제가 연 2.2%p 더 벌었다(대부분 배당). 백테스트는 실제보다 보수적이다. 단 금리가 오른 2022년 이후로는 차이가 거의 없다.',
+    pinned: true,
     category: '적립식',
   },
   {
@@ -209,6 +217,7 @@ export const posts: PostMeta[] = [
     tags: ['비용', 'TQQQ', '스왑금리', '레버리지', '백테스트'],
     summary:
       'TQQQ를 보유할 때 드는 진짜 비용은 운용보수 하나가 아니다. 3배 레버리지를 구현하는 총수익 스왑의 차입 이자(SOFR + 50bps)가 별도로 붙는다. 2023년 고금리 구간에는 이 비용만 연 11%를 넘겼다. 수식부터 백테스트 영향까지 전부 정리한다.',
+    pinned: true,
     category: '인출식',
   },
   {
