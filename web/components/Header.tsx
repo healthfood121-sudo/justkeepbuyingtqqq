@@ -5,7 +5,7 @@ import { useTheme } from './ThemeProvider'
 
 interface HeaderProps {
   maxWidth?: string
-  activePage?: 'simulator' | 'withdrawal' | 'posts' | 'qqq-holdings'
+  activePage?: 'simulator' | 'withdrawal' | 'posts' | 'qqq-holdings' | 'sp500-holdings'
 }
 
 export default function Header({ maxWidth = 'max-w-6xl', activePage }: HeaderProps) {
@@ -53,7 +53,15 @@ export default function Header({ maxWidth = 'max-w-6xl', activePage }: HeaderPro
                 activePage === 'qqq-holdings' ? 'text-gray-900 dark:text-white font-semibold' : ''
               }`}
             >
-              <span className="sm:hidden">구성종목</span><span className="hidden sm:inline">나스닥100 구성종목</span>
+              <span className="sm:hidden">나스닥100</span><span className="hidden sm:inline">나스닥100 구성종목</span>
+            </Link>
+            <Link
+              href="/sp500-holdings"
+              className={`transition-colors hover:text-gray-900 dark:hover:text-white ${
+                activePage === 'sp500-holdings' ? 'text-gray-900 dark:text-white font-semibold' : ''
+              }`}
+            >
+              <span className="sm:hidden">S&amp;P500</span><span className="hidden sm:inline">S&amp;P500 구성종목</span>
             </Link>
           </nav>
           <button
