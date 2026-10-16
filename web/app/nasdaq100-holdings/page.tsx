@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react'
 import Header from '@/components/Header'
 import { HOLDINGS, META, type Holding } from './data'
+import { WEBSITES } from './websites'
 
 function fmt(n: number) {
   return n.toLocaleString('ko-KR')
@@ -96,7 +97,22 @@ export default function QqqHoldingsPage() {
                     className={`border-b border-gray-100 dark:border-gray-800 ${rowBg(h, idx)}`}
                   >
                     <td className="py-2 px-3 text-right text-gray-400 dark:text-gray-600 font-mono text-xs">{h.rank}</td>
-                    <td className="py-2 px-3 font-mono font-bold text-blue-600 dark:text-blue-400">{h.ticker}</td>
+                    <td className="py-2 px-3 font-mono font-bold text-blue-600 dark:text-blue-400">
+                      {WEBSITES[h.ticker] ? (
+                        <a
+                          href={WEBSITES[h.ticker]}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:underline hover:text-blue-800 dark:hover:text-blue-200"
+                          title={`${h.name} 공식 사이트`}
+                        >
+                          {h.ticker}
+                          <svg className="inline-block ml-0.5 mb-0.5 w-3 h-3 text-blue-400 dark:text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                          </svg>
+                        </a>
+                      ) : h.ticker}
+                    </td>
                     <td className="py-2 px-3 text-gray-800 dark:text-gray-200 font-medium">{h.name}</td>
                     <td className="py-2 px-3 text-right font-mono text-gray-700 dark:text-gray-300">
                       <span className={h.weight < 0 ? 'text-red-500' : ''}>{h.weight.toFixed(2)}%</span>

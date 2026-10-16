@@ -330,6 +330,7 @@ def generate_data_ts(as_of_kr: str, holdings: list[dict], descs: dict, source: s
 // ⚠️  자동 생성 파일 — scripts/update_nasdaq100_holdings.py
 // 마지막 업데이트: {today}  |  기준일: {as_of_kr}
 // 직접 수정 금지. 한글명·섹터·설명은 descriptions.json 에서 관리.
+// 공식 사이트 링크는 websites.ts 에서 별도 관리.
 
 export type HoldingType = 'stock' | 'cash' | 'futures' | 'other'
 
