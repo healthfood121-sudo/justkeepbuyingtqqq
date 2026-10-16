@@ -20,20 +20,36 @@ function rowBg(h: Holding, idx: number) {
 
 export default function QqqHoldingsPage() {
   const [rawInput, setRawInput] = useState('270000000')
+  const [query, setQuery] = useState('')
 
   const totalKRW = useMemo(() => {
     const num = Number(rawInput.replace(/,/g, ''))
     return isNaN(num) ? 0 : num
   }, [rawInput])
 
-  // 누적 비율 계산 (stock/cash/futures만 누적)
-  const withCumulative = useMemo(() => {
+  // 누적 비율 계산 (stock/cash/futures만 누적, 전체 기준)
+  const cumulativeMap = useMemo(() => {
     let cum = 0
-    return HOLDINGS.map(h => {
+    const map = new Map<string, number>()
+    for (const h of HOLDINGS) {
       if (h.type !== 'other') cum += h.weight
-      return { h, cum: h.type === 'other' ? null : cum }
-    })
+      if (h.type !== 'other') map.set(h.ticker, cum)
+    }
+    return map
   }, [])
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    if (!q) return HOLDINGS
+    return HOLDINGS.filter(
+      h => h.ticker.toLowerCase().includes(q) || h.name.toLowerCase().includes(q)
+    )
+  }, [query])
+
+  const totalWeight = useMemo(
+    () => HOLDINGS.reduce((s, h) => s + h.weight, 0),
+    []
+  )
 
   function handleInput(e: React.ChangeEvent<HTMLInputElement>) {
     const raw = e.target.value.replace(/[^0-9]/g, '')
@@ -57,20 +73,51 @@ export default function QqqHoldingsPage() {
           </p>
         </div>
 
-        {/* 투자금액 입력 */}
-        <div className="mb-6 inline-flex items-center gap-3 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700 rounded-xl px-5 py-3">
-          <span className="text-sm font-medium text-orange-800 dark:text-orange-200 whitespace-nowrap">
-            총 투자금액 (KRW)
-          </span>
-          <input
-            type="text"
-            inputMode="numeric"
-            value={displayInput}
-            onChange={handleInput}
-            placeholder="270,000,000"
-            className="w-44 text-right font-mono text-base font-bold bg-transparent border-b-2 border-orange-400 dark:border-orange-500 text-orange-900 dark:text-orange-100 outline-none placeholder:text-orange-300 dark:placeholder:text-orange-700 py-0.5"
-          />
-          <span className="text-sm text-orange-600 dark:text-orange-400">원</span>
+        {/* 컨트롤 바 */}
+        <div className="mb-6 flex flex-wrap items-center gap-4">
+          {/* 투자금액 입력 */}
+          <div className="inline-flex items-center gap-3 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700 rounded-xl px-5 py-3">
+            <span className="text-sm font-medium text-orange-800 dark:text-orange-200 whitespace-nowrap">
+              총 투자금액 (KRW)
+            </span>
+            <input
+              type="text"
+              inputMode="numeric"
+              value={displayInput}
+              onChange={handleInput}
+              placeholder="270,000,000"
+              className="w-44 text-right font-mono text-base font-bold bg-transparent border-b-2 border-orange-400 dark:border-orange-500 text-orange-900 dark:text-orange-100 outline-none placeholder:text-orange-300 dark:placeholder:text-orange-700 py-0.5"
+            />
+            <span className="text-sm text-orange-600 dark:text-orange-400">원</span>
+          </div>
+
+          {/* 검색 */}
+          <div className="inline-flex items-center gap-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 flex-1 min-w-[180px] max-w-xs">
+            <svg className="w-4 h-4 text-gray-400 dark:text-gray-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+            </svg>
+            <input
+              type="text"
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              placeholder="티커 또는 종목명 검색"
+              className="flex-1 bg-transparent text-sm text-gray-700 dark:text-gray-300 outline-none placeholder:text-gray-400 dark:placeholder:text-gray-600"
+            />
+            {query && (
+              <button
+                onClick={() => setQuery('')}
+                className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-xs"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
+          {query && (
+            <span className="text-sm text-gray-500 dark:text-gray-400">
+              {filtered.length}개 검색됨
+            </span>
+          )}
         </div>
 
         {/* 테이블 */}
@@ -89,8 +136,9 @@ export default function QqqHoldingsPage() {
               </tr>
             </thead>
             <tbody>
-              {withCumulative.map(({ h, cum }, idx) => {
+              {filtered.map((h, idx) => {
                 const amount = totalKRW > 0 ? Math.round(totalKRW * h.weight / 100) : null
+                const cum = cumulativeMap.get(h.ticker) ?? null
                 return (
                   <tr
                     key={h.ticker}
@@ -136,15 +184,17 @@ export default function QqqHoldingsPage() {
               })}
 
               {/* 합계 행 */}
-              <tr className="bg-gray-50 dark:bg-gray-900 border-t-2 border-gray-300 dark:border-gray-600 font-bold">
-                <td colSpan={3} className="py-3 px-3 text-right text-gray-700 dark:text-gray-200">합계</td>
-                <td className="py-3 px-3 text-right font-mono text-gray-800 dark:text-gray-100">99.97%</td>
-                <td colSpan={2} />
-                <td className="py-3 px-3 text-right font-mono text-gray-800 dark:text-gray-100">
-                  {totalKRW > 0 ? fmt(Math.round(totalKRW * 99.97 / 100)) : '—'}
-                </td>
-                <td />
-              </tr>
+              {!query && (
+                <tr className="bg-gray-50 dark:bg-gray-900 border-t-2 border-gray-300 dark:border-gray-600 font-bold">
+                  <td colSpan={3} className="py-3 px-3 text-right text-gray-700 dark:text-gray-200">합계</td>
+                  <td className="py-3 px-3 text-right font-mono text-gray-800 dark:text-gray-100">{totalWeight.toFixed(2)}%</td>
+                  <td colSpan={2} />
+                  <td className="py-3 px-3 text-right font-mono text-gray-800 dark:text-gray-100">
+                    {totalKRW > 0 ? fmt(Math.round(totalKRW * totalWeight / 100)) : '—'}
+                  </td>
+                  <td />
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
