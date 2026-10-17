@@ -161,7 +161,7 @@ export default function MarketHistoryPage() {
     })
   }, [sp500])
 
-  /* 선택된 이벤트로 차트 줌 */
+  /* 선택된 이벤트로 차트 줌 (X + Y 동시 조정) */
   useEffect(() => {
     if (!selectedEventId || !sp500 || !chartRef.current || !pluginLoaded) return
     const ev = allCorrections.find(e => e.id === selectedEventId)
@@ -173,11 +173,20 @@ export default function MarketHistoryPage() {
     if (si === -1) return
     const span = Math.max((ei !== -1 ? ei : si) - si, 3)
     const padding = Math.max(span * 4, 30)
+    const xMin = Math.max(0, si - padding)
+    const xMax = Math.min(labels.length - 1, (ei !== -1 ? ei : si) + padding)
+
+    // 가시 범위 내 Y 범위 계산
+    const visiblePrices = sp500.slice(xMin, xMax + 1).map(p => p.p)
+    const priceMin = Math.min(...visiblePrices)
+    const priceMax = Math.max(...visiblePrices)
+
     try {
-      ;(chartRef.current as any).zoomScale('x', {
-        min: Math.max(0, si - padding),
-        max: Math.min(labels.length - 1, (ei !== -1 ? ei : si) + padding),
-      }, 'none')
+      const chart = chartRef.current as any
+      chart.zoomScale('x', { min: xMin, max: xMax }, 'none')
+      chart.options.scales.y.min = priceMin * 0.75
+      chart.options.scales.y.max = priceMax * 1.35
+      chart.update('none')
     } catch { /* zoom plugin이 초기화되지 않은 경우 무시 */ }
   }, [selectedEventId, allCorrections, labels, sp500, pluginLoaded])
 
@@ -358,6 +367,15 @@ export default function MarketHistoryPage() {
     })
   }, [])
 
+  function resetChartZoom() {
+    const chart = chartRef.current as any
+    if (!chart) return
+    chart.resetZoom()
+    chart.options.scales.y.min = undefined
+    chart.options.scales.y.max = undefined
+    chart.update('none')
+  }
+
   function toggleSort(key: typeof sort) {
     if (sort === key) setSortAsc(v => !v)
     else { setSort(key); setSortAsc(false) }
@@ -366,7 +384,7 @@ export default function MarketHistoryPage() {
   function handleSelectEvent(id: string) {
     if (selectedEventId === id) {
       setSelectedEventId(null)
-      chartRef.current?.resetZoom()
+      resetChartZoom()
     } else {
       setSelectedEventId(id)
       if (!expanded.has(id)) toggleExpand(id)
@@ -419,14 +437,14 @@ export default function MarketHistoryPage() {
             <div className="flex gap-1">
               {selectedEventId && (
                 <button
-                  onClick={() => { setSelectedEventId(null); chartRef.current?.resetZoom() }}
+                  onClick={() => { setSelectedEventId(null); resetChartZoom() }}
                   className="text-[10px] px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                 >
                   전체 보기
                 </button>
               )}
               <button
-                onClick={() => { chartRef.current?.resetZoom(); setSelectedEventId(null) }}
+                onClick={() => { resetChartZoom(); setSelectedEventId(null) }}
                 className="text-[10px] px-2 py-1 rounded bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 transition-colors"
               >
                 줌 초기화
