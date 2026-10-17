@@ -42,6 +42,7 @@ const EVENTS = [
   { year: '2020', event: 'COVID-19 팬데믹 — 33일 만에 −34%' },
   { year: '2022', event: '미 연준 급격한 금리 인상 — 나스닥 −33%' },
   { year: '2025', event: '트럼프 관세 충격 — 나스닥 −23%' },
+  { year: '2026', event: '미 연준 추가 금리 인상 · 경기침체 우려' },
 ]
 
 export default function TrustTheMethodPage() {
@@ -91,6 +92,15 @@ export default function TrustTheMethodPage() {
           이 모든 사건이 백테스트 데이터 안에 이미 들어있다.
           그리고 그 모든 것을 겪은 후 나스닥100은 지금 이 자리에 있다.
           전쟁이 났을 때 판 사람, 금리가 오를 때 판 사람, 팬데믹 때 판 사람 — 모두 틀렸다.
+        </P>
+
+        <P>
+          위 목록은 빙산의 일각이다.{' '}
+          <Link href="/posts/market-history" className="text-blue-600 dark:text-blue-400 underline underline-offset-2">
+            조정장 역사서
+          </Link>
+          에는 1871년부터 S&P500이 -5% 이상 빠진 사건 481건이 전부 기록돼 있다.
+          S&P500 장기 차트에 그 구간을 겹쳐 보면, 하나하나는 공포스러웠지만 전체 흐름에서는 작은 점에 불과하다는 걸 알 수 있다.
         </P>
 
         <Callout color="blue">
@@ -195,18 +205,6 @@ export default function TrustTheMethodPage() {
                   조정장 역사서 — 1871년부터 481개 하락 사건
                 </div>
                 <div className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">S&P500 장기 차트에 모든 하락 구간 오버레이 + 전체 사건 목록</div>
-              </div>
-            </Link>
-            <Link
-              href="/posts/market-history"
-              className="flex items-start gap-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 rounded-xl px-5 py-3.5 transition-colors group"
-            >
-              <span className="text-blue-400 dark:text-blue-500 text-sm mt-0.5 shrink-0">→</span>
-              <div>
-                <div className="text-sm font-semibold text-gray-800 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                  조정장 역사서 — 478건 전부 기록
-                </div>
-                <div className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">1871년부터 2025년까지 S&P500이 -5% 이상 빠진 모든 사건</div>
               </div>
             </Link>
           </div>
