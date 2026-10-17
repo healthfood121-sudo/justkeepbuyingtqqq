@@ -5,6 +5,7 @@ import LivingCalc from '@/components/LivingCalc'
 import LifeCountdown from '@/components/LifeCountdown'
 import WorldPopCounter from '@/components/WorldPopCounter'
 import GlobalLiquidityCounter from '@/components/GlobalLiquidityCounter'
+import GlobalDebtCounter from '@/components/GlobalDebtCounter'
 import Link from 'next/link'
 
 const principles = [
@@ -63,6 +64,7 @@ export default function HomePage() {
                     <div className="mt-3 pl-6 flex flex-col gap-2">
                       <WorldPopCounter />
                       <GlobalLiquidityCounter />
+                      <GlobalDebtCounter />
                       <div className="flex flex-col gap-1 mt-1">
                         <Link href="/posts/why-index" className="text-xs text-blue-500 dark:text-blue-400 hover:underline">
                           왜 개별주가 아니라 시장지수인가 →

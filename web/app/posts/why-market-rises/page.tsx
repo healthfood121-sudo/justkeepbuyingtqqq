@@ -1,6 +1,7 @@
 import Header from '@/components/Header'
 import WorldPopCounter from '@/components/WorldPopCounter'
 import GlobalLiquidityCounter from '@/components/GlobalLiquidityCounter'
+import GlobalDebtCounter from '@/components/GlobalDebtCounter'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 
@@ -186,6 +187,7 @@ export default function WhyMarketRisesPage() {
 
         <div className="my-6">
           <GlobalLiquidityCounter />
+          <GlobalDebtCounter />
         </div>
 
         <P>
