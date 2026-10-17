@@ -57,24 +57,10 @@ function daysToText(days: number | null): string {
   return rem > 0 ? `${years}년 ${rem}개월` : `${years}년`
 }
 
-// S&P500 주요 사건(중복 제거된 최상위 이벤트)
-const MAJOR_EVENTS_STATIC: Pick<CorrectionEvent, 'id' | 'name_ko' | 'peak_date' | 'trough_date' | 'drawdown_pct' | 'grade'>[] = [
-  { id: 'oil_shock',    name_ko: '오일쇼크 / 워터게이트',     peak_date: '1973-01-11', trough_date: '1974-10-03', drawdown_pct: -48.2, grade: 'A' },
-  { id: 'stagflation', name_ko: '볼커 쇼크 / 이중 침체',      peak_date: '1980-11-28', trough_date: '1982-08-12', drawdown_pct: -27.1, grade: 'C' },
-  { id: 'blackmonday', name_ko: '블랙먼데이',                 peak_date: '1987-08-25', trough_date: '1987-12-04', drawdown_pct: -33.5, grade: 'B' },
-  { id: 'gulf_war',    name_ko: '걸프전 / 경기침체',           peak_date: '1990-07-16', trough_date: '1990-10-11', drawdown_pct: -19.9, grade: 'D' },
-  { id: 'ltcm',        name_ko: 'LTCM / 러시아 위기',         peak_date: '1998-07-17', trough_date: '1998-08-31', drawdown_pct: -19.3, grade: 'D' },
-  { id: 'dotcom',      name_ko: '닷컴 버블 붕괴',              peak_date: '2000-03-24', trough_date: '2002-10-09', drawdown_pct: -49.1, grade: 'A' },
-  { id: 'gfc',         name_ko: '글로벌 금융위기',             peak_date: '2007-10-09', trough_date: '2009-03-09', drawdown_pct: -56.8, grade: 'A' },
-  { id: 'eurodbt',     name_ko: '미국 신용등급 강등 / 유로존',  peak_date: '2011-04-29', trough_date: '2011-10-03', drawdown_pct: -19.4, grade: 'D' },
-  { id: 'tradewar18',  name_ko: '무역전쟁 / 연준 긴축',         peak_date: '2018-09-20', trough_date: '2018-12-24', drawdown_pct: -19.8, grade: 'D' },
-  { id: 'covid',       name_ko: '코로나19 팬데믹',             peak_date: '2020-02-19', trough_date: '2020-03-23', drawdown_pct: -33.9, grade: 'B' },
-  { id: 'inflation22', name_ko: '인플레이션 / 금리인상',        peak_date: '2022-01-03', trough_date: '2022-10-12', drawdown_pct: -25.4, grade: 'C' },
-  { id: 'tariff25',    name_ko: '트럼프 관세전쟁',              peak_date: '2025-02-19', trough_date: '2025-04-08', drawdown_pct: -18.9, grade: 'D' },
-]
 
 export default function DrawdownMapPage() {
   const [synthData, setSynthData] = useState<PricePoint[] | null>(null)
+  const [events, setEvents] = useState<CorrectionEvent[]>([])
   const [pluginLoaded, setPluginLoaded] = useState(false)
   const chartRef = useRef<ChartJS<'line'> | null>(null)
   const { theme } = useTheme()
@@ -85,6 +71,22 @@ export default function DrawdownMapPage() {
       const series = d.synth.latest.filter(p => p.d >= '1971-02')
       setSynthData(series)
     })
+  }, [])
+
+  useEffect(() => {
+    fetch('/data/sp500_corrections_history.json')
+      .then(r => r.json())
+      .then((d: { corrections: CorrectionEvent[] }) => {
+        const filtered = d.corrections
+          .filter(e =>
+            !e.parent_id &&
+            e.peak_date >= '1971-01-01' &&
+            ['A', 'B', 'C', 'D'].includes(e.grade) &&
+            (e.grade !== 'D' || e.drawdown_pct <= -15)
+          )
+          .sort((a, b) => a.peak_date.localeCompare(b.peak_date))
+        setEvents(filtered)
+      })
   }, [])
 
   useEffect(() => {
@@ -107,7 +109,7 @@ export default function DrawdownMapPage() {
 
   // 주석 플러그인 (하락 구간 음영)
   const annotationPlugin = useMemo(() => {
-    const events = MAJOR_EVENTS_STATIC
+    const evts = events
     return {
       id: 'drawdownRegions',
       beforeDatasetsDraw(chart: ChartJS) {
@@ -115,7 +117,7 @@ export default function DrawdownMapPage() {
         const xScale = scales.x
         if (!xScale || !chartArea) return
         ctx.save()
-        events.forEach(ev => {
+        evts.forEach(ev => {
           const startM = ev.peak_date.slice(0, 7)
           const endM   = ev.trough_date.slice(0, 7)
           const si = labels.indexOf(startM)
@@ -139,7 +141,7 @@ export default function DrawdownMapPage() {
       },
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [labels, dark])
+  }, [events, labels, dark])
 
   const gridColor  = dark ? '#1f2937' : '#f3f4f6'
   const tickColor  = dark ? '#9ca3af' : '#6b7280'
@@ -282,10 +284,9 @@ export default function DrawdownMapPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
-              {MAJOR_EVENTS_STATIC.filter(e => e.grade !== 'D').map(e => {
+              {events.filter(e => e.grade !== 'D').map(e => {
                 const info = GRADE_FILL[e.grade]
                 const bgStyle = { background: dark ? info?.dark : info?.light }
-                // Find matching full event from static for recovery
                 return (
                   <tr key={e.id} className="text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900/40 transition-colors">
                     <td className="py-2.5 px-3">
@@ -301,7 +302,9 @@ export default function DrawdownMapPage() {
                     <td className="py-2.5 px-3 whitespace-nowrap text-gray-500 dark:text-gray-400">
                       {e.peak_date.slice(0,7)} ~ {e.trough_date.slice(0,7)}
                     </td>
-                    <td className="py-2.5 px-3 whitespace-nowrap text-gray-400 dark:text-gray-500">—</td>
+                    <td className="py-2.5 px-3 whitespace-nowrap text-gray-400 dark:text-gray-500">
+                      {daysToText(e.recovery_days)}
+                    </td>
                     <td className="py-2.5 px-3 font-mono text-gray-400 dark:text-gray-600">{e.peak_date.slice(0,7)}</td>
                     <td className="py-2.5 px-3 font-mono text-gray-400 dark:text-gray-600">{e.trough_date.slice(0,7)}</td>
                   </tr>

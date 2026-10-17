@@ -1,40 +1,82 @@
 import Header from '@/components/Header'
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import fs from 'fs'
+import path from 'path'
 
 export const metadata: Metadata = {
   title: '연도별 수익률 비교',
   description: 'TQQQ·QLD·QQQ·VOO 2010년부터 현재까지 연도별 실제 수익률 비교표. 좋은 해와 나쁜 해의 극단적 차이, 레버리지의 의미.',
 }
 
-// 실제 ETF 수익률 (TQQQ·QLD·QQQ: real_vs_synthetic.json yearly.real)
-// VOO: SP500 csv 종가 기준 (배당 미포함 — 실제는 연 1.5%p 정도 높음)
-const DATA: { year: number; tqqq: number | null; qld: number | null; qqq: number; voo: number; note?: string }[] = [
-  { year: 2010, tqqq: 78.1,  qld: 36.9, qqq: 20.1, voo: 12.8, note: 'TQQQ 2월 상장' },
-  { year: 2011, tqqq: -8.0,  qld: 0.0,  qqq: 3.5,  voo: -0.0 },
-  { year: 2012, tqqq: 52.3,  qld: 34.8, qqq: 18.1, voo: 13.4 },
-  { year: 2013, tqqq: 139.7, qld: 82.1, qqq: 36.6, voo: 29.6 },
-  { year: 2014, tqqq: 57.1,  qld: 37.6, qqq: 19.2, voo: 11.4 },
-  { year: 2015, tqqq: 17.2,  qld: 14.7, qqq: 9.4,  voo: -0.7 },
-  { year: 2016, tqqq: 11.4,  qld: 10.0, qqq: 7.1,  voo: 9.5 },
-  { year: 2017, tqqq: 118.1, qld: 70.3, qqq: 32.7, voo: 19.4 },
-  { year: 2018, tqqq: -19.8, qld: -8.3, qqq: -0.1, voo: -6.2 },
-  { year: 2019, tqqq: 133.8, qld: 81.7, qqq: 39.0, voo: 28.9 },
-  { year: 2020, tqqq: 110.1, qld: 88.9, qqq: 48.4, voo: 16.3 },
-  { year: 2021, tqqq: 83.0,  qld: 54.7, qqq: 27.4, voo: 26.9 },
-  { year: 2022, tqqq: -79.1, qld: -60.5,qqq: -32.6,voo: -19.4 },
-  { year: 2023, tqqq: 198.0, qld: 117.7,qqq: 54.9, voo: 24.2 },
-  { year: 2024, tqqq: 58.3,  qld: 42.8, qqq: 25.6, voo: 23.3 },
-  { year: 2025, tqqq: 34.4,  qld: 30.4, qqq: 20.8, voo: 16.4 },
-  { year: 2026, tqqq: 51.9,  qld: 37.9, qqq: 21.6, voo: 13.4, note: '연중 (10월 기준)' },
-]
+// VOO는 S&P500 지수 종가 기준 (배당 미포함). real_vs_synthetic.json에 없으므로 별도 관리.
+const VOO_YEARS: Record<number, number> = {
+  2010: 12.8, 2011: -0.0, 2012: 13.4, 2013: 29.6, 2014: 11.4,
+  2015: -0.7, 2016:  9.5, 2017: 19.4, 2018: -6.2, 2019: 28.9,
+  2020: 16.3, 2021: 26.9, 2022:-19.4, 2023: 24.2, 2024: 23.3,
+  2025: 16.4, 2026: 13.4,
+}
+
+interface YearEntry { year: number; real: number; partial: boolean }
+interface EtfData   { yearly: YearEntry[] }
+interface RVSData   { asof: string; etfs: { TQQQ: EtfData; QLD: EtfData; QQQ: EtfData } }
+
+interface RowData {
+  year:    number
+  tqqq:    number | null
+  qld:     number | null
+  qqq:     number | null
+  voo:     number | null
+  note?:   string
+  partial: boolean
+}
+
+function loadRows(): { rows: RowData[]; asof: string } {
+  const filePath = path.join(process.cwd(), 'public', 'data', 'real_vs_synthetic.json')
+  const raw: RVSData = JSON.parse(fs.readFileSync(filePath, 'utf8'))
+
+  const tqqqMap = Object.fromEntries(raw.etfs.TQQQ.yearly.map(e => [e.year, e]))
+  const qldMap  = Object.fromEntries(raw.etfs.QLD.yearly.map(e => [e.year, e]))
+  const qqqMap  = Object.fromEntries(raw.etfs.QQQ.yearly.map(e => [e.year, e]))
+
+  const years = Array.from(new Set([
+    ...Object.keys(tqqqMap),
+    ...Object.keys(qldMap),
+    ...Object.keys(qqqMap),
+  ].map(Number))).filter(y => y >= 2010).sort((a, b) => a - b)
+
+  const asofDate = new Date(raw.asof)
+  const asofMonth = `${asofDate.getMonth() + 1}월`
+
+  const rows: RowData[] = years.map(year => {
+    const tqqq = tqqqMap[year]
+    const qld  = qldMap[year]
+    const qqq  = qqqMap[year]
+    const partial = !!(tqqq?.partial || qld?.partial || qqq?.partial)
+
+    let note: string | undefined
+    if (year === 2010 && tqqq?.partial) note = 'TQQQ 2월 상장'
+    else if (partial) note = `연중 (${asofMonth} 기준)`
+
+    return {
+      year,
+      tqqq: tqqq ? tqqq.real : null,
+      qld:  qld  ? qld.real  : null,
+      qqq:  qqq  ? qqq.real  : null,
+      voo:  VOO_YEARS[year] ?? null,
+      note,
+      partial,
+    }
+  })
+
+  return { rows, asof: raw.asof }
+}
 
 function RetCell({ v, base }: { v: number | null; base?: boolean }) {
   if (v === null) return <td className="py-2.5 px-3 text-gray-300 dark:text-gray-700 text-center">—</td>
   const isPos = v > 0
   const abs = Math.abs(v)
 
-  // 색상 강도 계산
   let bg = ''
   if (isPos) {
     if (abs >= 100) bg = 'bg-green-700 dark:bg-green-600 text-white'
@@ -46,7 +88,7 @@ function RetCell({ v, base }: { v: number | null; base?: boolean }) {
     if (abs >= 50) bg = 'bg-red-700 dark:bg-red-600 text-white'
     else if (abs >= 30) bg = 'bg-red-600 dark:bg-red-700 text-white'
     else if (abs >= 15) bg = 'bg-red-400 dark:bg-red-800 text-white'
-    else if (abs >= 5) bg = 'bg-red-200 dark:bg-red-900/60 text-red-900 dark:text-red-200'
+    else if (abs >= 5)  bg = 'bg-red-200 dark:bg-red-900/60 text-red-900 dark:text-red-200'
     else bg = 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300'
   }
 
@@ -68,13 +110,18 @@ function cumGrowth(data: number[]): number {
   return data.reduce((acc, v) => acc * (1 + v / 100), 1)
 }
 
-const fullYears = DATA.filter(d => !d.note?.includes('상장') && !d.note?.includes('연중'))
-const tqqqFull = fullYears.filter(d => d.tqqq !== null).map(d => d.tqqq!)
-const qldFull = fullYears.map(d => d.qld!)
-const qqqFull = fullYears.map(d => d.qqq)
-const vooFull = fullYears.map(d => d.voo)
-
 export default function AnnualReturnsPage() {
+  const { rows, asof } = loadRows()
+
+  const fullRows  = rows.filter(r => !r.partial)
+  const tqqqFull  = fullRows.filter(r => r.tqqq !== null).map(r => r.tqqq!)
+  const qldFull   = fullRows.filter(r => r.qld  !== null).map(r => r.qld!)
+  const qqqFull   = fullRows.map(r => r.qqq!)
+  const vooFull   = fullRows.filter(r => r.voo  !== null).map(r => r.voo!)
+
+  const firstFull = fullRows[0]?.year ?? 2011
+  const lastFull  = fullRows[fullRows.length - 1]?.year ?? 2025
+
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-white">
       <Header />
@@ -113,7 +160,7 @@ export default function AnnualReturnsPage() {
           ))}
         </div>
         <p className="text-xs text-gray-400 dark:text-gray-500 mb-6 -mt-4">
-          2011~2025년 (완전한 연도 기준) · TQQQ·QLD·QQQ: 실제 ETF 종가 수익률 · VOO: S&P500 종가 기준 (배당 미포함 — 실제 VOO는 연 1.5%p 정도 높음)
+          {firstFull}~{lastFull}년 (완전한 연도 기준) · TQQQ·QLD·QQQ: 실제 ETF 종가 수익률 · VOO: S&P500 종가 기준 (배당 미포함 — 실제 VOO는 연 1.5%p 정도 높음)
         </p>
 
         {/* 수익률 표 */}
@@ -130,7 +177,7 @@ export default function AnnualReturnsPage() {
               </tr>
             </thead>
             <tbody>
-              {DATA.map(row => (
+              {rows.map(row => (
                 <tr key={row.year} className="border-b border-gray-50 dark:border-gray-800/50 last:border-0">
                   <td className="py-2.5 px-3 font-mono font-semibold text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">
                     {row.year}
@@ -182,8 +229,9 @@ export default function AnnualReturnsPage() {
         </div>
 
         <div className="mt-8 text-xs text-gray-400 dark:text-gray-600 space-y-1">
-          <p>TQQQ·QLD·QQQ 수익률: 실제 ETF 연간 종가 기준 (연초 첫 거래일 → 연말 마지막 거래일). 2010년 TQQQ는 2월 상장이므로 부분 연도. 2026년은 10월 기준 연중 수익률.</p>
+          <p>TQQQ·QLD·QQQ 수익률: 실제 ETF 연간 종가 기준 (연초 첫 거래일 → 연말 마지막 거래일). 2010년 TQQQ는 2월 상장이므로 부분 연도. 가장 최근 연도는 연중 수익률.</p>
           <p>VOO 수익률: S&P500 지수 종가 기준 (배당 미포함). 실제 VOO는 배당(약 연 1.3~1.5%)이 추가로 있어 더 높다.</p>
+          <p className="text-gray-300 dark:text-gray-700">데이터 기준: {asof}</p>
         </div>
       </main>
     </div>
