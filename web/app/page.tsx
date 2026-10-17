@@ -10,7 +10,7 @@ import Link from 'next/link'
 const principles = [
   {
     num: '01',
-    title: '시장지수와 자본주의를 믿자',
+    title: '시장지수와 자본주의의 장기적 우상향을 믿자',
     sub: '인구도, 돈도 계속 늘어난다',
     desc: '개별주 투자 금지, 가치주 금지, 성장주 금지, 개별주 레버리지 금지. — VOO, 나스닥100, QLD, TQQQ',
   },
@@ -102,6 +102,9 @@ export default function HomePage() {
               <div className="flex items-baseline gap-2 mb-3">
                 <span className="text-xs font-bold text-blue-500 dark:text-blue-400 tracking-wide">JUST KEEP BUYING</span>
                 <span className="text-base font-bold text-gray-900 dark:text-white">적립식</span>
+                <Link href="/posts/accumulation-guide" className="ml-auto text-xs text-blue-600 dark:text-blue-400 hover:underline font-semibold whitespace-nowrap">
+                  방법론 상세 보기 →
+                </Link>
               </div>
               <p className="text-xs font-bold text-blue-700 dark:text-blue-300 mb-3">
                 매일 같은 금액을 자동 매수 — 시장이 어떻든 멈추지 않는다
@@ -135,6 +138,9 @@ export default function HomePage() {
                 <span className="text-xs font-bold text-purple-500 dark:text-purple-400 tracking-wide">JUST KEEP SELLING</span>
                 <span className="text-base font-bold text-gray-900 dark:text-white">인출식</span>
                 <span className="text-sm font-bold text-purple-600 dark:text-purple-300">나스닥100 25% 룰</span>
+                <Link href="/posts/withdrawal-guide" className="ml-auto text-xs text-purple-600 dark:text-purple-400 hover:underline font-semibold whitespace-nowrap">
+                  방법론 상세 보기 →
+                </Link>
               </div>
 
               {/* 규칙 ①②③ + 수익률 */}
@@ -162,7 +168,7 @@ export default function HomePage() {
                   href="/posts/withdrawal-guide"
                   className="text-xs text-purple-600 dark:text-purple-400 hover:underline font-semibold"
                 >
-                  방법론 상세 보기 — 1971년 이후 인출 포함 연 <strong>21.5%</strong> (중간값) →
+                  방법론 상세 보기 →
                 </Link>
                 <Link
                   href="/simulator/withdrawal"
