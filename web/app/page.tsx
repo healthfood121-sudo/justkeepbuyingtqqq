@@ -3,6 +3,8 @@ import HomeSimulator from '@/components/HomeSimulator'
 import WithdrawalSignal from '@/components/WithdrawalSignal'
 import LivingCalc from '@/components/LivingCalc'
 import LifeCountdown from '@/components/LifeCountdown'
+import WorldPopCounter from '@/components/WorldPopCounter'
+import GlobalLiquidityCounter from '@/components/GlobalLiquidityCounter'
 import Link from 'next/link'
 
 const principles = [
@@ -23,6 +25,12 @@ const principles = [
     title: '뉴스를 보지 말고, 방법론을 지킨다',
     sub: '시장지수를 믿자',
     desc: '백테스트 안에는 이미 모든 뉴스가 담겨 있다. 전쟁, 인플레이션, 디플레이션, 공황, 경제위기, 신용경색 등등 역사에 담겨있는 모든 불확실성이 시장지수에 담겨있다. — 시장지수는 그 모든 것을 겪고도 우상향했다. 뉴스에 흔들리지 말고 방법론을 지키자.',
+  },
+  {
+    num: '04',
+    title: '자본주의를 믿자',
+    sub: '인구도, 돈도 계속 늘어난다',
+    desc: '지금 이 순간에도 새로운 소비자가 태어나고 있고, 더 많은 돈이 풀리고 있다. 소비자가 늘면 기업 이익이 커지고, 돈이 풀리면 현금 가치가 희석돼 자산 가격이 오른다. 시장지수가 장기적으로 우상향하는 건 우연이 아니라 구조다.',
   },
 ]
 
@@ -79,6 +87,15 @@ export default function HomePage() {
                     <div className="mt-2 pl-6">
                       <Link href="/posts/trust-the-method" className="text-xs text-blue-500 dark:text-blue-400 hover:underline">
                         뉴스를 보지 말고 방법론을 지켜라 →
+                      </Link>
+                    </div>
+                  )}
+                  {p.num === '04' && (
+                    <div className="mt-3 pl-6 flex flex-col gap-2">
+                      <WorldPopCounter />
+                      <GlobalLiquidityCounter />
+                      <Link href="/posts/why-market-rises" className="text-xs text-blue-500 dark:text-blue-400 hover:underline">
+                        시장지수는 왜 장기적으로 우상향하는가 →
                       </Link>
                     </div>
                   )}
