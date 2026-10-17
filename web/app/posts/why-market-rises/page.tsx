@@ -1,5 +1,6 @@
 import Header from '@/components/Header'
 import WorldPopCounter from '@/components/WorldPopCounter'
+import GlobalLiquidityCounter from '@/components/GlobalLiquidityCounter'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 
@@ -175,6 +176,43 @@ export default function WhyMarketRisesPage() {
           반면 은행 예금이나 현금을 들고 있으면 인플레이션만큼 실질 가치가 줄어든다.
           주식 지수는 이 인플레이션에 자동으로 올라타는 자산이다.
         </P>
+
+        <H2>④-1. 인플레이션은 왜 생기는가 — 통화량 증가</H2>
+
+        <P>
+          인플레이션의 가장 큰 원인 중 하나는 통화량 증가다.
+          전 세계 통화량(M2)은 지금 이 순간에도 늘어나고 있다.
+        </P>
+
+        <div className="my-6">
+          <GlobalLiquidityCounter />
+        </div>
+
+        <P>
+          중앙은행의 통화 공급과 은행의 신용 창출이 합쳐져 전 세계 M2는 연 약 6%씩 증가한다.
+          그렇다고 내 현금이 매년 6%씩 줄어드는 건 아니다.
+          경제가 성장하면서 새로 풀린 돈을 일부 흡수하기 때문이다.
+        </P>
+
+        <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-5 py-4 mb-6 font-mono text-sm text-gray-700 dark:text-gray-300 space-y-1">
+          <div>M2 +6%</div>
+          <div className="pl-4 text-gray-400 dark:text-gray-500">→ 경제 실질 성장 ~2–3% 흡수</div>
+          <div className="pl-4 text-gray-400 dark:text-gray-500">→ 실제 물가 상승(인플레이션) ~2–3%</div>
+        </div>
+
+        <P>
+          현금 희석 속도는 인플레이션율(연 2~3%)에 가깝다.
+          그렇다면 기업은? 물가가 3% 오르면 기업이 파는 물건 가격도 3% 오른다.
+          실질 성장이 전혀 없는 기업이라도 명목 매출은 인플레이션만큼 자동으로 오른다.
+          주가는 이 명목 수치를 반영하기 때문에, 지수는 최소 인플레이션만큼은 자동으로 오르는 구조다.
+        </P>
+
+        <Callout color="yellow">
+          <strong>현금 vs 주식 지수</strong><br />
+          <span className="font-mono">현금 보유 = 매년 인플레이션(~2–3%)만큼 실질 가치 감소</span><br />
+          <span className="font-mono">주식 지수 = 인플레이션 자동 반영 + 실질 성장</span><br /><br />
+          현금을 들고 있는 것은 매년 2~3%씩 손해를 확정하는 선택이다.
+        </Callout>
 
         <Callout color="yellow">
           <strong>네 가지 힘이 동시에 작용한다</strong><br />
