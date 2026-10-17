@@ -283,8 +283,7 @@ export default function WhyMarketRisesPage() {
             {[
               { href: '/posts/why-index', title: '왜 개별주가 아니라 시장지수인가', desc: '생존 편향과 지수의 자동 구성 재조정' },
               { href: '/posts/trust-the-method', title: '뉴스를 보지 말고 방법론을 지켜라', desc: '백테스트에 담긴 역사적 사건 목록' },
-              { href: '/posts/drawdown-map', title: '하락장 지도', desc: '1971년부터 54년 TQQQ 차트에 모든 폭락 구간 표시' },
-              { href: '/posts/market-history', title: '조정장 역사서 — 478건 전부', desc: '1871년부터 모든 사건 등급·카테고리별 탐색' },
+              { href: '/posts/market-history', title: '조정장 역사서', desc: '1871년부터 481개 하락 사건 — S&P500 장기 차트 + 전체 목록' },
               { href: '/posts/accumulation-guide', title: '적립식 방법론: 어떤 종목을, 얼마씩, 어떻게 매수하나', desc: 'TQQQ 장기 적립의 전체 설계도' },
             ].map(link => (
               <Link

@@ -218,7 +218,7 @@ export default function AnnualReturnsPage() {
           {[
             { href: '/posts/real-vs-synthetic', label: '백테스트 합성 가격은 실제와 얼마나 다른가', desc: '2010년 이후 실제 ETF와 직접 비교' },
             { href: '/posts/tqqq-cost', label: 'TQQQ 비용의 전부', desc: '운용보수 + 스왑금리 — 고금리 구간에서 연 11%+' },
-            { href: '/posts/drawdown-map', label: '하락장 지도', desc: '1971년 이후 모든 하락 구간 시각화' },
+            { href: '/posts/market-history', label: '조정장 역사서', desc: '1871년부터 481개 하락 사건 — S&P500 장기 차트 + 전체 목록' },
             { href: '/simulator/custom', label: '백테스트 시뮬레이터', desc: '내 금액, 종목으로 전체 기간 돌려보기' },
           ].map(l => (
             <Link key={l.href} href={l.href} className="flex items-baseline gap-2 group">
