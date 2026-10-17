@@ -19,6 +19,7 @@ const STEPS = [
       { href: '/posts/trust-the-method', label: '뉴스를 보지 말고 방법론을 지켜라', desc: '백테스트 안에는 이미 모든 위기가 들어 있다' },
       { href: '/posts/accumulation-guide', label: '적립식 방법론', desc: '무엇을, 얼마씩, 어떻게 사나 — 매일 자동 적립' },
       { href: '/simulator/custom', label: '적립 시뮬레이터', desc: '내 금액으로 10억까지 몇 년 걸렸나' },
+      { href: '/simulator/reverse', label: '역방향 계산기', desc: 'N년 안에 목표 달성 — 매달 얼마씩 필요한가' },
       { href: '/posts/real-vs-synthetic', label: '백테스트를 믿어도 되나', desc: '실제 TQQQ와 비교한 검증' },
     ],
   },
@@ -102,6 +103,15 @@ export default function StartPage() {
             </div>
           ))}
         </dl>
+
+        <div className="mb-8 flex flex-wrap gap-3 text-sm">
+          <Link href="/faq" className="inline-block bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 hover:border-blue-300 dark:hover:border-blue-600 transition-colors text-blue-600 dark:text-blue-400 font-medium">
+            자주 묻는 질문(FAQ) →
+          </Link>
+          <Link href="/posts/annual-returns" className="inline-block bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 hover:border-blue-300 dark:hover:border-blue-600 transition-colors text-blue-600 dark:text-blue-400 font-medium">
+            연도별 수익률 비교 →
+          </Link>
+        </div>
 
         <div className="bg-yellow-50 dark:bg-yellow-500/10 border border-yellow-200 dark:border-yellow-500/30 rounded-xl px-5 py-4 text-sm text-yellow-800 dark:text-yellow-200 leading-relaxed">
           모든 결과는 과거 데이터로 계산한 것이고 미래를 보장하지 않는다. 3배 상품은 자산이 한때 90% 넘게 줄어드는 시기를 견뎌야 한다.

@@ -268,6 +268,16 @@ export const posts: PostMeta[] = [
     category: '인출식',
   },
   {
+    slug: 'annual-returns',
+    title: '연도별 수익률 비교 — TQQQ·QLD·QQQ·VOO 2010~현재',
+    date: '2026-10-18',
+    tags: ['수익률', 'TQQQ', 'QLD', 'QQQ', 'VOO', '레버리지'],
+    summary:
+      '2010년부터 현재까지 연도별 실제 수익률 비교. 2013년 TQQQ +139%, 2023년 +198%... 그리고 2022년 −79%. 레버리지가 클수록 좋은 해와 나쁜 해의 폭이 극단적으로 벌어진다. 이 극단을 버티면 연평균 수익률 차이가 만들어진다.',
+    pinned: true,
+    category: '적립식',
+  },
+  {
     slug: 'drawdown-map',
     title: '하락장 지도 — 1971년부터 54년, 모든 폭락 구간을 한눈에',
     date: '2026-10-17',
