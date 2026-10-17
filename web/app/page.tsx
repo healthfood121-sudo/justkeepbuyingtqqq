@@ -84,9 +84,12 @@ export default function HomePage() {
                     </div>
                   )}
                   {p.num === '03' && (
-                    <div className="mt-2 pl-6">
-                      <Link href="/posts/trust-the-method" className="text-xs text-blue-500 dark:text-blue-400 hover:underline">
+                    <div className="mt-2 pl-6 space-y-1">
+                      <Link href="/posts/trust-the-method" className="block text-xs text-blue-500 dark:text-blue-400 hover:underline">
                         뉴스를 보지 말고 방법론을 지켜라 →
+                      </Link>
+                      <Link href="/posts/market-history" className="block text-xs text-blue-500 dark:text-blue-400 hover:underline">
+                        조정장 역사서 — 1871년부터 481개 하락 사건 →
                       </Link>
                     </div>
                   )}
