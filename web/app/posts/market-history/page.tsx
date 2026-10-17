@@ -455,7 +455,7 @@ export default function MarketHistoryPage() {
             })}
           </div>
 
-          {!sp500 ? (
+          {!sp500 || allCorrections.length === 0 ? (
             <div className="h-80 flex items-center justify-center text-sm text-gray-400">불러오는 중…</div>
           ) : (
             <div className="relative">
