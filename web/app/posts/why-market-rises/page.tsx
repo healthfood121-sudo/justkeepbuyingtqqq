@@ -216,6 +216,43 @@ export default function WhyMarketRisesPage() {
           현금을 들고 있는 것은 매년 2~3%씩 손해를 확정하는 선택이다.
         </Callout>
 
+        <H2>④-2. 전 세계 부채 — 레버리지가 쌓인다</H2>
+
+        <P>
+          통화량(M2, ~$120조)보다 훨씬 큰 숫자가 있다. 전 세계 부채(~$347조)다.
+          왜 부채가 M2보다 3배 가까이 클까?
+        </P>
+
+        <P>
+          은행이 대출을 실행하는 순간 두 가지가 동시에 일어난다.
+          빌린 사람의 통장에 돈이 생기고(M2 증가), 동시에 갚아야 할 빚이 생긴다(부채 증가).
+          같은 금액이 양쪽 모두에 기록된다.
+          여기에 국가 간 채권, 기업 간 대출, 금융기관끼리의 거래 등이 더해져
+          부채 총액은 M2보다 훨씬 커진다.
+        </P>
+
+        <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-5 py-4 mb-6 font-mono text-sm text-gray-700 dark:text-gray-300 space-y-1">
+          <div>은행이 1억 대출 실행</div>
+          <div className="pl-4 text-gray-400 dark:text-gray-500">→ 예금 +1억 (M2 증가)</div>
+          <div className="pl-4 text-gray-400 dark:text-gray-500">→ 부채 +1억 (동시에 증가)</div>
+          <div className="pl-4 text-orange-400 dark:text-orange-500 mt-1">∴ M2 + 부채를 더하면 이중 계산</div>
+        </div>
+
+        <P>
+          M2와 부채는 더하거나 빼는 숫자가 아니다.
+          같은 현상 — 신용 팽창 — 을 두 각도에서 본 것이다.
+          M2는 "지금 세상에 돌아다니는 돈의 양"이고,
+          부채는 "세상이 쌓아온 총 레버리지"다.
+          둘 다 계속 늘어난다는 사실이 중요하다.
+        </P>
+
+        <Callout color="blue">
+          <strong>신용 팽창이 자산 가격을 밀어올린다</strong><br />
+          부채가 늘면 더 많은 돈이 경제에 풀린다. 그 돈의 일부는 소비로, 일부는 투자로 흘러든다.
+          투자 자금이 늘어난다는 것은 주식, 부동산 같은 자산을 사려는 수요가 늘어난다는 뜻이다.
+          수요가 늘면 가격은 오른다 — 이것이 신용 팽창이 자산 가격을 구조적으로 밀어올리는 메커니즘이다.
+        </Callout>
+
         <Callout color="yellow">
           <strong>네 가지 힘이 동시에 작용한다</strong><br />
           단기적으로는 어느 한 요소가 꺾일 수 있다. 인구 성장이 둔화되거나,
@@ -235,7 +272,7 @@ export default function WhyMarketRisesPage() {
         </P>
 
         <P>
-          이 네 가지 이유 — 인구, 생산성, 복리, 인플레이션 — 가 작동하는 한,
+          인구, 생산성, 복리, 인플레이션, 그리고 끝없이 팽창하는 신용 — 이 힘들이 작동하는 한,
           시장지수의 장기 우상향을 믿을 근거는 충분하다.
         </P>
 
