@@ -17,6 +17,7 @@ const STEPS = [
       { href: '/posts/why-market-rises', label: '시장지수는 왜 장기적으로 오르는가', desc: '투자 전제를 납득하는 단계' },
       { href: '/posts/why-index', label: '왜 개별주가 아니라 지수인가', desc: '생존 편향과 지수의 자동 구성 재조정' },
       { href: '/posts/trust-the-method', label: '뉴스를 보지 말고 방법론을 지켜라', desc: '백테스트 안에는 이미 모든 위기가 들어 있다' },
+      { href: '/posts/market-history', label: '조정장 역사서', desc: '1871년부터 481개 하락 사건 — 이 모든 것을 견디고 시장은 우상향했다' },
       { href: '/posts/accumulation-guide', label: '적립식 방법론', desc: '무엇을, 얼마씩, 어떻게 사나 — 매일 자동 적립' },
       { href: '/simulator/custom', label: '적립 시뮬레이터', desc: '내 금액으로 10억까지 몇 년 걸렸나' },
       { href: '/simulator/reverse', label: '역방향 계산기', desc: 'N년 안에 목표 달성 — 매달 얼마씩 필요한가' },
