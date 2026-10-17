@@ -10,9 +10,9 @@ import Link from 'next/link'
 const principles = [
   {
     num: '01',
-    title: '종목은 시장지수를 한다',
-    sub: 'VOO, 나스닥100, QLD, TQQQ',
-    desc: '개별주 투자 금지, 가치주 금지, 성장주 금지, 개별주 레버리지 금지.',
+    title: '자본주의를 믿자',
+    sub: '시장지수가 그 증거다',
+    desc: '개별주 투자 금지, 가치주 금지, 성장주 금지, 개별주 레버리지 금지. — VOO, 나스닥100, QLD, TQQQ',
   },
   {
     num: '02',
