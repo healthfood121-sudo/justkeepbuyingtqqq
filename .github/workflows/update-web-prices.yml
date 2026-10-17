@@ -32,11 +32,45 @@ jobs:
       - name: 가격·금리 덧붙이기 (data/ 원본은 그대로, web/public 사본만)
         run: python scripts/update_web_prices.py
 
+      - name: 실제 ETF 가격 받기 (TQQQ·QLD·QQQ — real_vs_synthetic 입력)
+        run: python scripts/fetch_market_extra.py
+
+      - name: NDX 원본(data/ndx_1971_now.csv) 최신화
+        run: |
+          python - <<'EOF'
+          import csv
+          from pathlib import Path
+
+          src = Path("data/extra/ndx_yahoo.csv")
+          dst = Path("data/ndx_1971_now.csv")
+
+          # 기존 마지막 날짜 파악
+          with open(dst) as f:
+              rows = list(csv.reader(f))
+          last_date = rows[-1][0] if rows else ""
+
+          # src에서 그 이후 행만 추출 (헤더 제외)
+          with open(src) as f:
+              new_rows = [r for r in csv.reader(f) if r[0] > last_date and r[0] != "Date"]
+
+          if new_rows:
+              with open(dst, "a", newline="") as f:
+                  w = csv.writer(f)
+                  for r in new_rows:
+                      w.writerow([r[0], r[1]])  # Date, Close
+              print(f"추가: {len(new_rows)}행 ({new_rows[0][0]} ~ {new_rows[-1][0]})")
+          else:
+              print("추가할 새 데이터 없음")
+          EOF
+
+      - name: 연도별 수익률 비교 데이터 생성 (real_vs_synthetic.json)
+        run: python scripts/real_vs_synthetic.py
+
       - name: 변경사항 커밋 & 푸시
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add web/public/ndx.csv web/public/sp500.csv web/public/data/fed_funds_rate.json
+          git add web/public/ndx.csv web/public/sp500.csv web/public/data/fed_funds_rate.json data/extra data/ndx_1971_now.csv web/public/data/real_vs_synthetic.json
           if git diff --cached --quiet; then
             echo "변경사항 없음 — 스킵"
           else
