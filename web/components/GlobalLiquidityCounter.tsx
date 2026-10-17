@@ -31,9 +31,12 @@ export default function GlobalLiquidityCounter() {
         <span className="font-mono text-sm font-bold text-yellow-300 tabular-nums select-none">
           ${m2.toLocaleString()}
         </span>
+        <span className="text-[11px] text-yellow-200/30 whitespace-nowrap">
+          연 +6% · 연 +$7.2조 · IMF 2024 추정치
+        </span>
       </div>
       <div className="mt-2 text-xs text-white/40 leading-relaxed">
-        +$228,600/초 · IMF 2024 추정치 — 돈이 더 풀릴수록 현금 가치는 희석되고, 자산 가격은 오른다
+        중앙은행 통화 공급 + 신용 창출 — 돈이 더 풀릴수록 현금 가치는 희석되고, 자산 가격은 오른다
       </div>
     </div>
   )
