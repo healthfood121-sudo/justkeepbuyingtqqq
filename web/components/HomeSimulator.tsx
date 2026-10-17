@@ -73,7 +73,7 @@ function jsonRowsToResults(rows: CohortJsonRow[], s: 'A' | 'B' | 'C'): CohortRes
 export default function HomeSimulator() {
   const [cohortJson, setCohortJson] = useState<CohortJsonFile | null>(null)
   const [jsonLoading, setJsonLoading] = useState(true)
-  const [show, setShow] = useState<Record<'A' | 'B' | 'C', boolean>>({ A: true, B: true, C: true })
+  const [show, setShow] = useState<Record<'A' | 'B' | 'C', boolean>>({ A: true, B: false, C: false })
   const [tableSort, setTableSort] = useState<{ col: 'start' | 'yA' | 'yB' | 'yC'; dir: 1 | -1 }>({ col: 'start', dir: 1 })
   const [instrument, setInstrument] = useState<Instrument>('ndx3x')
   const [withCosts, setWithCosts] = useState(true)
