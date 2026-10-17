@@ -50,7 +50,7 @@ export default function WorldPopCounter() {
           {pop.toLocaleString()}명
         </span>
         <span className="text-[11px] text-blue-200/30 whitespace-nowrap">
-          출생 4.37/초 · 사망 2.12/초 · UN 2024
+          출생 4.37/초 · 사망 2.12/초 · UN 2024 추정치
         </span>
       </div>
       <div className="mt-2 text-xs text-white/40 leading-relaxed">
