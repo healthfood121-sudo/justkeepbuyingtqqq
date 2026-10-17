@@ -125,7 +125,7 @@ export default function WithdrawalNewIdeas2Page() {
 
         <Callout color="yellow">
           <strong>핵심 결론: 세 가지 모두 기존 최선보다 나쁘다</strong><br />
-          직관적으로 합리적인 아이디어였지만 668가지 진입 시점 시뮬레이션 결과, 현재 최선(D10GK 3,741억)은
+          직관적으로 합리적인 아이디어였지만 668가지 진입 시점 20년 시뮬레이션 결과, 당시 최선(D10GK 3,741억)은
           물론 기준선(EMA200 15일 전략, 1,109억)도 넘지 못했다.
           특히 단계적 현금화는 예상을 뒤엎고 131억으로 가장 낮았다.
         </Callout>
@@ -440,12 +440,15 @@ export default function WithdrawalNewIdeas2Page() {
         <H2>8. 결론</H2>
 
         <Callout color="purple">
-          <strong>D10GK가 여전히 최선</strong><br />
+          <strong>이 연구 당시 결론: D10GK가 최선</strong><br />
           트레일링 스탑, 단계적 현금화, 자산 규모별 레버리지 하향 세 가지를 추가 검증했으나
-          668가지 진입 시점 중앙값 기준으로 기존 최선(D10GK 3,741억)은 물론
+          668가지 진입 시점 20년 중앙값 기준으로 당시 최선(D10GK 3,741억)은 물론
           기준선(1,109억)도 넘지 못했다.
           탈출·재진입 신호는 이진 방식(전량 현금 ↔ 전량 투자)이 단계적 방식보다 강하고,
-          레버리지는 자산이 커져도 줄이는 것이 이득이 아니었다.
+          레버리지는 자산이 커져도 줄이는 것이 이득이 아니었다.<br /><br />
+          <strong>현재 권장 전략은 25% 룰입니다.</strong>{' '}
+          전체 기간(꺼내 쓴 돈 + 남은 자산 합산) 기준 재검증에서 25% 룰이 D10GK보다 총 인출액 우세로 최종 채택됐습니다 —{' '}
+          <a href="/posts/withdrawal-full-period" className="underline">전체 기간 비교 →</a>
         </Callout>
 
         <ul className="list-none space-y-3 mb-8">
@@ -472,7 +475,7 @@ export default function WithdrawalNewIdeas2Page() {
           <AnalysisLink
             href="/posts/withdrawal-guide"
             title="인출식 방법론: 10억 달성 후 어떻게 꺼내 쓰나"
-            desc="현재 최선 후보(EMA200 15일 + 동적인출)의 설계 근거."
+            desc="현재 권장 전략(25% 룰)과 전체 연구 흐름 정리."
           />
           <AnalysisLink
             href="/posts/withdrawal-new-ideas2/data"

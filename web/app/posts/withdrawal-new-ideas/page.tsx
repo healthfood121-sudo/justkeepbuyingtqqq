@@ -122,7 +122,7 @@ export default function WithdrawalNewIdeasPage() {
 
         <Callout color="green">
           <strong>핵심 발견: 상대강도지수(RSI) 조기 재진입이 압도적으로 우세</strong><br />
-          418가지 시작 시점 기준 중앙값 <strong>3,232억</strong> (현재 최선 200일 지수이동평균(EMA200) 15일 기준 대비 +175%). 생존율 100%.
+          418가지 시작 시점 기준 중앙값 <strong>3,232억</strong> (당시 기준선 200일 지수이동평균(EMA200) 15일 기준 대비 +175%). 생존율 100%.
           RSI 14일 지수가 30 미만으로 떨어질 때 EMA200 조건 전이라도 즉시 재매수하는 방식이 검증됐다.
         </Callout>
 
@@ -203,7 +203,7 @@ export default function WithdrawalNewIdeasPage() {
               '57회',
             ],
             ['S4', 'Guyton-Klinger', '100%', '1,269억', '26.7%', '21회'],
-            ['S0', '현재 최선 (기준선)', '100%', '1,176억', '26.0%', '21회'],
+            ['S0', '기준선', '100%', '1,176억', '26.0%', '21회'],
             ['S5', '변동성 조정 인출', '100%', '1,171억', '25.9%', '21회'],
             ['S8', 'Floor 보장형', '97.1%', '1,123억', '25.5%', '20회'],
             ['S2', '분할재진입 3개월', '100%', '684억', '22.6%', '41회'],
@@ -411,10 +411,12 @@ export default function WithdrawalNewIdeasPage() {
         <H2>10. 결론</H2>
 
         <Callout color="purple">
-          <strong>D10GK를 새 최선 후보로 검토 중</strong><br />
-          중앙값 3,918억(기존 S0 대비 +233%), 생존율 100%.
-          2000-03 버블 정점 진입 시 46억(S0보다 2배 우세), 2003-03 붕괴 직후 231억(S0의 91%).
-          유일한 미해결 케이스는 2003-03처럼 이미 하락이 상당 진행된 뒤 시작하는 경우뿐이다.
+          <strong>이 연구 당시 결론: D10GK를 최선 후보로 검토</strong><br />
+          중앙값 3,918억(기준선 S0 대비 +233%), 생존율 100%.
+          2000-03 버블 정점 진입 시 46억(S0보다 2배 우세), 2003-03 붕괴 직후 231억(S0의 91%).<br /><br />
+          <strong>현재 권장 전략은 25% 룰입니다.</strong>{' '}
+          20년 단면이 아닌 전체 기간(꺼내 쓴 돈 + 남은 자산)으로 재검증한 결과, 25% 룰이 D10GK보다 꺼내 쓴 총액 기준 우세했습니다 —{' '}
+          <a href="/posts/withdrawal-full-period" className="underline">전체 기간 비교 →</a>
         </Callout>
 
         <ul className="list-none space-y-3 mb-8">
@@ -551,7 +553,7 @@ export default function WithdrawalNewIdeasPage() {
           <AnalysisLink
             href="/posts/withdrawal-guide"
             title="인출식 방법론: 10억 달성 후 어떻게 꺼내 쓰나"
-            desc="현재 최선 후보(EMA200 15일 + 동적인출)의 설계 근거와 95개 조합 그리드 서치 결과."
+            desc="현재 권장 전략(25% 룰)과 전체 연구 흐름 정리."
           />
           <AnalysisLink
             href="/posts/withdrawal-new-ideas/data"
