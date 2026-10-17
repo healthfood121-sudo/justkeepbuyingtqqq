@@ -157,12 +157,6 @@ export default function HomePage() {
 
               <WithdrawalSignal />
               <LivingCalc />
-              <Link
-                href="/simulator/withdrawal"
-                className="text-xs text-purple-600 dark:text-purple-400 hover:underline font-semibold"
-              >
-                인출 시뮬레이터 →
-              </Link>
             </div>
           </div>
 
