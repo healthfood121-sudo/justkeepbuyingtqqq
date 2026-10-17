@@ -72,6 +72,68 @@ export default function StartPage() {
           1971년 이후 모든 시작 시점으로 검증한 기록이다. 지금 상황에 맞는 곳부터 읽으면 된다.
         </p>
 
+        {/* 순서대로 읽기 */}
+        <div className="mb-12">
+          <h2 className="text-base font-bold text-gray-900 dark:text-white mb-1">순서대로 읽고 싶다면</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">처음부터 끝까지 흐름을 잡고 싶을 때.</p>
+          <ol className="space-y-3">
+            {[
+              {
+                n: '1',
+                label: '왜 시장지수를 사는가',
+                links: [
+                  { href: '/posts/why-market-rises', text: '시장지수는 왜 장기적으로 오르는가' },
+                  { href: '/posts/why-index', text: '왜 개별주가 아니라 지수인가' },
+                ],
+                note: '투자 전제를 납득하는 단계',
+              },
+              {
+                n: '2',
+                label: '적립 단계 설계',
+                links: [
+                  { href: '/posts/accumulation-guide', text: '적립식 방법론 (필독)' },
+                ],
+                note: '무엇을 얼마씩 어떻게 — 이 사이트 전체의 전제',
+              },
+              {
+                n: '3',
+                label: '인출 단계 설계',
+                links: [
+                  { href: '/posts/withdrawal-guide', text: '인출식 방법론 (필독)' },
+                ],
+                note: '25% 룰 세 줄 규칙과 감수해야 할 것',
+              },
+              {
+                n: '4',
+                label: '숫자가 더 필요하다면',
+                links: [
+                  { href: '/posts/experience-1990', text: '−96%를 견딜 수 있나 — 1990년 사례' },
+                  { href: '/posts/tqqq-cost', text: 'TQQQ 비용 구조' },
+                  { href: '/posts/withdrawal-full-period', text: '16가지 전략 전체 기간 비교' },
+                ],
+                note: '분석 글 중 핵심 3편',
+              },
+            ].map(({ n, label, links, note }) => (
+              <li key={n} className="flex gap-4">
+                <span className="mt-0.5 flex-none w-6 h-6 rounded-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-bold flex items-center justify-center">{n}</span>
+                <div className="flex-1 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3">
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white mb-1">{label}</p>
+                  <div className="space-y-0.5 mb-1.5">
+                    {links.map(l => (
+                      <div key={l.href}>
+                        <Link href={l.href} className="text-sm text-blue-600 dark:text-blue-400 hover:underline">{l.text} →</Link>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">{note}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        <h2 className="text-base font-bold text-gray-900 dark:text-white mb-1">지금 상황에 맞는 곳부터</h2>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">이미 진행 중이라면 해당 단계로 바로.</p>
         <div className="space-y-4 mb-14">
           {STEPS.map((s, i) => (
             <div key={s.who} className={`border rounded-2xl px-5 py-4 ${s.color}`}>
