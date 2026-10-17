@@ -123,13 +123,7 @@ export default function HomePage() {
                   </div>
                 ))}
               </div>
-              <p className="text-[10px] text-gray-400 dark:text-gray-500 mb-4">1971년 이후 모든 시작 시점 · 운용보수·스왑금리 반영</p>
-              <Link
-                href="/posts/accumulation-guide"
-                className="text-xs text-blue-600 dark:text-blue-400 hover:underline font-semibold"
-              >
-                방법론 상세 보기 →
-              </Link>
+              <p className="text-[10px] text-gray-400 dark:text-gray-500">1971년 이후 모든 시작 시점 · 운용보수·스왑금리 반영</p>
             </div>
 
             {/* 인출식 */}
@@ -163,20 +157,12 @@ export default function HomePage() {
 
               <WithdrawalSignal />
               <LivingCalc />
-              <div className="flex flex-col gap-1">
-                <Link
-                  href="/posts/withdrawal-guide"
-                  className="text-xs text-purple-600 dark:text-purple-400 hover:underline font-semibold"
-                >
-                  방법론 상세 보기 →
-                </Link>
-                <Link
-                  href="/simulator/withdrawal"
-                  className="text-xs text-purple-600 dark:text-purple-400 hover:underline font-semibold"
-                >
-                  인출 시뮬레이터 →
-                </Link>
-              </div>
+              <Link
+                href="/simulator/withdrawal"
+                className="text-xs text-purple-600 dark:text-purple-400 hover:underline font-semibold"
+              >
+                인출 시뮬레이터 →
+              </Link>
             </div>
           </div>
 
