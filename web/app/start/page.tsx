@@ -15,6 +15,7 @@ const STEPS = [
     tag: 'text-blue-600 dark:text-blue-400',
     links: [
       { href: '/posts/accumulation-guide', label: '적립식 방법론', desc: '무엇을, 얼마씩, 어떻게 사나 — 매일 자동 적립' },
+      { href: '/posts/time-is-equal', label: '왜 지금 시작해야 하나', desc: '기대여명으로 남은 시간을 세어 보면' },
       { href: '/simulator/custom', label: '적립 시뮬레이터', desc: '내 금액으로 10억까지 몇 년 걸렸나' },
       { href: '/posts/real-vs-synthetic', label: '백테스트를 믿어도 되나', desc: '실제 TQQQ와 비교한 검증' },
     ],
@@ -24,7 +25,9 @@ const STEPS = [
     color: 'border-blue-200 dark:border-blue-500/30',
     tag: 'text-blue-600 dark:text-blue-400',
     links: [
-      { href: '/posts/strategy-abc', label: '목돈이 생기면', desc: '한 번에 넣을까, 5년에 나눠 넣을까' },
+      { href: '/posts/strategy-abc', label: 'A·B·C 전략 비교', desc: '목돈 있을 때 어떻게 넣을지' },
+      { href: '/posts/lump-sum-vs-split', label: '목돈, 한번에 vs 5년 분할', desc: '668가지 시작 시점으로 본 결론' },
+      { href: '/posts/krw-exchange-rate', label: '환율 때문에 결과가 달라지나', desc: '원화 기준 vs 달러 기준 비교' },
       { href: '/posts/synthetic-ndx-1929', label: '최악의 경우', desc: '1929년 대공황이 다시 오면 몇 년 걸리나' },
       { href: '/posts/withdrawal-guide', label: '미리 읽어 둘 인출 방법', desc: '10억이 되면 무엇을 바꾸나' },
     ],
@@ -36,6 +39,10 @@ const STEPS = [
     links: [
       { href: '/posts/withdrawal-guide', label: '인출식 방법론', desc: '25% 룰 세 줄 규칙과 감수해야 할 것' },
       { href: '/', label: '오늘의 신호', desc: '홈 화면 — 일주일에 한 번 확인' },
+      { href: '/posts/withdrawal-tax', label: '세금은 얼마나, 언제 내나', desc: '양도세가 연 수익률을 얼마나 깎는지' },
+      { href: '/posts/living-stability', label: '생활비 안정', desc: '자산이 반토막 나면 생활비도 반토막인가' },
+      { href: '/posts/withdrawal-early-buffer', label: '처음 5년 버퍼 전략', desc: '현금 버퍼가 TQQQ를 지키는 방식' },
+      { href: '/posts/experience-1990', label: '−96%를 견딜 수 있나', desc: '1990년 은퇴자의 36년을 한 달씩' },
       { href: '/simulator/withdrawal', label: '인출 시뮬레이터', desc: '내 시작 시점·금액으로 돌려 보기' },
       { href: '/posts/rule25-sensitivity', label: '왜 25%인가', desc: '기준값을 바꿔 본 검증' },
     ],
@@ -84,6 +91,7 @@ export default function StartPage() {
                 links: [
                   { href: '/posts/why-market-rises', text: '시장지수는 왜 장기적으로 오르는가' },
                   { href: '/posts/why-index', text: '왜 개별주가 아니라 지수인가' },
+                  { href: '/posts/trust-the-method', text: '뉴스를 보지 말고 방법론을 지켜라' },
                 ],
                 note: '투자 전제를 납득하는 단계',
               },
