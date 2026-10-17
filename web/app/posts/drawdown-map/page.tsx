@@ -187,8 +187,9 @@ export default function DrawdownMapPage() {
         padding: 8,
         callbacks: {
           title: (items: Array<{ label: string }>) => items[0]?.label ?? '',
-          label: (ctx: { parsed: { y: number } }) => {
+          label: (ctx: { parsed: { y: number | null } }) => {
             const v = ctx.parsed.y
+            if (v == null) return ''
             return `합성가격 ${v >= 1000 ? v.toFixed(0) : v.toFixed(2)}`
           },
         },
