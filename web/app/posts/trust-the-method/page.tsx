@@ -185,6 +185,30 @@ export default function TrustTheMethodPage() {
                 <div className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">일주일에 한 번 확인하는 신호의 정확한 기준</div>
               </div>
             </Link>
+            <Link
+              href="/posts/drawdown-map"
+              className="flex items-start gap-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 rounded-xl px-5 py-3.5 transition-colors group"
+            >
+              <span className="text-blue-400 dark:text-blue-500 text-sm mt-0.5 shrink-0">→</span>
+              <div>
+                <div className="text-sm font-semibold text-gray-800 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  하락장 지도 — 1971년부터 54년, 모든 폭락 구간
+                </div>
+                <div className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">TQQQ 가격 차트에서 모든 폭락 구간이 얼마나 작아 보이는지</div>
+              </div>
+            </Link>
+            <Link
+              href="/posts/market-history"
+              className="flex items-start gap-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 rounded-xl px-5 py-3.5 transition-colors group"
+            >
+              <span className="text-blue-400 dark:text-blue-500 text-sm mt-0.5 shrink-0">→</span>
+              <div>
+                <div className="text-sm font-semibold text-gray-800 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  조정장 역사서 — 478건 전부 기록
+                </div>
+                <div className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">1871년부터 2025년까지 S&P500이 -5% 이상 빠진 모든 사건</div>
+              </div>
+            </Link>
           </div>
         </div>
 
