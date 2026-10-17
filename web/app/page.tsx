@@ -10,8 +10,8 @@ import Link from 'next/link'
 const principles = [
   {
     num: '01',
-    title: '자본주의를 믿자',
-    sub: '시장지수가 그 증거다',
+    title: '시장지수와 자본주의를 믿자',
+    sub: '인구도, 돈도 계속 늘어난다',
     desc: '개별주 투자 금지, 가치주 금지, 성장주 금지, 개별주 레버리지 금지. — VOO, 나스닥100, QLD, TQQQ',
   },
   {
