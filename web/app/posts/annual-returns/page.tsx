@@ -23,7 +23,7 @@ interface RowData {
   partial: boolean
 }
 
-function loadRows(): { rows: RowData[]; asof: string } {
+function loadRows(): { rows: RowData[] } {
   const filePath = path.join(process.cwd(), 'public', 'data', 'real_vs_synthetic.json')
   const raw: RVSData = JSON.parse(fs.readFileSync(filePath, 'utf8'))
 
@@ -59,7 +59,7 @@ function loadRows(): { rows: RowData[]; asof: string } {
     }
   })
 
-  return { rows, asof: raw.asof }
+  return { rows }
 }
 
 function RetCell({ v, base }: { v: number | null; base?: boolean }) {
@@ -101,7 +101,7 @@ function cumGrowth(data: number[]): number {
 }
 
 export default function AnnualReturnsPage() {
-  const { rows, asof } = loadRows()
+  const { rows } = loadRows()
 
   const fullRows  = rows.filter(r => !r.partial)
   const tqqqFull  = fullRows.filter(r => r.tqqq !== null).map(r => r.tqqq!)
@@ -221,7 +221,6 @@ export default function AnnualReturnsPage() {
         <div className="mt-8 text-xs text-gray-400 dark:text-gray-600 space-y-1">
           <p>TQQQ·QLD·QQQ·VOO 수익률: 실제 ETF 연간 종가 기준 (전년 마지막 거래일 → 당년 마지막 거래일). 트레이딩뷰·증권사 기준과 동일. 2010년 TQQQ는 2월 상장이므로 부분 연도. 가장 최근 연도는 연중 수익률.</p>
           <p>배당은 반영하지 않은 순수 주가 수익률입니다. 배당 포함 총수익률은 TQQQ +1~2%p, QQQ +0.5~0.7%p, VOO +1.3~1.5%p 정도 더 높습니다.</p>
-          <p className="text-gray-300 dark:text-gray-700">데이터 기준: {asof}</p>
         </div>
       </main>
     </div>
