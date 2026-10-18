@@ -33,8 +33,47 @@ jobs:
         run: python scripts/update_web_prices.py
 
       - name: 실제 ETF 가격 받기 (TQQQ·QLD·QQQ — real_vs_synthetic 입력)
-        run: python scripts/fetch_market_extra.py || true
-        # FRED(환율·물가) 타임아웃으로 exit 1이 나와도 ETF/NDX 데이터는 이미 수집 완료됨
+        run: |
+          python - <<'EOF'
+          # FRED(환율·물가)는 이 워크플로에서 불필요 — Yahoo ETF/NDX만 받음
+          import io, sys, time
+          from pathlib import Path
+          import pandas as pd, requests
+
+          OUT_DIR = Path("data/extra")
+          OUT_DIR.mkdir(parents=True, exist_ok=True)
+          UA = {"User-Agent": "Mozilla/5.0"}
+          YAHOO = {"TQQQ": "tqqq", "QLD": "qld", "QQQ": "qqq", "^NDX": "ndx_yahoo"}
+
+          def fetch_yahoo(symbol):
+              url = (f"https://query1.finance.yahoo.com/v8/finance/chart/{requests.utils.quote(symbol)}"
+                     f"?period1=0&period2={int(time.time())}&interval=1d&events=div,split&includeAdjustedClose=true")
+              for i in range(4):
+                  try:
+                      res = requests.get(url, headers=UA, timeout=30).json()["chart"]["result"][0]
+                      q = res["indicators"]["quote"][0]
+                      adj = res["indicators"].get("adjclose", [{}])[0].get("adjclose") or q["close"]
+                      df = pd.DataFrame({
+                          "Date": pd.to_datetime(res["timestamp"], unit="s").tz_localize("UTC").tz_convert("America/New_York").date,
+                          "Close": q["close"], "AdjClose": adj,
+                      }).dropna().drop_duplicates("Date", keep="last")
+                      return df
+                  except Exception as e:
+                      if i == 3: raise
+                      print(f"  재시도 {i+1}: {e}"); time.sleep(2**(i+1))
+
+          failed = []
+          for sym, name in YAHOO.items():
+              try:
+                  df = fetch_yahoo(sym)
+                  df.to_csv(OUT_DIR / f"{name}.csv", index=False)
+                  print(f"{sym}: {len(df)}행 {df.Date.iloc[0]} ~ {df.Date.iloc[-1]}")
+              except Exception as e:
+                  failed.append(sym); print(f"[실패] {sym}: {e}", file=sys.stderr)
+
+          if failed:
+              sys.exit(f"실패: {failed}")
+          EOF
 
       - name: NDX 원본(data/ndx_1971_now.csv) 최신화
         run: |
