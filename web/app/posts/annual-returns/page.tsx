@@ -38,9 +38,6 @@ function loadRows(): { rows: RowData[]; asof: string } {
     ...Object.keys(qqqMap),
   ].map(Number))).filter(y => y >= 2010).sort((a, b) => a - b)
 
-  const asofDate = new Date(raw.asof)
-  const asofMonth = `${asofDate.getMonth() + 1}월`
-
   const rows: RowData[] = years.map(year => {
     const tqqq = tqqqMap[year]
     const qld  = qldMap[year]
@@ -50,7 +47,6 @@ function loadRows(): { rows: RowData[]; asof: string } {
 
     let note: string | undefined
     if (year === 2010 && tqqq?.partial) note = 'TQQQ 2월 상장'
-    else if (partial) note = `연중 (${asofMonth} 기준)`
 
     return {
       year,
