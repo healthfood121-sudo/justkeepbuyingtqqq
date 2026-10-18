@@ -36,7 +36,9 @@ jobs:
         run: |
           python - <<'EOF'
           # FRED(환율·물가)는 이 워크플로에서 불필요 — Yahoo ETF/NDX만 받음
-          import io, sys, time
+          # 기존 파일이 있으면 마지막 날짜 이후만 증분 추가
+          import csv, sys, time
+          from datetime import datetime, timezone
           from pathlib import Path
           import pandas as pd, requests
 
@@ -45,18 +47,31 @@ jobs:
           UA = {"User-Agent": "Mozilla/5.0"}
           YAHOO = {"TQQQ": "tqqq", "QLD": "qld", "QQQ": "qqq", "^NDX": "ndx_yahoo"}
 
-          def fetch_yahoo(symbol):
+          def last_date(path):
+              if not path.exists(): return None
+              rows = list(csv.reader(path.open()))
+              return rows[-1][0] if len(rows) >= 2 else None
+
+          def fetch_yahoo(symbol, since=None):
+              period1 = (int(datetime.strptime(since, "%Y-%m-%d")
+                             .replace(tzinfo=timezone.utc).timestamp()) + 86400) if since else 0
               url = (f"https://query1.finance.yahoo.com/v8/finance/chart/{requests.utils.quote(symbol)}"
-                     f"?period1=0&period2={int(time.time())}&interval=1d&events=div,split&includeAdjustedClose=true")
+                     f"?period1={period1}&period2={int(time.time())}&interval=1d&events=div,split&includeAdjustedClose=true")
               for i in range(4):
                   try:
-                      res = requests.get(url, headers=UA, timeout=30).json()["chart"]["result"][0]
+                      data = requests.get(url, headers=UA, timeout=30).json()
+                      result = (data.get("chart") or {}).get("result")
+                      if not result:
+                          return pd.DataFrame(columns=["Date", "Close", "AdjClose"])
+                      res = result[0]
                       q = res["indicators"]["quote"][0]
                       adj = res["indicators"].get("adjclose", [{}])[0].get("adjclose") or q["close"]
                       df = pd.DataFrame({
                           "Date": pd.to_datetime(res["timestamp"], unit="s").tz_localize("UTC").tz_convert("America/New_York").date,
                           "Close": q["close"], "AdjClose": adj,
                       }).dropna().drop_duplicates("Date", keep="last")
+                      if since:
+                          df = df[df["Date"].astype(str) > since]
                       return df
                   except Exception as e:
                       if i == 3: raise
@@ -64,10 +79,19 @@ jobs:
 
           failed = []
           for sym, name in YAHOO.items():
+              path = OUT_DIR / f"{name}.csv"
+              last = last_date(path)
               try:
-                  df = fetch_yahoo(sym)
-                  df.to_csv(OUT_DIR / f"{name}.csv", index=False)
-                  print(f"{sym}: {len(df)}행 {df.Date.iloc[0]} ~ {df.Date.iloc[-1]}")
+                  df = fetch_yahoo(sym, since=last)
+                  if df.empty:
+                      print(f"{sym}: 새 데이터 없음 (마지막: {last})")
+                      continue
+                  if last and path.exists():
+                      df.to_csv(path, mode="a", header=False, index=False)
+                      print(f"{sym}: +{len(df)}행 추가 ({df['Date'].iloc[0]} ~ {df['Date'].iloc[-1]})")
+                  else:
+                      df.to_csv(path, index=False)
+                      print(f"{sym}: 신규 {len(df)}행 ({df['Date'].iloc[0]} ~ {df['Date'].iloc[-1]})")
               except Exception as e:
                   failed.append(sym); print(f"[실패] {sym}: {e}", file=sys.stderr)
 
