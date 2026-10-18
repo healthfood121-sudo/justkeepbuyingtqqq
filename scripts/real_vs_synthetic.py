@@ -44,7 +44,8 @@ def main():
         real = raw["AdjClose"]
         s_cost = pd.Series(syn["with_costs"][key], index=dates)
         s_fee  = pd.Series(syn["standard"][key], index=dates)
-        df = pd.concat({"real": real, "cost": s_cost, "fee": s_fee}, axis=1, join="inner").dropna()
+        # close: 배당 미반영 순수 주가 (트레이딩뷰·증권사와 동일한 기준)
+        df = pd.concat({"real": real, "close": raw["Close"], "cost": s_cost, "fee": s_fee}, axis=1, join="inner").dropna()
         df = df / df.iloc[0] * 100
         d0, d1 = df.index[0], df.index[-1]
         years = (d1 - d0).days / 365.25
@@ -64,7 +65,8 @@ def main():
         yr = (ye / prev.values - 1)
         yearly = [{
             "year": int(y),
-            "real": round(float(yr.loc[y, "real"]) * 100, 1),
+            "real": round(float(yr.loc[y, "real"]) * 100, 1),       # AdjClose 기준 총수익률 (real-vs-synthetic 비교용)
+            "real_close": round(float(yr.loc[y, "close"]) * 100, 1), # Close 기준 주가 수익률 (트레이딩뷰·증권사 기준)
             "cost": round(float(yr.loc[y, "cost"]) * 100, 1),
             "fee":  round(float(yr.loc[y, "fee"]) * 100, 1),
             "partial": bool(y == d0.year and d0.month > 1) or bool(y == d1.year and d1.month < 12),

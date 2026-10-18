@@ -17,7 +17,7 @@ const VOO_YEARS: Record<number, number> = {
   2025: 16.4, 2026: 13.4,
 }
 
-interface YearEntry { year: number; real: number; partial: boolean }
+interface YearEntry { year: number; real: number; real_close?: number; partial: boolean }
 interface EtfData   { yearly: YearEntry[] }
 interface RVSData   { asof: string; etfs: { TQQQ: EtfData; QLD: EtfData; QQQ: EtfData } }
 
@@ -58,11 +58,12 @@ function loadRows(): { rows: RowData[]; asof: string } {
     if (year === 2010 && tqqq?.partial) note = 'TQQQ 2월 상장'
     else if (partial) note = `연중 (${asofMonth} 기준)`
 
+    // real_close(Close 기준 주가수익률)가 있으면 우선 사용 — 트레이딩뷰·증권사 기준과 일치
     return {
       year,
-      tqqq: tqqq ? tqqq.real : null,
-      qld:  qld  ? qld.real  : null,
-      qqq:  qqq  ? qqq.real  : null,
+      tqqq: tqqq ? (tqqq.real_close ?? tqqq.real) : null,
+      qld:  qld  ? (qld.real_close  ?? qld.real)  : null,
+      qqq:  qqq  ? (qqq.real_close  ?? qqq.real)  : null,
       voo:  VOO_YEARS[year] ?? null,
       note,
       partial,
