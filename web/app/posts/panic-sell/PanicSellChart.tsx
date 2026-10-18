@@ -25,6 +25,7 @@ ChartJS.register(
 
 type MonthEntry = { d: string; port: number; inv: number }
 type StratData = { completed: boolean; years: number | null; panic_date: string | null; monthly: MonthEntry[] }
+type CohortData = Record<string, StratData>
 
 const STRAT_CONFIG: Record<string, { label: string; color: string; dash?: number[] }> = {
   HOLD:     { label: '계속 매수',                color: '#3b82f6' },
@@ -42,7 +43,7 @@ function downsample(monthly: MonthEntry[], step = 3): MonthEntry[] {
 export default function PanicSellChart() {
   const chartRef = useRef<ChartJS<'line'> | null>(null)
   const [pluginLoaded, setPluginLoaded] = useState(false)
-  const [chartData, setChartData] = useState<Record<string, StratData> | null>(null)
+  const [chartData, setChartData] = useState<Record<string, CohortData> | null>(null)
   const [cohort, setCohort] = useState<'2000-01' | '2007-10'>('2000-01')
 
   useEffect(() => {
@@ -62,7 +63,7 @@ export default function PanicSellChart() {
     return <div className="h-72 flex items-center justify-center text-gray-400 text-sm">로딩 중…</div>
   }
 
-  const cohortData = chartData[cohort]
+  const cohortData: CohortData = chartData[cohort]
   const baseMonthly = cohortData['HOLD'].monthly
   const labels = downsample(baseMonthly).map((m) => m.d)
 

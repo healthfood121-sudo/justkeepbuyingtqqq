@@ -1,15 +1,13 @@
 import Header from '@/components/Header'
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import dynamic from 'next/dynamic'
-
 export const metadata: Metadata = {
   title: '적립 중 패닉매도하면 어떻게 되나',
   description:
     '1971년 이후 669개 진입 시점 시뮬레이션. 하락 중에 팔고 나오면 10억 목표를 못 이룰 확률이 얼마나 되는지 데이터로 확인했다.',
 }
 
-const PanicSellChart = dynamic(() => import('./PanicSellChart'), { ssr: false })
+import PanicSellChart from './PanicSellChartLoader'
 
 function H2({ children }: { children: React.ReactNode }) {
   return <h2 className="text-xl font-bold mt-14 mb-4 text-gray-900 dark:text-white">{children}</h2>
