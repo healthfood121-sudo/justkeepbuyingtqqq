@@ -34,6 +34,7 @@ jobs:
 
       - name: 실제 ETF 가격 받기 (TQQQ·QLD·QQQ — real_vs_synthetic 입력)
         run: python scripts/fetch_market_extra.py
+        continue-on-error: true  # FRED(환율·물가) 타임아웃 시에도 ETF 데이터는 정상 수집됨
 
       - name: NDX 원본(data/ndx_1971_now.csv) 최신화
         run: |
