@@ -23,22 +23,10 @@
     "products": "Amazon.com 쇼핑몰, AWS 클라우드, Prime Video, Alexa, 물류/광고",
     "type": "stock"
   },
-  "META": {
-    "name": "메타 플랫폼",
-    "sector": "소셜미디어/광고",
-    "products": "Facebook, Instagram, WhatsApp, Meta Quest VR 헤드셋, Llama AI 모델",
-    "type": "stock"
-  },
   "GOOGL": {
     "name": "알파벳 클래스 A",
     "sector": "인터넷/광고",
     "products": "Google 검색, YouTube, Google Cloud, Android, Waymo 자율주행, Gemini AI",
-    "type": "stock"
-  },
-  "TSLA": {
-    "name": "테슬라",
-    "sector": "전기차/에너지",
-    "products": "Model 3/Y/S/X/Cybertruck 전기차, 에너지저장장치(Powerwall), 태양광, FSD",
     "type": "stock"
   },
   "GOOG": {
@@ -47,10 +35,22 @@
     "products": "Google 검색, YouTube, Google Cloud (클래스 C, 무의결권)",
     "type": "stock"
   },
+  "META": {
+    "name": "메타 플랫폼",
+    "sector": "소셜미디어/광고",
+    "products": "Facebook, Instagram, WhatsApp, Meta Quest VR 헤드셋, Llama AI 모델",
+    "type": "stock"
+  },
   "AVGO": {
     "name": "브로드컴",
     "sector": "반도체/네트워크",
     "products": "데이터센터 네트워킹 칩, 맞춤형 AI ASIC, WiFi/블루투스 칩, VMware",
+    "type": "stock"
+  },
+  "TSLA": {
+    "name": "테슬라",
+    "sector": "전기차/에너지",
+    "products": "Model 3/Y/S/X/Cybertruck 전기차, 에너지저장장치(Powerwall), 태양광, FSD",
     "type": "stock"
   },
   "BRK-B": {
@@ -65,52 +65,10 @@
     "products": "비만치료제(Mounjaro·Zepbound), 당뇨(Trulicity), 알츠하이머(Kisunla), 면역(Taltz·Verzenio)",
     "type": "stock"
   },
-  "JPM": {
-    "name": "JP모건 체이스",
-    "sector": "금융",
-    "products": "투자은행, 소매금융(Chase), 자산관리, 신용카드, 상업은행 — 미국 최대 은행",
-    "type": "stock"
-  },
-  "V": {
-    "name": "비자",
-    "sector": "핀테크/결제",
-    "products": "글로벌 카드 결제 네트워크 — Visa 신용카드·직불카드·선불카드 처리 인프라",
-    "type": "stock"
-  },
-  "UNH": {
-    "name": "유나이티드헬스 그룹",
-    "sector": "헬스케어 보험/서비스",
-    "products": "미국 최대 건강보험(UnitedHealthcare) + 의료서비스·데이터(Optum)",
-    "type": "stock"
-  },
-  "XOM": {
-    "name": "엑손모빌",
-    "sector": "에너지(석유·가스)",
-    "products": "세계 최대 민간 석유회사 — 탐사·생산·정제·화학, 퍼미안 분지 E&P",
-    "type": "stock"
-  },
-  "MA": {
-    "name": "마스터카드",
-    "sector": "핀테크/결제",
-    "products": "글로벌 카드 결제 네트워크 — Mastercard·Maestro·Cirrus 브랜드",
-    "type": "stock"
-  },
-  "COST": {
-    "name": "코스트코 홀세일",
-    "sector": "유통/소매",
-    "products": "창고형 회원제 대형마트, Kirkland 자체 브랜드 식료품·생활용품",
-    "type": "stock"
-  },
-  "HD": {
-    "name": "홈 디포",
-    "sector": "주택 개보수 소매",
-    "products": "미국 최대 주택 개조·건자재 소매체인, Pro 건설업자 전문 서비스",
-    "type": "stock"
-  },
-  "ABBV": {
-    "name": "애브비",
-    "sector": "제약/바이오",
-    "products": "Humira(류마티스), Rinvoq(면역), Skyrizi(건선), Imbruvica(혈액암)",
+  "MU": {
+    "name": "마이크론 테크놀로지",
+    "sector": "반도체",
+    "products": "DRAM, NAND 플래시 메모리, HBM(AI용 고대역폭 메모리), SSD",
     "type": "stock"
   },
   "WMT": {
@@ -119,52 +77,10 @@
     "products": "대형마트, Sam's Club 창고형 매장, Walmart+ 멤버십, 이커머스",
     "type": "stock"
   },
-  "PG": {
-    "name": "프록터 앤 갬블",
-    "sector": "생활용품",
-    "products": "Tide 세제, Pampers 기저귀, Gillette 면도기, Ariel, Olay, Head & Shoulders",
-    "type": "stock"
-  },
-  "NFLX": {
-    "name": "넷플릭스",
-    "sector": "스트리밍/콘텐츠",
-    "products": "동영상 스트리밍, 오리지널 드라마·영화·애니메이션, 게임 서비스",
-    "type": "stock"
-  },
-  "JNJ": {
-    "name": "존슨앤존슨",
-    "sector": "제약/의료기기",
-    "products": "Darzalex·Stelara·Tremfya 의약품, 수술·정형외과 기기(MedTech)",
-    "type": "stock"
-  },
-  "CRM": {
-    "name": "세일즈포스",
-    "sector": "클라우드/CRM",
-    "products": "세계 1위 CRM 플랫폼(Sales·Service·Marketing Cloud), Tableau, Slack",
-    "type": "stock"
-  },
-  "BAC": {
-    "name": "뱅크 오브 아메리카",
+  "JPM": {
+    "name": "JP모건 체이스",
     "sector": "금융",
-    "products": "소매·기업·투자은행, 자산관리(Merrill Lynch), 신용카드(BofA)",
-    "type": "stock"
-  },
-  "ACN": {
-    "name": "액센추어",
-    "sector": "IT 컨설팅/서비스",
-    "products": "글로벌 IT 컨설팅·디지털 전환·아웃소싱 — AI, 클라우드, 보안, 인더스트리 X",
-    "type": "stock"
-  },
-  "MRK": {
-    "name": "머크",
-    "sector": "제약",
-    "products": "Keytruda(항암제 세계 1위), Januvia(당뇨), Gardasil(HPV 백신), Winrevair(폐동맥고혈압)",
-    "type": "stock"
-  },
-  "ABT": {
-    "name": "애보트 래버러토리스",
-    "sector": "의료기기/진단",
-    "products": "FreeStyle 연속혈당계, 심장 스텐트, 급속 진단키트, 영양식품(Ensure·Pedialyte)",
+    "products": "투자은행, 소매금융(Chase), 자산관리, 신용카드, 상업은행 — 미국 최대 은행",
     "type": "stock"
   },
   "AMD": {
@@ -173,58 +89,40 @@
     "products": "Ryzen CPU, Radeon GPU, EPYC 서버칩, Instinct AI 가속기(MI300 시리즈)",
     "type": "stock"
   },
-  "CVX": {
-    "name": "셰브론",
+  "V": {
+    "name": "비자",
+    "sector": "핀테크/결제",
+    "products": "글로벌 카드 결제 네트워크 — Visa 신용카드·직불카드·선불카드 처리 인프라",
+    "type": "stock"
+  },
+  "XOM": {
+    "name": "엑손모빌",
     "sector": "에너지(석유·가스)",
-    "products": "탐사·생산·정제·화학, LNG(호주 고르곤), 퍼미안 분지, 재생에너지",
+    "products": "세계 최대 민간 석유회사 — 탐사·생산·정제·화학, 퍼미안 분지 E&P",
     "type": "stock"
   },
-  "KO": {
-    "name": "코카콜라",
-    "sector": "식음료",
-    "products": "코카콜라·판타·스프라이트·파워에이드 등 200여 음료 브랜드 세계 1위",
+  "JNJ": {
+    "name": "존슨앤존슨",
+    "sector": "제약/의료기기",
+    "products": "Darzalex·Stelara·Tremfya 의약품, 수술·정형외과 기기(MedTech)",
     "type": "stock"
   },
-  "TMO": {
-    "name": "서모 피셔 사이언티픽",
-    "sector": "생명과학 장비",
-    "products": "실험 장비·시약·소모품, 바이오의약품 위탁생산(CDMO), 유전자 검사",
+  "MA": {
+    "name": "마스터카드",
+    "sector": "핀테크/결제",
+    "products": "글로벌 카드 결제 네트워크 — Mastercard·Maestro·Cirrus 브랜드",
     "type": "stock"
   },
-  "WFC": {
-    "name": "웰스 파고",
-    "sector": "금융",
-    "products": "미국 4대 은행 — 소매·상업·주택담보대출, 기업금융",
+  "ABBV": {
+    "name": "애브비",
+    "sector": "제약/바이오",
+    "products": "Humira(류마티스), Rinvoq(면역), Skyrizi(건선), Imbruvica(혈액암)",
     "type": "stock"
   },
-  "NOW": {
-    "name": "서비스나우",
-    "sector": "클라우드/엔터프라이즈",
-    "products": "기업 워크플로우 자동화 플랫폼(IT·HR·법무·재무), AI 에이전트(Now Assist)",
-    "type": "stock"
-  },
-  "CSCO": {
-    "name": "시스코 시스템즈",
-    "sector": "네트워크/IT",
-    "products": "네트워크 스위치·라우터, 보안 솔루션(Duo, Umbrella), Webex, 데이터센터 장비",
-    "type": "stock"
-  },
-  "IBM": {
-    "name": "IBM",
-    "sector": "IT 서비스/인프라",
-    "products": "하이브리드 클라우드(Red Hat), AI(Watsonx), IT 컨설팅·인프라 서비스",
-    "type": "stock"
-  },
-  "GS": {
-    "name": "골드만 삭스",
-    "sector": "투자은행/금융",
-    "products": "투자은행, 증권 거래, 자산운용, 소비자 금융(Marcus)",
-    "type": "stock"
-  },
-  "ISRG": {
-    "name": "인튜이티브 서지컬",
-    "sector": "의료기기",
-    "products": "다빈치 로봇 수술 시스템 — 복강경·전립선·부인과 수술용 로봇",
+  "INTC": {
+    "name": "인텔",
+    "sector": "반도체",
+    "products": "Core/Xeon CPU, 파운드리 서비스(IFS), Arc GPU, 네트워크 칩",
     "type": "stock"
   },
   "PLTR": {
@@ -233,46 +131,28 @@
     "products": "정부·군사용 데이터 분석(Gotham), 기업용 AI 플랫폼(Foundry, AIP)",
     "type": "stock"
   },
-  "ANET": {
-    "name": "아리스타 네트웍스",
-    "sector": "네트워크",
-    "products": "데이터센터·클라우드 네트워크 스위치 — AI 클러스터 인프라, 하이퍼스케일러 납품",
+  "CVX": {
+    "name": "셰브론",
+    "sector": "에너지(석유·가스)",
+    "products": "탐사·생산·정제·화학, LNG(호주 고르곤), 퍼미안 분지, 재생에너지",
     "type": "stock"
   },
-  "GE": {
-    "name": "GE 에어로스페이스",
-    "sector": "항공 엔진/방산",
-    "products": "민항기·군용 항공 엔진(LEAP·GE9X·F110), 유지보수 서비스 — GE에서 2024 분사",
+  "COST": {
+    "name": "코스트코 홀세일",
+    "sector": "유통/소매",
+    "products": "창고형 회원제 대형마트, Kirkland 자체 브랜드 식료품·생활용품",
     "type": "stock"
   },
-  "MS": {
-    "name": "모건 스탠리",
-    "sector": "투자은행/금융",
-    "products": "투자은행, 증권 중개, 자산·재산 관리(E*TRADE)",
+  "CSCO": {
+    "name": "시스코 시스템즈",
+    "sector": "네트워크/IT",
+    "products": "네트워크 스위치·라우터, 보안 솔루션(Duo, Umbrella), Webex, 데이터센터 장비",
     "type": "stock"
   },
-  "PFE": {
-    "name": "화이자",
-    "sector": "제약",
-    "products": "Paxlovid(코로나 치료제), Eliquis(항응고), Prevnar(폐렴구균 백신), 항암제",
-    "type": "stock"
-  },
-  "RTX": {
-    "name": "RTX 코퍼레이션",
-    "sector": "항공우주/방산",
-    "products": "Pratt & Whitney 항공 엔진, Raytheon 미사일·레이더·방공시스템",
-    "type": "stock"
-  },
-  "MCD": {
-    "name": "맥도날드",
-    "sector": "패스트푸드",
-    "products": "전 세계 최대 패스트푸드 체인 — 빅맥, 프렌치프라이, 프랜차이즈 모델",
-    "type": "stock"
-  },
-  "BLK": {
-    "name": "블랙록",
-    "sector": "자산운용",
-    "products": "세계 최대 자산운용사 — iShares ETF, 펀드 운용, Aladdin 리스크 플랫폼",
+  "KO": {
+    "name": "코카콜라",
+    "sector": "식음료",
+    "products": "코카콜라·판타·스프라이트·파워에이드 등 200여 음료 브랜드 세계 1위",
     "type": "stock"
   },
   "ORCL": {
@@ -281,40 +161,28 @@
     "products": "데이터베이스(Oracle DB), ERP·HCM 클라우드, 클라우드 인프라(OCI)",
     "type": "stock"
   },
-  "LRCX": {
-    "name": "램 리서치",
-    "sector": "반도체 장비",
-    "products": "반도체 식각(에칭)·증착·세정 장비 — NAND/DRAM 제조 핵심",
+  "PG": {
+    "name": "프록터 앤 갬블",
+    "sector": "생활용품",
+    "products": "Tide 세제, Pampers 기저귀, Gillette 면도기, Ariel, Olay, Head & Shoulders",
     "type": "stock"
   },
-  "TXN": {
-    "name": "텍사스 인스트루먼트",
-    "sector": "반도체",
-    "products": "아날로그 반도체, 임베디드 프로세서 — 산업·자동차용 마이크로컨트롤러",
+  "MRK": {
+    "name": "머크",
+    "sector": "제약",
+    "products": "Keytruda(항암제 세계 1위), Januvia(당뇨), Gardasil(HPV 백신), Winrevair(폐동맥고혈압)",
     "type": "stock"
   },
-  "AMGN": {
-    "name": "암젠",
-    "sector": "바이오의약품",
-    "products": "Enbrel(류마티스), Prolia(골다공증), Repatha(콜레스테롤), Lumakras(폐암)",
+  "UNH": {
+    "name": "유나이티드헬스 그룹",
+    "sector": "헬스케어 보험/서비스",
+    "products": "미국 최대 건강보험(UnitedHealthcare) + 의료서비스·데이터(Optum)",
     "type": "stock"
   },
-  "DHR": {
-    "name": "다나허",
-    "sector": "생명과학/진단",
-    "products": "바이오프로세스 장비(Cytiva), 수질·환경 분석기기(Hach), 분자진단(Cepheid)",
-    "type": "stock"
-  },
-  "AXP": {
-    "name": "아메리칸 익스프레스",
-    "sector": "금융/결제",
-    "products": "프리미엄 신용카드, 여행·비즈니스 결제 서비스, 멤버십 리워드",
-    "type": "stock"
-  },
-  "PM": {
-    "name": "필립 모리스 인터내셔널",
-    "sector": "담배/니코틴",
-    "products": "Marlboro(해외), IQOS 전자담배, ZYN 구강 니코틴 파우치",
+  "BAC": {
+    "name": "뱅크 오브 아메리카",
+    "sector": "금융",
+    "products": "소매·기업·투자은행, 자산관리(Merrill Lynch), 신용카드(BofA)",
     "type": "stock"
   },
   "CAT": {
@@ -323,10 +191,10 @@
     "products": "굴착기·불도저·덤프트럭, 건설·광업·에너지용 중장비, Cat 금융",
     "type": "stock"
   },
-  "ETN": {
-    "name": "이튼",
-    "sector": "전력관리/산업",
-    "products": "전력 분배 시스템, 유압 장치, 자동차 드라이브트레인, 항공우주 전력",
+  "LRCX": {
+    "name": "램 리서치",
+    "sector": "반도체 장비",
+    "products": "반도체 식각(에칭)·증착·세정 장비 — NAND/DRAM 제조 핵심",
     "type": "stock"
   },
   "AMAT": {
@@ -335,52 +203,40 @@
     "products": "반도체 제조 장비(CVD/PVD/에칭), 디스플레이 제조 장비",
     "type": "stock"
   },
-  "SPGI": {
-    "name": "S&P 글로벌",
-    "sector": "금융 정보",
-    "products": "신용 등급(S&P Ratings), 시장 인덱스(S&P 500/Dow Jones), 금융 데이터(Market Intelligence)",
+  "GE": {
+    "name": "GE 에어로스페이스",
+    "sector": "항공 엔진/방산",
+    "products": "민항기·군용 항공 엔진(LEAP·GE9X·F110), 유지보수 서비스 — GE에서 2024 분사",
     "type": "stock"
   },
-  "SCHW": {
-    "name": "찰스 슈왑",
-    "sector": "투자/증권",
-    "products": "온라인 주식 거래 플랫폼, 로보어드바이저(Intelligent Portfolios), TD Ameritrade",
+  "PM": {
+    "name": "필립 모리스 인터내셔널",
+    "sector": "담배/니코틴",
+    "products": "Marlboro(해외), IQOS 전자담배, ZYN 구강 니코틴 파우치",
     "type": "stock"
   },
-  "NEE": {
-    "name": "넥스트에라 에너지",
-    "sector": "전력/유틸리티",
-    "products": "미국 최대 전기 유틸리티 — Florida Power & Light + 세계 최대 풍력·태양광(NEER)",
+  "HD": {
+    "name": "홈 디포",
+    "sector": "주택 개보수 소매",
+    "products": "미국 최대 주택 개조·건자재 소매체인, Pro 건설업자 전문 서비스",
     "type": "stock"
   },
-  "BSX": {
-    "name": "보스턴 사이언티픽",
-    "sector": "의료기기",
-    "products": "심장 스텐트·전기생리학 기기, 내시경·뇨관 기기, 뇌신경 자극 기기",
+  "NFLX": {
+    "name": "넷플릭스",
+    "sector": "스트리밍/콘텐츠",
+    "products": "동영상 스트리밍, 오리지널 드라마·영화·애니메이션, 게임 서비스",
     "type": "stock"
   },
-  "MU": {
-    "name": "마이크론 테크놀로지",
-    "sector": "반도체",
-    "products": "DRAM, NAND 플래시 메모리, HBM(AI용 고대역폭 메모리), SSD",
+  "DELL": {
+    "name": "Dell Technologies Inc.",
+    "sector": "PC/서버/IT인프라",
+    "products": "PC(XPS·Latitude·Alienware), 서버·스토리지(PowerEdge·PowerStore), 네트워크",
     "type": "stock"
   },
-  "SYK": {
-    "name": "스트라이커",
-    "sector": "의료기기",
-    "products": "정형외과 임플란트, 수술 로봇(Mako), 병원 침대·들것, 신경수술기기",
-    "type": "stock"
-  },
-  "KLAC": {
-    "name": "KLA 코퍼레이션",
-    "sector": "반도체 장비",
-    "products": "반도체 공정 계측 및 결함 검사 장비",
-    "type": "stock"
-  },
-  "LIN": {
-    "name": "린데",
-    "sector": "산업용 가스",
-    "products": "산업용 가스(산소·질소·수소·아르곤), 반도체 공정용 특수가스",
+  "MS": {
+    "name": "모건 스탠리",
+    "sector": "투자은행/금융",
+    "products": "투자은행, 증권 중개, 자산·재산 관리(E*TRADE)",
     "type": "stock"
   },
   "PANW": {
@@ -389,100 +245,34 @@
     "products": "차세대 방화벽, SASE 보안 플랫폼(Prisma), XDR(Cortex)",
     "type": "stock"
   },
-  "CB": {
-    "name": "처브",
-    "sector": "보험",
-    "products": "세계 최대 상장 손해보험사 — 재산·상해·특수·생명보험 (80개국 영업)",
+  "RTX": {
+    "name": "RTX 코퍼레이션",
+    "sector": "항공우주/방산",
+    "products": "Pratt & Whitney 항공 엔진, Raytheon 미사일·레이더·방공시스템",
     "type": "stock"
   },
-  "DE": {
-    "name": "디어",
-    "sector": "농업/건설 장비",
-    "products": "John Deere 트랙터·콤바인·파종기, 건설용 굴착기, 정밀농업(JDLink)",
+  "GS": {
+    "name": "골드만 삭스",
+    "sector": "투자은행/금융",
+    "products": "투자은행, 증권 거래, 자산운용, 소비자 금융(Marcus)",
     "type": "stock"
   },
-  "VRTX": {
-    "name": "버텍스 제약",
-    "sector": "바이오의약품",
-    "products": "낭포성 섬유증 치료제(Trikafta), 겸상적혈구병·신장질환 치료제",
+  "TMO": {
+    "name": "서모 피셔 사이언티픽",
+    "sector": "생명과학 장비",
+    "products": "실험 장비·시약·소모품, 바이오의약품 위탁생산(CDMO), 유전자 검사",
     "type": "stock"
   },
-  "MMC": {
-    "name": "마시 앤 매클레넌",
-    "sector": "보험/컨설팅",
-    "products": "위험관리·보험(Marsh), 경영컨설팅(Oliver Wyman), 인사컨설팅(Mercer)",
-    "type": "stock"
-  },
-  "CRWD": {
-    "name": "크라우드스트라이크",
-    "sector": "사이버보안",
-    "products": "Falcon 플랫폼 — 엔드포인트 보안, 위협 인텔리전스, SIEM",
-    "type": "stock"
-  },
-  "UPS": {
-    "name": "UPS",
-    "sector": "물류/운송",
-    "products": "미국 최대 소화물 특송 — 항공·육상 배송, 공급망 솔루션, 의료물류",
-    "type": "stock"
-  },
-  "CI": {
-    "name": "시그나",
-    "sector": "헬스케어 보험",
-    "products": "건강보험(Cigna), 약국혜택관리(Express Scripts), 글로벌 보험",
-    "type": "stock"
-  },
-  "PGR": {
-    "name": "프로그레시브",
-    "sector": "보험",
-    "products": "미국 3위 자동차 보험사, 주택·오토바이·보트 보험 — 온라인 직판 강점",
-    "type": "stock"
-  },
-  "ADI": {
-    "name": "아날로그 디바이스",
+  "TXN": {
+    "name": "텍사스 인스트루먼트",
     "sector": "반도체",
-    "products": "아날로그·혼성신호 반도체 — 산업·의료·자동차·통신용 센서·DAC/ADC",
+    "products": "아날로그 반도체, 임베디드 프로세서 — 산업·자동차용 마이크로컨트롤러",
     "type": "stock"
   },
-  "ELV": {
-    "name": "엘레반스 헬스",
-    "sector": "헬스케어 보험",
-    "products": "구 앤썸(Anthem) — BlueCross BlueShield 가맹 건강보험, Medicaid 관리의료",
-    "type": "stock"
-  },
-  "BMY": {
-    "name": "브리스톨 마이어스 스큅",
-    "sector": "제약/바이오",
-    "products": "Revlimid(혈액암), Opdivo(면역항암), Eliquis(항응고), Breyanzi",
-    "type": "stock"
-  },
-  "NKE": {
-    "name": "나이키",
-    "sector": "스포츠용품",
-    "products": "스포츠화·의류·용품 세계 1위 — Air Jordan, Converse, Nike Direct(DTC) 전략",
-    "type": "stock"
-  },
-  "INTU": {
-    "name": "인튜이트",
-    "sector": "금융 소프트웨어",
-    "products": "TurboTax(세금 신고), QuickBooks(회계), Credit Karma, Mailchimp",
-    "type": "stock"
-  },
-  "BX": {
-    "name": "블랙스톤",
-    "sector": "사모펀드/투자",
-    "products": "세계 최대 사모펀드 — 부동산·인프라·사모신용·헤지펀드(BREIT 포함)",
-    "type": "stock"
-  },
-  "TMUS": {
-    "name": "티모바일 US",
-    "sector": "통신",
-    "products": "미국 무선통신 서비스(5G), 모바일 요금제, 홈 인터넷",
-    "type": "stock"
-  },
-  "MRVL": {
-    "name": "마벨 테크놀로지",
-    "sector": "반도체",
-    "products": "데이터센터용 맞춤 AI ASIC, 이더넷 칩, 스토리지 컨트롤러, 광트랜시버",
+  "WFC": {
+    "name": "웰스 파고",
+    "sector": "금융",
+    "products": "미국 4대 은행 — 소매·상업·주택담보대출, 기업금융",
     "type": "stock"
   },
   "GEV": {
@@ -491,94 +281,70 @@
     "products": "가스터빈·풍력 터빈·그리드 솔루션 — GE에서 2024년 분사한 에너지 전문 기업",
     "type": "stock"
   },
-  "ASML": {
-    "name": "ASML 홀딩(ADR)",
+  "AMGN": {
+    "name": "암젠",
+    "sector": "바이오의약품",
+    "products": "Enbrel(류마티스), Prolia(골다공증), Repatha(콜레스테롤), Lumakras(폐암)",
+    "type": "stock"
+  },
+  "CRWD": {
+    "name": "크라우드스트라이크",
+    "sector": "사이버보안",
+    "products": "Falcon 플랫폼 — 엔드포인트 보안, 위협 인텔리전스, SIEM",
+    "type": "stock"
+  },
+  "LIN": {
+    "name": "린데",
+    "sector": "산업용 가스",
+    "products": "산업용 가스(산소·질소·수소·아르곤), 반도체 공정용 특수가스",
+    "type": "stock"
+  },
+  "ANET": {
+    "name": "아리스타 네트웍스",
+    "sector": "네트워크",
+    "products": "데이터센터·클라우드 네트워크 스위치 — AI 클러스터 인프라, 하이퍼스케일러 납품",
+    "type": "stock"
+  },
+  "KLAC": {
+    "name": "KLA 코퍼레이션",
     "sector": "반도체 장비",
-    "products": "EUV(극자외선) 및 DUV 노광 장비 — 첨단 반도체 제조 핵심 독점 장비",
+    "products": "반도체 공정 계측 및 결함 검사 장비",
     "type": "stock"
   },
-  "MDT": {
-    "name": "메드트로닉",
-    "sector": "의료기기",
-    "products": "심장 박동기, 인슐린 펌프, 척추 수술 기기, 수술 내비게이션 시스템",
+  "IBM": {
+    "name": "IBM",
+    "sector": "IT 서비스/인프라",
+    "products": "하이브리드 클라우드(Red Hat), AI(Watsonx), IT 컨설팅·인프라 서비스",
     "type": "stock"
   },
-  "T": {
-    "name": "AT&T",
-    "sector": "통신",
-    "products": "미국 최대 무선통신 서비스, 광통신망(Fiber), 정부·기업 통신",
+  "AXP": {
+    "name": "아메리칸 익스프레스",
+    "sector": "금융/결제",
+    "products": "프리미엄 신용카드, 여행·비즈니스 결제 서비스, 멤버십 리워드",
     "type": "stock"
   },
-  "LOW": {
-    "name": "로우스",
-    "sector": "주택 개보수 소매",
-    "products": "미국 2위 주택 개조·건자재 소매체인 (전국 1,700여 매장)",
+  "C": {
+    "name": "씨티그룹",
+    "sector": "금융",
+    "products": "글로벌 소매·기업·투자은행, 신용카드(Citi), 160개국 영업",
     "type": "stock"
   },
-  "ADBE": {
-    "name": "어도비",
-    "sector": "소프트웨어/크리에이티브",
-    "products": "Photoshop, Illustrator, Premiere Pro, Acrobat, Firefly AI",
+  "MRVL": {
+    "name": "마벨 테크놀로지",
+    "sector": "반도체",
+    "products": "데이터센터용 맞춤 AI ASIC, 이더넷 칩, 스토리지 컨트롤러, 광트랜시버",
     "type": "stock"
   },
-  "SBUX": {
-    "name": "스타벅스",
-    "sector": "외식/소매",
-    "products": "전 세계 커피 전문점 체인, 원두·RTD 음료, 리워드 멤버십 앱",
+  "CRM": {
+    "name": "세일즈포스",
+    "sector": "클라우드/CRM",
+    "products": "세계 1위 CRM 플랫폼(Sales·Service·Marketing Cloud), Tableau, Slack",
     "type": "stock"
   },
-  "ADP": {
-    "name": "오토매틱 데이터 프로세싱",
-    "sector": "HR/급여 소프트웨어",
-    "products": "기업 급여 관리, HR 소프트웨어, 복리후생·세금 신고 자동화",
-    "type": "stock"
-  },
-  "TGT": {
-    "name": "타겟",
-    "sector": "유통/소매",
-    "products": "미국 대형 할인 소매체인 — 자체 브랜드(Good & Gather 등), 동네 밀착 매장",
-    "type": "stock"
-  },
-  "UNP": {
-    "name": "유니온 퍼시픽",
-    "sector": "철도 물류",
-    "products": "미국 서부 화물 철도 — 농산물·석탄·화학·소비재 운송",
-    "type": "stock"
-  },
-  "PH": {
-    "name": "파커 해니핀",
-    "sector": "산업 장비",
-    "products": "유압·공압 시스템, 항공우주 연료 시스템, 여과 장치, 전기구동 시스템",
-    "type": "stock"
-  },
-  "VZ": {
-    "name": "버라이즌",
-    "sector": "통신",
-    "products": "미국 최대 무선통신 가입자 수 — Verizon 5G, 광통신(Fios), 기업 통신",
-    "type": "stock"
-  },
-  "ICE": {
-    "name": "인터컨티넨탈 익스체인지",
-    "sector": "금융 인프라",
-    "products": "NYSE 운영, 글로벌 선물·에너지 거래소, 금융 데이터(Intercontinental Exchange)",
-    "type": "stock"
-  },
-  "QCOM": {
-    "name": "퀄컴",
-    "sector": "반도체/통신",
-    "products": "스냅드래곤 모바일 AP, 5G 모뎀 칩, 자동차·IoT용 반도체",
-    "type": "stock"
-  },
-  "SO": {
-    "name": "서던 컴퍼니",
-    "sector": "전력/유틸리티",
-    "products": "미국 남동부 전력·천연가스 공급 (Georgia·Alabama·Mississippi)",
-    "type": "stock"
-  },
-  "ZTS": {
-    "name": "조에티스",
-    "sector": "동물약품",
-    "products": "반려동물·가축용 의약품 — 백신·항생제·기생충 치료제·진단기기",
+  "APH": {
+    "name": "Amphenol Corporation",
+    "sector": "전자부품/커넥터",
+    "products": "고성능 커넥터·케이블·센서 — 자동차·항공우주·IT 인프라용",
     "type": "stock"
   },
   "GILD": {
@@ -587,46 +353,226 @@
     "products": "HIV 치료제(Biktarvy, Truvada), C형 간염, 항암제(Tecartus)",
     "type": "stock"
   },
+  "ADI": {
+    "name": "아날로그 디바이스",
+    "sector": "반도체",
+    "products": "아날로그·혼성신호 반도체 — 산업·의료·자동차·통신용 센서·DAC/ADC",
+    "type": "stock"
+  },
+  "DIS": {
+    "name": "월트 디즈니",
+    "sector": "미디어/엔터테인먼트",
+    "products": "Disney+·ESPN+ 스트리밍, 테마파크(Disneyland·Disney World), 영화·TV 제작",
+    "type": "stock"
+  },
+  "SNDK": {
+    "name": "샌디스크",
+    "sector": "저장장치",
+    "products": "NAND 플래시 메모리, SSD, 플래시 드라이브, 메모리 카드",
+    "type": "stock"
+  },
+  "VZ": {
+    "name": "버라이즌",
+    "sector": "통신",
+    "products": "미국 최대 무선통신 가입자 수 — Verizon 5G, 광통신(Fios), 기업 통신",
+    "type": "stock"
+  },
+  "QCOM": {
+    "name": "퀄컴",
+    "sector": "반도체/통신",
+    "products": "스냅드래곤 모바일 AP, 5G 모뎀 칩, 자동차·IoT용 반도체",
+    "type": "stock"
+  },
+  "ABT": {
+    "name": "애보트 래버러토리스",
+    "sector": "의료기기/진단",
+    "products": "FreeStyle 연속혈당계, 심장 스텐트, 급속 진단키트, 영양식품(Ensure·Pedialyte)",
+    "type": "stock"
+  },
+  "PEP": {
+    "name": "펩시코",
+    "sector": "식음료",
+    "products": "펩시콜라, 게토레이, 도리토스, 레이즈, 퀘이커 오트밀",
+    "type": "stock"
+  },
+  "COP": {
+    "name": "코노코필립스",
+    "sector": "에너지(석유·가스)",
+    "products": "미국 최대 독립 E&P — 퍼미안·알래스카·캐나다 오일샌드·LNG",
+    "type": "stock"
+  },
+  "BLK": {
+    "name": "블랙록",
+    "sector": "자산운용",
+    "products": "세계 최대 자산운용사 — iShares ETF, 펀드 운용, Aladdin 리스크 플랫폼",
+    "type": "stock"
+  },
+  "DE": {
+    "name": "디어",
+    "sector": "농업/건설 장비",
+    "products": "John Deere 트랙터·콤바인·파종기, 건설용 굴착기, 정밀농업(JDLink)",
+    "type": "stock"
+  },
+  "MCD": {
+    "name": "맥도날드",
+    "sector": "패스트푸드",
+    "products": "전 세계 최대 패스트푸드 체인 — 빅맥, 프렌치프라이, 프랜차이즈 모델",
+    "type": "stock"
+  },
+  "UNP": {
+    "name": "유니온 퍼시픽",
+    "sector": "철도 물류",
+    "products": "미국 서부 화물 철도 — 농산물·석탄·화학·소비재 운송",
+    "type": "stock"
+  },
+  "WELL": {
+    "name": "웰타워",
+    "sector": "의료 REIT",
+    "products": "노인 요양원·의료 사무소·복지시설 운영 및 임대",
+    "type": "stock"
+  },
+  "TMUS": {
+    "name": "티모바일 US",
+    "sector": "통신",
+    "products": "미국 무선통신 서비스(5G), 모바일 요금제, 홈 인터넷",
+    "type": "stock"
+  },
+  "PFE": {
+    "name": "화이자",
+    "sector": "제약",
+    "products": "Paxlovid(코로나 치료제), Eliquis(항응고), Prevnar(폐렴구균 백신), 항암제",
+    "type": "stock"
+  },
+  "NEE": {
+    "name": "넥스트에라 에너지",
+    "sector": "전력/유틸리티",
+    "products": "미국 최대 전기 유틸리티 — Florida Power & Light + 세계 최대 풍력·태양광(NEER)",
+    "type": "stock"
+  },
+  "TJX": {
+    "name": "TJX 컴퍼니스",
+    "sector": "유통/소매",
+    "products": "TJ Maxx·Marshalls·HomeGoods 오프프라이스 의류·홈 제품 할인 소매",
+    "type": "stock"
+  },
+  "T": {
+    "name": "AT&T",
+    "sector": "통신",
+    "products": "미국 최대 무선통신 서비스, 광통신망(Fiber), 정부·기업 통신",
+    "type": "stock"
+  },
+  "DHR": {
+    "name": "다나허",
+    "sector": "생명과학/진단",
+    "products": "바이오프로세스 장비(Cytiva), 수질·환경 분석기기(Hach), 분자진단(Cepheid)",
+    "type": "stock"
+  },
+  "SCHW": {
+    "name": "찰스 슈왑",
+    "sector": "투자/증권",
+    "products": "온라인 주식 거래 플랫폼, 로보어드바이저(Intelligent Portfolios), TD Ameritrade",
+    "type": "stock"
+  },
+  "ETN": {
+    "name": "이튼",
+    "sector": "전력관리/산업",
+    "products": "전력 분배 시스템, 유압 장치, 자동차 드라이브트레인, 항공우주 전력",
+    "type": "stock"
+  },
+  "ISRG": {
+    "name": "인튜이티브 서지컬",
+    "sector": "의료기기",
+    "products": "다빈치 로봇 수술 시스템 — 복강경·전립선·부인과 수술용 로봇",
+    "type": "stock"
+  },
+  "BA": {
+    "name": "보잉",
+    "sector": "항공기/방산",
+    "products": "737·787 민항기, 아파치·치누크 군용 헬기, 방산·우주 시스템",
+    "type": "stock"
+  },
+  "NOW": {
+    "name": "서비스나우",
+    "sector": "클라우드/엔터프라이즈",
+    "products": "기업 워크플로우 자동화 플랫폼(IT·HR·법무·재무), AI 에이전트(Now Assist)",
+    "type": "stock"
+  },
+  "STX": {
+    "name": "시게이트 테크놀로지",
+    "sector": "저장장치",
+    "products": "HDD 세계 1위, 데이터센터·NAS·소비자용 스토리지",
+    "type": "stock"
+  },
+  "UBER": {
+    "name": "Uber Technologies, Inc.",
+    "sector": "모빌리티/배달 플랫폼",
+    "products": "차량 호출(Uber), 음식 배달(Uber Eats), 화물 운송(Uber Freight)",
+    "type": "stock"
+  },
+  "ACN": {
+    "name": "액센추어",
+    "sector": "IT 컨설팅/서비스",
+    "products": "글로벌 IT 컨설팅·디지털 전환·아웃소싱 — AI, 클라우드, 보안, 인더스트리 X",
+    "type": "stock"
+  },
+  "CB": {
+    "name": "처브",
+    "sector": "보험",
+    "products": "세계 최대 상장 손해보험사 — 재산·상해·특수·생명보험 (80개국 영업)",
+    "type": "stock"
+  },
+  "MPC": {
+    "name": "마라톤 페트롤리엄",
+    "sector": "에너지(정제)",
+    "products": "미국 최대 정유 용량 — MPLX 파이프라인 자회사, 편의점(Speedway)",
+    "type": "stock"
+  },
+  "VLO": {
+    "name": "발레로 에너지",
+    "sector": "에너지(정제)",
+    "products": "미국 최대 독립 정유사 — 휘발유·경유·에탄올 생산",
+    "type": "stock"
+  },
+  "LMT": {
+    "name": "록히드 마틴",
+    "sector": "방산/항공",
+    "products": "F-35 전투기, 미사일 시스템, 위성·우주, 헬리콥터(Sikorsky)",
+    "type": "stock"
+  },
+  "VRTX": {
+    "name": "버텍스 제약",
+    "sector": "바이오의약품",
+    "products": "낭포성 섬유증 치료제(Trikafta), 겸상적혈구병·신장질환 치료제",
+    "type": "stock"
+  },
+  "SPGI": {
+    "name": "S&P 글로벌",
+    "sector": "금융 정보",
+    "products": "신용 등급(S&P Ratings), 시장 인덱스(S&P 500/Dow Jones), 금융 데이터(Market Intelligence)",
+    "type": "stock"
+  },
+  "PGR": {
+    "name": "프로그레시브",
+    "sector": "보험",
+    "products": "미국 3위 자동차 보험사, 주택·오토바이·보트 보험 — 온라인 직판 강점",
+    "type": "stock"
+  },
   "MO": {
     "name": "알트리아 그룹",
     "sector": "담배",
     "products": "미국 내 Marlboro 담배, on! 니코틴 파우치, NJOY 전자담배",
     "type": "stock"
   },
-  "EMR": {
-    "name": "에머슨 일렉트릭",
-    "sector": "산업 자동화",
-    "products": "공정 자동화 제어 시스템(DeltaV), 밸브·계측기, 소프트웨어(AspenTech)",
+  "NEM": {
+    "name": "뉴몬트",
+    "sector": "광업/금",
+    "products": "세계 최대 금 광산 기업 — 네바다·아프리카·호주·남미 광산 운영",
     "type": "stock"
   },
-  "HCA": {
-    "name": "HCA 헬스케어",
-    "sector": "병원 운영",
-    "products": "미국 최대 영리 병원체인 (약 180개 병원, 2,000여 의원)",
-    "type": "stock"
-  },
-  "ITW": {
-    "name": "일리노이 툴 웍스",
-    "sector": "산업용 제조",
-    "products": "용접 장비(Hobart), 자동차 부품, 패스너·폴리머 소재, 식품 장비",
-    "type": "stock"
-  },
-  "WM": {
-    "name": "웨이스트 매니지먼트",
-    "sector": "폐기물 관리",
-    "products": "미국 최대 쓰레기 수거·재활용·매립지 운영업체",
-    "type": "stock"
-  },
-  "DUK": {
-    "name": "듀크 에너지",
-    "sector": "전력/유틸리티",
-    "products": "미국 최대 규제 전력회사 — 남동부·중서부 8개 주 발전·배전",
-    "type": "stock"
-  },
-  "SHW": {
-    "name": "셔윈-윌리엄스",
-    "sector": "페인트/코팅",
-    "products": "미국 최대 페인트·코팅제 제조판매 (Sherwin-Williams·Valspar)",
+  "FTNT": {
+    "name": "포티넷",
+    "sector": "사이버보안",
+    "products": "FortiGate 방화벽, SD-WAN, 보안 운영체제(FortiOS)",
     "type": "stock"
   },
   "COF": {
@@ -641,82 +587,28 @@
     "products": "Booking.com, Priceline, Kayak, Agoda — 글로벌 온라인 여행 예약",
     "type": "stock"
   },
-  "CEG": {
-    "name": "컨스텔레이션 에너지",
-    "sector": "에너지(원자력)",
-    "products": "원자력 발전소 운영(미국 최대), 청정 에너지 공급",
+  "WDC": {
+    "name": "웨스턴 디지털",
+    "sector": "저장장치",
+    "products": "HDD 전문 기업 — 데이터센터용 Nearline HDD 중심 (NAND 사업은 Sandisk로 분사)",
     "type": "stock"
   },
-  "TJX": {
-    "name": "TJX 컴퍼니스",
-    "sector": "유통/소매",
-    "products": "TJ Maxx·Marshalls·HomeGoods 오프프라이스 의류·홈 제품 할인 소매",
+  "BMY": {
+    "name": "브리스톨 마이어스 스큅",
+    "sector": "제약/바이오",
+    "products": "Revlimid(혈액암), Opdivo(면역항암), Eliquis(항응고), Breyanzi",
     "type": "stock"
   },
-  "BDX": {
-    "name": "베킨슨 디킨슨",
+  "PH": {
+    "name": "파커 해니핀",
+    "sector": "산업 장비",
+    "products": "유압·공압 시스템, 항공우주 연료 시스템, 여과 장치, 전기구동 시스템",
+    "type": "stock"
+  },
+  "MDT": {
+    "name": "메드트로닉",
     "sector": "의료기기",
-    "products": "주사기·채혈 기기, 의료 진단기기, 약물 전달 시스템",
-    "type": "stock"
-  },
-  "FTNT": {
-    "name": "포티넷",
-    "sector": "사이버보안",
-    "products": "FortiGate 방화벽, SD-WAN, 보안 운영체제(FortiOS)",
-    "type": "stock"
-  },
-  "LMT": {
-    "name": "록히드 마틴",
-    "sector": "방산/항공",
-    "products": "F-35 전투기, 미사일 시스템, 위성·우주, 헬리콥터(Sikorsky)",
-    "type": "stock"
-  },
-  "COP": {
-    "name": "코노코필립스",
-    "sector": "에너지(석유·가스)",
-    "products": "미국 최대 독립 E&P — 퍼미안·알래스카·캐나다 오일샌드·LNG",
-    "type": "stock"
-  },
-  "SNPS": {
-    "name": "시놉시스",
-    "sector": "EDA 소프트웨어",
-    "products": "반도체 설계 자동화(EDA) 소프트웨어, 보안 테스팅, AI 설계 도구",
-    "type": "stock"
-  },
-  "GD": {
-    "name": "제너럴 다이나믹스",
-    "sector": "방산/IT",
-    "products": "Gulfstream 비즈니스 제트, 핵잠수함(Virginia급), 장갑차(Abrams), 방산 IT",
-    "type": "stock"
-  },
-  "AMT": {
-    "name": "아메리칸 타워",
-    "sector": "통신 인프라 REIT",
-    "products": "글로벌 무선 통신탑·안테나 설비 임대 (22만여 타워, 25개국)",
-    "type": "stock"
-  },
-  "MELI": {
-    "name": "메르카도리브레",
-    "sector": "이커머스/핀테크",
-    "products": "라틴아메리카 최대 이커머스 플랫폼, MercadoPago 결제",
-    "type": "stock"
-  },
-  "REGN": {
-    "name": "리제네론 제약",
-    "sector": "바이오의약품",
-    "products": "Dupixent(아토피·천식), Eylea(황반변성), Kevzara",
-    "type": "stock"
-  },
-  "APD": {
-    "name": "에어 프로덕츠 앤 케미컬스",
-    "sector": "산업용 가스",
-    "products": "수소·산소·질소·아르곤 산업가스, 청정수소 인프라 투자",
-    "type": "stock"
-  },
-  "DIS": {
-    "name": "월트 디즈니",
-    "sector": "미디어/엔터테인먼트",
-    "products": "Disney+·ESPN+ 스트리밍, 테마파크(Disneyland·Disney World), 영화·TV 제작",
+    "products": "심장 박동기, 인슐린 펌프, 척추 수술 기기, 수술 내비게이션 시스템",
     "type": "stock"
   },
   "PLD": {
@@ -725,100 +617,10 @@
     "products": "이커머스·물류 창고 임대 세계 1위 — 아마zon·UPS 등 주요 고객",
     "type": "stock"
   },
-  "NSC": {
-    "name": "노퍽 서던",
-    "sector": "철도 물류",
-    "products": "미국 동부 화물 철도 — 석탄·자동차·화학·인터모달",
-    "type": "stock"
-  },
-  "BA": {
-    "name": "보잉",
-    "sector": "항공기/방산",
-    "products": "737·787 민항기, 아파치·치누크 군용 헬기, 방산·우주 시스템",
-    "type": "stock"
-  },
-  "AFL": {
-    "name": "아플락",
-    "sector": "보험",
-    "products": "보충 건강·생명보험 전문 — 단기 소득 보전 보험 (미국·일본)",
-    "type": "stock"
-  },
-  "TRV": {
-    "name": "트래블러스",
-    "sector": "보험",
-    "products": "미국 2위 재산보험사 — 가정·기업·특수 손해보험",
-    "type": "stock"
-  },
-  "CL": {
-    "name": "콜게이트-팜올리브",
-    "sector": "생활용품",
-    "products": "Colgate 치약·칫솔, Palmolive 주방세제, Hill's 반려동물 식품",
-    "type": "stock"
-  },
-  "SLB": {
-    "name": "슐럼버거",
-    "sector": "에너지 서비스",
-    "products": "유정 시추·완결 서비스 세계 1위, 디지털 유전 솔루션",
-    "type": "stock"
-  },
-  "PEP": {
-    "name": "펩시코",
-    "sector": "식음료",
-    "products": "펩시콜라, 게토레이, 도리토스, 레이즈, 퀘이커 오트밀",
-    "type": "stock"
-  },
-  "NOC": {
-    "name": "노스럽 그루먼",
-    "sector": "방산/우주",
-    "products": "B-21 폭격기, 위성·우주 시스템, 사이버 보안, 미사일 방어",
-    "type": "stock"
-  },
-  "C": {
-    "name": "씨티그룹",
-    "sector": "금융",
-    "products": "글로벌 소매·기업·투자은행, 신용카드(Citi), 160개국 영업",
-    "type": "stock"
-  },
-  "EQIX": {
-    "name": "에퀴닉스",
-    "sector": "데이터센터 REIT",
-    "products": "글로벌 코로케이션 데이터센터 운영 — 인터넷 교환 허브 (260여 센터)",
-    "type": "stock"
-  },
-  "CDNS": {
-    "name": "케이던스 디자인 시스템즈",
-    "sector": "EDA 소프트웨어",
-    "products": "반도체 설계 자동화(EDA) 소프트웨어, 칩 검증 툴, AI 설계 플랫폼",
-    "type": "stock"
-  },
-  "ECL": {
-    "name": "에코랩",
-    "sector": "산업용 청소/위생",
-    "products": "식품·병원·산업용 세정·살균·수처리 솔루션 전문",
-    "type": "stock"
-  },
-  "WDC": {
-    "name": "웨스턴 디지털",
-    "sector": "저장장치",
-    "products": "HDD 전문 기업 — 데이터센터용 Nearline HDD 중심 (NAND 사업은 Sandisk로 분사)",
-    "type": "stock"
-  },
-  "F": {
-    "name": "포드 모터",
-    "sector": "자동차",
-    "products": "Ford F-150·Mustang·Explorer, EV(Mustang Mach-E·F-150 Lightning), Ford Pro 상용",
-    "type": "stock"
-  },
-  "GM": {
-    "name": "제너럴 모터스",
-    "sector": "자동차",
-    "products": "Chevrolet·GMC·Cadillac·Buick, EV(Ultium 플랫폼), Cruise 자율주행",
-    "type": "stock"
-  },
-  "D": {
-    "name": "도미니언 에너지",
-    "sector": "전력/유틸리티",
-    "products": "미국 동부 전력·천연가스 공급 (버지니아·사우스캐롤라이나 등)",
+  "CVS": {
+    "name": "CVS HEALTH CORPORATION",
+    "sector": "약국/건강보험",
+    "products": "CVS 약국 체인, Aetna 건강보험, MinuteClinic, PBM(Caremark)",
     "type": "stock"
   },
   "MCK": {
@@ -827,142 +629,40 @@
     "products": "미국 최대 의약품 도매·유통, 의료 공급망 관리 소프트웨어",
     "type": "stock"
   },
-  "CTAS": {
-    "name": "신타스",
-    "sector": "기업 서비스",
-    "products": "기업용 유니폼·작업복 임대·세탁, 안전 용품, 응급처치 키트",
-    "type": "stock"
-  },
-  "DDOG": {
-    "name": "데이터독",
-    "sector": "클라우드 모니터링",
-    "products": "클라우드 인프라 모니터링, APM, 로그 관리, 보안 모니터링",
-    "type": "stock"
-  },
-  "ROK": {
-    "name": "로크웰 오토메이션",
-    "sector": "산업 자동화",
-    "products": "PLC·HMI 자동화 컨트롤러, 디지털 전환 솔루션(FactoryTalk)",
-    "type": "stock"
-  },
-  "USB": {
-    "name": "US 뱅코프",
-    "sector": "금융",
-    "products": "미국 5위 은행 — 소매·기업금융, 지급결제 서비스",
-    "type": "stock"
-  },
-  "CARR": {
-    "name": "캐리어 글로벌",
-    "sector": "냉난방/냉동",
-    "products": "에어컨·히트펌프(Carrier), 냉동 시스템, 화재·보안(Chubb Fire)",
-    "type": "stock"
-  },
-  "NXPI": {
-    "name": "NXP 반도체",
-    "sector": "반도체",
-    "products": "자동차용 반도체(ADAS·전기차), 산업용 MCU, NFC 칩",
-    "type": "stock"
-  },
-  "CMCSA": {
-    "name": "컴캐스트",
-    "sector": "미디어/통신",
-    "products": "Xfinity 케이블·인터넷, NBCUniversal 방송·영화, Peacock",
-    "type": "stock"
-  },
-  "OTIS": {
-    "name": "오티스 월드와이드",
-    "sector": "엘리베이터/에스컬레이터",
-    "products": "엘리베이터·에스컬레이터 제조·설치·유지보수 세계 1위",
-    "type": "stock"
-  },
-  "KMB": {
-    "name": "킴벌리-클라크",
-    "sector": "생활용품",
-    "products": "Kleenex 티슈, Huggies 기저귀, Scott 화장지, Kotex",
-    "type": "stock"
-  },
-  "CHTR": {
-    "name": "차터 커뮤니케이션스",
-    "sector": "케이블/통신",
-    "products": "미국 2위 케이블·인터넷 — Spectrum 브랜드, 기업 통신",
-    "type": "stock"
-  },
-  "ISRG_": {
-    "name": "인튜이티브 서지컬",
-    "sector": "의료기기",
-    "products": "다빈치 로봇 수술 시스템",
-    "type": "stock"
-  },
-  "IQV": {
-    "name": "IQVIA",
-    "sector": "의료 데이터/CRO",
-    "products": "임상시험 수탁(CRO), 의약품 데이터 분석, 리얼월드 에비던스",
-    "type": "stock"
-  },
-  "SRE": {
-    "name": "셈프라",
-    "sector": "에너지/유틸리티",
-    "products": "캘리포니아 전력·가스(SDG&E·SoCalGas), LNG 수출(Port Arthur LNG)",
-    "type": "stock"
-  },
-  "FCX": {
-    "name": "프리포트-맥모런",
-    "sector": "광업/구리",
-    "products": "세계 최대 구리 광산 기업 — 그라스버그 광산(인도네시아), 몰리브덴 생산",
-    "type": "stock"
-  },
   "PSX": {
     "name": "필립스 66",
     "sector": "에너지(정제/화학)",
     "products": "원유 정제, 석유화학(CPChem), 미드스트림 파이프라인, 재생 연료",
     "type": "stock"
   },
-  "EOG": {
-    "name": "EOG 리소시스",
-    "sector": "에너지(석유·가스)",
-    "products": "미국 내 최대 독립 석유 생산업체 — 퍼미안·이글포드 시추",
+  "ADP": {
+    "name": "오토매틱 데이터 프로세싱",
+    "sector": "HR/급여 소프트웨어",
+    "products": "기업 급여 관리, HR 소프트웨어, 복리후생·세금 신고 자동화",
     "type": "stock"
   },
-  "HLT": {
-    "name": "힐튼 월드와이드",
-    "sector": "숙박/호텔",
-    "products": "Hilton·Hampton Inn·DoubleTree·Waldorf Astoria 등 호텔 브랜드",
+  "GLW": {
+    "name": "Corning Incorporated",
+    "sector": "특수유리/광섬유",
+    "products": "Gorilla Glass(스마트폰), 광섬유·케이블, 디스플레이 유리, 반도체 소재(Corning)",
     "type": "stock"
   },
-  "MAR": {
-    "name": "메리어트 인터내셔널",
-    "sector": "숙박/호텔",
-    "products": "Marriott, Sheraton, Westin, W Hotels, Ritz-Carlton 등 호텔 브랜드",
+  "SYK": {
+    "name": "스트라이커",
+    "sector": "의료기기",
+    "products": "정형외과 임플란트, 수술 로봇(Mako), 병원 침대·들것, 신경수술기기",
     "type": "stock"
   },
-  "NEM": {
-    "name": "뉴몬트",
-    "sector": "광업/금",
-    "products": "세계 최대 금 광산 기업 — 네바다·아프리카·호주·남미 광산 운영",
+  "SBUX": {
+    "name": "스타벅스",
+    "sector": "외식/소매",
+    "products": "전 세계 커피 전문점 체인, 원두·RTD 음료, 리워드 멤버십 앱",
     "type": "stock"
   },
-  "GIS": {
-    "name": "제너럴 밀스",
-    "sector": "식음료",
-    "products": "Cheerios·General Mills 시리얼, Häagen-Dazs 아이스크림, Betty Crocker",
-    "type": "stock"
-  },
-  "KDP": {
-    "name": "큐리그 닥터페퍼",
-    "sector": "식음료",
-    "products": "닥터페퍼·캐나다 드라이·스냅플 음료, Keurig 커피머신",
-    "type": "stock"
-  },
-  "PPG": {
-    "name": "PPG 인더스트리스",
-    "sector": "페인트/코팅",
-    "products": "산업용·건축용 페인트, 자동차 도료, 항공·방산 코팅",
-    "type": "stock"
-  },
-  "TFC": {
-    "name": "트루이스트 파이낸셜",
-    "sector": "금융",
-    "products": "미국 남동부 지역은행 — 소매·기업금융 (BB&T·SunTrust 합병)",
+  "LOW": {
+    "name": "로우스",
+    "sector": "주택 개보수 소매",
+    "products": "미국 2위 주택 개조·건자재 소매체인 (전국 1,700여 매장)",
     "type": "stock"
   },
   "CME": {
@@ -971,268 +671,10 @@
     "products": "세계 최대 파생상품 거래소 — 선물·옵션(금리·지수·원자재·FX)",
     "type": "stock"
   },
-  "CSX": {
-    "name": "CSX 코퍼레이션",
-    "sector": "철도 물류",
-    "products": "미국 동부 화물 철도 운송 — 석탄·자동차·농산물·컨테이너",
-    "type": "stock"
-  },
-  "JCI": {
-    "name": "존슨 컨트롤스",
-    "sector": "건물 솔루션",
-    "products": "건물 HVAC·보안·소방 시스템 자동화, 건물 에너지 관리",
-    "type": "stock"
-  },
-  "AIG": {
-    "name": "AIG",
-    "sector": "보험",
-    "products": "글로벌 대형 보험사 — 재산·상해·생명·의료 보험 (80개국)",
-    "type": "stock"
-  },
-  "PYPL": {
-    "name": "페이팔 홀딩스",
-    "sector": "핀테크/결제",
-    "products": "PayPal 온라인 결제, Venmo 개인 송금, Braintree, BNPL",
-    "type": "stock"
-  },
-  "INTC": {
-    "name": "인텔",
-    "sector": "반도체",
-    "products": "Core/Xeon CPU, 파운드리 서비스(IFS), Arc GPU, 네트워크 칩",
-    "type": "stock"
-  },
-  "IT": {
-    "name": "가트너",
-    "sector": "IT 리서치/컨설팅",
-    "products": "IT 시장 조사·분석 보고서, 기술 컨설팅, Magic Quadrant",
-    "type": "stock"
-  },
-  "O": {
-    "name": "리얼티 인컴",
-    "sector": "소매 REIT",
-    "products": "월배당 REIT — 편의점·약국·패스트푸드 점포 임대 (15,450여 자산)",
-    "type": "stock"
-  },
-  "FDX": {
-    "name": "페덱스",
-    "sector": "물류/운송",
-    "products": "글로벌 특급 배송, 화물 운송, 공급망 관리",
-    "type": "stock"
-  },
-  "AXON": {
-    "name": "액손 엔터프라이즈",
-    "sector": "공공 안전 기술",
-    "products": "경찰용 테이저건, 바디캠, 대시캠, Axon Evidence 클라우드",
-    "type": "stock"
-  },
-  "WELL": {
-    "name": "웰타워",
-    "sector": "의료 REIT",
-    "products": "노인 요양원·의료 사무소·복지시설 운영 및 임대",
-    "type": "stock"
-  },
-  "MET": {
-    "name": "메트라이프",
-    "sector": "보험",
-    "products": "생명·건강·연금 보험 — 미국 및 해외 그룹 보험",
-    "type": "stock"
-  },
-  "SPG": {
-    "name": "사이먼 프로퍼티 그룹",
-    "sector": "쇼핑몰 REIT",
-    "products": "미국 최대 쇼핑몰 REIT — 프리미엄 아울렛·몰 운영",
-    "type": "stock"
-  },
-  "WDAY": {
-    "name": "워크데이",
-    "sector": "HR/ERP 소프트웨어",
-    "products": "클라우드 기반 HR·재무 관리·급여 ERP 소프트웨어",
-    "type": "stock"
-  },
-  "OXY": {
-    "name": "옥시덴탈 페트롤리엄",
-    "sector": "에너지(석유·가스)",
-    "products": "퍼미안 분지 원유 생산, 화학(OxyChem), 탄소 포집(Carbon Engineering)",
-    "type": "stock"
-  },
-  "ROST": {
-    "name": "로스 스토어즈",
-    "sector": "유통/소매",
-    "products": "미국 오프프라이스 의류·홈 제품 할인 소매 체인",
-    "type": "stock"
-  },
-  "PRU": {
-    "name": "프루덴셜 파이낸셜",
-    "sector": "보험/투자",
-    "products": "생명보험, 개인·기업 은퇴·자산관리",
-    "type": "stock"
-  },
-  "ADSK": {
-    "name": "오토데스크",
-    "sector": "설계 소프트웨어",
-    "products": "AutoCAD, Revit(BIM), Maya(3D 애니메이션), Fusion 360",
-    "type": "stock"
-  },
-  "PSA": {
-    "name": "퍼블릭 스토리지",
-    "sector": "자가창고 REIT",
-    "products": "미국 최대 셀프 스토리지 시설 운영 (3,000여 개소)",
-    "type": "stock"
-  },
-  "CTSH": {
-    "name": "코그니전트",
-    "sector": "IT 서비스",
-    "products": "글로벌 IT 서비스·아웃소싱·디지털 컨설팅 (인도 기반)",
-    "type": "stock"
-  },
-  "NUE": {
-    "name": "뉴코",
-    "sector": "철강",
-    "products": "미국 최대 전기로(EAF) 철강 메이커 — 재활용 고철 기반 친환경 철강",
-    "type": "stock"
-  },
-  "VLO": {
-    "name": "발레로 에너지",
-    "sector": "에너지(정제)",
-    "products": "미국 최대 독립 정유사 — 휘발유·경유·에탄올 생산",
-    "type": "stock"
-  },
-  "MPC": {
-    "name": "마라톤 페트롤리엄",
-    "sector": "에너지(정제)",
-    "products": "미국 최대 정유 용량 — MPLX 파이프라인 자회사, 편의점(Speedway)",
-    "type": "stock"
-  },
-  "MSI": {
-    "name": "모토로라 솔루션스",
-    "sector": "통신 기술/방산",
-    "products": "경찰·소방용 무선통신 장비, 영상 보안(Avigilon), 소프트웨어",
-    "type": "stock"
-  },
-  "FAST": {
-    "name": "패스트너 컴퍼니",
-    "sector": "산업용 유통",
-    "products": "볼트·나사 등 산업용 체결 부품 및 공구 유통 체인",
-    "type": "stock"
-  },
-  "DRI": {
-    "name": "다든 레스토랑",
-    "sector": "외식 체인",
-    "products": "Olive Garden, LongHorn Steakhouse, Cheddar's Scratch Kitchen 레스토랑",
-    "type": "stock"
-  },
-  "IDXX": {
-    "name": "IDEXX 래버러토리스",
-    "sector": "동물 의료 진단",
-    "products": "반려동물·가축용 진단 장비 및 시약, 수의학 소프트웨어",
-    "type": "stock"
-  },
-  "SYY": {
-    "name": "시스코 코퍼레이션",
-    "sector": "식품 유통",
-    "products": "미국 최대 식품·식자재 도매 유통 (음식점·병원·학교 등)",
-    "type": "stock"
-  },
-  "K": {
-    "name": "켈라노바",
-    "sector": "식음료",
-    "products": "Pringles, Cheez-It, Pop-Tarts, Special K, Eggo (구 켈로그에서 분사)",
-    "type": "stock"
-  },
-  "MPWR": {
-    "name": "모놀리식 파워 시스템즈",
-    "sector": "반도체",
-    "products": "고효율 전력 관리 IC — AI 서버 전원 공급, 자동차·산업용",
-    "type": "stock"
-  },
-  "DASH": {
-    "name": "도어대시",
-    "sector": "음식 배달 플랫폼",
-    "products": "음식 배달 앱(미국 1위), Wolt(유럽), DashPass 구독",
-    "type": "stock"
-  },
-  "TER": {
-    "name": "테라다인",
-    "sector": "반도체 장비",
-    "products": "반도체 테스트 장비(ATE), 로봇 자동화(Universal Robots)",
-    "type": "stock"
-  },
-  "ORLY": {
-    "name": "오라일리 자동차",
-    "sector": "자동차 부품 유통",
-    "products": "자동차 부품·액세서리 소매 체인 — DIY 및 정비소용",
-    "type": "stock"
-  },
-  "PCAR": {
-    "name": "패카(PACCAR)",
-    "sector": "상용차 제조",
-    "products": "Kenworth, Peterbilt, DAF 트럭 브랜드, 금융·부품·서비스",
-    "type": "stock"
-  },
-  "WMB": {
-    "name": "윌리엄스 컴퍼니스",
-    "sector": "에너지(미드스트림)",
-    "products": "천연가스 파이프라인·처리 인프라 — Transco 파이프라인 운영",
-    "type": "stock"
-  },
-  "HSY": {
-    "name": "허쉬 컴퍼니",
-    "sector": "식음료",
-    "products": "Hershey's 초콜릿, Reese's, Kit Kat(북미), SkinnyPop 팝콘",
-    "type": "stock"
-  },
-  "ADM": {
-    "name": "아처 대니얼스 미들랜드",
-    "sector": "농산물 가공",
-    "products": "곡물·대두·에탄올 가공 유통, 동물 영양, 산업용 전분",
-    "type": "stock"
-  },
-  "DLR": {
-    "name": "디지털 리얼티",
-    "sector": "데이터센터 REIT",
-    "products": "글로벌 데이터센터 임대·운영",
-    "type": "stock"
-  },
-  "CCI": {
-    "name": "크라운 캐슬",
-    "sector": "통신 인프라 REIT",
-    "products": "미국 통신탑·소형 셀·광섬유 네트워크 임대",
-    "type": "stock"
-  },
-  "INCY": {
-    "name": "인사이트 제약",
-    "sector": "바이오의약품",
-    "products": "JAK 억제제(Jakafi/Ruxolitinib) — 골수섬유증·진성 적혈구 증가증",
-    "type": "stock"
-  },
-  "PAYX": {
-    "name": "페이첵스",
-    "sector": "HR/급여 소프트웨어",
-    "products": "중소기업 급여 처리·HR 관리·세금 신고 아웃소싱",
-    "type": "stock"
-  },
-  "TTWO": {
-    "name": "Take-Two 인터랙티브",
-    "sector": "비디오게임",
-    "products": "GTA 시리즈, Red Dead Redemption, NBA 2K, Borderlands",
-    "type": "stock"
-  },
-  "SNDK": {
-    "name": "샌디스크",
-    "sector": "저장장치",
-    "products": "NAND 플래시 메모리, SSD, 플래시 드라이브, 메모리 카드",
-    "type": "stock"
-  },
-  "STX": {
-    "name": "시게이트 테크놀로지",
-    "sector": "저장장치",
-    "products": "HDD 세계 1위, 데이터센터·NAS·소비자용 스토리지",
-    "type": "stock"
-  },
-  "RCL": {
-    "name": "로열 캐리비안",
-    "sector": "크루즈",
-    "products": "로열 캐리비안·Celebrity·Silversea 크루즈 선사",
+  "SO": {
+    "name": "서던 컴퍼니",
+    "sector": "전력/유틸리티",
+    "products": "미국 남동부 전력·천연가스 공급 (Georgia·Alabama·Mississippi)",
     "type": "stock"
   },
   "ABNB": {
@@ -1241,10 +683,112 @@
     "products": "전 세계 단기 숙박 임대 플랫폼, Experiences 여행 프로그램",
     "type": "stock"
   },
-  "ROP": {
-    "name": "로퍼 테크놀로지스",
-    "sector": "소프트웨어/산업",
-    "products": "틈새 B2B 소프트웨어(의료·교육·물류·에너지), 산업용 기술 제품",
+  "MAR": {
+    "name": "메리어트 인터내셔널",
+    "sector": "숙박/호텔",
+    "products": "Marriott, Sheraton, Westin, W Hotels, Ritz-Carlton 등 호텔 브랜드",
+    "type": "stock"
+  },
+  "TT": {
+    "name": "Trane Technologies plc",
+    "sector": "HVAC/냉동",
+    "products": "공업용 냉난방공조(Trane), 냉동 운송 장치(Thermo King — Trane Technologies)",
+    "type": "stock"
+  },
+  "FCX": {
+    "name": "프리포트-맥모런",
+    "sector": "광업/구리",
+    "products": "세계 최대 구리 광산 기업 — 그라스버그 광산(인도네시아), 몰리브덴 생산",
+    "type": "stock"
+  },
+  "HCA": {
+    "name": "HCA 헬스케어",
+    "sector": "병원 운영",
+    "products": "미국 최대 영리 병원체인 (약 180개 병원, 2,000여 의원)",
+    "type": "stock"
+  },
+  "BNY": {
+    "name": "Bank of New York Mellon Corporation",
+    "sector": "금융/수탁서비스",
+    "products": "자산 수탁·결제·청산, 외환거래, 자산운용(BNY Mellon)",
+    "type": "stock"
+  },
+  "EQIX": {
+    "name": "에퀴닉스",
+    "sector": "데이터센터 REIT",
+    "products": "글로벌 코로케이션 데이터센터 운영 — 인터넷 교환 허브 (260여 센터)",
+    "type": "stock"
+  },
+  "CEG": {
+    "name": "컨스텔레이션 에너지",
+    "sector": "에너지(원자력)",
+    "products": "원자력 발전소 운영(미국 최대), 청정 에너지 공급",
+    "type": "stock"
+  },
+  "ADBE": {
+    "name": "어도비",
+    "sector": "소프트웨어/크리에이티브",
+    "products": "Photoshop, Illustrator, Premiere Pro, Acrobat, Firefly AI",
+    "type": "stock"
+  },
+  "PWR": {
+    "name": "Quanta Services, Inc.",
+    "sector": "인프라 시공",
+    "products": "전력·통신·파이프라인·재생에너지 인프라 설계·시공(Quanta Services)",
+    "type": "stock"
+  },
+  "DUK": {
+    "name": "듀크 에너지",
+    "sector": "전력/유틸리티",
+    "products": "미국 최대 규제 전력회사 — 남동부·중서부 8개 주 발전·배전",
+    "type": "stock"
+  },
+  "GD": {
+    "name": "제너럴 다이나믹스",
+    "sector": "방산/IT",
+    "products": "Gulfstream 비즈니스 제트, 핵잠수함(Virginia급), 장갑차(Abrams), 방산 IT",
+    "type": "stock"
+  },
+  "ELV": {
+    "name": "엘레반스 헬스",
+    "sector": "헬스케어 보험",
+    "products": "구 앤썸(Anthem) — BlueCross BlueShield 가맹 건강보험, Medicaid 관리의료",
+    "type": "stock"
+  },
+  "USB": {
+    "name": "US 뱅코프",
+    "sector": "금융",
+    "products": "미국 5위 은행 — 소매·기업금융, 지급결제 서비스",
+    "type": "stock"
+  },
+  "ICE": {
+    "name": "인터컨티넨탈 익스체인지",
+    "sector": "금융 인프라",
+    "products": "NYSE 운영, 글로벌 선물·에너지 거래소, 금융 데이터(Intercontinental Exchange)",
+    "type": "stock"
+  },
+  "WM": {
+    "name": "웨이스트 매니지먼트",
+    "sector": "폐기물 관리",
+    "products": "미국 최대 쓰레기 수거·재활용·매립지 운영업체",
+    "type": "stock"
+  },
+  "CSX": {
+    "name": "CSX 코퍼레이션",
+    "sector": "철도 물류",
+    "products": "미국 동부 화물 철도 운송 — 석탄·자동차·농산물·컨테이너",
+    "type": "stock"
+  },
+  "MRSH": {
+    "name": "Marsh",
+    "sector": "보험중개/컨설팅",
+    "products": "보험중개(Marsh), 재보험(Guy Carpenter), 인사컨설팅(Mercer), 경영컨설팅(Oliver Wyman)",
+    "type": "stock"
+  },
+  "EMR": {
+    "name": "에머슨 일렉트릭",
+    "sector": "산업 자동화",
+    "products": "공정 자동화 제어 시스템(DeltaV), 밸브·계측기, 소프트웨어(AspenTech)",
     "type": "stock"
   },
   "MNST": {
@@ -1253,130 +797,10 @@
     "products": "Monster Energy 에너지 드링크, Reign, NOS",
     "type": "stock"
   },
-  "PCG": {
-    "name": "PG&E 코퍼레이션",
-    "sector": "전력/유틸리티",
-    "products": "캘리포니아 북부 전력·가스 공급 (PG&E 자회사)",
-    "type": "stock"
-  },
-  "BKR": {
-    "name": "베이커 휴즈",
-    "sector": "에너지 서비스",
-    "products": "유전 시추 장비·서비스, LNG 장비, 산업용 터빈·압축기",
-    "type": "stock"
-  },
-  "FANG": {
-    "name": "다이아몬드백 에너지",
-    "sector": "에너지(석유·가스)",
-    "products": "미국 퍼미안 분지 원유·천연가스 시추 및 생산",
-    "type": "stock"
-  },
-  "URI": {
-    "name": "유나이티드 렌탈스",
-    "sector": "장비 임대",
-    "products": "미국 최대 건설·산업 장비 임대 — 크레인·굴착기·리프트 등",
-    "type": "stock"
-  },
-  "MMM": {
-    "name": "3M",
-    "sector": "복합 제조",
-    "products": "Post-it, Scotch 테이프, 산업용 접착제·연마재, 의료용 필름·마스크",
-    "type": "stock"
-  },
-  "XEL": {
-    "name": "엑셀 에너지",
-    "sector": "전력/유틸리티",
-    "products": "미국 중서부·남서부 전력·천연가스 공급 (풍력 발전 비중 높음)",
-    "type": "stock"
-  },
-  "AEP": {
-    "name": "아메리칸 일렉트릭 파워",
-    "sector": "전력/유틸리티",
-    "products": "미국 중부·남부 전력망 운영, 발전·송전·배전 (11개 주)",
-    "type": "stock"
-  },
-  "VTR": {
-    "name": "벤타스",
-    "sector": "의료 REIT",
-    "products": "노인 주거·의료 사무소·생명과학 건물 임대",
-    "type": "stock"
-  },
-  "CRWV": {
-    "name": "코어위브",
-    "sector": "AI 클라우드",
-    "products": "NVIDIA GPU 특화 클라우드 컴퓨팅 임대 — AI 학습·추론 인프라",
-    "type": "stock"
-  },
-  "VRSK": {
-    "name": "버리스크 애널리틱스",
-    "sector": "데이터/분석",
-    "products": "보험 데이터 분석, 리스크 평가, 금융 데이터 서비스",
-    "type": "stock"
-  },
-  "GPN": {
-    "name": "글로벌 페이먼츠",
-    "sector": "핀테크/결제",
-    "products": "기업 결제 처리·소프트웨어, POS 시스템, 국제 결제",
-    "type": "stock"
-  },
-  "MDLZ": {
-    "name": "몬델리즈 인터내셔널",
-    "sector": "식음료",
-    "products": "오레오, 리츠 크래커, 토블론 초콜릿, Cadbury, Trident 껌",
-    "type": "stock"
-  },
-  "EXPE": {
-    "name": "익스피디아",
-    "sector": "온라인 여행",
-    "products": "Expedia·Hotels.com·Vrbo·Trivago — 글로벌 온라인 여행 플랫폼",
-    "type": "stock"
-  },
-  "EXC": {
-    "name": "엑셀론",
-    "sector": "전력/유틸리티",
-    "products": "미국 동부 전력 배전 유틸리티(ComEd, PECO, BGE 등)",
-    "type": "stock"
-  },
-  "DXCM": {
-    "name": "덱스콤",
-    "sector": "의료기기",
-    "products": "연속혈당측정기(CGM) — 당뇨 환자용 실시간 혈당 모니터링",
-    "type": "stock"
-  },
-  "GEHC": {
-    "name": "GE 헬스케어 테크놀로지스",
-    "sector": "의료기기",
-    "products": "CT·MRI·X레이 영상 장비, 초음파, AI 의료 영상 진단",
-    "type": "stock"
-  },
-  "ALNY": {
-    "name": "알닐람 제약",
-    "sector": "바이오의약품",
-    "products": "RNA 간섭(RNAi) 치료제 — Onpattro, Givlaari, Oxlumo",
-    "type": "stock"
-  },
-  "CPRT": {
-    "name": "코파트",
-    "sector": "자동차 경매",
-    "products": "사고·폐차 차량 온라인 경매 플랫폼",
-    "type": "stock"
-  },
-  "LHX": {
-    "name": "L3해리스 테크놀로지스",
-    "sector": "방산/전자",
-    "products": "전술통신·전자전·우주·센서·항공전자 — 미국 방산 6위",
-    "type": "stock"
-  },
-  "FIS": {
-    "name": "피델리티 내셔널 인포메이션",
-    "sector": "금융 기술",
-    "products": "은행·결제 처리 소프트웨어, 핀테크 인프라",
-    "type": "stock"
-  },
-  "MTD": {
-    "name": "메틀러-톨레도",
-    "sector": "정밀 계측기",
-    "products": "실험실·산업용 전자저울, 정밀 측정 기기",
+  "HOOD": {
+    "name": "Robinhood Markets, Inc. Class A Common Stock",
+    "sector": "핀테크/증권",
+    "products": "주식·옵션·암호화폐 거래 앱(Robinhood), 수수료 무료 모델",
     "type": "stock"
   },
   "APP": {
@@ -1385,1702 +809,2212 @@
     "products": "모바일 앱 광고·마케팅 플랫폼(AXON AI) — 현재 순수 애드테크 기업",
     "type": "stock"
   },
-  "SHOP": {
-    "name": "쇼피파이",
-    "sector": "이커머스 플랫폼",
-    "products": "온라인 쇼핑몰 구축 플랫폼, 결제(Shopify Payments), 물류",
-    "type": "stock"
-  },
-  "ARM": {
-    "name": "ARM 홀딩스(ADR)",
-    "sector": "반도체 설계",
-    "products": "CPU·GPU 아키텍처 IP 라이선스 — 스마트폰·서버·자동차 칩 설계 표준",
-    "type": "stock"
-  },
-  "CASH": {
-    "name": "현금 및 현금성 자산",
-    "sector": "현금",
-    "products": "현금성 자산 및 담보 포지션",
-    "type": "cash"
-  },
-  "USD": {
-    "name": "현금 및 현금성 자산",
-    "sector": "현금",
-    "products": "현금성 자산 및 담보 포지션",
-    "type": "cash"
-  },
-  "A": {
-    "name": "Agilent Technologies Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "ACGL": {
-    "name": "Arch Capital Group Ltd",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "AEE": {
-    "name": "Ameren Corporation",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "AES": {
-    "name": "AES Corporation",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "AIZ": {
-    "name": "Assurant, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "AJG": {
-    "name": "Arthur J. Gallagher & Co.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "AKAM": {
-    "name": "Akamai Technologies Inc",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "ALB": {
-    "name": "Albemarle Corporation",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "ALGN": {
-    "name": "Align Technology Inc",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "ALL": {
-    "name": "The Allstate Corporation",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "ALLE": {
-    "name": "Allegion Public Limited Company",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "AMCR": {
-    "name": "Amcor plc Ordinary Shares",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "AME": {
-    "name": "Ametek, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "AMP": {
-    "name": "Ameriprise Financial, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "AON": {
-    "name": "Aon plc Class A",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "AOS": {
-    "name": "A.O. Smith Corporation",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "APA": {
-    "name": "APA Corporation Common Stock",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "APH": {
-    "name": "Amphenol Corporation",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "APO": {
-    "name": "Apollo Global Management, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "APTV": {
-    "name": "Aptiv PLC",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "ARE": {
-    "name": "Alexandria Real Estate Equities, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "ARES": {
-    "name": "Ares Management Corporation Class A Common Stock",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "ATO": {
-    "name": "Atmos Energy Corporation",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "AVY": {
-    "name": "Avery Dennison Corp.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "AWK": {
-    "name": "American Water Works Company, Inc",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "AZO": {
-    "name": "AutoZone, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "BALL": {
-    "name": "Ball Corporation",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "BAX": {
-    "name": "Baxter International Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "BBY": {
-    "name": "Best Buy Company, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "BE": {
-    "name": "Bloom Energy Corporation",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "BEN": {
-    "name": "Franklin Templeton, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "BF-B": {
-    "name": "Brown-Forman Corporation Class B",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "BG": {
-    "name": "Bunge Global SA",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "BIIB": {
-    "name": "Biogen Inc. Common Stock",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "BNY": {
-    "name": "Bank of New York Mellon Corporation",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "BR": {
-    "name": "Broadridge Financial Solutions Inc",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "BRO": {
-    "name": "Brown & Brown, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "BXP": {
-    "name": "BXP, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "CAH": {
-    "name": "Cardinal Health, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "CASY": {
-    "name": "Casey's General Stores Inc",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "CBOE": {
-    "name": "Cboe Global Markets, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "CBRE": {
-    "name": "CBRE GROUP, INC.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "CCL": {
-    "name": "Carnival Corporation Ltd.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "CDW": {
-    "name": "CDW Corporation",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "CF": {
-    "name": "CF Industries Holding, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "CFG": {
-    "name": "Citizens Financial Group, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "CHD": {
-    "name": "Church & Dwight Co., Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "CHRW": {
-    "name": "C.H. Robinson Worldwide, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "CIEN": {
-    "name": "Ciena Corporation",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "CINF": {
-    "name": "Cincinnati Financial Corp",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "CLX": {
-    "name": "Clorox Company",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "CMG": {
-    "name": "Chipotle Mexican Grill, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "CMI": {
-    "name": "Cummins Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "CMS": {
-    "name": "CMS Energy Corporation",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "CNC": {
-    "name": "Centene Corporation",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "CNP": {
-    "name": "CenterPoint Energy, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "COHR": {
-    "name": "Coherent Corp.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "COIN": {
-    "name": "Coinbase Global, Inc. Class A Common Stock",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "COO": {
-    "name": "The Cooper Companies, Inc. Common Stock",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "COR": {
-    "name": "Cencora, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "CPAY": {
-    "name": "Corpay, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "CPT": {
-    "name": "Camden Property Trust",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "CRH": {
-    "name": "CRH Public Limited Company",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "CRL": {
-    "name": "Charles River Laboratories International, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "CSGP": {
-    "name": "CoStar Group Inc",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "CVNA": {
-    "name": "Carvana Co.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "CVS": {
-    "name": "CVS HEALTH CORPORATION",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "DAL": {
-    "name": "Delta Air Lines, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "DD": {
-    "name": "DuPont de Nemours, Inc. Common Stock",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "DECK": {
-    "name": "Deckers Outdoor Corp",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "DELL": {
-    "name": "Dell Technologies Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "DG": {
-    "name": "Dollar General Corp.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "DGX": {
-    "name": "Quest Diagnostics Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "DHI": {
-    "name": "D.R. Horton Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "DLTR": {
-    "name": "Dollar Tree Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "DOC": {
-    "name": "Healthpeak Properties, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "DOV": {
-    "name": "Dover Corporation",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "DOW": {
-    "name": "Dow Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "DPZ": {
-    "name": "Domino's Pizza Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "DTE": {
-    "name": "DTE Energy Company",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "DVA": {
-    "name": "DaVita Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "DVN": {
-    "name": "Devon Energy Corporation",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "EBAY": {
-    "name": "eBay Inc",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "ECHO": {
-    "name": "EchoStar Corporation",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "ED": {
-    "name": "Consolidated Edison, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "EFX": {
-    "name": "Equifax, Incorporated",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "EG": {
-    "name": "Everest Group, Ltd.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "EIX": {
-    "name": "Edison International",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "EL": {
-    "name": "The Estee Lauder Companies Inc. Class A",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "EME": {
-    "name": "EMCOR Group, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "EQT": {
-    "name": "EQT CORP",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "ERIE": {
-    "name": "Erie Indemnity Co",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "ES": {
-    "name": "Eversource Energy",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "ESS": {
-    "name": "Essex Property Trust, Inc",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "ETR": {
-    "name": "Entergy Corporation",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "EVRG": {
-    "name": "Evergy, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "EW": {
-    "name": "Edwards Lifesciences Corp",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "EXE": {
-    "name": "Expand Energy Corporation Common Stock",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "EXPD": {
-    "name": "Expeditors International of Washington, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "EXR": {
-    "name": "Extra Space Storage, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "FDS": {
-    "name": "Factset Research Systems",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "FDXF": {
-    "name": "FedEx Freight Holding Company, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "FE": {
-    "name": "FirstEnergy Corp.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "FERG": {
-    "name": "Ferguson Enterprises Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "FFIV": {
-    "name": "F5, Inc. Common Stock",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "FICO": {
-    "name": "Fair Isaac Corporation",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "FISV": {
-    "name": "Fiserv, Inc. Common Stock",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "FITB": {
-    "name": "Fifth Third Bancorp",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "FIX": {
-    "name": "Comfort Systems USA, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "FLEX": {
-    "name": "Flex Ltd. Ordinary Shares",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "FOX": {
-    "name": "Fox Corporation Class B Common Stock",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "FOXA": {
-    "name": "Fox Corporation Class A Common Stock",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "FRT": {
-    "name": "Federal Realty Investment Trust",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "FSLR": {
-    "name": "First Solar, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "FTV": {
-    "name": "Fortive Corporation",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "GDDY": {
-    "name": "GoDaddy Inc",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "GEN": {
-    "name": "Gen Digital Inc. Common Stock",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "GL": {
-    "name": "Globe Life Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "GLW": {
-    "name": "Corning Incorporated",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "GNRC": {
-    "name": "GENERAC HOLDINGS INC",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "GPC": {
-    "name": "Genuine Parts Company",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "GRMN": {
-    "name": "Garmin Ltd",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "GWW": {
-    "name": "W.W. Grainger, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "HAL": {
-    "name": "Halliburton Company",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "HAS": {
-    "name": "Hasbro, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "HBAN": {
-    "name": "Huntington Bancshares Inc",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "HIG": {
-    "name": "The Hartford Insurance Group, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "HII": {
-    "name": "Huntington Ingalls Industries, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "HON": {
-    "name": "Honeywell International, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "HONA": {
-    "name": "Honeywell Aerospace Inc. Common Stock",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "HOOD": {
-    "name": "Robinhood Markets, Inc. Class A Common Stock",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "HPE": {
-    "name": "Hewlett Packard Enterprise Company",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "HPQ": {
-    "name": "HP Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "HRL": {
-    "name": "Hormel Foods Corporation",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "HSIC": {
-    "name": "Henry Schein Inc",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "HST": {
-    "name": "Host Hotels & Resorts, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "HUBB": {
-    "name": "Hubbell Incorporated",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "HUM": {
-    "name": "Humana Inc.",
-    "sector": "",
-    "products": "",
+  "CDNS": {
+    "name": "케이던스 디자인 시스템즈",
+    "sector": "EDA 소프트웨어",
+    "products": "반도체 설계 자동화(EDA) 소프트웨어, 칩 검증 툴, AI 설계 플랫폼",
     "type": "stock"
   },
   "HWM": {
     "name": "Howmet Aerospace Inc.",
-    "sector": "",
-    "products": "",
+    "sector": "항공우주 부품",
+    "products": "항공기 터빈 블레이드·케이스·패스너(Howmet, 보잉·에어버스 공급)",
     "type": "stock"
   },
-  "IBKR": {
-    "name": "Interactive Brokers Group, Inc. Class A Common Stock",
-    "sector": "",
-    "products": "",
+  "DDOG": {
+    "name": "데이터독",
+    "sector": "클라우드 모니터링",
+    "products": "클라우드 인프라 모니터링, APM, 로그 관리, 보안 모니터링",
     "type": "stock"
   },
-  "IEX": {
-    "name": "IDEX Corporation",
-    "sector": "",
-    "products": "",
+  "JCI": {
+    "name": "존슨 컨트롤스",
+    "sector": "건물 솔루션",
+    "products": "건물 HVAC·보안·소방 시스템 자동화, 건물 에너지 관리",
     "type": "stock"
   },
-  "IFF": {
-    "name": "International Flavors & Fragrances Inc.",
-    "sector": "",
-    "products": "",
+  "SNPS": {
+    "name": "시놉시스",
+    "sector": "EDA 소프트웨어",
+    "products": "반도체 설계 자동화(EDA) 소프트웨어, 보안 테스팅, AI 설계 도구",
     "type": "stock"
   },
-  "ILMN": {
-    "name": "Illumina Inc",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "INVH": {
-    "name": "Invitation Homes Inc. Common Stock",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "IP": {
-    "name": "International Paper Co.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "IR": {
-    "name": "Ingersoll Rand Inc. Common Stock",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "IRM": {
-    "name": "Iron Mountain Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "IVZ": {
-    "name": "Invesco LTD",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "J": {
-    "name": "Jacobs Solutions Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "JBHT": {
-    "name": "JB Hunt Transport Services Inc",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "JBL": {
-    "name": "Jabil Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "JKHY": {
-    "name": "Henry (Jack) & Associates",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "KEY": {
-    "name": "KeyCorp",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "KEYS": {
-    "name": "Keysight Technologies, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "KHC": {
-    "name": "The Kraft Heinz Company",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "KIM": {
-    "name": "Kimco Realty Corp.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "KKR": {
-    "name": "KKR & Co. Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "KMI": {
-    "name": "Kinder Morgan, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "KR": {
-    "name": "The Kroger Co.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "KVUE": {
-    "name": "Kenvue Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "L": {
-    "name": "Loews Corporation",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "LDOS": {
-    "name": "Leidos Holdings, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "LEN": {
-    "name": "Lennar Corporation Class A",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "LH": {
-    "name": "Labcorp Holdings Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "LII": {
-    "name": "Lennox International Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "LITE": {
-    "name": "Lumentum Holdings Inc. Common Stock",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "LNT": {
-    "name": "Alliant Energy Corporation Common Stock",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "LULU": {
-    "name": "lululemon athletica inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "LUV": {
-    "name": "Southwest Airlines Co.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "LVS": {
-    "name": "Las Vegas Sands Corp.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "LYB": {
-    "name": "LyondellBasell Industries N.V. Class A",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "LYV": {
-    "name": "Live Nation Entertainment Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "MAA": {
-    "name": "Mid-America Apartment Communities, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "MAS": {
-    "name": "Masco Corporation",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "MCHP": {
-    "name": "Microchip Technology Inc",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "MCO": {
-    "name": "Moody's Corporation",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "MGM": {
-    "name": "MGM RESORTS INTERNATIONAL",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "MKC": {
-    "name": "McCormick & Company, Incorporated Non-VTG CS",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "MLM": {
-    "name": "Martin Marietta Materials",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "MOS": {
-    "name": "The Mosaic Company",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "MRNA": {
-    "name": "Moderna, Inc. Common Stock",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "MRSH": {
-    "name": "Marsh",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "MSCI": {
-    "name": "MSCI, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "MTB": {
-    "name": "M&T Bank Corp.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "NCLH": {
-    "name": "Norwegian Cruise Line Holdings Ltd. Ordinary Shares",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "NDAQ": {
-    "name": "Nasdaq, Inc. Common Stock",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "NDSN": {
-    "name": "Nordson Corp",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "NI": {
-    "name": "NiSource Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "NRG": {
-    "name": "NRG Energy, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "NTAP": {
-    "name": "NetApp, Inc",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "NTRS": {
-    "name": "Northern Trust Corp",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "NVR": {
-    "name": "NVR, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "NWS": {
-    "name": "News Corporation Class B Common Stock",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "NWSA": {
-    "name": "News Corporation Class A Common Stock",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "ODFL": {
-    "name": "Old Dominion Freight Line",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "OKE": {
-    "name": "Oneok, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "OMC": {
-    "name": "Omnicom Group Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "ON": {
-    "name": "ON Semiconductor Corp",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "P": {
-    "name": "Everpure, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "PEG": {
-    "name": "Public Service Enterprise Group Incorporated",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "PFG": {
-    "name": "Principal Financial Group, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "PHM": {
-    "name": "Pultegroup, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "PKG": {
-    "name": "Packaging Corp of America",
-    "sector": "",
-    "products": "",
+  "INTU": {
+    "name": "인튜이트",
+    "sector": "금융 소프트웨어",
+    "products": "TurboTax(세금 신고), QuickBooks(회계), Credit Karma, Mailchimp",
     "type": "stock"
   },
   "PNC": {
     "name": "PNC Financial Services Group",
-    "sector": "",
-    "products": "",
+    "sector": "금융/은행",
+    "products": "소매·기업·자산관리 금융(PNC Bank, 미국 5위권 은행)",
     "type": "stock"
   },
-  "PNR": {
-    "name": "Pentair plc",
-    "sector": "",
-    "products": "",
+  "MRNA": {
+    "name": "Moderna, Inc. Common Stock",
+    "sector": "mRNA 바이오텍",
+    "products": "코로나19 백신(Spikevax), mRNA 기반 독감·RSV·암 치료제 개발",
     "type": "stock"
   },
-  "PNW": {
-    "name": "Pinnacle West Capital Corporation",
-    "sector": "",
-    "products": "",
+  "WMB": {
+    "name": "윌리엄스 컴퍼니스",
+    "sector": "에너지(미드스트림)",
+    "products": "천연가스 파이프라인·처리 인프라 — Transco 파이프라인 운영",
     "type": "stock"
   },
-  "PODD": {
-    "name": "Insulet Corporation",
-    "sector": "",
-    "products": "",
+  "AMT": {
+    "name": "아메리칸 타워",
+    "sector": "통신 인프라 REIT",
+    "products": "글로벌 무선 통신탑·안테나 설비 임대 (22만여 타워, 25개국)",
     "type": "stock"
   },
-  "PPL": {
-    "name": "PPL Corporation",
-    "sector": "",
-    "products": "",
+  "BX": {
+    "name": "블랙스톤",
+    "sector": "사모펀드/투자",
+    "products": "세계 최대 사모펀드 — 부동산·인프라·사모신용·헤지펀드(BREIT 포함)",
     "type": "stock"
   },
-  "PTC": {
-    "name": "PTC, INC",
-    "sector": "",
-    "products": "",
+  "MMM": {
+    "name": "3M",
+    "sector": "복합 제조",
+    "products": "Post-it, Scotch 테이프, 산업용 접착제·연마재, 의료용 필름·마스크",
     "type": "stock"
   },
-  "PWR": {
-    "name": "Quanta Services, Inc.",
-    "sector": "",
-    "products": "",
+  "CTAS": {
+    "name": "신타스",
+    "sector": "기업 서비스",
+    "products": "기업용 유니폼·작업복 임대·세탁, 안전 용품, 응급처치 키트",
     "type": "stock"
   },
-  "Q": {
-    "name": "Qnity Electronics, Inc.",
-    "sector": "",
-    "products": "",
+  "MCO": {
+    "name": "Moody's Corporation",
+    "sector": "신용평가/금융분석",
+    "products": "기업·국가 신용등급, 금융 리스크 분석 소프트웨어(Moody's Analytics)",
     "type": "stock"
   },
-  "RDDT": {
-    "name": "Reddit, Inc.",
-    "sector": "",
-    "products": "",
+  "UPS": {
+    "name": "UPS",
+    "sector": "물류/운송",
+    "products": "미국 최대 소화물 특송 — 항공·육상 배송, 공급망 솔루션, 의료물류",
     "type": "stock"
   },
-  "REG": {
-    "name": "Regency Centers Corporation",
-    "sector": "",
-    "products": "",
+  "EOG": {
+    "name": "EOG 리소시스",
+    "sector": "에너지(석유·가스)",
+    "products": "미국 내 최대 독립 석유 생산업체 — 퍼미안·이글포드 시추",
     "type": "stock"
   },
-  "RF": {
-    "name": "Regions Financial Corp.",
-    "sector": "",
-    "products": "",
+  "DASH": {
+    "name": "도어대시",
+    "sector": "음식 배달 플랫폼",
+    "products": "음식 배달 앱(미국 1위), Wolt(유럽), DashPass 구독",
     "type": "stock"
   },
-  "RJF": {
-    "name": "Raymond James Financial, Inc.",
-    "sector": "",
-    "products": "",
+  "REGN": {
+    "name": "리제네론 제약",
+    "sector": "바이오의약품",
+    "products": "Dupixent(아토피·천식), Eylea(황반변성), Kevzara",
     "type": "stock"
   },
-  "RL": {
-    "name": "Ralph Lauren Corporation",
-    "sector": "",
-    "products": "",
+  "TRV": {
+    "name": "트래블러스",
+    "sector": "보험",
+    "products": "미국 2위 재산보험사 — 가정·기업·특수 손해보험",
     "type": "stock"
   },
-  "RMD": {
-    "name": "ResMed Inc.",
-    "sector": "",
-    "products": "",
+  "SHW": {
+    "name": "셔윈-윌리엄스",
+    "sector": "페인트/코팅",
+    "products": "미국 최대 페인트·코팅제 제조판매 (Sherwin-Williams·Valspar)",
     "type": "stock"
   },
-  "ROL": {
-    "name": "Rollins, Inc.",
-    "sector": "",
-    "products": "",
+  "MDLZ": {
+    "name": "몬델리즈 인터내셔널",
+    "sector": "식음료",
+    "products": "오레오, 리츠 크래커, 토블론 초콜릿, Cadbury, Trident 껌",
     "type": "stock"
   },
-  "RSG": {
-    "name": "Republic Services Inc.",
-    "sector": "",
-    "products": "",
+  "ECL": {
+    "name": "에코랩",
+    "sector": "산업용 청소/위생",
+    "products": "식품·병원·산업용 세정·살균·수처리 솔루션 전문",
     "type": "stock"
   },
-  "RVTY": {
-    "name": "Revvity, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "SBAC": {
-    "name": "SBA Communications Corp",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "SJM": {
-    "name": "The J.M. Smucker Company",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "SKYD": {
-    "name": "Skydance Corporation",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "SMCI": {
-    "name": "Super Micro Computer, Inc. Common Stock",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "SNA": {
-    "name": "Snap-on Incorporated",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "SOLV": {
-    "name": "Solventum Corporation",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "STE": {
-    "name": "STERIS plc",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "STLD": {
-    "name": "Steel Dynamics Inc",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "STT": {
-    "name": "State Street Corporation",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "STZ": {
-    "name": "Constellation Brands, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "SW": {
-    "name": "Smurfit Westrock plc",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "SWK": {
-    "name": "Stanley Black & Decker, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "SWKS": {
-    "name": "Skyworks Solutions Inc",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "SYF": {
-    "name": "SYNCHRONY FINANCIAL",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "TDG": {
-    "name": "TransDigm Group Incorporated",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "TDY": {
-    "name": "Teledyne Technologies Incorporated",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "TECH": {
-    "name": "Bio-Techne Corp.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "TEL": {
-    "name": "TE Connectivity plc",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "TKO": {
-    "name": "TKO Group Holdings, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "TPL": {
-    "name": "Texas Pacific Land Corporation",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "TPR": {
-    "name": "Tapestry, Inc. Common Stock",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "TRGP": {
-    "name": "Targa Resources Corp.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "TRMB": {
-    "name": "Trimble Inc. Common Stock",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "TROW": {
-    "name": "T Rowe Price Group Inc",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "TSCO": {
-    "name": "Tractor Supply Co",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "TSN": {
-    "name": "Tyson Foods, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "TT": {
-    "name": "Trane Technologies plc",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "TWLO": {
-    "name": "Twilio Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "TXT": {
-    "name": "Textron, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "TYL": {
-    "name": "Tyler Technologies, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "UAL": {
-    "name": "United Airlines Holdings, Inc. Common Stock",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "UBER": {
-    "name": "Uber Technologies, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "UDR": {
-    "name": "UDR, Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "UHS": {
-    "name": "Universal Health Services, Inc. Class B",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "ULTA": {
-    "name": "Ulta Beauty, Inc. Common Stock",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "VEEV": {
-    "name": "Veeva Systems Inc.",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "VICI": {
-    "name": "VICI Properties Inc. Common Stock",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "VLTO": {
-    "name": "Veralto Corporation",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "VMC": {
-    "name": "Vulcan Materials Company(Holding Company)",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "VMRK": {
-    "name": "Vivmark Residential",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "VRSN": {
-    "name": "VeriSign Inc",
-    "sector": "",
-    "products": "",
+  "CI": {
+    "name": "시그나",
+    "sector": "헬스케어 보험",
+    "products": "건강보험(Cigna), 약국혜택관리(Express Scripts), 글로벌 보험",
     "type": "stock"
   },
   "VRT": {
     "name": "Vertiv Holdings Co Class A Common Stock",
-    "sector": "",
-    "products": "",
+    "sector": "데이터센터 인프라",
+    "products": "데이터센터 전력·냉각 시스템(UPS, PDU, 액침냉각 — Vertiv)",
+    "type": "stock"
+  },
+  "HLT": {
+    "name": "힐튼 월드와이드",
+    "sector": "숙박/호텔",
+    "products": "Hilton·Hampton Inn·DoubleTree·Waldorf Astoria 등 호텔 브랜드",
+    "type": "stock"
+  },
+  "CMCSA": {
+    "name": "컴캐스트",
+    "sector": "미디어/통신",
+    "products": "Xfinity 케이블·인터넷, NBCUniversal 방송·영화, Peacock",
+    "type": "stock"
+  },
+  "ITW": {
+    "name": "일리노이 툴 웍스",
+    "sector": "산업용 제조",
+    "products": "용접 장비(Hobart), 자동차 부품, 패스너·폴리머 소재, 식품 장비",
+    "type": "stock"
+  },
+  "KKR": {
+    "name": "KKR & Co. Inc.",
+    "sector": "사모펀드/대체투자",
+    "products": "사모펀드, 인프라, 부동산, 크레딧, 헤지펀드 투자(KKR & Co.)",
+    "type": "stock"
+  },
+  "MSI": {
+    "name": "모토로라 솔루션스",
+    "sector": "통신 기술/방산",
+    "products": "경찰·소방용 무선통신 장비, 영상 보안(Avigilon), 소프트웨어",
+    "type": "stock"
+  },
+  "ROST": {
+    "name": "로스 스토어즈",
+    "sector": "유통/소매",
+    "products": "미국 오프프라이스 의류·홈 제품 할인 소매 체인",
+    "type": "stock"
+  },
+  "KMI": {
+    "name": "Kinder Morgan, Inc.",
+    "sector": "에너지 파이프라인",
+    "products": "천연가스 파이프라인·터미널·저장 시설 운영(Kinder Morgan)",
+    "type": "stock"
+  },
+  "CL": {
+    "name": "콜게이트-팜올리브",
+    "sector": "생활용품",
+    "products": "Colgate 치약·칫솔, Palmolive 주방세제, Hill's 반려동물 식품",
+    "type": "stock"
+  },
+  "LITE": {
+    "name": "Lumentum Holdings Inc. Common Stock",
+    "sector": "광학/포토닉스",
+    "products": "광통신용 레이저·트랜시버, 3D 센싱 VCSEL, 레이저 부품(Lumentum)",
+    "type": "stock"
+  },
+  "RCL": {
+    "name": "로열 캐리비안",
+    "sector": "크루즈",
+    "products": "로열 캐리비안·Celebrity·Silversea 크루즈 선사",
+    "type": "stock"
+  },
+  "GM": {
+    "name": "제너럴 모터스",
+    "sector": "자동차",
+    "products": "Chevrolet·GMC·Cadillac·Buick, EV(Ultium 플랫폼), Cruise 자율주행",
+    "type": "stock"
+  },
+  "NSC": {
+    "name": "노퍽 서던",
+    "sector": "철도 물류",
+    "products": "미국 동부 화물 철도 — 석탄·자동차·화학·인터모달",
+    "type": "stock"
+  },
+  "NOC": {
+    "name": "노스럽 그루먼",
+    "sector": "방산/우주",
+    "products": "B-21 폭격기, 위성·우주 시스템, 사이버 보안, 미사일 방어",
+    "type": "stock"
+  },
+  "SLB": {
+    "name": "슐럼버거",
+    "sector": "에너지 서비스",
+    "products": "유정 시추·완결 서비스 세계 1위, 디지털 유전 솔루션",
+    "type": "stock"
+  },
+  "CMI": {
+    "name": "Cummins Inc.",
+    "sector": "엔진/발전기",
+    "products": "디젤·천연가스·수소 엔진, 발전기, 배기필터(Cummins)",
+    "type": "stock"
+  },
+  "HPE": {
+    "name": "Hewlett Packard Enterprise Company",
+    "sector": "IT 인프라/클라우드",
+    "products": "서버(ProLiant), 스토리지, 네트워크(Aruba), 하이브리드클라우드(GreenLake)",
+    "type": "stock"
+  },
+  "ORLY": {
+    "name": "오라일리 자동차",
+    "sector": "자동차 부품 유통",
+    "products": "자동차 부품·액세서리 소매 체인 — DIY 및 정비소용",
+    "type": "stock"
+  },
+  "RSG": {
+    "name": "Republic Services Inc.",
+    "sector": "폐기물/환경 서비스",
+    "products": "쓰레기 수거·이송·매립·재활용(Republic Services, 미국 2위)",
+    "type": "stock"
+  },
+  "TGT": {
+    "name": "타겟",
+    "sector": "유통/소매",
+    "products": "미국 대형 할인 소매체인 — 자체 브랜드(Good & Gather 등), 동네 밀착 매장",
+    "type": "stock"
+  },
+  "FDX": {
+    "name": "페덱스",
+    "sector": "물류/운송",
+    "products": "글로벌 특급 배송, 화물 운송, 공급망 관리",
+    "type": "stock"
+  },
+  "AEP": {
+    "name": "아메리칸 일렉트릭 파워",
+    "sector": "전력/유틸리티",
+    "products": "미국 중부·남부 전력망 운영, 발전·송전·배전 (11개 주)",
+    "type": "stock"
+  },
+  "HON": {
+    "name": "Honeywell International, Inc.",
+    "sector": "산업/항공우주/빌딩기술",
+    "products": "항공우주 부품·엔진, 빌딩자동화(Honeywell), 공정제어, 안전장비",
+    "type": "stock"
+  },
+  "APD": {
+    "name": "에어 프로덕츠 앤 케미컬스",
+    "sector": "산업용 가스",
+    "products": "수소·산소·질소·아르곤 산업가스, 청정수소 인프라 투자",
+    "type": "stock"
+  },
+  "SPG": {
+    "name": "사이먼 프로퍼티 그룹",
+    "sector": "쇼핑몰 REIT",
+    "products": "미국 최대 쇼핑몰 REIT — 프리미엄 아울렛·몰 운영",
+    "type": "stock"
+  },
+  "APO": {
+    "name": "Apollo Global Management, Inc.",
+    "sector": "대체투자/자산관리",
+    "products": "사모펀드·크레딧·부동산 투자(Apollo Global Management)",
+    "type": "stock"
+  },
+  "DLR": {
+    "name": "디지털 리얼티",
+    "sector": "데이터센터 REIT",
+    "products": "글로벌 데이터센터 임대·운영",
+    "type": "stock"
+  },
+  "CVNA": {
+    "name": "Carvana Co.",
+    "sector": "자동차/이커머스",
+    "products": "온라인 중고차 구매·판매 플랫폼, 자동차 금융, 차량 배달",
+    "type": "stock"
+  },
+  "BE": {
+    "name": "Bloom Energy Corporation",
+    "sector": "청정에너지/연료전지",
+    "products": "천연가스·수소 연료전지 발전 시스템(Bloom Energy Server)",
+    "type": "stock"
+  },
+  "COR": {
+    "name": "Cencora, Inc.",
+    "sector": "의약품 유통",
+    "products": "처방약·특수의약품 도매 유통, 3PL 약국서비스(Cencora, 구 AmerisourceBergen)",
+    "type": "stock"
+  },
+  "MET": {
+    "name": "메트라이프",
+    "sector": "보험",
+    "products": "생명·건강·연금 보험 — 미국 및 해외 그룹 보험",
+    "type": "stock"
+  },
+  "AJG": {
+    "name": "Arthur J. Gallagher & Co.",
+    "sector": "보험중개/리스크관리",
+    "products": "기업 보험중개, 리스크 컨설팅, 퇴직연금 서비스",
+    "type": "stock"
+  },
+  "URI": {
+    "name": "유나이티드 렌탈스",
+    "sector": "장비 임대",
+    "products": "미국 최대 건설·산업 장비 임대 — 크레인·굴착기·리프트 등",
+    "type": "stock"
+  },
+  "BSX": {
+    "name": "보스턴 사이언티픽",
+    "sector": "의료기기",
+    "products": "심장 스텐트·전기생리학 기기, 내시경·뇨관 기기, 뇌신경 자극 기기",
+    "type": "stock"
+  },
+  "TDG": {
+    "name": "TransDigm Group Incorporated",
+    "sector": "항공우주 부품",
+    "products": "고부가가치 항공기 교체부품 독점 생산·공급(TransDigm)",
+    "type": "stock"
+  },
+  "GWW": {
+    "name": "W.W. Grainger, Inc.",
+    "sector": "산업용 MRO 유통",
+    "products": "산업용 소모품·공구·안전장비 유통(W.W. Grainger, 미국 1위)",
+    "type": "stock"
+  },
+  "OXY": {
+    "name": "옥시덴탈 페트롤리엄",
+    "sector": "에너지(석유·가스)",
+    "products": "퍼미안 분지 원유 생산, 화학(OxyChem), 탄소 포집(Carbon Engineering)",
+    "type": "stock"
+  },
+  "TRGP": {
+    "name": "Targa Resources Corp.",
+    "sector": "에너지 미드스트림",
+    "products": "천연가스 수집·처리·NGL 분리·파이프라인 운영(Targa Resources)",
+    "type": "stock"
+  },
+  "AON": {
+    "name": "Aon plc Class A",
+    "sector": "보험중개/리스크컨설팅",
+    "products": "상업 보험중개, 재보험, 인재·퇴직연금 컨설팅(Aon Hewitt)",
+    "type": "stock"
+  },
+  "TEL": {
+    "name": "TE Connectivity plc",
+    "sector": "전자부품/커넥터",
+    "products": "자동차·산업·통신용 커넥터·센서·안테나(TE Connectivity)",
+    "type": "stock"
+  },
+  "ALL": {
+    "name": "The Allstate Corporation",
+    "sector": "손해보험",
+    "products": "자동차·주택 보험(Allstate), 특수보험(Esurance, Encompass)",
+    "type": "stock"
+  },
+  "AFL": {
+    "name": "아플락",
+    "sector": "보험",
+    "products": "보충 건강·생명보험 전문 — 단기 소득 보전 보험 (미국·일본)",
+    "type": "stock"
+  },
+  "MPWR": {
+    "name": "모놀리식 파워 시스템즈",
+    "sector": "반도체",
+    "products": "고효율 전력 관리 IC — AI 서버 전원 공급, 자동차·산업용",
+    "type": "stock"
+  },
+  "FAST": {
+    "name": "패스트너 컴퍼니",
+    "sector": "산업용 유통",
+    "products": "볼트·나사 등 산업용 체결 부품 및 공구 유통 체인",
+    "type": "stock"
+  },
+  "OKE": {
+    "name": "Oneok, Inc.",
+    "sector": "에너지 파이프라인",
+    "products": "천연가스 수집·처리·운반 파이프라인, NGL(ONEOK)",
+    "type": "stock"
+  },
+  "CAH": {
+    "name": "Cardinal Health, Inc.",
+    "sector": "의약품/의료기기 유통",
+    "products": "처방약·의료기기 도매 유통, 핵의학 서비스(Cardinal Health)",
+    "type": "stock"
+  },
+  "PCAR": {
+    "name": "패카(PACCAR)",
+    "sector": "상용차 제조",
+    "products": "Kenworth, Peterbilt, DAF 트럭 브랜드, 금융·부품·서비스",
+    "type": "stock"
+  },
+  "NXPI": {
+    "name": "NXP 반도체",
+    "sector": "반도체",
+    "products": "자동차용 반도체(ADAS·전기차), 산업용 MCU, NFC 칩",
+    "type": "stock"
+  },
+  "NUE": {
+    "name": "뉴코",
+    "sector": "철강",
+    "products": "미국 최대 전기로(EAF) 철강 메이커 — 재활용 고철 기반 친환경 철강",
+    "type": "stock"
+  },
+  "TFC": {
+    "name": "트루이스트 파이낸셜",
+    "sector": "금융",
+    "products": "미국 남동부 지역은행 — 소매·기업금융 (BB&T·SunTrust 합병)",
+    "type": "stock"
+  },
+  "KEYS": {
+    "name": "Keysight Technologies, Inc.",
+    "sector": "전자 계측장비",
+    "products": "오실로스코프·신호발생기·네트워크분석기, 5G·반도체 테스트(Keysight)",
+    "type": "stock"
+  },
+  "AME": {
+    "name": "Ametek, Inc.",
+    "sector": "전자계측/산업기기",
+    "products": "전자계측 장비(EIG), 전기기계 장비(EMG), 항공우주·의료용 센서",
+    "type": "stock"
+  },
+  "PSA": {
+    "name": "퍼블릭 스토리지",
+    "sector": "자가창고 REIT",
+    "products": "미국 최대 셀프 스토리지 시설 운영 (3,000여 개소)",
+    "type": "stock"
+  },
+  "FANG": {
+    "name": "다이아몬드백 에너지",
+    "sector": "에너지(석유·가스)",
+    "products": "미국 퍼미안 분지 원유·천연가스 시추 및 생산",
+    "type": "stock"
+  },
+  "DVN": {
+    "name": "Devon Energy Corporation",
+    "sector": "에너지(석유·가스)",
+    "products": "퍼미안·이글포드·바켄·파우더리버 석유가스 탐사·생산(Devon Energy)",
+    "type": "stock"
+  },
+  "D": {
+    "name": "도미니언 에너지",
+    "sector": "전력/유틸리티",
+    "products": "미국 동부 전력·천연가스 공급 (버지니아·사우스캐롤라이나 등)",
+    "type": "stock"
+  },
+  "CRH": {
+    "name": "CRH Public Limited Company",
+    "sector": "건설자재",
+    "products": "시멘트·골재·레디믹스 콘크리트·아스팔트(CRH, 세계 최대 건설자재사)",
+    "type": "stock"
+  },
+  "BKR": {
+    "name": "베이커 휴즈",
+    "sector": "에너지 서비스",
+    "products": "유전 시추 장비·서비스, LNG 장비, 산업용 터빈·압축기",
+    "type": "stock"
+  },
+  "NKE": {
+    "name": "나이키",
+    "sector": "스포츠용품",
+    "products": "스포츠화·의류·용품 세계 1위 — Air Jordan, Converse, Nike Direct(DTC) 전략",
+    "type": "stock"
+  },
+  "GRMN": {
+    "name": "Garmin Ltd",
+    "sector": "GPS/웨어러블/항공전자",
+    "products": "GPS 내비게이션, Forerunner·Fenix 스마트워치, 항공·해양 전자기기(Garmin)",
+    "type": "stock"
+  },
+  "SRE": {
+    "name": "셈프라",
+    "sector": "에너지/유틸리티",
+    "products": "캘리포니아 전력·가스(SDG&E·SoCalGas), LNG 수출(Port Arthur LNG)",
+    "type": "stock"
+  },
+  "EBAY": {
+    "name": "eBay Inc",
+    "sector": "이커머스",
+    "products": "글로벌 온라인 마켓플레이스 — 중고품·수집품·신품 경매·즉시구매",
+    "type": "stock"
+  },
+  "O": {
+    "name": "리얼티 인컴",
+    "sector": "소매 REIT",
+    "products": "월배당 REIT — 편의점·약국·패스트푸드 점포 임대 (15,450여 자산)",
+    "type": "stock"
+  },
+  "BDX": {
+    "name": "베킨슨 디킨슨",
+    "sector": "의료기기",
+    "products": "주사기·채혈 기기, 의료 진단기기, 약물 전달 시스템",
+    "type": "stock"
+  },
+  "HONA": {
+    "name": "Honeywell Aerospace Inc. Common Stock",
+    "sector": "항공우주/방산",
+    "products": "항공기 엔진부품·항공전자(APU, 통신·항법 시스템 — Honeywell Aerospace)",
+    "type": "stock"
+  },
+  "NDAQ": {
+    "name": "Nasdaq, Inc. Common Stock",
+    "sector": "금융거래소/기술",
+    "products": "주식·파생상품 거래소, 시장 기술 솔루션, 금융 데이터(Nasdaq)",
     "type": "stock"
   },
   "VST": {
     "name": "Vistra Corp.",
-    "sector": "",
-    "products": "",
+    "sector": "전력/에너지",
+    "products": "가스·원자력·재생에너지 발전 및 소매 전력(Vistra, 텍사스 중심)",
     "type": "stock"
   },
-  "VTRS": {
-    "name": "Viatris Inc. Common Stock",
-    "sector": "",
-    "products": "",
+  "TER": {
+    "name": "테라다인",
+    "sector": "반도체 장비",
+    "products": "반도체 테스트 장비(ATE), 로봇 자동화(Universal Robots)",
     "type": "stock"
   },
-  "VYLR": {
-    "name": "Vylor Inc.",
-    "sector": "",
-    "products": "",
+  "FIX": {
+    "name": "Comfort Systems USA, Inc.",
+    "sector": "HVAC/기계전기 시공",
+    "products": "냉난방공조·배관·전기 설계·시공·서비스(Comfort Systems USA)",
+    "type": "stock"
+  },
+  "VEEV": {
+    "name": "Veeva Systems Inc.",
+    "sector": "생명과학 SaaS",
+    "products": "제약·바이오용 CRM·규제 문서·임상 데이터 클라우드(Veeva Systems)",
+    "type": "stock"
+  },
+  "AZO": {
+    "name": "AutoZone, Inc.",
+    "sector": "자동차부품 소매",
+    "products": "자동차 교체 부품·액세서리·용품 소매(AutoZone 7,000여 매장)",
+    "type": "stock"
+  },
+  "ADSK": {
+    "name": "오토데스크",
+    "sector": "설계 소프트웨어",
+    "products": "AutoCAD, Revit(BIM), Maya(3D 애니메이션), Fusion 360",
+    "type": "stock"
+  },
+  "ETR": {
+    "name": "Entergy Corporation",
+    "sector": "전력 유틸리티",
+    "products": "루이지애나·아칸소·텍사스·미시시피 전력 공급(Entergy)",
+    "type": "stock"
+  },
+  "EW": {
+    "name": "Edwards Lifesciences Corp",
+    "sector": "의료기기/심장",
+    "products": "경카테터 대동맥판막(TAVR, Sapien), 중증 환자 혈역학 모니터링(Edwards)",
+    "type": "stock"
+  },
+  "DAL": {
+    "name": "Delta Air Lines, Inc.",
+    "sector": "항공",
+    "products": "국내외 여객·화물 항공(Delta, Delta Connection 파트너 네트워크)",
+    "type": "stock"
+  },
+  "HUM": {
+    "name": "Humana Inc.",
+    "sector": "건강보험/의료서비스",
+    "products": "Medicare Advantage, Medicaid, 홈케어·약국 혜택 관리(Humana)",
+    "type": "stock"
+  },
+  "F": {
+    "name": "포드 모터",
+    "sector": "자동차",
+    "products": "Ford F-150·Mustang·Explorer, EV(Mustang Mach-E·F-150 Lightning), Ford Pro 상용",
+    "type": "stock"
+  },
+  "A": {
+    "name": "Agilent Technologies Inc.",
+    "sector": "생명과학/분석장비",
+    "products": "HPLC·질량분석기·원자흡수분광기, 유전체·세포분석 시스템, 실험실 소모품",
     "type": "stock"
   },
   "WAB": {
     "name": "Wabtec Inc.",
-    "sector": "",
-    "products": "",
+    "sector": "철도 장비",
+    "products": "기관차·화차 브레이크·디지털 솔루션, 철도 신호(Wabtec)",
     "type": "stock"
   },
-  "WAT": {
-    "name": "Waters Corp",
-    "sector": "",
-    "products": "",
+  "VYLR": {
+    "name": "Vylor Inc.",
+    "sector": "산업/기술",
+    "products": "산업 기술 솔루션(Vylor Inc.)",
     "type": "stock"
   },
-  "WEC": {
-    "name": "WEC Energy Group, Inc.",
-    "sector": "",
-    "products": "",
+  "PYPL": {
+    "name": "페이팔 홀딩스",
+    "sector": "핀테크/결제",
+    "products": "PayPal 온라인 결제, Venmo 개인 송금, Braintree, BNPL",
     "type": "stock"
   },
-  "WRB": {
-    "name": "W.R. Berkley Corporation",
-    "sector": "",
-    "products": "",
+  "VMRK": {
+    "name": "Vivmark Residential",
+    "sector": "주거 부동산",
+    "products": "주거용 부동산 임대·관리(Vivmark Residential)",
     "type": "stock"
   },
-  "WSM": {
-    "name": "Williams-Sonoma, Inc.",
-    "sector": "",
-    "products": "",
+  "XEL": {
+    "name": "엑셀 에너지",
+    "sector": "전력/유틸리티",
+    "products": "미국 중서부·남서부 전력·천연가스 공급 (풍력 발전 비중 높음)",
     "type": "stock"
   },
-  "WST": {
-    "name": "West Pharmaceutical Services, Inc.",
-    "sector": "",
-    "products": "",
+  "ROK": {
+    "name": "로크웰 오토메이션",
+    "sector": "산업 자동화",
+    "products": "PLC·HMI 자동화 컨트롤러, 디지털 전환 솔루션(FactoryTalk)",
     "type": "stock"
   },
-  "WTW": {
-    "name": "Willis Towers Watson Public Limited Company Ordinary Shares",
-    "sector": "",
-    "products": "",
+  "CIEN": {
+    "name": "Ciena Corporation",
+    "sector": "광통신 네트워크",
+    "products": "광통신 네트워크 장비(웨이브로직 칩), 소프트웨어 정의 네트워킹",
     "type": "stock"
   },
-  "WY": {
-    "name": "Weyerhaeuser Company",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "WYNN": {
-    "name": "Wynn Resorts Ltd",
-    "sector": "",
-    "products": "",
-    "type": "stock"
-  },
-  "XYL": {
-    "name": "Xylem Inc",
-    "sector": "",
-    "products": "",
+  "KDP": {
+    "name": "큐리그 닥터페퍼",
+    "sector": "식음료",
+    "products": "닥터페퍼·캐나다 드라이·스냅플 음료, Keurig 커피머신",
     "type": "stock"
   },
   "XYZ": {
     "name": "Block, Inc.",
-    "sector": "",
-    "products": "",
+    "sector": "핀테크/결제",
+    "products": "Square POS·결제 솔루션, Cash App 모바일 금융, Afterpay 후불결제(Block)",
+    "type": "stock"
+  },
+  "LHX": {
+    "name": "L3해리스 테크놀로지스",
+    "sector": "방산/전자",
+    "products": "전술통신·전자전·우주·센서·항공전자 — 미국 방산 6위",
+    "type": "stock"
+  },
+  "FITB": {
+    "name": "Fifth Third Bancorp",
+    "sector": "금융/은행",
+    "products": "소매·기업·모기지 금융(Fifth Third Bank, 중서부 중심)",
+    "type": "stock"
+  },
+  "COIN": {
+    "name": "Coinbase Global, Inc. Class A Common Stock",
+    "sector": "암호화폐/핀테크",
+    "products": "비트코인·이더리움 등 암호화폐 거래소, 기관 커스터디, Base 블록체인",
+    "type": "stock"
+  },
+  "COHR": {
+    "name": "Coherent Corp.",
+    "sector": "레이저/광학/반도체 소재",
+    "products": "고출력 레이저, 광통신 부품, 반도체·디스플레이 제조용 소재(Coherent)",
+    "type": "stock"
+  },
+  "WDAY": {
+    "name": "워크데이",
+    "sector": "HR/ERP 소프트웨어",
+    "products": "클라우드 기반 HR·재무 관리·급여 ERP 소프트웨어",
+    "type": "stock"
+  },
+  "STT": {
+    "name": "State Street Corporation",
+    "sector": "금융/수탁서비스",
+    "products": "기관 자산 수탁·결제, ETF 운용(SPDR), 외환(State Street)",
+    "type": "stock"
+  },
+  "CARR": {
+    "name": "캐리어 글로벌",
+    "sector": "냉난방/냉동",
+    "products": "에어컨·히트펌프(Carrier), 냉동 시스템, 화재·보안(Chubb Fire)",
+    "type": "stock"
+  },
+  "EXC": {
+    "name": "엑셀론",
+    "sector": "전력/유틸리티",
+    "products": "미국 동부 전력 배전 유틸리티(ComEd, PECO, BGE 등)",
+    "type": "stock"
+  },
+  "AMP": {
+    "name": "Ameriprise Financial, Inc.",
+    "sector": "자산관리/금융서비스",
+    "products": "투자자문·자산관리(Ameriprise Financial), Columbia Threadneedle 펀드",
+    "type": "stock"
+  },
+  "VTR": {
+    "name": "벤타스",
+    "sector": "의료 REIT",
+    "products": "노인 주거·의료 사무소·생명과학 건물 임대",
+    "type": "stock"
+  },
+  "IQV": {
+    "name": "IQVIA",
+    "sector": "의료 데이터/CRO",
+    "products": "임상시험 수탁(CRO), 의약품 데이터 분석, 리얼월드 에비던스",
+    "type": "stock"
+  },
+  "FERG": {
+    "name": "Ferguson Enterprises Inc.",
+    "sector": "배관/HVAC 유통",
+    "products": "배관·난방·공조·방화 제품 유통(Ferguson, 북미 선두)",
+    "type": "stock"
+  },
+  "IDXX": {
+    "name": "IDEXX 래버러토리스",
+    "sector": "동물 의료 진단",
+    "products": "반려동물·가축용 진단 장비 및 시약, 수의학 소프트웨어",
+    "type": "stock"
+  },
+  "WAT": {
+    "name": "Waters Corp",
+    "sector": "분석 기기/과학장비",
+    "products": "HPLC·질량분석기, 크로마토그래피 소모품, 데이터 소프트웨어(Waters)",
+    "type": "stock"
+  },
+  "AIG": {
+    "name": "AIG",
+    "sector": "보험",
+    "products": "글로벌 대형 보험사 — 재산·상해·생명·의료 보험 (80개국)",
+    "type": "stock"
+  },
+  "ED": {
+    "name": "Consolidated Edison, Inc.",
+    "sector": "전력/가스 유틸리티",
+    "products": "뉴욕시·웨체스터 전력·가스 공급(Consolidated Edison)",
+    "type": "stock"
+  },
+  "MSCI": {
+    "name": "MSCI, Inc.",
+    "sector": "금융 지수/데이터",
+    "products": "MSCI World·EM 지수, ESG 평가, 부동산·팩터 분석(MSCI Inc.)",
+    "type": "stock"
+  },
+  "P": {
+    "name": "Everpure, Inc.",
+    "sector": "수처리",
+    "products": "상업·산업용 정수 필터 시스템(Everpure)",
     "type": "stock"
   },
   "YUM": {
     "name": "Yum! Brands, Inc.",
-    "sector": "",
-    "products": "",
+    "sector": "레스토랑/프랜차이즈",
+    "products": "KFC·Pizza Hut·Taco Bell 프랜차이즈 운영·라이선스(Yum! Brands)",
+    "type": "stock"
+  },
+  "SYY": {
+    "name": "시스코 코퍼레이션",
+    "sector": "식품 유통",
+    "products": "미국 최대 식품·식자재 도매 유통 (음식점·병원·학교 등)",
+    "type": "stock"
+  },
+  "MCHP": {
+    "name": "Microchip Technology Inc",
+    "sector": "반도체",
+    "products": "마이크로컨트롤러(PIC·AVR), 아날로그 IC, FPGA(Microchip Technology)",
+    "type": "stock"
+  },
+  "NTAP": {
+    "name": "NetApp, Inc",
+    "sector": "데이터 스토리지/클라우드",
+    "products": "하이브리드 클라우드 스토리지, 데이터 관리 소프트웨어(NetApp)",
+    "type": "stock"
+  },
+  "PRU": {
+    "name": "프루덴셜 파이낸셜",
+    "sector": "보험/투자",
+    "products": "생명보험, 개인·기업 은퇴·자산관리",
+    "type": "stock"
+  },
+  "ILMN": {
+    "name": "Illumina Inc",
+    "sector": "유전체/바이오텍",
+    "products": "DNA 시퀀싱 장비(NextSeq·NovaSeq), 소모품, 다중 유전자 분석(Illumina)",
+    "type": "stock"
+  },
+  "ADM": {
+    "name": "아처 대니얼스 미들랜드",
+    "sector": "농산물 가공",
+    "products": "곡물·대두·에탄올 가공 유통, 동물 영양, 산업용 전분",
+    "type": "stock"
+  },
+  "LYV": {
+    "name": "Live Nation Entertainment Inc.",
+    "sector": "공연/이벤트/티켓",
+    "products": "콘서트·페스티벌 기획, Ticketmaster 티켓 판매, 공연장 운영(Live Nation)",
+    "type": "stock"
+  },
+  "PAYX": {
+    "name": "페이첵스",
+    "sector": "HR/급여 소프트웨어",
+    "products": "중소기업 급여 처리·HR 관리·세금 신고 아웃소싱",
+    "type": "stock"
+  },
+  "PCG": {
+    "name": "PG&E 코퍼레이션",
+    "sector": "전력/유틸리티",
+    "products": "캘리포니아 북부 전력·가스 공급 (PG&E 자회사)",
+    "type": "stock"
+  },
+  "DHI": {
+    "name": "D.R. Horton Inc.",
+    "sector": "주택건설",
+    "products": "미국 최대 단독주택 건설업체(D.R. Horton, Emerald Homes, Express Homes)",
+    "type": "stock"
+  },
+  "ODFL": {
+    "name": "Old Dominion Freight Line",
+    "sector": "화물운송",
+    "products": "미국 전국 소량화물(LTL) 트럭 운송(Old Dominion Freight Line)",
+    "type": "stock"
+  },
+  "CBRE": {
+    "name": "CBRE GROUP, INC.",
+    "sector": "상업부동산 서비스",
+    "products": "부동산 중개·임대·투자관리·시설관리·가치평가(CBRE Group)",
+    "type": "stock"
+  },
+  "TTWO": {
+    "name": "Take-Two 인터랙티브",
+    "sector": "비디오게임",
+    "products": "GTA 시리즈, Red Dead Redemption, NBA 2K, Borderlands",
+    "type": "stock"
+  },
+  "CMG": {
+    "name": "Chipotle Mexican Grill, Inc.",
+    "sector": "레스토랑",
+    "products": "멕시칸 패스트캐주얼 레스토랑 체인(Chipotle Mexican Grill 3,500여 점)",
+    "type": "stock"
+  },
+  "ROP": {
+    "name": "로퍼 테크놀로지스",
+    "sector": "소프트웨어/산업",
+    "products": "틈새 B2B 소프트웨어(의료·교육·물류·에너지), 산업용 기술 제품",
+    "type": "stock"
+  },
+  "EL": {
+    "name": "The Estee Lauder Companies Inc. Class A",
+    "sector": "럭셔리 화장품/뷰티",
+    "products": "Estee Lauder, MAC, Clinique, La Mer, Jo Malone 등 25개 이상 브랜드",
+    "type": "stock"
+  },
+  "KR": {
+    "name": "The Kroger Co.",
+    "sector": "슈퍼마켓/식품소매",
+    "products": "슈퍼마켓 체인 운영(Kroger, Fred Meyer, Ralphs, Harris Teeter)",
+    "type": "stock"
+  },
+  "IBKR": {
+    "name": "Interactive Brokers Group, Inc. Class A Common Stock",
+    "sector": "증권/핀테크",
+    "products": "기관·개인 투자자 대상 다자산 온라인 브로커리지(Interactive Brokers)",
+    "type": "stock"
+  },
+  "TWLO": {
+    "name": "Twilio Inc.",
+    "sector": "클라우드 커뮤니케이션",
+    "products": "SMS·음성·이메일·인증 API 플랫폼, CDP(Segment — Twilio)",
+    "type": "stock"
+  },
+  "HIG": {
+    "name": "The Hartford Insurance Group, Inc.",
+    "sector": "손해/생명보험",
+    "products": "상업·개인 손해보험, 단체 생명·장애보험, 뮤추얼펀드(The Hartford)",
+    "type": "stock"
+  },
+  "KVUE": {
+    "name": "Kenvue Inc.",
+    "sector": "소비자 건강",
+    "products": "타이레놀, 밴드에이드, 리스테린, Neutrogena(Kenvue, J&J 소비자부문 2023 분사)",
+    "type": "stock"
+  },
+  "MLM": {
+    "name": "Martin Marietta Materials",
+    "sector": "건설골재/시멘트",
+    "products": "쇄석·모래·자갈·시멘트 생산(Martin Marietta Materials, 미국 2위)",
+    "type": "stock"
+  },
+  "PEG": {
+    "name": "Public Service Enterprise Group Incorporated",
+    "sector": "전력/가스 유틸리티",
+    "products": "뉴저지 전력·가스 공급(PSE&G), 재생에너지 발전(PSEG)",
+    "type": "stock"
+  },
+  "WEC": {
+    "name": "WEC Energy Group, Inc.",
+    "sector": "전력/가스 유틸리티",
+    "products": "위스콘신·일리노이·미시간 전력·가스 공급(WEC Energy Group)",
+    "type": "stock"
+  },
+  "KMB": {
+    "name": "킴벌리-클라크",
+    "sector": "생활용품",
+    "products": "Kleenex 티슈, Huggies 기저귀, Scott 화장지, Kotex",
+    "type": "stock"
+  },
+  "STLD": {
+    "name": "Steel Dynamics Inc",
+    "sector": "철강",
+    "products": "전기아크로 철강 생산, 판재·긴 제품(Steel Dynamics, 미국 3위)",
+    "type": "stock"
+  },
+  "CCI": {
+    "name": "크라운 캐슬",
+    "sector": "통신 인프라 REIT",
+    "products": "미국 통신탑·소형 셀·광섬유 네트워크 임대",
+    "type": "stock"
+  },
+  "SKYD": {
+    "name": "Skydance Corporation",
+    "sector": "미디어/엔터테인먼트",
+    "products": "영화·TV 콘텐츠 제작·배급(Skydance, Paramount 인수 후 통합)",
+    "type": "stock"
+  },
+  "CCL": {
+    "name": "Carnival Corporation Ltd.",
+    "sector": "크루즈",
+    "products": "크루즈 운항(Carnival, Princess, Holland America, AIDA)",
+    "type": "stock"
+  },
+  "EXPE": {
+    "name": "익스피디아",
+    "sector": "온라인 여행",
+    "products": "Expedia·Hotels.com·Vrbo·Trivago — 글로벌 온라인 여행 플랫폼",
+    "type": "stock"
+  },
+  "BIIB": {
+    "name": "Biogen Inc. Common Stock",
+    "sector": "바이오텍/신경과학",
+    "products": "다발성경화증(Tysabri), 알츠하이머(Leqembi), SMA(Spinraza — Biogen)",
+    "type": "stock"
+  },
+  "HSY": {
+    "name": "허쉬 컴퍼니",
+    "sector": "식음료",
+    "products": "Hershey's 초콜릿, Reese's, Kit Kat(북미), SkinnyPop 팝콘",
+    "type": "stock"
+  },
+  "ACGL": {
+    "name": "Arch Capital Group Ltd",
+    "sector": "보험/재보험",
+    "products": "전문직 배상책임·재해 재보험, 모기지 보증보험",
+    "type": "stock"
+  },
+  "CNC": {
+    "name": "Centene Corporation",
+    "sector": "건강보험/메디케이드",
+    "products": "메디케이드·메디케어·ACA 플랜 관리(Centene)",
+    "type": "stock"
+  },
+  "EQT": {
+    "name": "EQT CORP",
+    "sector": "에너지(천연가스)",
+    "products": "애팔래치아 셰일 천연가스 탐사·생산(EQT, 미국 최대 천연가스 생산업체)",
+    "type": "stock"
+  },
+  "RMD": {
+    "name": "ResMed Inc.",
+    "sector": "의료기기/수면",
+    "products": "CPAP·BiPAP 수면무호흡 기기, 마스크, 원격 모니터링(ResMed)",
+    "type": "stock"
+  },
+  "FLEX": {
+    "name": "Flex Ltd. Ordinary Shares",
+    "sector": "전자제조서비스(EMS)",
+    "products": "전자기기 위탁제조, 공급망 설계·관리(Flex Ltd.)",
+    "type": "stock"
+  },
+  "IRM": {
+    "name": "Iron Mountain Inc.",
+    "sector": "정보관리/데이터센터",
+    "products": "문서 보관·파기, 데이터센터 임대·관리(Iron Mountain)",
+    "type": "stock"
+  },
+  "VMC": {
+    "name": "Vulcan Materials Company(Holding Company)",
+    "sector": "건설골재",
+    "products": "쇄석·모래·자갈·아스팔트 생산(Vulcan Materials, 미국 최대 골재 기업)",
+    "type": "stock"
+  },
+  "CBOE": {
+    "name": "Cboe Global Markets, Inc.",
+    "sector": "금융거래소",
+    "products": "옵션·선물 거래소(VIX 지수 산출), 주식·FX 거래 플랫폼",
+    "type": "stock"
+  },
+  "EME": {
+    "name": "EMCOR Group, Inc.",
+    "sector": "전기/기계 건설",
+    "products": "전기·기계·배관·HVAC 설계·시공·시설관리(EMCOR Group)",
+    "type": "stock"
+  },
+  "ZTS": {
+    "name": "조에티스",
+    "sector": "동물약품",
+    "products": "반려동물·가축용 의약품 — 백신·항생제·기생충 치료제·진단기기",
+    "type": "stock"
+  },
+  "MTD": {
+    "name": "메틀러-톨레도",
+    "sector": "정밀 계측기",
+    "products": "실험실·산업용 전자저울, 정밀 측정 기기",
+    "type": "stock"
+  },
+  "DXCM": {
+    "name": "덱스콤",
+    "sector": "의료기기",
+    "products": "연속혈당측정기(CGM) — 당뇨 환자용 실시간 혈당 모니터링",
+    "type": "stock"
+  },
+  "AXON": {
+    "name": "액손 엔터프라이즈",
+    "sector": "공공 안전 기술",
+    "products": "경찰용 테이저건, 바디캠, 대시캠, Axon Evidence 클라우드",
+    "type": "stock"
+  },
+  "GEHC": {
+    "name": "GE 헬스케어 테크놀로지스",
+    "sector": "의료기기",
+    "products": "CT·MRI·X레이 영상 장비, 초음파, AI 의료 영상 진단",
+    "type": "stock"
+  },
+  "UAL": {
+    "name": "United Airlines Holdings, Inc. Common Stock",
+    "sector": "항공",
+    "products": "국내외 여객·화물 항공(United Airlines, Star Alliance 허브)",
+    "type": "stock"
+  },
+  "HBAN": {
+    "name": "Huntington Bancshares Inc",
+    "sector": "금융/은행",
+    "products": "소매·기업·모기지 금융(Huntington Bank, 중서부 중심)",
+    "type": "stock"
+  },
+  "MTB": {
+    "name": "M&T Bank Corp.",
+    "sector": "금융/은행",
+    "products": "소매·기업·모기지 금융(M&T Bank, 동북부 중심)",
+    "type": "stock"
+  },
+  "NTRS": {
+    "name": "Northern Trust Corp",
+    "sector": "자산관리/수탁",
+    "products": "기관·초고액자산가 대상 자산운용·수탁·결제(Northern Trust)",
+    "type": "stock"
+  },
+  "RJF": {
+    "name": "Raymond James Financial, Inc.",
+    "sector": "금융/자산관리",
+    "products": "투자은행·자산관리·증권거래·은행(Raymond James Financial)",
+    "type": "stock"
+  },
+  "RDDT": {
+    "name": "Reddit, Inc.",
+    "sector": "소셜미디어/커뮤니티",
+    "products": "커뮤니티 기반 토론 플랫폼(Reddit), 광고, 데이터 라이선싱",
+    "type": "stock"
+  },
+  "IR": {
+    "name": "Ingersoll Rand Inc. Common Stock",
+    "sector": "산업 기계/압축기",
+    "products": "공기압축기(Ingersoll Rand), 진공펌프, 전동공구(Gardner Denver)",
+    "type": "stock"
+  },
+  "DG": {
+    "name": "Dollar General Corp.",
+    "sector": "할인소매",
+    "products": "생활용품·식품·의류 할인소매(Dollar General 20,000여 매장)",
+    "type": "stock"
+  },
+  "CTSH": {
+    "name": "코그니전트",
+    "sector": "IT 서비스",
+    "products": "글로벌 IT 서비스·아웃소싱·디지털 컨설팅 (인도 기반)",
+    "type": "stock"
+  },
+  "EXR": {
+    "name": "Extra Space Storage, Inc.",
+    "sector": "셀프스토리지 리츠",
+    "products": "미국 전역 셀프스토리지 시설 운영(Extra Space Storage)",
+    "type": "stock"
+  },
+  "WSM": {
+    "name": "Williams-Sonoma, Inc.",
+    "sector": "홈퍼니싱 소매",
+    "products": "프리미엄 홈퍼니싱·주방용품(Williams-Sonoma, Pottery Barn, West Elm)",
+    "type": "stock"
+  },
+  "WTW": {
+    "name": "Willis Towers Watson Public Limited Company Ordinary Shares",
+    "sector": "리스크/HR 컨설팅",
+    "products": "보험중개·위험관리·인적자원 컨설팅(WTW, Willis Towers Watson)",
+    "type": "stock"
+  },
+  "AEE": {
+    "name": "Ameren Corporation",
+    "sector": "전력/가스 유틸리티",
+    "products": "미주리·일리노이 전력·가스 공급(Ameren Missouri, Ameren Illinois)",
+    "type": "stock"
+  },
+  "JBL": {
+    "name": "Jabil Inc.",
+    "sector": "전자제조서비스(EMS)",
+    "products": "전자기기 위탁제조·공급망·헬스케어 솔루션(Jabil)",
+    "type": "stock"
+  },
+  "ATO": {
+    "name": "Atmos Energy Corporation",
+    "sector": "가스 유틸리티",
+    "products": "8개 주 천연가스 배급·운송(Atmos Energy)",
+    "type": "stock"
+  },
+  "KHC": {
+    "name": "The Kraft Heinz Company",
+    "sector": "식품/음료",
+    "products": "Heinz 케첩·소스, Kraft 치즈, Oscar Mayer 육가공, Jell-O",
+    "type": "stock"
+  },
+  "ON": {
+    "name": "ON Semiconductor Corp",
+    "sector": "전력반도체/센서",
+    "products": "SiC·IGBT 전력소자, 이미지센서, 차량용·산업용 아날로그 IC(onsemi)",
+    "type": "stock"
+  },
+  "HAL": {
+    "name": "Halliburton Company",
+    "sector": "유전 서비스",
+    "products": "시추·시멘팅·유정 완결·생산 최적화 서비스(Halliburton)",
+    "type": "stock"
+  },
+  "TDY": {
+    "name": "Teledyne Technologies Incorporated",
+    "sector": "방산/우주/계측",
+    "products": "해양·항공 방산 전자, 우주 기기, 계측장비(Teledyne Technologies)",
+    "type": "stock"
+  },
+  "WRB": {
+    "name": "W.R. Berkley Corporation",
+    "sector": "상업보험/재보험",
+    "products": "전문직·산업 상업 손해보험, 재보험(W.R. Berkley)",
+    "type": "stock"
+  },
+  "CINF": {
+    "name": "Cincinnati Financial Corp",
+    "sector": "손해/생명보험",
+    "products": "상업·개인 손해보험, 생명보험, 과잉손해 보험(Cincinnati Financial)",
+    "type": "stock"
+  },
+  "HPQ": {
+    "name": "HP Inc.",
+    "sector": "PC/프린터",
+    "products": "HP PC(Envy·Spectre·EliteBook), 레이저·잉크젯 프린터, 소모품",
+    "type": "stock"
+  },
+  "VRSN": {
+    "name": "VeriSign Inc",
+    "sector": "인터넷 인프라",
+    "products": ".com·.net 도메인 등록 독점 운영·DNS 루트 서버(VeriSign)",
+    "type": "stock"
+  },
+  "OTIS": {
+    "name": "오티스 월드와이드",
+    "sector": "엘리베이터/에스컬레이터",
+    "products": "엘리베이터·에스컬레이터 제조·설치·유지보수 세계 1위",
+    "type": "stock"
+  },
+  "DTE": {
+    "name": "DTE Energy Company",
+    "sector": "전력/가스 유틸리티",
+    "products": "미시간 전력(DTE Electric)·가스(DTE Gas) 공급, 미드스트림 서비스",
+    "type": "stock"
+  },
+  "WST": {
+    "name": "West Pharmaceutical Services, Inc.",
+    "sector": "의약품 포장",
+    "products": "약병 고무 마개·실링·주사기 부품(West Pharmaceutical Services)",
+    "type": "stock"
+  },
+  "AWK": {
+    "name": "American Water Works Company, Inc",
+    "sector": "수도/폐수 유틸리티",
+    "products": "미국 최대 상수도·폐수처리 사업자(American Water Works)",
+    "type": "stock"
+  },
+  "CNP": {
+    "name": "CenterPoint Energy, Inc.",
+    "sector": "전력/가스 유틸리티",
+    "products": "텍사스·인디애나 등 전력·가스 공급(CenterPoint Energy)",
+    "type": "stock"
+  },
+  "FE": {
+    "name": "FirstEnergy Corp.",
+    "sector": "전력 유틸리티",
+    "products": "오하이오·뉴저지·펜실베이니아 전력 공급(FirstEnergy)",
+    "type": "stock"
+  },
+  "PPL": {
+    "name": "PPL Corporation",
+    "sector": "전력 유틸리티",
+    "products": "켄터키·펜실베이니아 전력·가스 공급(PPL Corporation)",
+    "type": "stock"
+  },
+  "DOV": {
+    "name": "Dover Corporation",
+    "sector": "산업장비/다각화",
+    "products": "청정에너지, 급유장비, 식음료·냉동 장비, 폐기물 처리 부품(Dover)",
+    "type": "stock"
+  },
+  "CPAY": {
+    "name": "Corpay, Inc.",
+    "sector": "기업결제/핀테크",
+    "products": "플릿 카드, 가상카드, 기업 지출 관리 솔루션(Corpay)",
+    "type": "stock"
+  },
+  "CFG": {
+    "name": "Citizens Financial Group, Inc.",
+    "sector": "금융/은행",
+    "products": "소매·기업 금융, 모기지, 학자금 대출(Citizens Bank)",
+    "type": "stock"
+  },
+  "VICI": {
+    "name": "VICI Properties Inc. Common Stock",
+    "sector": "게임·레저 리츠",
+    "products": "카지노·리조트 부동산 소유·임대(VICI Properties, Caesars·MGM 물건)",
+    "type": "stock"
+  },
+  "DGX": {
+    "name": "Quest Diagnostics Inc.",
+    "sector": "임상진단검사",
+    "products": "혈액·유전자·병리 검사, 처방전 약물 검사(Quest Diagnostics)",
+    "type": "stock"
+  },
+  "CPRT": {
+    "name": "코파트",
+    "sector": "자동차 경매",
+    "products": "사고·폐차 차량 온라인 경매 플랫폼",
+    "type": "stock"
+  },
+  "LH": {
+    "name": "Labcorp Holdings Inc.",
+    "sector": "임상진단검사/CRO",
+    "products": "혈액·소변·유전자 검사, 임상 CRO 서비스(Labcorp)",
+    "type": "stock"
+  },
+  "EXPD": {
+    "name": "Expeditors International of Washington, Inc.",
+    "sector": "글로벌 물류",
+    "products": "해상·항공 포워딩, 세관 통관, 물류 관리(Expeditors International)",
+    "type": "stock"
+  },
+  "CASY": {
+    "name": "Casey's General Stores Inc",
+    "sector": "편의점/주유소",
+    "products": "중서부 편의점·주유소 운영, 자체 피자 브랜드(Casey's General Stores)",
+    "type": "stock"
+  },
+  "ARES": {
+    "name": "Ares Management Corporation Class A Common Stock",
+    "sector": "대체투자/자산관리",
+    "products": "크레딧·사모펀드·부동산·인프라 투자(Ares Management)",
+    "type": "stock"
+  },
+  "ULTA": {
+    "name": "Ulta Beauty, Inc. Common Stock",
+    "sector": "뷰티 소매",
+    "products": "화장품·향수·스킨케어·헤어케어 전문 소매(Ulta Beauty, 1,400여 매장)",
+    "type": "stock"
+  },
+  "ES": {
+    "name": "Eversource Energy",
+    "sector": "전력/가스 유틸리티",
+    "products": "뉴잉글랜드 전력·가스 공급(Eversource Energy)",
+    "type": "stock"
+  },
+  "FFIV": {
+    "name": "F5, Inc. Common Stock",
+    "sector": "네트워크/사이버보안",
+    "products": "앱 딜리버리 컨트롤러(ADC), WAF, 멀티클라우드 네트워킹(F5)",
+    "type": "stock"
+  },
+  "FISV": {
+    "name": "Fiserv, Inc. Common Stock",
+    "sector": "금융기술/결제",
+    "products": "결제 처리, 은행 핵심 솔루션, Clover POS 단말기(Fiserv)",
+    "type": "stock"
+  },
+  "TPL": {
+    "name": "Texas Pacific Land Corporation",
+    "sector": "에너지 토지/로열티",
+    "products": "퍼미안 분지 토지 소유·로열티 수취, 수자원 서비스(Texas Pacific Land)",
+    "type": "stock"
+  },
+  "VRSK": {
+    "name": "버리스크 애널리틱스",
+    "sector": "데이터/분석",
+    "products": "보험 데이터 분석, 리스크 평가, 금융 데이터 서비스",
+    "type": "stock"
+  },
+  "CHD": {
+    "name": "Church & Dwight Co., Inc.",
+    "sector": "소비재/생활용품",
+    "products": "Arm & Hammer 베이킹소다·치약, OxiClean 세제, Trojan 콘돔",
+    "type": "stock"
+  },
+  "ECHO": {
+    "name": "EchoStar Corporation",
+    "sector": "위성통신",
+    "products": "위성방송·광대역 서비스(EchoStar, 구 DISH 위성 부문)",
+    "type": "stock"
+  },
+  "Q": {
+    "name": "Qnity Electronics, Inc.",
+    "sector": "전자기기",
+    "products": "전자부품 설계·제조 서비스(Qnity Electronics)",
+    "type": "stock"
+  },
+  "VLTO": {
+    "name": "Veralto Corporation",
+    "sector": "수질/품질 분석",
+    "products": "수처리 화학제·분석장비(ChemTreat), 라벨링·코딩(Veralto, Danaher 2023 분사)",
+    "type": "stock"
+  },
+  "LVS": {
+    "name": "Las Vegas Sands Corp.",
+    "sector": "카지노/MICE 리조트",
+    "products": "싱가포르 마리나베이샌즈, 마카오 베네치안·팔라조 카지노 리조트",
+    "type": "stock"
+  },
+  "XYL": {
+    "name": "Xylem Inc",
+    "sector": "수처리/유체 기기",
+    "products": "펌프·유량계·수질 분석기, 스마트 수도 인프라(Xylem Inc.)",
+    "type": "stock"
+  },
+  "DRI": {
+    "name": "다든 레스토랑",
+    "sector": "외식 체인",
+    "products": "Olive Garden, LongHorn Steakhouse, Cheddar's Scratch Kitchen 레스토랑",
+    "type": "stock"
+  },
+  "HUBB": {
+    "name": "Hubbell Incorporated",
+    "sector": "전기설비",
+    "products": "배전반·콘센트·조명·통신 설비 제품, 유틸리티 솔루션(Hubbell)",
+    "type": "stock"
+  },
+  "TPR": {
+    "name": "Tapestry, Inc. Common Stock",
+    "sector": "럭셔리 패션",
+    "products": "Coach 핸드백·액세서리, Kate Spade, Stuart Weitzman(Tapestry)",
+    "type": "stock"
+  },
+  "SYF": {
+    "name": "SYNCHRONY FINANCIAL",
+    "sector": "소비자 금융",
+    "products": "소매 제휴 신용카드, 소비자 대출(Synchrony Financial)",
+    "type": "stock"
+  },
+  "PPG": {
+    "name": "PPG 인더스트리스",
+    "sector": "페인트/코팅",
+    "products": "산업용·건축용 페인트, 자동차 도료, 항공·방산 코팅",
+    "type": "stock"
+  },
+  "RF": {
+    "name": "Regions Financial Corp.",
+    "sector": "금융/은행",
+    "products": "소매·기업·모기지 금융(Regions Bank, 남동부 중심)",
+    "type": "stock"
+  },
+  "PFG": {
+    "name": "Principal Financial Group, Inc.",
+    "sector": "퇴직연금/보험/자산관리",
+    "products": "기업 퇴직연금·단체보험, 자산운용(Principal Financial Group)",
+    "type": "stock"
+  },
+  "DLTR": {
+    "name": "Dollar Tree Inc.",
+    "sector": "할인소매",
+    "products": "균일가 생활용품 소매(Dollar Tree), 다품목 할인(Family Dollar)",
+    "type": "stock"
+  },
+  "IFF": {
+    "name": "International Flavors & Fragrances Inc.",
+    "sector": "향료/식품첨가물",
+    "products": "식음료 향료, 향수 원료, 효소·영양성분(IFF, 구 DuPont N&B 합병)",
+    "type": "stock"
+  },
+  "BRO": {
+    "name": "Brown & Brown, Inc.",
+    "sector": "보험중개",
+    "products": "재산·상해·직원복리후생 보험 중개(Brown & Brown)",
+    "type": "stock"
+  },
+  "RL": {
+    "name": "Ralph Lauren Corporation",
+    "sector": "럭셔리 패션",
+    "products": "Polo Ralph Lauren·Polo·Lauren 브랜드 의류·가방·향수",
+    "type": "stock"
+  },
+  "INCY": {
+    "name": "인사이트 제약",
+    "sector": "바이오의약품",
+    "products": "JAK 억제제(Jakafi/Ruxolitinib) — 골수섬유증·진성 적혈구 증가증",
+    "type": "stock"
+  },
+  "L": {
+    "name": "Loews Corporation",
+    "sector": "지주회사",
+    "products": "CNA 손해보험, Boardwalk 파이프라인, Loews 호텔 운영(Loews Corporation)",
+    "type": "stock"
+  },
+  "STZ": {
+    "name": "Constellation Brands, Inc.",
+    "sector": "주류",
+    "products": "Corona·Modelo·Pacifico 맥주(미국 판권), Kim Crawford 와인(Constellation Brands)",
+    "type": "stock"
+  },
+  "GPN": {
+    "name": "글로벌 페이먼츠",
+    "sector": "핀테크/결제",
+    "products": "기업 결제 처리·소프트웨어, POS 시스템, 국제 결제",
+    "type": "stock"
+  },
+  "OMC": {
+    "name": "Omnicom Group Inc.",
+    "sector": "광고/마케팅/PR",
+    "products": "글로벌 광고·마케팅 서비스(BBDO, DDB, TBWA, FleishmanHillard — Omnicom)",
+    "type": "stock"
+  },
+  "NRG": {
+    "name": "NRG Energy, Inc.",
+    "sector": "전력/에너지",
+    "products": "발전소 운영, 가정용 전력·가스 소매(NRG Energy, Vivint Smart Home)",
+    "type": "stock"
+  },
+  "STE": {
+    "name": "STERIS plc",
+    "sector": "의료기기/멸균",
+    "products": "병원기기 멸균·소독 서비스, 수술용 기기·내시경 재처리(Steris)",
+    "type": "stock"
+  },
+  "DOW": {
+    "name": "Dow Inc.",
+    "sector": "화학/소재",
+    "products": "폴리에틸렌·실리콘·폴리우레탄 등 패키징·인프라·소비재용 화학소재(Dow)",
+    "type": "stock"
+  },
+  "EXE": {
+    "name": "Expand Energy Corporation Common Stock",
+    "sector": "에너지(천연가스)",
+    "products": "애팔래치아 천연가스 탐사·생산(Expand Energy, 구 Chesapeake Energy)",
+    "type": "stock"
+  },
+  "PHM": {
+    "name": "Pultegroup, Inc.",
+    "sector": "주택건설",
+    "products": "주택건설(Pulte Homes, Centex, Del Webb 은퇴자 커뮤니티)",
+    "type": "stock"
+  },
+  "SW": {
+    "name": "Smurfit Westrock plc",
+    "sector": "포장재/골판지",
+    "products": "골판지 상자·포장재 제조(Smurfit Westrock, 세계 최대 골판지 기업)",
+    "type": "stock"
+  },
+  "TROW": {
+    "name": "T Rowe Price Group Inc",
+    "sector": "자산운용",
+    "products": "액티브 뮤추얼펀드·ETF, 퇴직연금 운용(T. Rowe Price)",
+    "type": "stock"
+  },
+  "CMS": {
+    "name": "CMS Energy Corporation",
+    "sector": "전력/가스 유틸리티",
+    "products": "미시간 전력·가스 공급(Consumers Energy)",
+    "type": "stock"
+  },
+  "VTRS": {
+    "name": "Viatris Inc. Common Stock",
+    "sector": "제네릭 의약품",
+    "products": "제네릭·브랜드 의약품(EpiPen, Lipitor 제네릭 등 — Viatris)",
+    "type": "stock"
+  },
+  "EIX": {
+    "name": "Edison International",
+    "sector": "전력 유틸리티",
+    "products": "캘리포니아 전력 공급(Southern California Edison), 청정에너지 투자",
+    "type": "stock"
+  },
+  "JBHT": {
+    "name": "JB Hunt Transport Services Inc",
+    "sector": "화물운송/물류",
+    "products": "트럭·철도 복합운송(Intermodal), 트럭운송, 라스트마일 배송(J.B. Hunt)",
+    "type": "stock"
+  },
+  "KEY": {
+    "name": "KeyCorp",
+    "sector": "금융/은행",
+    "products": "소매·기업·투자은행(KeyBank, 중서부·동부 중심)",
+    "type": "stock"
+  },
+  "PKG": {
+    "name": "Packaging Corp of America",
+    "sector": "포장지/골판지",
+    "products": "골판지 상자·용기, 포장지(Packaging Corporation of America)",
+    "type": "stock"
+  },
+  "PTC": {
+    "name": "PTC, INC",
+    "sector": "산업 소프트웨어/IoT",
+    "products": "Windchill PLM, Creo CAD, ThingWorx IoT, Vuforia AR(PTC Inc.)",
+    "type": "stock"
+  },
+  "LYB": {
+    "name": "LyondellBasell Industries N.V. Class A",
+    "sector": "화학/플라스틱",
+    "products": "폴리에틸렌·폴리프로필렌·산화프로필렌·정유(LyondellBasell)",
+    "type": "stock"
+  },
+  "SMCI": {
+    "name": "Super Micro Computer, Inc. Common Stock",
+    "sector": "서버/AI 인프라",
+    "products": "AI·HPC용 고밀도 서버, 스토리지, 냉각 솔루션(Super Micro Computer)",
+    "type": "stock"
+  },
+  "NI": {
+    "name": "NiSource Inc.",
+    "sector": "가스 유틸리티",
+    "products": "7개 주 천연가스 배급(Columbia Gas, NiSource)",
+    "type": "stock"
+  },
+  "BG": {
+    "name": "Bunge Global SA",
+    "sector": "농업/식품",
+    "products": "곡물·유지종자 조달·가공·거래, 설탕·식용유 생산(Bunge Global)",
+    "type": "stock"
+  },
+  "AMCR": {
+    "name": "Amcor plc Ordinary Shares",
+    "sector": "포장재",
+    "products": "플라스틱 연성포장, 경성포장(식품·의약품·음료용 용기)",
+    "type": "stock"
+  },
+  "SBAC": {
+    "name": "SBA Communications Corp",
+    "sector": "통신 인프라 리츠",
+    "products": "미국·남미 통신탑 임대(SBA Communications)",
+    "type": "stock"
+  },
+  "BR": {
+    "name": "Broadridge Financial Solutions Inc",
+    "sector": "금융기술/투자자서비스",
+    "products": "주주총회 의결권 대행, 매매 처리, 데이터분석(Broadridge Financial)",
+    "type": "stock"
+  },
+  "BBY": {
+    "name": "Best Buy Company, Inc.",
+    "sector": "전자제품 소매",
+    "products": "가전·PC·모바일·게임 소매(Best Buy 매장 및 온라인)",
+    "type": "stock"
+  },
+  "LUV": {
+    "name": "Southwest Airlines Co.",
+    "sector": "항공",
+    "products": "미국 최대 저가 항공사 — 포인트투포인트 국내선 중심(Southwest Airlines)",
+    "type": "stock"
+  },
+  "TSN": {
+    "name": "Tyson Foods, Inc.",
+    "sector": "식품/육류",
+    "products": "닭고기·쇠고기·돼지고기 가공(Tyson, Jimmy Dean, Ball Park, Hillshire Farm)",
+    "type": "stock"
+  },
+  "EVRG": {
+    "name": "Evergy, Inc.",
+    "sector": "전력 유틸리티",
+    "products": "캔자스·미주리 전력 공급(Evergy)",
+    "type": "stock"
+  },
+  "SNA": {
+    "name": "Snap-on Incorporated",
+    "sector": "전문 공구/장비",
+    "products": "자동차정비·항공우주·산업용 수공구·진단장비(Snap-on)",
+    "type": "stock"
+  },
+  "SWKS": {
+    "name": "Skyworks Solutions Inc",
+    "sector": "RF 반도체",
+    "products": "스마트폰용 RF 프론트엔드 칩, Wi-Fi·블루투스 모듈(Skyworks Solutions)",
+    "type": "stock"
+  },
+  "EFX": {
+    "name": "Equifax, Incorporated",
+    "sector": "신용평가/데이터분석",
+    "products": "개인·기업 신용정보, 고용·소득 확인, 사기 탐지(Equifax)",
+    "type": "stock"
+  },
+  "CDW": {
+    "name": "CDW Corporation",
+    "sector": "IT솔루션/유통",
+    "products": "기업용 하드웨어·소프트웨어·클라우드 솔루션 유통(CDW)",
+    "type": "stock"
+  },
+  "FSLR": {
+    "name": "First Solar, Inc.",
+    "sector": "태양광/재생에너지",
+    "products": "박막 CdTe 태양광 패널 제조(First Solar, 미국산 선두)",
+    "type": "stock"
+  },
+  "FIS": {
+    "name": "피델리티 내셔널 인포메이션",
+    "sector": "금융 기술",
+    "products": "은행·결제 처리 소프트웨어, 핀테크 인프라",
+    "type": "stock"
+  },
+  "GPC": {
+    "name": "Genuine Parts Company",
+    "sector": "자동차부품/산업용품 유통",
+    "products": "자동차 교체부품(NAPA Auto Parts), 산업용 MRO 용품(Motion Industries)",
+    "type": "stock"
+  },
+  "LEN": {
+    "name": "Lennar Corporation Class A",
+    "sector": "주택건설",
+    "products": "미국 2위 주택건설업체(Lennar, NextGen 스마트홈, Rialto 모기지)",
+    "type": "stock"
+  },
+  "CF": {
+    "name": "CF Industries Holding, Inc.",
+    "sector": "비료/화학",
+    "products": "암모니아·요소·질소비료 제조 — 북미 최대 질소비료 업체",
     "type": "stock"
   },
   "ZBH": {
     "name": "Zimmer Biomet Holdings, Inc.",
-    "sector": "",
-    "products": "",
+    "sector": "정형외과 임플란트",
+    "products": "인공 무릎·고관절·척추 임플란트, 로봇수술 시스템(Zimmer Biomet)",
+    "type": "stock"
+  },
+  "IP": {
+    "name": "International Paper Co.",
+    "sector": "포장지/종이",
+    "products": "골판지 상자, 산업용 포장지, 특수 포장재(International Paper)",
+    "type": "stock"
+  },
+  "NDSN": {
+    "name": "Nordson Corp",
+    "sector": "산업 자동화/유체",
+    "products": "접착제·코팅·밀봉재 정밀 디스펜싱 장비(Nordson)",
+    "type": "stock"
+  },
+  "DD": {
+    "name": "DuPont de Nemours, Inc. Common Stock",
+    "sector": "특수화학/소재",
+    "products": "전자·반도체 소재, 산업용 필름·코팅, 수처리 소재(DuPont)",
+    "type": "stock"
+  },
+  "GIS": {
+    "name": "제너럴 밀스",
+    "sector": "식음료",
+    "products": "Cheerios·General Mills 시리얼, Häagen-Dazs 아이스크림, Betty Crocker",
+    "type": "stock"
+  },
+  "LNT": {
+    "name": "Alliant Energy Corporation Common Stock",
+    "sector": "전력/가스 유틸리티",
+    "products": "아이오와·위스콘신 전력·가스 공급(Alliant Energy)",
+    "type": "stock"
+  },
+  "TSCO": {
+    "name": "Tractor Supply Co",
+    "sector": "농·축산용품 소매",
+    "products": "농장·목장·반려동물·야외 생활용품 소매(Tractor Supply Co.)",
     "type": "stock"
   },
   "ZBRA": {
     "name": "Zebra Technologies Corporation",
-    "sector": "",
-    "products": "",
+    "sector": "엔터프라이즈 모빌리티",
+    "products": "바코드 스캐너·레이블 프린터·RFID·실시간 위치 시스템(Zebra Technologies)",
+    "type": "stock"
+  },
+  "FTV": {
+    "name": "Fortive Corporation",
+    "sector": "산업기술/소프트웨어",
+    "products": "워크플로 소프트웨어·계측·서비스(Fluke, Tektronix, Gordian — Fortive)",
+    "type": "stock"
+  },
+  "IEX": {
+    "name": "IDEX Corporation",
+    "sector": "산업용 펌프/유량",
+    "products": "산업용 펌프·유량계·분석장비, 소방 장비(IDEX Corporation)",
+    "type": "stock"
+  },
+  "ESS": {
+    "name": "Essex Property Trust, Inc",
+    "sector": "주거 리츠",
+    "products": "캘리포니아·시애틀 해안 도시 아파트 임대(Essex Property Trust)",
+    "type": "stock"
+  },
+  "APA": {
+    "name": "APA Corporation Common Stock",
+    "sector": "에너지(석유·가스)",
+    "products": "퍼미안 분지·노스씨·수리남 석유가스 탐사·생산",
+    "type": "stock"
+  },
+  "FDXF": {
+    "name": "FedEx Freight Holding Company, Inc.",
+    "sector": "물류/화물운송",
+    "products": "소량화물(LTL) 트럭 운송(FedEx Freight, 북미 최대 LTL)",
+    "type": "stock"
+  },
+  "RVTY": {
+    "name": "Revvity, Inc.",
+    "sector": "생명과학/진단",
+    "products": "분석 장비, 체외진단(IVD), 방사성 동위원소 시약(Revvity, 구 PerkinElmer)",
+    "type": "stock"
+  },
+  "BALL": {
+    "name": "Ball Corporation",
+    "sector": "알루미늄 포장/항공우주",
+    "products": "알루미늄 음료 캔, 에어로졸 캔, 항공우주 부품",
+    "type": "stock"
+  },
+  "FICO": {
+    "name": "Fair Isaac Corporation",
+    "sector": "신용점수/분석 AI",
+    "products": "FICO 신용점수(미국 표준), 대출심사·사기탐지 AI(Fair Isaac)",
+    "type": "stock"
+  },
+  "HST": {
+    "name": "Host Hotels & Resorts, Inc.",
+    "sector": "호텔 리츠",
+    "products": "럭셔리·어퍼업스케일 호텔 부동산 소유(Marriott·Hyatt·Hilton 브랜드 임차)",
+    "type": "stock"
+  },
+  "J": {
+    "name": "Jacobs Solutions Inc.",
+    "sector": "엔지니어링/건설",
+    "products": "인프라·환경·IT·방산 엔지니어링·컨설팅 서비스(Jacobs Solutions)",
+    "type": "stock"
+  },
+  "CHRW": {
+    "name": "C.H. Robinson Worldwide, Inc.",
+    "sector": "물류/화물중개",
+    "products": "화물 브로커리지, 트럭·항공·해상 운송 중개(C.H. Robinson)",
+    "type": "stock"
+  },
+  "INVH": {
+    "name": "Invitation Homes Inc. Common Stock",
+    "sector": "단독주택 임대 리츠",
+    "products": "미국 선벨트·서부 단독주택 임대 운영(Invitation Homes, 약 8만 채)",
+    "type": "stock"
+  },
+  "ROL": {
+    "name": "Rollins, Inc.",
+    "sector": "해충 방제 서비스",
+    "products": "가정·기업 해충방제(Rollins, Orkin — 세계 1위)",
+    "type": "stock"
+  },
+  "NVR": {
+    "name": "NVR, Inc.",
+    "sector": "주택건설",
+    "products": "단독·연립주택 건설(Ryan Homes, NVHomes) 및 모기지(NVR Mortgage)",
+    "type": "stock"
+  },
+  "BEN": {
+    "name": "Franklin Templeton, Inc.",
+    "sector": "자산운용",
+    "products": "Franklin Templeton 뮤추얼펀드·ETF, 채권·주식·대체자산 운용",
+    "type": "stock"
+  },
+  "LDOS": {
+    "name": "Leidos Holdings, Inc.",
+    "sector": "방산/IT서비스",
+    "products": "미국 정부 대상 IT·사이버보안·과학 기술 서비스(Leidos Holdings)",
+    "type": "stock"
+  },
+  "KIM": {
+    "name": "Kimco Realty Corp.",
+    "sector": "리테일 리츠",
+    "products": "식료품점 앵커 오픈에어 쇼핑센터 임대(Kimco Realty)",
+    "type": "stock"
+  },
+  "EG": {
+    "name": "Everest Group, Ltd.",
+    "sector": "보험/재보험",
+    "products": "재해·전문직·재보험 전문(Everest Group)",
+    "type": "stock"
+  },
+  "TYL": {
+    "name": "Tyler Technologies, Inc.",
+    "sector": "정부용 소프트웨어",
+    "products": "지방정부 ERP·법원·세금·공공안전 소프트웨어(Tyler Technologies)",
+    "type": "stock"
+  },
+  "SOLV": {
+    "name": "Solventum Corporation",
+    "sector": "의료/산업 소재",
+    "products": "의료 테이프·드레싱·의약품 필터, 산업용 분리 소재(Solventum, 3M 2024 분사)",
+    "type": "stock"
+  },
+  "GEN": {
+    "name": "Gen Digital Inc. Common Stock",
+    "sector": "소비자 사이버보안",
+    "products": "Norton 바이러스 백신, Avast, LifeLock 신원보호(Gen Digital)",
+    "type": "stock"
+  },
+  "MAS": {
+    "name": "Masco Corporation",
+    "sector": "주택개선/가전",
+    "products": "Delta 수전, Behr 페인트, KraftMaid 캐비닛, Milgard 창호(Masco)",
+    "type": "stock"
+  },
+  "CRL": {
+    "name": "Charles River Laboratories International, Inc.",
+    "sector": "전임상 연구/CRO",
+    "products": "실험동물 모델, 전임상 안전성 시험, 생체분석(Charles River Laboratories)",
+    "type": "stock"
+  },
+  "WY": {
+    "name": "Weyerhaeuser Company",
+    "sector": "목재/임업 리츠",
+    "products": "목재(제재목·합판), 펄프, 산림 토지 임대(Weyerhaeuser REIT)",
+    "type": "stock"
+  },
+  "AIZ": {
+    "name": "Assurant, Inc.",
+    "sector": "특수보험",
+    "products": "연결기기 보험(휴대폰 파손), 임차인·생명·신용보험",
+    "type": "stock"
+  },
+  "SWK": {
+    "name": "Stanley Black & Decker, Inc.",
+    "sector": "전동공구/산업장비",
+    "products": "DeWalt·Stanley·Black+Decker 전동공구, Craftsman, 잠금장치(Stanley Black & Decker)",
+    "type": "stock"
+  },
+  "HAS": {
+    "name": "Hasbro, Inc.",
+    "sector": "완구/게임",
+    "products": "Monopoly·Nerf·My Little Pony·Transformers, Magic: The Gathering, D&D(Hasbro)",
+    "type": "stock"
+  },
+  "TRMB": {
+    "name": "Trimble Inc. Common Stock",
+    "sector": "위치기술/농업",
+    "products": "측량·농업·건설·BIM용 GPS·GNSS·소프트웨어(Trimble Inc.)",
+    "type": "stock"
+  },
+  "SJM": {
+    "name": "The J.M. Smucker Company",
+    "sector": "식품/음료",
+    "products": "Jif 땅콩버터, Folgers 커피, Smucker's 잼, Milk-Bone 반려동물 간식",
+    "type": "stock"
+  },
+  "MAA": {
+    "name": "Mid-America Apartment Communities, Inc.",
+    "sector": "주거 리츠",
+    "products": "선벨트·남동부 멀티패밀리 아파트 임대(Mid-America Apartment Communities)",
+    "type": "stock"
+  },
+  "REG": {
+    "name": "Regency Centers Corporation",
+    "sector": "리테일 리츠",
+    "products": "식료품점 앵커 오픈에어 쇼핑센터(Regency Centers)",
+    "type": "stock"
+  },
+  "ALLE": {
+    "name": "Allegion Public Limited Company",
+    "sector": "보안/출입통제",
+    "products": "잠금장치·도어 하드웨어(Schlage, Von Duprin), 전자출입통제 시스템",
+    "type": "stock"
+  },
+  "AVY": {
+    "name": "Avery Dennison Corp.",
+    "sector": "라벨/포장소재",
+    "products": "감압식 라벨 소재, RFID 인텔리전트 라벨, 포장 테이프(Avery Dennison)",
+    "type": "stock"
+  },
+  "GDDY": {
+    "name": "GoDaddy Inc",
+    "sector": "웹서비스/중소기업 IT",
+    "products": "도메인 등록, 웹호스팅, 홈페이지 빌더, 이메일(GoDaddy)",
+    "type": "stock"
+  },
+  "BF-B": {
+    "name": "Brown-Forman Corporation Class B",
+    "sector": "주류(증류주)",
+    "products": "Jack Daniel's 위스키, Woodford Reserve 버번, Herradura 데킬라",
+    "type": "stock"
+  },
+  "BAX": {
+    "name": "Baxter International Inc.",
+    "sector": "의료기기/병원용품",
+    "products": "신장투석 장비·소모품, 수액 주사제, 병원 영양공급 시스템",
+    "type": "stock"
+  },
+  "DOC": {
+    "name": "Healthpeak Properties, Inc.",
+    "sector": "헬스케어 리츠",
+    "products": "외래클리닉·MOB·생명과학 빌딩 임대(Healthpeak Properties)",
+    "type": "stock"
+  },
+  "TXT": {
+    "name": "Textron, Inc.",
+    "sector": "항공우주/방산",
+    "products": "Bell 헬리콥터, Cessna·Beechcraft 비즈니스 항공기, 방산 시스템(Textron)",
+    "type": "stock"
+  },
+  "CSGP": {
+    "name": "CoStar Group Inc",
+    "sector": "부동산 데이터/플랫폼",
+    "products": "상업부동산 데이터(CoStar), 임대 플랫폼(Apartments.com, LoopNet)",
+    "type": "stock"
+  },
+  "IT": {
+    "name": "가트너",
+    "sector": "IT 리서치/컨설팅",
+    "products": "IT 시장 조사·분석 보고서, 기술 컨설팅, Magic Quadrant",
+    "type": "stock"
+  },
+  "GL": {
+    "name": "Globe Life Inc.",
+    "sector": "생명/건강보험",
+    "products": "우편·온라인 직접판매 생명·건강보험(Globe Life, American Income Life)",
+    "type": "stock"
+  },
+  "FOXA": {
+    "name": "Fox Corporation Class A Common Stock",
+    "sector": "미디어/방송",
+    "products": "Fox News, Fox Sports, Fox Entertainment, Tubi 스트리밍(의결권)",
+    "type": "stock"
+  },
+  "ERIE": {
+    "name": "Erie Indemnity Co",
+    "sector": "손해보험",
+    "products": "자동차·주택·사업자 손해보험 직접 판매(Erie Indemnity)",
+    "type": "stock"
+  },
+  "TKO": {
+    "name": "TKO Group Holdings, Inc.",
+    "sector": "스포츠 엔터테인먼트",
+    "products": "UFC(격투기), WWE 프로레슬링, 미디어 라이선싱(TKO Group Holdings)",
+    "type": "stock"
+  },
+  "CHTR": {
+    "name": "차터 커뮤니케이션스",
+    "sector": "케이블/통신",
+    "products": "미국 2위 케이블·인터넷 — Spectrum 브랜드, 기업 통신",
+    "type": "stock"
+  },
+  "AKAM": {
+    "name": "Akamai Technologies Inc",
+    "sector": "CDN/사이버보안",
+    "products": "콘텐츠 전송 네트워크(CDN), Zero Trust 보안, 클라우드 웹방화벽",
+    "type": "stock"
+  },
+  "FOX": {
+    "name": "Fox Corporation Class B Common Stock",
+    "sector": "미디어/방송",
+    "products": "Fox News, Fox Sports, Fox Entertainment, Tubi 스트리밍(무의결권)",
+    "type": "stock"
+  },
+  "PNW": {
+    "name": "Pinnacle West Capital Corporation",
+    "sector": "전력 유틸리티",
+    "products": "애리조나 전력 공급(Arizona Public Service, Pinnacle West Capital)",
+    "type": "stock"
+  },
+  "MKC": {
+    "name": "McCormick & Company, Incorporated Non-VTG CS",
+    "sector": "향신료/소스",
+    "products": "McCormick 향신료, Frank's RedHot·French's·Old Bay 소스, 식품 향료",
+    "type": "stock"
+  },
+  "IVZ": {
+    "name": "Invesco LTD",
+    "sector": "자산운용",
+    "products": "ETF·뮤추얼펀드·대체투자 운용(Invesco, QQQ ETF 운용사)",
+    "type": "stock"
+  },
+  "LII": {
+    "name": "Lennox International Inc.",
+    "sector": "HVAC",
+    "products": "주거·상업용 에어컨·히트펌프·가스로(Lennox International)",
+    "type": "stock"
+  },
+  "DVA": {
+    "name": "DaVita Inc.",
+    "sector": "의료서비스/투석",
+    "products": "신장 투석센터 운영(DaVita, 미국 최대), 만성신장질환 관리",
+    "type": "stock"
+  },
+  "DECK": {
+    "name": "Deckers Outdoor Corp",
+    "sector": "신발/아웃도어",
+    "products": "UGG 부츠, HOKA 러닝화, Teva 샌들(Deckers Outdoor)",
+    "type": "stock"
+  },
+  "TECH": {
+    "name": "Bio-Techne Corp.",
+    "sector": "생명과학 시약",
+    "products": "단백질·항체·면역분석 시약(Bio-Techne, R&D Systems·Novus Biologicals)",
+    "type": "stock"
+  },
+  "GNRC": {
+    "name": "GENERAC HOLDINGS INC",
+    "sector": "발전기/에너지 저장",
+    "products": "가정용·산업용 발전기, 에너지 저장, 전력망 서비스(Generac)",
+    "type": "stock"
+  },
+  "CPT": {
+    "name": "Camden Property Trust",
+    "sector": "주거 리츠",
+    "products": "선벨트·서부 도시 멀티패밀리 아파트 임대(Camden Property Trust)",
+    "type": "stock"
+  },
+  "HRL": {
+    "name": "Hormel Foods Corporation",
+    "sector": "식품",
+    "products": "SPAM, Skippy 땅콩버터, Jennie-O 칠면조, Applegate 유기농 육류(Hormel Foods)",
+    "type": "stock"
+  },
+  "ALB": {
+    "name": "Albemarle Corporation",
+    "sector": "특수화학/리튬",
+    "products": "리튬(배터리용 수산화리튬·탄산리튬), 브롬 화합물, 촉매제",
+    "type": "stock"
+  },
+  "LULU": {
+    "name": "lululemon athletica inc.",
+    "sector": "스포츠웨어/패션",
+    "products": "요가팬츠·레깅스·런닝웨어·스포츠 브라(lululemon athletica)",
+    "type": "stock"
+  },
+  "UDR": {
+    "name": "UDR, Inc.",
+    "sector": "주거 리츠",
+    "products": "주요 도시 멀티패밀리 아파트 임대(United Dominion Realty)",
+    "type": "stock"
+  },
+  "COO": {
+    "name": "The Cooper Companies, Inc. Common Stock",
+    "sector": "의료기기/안과",
+    "products": "콘택트렌즈(CooperVision), 여성건강·생식의학 기기(CooperSurgical)",
+    "type": "stock"
+  },
+  "NWSA": {
+    "name": "News Corporation Class A Common Stock",
+    "sector": "미디어/출판",
+    "products": "WSJ, Barron's, HarperCollins, 부동산 포털(realtor.com), 호주 미디어 (의결권)",
+    "type": "stock"
+  },
+  "UHS": {
+    "name": "Universal Health Services, Inc. Class B",
+    "sector": "병원/의료서비스",
+    "products": "급성·행동건강 병원 운영(Universal Health Services, 400여 시설)",
+    "type": "stock"
+  },
+  "JKHY": {
+    "name": "Henry (Jack) & Associates",
+    "sector": "금융기술(은행)",
+    "products": "지역은행·신협용 핵심 뱅킹 소프트웨어, 결제·데이터 솔루션(Jack Henry)",
+    "type": "stock"
+  },
+  "HII": {
+    "name": "Huntington Ingalls Industries, Inc.",
+    "sector": "방산/조선",
+    "products": "해군 항공모함·구축함 건조(Newport News, Ingalls), 핵잠수함 유지보수",
+    "type": "stock"
+  },
+  "AES": {
+    "name": "AES Corporation",
+    "sector": "전력/재생에너지",
+    "products": "가스·석탄·재생에너지 발전소, 에너지 저장(AES Clean Energy)",
+    "type": "stock"
+  },
+  "CLX": {
+    "name": "Clorox Company",
+    "sector": "소비재/청소용품",
+    "products": "Clorox 표백제·청소제, Kingsford 숯, Hidden Valley 드레싱, Burt's Bees",
+    "type": "stock"
+  },
+  "ALGN": {
+    "name": "Align Technology Inc",
+    "sector": "의료기기/치과",
+    "products": "Invisalign 투명교정기, iTero 3D 구강 스캐너",
+    "type": "stock"
+  },
+  "FDS": {
+    "name": "Factset Research Systems",
+    "sector": "금융 데이터/분석",
+    "products": "기업·증권 재무 데이터, 포트폴리오 분석, 리서치 플랫폼(FactSet)",
+    "type": "stock"
+  },
+  "DPZ": {
+    "name": "Domino's Pizza Inc.",
+    "sector": "레스토랑/프랜차이즈",
+    "products": "피자 배달·픽업 프랜차이즈(Domino's, 전 세계 19,000여 매장)",
+    "type": "stock"
+  },
+  "PODD": {
+    "name": "Insulet Corporation",
+    "sector": "의료기기/당뇨",
+    "products": "OmniPod 착용형 인슐린 패치 펌프(Insulet)",
+    "type": "stock"
+  },
+  "HSIC": {
+    "name": "Henry Schein Inc",
+    "sector": "의료/치과 용품 유통",
+    "products": "치과·의료용 소모품·장비·소프트웨어 유통(Henry Schein)",
+    "type": "stock"
+  },
+  "BXP": {
+    "name": "BXP, Inc.",
+    "sector": "오피스 리츠",
+    "products": "보스턴·뉴욕·샌프란시스코·워싱턴DC 주요 오피스 빌딩 임대",
+    "type": "stock"
+  },
+  "APTV": {
+    "name": "Aptiv PLC",
+    "sector": "자동차 전장",
+    "products": "차량 전기·전자 아키텍처, 고전압 배선, 첨단 안전 시스템",
+    "type": "stock"
+  },
+  "FRT": {
+    "name": "Federal Realty Investment Trust",
+    "sector": "리테일 리츠",
+    "products": "주요 도시권 혼합용도 쇼핑센터 임대(Federal Realty Investment Trust)",
+    "type": "stock"
+  },
+  "PNR": {
+    "name": "Pentair plc",
+    "sector": "수처리/유체제어",
+    "products": "정수·연수·수영장·산업용 유체 제어 솔루션(Pentair)",
+    "type": "stock"
+  },
+  "AOS": {
+    "name": "A.O. Smith Corporation",
+    "sector": "가전/수처리",
+    "products": "전기·가스 온수기, 보일러, 정수기(A.O. Smith 브랜드)",
+    "type": "stock"
+  },
+  "WYNN": {
+    "name": "Wynn Resorts Ltd",
+    "sector": "카지노/럭셔리 리조트",
+    "products": "라스베이거스·마카오 럭셔리 카지노·호텔(Wynn Las Vegas, Wynn Macau)",
+    "type": "stock"
+  },
+  "ARE": {
+    "name": "Alexandria Real Estate Equities, Inc.",
+    "sector": "생명과학 리츠",
+    "products": "생명과학·기술 캠퍼스 임대(Alexandria Real Estate Equities)",
+    "type": "stock"
+  },
+  "MGM": {
+    "name": "MGM RESORTS INTERNATIONAL",
+    "sector": "카지노/리조트",
+    "products": "Bellagio·MGM Grand·Aria 카지노 리조트, BetMGM 스포츠베팅",
+    "type": "stock"
+  },
+  "NCLH": {
+    "name": "Norwegian Cruise Line Holdings Ltd. Ordinary Shares",
+    "sector": "크루즈",
+    "products": "크루즈 운항(Norwegian Cruise Line, Oceania, Regent Seven Seas)",
+    "type": "stock"
+  },
+  "MOS": {
+    "name": "The Mosaic Company",
+    "sector": "비료/광업",
+    "products": "인산비료(DAP·MAP), 칼리비료 채굴·생산(Mosaic Company)",
+    "type": "stock"
+  },
+  "NWS": {
+    "name": "News Corporation Class B Common Stock",
+    "sector": "미디어/출판",
+    "products": "WSJ, Barron's, HarperCollins, 부동산 포털(realtor.com), 호주 미디어 (무의결권)",
     "type": "stock"
   }
 }
