@@ -45,7 +45,7 @@ jobs:
           OUT_DIR = Path("data/extra")
           OUT_DIR.mkdir(parents=True, exist_ok=True)
           UA = {"User-Agent": "Mozilla/5.0"}
-          YAHOO = {"TQQQ": "tqqq", "QLD": "qld", "QQQ": "qqq", "^NDX": "ndx_yahoo"}
+          YAHOO = {"TQQQ": "tqqq", "QLD": "qld", "QQQ": "qqq", "VOO": "voo", "^NDX": "ndx_yahoo"}
 
           def last_date(path):
               if not path.exists(): return None

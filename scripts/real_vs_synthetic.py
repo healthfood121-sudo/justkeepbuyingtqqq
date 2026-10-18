@@ -128,6 +128,25 @@ def main():
         if e["roll5"]:
             print(f"  5년 구간 {e['roll5']['n']}개: 실제−합성 {e['roll5']['min']} ~ {e['roll5']['max']} (중간 {e['roll5']['median']})%p/년")
 
+    # VOO: 합성 없음, Close 기준 연간 수익률만 추출
+    voo_raw = pd.read_csv(EXTRA / "voo.csv", parse_dates=["Date"]).set_index("Date")
+    voo_close = voo_raw["Close"].dropna()
+    voo_d0, voo_d1 = voo_close.index[0], voo_close.index[-1]
+    voo_norm = voo_close / voo_close.iloc[0] * 100
+    voo_ye = voo_norm.groupby(voo_norm.index.year).last()
+    voo_prev = pd.concat([pd.Series([100.0], index=[voo_d0]), voo_ye.iloc[:-1]])
+    voo_prev.index = voo_ye.index
+    voo_yr = (voo_ye / voo_prev.values - 1)
+    out["etfs"]["VOO"] = {
+        "start": str(voo_d0.date()), "end": str(voo_d1.date()),
+        "yearly": [{
+            "year": int(y),
+            "real_close": round(float(voo_yr.loc[y]) * 100, 1),
+            "partial": bool(y == voo_d0.year and voo_d0.month > 1) or bool(y == voo_d1.year and voo_d1.month < 12),
+        } for y in voo_yr.index],
+    }
+    print(f"\n[VOO] {voo_d0.date()} ~ {voo_d1.date()} · {len(voo_yr)}개 연도")
+
     OUT_PATH.write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     print(f"\n→ {OUT_PATH.relative_to(ROOT)} ({OUT_PATH.stat().st_size / 1024:.0f} KB)")
 
