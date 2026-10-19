@@ -1,5 +1,9 @@
 # 프로젝트 작업 규칙
 
+## 롤링 분석 종목 추가
+
+**`/private` 페이지에 새 종목을 추가할 때는 반드시 `scripts/ROLLING_HOWTO.md`를 읽어라.**
+
 ## 백테스트 / 데이터 생성
 
 **새 백테스트를 실행하거나 JSON 데이터를 생성하기 전에 반드시 `scripts/BACKTEST_DATA.md`를 읽어라.**
