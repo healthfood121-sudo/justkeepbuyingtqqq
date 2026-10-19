@@ -198,8 +198,10 @@ function StatCard({ label, value }: { label: string; value: string }) {
 
 // ── 롤링 테이블 ──────────────────────────────────────────────
 function RollingTable({ data }: { data: StockData }) {
-  const comp = data.rows10y.filter(r => r.isComplete)
-  const prog = data.rows10y.filter(r => !r.isComplete)
+  const rows = [
+    ...data.rows10y.filter(r => r.isComplete),
+    ...data.rows10y.filter(r => !r.isComplete && r.yearsActual >= 9),
+  ]
   const s = data.stats
 
   return (
@@ -243,14 +245,17 @@ function RollingTable({ data }: { data: StockData }) {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-            {comp.map(r => {
+            {rows.map(r => {
               const diff = 'diff' in r ? (r as any).diff as number : null
               const bc   = 'benchCagr' in r ? (r as any).benchCagr as number : null
+              const inProg = !r.isComplete
               return (
-                <tr key={r.buyYear} className="hover:bg-gray-50 dark:hover:bg-gray-800/40">
+                <tr key={r.buyYear} className={`hover:bg-gray-50 dark:hover:bg-gray-800/40 ${inProg ? 'opacity-50' : ''}`}>
                   <td className="py-1.5 pr-3 text-gray-600 dark:text-gray-300 tabular-nums">{r.buyYear}</td>
-                  <td className="py-1.5 pr-3 text-gray-600 dark:text-gray-300 tabular-nums">{r.sellYear}</td>
-                  <td className={`py-1.5 pr-3 text-right font-semibold tabular-nums ${cagrTextColor(r.cagr, true)}`}>
+                  <td className="py-1.5 pr-3 text-gray-600 dark:text-gray-300 tabular-nums">
+                    {inProg ? <span className="italic text-gray-400 dark:text-gray-500">진행 중</span> : r.sellYear}
+                  </td>
+                  <td className={`py-1.5 pr-3 text-right font-semibold tabular-nums ${cagrTextColor(r.cagr, !inProg)}`}>
                     {r.cagr.toFixed(1)}%
                   </td>
                   <td className="py-1.5 pr-3 text-right tabular-nums text-gray-500 dark:text-gray-400">
@@ -269,41 +274,6 @@ function RollingTable({ data }: { data: StockData }) {
         </table>
       </div>
 
-      {/* 진행 중 — 9년 이상 경과 구간만 표시 */}
-      {prog.filter(r => r.yearsActual >= 9).length > 0 && (
-        <div>
-          <p className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-2">
-            진행 중 (9년 이상, 10년 미완료)
-          </p>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                {prog.filter(r => r.yearsActual >= 9).map(r => {
-                  const diff = 'diff' in r ? (r as any).diff as number : null
-                  const bc   = 'benchCagr' in r ? (r as any).benchCagr as number : null
-                  return (
-                    <tr key={r.buyYear} className="hover:bg-gray-50 dark:hover:bg-gray-800/40">
-                      <td className="py-1.5 pr-3 text-gray-400 dark:text-gray-500 tabular-nums">
-                        {r.buyYear} → {r.sellDate.slice(0,7)} ({r.yearsActual}년)
-                      </td>
-                      <td className={`py-1.5 pr-3 text-right font-semibold tabular-nums ${cagrTextColor(r.cagr, false)}`}>
-                        {r.cagr.toFixed(1)}%
-                      </td>
-                      <td className="py-1.5 pr-3 text-right tabular-nums text-gray-400">{fmtTotalReturn(r.multiple)}</td>
-                      <td className="py-1.5 pr-3 text-right tabular-nums text-gray-400">
-                        {bc != null ? `S&P ${bc.toFixed(1)}%` : ''}
-                      </td>
-                      <td className={`py-1.5 text-right tabular-nums ${diff == null ? '' : diff > 0 ? 'text-emerald-500' : 'text-red-400'}`}>
-                        {diff != null ? `${diff > 0 ? '+' : ''}${diff.toFixed(1)}pp` : ''}
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
 
       {/* 범례 */}
       <div className="flex flex-wrap gap-3 text-xs text-gray-400 pt-2 border-t border-gray-100 dark:border-gray-800">
