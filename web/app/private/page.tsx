@@ -463,7 +463,7 @@ function RangeBar({
   const fmt = (v: number) => `${sign && v > 0 ? '+' : ''}${v.toFixed(1)}${unit}`
 
   return (
-    <div className="relative group flex items-center" style={{ width: 260, height: 44 }}>
+    <div className="relative group flex items-center" style={{ width: 180, height: 44 }}>
       {/* 배경 트랙 */}
       <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-3 bg-gray-100 dark:bg-gray-800 rounded-full" />
       {/* min~max 구간 바 */}
@@ -481,12 +481,12 @@ function RangeBar({
         className={`absolute top-1/2 w-5 h-5 rounded-full border-2 border-white dark:border-gray-950 ${markerColor}`}
         style={{ left: toX(med), transform: 'translateX(-50%) translateY(-50%)' }}
       />
-      {/* 툴팁 */}
-      <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-20
+      {/* 툴팁 — 위쪽으로 표시, overflow 문제 없도록 fixed */}
+      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50
                       invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity duration-150
                       bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg px-3 py-2
                       whitespace-nowrap shadow-lg pointer-events-none">
-        <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-900 dark:border-b-gray-700" />
+        <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900 dark:border-t-gray-700" />
         <div className="space-y-1">
           <div className="flex justify-between gap-4">
             <span className="text-gray-400">최솟값</span>
@@ -547,7 +547,7 @@ function OverviewTable({
   })
 
   return (
-    <div className="overflow-x-auto">
+    <div>
       <table className="text-sm">
         <thead>
           <tr className="text-xs text-gray-400 dark:text-gray-500">
@@ -642,7 +642,7 @@ export default function PrivatePage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 space-y-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 space-y-8">
 
         {/* 헤더 */}
         <div>
