@@ -44,8 +44,17 @@ const CATEGORY_STYLE = {
 
 export default function PostsPage() {
   const [filter, setFilter] = useState<Filter>('전체')
+  const [search, setSearch] = useState('')
 
-  const filtered    = posts.filter(p => filter === '전체' || p.category === filter)
+  const q = search.trim().toLowerCase()
+  const filtered    = posts.filter(p => {
+    const matchCat = filter === '전체' || p.category === filter
+    const matchQ   = !q ||
+      p.title.toLowerCase().includes(q) ||
+      p.summary.toLowerCase().includes(q) ||
+      p.tags.some(t => t.toLowerCase().includes(q))
+    return matchCat && matchQ
+  })
   const methodology = filtered.filter(p => p.methodology)
   const pinned      = filtered.filter(p => p.pinned && !p.methodology)
   const rest        = filtered.filter(p => !p.pinned && !p.methodology).sort((a, b) => b.date.localeCompare(a.date))
@@ -65,7 +74,7 @@ export default function PostsPage() {
         </p>
 
         {/* 필터 버튼 */}
-        <div className="flex gap-2 mb-10">
+        <div className="flex gap-2 mb-4">
           {filters.map(f => {
             const isActive = filter === f
             const activeStyle =
@@ -91,6 +100,28 @@ export default function PostsPage() {
               </button>
             )
           })}
+        </div>
+
+        {/* 검색창 */}
+        <div className="relative mb-8">
+          <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+          </svg>
+          <input
+            type="text"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="제목, 요약, 태그 검색…"
+            className="w-full pl-9 pr-8 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:border-gray-400 dark:focus:border-gray-500 transition-colors"
+          />
+          {search && (
+            <button
+              onClick={() => setSearch('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
+            >
+              ✕
+            </button>
+          )}
         </div>
 
         {/* 방법론 */}
@@ -229,10 +260,10 @@ export default function PostsPage() {
           </div>
         )}
 
-        {/* 필터 결과 없음 */}
+        {/* 결과 없음 */}
         {filtered.length === 0 && (
           <div className="text-center py-20 text-gray-400 dark:text-gray-600">
-            해당 카테고리의 글이 없습니다.
+            {q ? `"${search}"에 해당하는 글이 없습니다.` : '해당 카테고리의 글이 없습니다.'}
           </div>
         )}
       </main>
