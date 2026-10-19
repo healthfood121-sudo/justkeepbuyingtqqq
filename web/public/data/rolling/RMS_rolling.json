@@ -389,6 +389,112 @@
     }
   ],
   "loss5y": [],
-  "epsDecomp": [],
-  "epsNote": "EPS 이력 데이터 미확보 (에르메스는 SEC 미상장, EDGAR XBRL 없음). 향후 수동 입력 예정."
+  "epsDecomp": [
+    {
+      "buyYear": 2001, "sellYear": 2011,
+      "epsBuy": 1.82, "epsSell": 5.14, "epsMultiple": 2.82,
+      "peBuy": 23.1, "peSell": 37.7, "peMultiple": 1.63,
+      "epsGrowthCagr": 10.94, "peCagr": 5.01, "totalCagr": 16.5,
+      "note": null
+    },
+    {
+      "buyYear": 2002, "sellYear": 2012,
+      "epsBuy": 2.31, "epsSell": 6.85, "epsMultiple": 2.97,
+      "peBuy": 13.9, "peSell": 28.2, "peMultiple": 2.03,
+      "epsGrowthCagr": 11.47, "peCagr": 7.34, "totalCagr": 19.55,
+      "note": null
+    },
+    {
+      "buyYear": 2003, "sellYear": 2013,
+      "epsBuy": 1.88, "epsSell": 7.06, "epsMultiple": 3.76,
+      "peBuy": 20.7, "peSell": 32.9, "peMultiple": 1.59,
+      "epsGrowthCagr": 14.14, "peCagr": 4.74, "totalCagr": 19.6,
+      "note": null
+    },
+    {
+      "buyYear": 2004, "sellYear": 2014,
+      "epsBuy": 1.95, "epsSell": 6.75, "epsMultiple": 3.46,
+      "peBuy": 19.5, "peSell": 39.0, "peMultiple": 2.00,
+      "epsGrowthCagr": 13.23, "peCagr": 7.18, "totalCagr": 21.43,
+      "note": "매수연도(2004) EPS 정상, 매도연도(2014) EPS 역성장(-4.4%) — 낮은 매도 EPS가 PER을 상향 왜곡"
+    },
+    {
+      "buyYear": 2005, "sellYear": 2015,
+      "epsBuy": 2.17, "epsSell": 9.44, "epsMultiple": 4.35,
+      "peBuy": 26.3, "peSell": 31.6, "peMultiple": 1.20,
+      "epsGrowthCagr": 15.83, "peCagr": 1.85, "totalCagr": 17.98,
+      "note": null
+    },
+    {
+      "buyYear": 2006, "sellYear": 2016,
+      "epsBuy": 2.76, "epsSell": 11.99, "epsMultiple": 4.34,
+      "peBuy": 26.8, "peSell": 29.8, "peMultiple": 1.11,
+      "epsGrowthCagr": 15.82, "peCagr": 1.07, "totalCagr": 16.98,
+      "note": null
+    },
+    {
+      "buyYear": 2007, "sellYear": 2017,
+      "epsBuy": 2.70, "epsSell": 12.40, "epsMultiple": 4.59,
+      "peBuy": 25.2, "peSell": 33.1, "peMultiple": 1.31,
+      "epsGrowthCagr": 16.46, "peCagr": 2.77, "totalCagr": 19.64,
+      "note": null
+    },
+    {
+      "buyYear": 2008, "sellYear": 2018,
+      "epsBuy": 2.64, "epsSell": 13.07, "epsMultiple": 4.95,
+      "peBuy": 31.1, "peSell": 34.8, "peMultiple": 1.12,
+      "epsGrowthCagr": 17.33, "peCagr": 1.13, "totalCagr": 18.65,
+      "note": null
+    },
+    {
+      "buyYear": 2009, "sellYear": 2019,
+      "epsBuy": 2.72, "epsSell": 14.66, "epsMultiple": 5.39,
+      "peBuy": 28.3, "peSell": 43.0, "peMultiple": 1.52,
+      "epsGrowthCagr": 18.34, "peCagr": 4.27, "totalCagr": 23.35,
+      "note": null
+    },
+    {
+      "buyYear": 2010, "sellYear": 2020,
+      "epsBuy": 4.01, "epsSell": 14.32, "epsMultiple": 3.57,
+      "peBuy": 32.9, "peSell": 58.4, "peMultiple": 1.78,
+      "epsGrowthCagr": 13.57, "peCagr": 5.91, "totalCagr": 20.31,
+      "note": "매도연도(2020) EPS 코로나 영향 역성장(-0.6%). PER은 회복 기대로 급등"
+    },
+    {
+      "buyYear": 2011, "sellYear": 2021,
+      "epsBuy": 5.14, "epsSell": 22.43, "epsMultiple": 4.36,
+      "peBuy": 37.7, "peSell": 65.1, "peMultiple": 1.73,
+      "epsGrowthCagr": 15.87, "peCagr": 5.62, "totalCagr": 22.4,
+      "note": "매도연도(2021) EPS 코로나 펜트업 수요로 급등(+62.1%) — 일회성 성격"
+    },
+    {
+      "buyYear": 2012, "sellYear": 2022,
+      "epsBuy": 6.85, "epsSell": 32.90, "epsMultiple": 4.80,
+      "peBuy": 28.2, "peSell": 42.1, "peMultiple": 1.49,
+      "epsGrowthCagr": 17.00, "peCagr": 4.09, "totalCagr": 21.78,
+      "note": null
+    },
+    {
+      "buyYear": 2013, "sellYear": 2023,
+      "epsBuy": 7.06, "epsSell": 42.16, "epsMultiple": 5.97,
+      "peBuy": 32.9, "peSell": 44.4, "peMultiple": 1.35,
+      "epsGrowthCagr": 19.58, "peCagr": 3.05, "totalCagr": 23.21,
+      "note": null
+    },
+    {
+      "buyYear": 2014, "sellYear": 2024,
+      "epsBuy": 6.75, "epsSell": 42.32, "epsMultiple": 6.27,
+      "peBuy": 39.0, "peSell": 54.1, "peMultiple": 1.39,
+      "epsGrowthCagr": 20.17, "peCagr": 3.32, "totalCagr": 24.18,
+      "note": "매수연도(2014) EPS 역성장(-4.4%) — 낮은 매수 EPS가 이후 성장률을 과장할 수 있음"
+    },
+    {
+      "buyYear": 2015, "sellYear": 2025,
+      "epsBuy": 9.44, "epsSell": 46.50, "epsMultiple": 4.93,
+      "peBuy": 31.6, "peSell": 47.3, "peMultiple": 1.50,
+      "epsGrowthCagr": 17.27, "peCagr": 4.12, "totalCagr": 22.12,
+      "note": null
+    }
+  ],
+  "epsNote": "EUR EPS는 사용자 제공 USD EPS를 연도별 평균 USD/EUR 환율로 환산한 추정치. PER은 rows10y multiple에서 역산한 연말 EUR 주가 기준."
 }
