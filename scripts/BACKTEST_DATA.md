@@ -802,3 +802,41 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 - `vr_withdrawal_backtest.py`: G값 20~100 스윕, 생존율 최고 23.6% (G=100, P=80%, 0.5%)
 - `export_vr_sweep_json.py`: 216가지 조합 스윕, 생존율 100% 조합 없음
 - 결론: VR 인출식은 TQQQ 고변동성 환경에서 구조적 한계 → 채택 불가
+
+---
+
+## 개별 종목 롤링 분석 (/private 페이지)
+
+### 롤링 CSV (분석 스크립트 출력)
+
+| 파일 | 스크립트 | 종목 | 내용 |
+|------|----------|------|------|
+| `data/rolling/NKE_10y_annual.csv` | `analyze_nke.py` | NKE (나이키) | 10년 연말 매수 롤링 |
+| `data/rolling/NKE_5y_annual.csv` | `analyze_nke.py` | NKE | 5년 연말 매수 롤링 |
+| `data/rolling/NKE_10y_monthly.csv` | `analyze_nke.py` | NKE | 10년 월말 매수 롤링 |
+| `data/rolling/RMS_10y_annual_full.csv` | (별도) | RMS.PA (에르메스) | 10년 연말 매수 롤링 (1993~포함) |
+| `data/rolling/RMS_10y_monthly.csv` | (별도) | RMS.PA | 10년 월말 매수 롤링 |
+| `data/rolling/KO_10y_annual.csv` | `analyze_ko.py` | KO (코카콜라) | 10년 연말 매수 롤링 (1988년부터) |
+| `data/rolling/KO_5y_annual.csv` | `analyze_ko.py` | KO | 5년 연말 매수 롤링 |
+| `data/rolling/KO_10y_monthly.csv` | `analyze_ko.py` | KO | 10년 월말 매수 롤링 |
+
+### 롤링 JSON (export 스크립트 출력)
+
+재실행: `python scripts/export_rolling_json.py` (NKE, RMS, AAPL, COST, KO 전부 재생성)
+
+| 파일 | 크기 | 종목 | EPS 출처 |
+|------|------|------|---------|
+| `web/public/data/rolling/NKE_rolling.json` | ~60 KB | NKE (나이키) | EDGAR XBRL, 분할조정 적용 |
+| `web/public/data/rolling/RMS_rolling.json` | ~50 KB | RMS.PA (에르메스) | AI 역산 추정치 (EUR) |
+| `web/public/data/rolling/AAPL_rolling.json` | ~50 KB | AAPL (애플) | EDGAR XBRL |
+| `web/public/data/rolling/COST_rolling.json` | ~50 KB | COST (코스트코) | EDGAR XBRL |
+| `web/public/data/rolling/KO_rolling.json` | ~50 KB | KO (코카콜라) | EDGAR XBRL (2007~2025) + macrotrends 역산 (1988~2006) |
+
+**KO 파라미터:**
+- 매수 시작: 1988년 말 (연말 매수 기준)
+- 벤치마크: S&P 500 (^SP500TR)
+- 통화: USD
+- 완결 구간: 28개 (1988~2015 연말 매수), 중앙값 연평균 수익률 8.5%
+- EPS 일회성 왜곡: 1999(구조조정), 2000(병입업체 구조조정), 2017(TCJA), 2020(COVID-19)
+
+**사용처:** `/app/private` (개별 종목 10년 롤링 분석 페이지)

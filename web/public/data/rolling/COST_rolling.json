@@ -5,7 +5,7 @@
   "benchmark": "S&P 500",
   "note": "1986~1992 구간은 Price Club(합병 전) 데이터 포함. 특별 배당($7/2012, $10/2020, $15/2023) 반영 총수익률 기준.",
   "current": {
-    "price": 993.71,
+    "price": 994.29,
     "pe": 47.9,
     "divYield": 0.59,
     "eps": 20.76
@@ -14,10 +14,10 @@
     "start_date": "1986-07-09",
     "end_date": "2026-10-19",
     "start_price": 7.3166,
-    "end_price": 993.71,
+    "end_price": 994.33,
     "years": 40.3,
     "cagr": 12.97,
-    "multiple": 135.8
+    "multiple": 135.9
   },
   "stats": {
     "n": 30,
