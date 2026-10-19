@@ -238,9 +238,9 @@ function RollingTable({ data }: { data: StockData }) {
             <tr className="border-b border-gray-200 dark:border-gray-700 text-xs text-gray-400 dark:text-gray-500">
               <th className="text-left py-2 pr-3 font-medium">매수</th>
               <th className="text-left py-2 pr-3 font-medium">평가</th>
-              <th className="text-right py-2 pr-3 font-medium">CAGR</th>
-              <th className="text-right py-2 pr-3 font-medium">총 수익률</th>
-              <th className="text-right py-2 pr-3 font-medium">S&P 500</th>
+              <th className="text-right py-2 pr-3 font-medium">연복리<br/><span className="font-normal opacity-60">(배당포함)</span></th>
+              <th className="text-right py-2 pr-3 font-medium">누적 수익률</th>
+              <th className="text-right py-2 pr-3 font-medium">S&P 500<br/><span className="font-normal opacity-60">(배당포함)</span></th>
               <th className="text-right py-2 font-medium">차이</th>
             </tr>
           </thead>
@@ -350,7 +350,7 @@ function EpsDecompSection({ data }: { data: StockData }) {
                 PER 변화
                 <span className="block font-normal opacity-60">매수→매도</span>
               </th>
-              <th className="text-right py-2 font-medium whitespace-nowrap">총 연복리</th>
+              <th className="text-right py-2 font-medium whitespace-nowrap">총 연복리<br/><span className="font-normal opacity-60">(배당포함)</span></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -524,7 +524,10 @@ export default function PrivatePage() {
         <div>
           <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-1">개별 종목 분석</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            연말 매수 기준 10년 보유 연환산 수익률 (배당 재투자)
+            연말 매수 기준 10년 보유 연환산 수익률
+          </p>
+          <p className="text-xs text-blue-500 dark:text-blue-400 mt-0.5">
+            ★ 모든 수익률은 배당 재투자 포함 총수익률 (Yahoo Finance 수정주가 기준)
           </p>
         </div>
 
