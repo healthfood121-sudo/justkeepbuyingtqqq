@@ -41,6 +41,13 @@ function fmtTotalReturn(multiple: number) {
   const pct = (multiple - 1) * 100
   return `${pct >= 0 ? '+' : ''}${pct.toFixed(0)}%`
 }
+function epsGrowthColor(pct: number) {
+  if (pct >= 15) return 'text-blue-600 dark:text-blue-400'
+  if (pct >= 10) return 'text-emerald-600 dark:text-emerald-400'
+  if (pct >= 5)  return 'text-yellow-600 dark:text-yellow-400'
+  if (pct >= 0)  return 'text-orange-500 dark:text-orange-400'
+  return 'text-red-500 dark:text-red-400'
+}
 
 // ── 롤링 차트 ────────────────────────────────────────────────
 function RollingChart({ data }: { data: StockData }) {
@@ -203,6 +210,11 @@ function RollingTable({ data }: { data: StockData }) {
     ...data.rows10y.filter(r => !r.isComplete && r.yearsActual >= 9),
   ]
   const s = data.stats
+  const epsDecomp = (data as any).epsDecomp as Array<{
+    buyYear: number; epsGrowthCagr: number; peSell: number; note: string | null
+  }>
+  const epsNote: string | undefined = (data as any).epsNote
+  const epsMap = new Map(epsDecomp?.map(e => [e.buyYear, e]) ?? [])
 
   return (
     <div className="space-y-5">
@@ -240,20 +252,26 @@ function RollingTable({ data }: { data: StockData }) {
               <th className="text-left py-2 pr-3 font-medium">평가</th>
               <th className="text-right py-2 pr-3 font-medium">연복리<br/><span className="font-normal opacity-60">(배당포함)</span></th>
               <th className="text-right py-2 pr-3 font-medium">누적 수익률</th>
-              <th className="text-right py-2 pr-3 font-medium">매수 PER<br/><span className="font-normal opacity-60">(진입 시점)</span></th>
+              <th className="text-right py-2 pr-3 font-medium">EPS 성장<br/><span className="font-normal opacity-60">(연복리)</span></th>
+              <th className="text-right py-2 pr-3 font-medium">매수 PER</th>
+              <th className="text-right py-2 pr-3 font-medium">매도 PER</th>
               <th className="text-right py-2 pr-3 font-medium">S&P 500<br/><span className="font-normal opacity-60">(배당포함)</span></th>
               <th className="text-right py-2 font-medium">차이</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
             {rows.map(r => {
-              const diff   = 'diff' in r ? (r as any).diff as number : null
-              const bc     = 'benchCagr' in r ? (r as any).benchCagr as number : null
-              const peBuy  = 'peBuy' in r ? (r as any).peBuy as number : null
-              const inProg = !r.isComplete
+              const diff    = 'diff' in r ? (r as any).diff as number : null
+              const bc      = 'benchCagr' in r ? (r as any).benchCagr as number : null
+              const peBuy   = 'peBuy' in r ? (r as any).peBuy as number : null
+              const eps     = epsMap.get(r.buyYear)
+              const inProg  = !r.isComplete
               return (
                 <tr key={r.buyYear} className={`hover:bg-gray-50 dark:hover:bg-gray-800/40 ${inProg ? 'opacity-50' : ''}`}>
-                  <td className="py-1.5 pr-3 text-gray-600 dark:text-gray-300 tabular-nums">{r.buyYear}</td>
+                  <td className="py-1.5 pr-3 text-gray-600 dark:text-gray-300 tabular-nums">
+                    {r.buyYear}
+                    {eps?.note && <span title={eps.note} className="ml-1 text-amber-500 cursor-help text-xs">⚠</span>}
+                  </td>
                   <td className="py-1.5 pr-3 text-gray-600 dark:text-gray-300 tabular-nums">
                     {inProg ? <span className="italic text-gray-400 dark:text-gray-500">진행 중</span> : r.sellYear}
                   </td>
@@ -263,8 +281,14 @@ function RollingTable({ data }: { data: StockData }) {
                   <td className="py-1.5 pr-3 text-right tabular-nums text-gray-500 dark:text-gray-400">
                     {fmtTotalReturn(r.multiple)}
                   </td>
+                  <td className={`py-1.5 pr-3 text-right tabular-nums ${eps ? epsGrowthColor(eps.epsGrowthCagr) : 'text-gray-300 dark:text-gray-600'}`}>
+                    {eps ? `+${eps.epsGrowthCagr.toFixed(1)}%` : '—'}
+                  </td>
                   <td className="py-1.5 pr-3 text-right tabular-nums text-gray-400 dark:text-gray-500">
-                    {peBuy != null ? `${peBuy.toFixed(1)}x` : '—'}
+                    {peBuy != null ? `${peBuy.toFixed(0)}x` : '—'}
+                  </td>
+                  <td className="py-1.5 pr-3 text-right tabular-nums text-gray-400 dark:text-gray-500">
+                    {eps ? `${eps.peSell.toFixed(0)}x` : '—'}
                   </td>
                   <td className="py-1.5 pr-3 text-right tabular-nums text-gray-400 dark:text-gray-500">
                     {bc != null ? `${bc.toFixed(1)}%` : '—'}
@@ -280,6 +304,11 @@ function RollingTable({ data }: { data: StockData }) {
       </div>
 
 
+      {/* EPS 주석 */}
+      {epsNote && (
+        <p className="text-xs text-gray-300 dark:text-gray-600">{epsNote}</p>
+      )}
+
       {/* 범례 */}
       <div className="flex flex-wrap gap-3 text-xs text-gray-400 pt-2 border-t border-gray-100 dark:border-gray-800">
         <span className="text-blue-600 dark:text-blue-400">■ 20%+</span>
@@ -292,119 +321,6 @@ function RollingTable({ data }: { data: StockData }) {
   )
 }
 
-// ── EPS / PER 분해 ───────────────────────────────────────────
-function EpsDecompSection({ data }: { data: StockData }) {
-  const rows = (data as any).epsDecomp as Array<{
-    buyYear: number; sellYear: number
-    epsBuy: number; epsSell: number; epsMultiple: number
-    peBuy: number; peSell: number; peMultiple: number
-    epsGrowthCagr: number; peCagr: number; totalCagr: number
-    note: string | null
-  }>
-  const epsNote: string | undefined = (data as any).epsNote
-
-  if (!rows || rows.length === 0) {
-    return (
-      <div className="space-y-3">
-        <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-100">
-          과거 수익률 분해 (EPS 성장 vs PER 변화)
-        </h3>
-        <p className="text-xs text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-800/50 rounded px-3 py-2">
-          {epsNote ?? 'EPS 이력 데이터 없음'}
-        </p>
-      </div>
-    )
-  }
-
-  function growthColor(pct: number) {
-    if (pct >= 12) return 'text-blue-600 dark:text-blue-400'
-    if (pct >= 7)  return 'text-emerald-600 dark:text-emerald-400'
-    if (pct >= 3)  return 'text-yellow-600 dark:text-yellow-400'
-    if (pct >= 0)  return 'text-orange-500 dark:text-orange-400'
-    return 'text-red-500 dark:text-red-400'
-  }
-  function multipleColor(x: number) {
-    if (x >= 2.0) return 'text-blue-600 dark:text-blue-400'
-    if (x >= 1.2) return 'text-emerald-600 dark:text-emerald-400'
-    if (x >= 0.9) return 'text-gray-500 dark:text-gray-400'
-    return 'text-red-500 dark:text-red-400'
-  }
-
-  return (
-    <div className="space-y-4">
-      <div>
-        <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-1">
-          과거 수익률 분해 — EPS 성장 vs PER 변화
-        </h3>
-        <p className="text-xs text-gray-500 dark:text-gray-400">
-          주가 상승 ≈ 순이익(EPS) 성장 × PER 변화. 총 수익률에는 배당 재투자 효과 포함.
-          PER = 주가 ÷ EPS (시장이 순이익 대비 몇 배를 쳐주는가).
-        </p>
-      </div>
-
-      <div className="overflow-x-auto">
-        <table className="w-full text-xs">
-          <thead>
-            <tr className="border-b border-gray-200 dark:border-gray-700 text-gray-400 dark:text-gray-500">
-              <th className="text-left py-2 pr-4 font-medium">구간</th>
-              <th className="text-right py-2 pr-4 font-medium whitespace-nowrap">
-                EPS 연복리
-                <span className="block font-normal opacity-60">순이익 성장</span>
-              </th>
-              <th className="text-right py-2 pr-4 font-medium whitespace-nowrap">
-                PER 변화
-                <span className="block font-normal opacity-60">매수→매도</span>
-              </th>
-              <th className="text-right py-2 font-medium whitespace-nowrap">총 연복리<br/><span className="font-normal opacity-60">(배당포함)</span></th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-            {rows.map(r => {
-              const peDir = r.peMultiple >= 1.1 ? '↑팽창' : r.peMultiple <= 0.9 ? '↓수축' : '→유지'
-              const peDirColor = r.peMultiple >= 1.1
-                ? 'text-blue-500 dark:text-blue-400'
-                : r.peMultiple <= 0.9
-                  ? 'text-red-500 dark:text-red-400'
-                  : 'text-gray-400'
-              return (
-                <tr key={r.buyYear} className="hover:bg-gray-50 dark:hover:bg-gray-800/40">
-                  <td className="py-2 pr-4 text-gray-600 dark:text-gray-300 tabular-nums whitespace-nowrap">
-                    {r.buyYear}→{r.sellYear}
-                    {r.note && (
-                      <span title={r.note} className="ml-1 text-amber-500 cursor-help">⚠</span>
-                    )}
-                  </td>
-                  <td className={`py-2 pr-4 text-right tabular-nums font-semibold ${growthColor(r.epsGrowthCagr)}`}>
-                    {r.epsGrowthCagr > 0 ? '+' : ''}{r.epsGrowthCagr.toFixed(1)}%/년
-                    <span className="block text-gray-400 dark:text-gray-500 font-normal">
-                      {r.epsBuy.toFixed(2)} → {r.epsSell.toFixed(2)}
-                    </span>
-                  </td>
-                  <td className="py-2 pr-4 text-right tabular-nums">
-                    <span className={`font-semibold ${peDirColor}`}>{peDir}</span>
-                    <span className="block text-gray-400 dark:text-gray-500">
-                      {r.peBuy.toFixed(0)}x → {r.peSell.toFixed(0)}x
-                    </span>
-                  </td>
-                  <td className={`py-2 text-right tabular-nums font-semibold ${cagrTextColor(r.totalCagr, true)}`}>
-                    {r.totalCagr.toFixed(1)}%/년
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-      </div>
-
-      <div className="text-xs text-gray-400 dark:text-gray-500 space-y-1">
-        {rows.some(r => r.note) && (
-          <p>⚠ 일회성 항목(세금개혁/COVID) 영향으로 해당 연도 EPS가 왜곡됨 → PER 이상값 참고 시 주의.</p>
-        )}
-        {epsNote && <p className="text-gray-300 dark:text-gray-600">{epsNote}</p>}
-      </div>
-    </div>
-  )
-}
 
 // ── 미래 수익률 시나리오 테이블 ──────────────────────────────
 function ScenarioTable({ data }: { data: StockData }) {
@@ -570,11 +486,6 @@ export default function PrivatePage() {
 
         {/* 롤링 테이블 */}
         <RollingTable data={current.data} />
-
-        {/* EPS / PER 분해 */}
-        <div className="border-t border-gray-200 dark:border-gray-800 pt-6">
-          <EpsDecompSection data={current.data} />
-        </div>
 
         {/* 구분선 */}
         <div className="border-t border-gray-200 dark:border-gray-800 pt-2" />
