@@ -469,10 +469,12 @@ function RangeBar({ mn, med, mx }: { mn: number; med: number; mx: number }) {
         style={{ left: toX(med), transform: 'translateX(-50%) translateY(-50%)' }}
       />
       {/* 툴팁 */}
-      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-20
+      <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-20
                       invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity duration-150
                       bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg px-3 py-2
                       whitespace-nowrap shadow-lg pointer-events-none">
+        {/* 위 화살표 */}
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-900 dark:border-b-gray-700" />
         <div className="space-y-1">
           <div className="flex justify-between gap-4">
             <span className="text-gray-400">최솟값</span>
@@ -490,8 +492,6 @@ function RangeBar({ mn, med, mx }: { mn: number; med: number; mx: number }) {
             세로선 | = 연 20% 기준
           </div>
         </div>
-        {/* 아래 화살표 */}
-        <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900 dark:border-t-gray-700" />
       </div>
     </div>
   )
