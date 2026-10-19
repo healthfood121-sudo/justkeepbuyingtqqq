@@ -450,22 +450,22 @@ function RangeBar({ mn, med, mx }: { mn: number; med: number; mx: number }) {
   const ref20 = ((20 - BAR_MIN) / (BAR_MAX - BAR_MIN) * 100).toFixed(2)
 
   return (
-    <div className="relative flex items-center" style={{ width: 220, height: 28 }}>
+    <div className="relative flex items-center" style={{ width: 320, height: 44 }}>
       {/* 배경 트랙 */}
-      <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-2 bg-gray-100 dark:bg-gray-800 rounded-full" />
+      <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-3 bg-gray-100 dark:bg-gray-800 rounded-full" />
       {/* min~max 구간 바 */}
       <div
-        className="absolute top-1/2 -translate-y-1/2 h-2 bg-blue-200 dark:bg-blue-900 rounded-full"
+        className="absolute top-1/2 -translate-y-1/2 h-3 bg-blue-200 dark:bg-blue-900 rounded-full"
         style={{ left: toX(mn), right: `${(100 - parseFloat(toX(mx))).toFixed(2)}%` }}
       />
       {/* 20% 기준선 */}
       <div
-        className="absolute top-0 h-full w-0.5 bg-blue-400 dark:bg-blue-500 opacity-60"
+        className="absolute top-0 h-full w-0.5 bg-blue-400 dark:bg-blue-500 opacity-70"
         style={{ left: `${ref20}%` }}
       />
       {/* 중앙값 마커 */}
       <div
-        className="absolute top-1/2 w-3.5 h-3.5 rounded-full bg-blue-500 dark:bg-blue-400 border-2 border-white dark:border-gray-950"
+        className="absolute top-1/2 w-5 h-5 rounded-full bg-blue-500 dark:bg-blue-400 border-2 border-white dark:border-gray-950"
         style={{ left: toX(med), transform: 'translateX(-50%) translateY(-50%)' }}
       />
     </div>
@@ -566,7 +566,7 @@ function OverviewTable({
         </tbody>
       </table>
       <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
-        행 클릭 시 상세 보기 · 분포 바 세로선: 연 20% 기준 · 모두 최근 10개 완결 구간 기준
+        행 클릭 시 상세 보기 · 분포 바의 세로선(|)은 연 20% 기준선 · 모두 최근 10개 완결 구간 기준
       </p>
     </div>
   )
