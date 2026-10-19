@@ -5,7 +5,7 @@
   "benchmark": "S&P 500",
   "note": "",
   "current": {
-    "price": 93.7,
+    "price": 93.42,
     "pe": 28.1,
     "divYield": 2.26,
     "eps": 3.33
@@ -14,10 +14,10 @@
     "start_date": "1970-01-02",
     "end_date": "2026-10-19",
     "start_price": 0.1718,
-    "end_price": 93.7061,
+    "end_price": 93.42,
     "years": 56.8,
     "cagr": 11.73,
-    "multiple": 545.4
+    "multiple": 543.7
   },
   "stats": {
     "n": 28,

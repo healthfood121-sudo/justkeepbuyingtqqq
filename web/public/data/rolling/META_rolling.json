@@ -1,0 +1,261 @@
+{
+  "ticker": "META",
+  "name": "메타 플랫폼스",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "2012년 5월 상장. 완결 구간 4개(2012~2015년 말 매수)로 아직 역사 짧음. 주식 분할 없음.",
+  "current": {
+    "price": 705.44,
+    "pe": 26.6,
+    "divYield": 0.3,
+    "eps": 26.54
+  },
+  "fullPeriod": {
+    "start_date": "2012-05-18",
+    "end_date": "2026-10-19",
+    "start_price": 37.8673,
+    "end_price": 705.44,
+    "years": 14.4,
+    "cagr": 22.49,
+    "multiple": 18.6
+  },
+  "stats": {
+    "n": 4,
+    "min": 16.29,
+    "minBuy": "2012",
+    "median": 20.42,
+    "mean": 19.88,
+    "max": 22.37,
+    "maxBuy": "2014",
+    "over10": 100.0,
+    "over15": 100.0,
+    "over20": 75.0,
+    "losses": 0,
+    "beatBench": 4,
+    "beatTotal": 4
+  },
+  "rows10y": [
+    {
+      "buyYear": 2012,
+      "sellYear": 2022,
+      "sellDate": "2022-12-31",
+      "yearsActual": 10.0,
+      "cagr": 16.29,
+      "multiple": 4.52,
+      "isComplete": true,
+      "benchCagr": 12.56,
+      "diff": 3.72,
+      "peBuy": 2636.8
+    },
+    {
+      "buyYear": 2013,
+      "sellYear": 2023,
+      "sellDate": "2023-12-31",
+      "yearsActual": 10.0,
+      "cagr": 20.54,
+      "multiple": 6.48,
+      "isComplete": true,
+      "benchCagr": 12.03,
+      "diff": 8.51,
+      "peBuy": 90.2
+    },
+    {
+      "buyYear": 2014,
+      "sellYear": 2024,
+      "sellDate": "2024-12-31",
+      "yearsActual": 10.0,
+      "cagr": 22.37,
+      "multiple": 7.53,
+      "isComplete": true,
+      "benchCagr": 13.1,
+      "diff": 9.27,
+      "peBuy": 70.3
+    },
+    {
+      "buyYear": 2015,
+      "sellYear": 2025,
+      "sellDate": "2025-12-31",
+      "yearsActual": 10.0,
+      "cagr": 20.3,
+      "multiple": 6.35,
+      "isComplete": true,
+      "benchCagr": 14.82,
+      "diff": 5.48,
+      "peBuy": 80.4
+    },
+    {
+      "buyYear": 2016,
+      "sellYear": 2026,
+      "sellDate": "2026-10-19",
+      "yearsActual": 9.8,
+      "cagr": 20.45,
+      "multiple": 6.19,
+      "isComplete": false,
+      "benchCagr": 14.97,
+      "diff": 5.48,
+      "peBuy": 32.7
+    },
+    {
+      "buyYear": 2017,
+      "sellYear": 2026,
+      "sellDate": "2026-10-19",
+      "yearsActual": 8.8,
+      "cagr": 17.18,
+      "multiple": 4.04,
+      "isComplete": false,
+      "benchCagr": 14.23,
+      "diff": 2.96,
+      "peBuy": 32.4
+    },
+    {
+      "buyYear": 2018,
+      "sellYear": 2026,
+      "sellDate": "2026-10-19",
+      "yearsActual": 7.8,
+      "cagr": 24.23,
+      "multiple": 5.43,
+      "isComplete": false,
+      "benchCagr": 16.79,
+      "diff": 7.44,
+      "peBuy": 17.2
+    },
+    {
+      "buyYear": 2019,
+      "sellYear": 2026,
+      "sellDate": "2026-10-19",
+      "yearsActual": 6.8,
+      "cagr": 20.07,
+      "multiple": 3.47,
+      "isComplete": false,
+      "benchCagr": 14.83,
+      "diff": 5.24,
+      "peBuy": 31.6
+    },
+    {
+      "buyYear": 2020,
+      "sellYear": 2026,
+      "sellDate": "2026-10-19",
+      "yearsActual": 5.8,
+      "cagr": 17.97,
+      "multiple": 2.61,
+      "isComplete": false,
+      "benchCagr": 14.25,
+      "diff": 3.72,
+      "peBuy": 26.8
+    },
+    {
+      "buyYear": 2021,
+      "sellYear": 2026,
+      "sellDate": "2026-10-19",
+      "yearsActual": 4.8,
+      "cagr": 16.92,
+      "multiple": 2.12,
+      "isComplete": false,
+      "benchCagr": 11.56,
+      "diff": 5.36,
+      "peBuy": 24.2
+    },
+    {
+      "buyYear": 2022,
+      "sellYear": 2026,
+      "sellDate": "2026-10-19",
+      "yearsActual": 3.8,
+      "cagr": 59.66,
+      "multiple": 5.92,
+      "isComplete": false,
+      "benchCagr": 20.52,
+      "diff": 39.14,
+      "peBuy": 13.9
+    },
+    {
+      "buyYear": 2023,
+      "sellYear": 2026,
+      "sellDate": "2026-10-19",
+      "yearsActual": 2.8,
+      "cagr": 28.36,
+      "multiple": 2.01,
+      "isComplete": false,
+      "benchCagr": 18.66,
+      "diff": 9.7,
+      "peBuy": 23.6
+    },
+    {
+      "buyYear": 2024,
+      "sellYear": 2026,
+      "sellDate": "2026-10-19",
+      "yearsActual": 1.8,
+      "cagr": 11.27,
+      "multiple": 1.21,
+      "isComplete": false,
+      "benchCagr": 15.62,
+      "diff": -4.35,
+      "peBuy": 24.4
+    }
+  ],
+  "loss5y": [
+    {
+      "buyYear": 2017,
+      "sellYear": 2022,
+      "cagr": -7.37
+    }
+  ],
+  "epsDecomp": [
+    {
+      "buyYear": 2012,
+      "sellYear": 2022,
+      "epsBuy": 0.01,
+      "epsSell": 8.59,
+      "epsMultiple": 859.0,
+      "peBuy": 2636.8,
+      "peSell": 13.9,
+      "peMultiple": 0.01,
+      "epsGrowthCagr": 96.52,
+      "peCagr": -40.83,
+      "totalCagr": 16.29,
+      "note": "매수연도 EPS: IPO 관련 RSU 비용 일시 인식(EPS $0.01, 비정상적 저점); 매도연도 EPS: Reality Labs 적자 $13.7B + 디지털 광고 시장 침체"
+    },
+    {
+      "buyYear": 2013,
+      "sellYear": 2023,
+      "epsBuy": 0.6,
+      "epsSell": 14.87,
+      "epsMultiple": 24.78,
+      "peBuy": 90.2,
+      "peSell": 23.6,
+      "peMultiple": 0.26,
+      "epsGrowthCagr": 37.85,
+      "peCagr": -12.56,
+      "totalCagr": 20.54,
+      "note": null
+    },
+    {
+      "buyYear": 2014,
+      "sellYear": 2024,
+      "epsBuy": 1.1,
+      "epsSell": 23.86,
+      "epsMultiple": 21.69,
+      "peBuy": 70.3,
+      "peSell": 24.4,
+      "peMultiple": 0.35,
+      "epsGrowthCagr": 36.03,
+      "peCagr": -10.04,
+      "totalCagr": 22.37,
+      "note": null
+    },
+    {
+      "buyYear": 2015,
+      "sellYear": 2025,
+      "epsBuy": 1.29,
+      "epsSell": 23.49,
+      "epsMultiple": 18.21,
+      "peBuy": 80.4,
+      "peSell": 28.0,
+      "peMultiple": 0.35,
+      "epsGrowthCagr": 33.67,
+      "peCagr": -10.0,
+      "totalCagr": 20.3,
+      "note": null
+    }
+  ],
+  "epsNote": "EPS 출처: SEC EDGAR XBRL CIK 0001326801 (달력연도 10-K, 2012~2025). 주식 분할 없어 조정 불필요. PER은 Yahoo Finance 주가(배당 없음) 기준."
+}

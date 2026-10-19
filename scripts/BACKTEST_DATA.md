@@ -831,6 +831,7 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 | `web/public/data/rolling/AAPL_rolling.json` | ~50 KB | AAPL (애플) | EDGAR XBRL |
 | `web/public/data/rolling/COST_rolling.json` | ~50 KB | COST (코스트코) | EDGAR XBRL |
 | `web/public/data/rolling/KO_rolling.json` | ~50 KB | KO (코카콜라) | EDGAR XBRL (2007~2025) + macrotrends 역산 (1988~2006) |
+| `web/public/data/rolling/META_rolling.json` | ~20 KB | META (메타 플랫폼스) | EDGAR XBRL CIK 0001326801 (2012~2025, 분할 없음) |
 
 **KO 파라미터:**
 - 매수 시작: 1988년 말 (연말 매수 기준)

@@ -170,19 +170,21 @@ def get_metrics(ticker: str) -> dict:
         "eps":      round(eps, 2) if eps else None,
     }
 
-print("[현재 지표 조회] NKE, RMS.PA, KO, AAPL, COST, GOOGL ...")
+print("[현재 지표 조회] NKE, RMS.PA, KO, AAPL, COST, GOOGL, META ...")
 nke_metrics   = get_metrics("NKE")
 rms_metrics   = get_metrics("RMS.PA")
 ko_metrics    = get_metrics("KO")
 aapl_metrics  = get_metrics("AAPL")
 cost_metrics  = get_metrics("COST")
 googl_metrics = get_metrics("GOOGL")
+meta_metrics  = get_metrics("META")
 print(f"  NKE:    {nke_metrics}")
 print(f"  RMS.PA: {rms_metrics}")
 print(f"  KO:     {ko_metrics}")
 print(f"  AAPL:   {aapl_metrics}")
 print(f"  COST:   {cost_metrics}")
 print(f"  GOOGL:  {googl_metrics}")
+print(f"  META:   {meta_metrics}")
 
 nke_out = {
     "ticker":    "NKE",
@@ -623,5 +625,84 @@ googl_out = {
 out_path6 = DST / "GOOGL_rolling.json"
 out_path6.write_text(json.dumps(googl_out, ensure_ascii=False, indent=2), encoding="utf-8")
 print(f"  저장 → {out_path6}")
+
+# ── META EPS 데이터 ───────────────────────────────────────────
+# 메타 플랫폼스(Facebook → Meta) 회계연도 = 달력연도 (1월~12월)
+# 상장: 2012년 5월 18일 (NASDAQ)
+# 주식 분할 이력: 없음 → 조정 불필요
+#
+# 출처: SEC EDGAR XBRL CIK 0001326801 (us-gaap/EarningsPerShareDiluted, 10-K 기준)
+#
+# 주요 EPS 왜곡 연도:
+#   2012: IPO 관련 주식보상 비용(RSU 비용 일시 인식) → EPS $0.01 (비정상적 저점)
+#   2019: FTC 합의금 $5B 일회성 비용 → EPS -$3.14 감소 효과
+#   2022: Reality Labs 대규모 적자($13.7B) + 디지털 광고 침체 → EPS 급락
+_META_EPS = {
+    2012: 0.0100,
+    2013: 0.6000,
+    2014: 1.1000,
+    2015: 1.2900,
+    2016: 3.4900,
+    2017: 5.3900,
+    2018: 7.5700,
+    2019: 6.4300,
+    2020: 10.0900,
+    2021: 13.7700,
+    2022: 8.5900,
+    2023: 14.8700,
+    2024: 23.8600,
+    2025: 23.4900,
+}
+_META_ONE_TIME = {
+    2012: "IPO 관련 RSU 비용 일시 인식(EPS $0.01, 비정상적 저점)",
+    2019: "FTC 합의금 $5B 일회성 비용",
+    2022: "Reality Labs 적자 $13.7B + 디지털 광고 시장 침체",
+}
+
+# ── META ──────────────────────────────────────────────────────
+print("[META] 데이터 로드...")
+az_meta = RollingAnalyzer("META", benchmark="^SP500TR")
+df10a_meta = pd.read_csv(SRC / "META_10y_annual.csv", parse_dates=["buy_date","sell_date"])
+df5a_meta  = pd.read_csv(SRC / "META_5y_annual.csv",  parse_dates=["buy_date","sell_date"])
+fp_meta = az_meta.full_period()
+st_meta = summary_stats(df10a_meta, label="META")
+
+loss5_meta = df5a_meta[df5a_meta["is_complete"] & (df5a_meta["cagr"] < 0)]
+
+meta_out = {
+    "ticker":    "META",
+    "name":      "메타 플랫폼스",
+    "currency":  "USD",
+    "benchmark": "S&P 500",
+    "note":      "2012년 5월 상장. 완결 구간 4개(2012~2015년 말 매수)로 아직 역사 짧음. 주식 분할 없음.",
+    "current":   meta_metrics,
+    "fullPeriod": fp_meta,
+    "stats": {
+        "n":        st_meta["n_complete"],
+        "min":      st_meta["min_cagr"],
+        "minBuy":   st_meta["min_buy"],
+        "median":   st_meta["median_cagr"],
+        "mean":     st_meta["mean_cagr"],
+        "max":      st_meta["max_cagr"],
+        "maxBuy":   st_meta["max_buy"],
+        "over10":   st_meta["pct_over_10"],
+        "over15":   st_meta["pct_over_15"],
+        "over20":   st_meta["pct_over_20"],
+        "losses":   st_meta["n_losses"],
+        "beatBench":  st_meta.get("n_beat_bench"),
+        "beatTotal":  st_meta.get("n_beat_bench_total"),
+    },
+    "rows10y": df_to_rows(df10a_meta, _META_EPS),
+    "loss5y": [
+        {"buyYear": int(r["buy_date"].year), "sellYear": int(r["sell_date"].year), "cagr": float(r["cagr"])}
+        for _, r in loss5_meta.iterrows()
+    ],
+    "epsDecomp": compute_eps_decomp(df10a_meta, _META_EPS, _META_ONE_TIME),
+    "epsNote": "EPS 출처: SEC EDGAR XBRL CIK 0001326801 (달력연도 10-K, 2012~2025). 주식 분할 없어 조정 불필요. PER은 Yahoo Finance 주가(배당 없음) 기준.",
+}
+
+out_path7 = DST / "META_rolling.json"
+out_path7.write_text(json.dumps(meta_out, ensure_ascii=False, indent=2), encoding="utf-8")
+print(f"  저장 → {out_path7}")
 
 print("\n[완료]")

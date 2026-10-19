@@ -14,6 +14,7 @@ import aaplData  from '@/public/data/rolling/AAPL_rolling.json'
 import costData  from '@/public/data/rolling/COST_rolling.json'
 import koData    from '@/public/data/rolling/KO_rolling.json'
 import googlData from '@/public/data/rolling/GOOGL_rolling.json'
+import metaData  from '@/public/data/rolling/META_rolling.json'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Tooltip, Legend)
 
@@ -21,6 +22,7 @@ type StockData = typeof nkeData
 
 const STOCKS: Array<{ key: string; data: StockData }> = [
   { key: 'AAPL',  data: aaplData  as StockData },
+  { key: 'META',  data: metaData  as StockData },
   { key: 'RMS',   data: rmsData   as StockData },
   { key: 'COST',  data: costData  as StockData },
   { key: 'GOOGL', data: googlData as StockData },
@@ -642,7 +644,7 @@ export default function PrivatePage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 space-y-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 space-y-8">
 
         {/* 헤더 */}
         <div>
