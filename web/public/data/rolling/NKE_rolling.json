@@ -5,8 +5,8 @@
   "benchmark": "S&P 500",
   "note": "1980~1982 매수 구간: TradingView adj-on 주가로 보정 완료 (+약 3pp). 단 macrotrends 기준값 대비 여전히 약 5~6pp 차이 존재 (분할 이력 완전 일치 불가)",
   "current": {
-    "price": 36.8,
-    "pe": 17.7,
+    "price": 37.02,
+    "pe": 17.8,
     "divYield": 4.42,
     "eps": 2.08
   },
@@ -14,10 +14,10 @@
     "start_date": "1980-12-02",
     "end_date": "2026-10-19",
     "start_price": 0.1204,
-    "end_price": 36.8,
+    "end_price": 37.025,
     "years": 45.9,
-    "cagr": 13.28,
-    "multiple": 305.7
+    "cagr": 13.3,
+    "multiple": 307.5
   },
   "stats": {
     "n": 36,
@@ -143,7 +143,8 @@
       "multiple": 7.73,
       "isComplete": true,
       "benchCagr": 18.21,
-      "diff": 4.48
+      "diff": 4.48,
+      "peBuy": 8.3
     },
     {
       "buyYear": 1990,
@@ -154,7 +155,8 @@
       "multiple": 5.72,
       "isComplete": true,
       "benchCagr": 17.45,
-      "diff": 1.6
+      "diff": 1.6,
+      "peBuy": 8.9
     },
     {
       "buyYear": 1991,
@@ -165,7 +167,8 @@
       "multiple": 3.22,
       "isComplete": true,
       "benchCagr": 12.93,
-      "diff": -0.54
+      "diff": -0.54,
+      "peBuy": 13.6
     },
     {
       "buyYear": 1992,
@@ -176,7 +179,8 @@
       "multiple": 2.23,
       "isComplete": true,
       "benchCagr": 9.35,
-      "diff": -1.01
+      "diff": -1.01,
+      "peBuy": 13.7
     },
     {
       "buyYear": 1993,
@@ -187,7 +191,8 @@
       "multiple": 6.18,
       "isComplete": true,
       "benchCagr": 11.07,
-      "diff": 8.91
+      "diff": 8.91,
+      "peBuy": 7.0
     },
     {
       "buyYear": 1994,
@@ -198,7 +203,8 @@
       "multiple": 5.09,
       "isComplete": true,
       "benchCagr": 12.07,
-      "diff": 5.6
+      "diff": 5.6,
+      "peBuy": 13.4
     },
     {
       "buyYear": 1995,
@@ -209,7 +215,8 @@
       "multiple": 2.62,
       "isComplete": true,
       "benchCagr": 9.07,
-      "diff": 1.05
+      "diff": 1.05,
+      "peBuy": 18.2
     },
     {
       "buyYear": 1996,
@@ -220,7 +227,8 @@
       "multiple": 1.75,
       "isComplete": true,
       "benchCagr": 8.42,
-      "diff": -2.69
+      "diff": -2.69,
+      "peBuy": 22.8
     },
     {
       "buyYear": 1997,
@@ -231,7 +239,8 @@
       "multiple": 3.51,
       "isComplete": true,
       "benchCagr": 5.91,
-      "diff": 7.46
+      "diff": 7.46,
+      "peBuy": 10.4
     },
     {
       "buyYear": 1998,
@@ -242,7 +251,8 @@
       "multiple": 2.71,
       "isComplete": true,
       "benchCagr": -1.38,
-      "diff": 11.86
+      "diff": 11.86,
+      "peBuy": 21.7
     },
     {
       "buyYear": 1999,
@@ -253,7 +263,8 @@
       "multiple": 2.91,
       "isComplete": true,
       "benchCagr": -0.95,
-      "diff": 12.23
+      "diff": 12.23,
+      "peBuy": 22.9
     },
     {
       "buyYear": 2000,
@@ -264,7 +275,8 @@
       "multiple": 3.37,
       "isComplete": true,
       "benchCagr": 1.41,
-      "diff": 11.52
+      "diff": 11.52,
+      "peBuy": 19.7
     },
     {
       "buyYear": 2001,
@@ -275,7 +287,8 @@
       "multiple": 3.81,
       "isComplete": true,
       "benchCagr": 2.92,
-      "diff": 11.4
+      "diff": 11.4,
+      "peBuy": 19.1
     },
     {
       "buyYear": 2002,
@@ -286,7 +299,8 @@
       "multiple": 5.21,
       "isComplete": true,
       "benchCagr": 7.1,
-      "diff": 10.85
+      "diff": 10.85,
+      "peBuy": 13.3
     },
     {
       "buyYear": 2003,
@@ -297,7 +311,8 @@
       "multiple": 5.2,
       "isComplete": true,
       "benchCagr": 7.4,
-      "diff": 10.52
+      "diff": 10.52,
+      "peBuy": 28.5
     },
     {
       "buyYear": 2004,
@@ -308,7 +323,8 @@
       "multiple": 4.83,
       "isComplete": true,
       "benchCagr": 7.68,
-      "diff": 9.39
+      "diff": 9.39,
+      "peBuy": 19.3
     },
     {
       "buyYear": 2005,
@@ -319,7 +335,8 @@
       "multiple": 6.59,
       "isComplete": true,
       "benchCagr": 7.31,
-      "diff": 13.45
+      "diff": 13.45,
+      "peBuy": 14.5
     },
     {
       "buyYear": 2006,
@@ -330,7 +347,8 @@
       "multiple": 4.72,
       "isComplete": true,
       "benchCagr": 6.94,
-      "diff": 9.84
+      "diff": 9.84,
+      "peBuy": 14.2
     },
     {
       "buyYear": 2007,
@@ -341,7 +359,8 @@
       "multiple": 4.48,
       "isComplete": true,
       "benchCagr": 8.5,
-      "diff": 7.69
+      "diff": 7.69,
+      "peBuy": 16.8
     },
     {
       "buyYear": 2008,
@@ -567,6 +586,272 @@
   ],
   "epsDecomp": [
     {
+      "buyYear": 1989,
+      "sellYear": 1999,
+      "epsBuy": 0.07,
+      "epsSell": 0.196,
+      "epsMultiple": 2.8,
+      "peBuy": 8.3,
+      "peSell": 22.9,
+      "peMultiple": 2.76,
+      "epsGrowthCagr": 10.86,
+      "peCagr": 10.67,
+      "totalCagr": 22.69,
+      "note": null
+    },
+    {
+      "buyYear": 1990,
+      "sellYear": 2000,
+      "epsBuy": 0.1,
+      "epsSell": 0.259,
+      "epsMultiple": 2.59,
+      "peBuy": 8.9,
+      "peSell": 19.7,
+      "peMultiple": 2.21,
+      "epsGrowthCagr": 9.97,
+      "peCagr": 8.26,
+      "totalCagr": 19.05,
+      "note": null
+    },
+    {
+      "buyYear": 1991,
+      "sellYear": 2001,
+      "epsBuy": 0.117,
+      "epsSell": 0.27,
+      "epsMultiple": 2.3,
+      "peBuy": 13.6,
+      "peSell": 19.1,
+      "peMultiple": 1.4,
+      "epsGrowthCagr": 8.68,
+      "peCagr": 3.42,
+      "totalCagr": 12.4,
+      "note": null
+    },
+    {
+      "buyYear": 1992,
+      "sellYear": 2002,
+      "epsBuy": 0.134,
+      "epsSell": 0.307,
+      "epsMultiple": 2.3,
+      "peBuy": 13.7,
+      "peSell": 13.3,
+      "peMultiple": 0.97,
+      "epsGrowthCagr": 8.68,
+      "peCagr": -0.31,
+      "totalCagr": 8.34,
+      "note": null
+    },
+    {
+      "buyYear": 1993,
+      "sellYear": 2003,
+      "epsBuy": 0.147,
+      "epsSell": 0.223,
+      "epsMultiple": 1.51,
+      "peBuy": 7.0,
+      "peSell": 28.5,
+      "peMultiple": 4.1,
+      "epsGrowthCagr": 4.2,
+      "peCagr": 15.14,
+      "totalCagr": 19.98,
+      "note": "매도연도 EPS: 사업부 손상차손(Bauer Hockey 등, -28% EPS)"
+    },
+    {
+      "buyYear": 1994,
+      "sellYear": 2004,
+      "epsBuy": 0.124,
+      "epsSell": 0.438,
+      "epsMultiple": 3.54,
+      "peBuy": 13.4,
+      "peSell": 19.3,
+      "peMultiple": 1.44,
+      "epsGrowthCagr": 13.46,
+      "peCagr": 3.71,
+      "totalCagr": 17.67,
+      "note": null
+    },
+    {
+      "buyYear": 1995,
+      "sellYear": 2005,
+      "epsBuy": 0.17,
+      "epsSell": 0.56,
+      "epsMultiple": 3.29,
+      "peBuy": 18.2,
+      "peSell": 14.5,
+      "peMultiple": 0.8,
+      "epsGrowthCagr": 12.66,
+      "peCagr": -2.25,
+      "totalCagr": 10.12,
+      "note": null
+    },
+    {
+      "buyYear": 1996,
+      "sellYear": 2006,
+      "epsBuy": 0.235,
+      "epsSell": 0.66,
+      "epsMultiple": 2.81,
+      "peBuy": 22.8,
+      "peSell": 14.2,
+      "peMultiple": 0.62,
+      "epsGrowthCagr": 10.88,
+      "peCagr": -4.64,
+      "totalCagr": 5.73,
+      "note": null
+    },
+    {
+      "buyYear": 1997,
+      "sellYear": 2007,
+      "epsBuy": 0.335,
+      "epsSell": 0.733,
+      "epsMultiple": 2.19,
+      "peBuy": 10.4,
+      "peSell": 16.8,
+      "peMultiple": 1.6,
+      "epsGrowthCagr": 8.14,
+      "peCagr": 4.84,
+      "totalCagr": 13.37,
+      "note": null
+    },
+    {
+      "buyYear": 1998,
+      "sellYear": 2008,
+      "epsBuy": 0.169,
+      "epsSell": 0.935,
+      "epsMultiple": 5.54,
+      "peBuy": 21.7,
+      "peSell": 10.6,
+      "peMultiple": 0.49,
+      "epsGrowthCagr": 18.67,
+      "peCagr": -6.91,
+      "totalCagr": 10.47,
+      "note": "매수연도 EPS: 아시아 금융위기(-50% EPS)"
+    },
+    {
+      "buyYear": 1999,
+      "sellYear": 2009,
+      "epsBuy": 0.196,
+      "epsSell": 0.757,
+      "epsMultiple": 3.86,
+      "peBuy": 22.9,
+      "peSell": 17.3,
+      "peMultiple": 0.75,
+      "epsGrowthCagr": 14.46,
+      "peCagr": -2.77,
+      "totalCagr": 11.28,
+      "note": null
+    },
+    {
+      "buyYear": 2000,
+      "sellYear": 2010,
+      "epsBuy": 0.259,
+      "epsSell": 0.965,
+      "epsMultiple": 3.73,
+      "peBuy": 19.7,
+      "peSell": 17.8,
+      "peMultiple": 0.9,
+      "epsGrowthCagr": 14.07,
+      "peCagr": -1.0,
+      "totalCagr": 12.93,
+      "note": null
+    },
+    {
+      "buyYear": 2001,
+      "sellYear": 2011,
+      "epsBuy": 0.27,
+      "epsSell": 1.1,
+      "epsMultiple": 4.07,
+      "peBuy": 19.1,
+      "peSell": 17.8,
+      "peMultiple": 0.94,
+      "epsGrowthCagr": 15.08,
+      "peCagr": -0.66,
+      "totalCagr": 14.32,
+      "note": null
+    },
+    {
+      "buyYear": 2002,
+      "sellYear": 2012,
+      "epsBuy": 0.307,
+      "epsSell": 1.175,
+      "epsMultiple": 3.82,
+      "peBuy": 13.3,
+      "peSell": 18.2,
+      "peMultiple": 1.36,
+      "epsGrowthCagr": 14.35,
+      "peCagr": 3.15,
+      "totalCagr": 17.95,
+      "note": null
+    },
+    {
+      "buyYear": 2003,
+      "sellYear": 2013,
+      "epsBuy": 0.223,
+      "epsSell": 1.35,
+      "epsMultiple": 6.07,
+      "peBuy": 28.5,
+      "peSell": 24.4,
+      "peMultiple": 0.86,
+      "epsGrowthCagr": 19.76,
+      "peCagr": -1.53,
+      "totalCagr": 17.92,
+      "note": "매수연도 EPS: 사업부 손상차손(Bauer Hockey 등, -28% EPS)"
+    },
+    {
+      "buyYear": 2004,
+      "sellYear": 2014,
+      "epsBuy": 0.438,
+      "epsSell": 1.49,
+      "epsMultiple": 3.41,
+      "peBuy": 19.3,
+      "peSell": 27.4,
+      "peMultiple": 1.42,
+      "epsGrowthCagr": 13.04,
+      "peCagr": 3.56,
+      "totalCagr": 17.06,
+      "note": null
+    },
+    {
+      "buyYear": 2005,
+      "sellYear": 2015,
+      "epsBuy": 0.56,
+      "epsSell": 1.85,
+      "epsMultiple": 3.3,
+      "peBuy": 14.5,
+      "peSell": 29.0,
+      "peMultiple": 2.0,
+      "epsGrowthCagr": 12.69,
+      "peCagr": 7.15,
+      "totalCagr": 20.76,
+      "note": null
+    },
+    {
+      "buyYear": 2006,
+      "sellYear": 2016,
+      "epsBuy": 0.66,
+      "epsSell": 2.16,
+      "epsMultiple": 3.27,
+      "peBuy": 14.2,
+      "peSell": 20.4,
+      "peMultiple": 1.44,
+      "epsGrowthCagr": 12.59,
+      "peCagr": 3.73,
+      "totalCagr": 16.78,
+      "note": null
+    },
+    {
+      "buyYear": 2007,
+      "sellYear": 2017,
+      "epsBuy": 0.733,
+      "epsSell": 2.51,
+      "epsMultiple": 3.43,
+      "peBuy": 16.8,
+      "peSell": 21.9,
+      "peMultiple": 1.31,
+      "epsGrowthCagr": 13.11,
+      "peCagr": 2.72,
+      "totalCagr": 16.18,
+      "note": null
+    },
+    {
       "buyYear": 2008,
       "sellYear": 2018,
       "epsBuy": 0.935,
@@ -578,7 +863,7 @@
       "epsGrowthCagr": 2.27,
       "peCagr": 18.2,
       "totalCagr": 20.88,
-      "note": "매도연도 EPS: 세금개혁(TCJA)"
+      "note": "매도연도 EPS: 세금개혁(TCJA, -53% EPS)"
     },
     {
       "buyYear": 2009,
