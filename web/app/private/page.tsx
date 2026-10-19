@@ -450,7 +450,7 @@ function RangeBar({ mn, med, mx }: { mn: number; med: number; mx: number }) {
   const ref20 = ((20 - BAR_MIN) / (BAR_MAX - BAR_MIN) * 100).toFixed(2)
 
   return (
-    <div className="relative flex items-center" style={{ width: 320, height: 44 }}>
+    <div className="relative group flex items-center" style={{ width: 320, height: 44 }}>
       {/* 배경 트랙 */}
       <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-3 bg-gray-100 dark:bg-gray-800 rounded-full" />
       {/* min~max 구간 바 */}
@@ -468,6 +468,31 @@ function RangeBar({ mn, med, mx }: { mn: number; med: number; mx: number }) {
         className="absolute top-1/2 w-5 h-5 rounded-full bg-blue-500 dark:bg-blue-400 border-2 border-white dark:border-gray-950"
         style={{ left: toX(med), transform: 'translateX(-50%) translateY(-50%)' }}
       />
+      {/* 툴팁 */}
+      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-20
+                      invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity duration-150
+                      bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg px-3 py-2
+                      whitespace-nowrap shadow-lg pointer-events-none">
+        <div className="space-y-1">
+          <div className="flex justify-between gap-4">
+            <span className="text-gray-400">최솟값</span>
+            <span className="font-semibold">{mn.toFixed(1)}%</span>
+          </div>
+          <div className="flex justify-between gap-4">
+            <span className="text-gray-400">중앙값 ●</span>
+            <span className="font-semibold">{med.toFixed(1)}%</span>
+          </div>
+          <div className="flex justify-between gap-4">
+            <span className="text-gray-400">최댓값</span>
+            <span className="font-semibold">{mx.toFixed(1)}%</span>
+          </div>
+          <div className="border-t border-gray-600 pt-1 text-gray-400">
+            세로선 | = 연 20% 기준
+          </div>
+        </div>
+        {/* 아래 화살표 */}
+        <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900 dark:border-t-gray-700" />
+      </div>
     </div>
   )
 }
