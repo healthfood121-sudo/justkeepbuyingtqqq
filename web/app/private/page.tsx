@@ -450,22 +450,22 @@ function RangeBar({ mn, med, mx }: { mn: number; med: number; mx: number }) {
   const ref20 = ((20 - BAR_MIN) / (BAR_MAX - BAR_MIN) * 100).toFixed(2)
 
   return (
-    <div className="relative flex items-center" style={{ width: 140, height: 20 }}>
+    <div className="relative flex items-center" style={{ width: 220, height: 28 }}>
       {/* 배경 트랙 */}
-      <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-1 bg-gray-100 dark:bg-gray-800 rounded-full" />
+      <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-2 bg-gray-100 dark:bg-gray-800 rounded-full" />
       {/* min~max 구간 바 */}
       <div
-        className="absolute top-1/2 -translate-y-1/2 h-1 bg-blue-200 dark:bg-blue-900 rounded-full"
+        className="absolute top-1/2 -translate-y-1/2 h-2 bg-blue-200 dark:bg-blue-900 rounded-full"
         style={{ left: toX(mn), right: `${(100 - parseFloat(toX(mx))).toFixed(2)}%` }}
       />
       {/* 20% 기준선 */}
       <div
-        className="absolute top-0 h-full w-px bg-blue-400 dark:bg-blue-500 opacity-50"
+        className="absolute top-0 h-full w-0.5 bg-blue-400 dark:bg-blue-500 opacity-60"
         style={{ left: `${ref20}%` }}
       />
       {/* 중앙값 마커 */}
       <div
-        className="absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-blue-500 dark:bg-blue-400 border-2 border-white dark:border-gray-950"
+        className="absolute top-1/2 w-3.5 h-3.5 rounded-full bg-blue-500 dark:bg-blue-400 border-2 border-white dark:border-gray-950"
         style={{ left: toX(med), transform: 'translateX(-50%) translateY(-50%)' }}
       />
     </div>
@@ -493,7 +493,10 @@ function OverviewTable({
     const mx     = cagrs[cagrs.length - 1] ?? 0
     const over20 = cagrs.length === 0 ? 0
       : Math.round(cagrs.filter((c: number) => c >= 20).length / cagrs.length * 100)
-    return { i, s, med, mn, mx, over20 }
+    const withDiff = recent.filter((r: any) => r.diff != null)
+    const beatSP   = withDiff.length === 0 ? null
+      : Math.round(withDiff.filter((r: any) => r.diff > 0).length / withDiff.length * 100)
+    return { i, s, med, mn, mx, over20, beatSP }
   })
 
   return (
@@ -507,11 +510,12 @@ function OverviewTable({
             <th className="text-right py-2 pr-4 font-medium">최솟값</th>
             <th className="text-right py-2 pr-4 font-medium">중앙값</th>
             <th className="text-right py-2 pr-4 font-medium">최댓값</th>
-            <th className="text-right py-2 font-medium">20%+<br/><span className="font-normal opacity-60">비율</span></th>
+            <th className="text-right py-2 pr-4 font-medium">20%+<br/><span className="font-normal opacity-60">비율</span></th>
+            <th className="text-right py-2 font-medium">S&P500<br/><span className="font-normal opacity-60">초과 비율</span></th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-          {rows.map(({ i, s, med, mn, mx, over20 }) => {
+          {rows.map(({ i, s, med, mn, mx, over20, beatSP }) => {
             const isActive = activeStock === i
             return (
               <tr
@@ -540,12 +544,21 @@ function OverviewTable({
                 <td className={`py-3 pr-4 text-right tabular-nums ${cagrTextColor(mx, true)}`}>
                   {mx.toFixed(1)}%
                 </td>
-                <td className={`py-3 text-right tabular-nums font-medium ${
+                <td className={`py-3 pr-4 text-right tabular-nums font-medium ${
                   over20 >= 50 ? 'text-blue-600 dark:text-blue-400'
                   : over20 >= 20 ? 'text-yellow-600 dark:text-yellow-400'
                   : 'text-gray-400 dark:text-gray-500'
                 }`}>
                   {over20}%
+                </td>
+                <td className={`py-3 text-right tabular-nums font-medium ${
+                  beatSP == null       ? 'text-gray-300 dark:text-gray-600'
+                  : beatSP >= 80      ? 'text-blue-600 dark:text-blue-400'
+                  : beatSP >= 50      ? 'text-emerald-600 dark:text-emerald-400'
+                  : beatSP >= 30      ? 'text-yellow-600 dark:text-yellow-400'
+                  : 'text-gray-400 dark:text-gray-500'
+                }`}>
+                  {beatSP == null ? '—' : `${beatSP}%`}
                 </td>
               </tr>
             )
@@ -553,7 +566,7 @@ function OverviewTable({
         </tbody>
       </table>
       <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
-        행 클릭 시 상세 보기 · 분포 바의 세로선: 20% 기준 · 최근 10개 완결 구간 기준
+        행 클릭 시 상세 보기 · 분포 바 세로선: 연 20% 기준 · 모두 최근 10개 완결 구간 기준
       </p>
     </div>
   )
@@ -570,7 +583,7 @@ export default function PrivatePage() {
 
         {/* 헤더 */}
         <div>
-          <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-1">위대한 기업 찾기 - 이전에 성적 잘 받은 기업이 앞으로도 잘하더라</h1>
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-1">위대한 기업</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">
             연말 매수 기준 10년 보유 연환산 수익률
           </p>
