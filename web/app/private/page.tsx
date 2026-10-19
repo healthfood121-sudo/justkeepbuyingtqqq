@@ -503,8 +503,11 @@ function OverviewTable({
           <tr className="border-b border-gray-200 dark:border-gray-700 text-xs text-gray-400 dark:text-gray-500">
             <th className="text-left py-2 pr-4 font-medium">종목</th>
             <th className="text-right py-2 pr-4 font-medium">전체 기간<br/><span className="font-normal opacity-60">연평균 수익률</span></th>
-            <th className="text-left py-2 pr-3 font-medium pl-2">최근 10구간 분포<br/><span className="font-normal opacity-60">최솟값 ── 중앙값 ── 최댓값</span></th>
-            <th className="text-right py-2 font-medium">20%+ 비율<br/><span className="font-normal opacity-60">최근 10구간</span></th>
+            <th className="text-left py-2 px-3 font-medium">분포<br/><span className="font-normal opacity-60">최근 10구간</span></th>
+            <th className="text-right py-2 pr-4 font-medium">최솟값</th>
+            <th className="text-right py-2 pr-4 font-medium">중앙값</th>
+            <th className="text-right py-2 pr-4 font-medium">최댓값</th>
+            <th className="text-right py-2 font-medium">20%+<br/><span className="font-normal opacity-60">비율</span></th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -518,24 +521,26 @@ function OverviewTable({
                   isActive ? 'bg-blue-50/60 dark:bg-blue-900/10' : ''
                 }`}
               >
-                <td className="py-2.5 pr-4">
+                <td className="py-3 pr-4">
                   <span className="font-semibold text-gray-900 dark:text-white">{s.data.ticker}</span>
                   <span className="ml-1.5 text-xs text-gray-400 dark:text-gray-500">{s.data.name}</span>
                 </td>
-                <td className={`py-2.5 pr-4 text-right tabular-nums font-medium ${cagrTextColor(s.data.fullPeriod.cagr, true)}`}>
+                <td className={`py-3 pr-4 text-right tabular-nums font-medium ${cagrTextColor(s.data.fullPeriod.cagr, true)}`}>
                   {s.data.fullPeriod.cagr}%
                 </td>
-                <td className="py-2.5 pr-3 pl-2">
-                  <div className="flex items-center gap-3">
-                    <RangeBar mn={mn} med={med} mx={mx} />
-                    <span className="text-xs tabular-nums text-gray-400 dark:text-gray-500 whitespace-nowrap">
-                      {mn.toFixed(1)} ──{' '}
-                      <span className={`font-semibold ${cagrTextColor(med, true)}`}>{med.toFixed(1)}</span>
-                      {' '}── {mx.toFixed(1)}%
-                    </span>
-                  </div>
+                <td className="py-3 px-3">
+                  <RangeBar mn={mn} med={med} mx={mx} />
                 </td>
-                <td className={`py-2.5 text-right tabular-nums font-medium ${
+                <td className={`py-3 pr-4 text-right tabular-nums ${cagrTextColor(mn, true)}`}>
+                  {mn.toFixed(1)}%
+                </td>
+                <td className={`py-3 pr-4 text-right tabular-nums font-semibold ${cagrTextColor(med, true)}`}>
+                  {med.toFixed(1)}%
+                </td>
+                <td className={`py-3 pr-4 text-right tabular-nums ${cagrTextColor(mx, true)}`}>
+                  {mx.toFixed(1)}%
+                </td>
+                <td className={`py-3 text-right tabular-nums font-medium ${
                   over20 >= 50 ? 'text-blue-600 dark:text-blue-400'
                   : over20 >= 20 ? 'text-yellow-600 dark:text-yellow-400'
                   : 'text-gray-400 dark:text-gray-500'
@@ -548,7 +553,7 @@ function OverviewTable({
         </tbody>
       </table>
       <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
-        행 클릭 시 상세 보기 · 세로선: 20% 기준 · 최근 10개 완결 구간 기준
+        행 클릭 시 상세 보기 · 분포 바의 세로선: 20% 기준 · 최근 10개 완결 구간 기준
       </p>
     </div>
   )
