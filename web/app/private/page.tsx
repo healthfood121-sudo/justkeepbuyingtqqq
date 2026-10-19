@@ -440,6 +440,38 @@ function ScenarioTable({ data }: { data: StockData }) {
   )
 }
 
+// ── 분포 Range Bar ───────────────────────────────────────────
+// x축 고정 범위: 0% ~ 35%
+const BAR_MIN = 0
+const BAR_MAX = 35
+function RangeBar({ mn, med, mx }: { mn: number; med: number; mx: number }) {
+  const toX = (v: number) =>
+    `${Math.max(0, Math.min(100, (v - BAR_MIN) / (BAR_MAX - BAR_MIN) * 100)).toFixed(2)}%`
+  const ref20 = ((20 - BAR_MIN) / (BAR_MAX - BAR_MIN) * 100).toFixed(2)
+
+  return (
+    <div className="relative flex items-center" style={{ width: 140, height: 20 }}>
+      {/* 배경 트랙 */}
+      <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-1 bg-gray-100 dark:bg-gray-800 rounded-full" />
+      {/* min~max 구간 바 */}
+      <div
+        className="absolute top-1/2 -translate-y-1/2 h-1 bg-blue-200 dark:bg-blue-900 rounded-full"
+        style={{ left: toX(mn), right: `${(100 - parseFloat(toX(mx))).toFixed(2)}%` }}
+      />
+      {/* 20% 기준선 */}
+      <div
+        className="absolute top-0 h-full w-px bg-blue-400 dark:bg-blue-500 opacity-50"
+        style={{ left: `${ref20}%` }}
+      />
+      {/* 중앙값 마커 */}
+      <div
+        className="absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-blue-500 dark:bg-blue-400 border-2 border-white dark:border-gray-950"
+        style={{ left: toX(med), transform: 'translateX(-50%) translateY(-50%)' }}
+      />
+    </div>
+  )
+}
+
 // ── 종목 비교 개요 ───────────────────────────────────────────
 function OverviewTable({
   activeStock,
@@ -451,14 +483,17 @@ function OverviewTable({
   const rows = STOCKS.map((s, i) => {
     const completed = s.data.rows10y.filter((r: any) => r.isComplete)
     const recent    = completed.slice(-10)
-    const cagrs     = recent.map((r: any) => r.cagr as number).sort((a: number, b: number) => a - b)
+    const unsorted  = recent.map((r: any) => r.cagr as number)
+    const cagrs     = [...unsorted].sort((a, b) => a - b)
     const med = cagrs.length === 0 ? 0
       : cagrs.length % 2 === 0
         ? (cagrs[cagrs.length / 2 - 1] + cagrs[cagrs.length / 2]) / 2
         : cagrs[Math.floor(cagrs.length / 2)]
+    const mn     = cagrs[0] ?? 0
+    const mx     = cagrs[cagrs.length - 1] ?? 0
     const over20 = cagrs.length === 0 ? 0
       : Math.round(cagrs.filter((c: number) => c >= 20).length / cagrs.length * 100)
-    return { i, s, med, over20 }
+    return { i, s, med, mn, mx, over20 }
   })
 
   return (
@@ -468,12 +503,12 @@ function OverviewTable({
           <tr className="border-b border-gray-200 dark:border-gray-700 text-xs text-gray-400 dark:text-gray-500">
             <th className="text-left py-2 pr-4 font-medium">종목</th>
             <th className="text-right py-2 pr-4 font-medium">전체 기간<br/><span className="font-normal opacity-60">연평균 수익률</span></th>
-            <th className="text-right py-2 pr-4 font-medium">중앙값<br/><span className="font-normal opacity-60">최근 10구간</span></th>
+            <th className="text-left py-2 pr-3 font-medium pl-2">최근 10구간 분포<br/><span className="font-normal opacity-60">최솟값 ── 중앙값 ── 최댓값</span></th>
             <th className="text-right py-2 font-medium">20%+ 비율<br/><span className="font-normal opacity-60">최근 10구간</span></th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-          {rows.map(({ i, s, med, over20 }) => {
+          {rows.map(({ i, s, med, mn, mx, over20 }) => {
             const isActive = activeStock === i
             return (
               <tr
@@ -490,8 +525,15 @@ function OverviewTable({
                 <td className={`py-2.5 pr-4 text-right tabular-nums font-medium ${cagrTextColor(s.data.fullPeriod.cagr, true)}`}>
                   {s.data.fullPeriod.cagr}%
                 </td>
-                <td className={`py-2.5 pr-4 text-right tabular-nums font-medium ${cagrTextColor(med, true)}`}>
-                  {med.toFixed(1)}%
+                <td className="py-2.5 pr-3 pl-2">
+                  <div className="flex items-center gap-3">
+                    <RangeBar mn={mn} med={med} mx={mx} />
+                    <span className="text-xs tabular-nums text-gray-400 dark:text-gray-500 whitespace-nowrap">
+                      {mn.toFixed(1)} ──{' '}
+                      <span className={`font-semibold ${cagrTextColor(med, true)}`}>{med.toFixed(1)}</span>
+                      {' '}── {mx.toFixed(1)}%
+                    </span>
+                  </div>
                 </td>
                 <td className={`py-2.5 text-right tabular-nums font-medium ${
                   over20 >= 50 ? 'text-blue-600 dark:text-blue-400'
@@ -505,7 +547,9 @@ function OverviewTable({
           })}
         </tbody>
       </table>
-      <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">행 클릭 시 상세 보기 · 최근 중앙값·비율은 최근 10개 완결 구간 기준</p>
+      <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
+        행 클릭 시 상세 보기 · 세로선: 20% 기준 · 최근 10개 완결 구간 기준
+      </p>
     </div>
   )
 }
