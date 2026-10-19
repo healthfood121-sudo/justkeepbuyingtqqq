@@ -450,6 +450,88 @@ function ScenarioTable({ data }: { data: StockData }) {
   )
 }
 
+// ── 종목 비교 개요 ───────────────────────────────────────────
+function OverviewTable({
+  activeStock,
+  setActiveStock,
+}: {
+  activeStock: number
+  setActiveStock: (i: number) => void
+}) {
+  const rows = STOCKS.map((s, i) => {
+    const completed = s.data.rows10y.filter((r: any) => r.isComplete)
+    const recent    = completed.slice(-10)
+    const cagrs     = recent.map((r: any) => r.cagr as number).sort((a: number, b: number) => a - b)
+    const med = cagrs.length === 0 ? 0
+      : cagrs.length % 2 === 0
+        ? (cagrs[cagrs.length / 2 - 1] + cagrs[cagrs.length / 2]) / 2
+        : cagrs[Math.floor(cagrs.length / 2)]
+    const over20 = cagrs.length === 0 ? 0
+      : Math.round(cagrs.filter((c: number) => c >= 20).length / cagrs.length * 100)
+    return { i, s, med, over20 }
+  })
+
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="border-b border-gray-200 dark:border-gray-700 text-xs text-gray-400 dark:text-gray-500">
+            <th className="text-left py-2 pr-4 font-medium">종목</th>
+            <th className="text-left py-2 pr-4 font-medium">분류</th>
+            <th className="text-right py-2 pr-4 font-medium">전체 기간<br/><span className="font-normal opacity-60">연평균 수익률</span></th>
+            <th className="text-right py-2 pr-4 font-medium">최근 중앙값<br/><span className="font-normal opacity-60">(최근 10구간)</span></th>
+            <th className="text-right py-2 font-medium">최근 20%+<br/><span className="font-normal opacity-60">비율</span></th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+          {rows.map(({ i, s, med, over20 }) => {
+            const isActive = activeStock === i
+            const meta     = GRADE_META[s.grade]
+            return (
+              <tr
+                key={s.key}
+                onClick={() => setActiveStock(i)}
+                className={`cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/40 ${
+                  isActive ? 'bg-blue-50/60 dark:bg-blue-900/10' : ''
+                }`}
+              >
+                <td className="py-2.5 pr-4">
+                  <span className="font-semibold text-gray-900 dark:text-white">{s.data.ticker}</span>
+                  <span className="ml-1.5 text-xs text-gray-400 dark:text-gray-500">{s.data.name}</span>
+                </td>
+                <td className="py-2.5 pr-4">
+                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium
+                    ${s.grade === 'great'   ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : ''}
+                    ${s.grade === 'caution' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300' : ''}
+                    ${s.grade === 'slow'    ? 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400' : ''}
+                  `}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${meta.dot}`} />
+                    {meta.label}
+                  </span>
+                </td>
+                <td className={`py-2.5 pr-4 text-right tabular-nums font-medium ${cagrTextColor(s.data.fullPeriod.cagr, true)}`}>
+                  {s.data.fullPeriod.cagr}%
+                </td>
+                <td className={`py-2.5 pr-4 text-right tabular-nums font-medium ${cagrTextColor(med, true)}`}>
+                  {med.toFixed(1)}%
+                </td>
+                <td className={`py-2.5 text-right tabular-nums font-medium ${
+                  over20 >= 50 ? 'text-blue-600 dark:text-blue-400'
+                  : over20 >= 20 ? 'text-yellow-600 dark:text-yellow-400'
+                  : 'text-gray-400 dark:text-gray-500'
+                }`}>
+                  {over20}%
+                </td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+      <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">행 클릭 시 상세 보기 · 최근 중앙값·비율은 최근 10개 완결 구간 기준</p>
+    </div>
+  )
+}
+
 // ── 메인 페이지 ──────────────────────────────────────────────
 export default function PrivatePage() {
   const [activeStock, setActiveStock] = useState(0)
@@ -469,6 +551,9 @@ export default function PrivatePage() {
             ★ 모든 수익률은 배당 재투자 포함 총수익률 (Yahoo Finance 수정주가 기준)
           </p>
         </div>
+
+        {/* 종목 비교 개요 */}
+        <OverviewTable activeStock={activeStock} setActiveStock={setActiveStock} />
 
         {/* 종목 탭 */}
         <div className="space-y-2">
