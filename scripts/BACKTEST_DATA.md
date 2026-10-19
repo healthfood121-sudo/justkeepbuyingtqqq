@@ -825,6 +825,9 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 | `data/rolling/NVDA_10y_annual.csv` | `analyze_nvda.py` | NVDA (엔비디아) | 10년 연말 매수 롤링 (1999년부터) |
 | `data/rolling/NVDA_5y_annual.csv` | `analyze_nvda.py` | NVDA | 5년 연말 매수 롤링 |
 | `data/rolling/NVDA_10y_monthly.csv` | `analyze_nvda.py` | NVDA | 10년 월말 매수 롤링 |
+| `data/rolling/MSFT_10y_annual.csv` | `analyze_msft.py` | MSFT (마이크로소프트) | 10년 연말 매수 롤링 (1986년부터) |
+| `data/rolling/MSFT_5y_annual.csv` | `analyze_msft.py` | MSFT | 5년 연말 매수 롤링 |
+| `data/rolling/MSFT_10y_monthly.csv` | `analyze_msft.py` | MSFT | 10년 월말 매수 롤링 |
 
 ### 롤링 JSON (export 스크립트 출력)
 
@@ -840,6 +843,7 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 | `web/public/data/rolling/META_rolling.json` | ~20 KB | META (메타 플랫폼스) | EDGAR XBRL CIK 0001326801 (2012~2025, 분할 없음) |
 | `web/public/data/rolling/AMZN_rolling.json` | ~30 KB | AMZN (아마존) | EDGAR XBRL CIK 0001018724, FY2007~2019÷20, FY2020~2025 소급 반영 |
 | `web/public/data/rolling/NVDA_rolling.json` | ~50 KB | NVDA (엔비디아) | EDGAR XBRL CIK 0001045810, FY2008~2019÷40, FY2020~2022÷10, FY2023~조정없음 |
+| `web/public/data/rolling/MSFT_rolling.json` | ~60 KB | MSFT (마이크로소프트) | EDGAR XBRL (FY2008~2026), FY1993~2007 AI 역산 추정 (384:1 분할 반영) |
 
 **KO 파라미터:**
 - 매수 시작: 1988년 말 (연말 매수 기준)
