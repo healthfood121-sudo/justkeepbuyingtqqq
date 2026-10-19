@@ -18,13 +18,23 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointEleme
 
 type StockData = typeof nkeData
 
-const STOCKS = [
-  { key: 'NKE',  data: nkeData  as StockData },
-  { key: 'RMS',  data: rmsData  as StockData },
-  { key: 'AAPL', data: aaplData as StockData },
-  { key: 'COST', data: costData as StockData },
-  { key: 'KO',   data: koData   as StockData },
+// grade: 최근 10개 완결 구간 over20 비율 기준
+// 'great' = 50%+, 'caution' = 20~49%, 'slow' = 20% 미만
+type Grade = 'great' | 'caution' | 'slow'
+
+const STOCKS: Array<{ key: string; data: StockData; grade: Grade }> = [
+  { key: 'AAPL', data: aaplData as StockData, grade: 'great'   }, // over20 100%
+  { key: 'RMS',  data: rmsData  as StockData, grade: 'great'   }, // over20 70%
+  { key: 'COST', data: costData as StockData, grade: 'great'   }, // over20 60%
+  { key: 'NKE',  data: nkeData  as StockData, grade: 'caution' }, // over20 40%, 최근 하락
+  { key: 'KO',   data: koData   as StockData, grade: 'slow'    }, // over20 0%
 ]
+
+const GRADE_META: Record<Grade, { dot: string; label: string }> = {
+  great:   { dot: 'bg-blue-500',   label: '연 20%+ 가능성' },
+  caution: { dot: 'bg-yellow-400', label: '성장 둔화' },
+  slow:    { dot: 'bg-gray-400',   label: '저성장' },
+}
 
 // ── 색상 유틸 ───────────────────────────────────────────────
 function cagrBarColor(cagr: number, isComplete: boolean) {
@@ -459,31 +469,62 @@ export default function PrivatePage() {
         </div>
 
         {/* 종목 탭 */}
-        <div className="flex items-center gap-2 border-b border-gray-200 dark:border-gray-800">
-          {STOCKS.map((s, i) => (
-            <button
-              key={s.key}
-              onClick={() => setActiveStock(i)}
-              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-                activeStock === i
-                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
-              }`}
-            >
-              {s.data.ticker}
-              <span className="text-xs font-normal opacity-60 ml-1">({s.data.name})</span>
-            </button>
-          ))}
-          <span className="ml-2 px-3 py-1.5 text-xs text-gray-400 dark:text-gray-600 border border-dashed border-gray-300 dark:border-gray-700 rounded cursor-default">
-            + 종목 추가 예정
-          </span>
+        <div className="space-y-2">
+          {/* 범례 */}
+          <div className="flex flex-wrap gap-3 text-xs text-gray-400 dark:text-gray-500">
+            <span className="flex items-center gap-1.5">
+              <span className="inline-block w-2 h-2 rounded-full bg-blue-500" />
+              연 20%+ 가능성
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="inline-block w-2 h-2 rounded-full bg-yellow-400" />
+              성장 둔화
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="inline-block w-2 h-2 rounded-full bg-gray-400" />
+              저성장
+            </span>
+            <span className="ml-1 text-gray-300 dark:text-gray-600">(최근 10년 구간 기준)</span>
+          </div>
+          {/* 탭 */}
+          <div className="flex items-center gap-1 border-b border-gray-200 dark:border-gray-800 flex-wrap">
+            {STOCKS.map((s, i) => {
+              const dot = GRADE_META[s.grade].dot
+              return (
+                <button
+                  key={s.key}
+                  onClick={() => setActiveStock(i)}
+                  className={`flex items-center gap-1.5 px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                    activeStock === i
+                      ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                      : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                  }`}
+                >
+                  <span className={`inline-block w-1.5 h-1.5 rounded-full ${dot}`} />
+                  {s.data.ticker}
+                  <span className="text-xs font-normal opacity-60">({s.data.name})</span>
+                </button>
+              )
+            })}
+            <span className="ml-2 px-3 py-1.5 text-xs text-gray-400 dark:text-gray-600 border border-dashed border-gray-300 dark:border-gray-700 rounded cursor-default">
+              + 종목 추가 예정
+            </span>
+          </div>
         </div>
 
         {/* 종목명 */}
-        <div className="flex items-baseline gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <h2 className="text-base font-semibold text-gray-900 dark:text-white">
             {current.data.name} ({current.data.ticker})
           </h2>
+          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium
+            ${current.grade === 'great'   ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : ''}
+            ${current.grade === 'caution' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300' : ''}
+            ${current.grade === 'slow'    ? 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400' : ''}
+          `}>
+            <span className={`w-1.5 h-1.5 rounded-full ${GRADE_META[current.grade].dot}`} />
+            {GRADE_META[current.grade].label}
+          </span>
           <span className="text-xs text-gray-400">{current.data.currency} · 벤치마크: {current.data.benchmark}</span>
         </div>
 
