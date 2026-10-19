@@ -1,9 +1,17 @@
 'use client'
 
-import { useState } from 'react'
-import Link from 'next/link'
+import { useState, useRef, useEffect } from 'react'
+import {
+  Chart as ChartJS,
+  CategoryScale, LinearScale,
+  BarElement, LineElement, PointElement,
+  Tooltip, Legend,
+} from 'chart.js'
+import { Chart } from 'react-chartjs-2'
 import nkeData from '@/public/data/rolling/NKE_rolling.json'
 import rmsData from '@/public/data/rolling/RMS_rolling.json'
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Tooltip, Legend)
 
 type StockData = typeof nkeData
 
@@ -12,48 +20,202 @@ const STOCKS = [
   { key: 'RMS', data: rmsData as StockData },
 ]
 
-function cagrColor(cagr: number, isComplete: boolean) {
+// ── 색상 유틸 ───────────────────────────────────────────────
+function cagrBarColor(cagr: number, isComplete: boolean) {
+  if (!isComplete) return 'rgba(148,163,184,0.35)'
+  if (cagr < 0)  return 'rgba(239,68,68,0.75)'
+  if (cagr < 10) return 'rgba(249,115,22,0.75)'
+  if (cagr < 15) return 'rgba(234,179,8,0.75)'
+  if (cagr < 20) return 'rgba(16,185,129,0.75)'
+  return 'rgba(59,130,246,0.85)'
+}
+function cagrTextColor(cagr: number, isComplete: boolean) {
   if (!isComplete) return 'text-gray-400 dark:text-gray-500'
-  if (cagr < 0)  return 'text-red-500 dark:text-red-400'
-  if (cagr < 10) return 'text-orange-500 dark:text-orange-400'
+  if (cagr < 0)  return 'text-red-500'
+  if (cagr < 10) return 'text-orange-500'
   if (cagr < 15) return 'text-yellow-600 dark:text-yellow-400'
   if (cagr < 20) return 'text-emerald-600 dark:text-emerald-400'
   return 'text-blue-600 dark:text-blue-400'
 }
 
+// ── 롤링 차트 ────────────────────────────────────────────────
+function RollingChart({ data }: { data: StockData }) {
+  const chartRef = useRef<ChartJS | null>(null)
+  const [pluginLoaded, setPluginLoaded] = useState(false)
+
+  useEffect(() => {
+    import('chartjs-plugin-zoom').then(({ default: z }) => {
+      ChartJS.register(z)
+      setPluginLoaded(true)
+    })
+  }, [])
+
+  const rows = data.rows10y
+  const labels = rows.map(r => String(r.buyYear))
+  const barColors = rows.map(r => cagrBarColor(r.cagr, r.isComplete))
+
+  const sp500Points = rows.map(r =>
+    'benchCagr' in r && r.benchCagr != null ? (r as any).benchCagr : null
+  )
+
+  // 가로선 플러그인 (0%, 10%, 15%, 20%)
+  const refLinesPlugin = {
+    id: 'refLines',
+    afterDraw(chart: ChartJS) {
+      const { ctx, scales: { y }, chartArea } = chart as any
+      const lines = [
+        { val: 0,  color: 'rgba(100,100,100,0.5)', dash: [4,4],  label: '0%' },
+        { val: 10, color: 'rgba(16,185,129,0.4)',  dash: [3,3],  label: '10%' },
+        { val: 15, color: 'rgba(234,179,8,0.4)',   dash: [3,3],  label: '15%' },
+        { val: 20, color: 'rgba(59,130,246,0.4)',  dash: [3,3],  label: '20%' },
+      ]
+      ctx.save()
+      lines.forEach(({ val, color, dash, label }) => {
+        const yPx = y.getPixelForValue(val)
+        if (yPx < chartArea.top || yPx > chartArea.bottom) return
+        ctx.beginPath()
+        ctx.setLineDash(dash)
+        ctx.strokeStyle = color
+        ctx.lineWidth = 1
+        ctx.moveTo(chartArea.left, yPx)
+        ctx.lineTo(chartArea.right, yPx)
+        ctx.stroke()
+        ctx.setLineDash([])
+        ctx.fillStyle = color.replace('0.4', '0.7').replace('0.5', '0.7')
+        ctx.font = '10px sans-serif'
+        ctx.fillText(label, chartArea.right + 4, yPx + 3)
+      })
+      ctx.restore()
+    },
+  }
+
+  const chartData = {
+    labels,
+    datasets: [
+      {
+        type: 'bar' as const,
+        label: data.ticker,
+        data: rows.map(r => r.cagr),
+        backgroundColor: barColors,
+        borderColor: barColors.map(c => c.replace(/[\d.]+\)$/, '1)')),
+        borderWidth: 0.5,
+        order: 2,
+      },
+      {
+        type: 'line' as const,
+        label: 'S&P 500',
+        data: sp500Points,
+        borderColor: 'rgba(249,115,22,0.9)',
+        backgroundColor: 'rgba(249,115,22,0.9)',
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        borderWidth: 1.5,
+        spanGaps: false,
+        order: 1,
+      },
+    ],
+  }
+
+  const options: any = {
+    responsive: true,
+    maintainAspectRatio: false,
+    layout: { padding: { right: 32 } },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: { font: { size: 11 }, maxRotation: 45 },
+      },
+      y: {
+        ticks: {
+          font: { size: 11 },
+          callback: (v: number) => `${v}%`,
+        },
+        grid: { color: 'rgba(128,128,128,0.1)' },
+      },
+    },
+    plugins: {
+      legend: { position: 'top' as const, labels: { font: { size: 11 }, boxWidth: 12 } },
+      tooltip: {
+        callbacks: {
+          label: (ctx: any) => `${ctx.dataset.label}: ${ctx.parsed.y?.toFixed(1)}%`,
+          afterLabel: (ctx: any) => {
+            const r = rows[ctx.dataIndex]
+            if (ctx.datasetIndex === 0) {
+              const extra = r.isComplete
+                ? `${r.buyYear}→${r.sellYear}  ${r.multiple.toFixed(1)}x`
+                : `진행 중 (${r.yearsActual}년 경과)`
+              return extra
+            }
+            return ''
+          },
+        },
+      },
+      zoom: pluginLoaded ? {
+        pan: { enabled: true, mode: 'x' },
+        zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' },
+      } : {},
+    },
+    plugins_extra: [refLinesPlugin],
+  }
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => (chartRef.current as any)?.resetZoom?.()}
+        className="absolute top-0 right-0 z-10 px-2 py-0.5 text-xs text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 border border-gray-200 dark:border-gray-700 rounded"
+      >
+        줌 초기화
+      </button>
+      <div style={{ height: 320 }}>
+        <Chart
+          ref={chartRef as any}
+          type="bar"
+          data={chartData}
+          options={options}
+          plugins={[refLinesPlugin]}
+        />
+      </div>
+      <p className="text-xs text-gray-400 dark:text-gray-600 text-right mt-1">
+        휠: 확대/축소 &nbsp;|&nbsp; 드래그: 이동
+      </p>
+    </div>
+  )
+}
+
+// ── 요약 카드 ────────────────────────────────────────────────
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="bg-gray-50 dark:bg-gray-800 rounded-lg px-4 py-3">
+    <div className="bg-gray-50 dark:bg-gray-800/60 rounded-lg px-3 py-2.5">
       <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">{label}</p>
       <p className="text-sm font-semibold text-gray-900 dark:text-white">{value}</p>
     </div>
   )
 }
 
+// ── 롤링 테이블 ──────────────────────────────────────────────
 function RollingTable({ data }: { data: StockData }) {
-  const rows = data.rows10y
-  const comp = rows.filter(r => r.isComplete)
-  const prog = rows.filter(r => !r.isComplete)
+  const comp = data.rows10y.filter(r => r.isComplete)
+  const prog = data.rows10y.filter(r => !r.isComplete)
   const s = data.stats
 
   return (
-    <div className="space-y-6">
-      {/* 요약 통계 */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+    <div className="space-y-5">
+      {/* 요약 카드 */}
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
         <StatCard label="완결 구간" value={`${s.n}개`} />
         <StatCard label="중앙값 CAGR" value={`${s.median}%`} />
         <StatCard label="최저" value={`${s.min}% (${s.minBuy}년)`} />
         <StatCard label="최고" value={`${s.max}% (${s.maxBuy}년)`} />
+        <StatCard label="손실 구간" value={`${s.losses}개`} />
         <StatCard label="연 10% 초과" value={`${s.over10}%`} />
         <StatCard label="연 15% 초과" value={`${s.over15}%`} />
         <StatCard label="연 20% 초과" value={`${s.over20}%`} />
-        <StatCard label="손실 구간" value={`${s.losses}개`} />
         {s.beatBench != null && (
-          <StatCard label="S&P 500 이긴 구간" value={`${s.beatBench} / ${s.beatTotal}개`} />
+          <StatCard label="S&P 500 초과" value={`${s.beatBench} / ${s.beatTotal}개`} />
         )}
         <StatCard
-          label="전체 기간 CAGR"
-          value={`${data.fullPeriod.cagr}% (${data.fullPeriod.multiple}x)`}
+          label="전체 기간"
+          value={`${data.fullPeriod.cagr}% · ${data.fullPeriod.multiple}x`}
         />
       </div>
 
@@ -63,109 +225,223 @@ function RollingTable({ data }: { data: StockData }) {
         </p>
       )}
 
-      {/* 완결 구간 테이블 */}
+      {/* 완결 구간 */}
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400">
-              <th className="text-left py-2 pr-4 font-medium">매수 연도</th>
-              <th className="text-left py-2 pr-4 font-medium">평가 연도</th>
-              <th className="text-right py-2 pr-4 font-medium">CAGR</th>
-              <th className="text-right py-2 pr-4 font-medium">배수</th>
-              <th className="text-right py-2 pr-4 font-medium">S&P 500</th>
+            <tr className="border-b border-gray-200 dark:border-gray-700 text-xs text-gray-400 dark:text-gray-500">
+              <th className="text-left py-2 pr-3 font-medium">매수</th>
+              <th className="text-left py-2 pr-3 font-medium">평가</th>
+              <th className="text-right py-2 pr-3 font-medium">CAGR</th>
+              <th className="text-right py-2 pr-3 font-medium">배수</th>
+              <th className="text-right py-2 pr-3 font-medium">S&P 500</th>
               <th className="text-right py-2 font-medium">차이</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-            {comp.map(r => (
-              <tr key={r.buyYear} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
-                <td className="py-1.5 pr-4 text-gray-700 dark:text-gray-300">{r.buyYear}</td>
-                <td className="py-1.5 pr-4 text-gray-700 dark:text-gray-300">{r.sellYear}</td>
-                <td className={`py-1.5 pr-4 text-right font-semibold tabular-nums ${cagrColor(r.cagr, true)}`}>
-                  {r.cagr.toFixed(1)}%
-                </td>
-                <td className="py-1.5 pr-4 text-right tabular-nums text-gray-600 dark:text-gray-400">
-                  {r.multiple.toFixed(1)}x
-                </td>
-                <td className="py-1.5 pr-4 text-right tabular-nums text-gray-500 dark:text-gray-500">
-                  {'benchCagr' in r ? `${(r as any).benchCagr.toFixed(1)}%` : '—'}
-                </td>
-                <td className={`py-1.5 text-right tabular-nums font-medium ${'diff' in r ? ((r as any).diff > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400') : 'text-gray-400'}`}>
-                  {'diff' in r ? `${(r as any).diff > 0 ? '+' : ''}${(r as any).diff.toFixed(1)}pp` : '—'}
-                </td>
-              </tr>
-            ))}
+            {comp.map(r => {
+              const diff = 'diff' in r ? (r as any).diff as number : null
+              const bc   = 'benchCagr' in r ? (r as any).benchCagr as number : null
+              return (
+                <tr key={r.buyYear} className="hover:bg-gray-50 dark:hover:bg-gray-800/40">
+                  <td className="py-1.5 pr-3 text-gray-600 dark:text-gray-300 tabular-nums">{r.buyYear}</td>
+                  <td className="py-1.5 pr-3 text-gray-600 dark:text-gray-300 tabular-nums">{r.sellYear}</td>
+                  <td className={`py-1.5 pr-3 text-right font-semibold tabular-nums ${cagrTextColor(r.cagr, true)}`}>
+                    {r.cagr.toFixed(1)}%
+                  </td>
+                  <td className="py-1.5 pr-3 text-right tabular-nums text-gray-500 dark:text-gray-400">
+                    {r.multiple.toFixed(1)}x
+                  </td>
+                  <td className="py-1.5 pr-3 text-right tabular-nums text-gray-400 dark:text-gray-500">
+                    {bc != null ? `${bc.toFixed(1)}%` : '—'}
+                  </td>
+                  <td className={`py-1.5 text-right tabular-nums font-medium ${diff == null ? 'text-gray-400' : diff > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'}`}>
+                    {diff != null ? `${diff > 0 ? '+' : ''}${diff.toFixed(1)}pp` : '—'}
+                  </td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
       </div>
 
-      {/* 진행 중 구간 */}
+      {/* 진행 중 */}
       {prog.length > 0 && (
         <div>
-          <p className="text-xs font-medium text-gray-400 dark:text-gray-500 mb-2 uppercase tracking-wide">
+          <p className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-2">
             진행 중 (10년 미완료)
           </p>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                {prog.map(r => (
-                  <tr key={r.buyYear} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
-                    <td className="py-1.5 pr-4 text-gray-400 dark:text-gray-500">
-                      {r.buyYear} → {r.sellDate.slice(0, 7)} ({r.yearsActual}년)
-                    </td>
-                    <td className={`py-1.5 pr-4 text-right font-semibold tabular-nums ${cagrColor(r.cagr, false)}`}>
-                      {r.cagr.toFixed(1)}%
-                    </td>
-                    <td className="py-1.5 pr-4 text-right tabular-nums text-gray-400 dark:text-gray-500">
-                      {r.multiple.toFixed(2)}x
-                    </td>
-                    <td className="py-1.5 pr-4 text-right tabular-nums text-gray-400">
-                      {'benchCagr' in r ? `S&P ${(r as any).benchCagr.toFixed(1)}%` : ''}
-                    </td>
-                    <td className={`py-1.5 text-right tabular-nums ${'diff' in r ? ((r as any).diff > 0 ? 'text-emerald-500' : 'text-red-400') : 'text-gray-400'}`}>
-                      {'diff' in r ? `${(r as any).diff > 0 ? '+' : ''}${(r as any).diff.toFixed(1)}pp` : ''}
-                    </td>
-                  </tr>
-                ))}
+                {prog.map(r => {
+                  const diff = 'diff' in r ? (r as any).diff as number : null
+                  const bc   = 'benchCagr' in r ? (r as any).benchCagr as number : null
+                  return (
+                    <tr key={r.buyYear} className="hover:bg-gray-50 dark:hover:bg-gray-800/40">
+                      <td className="py-1.5 pr-3 text-gray-400 dark:text-gray-500 tabular-nums">
+                        {r.buyYear} → {r.sellDate.slice(0,7)} ({r.yearsActual}년)
+                      </td>
+                      <td className={`py-1.5 pr-3 text-right font-semibold tabular-nums ${cagrTextColor(r.cagr, false)}`}>
+                        {r.cagr.toFixed(1)}%
+                      </td>
+                      <td className="py-1.5 pr-3 text-right tabular-nums text-gray-400">{r.multiple.toFixed(2)}x</td>
+                      <td className="py-1.5 pr-3 text-right tabular-nums text-gray-400">
+                        {bc != null ? `S&P ${bc.toFixed(1)}%` : ''}
+                      </td>
+                      <td className={`py-1.5 text-right tabular-nums ${diff == null ? '' : diff > 0 ? 'text-emerald-500' : 'text-red-400'}`}>
+                        {diff != null ? `${diff > 0 ? '+' : ''}${diff.toFixed(1)}pp` : ''}
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>
         </div>
       )}
 
-      {/* 색상 범례 */}
-      <div className="flex flex-wrap gap-3 text-xs text-gray-500 dark:text-gray-500 pt-2 border-t border-gray-100 dark:border-gray-800">
+      {/* 범례 */}
+      <div className="flex flex-wrap gap-3 text-xs text-gray-400 pt-2 border-t border-gray-100 dark:border-gray-800">
         <span className="text-blue-600 dark:text-blue-400">■ 20%+</span>
         <span className="text-emerald-600 dark:text-emerald-400">■ 15~20%</span>
         <span className="text-yellow-600 dark:text-yellow-400">■ 10~15%</span>
         <span className="text-orange-500 dark:text-orange-400">■ 0~10%</span>
         <span className="text-red-500 dark:text-red-400">■ 손실</span>
-        <span className="text-gray-400 dark:text-gray-500">■ 진행 중</span>
       </div>
     </div>
   )
 }
 
+// ── 미래 수익률 시나리오 테이블 ──────────────────────────────
+function ScenarioTable({ data }: { data: StockData }) {
+  const c = data.current as { price: number; pe: number; divYield: number; eps: number }
+  const [pe,  setPE]  = useState(c.pe ?? 20)
+  const [div, setDiv] = useState(c.divYield ?? 1)
+
+  const growthRates = [0, 3, 5, 8, 10, 12, 15, 20]
+  const endPEs      = [15, 20, 25, 30, 35, 40, 50]
+
+  // 10년 연환산 CAGR 계산
+  // Total 10yr multiple = (1+g)^10 × (endPE/startPE) × (1+div/100)^10
+  // div_yield는 대략 일정하다고 가정 (배당이 이익과 같이 성장)
+  function calcCAGR(g: number, endPE: number): number {
+    const priceFactor = Math.pow(1 + g / 100, 10) * (endPE / pe)
+    const totalFactor = priceFactor * Math.pow(1 + div / 100, 10)
+    return (Math.pow(totalFactor, 1 / 10) - 1) * 100
+  }
+
+  function cellColor(cagr: number): string {
+    if (cagr < 0)  return 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400'
+    if (cagr < 5)  return 'bg-orange-50 dark:bg-orange-900/15 text-orange-600 dark:text-orange-400'
+    if (cagr < 10) return 'bg-yellow-50 dark:bg-yellow-900/15 text-yellow-700 dark:text-yellow-400'
+    if (cagr < 15) return 'bg-emerald-50 dark:bg-emerald-900/15 text-emerald-700 dark:text-emerald-400'
+    if (cagr < 20) return 'bg-blue-50 dark:bg-blue-900/15 text-blue-700 dark:text-blue-400'
+    return 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 font-semibold'
+  }
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-1">
+          지금 사서 10년 보유 시 예상 수익률
+        </h3>
+        <p className="text-xs text-gray-500 dark:text-gray-400">
+          현재 P/E와 배당수익률을 기준으로, EPS 성장률과 10년 후 P/E에 따른 연환산 수익률
+        </p>
+      </div>
+
+      {/* 입력값 */}
+      <div className="flex flex-wrap gap-4 text-sm">
+        <label className="flex items-center gap-2">
+          <span className="text-gray-500 dark:text-gray-400 text-xs">현재 P/E</span>
+          <input
+            type="number"
+            step="0.5"
+            value={pe}
+            onChange={e => setPE(Number(e.target.value))}
+            className="w-16 px-2 py-1 text-xs rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-right"
+          />
+          <span className="text-gray-400 text-xs">x</span>
+        </label>
+        <label className="flex items-center gap-2">
+          <span className="text-gray-500 dark:text-gray-400 text-xs">배당수익률</span>
+          <input
+            type="number"
+            step="0.1"
+            value={div}
+            onChange={e => setDiv(Number(e.target.value))}
+            className="w-16 px-2 py-1 text-xs rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-right"
+          />
+          <span className="text-gray-400 text-xs">%</span>
+        </label>
+        {c.eps != null && c.price != null && (
+          <span className="text-xs text-gray-400 self-center">
+            참고: TTM EPS {c.eps} {data.currency} · 주가 {c.price} {data.currency}
+          </span>
+        )}
+      </div>
+
+      {/* 시나리오 테이블 */}
+      <div className="overflow-x-auto">
+        <table className="text-xs">
+          <thead>
+            <tr className="text-gray-400 dark:text-gray-500">
+              <th className="text-left py-1.5 pr-3 font-medium whitespace-nowrap">EPS 성장률 ↓ / 10년 후 P/E →</th>
+              {endPEs.map(ep => (
+                <th key={ep} className={`text-right py-1.5 px-2 font-medium ${ep === pe ? 'text-blue-500' : ''}`}>
+                  {ep}x{ep === Math.round(pe) ? ' ★' : ''}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+            {growthRates.map(g => (
+              <tr key={g} className="hover:bg-gray-50 dark:hover:bg-gray-800/30">
+                <td className="py-1.5 pr-3 text-gray-600 dark:text-gray-300 font-medium whitespace-nowrap">
+                  연 {g}% 성장
+                </td>
+                {endPEs.map(ep => {
+                  const cagr = calcCAGR(g, ep)
+                  return (
+                    <td key={ep} className={`py-1.5 px-2 text-right tabular-nums rounded ${cellColor(cagr)}`}>
+                      {cagr.toFixed(1)}%
+                    </td>
+                  )
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <p className="text-xs text-gray-400 dark:text-gray-500">
+        계산식: 연환산 수익률 = [(1+EPS성장)^10 × (목표P/E÷현재P/E) × (1+배당수익률)^10]^(1/10) − 1<br />
+        배당이 이익과 같이 성장한다고 가정. 참고용 추정치이며 미래 보장 없음.
+      </p>
+    </div>
+  )
+}
+
+// ── 메인 페이지 ──────────────────────────────────────────────
 export default function PrivatePage() {
   const [activeStock, setActiveStock] = useState(0)
   const current = STOCKS[activeStock]
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 space-y-8">
 
         {/* 헤더 */}
-        <div className="mb-8">
-          <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
-            개별 종목 분석
-          </h1>
+        <div>
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-1">개별 종목 분석</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            10년 보유 시 연환산 수익률 (연말 매수 기준, 배당 재투자)
+            연말 매수 기준 10년 보유 연환산 수익률 (배당 재투자)
           </p>
         </div>
 
-        {/* 종목 탭 + 추가 버튼 */}
-        <div className="flex items-center gap-2 mb-6 border-b border-gray-200 dark:border-gray-800">
+        {/* 종목 탭 */}
+        <div className="flex items-center gap-2 border-b border-gray-200 dark:border-gray-800">
           {STOCKS.map((s, i) => (
             <button
               key={s.key}
@@ -176,7 +452,8 @@ export default function PrivatePage() {
                   : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
               }`}
             >
-              {s.data.ticker} <span className="text-xs font-normal opacity-70">({s.data.name})</span>
+              {s.data.ticker}
+              <span className="text-xs font-normal opacity-60 ml-1">({s.data.name})</span>
             </button>
           ))}
           <span className="ml-2 px-3 py-1.5 text-xs text-gray-400 dark:text-gray-600 border border-dashed border-gray-300 dark:border-gray-700 rounded cursor-default">
@@ -184,16 +461,25 @@ export default function PrivatePage() {
           </span>
         </div>
 
-        {/* 종목 이름 + 화폐 */}
-        <div className="flex items-baseline gap-2 mb-5">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+        {/* 종목명 */}
+        <div className="flex items-baseline gap-2">
+          <h2 className="text-base font-semibold text-gray-900 dark:text-white">
             {current.data.name} ({current.data.ticker})
           </h2>
-          <span className="text-xs text-gray-400">{current.data.currency}</span>
-          <span className="text-xs text-gray-400">벤치마크: {current.data.benchmark}</span>
+          <span className="text-xs text-gray-400">{current.data.currency} · 벤치마크: {current.data.benchmark}</span>
         </div>
 
+        {/* 차트 */}
+        <RollingChart key={current.key} data={current.data} />
+
+        {/* 롤링 테이블 */}
         <RollingTable data={current.data} />
+
+        {/* 구분선 */}
+        <div className="border-t border-gray-200 dark:border-gray-800 pt-2" />
+
+        {/* 시나리오 테이블 */}
+        <ScenarioTable key={`scenario-${current.key}`} data={current.data} />
 
       </div>
     </div>

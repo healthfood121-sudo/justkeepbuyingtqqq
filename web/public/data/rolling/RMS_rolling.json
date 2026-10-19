@@ -4,14 +4,20 @@
   "currency": "EUR",
   "benchmark": "S&P 500",
   "note": "1993~1999 연간 수익률은 TradingView 데이터, 2000년 이후는 Yahoo Finance. 1993~1999는 가격 수익률일 수 있음(배당 미포함 가능성)",
+  "current": {
+    "price": 1332.5,
+    "pe": 31.0,
+    "divYield": 1.35,
+    "eps": 43.0
+  },
   "fullPeriod": {
     "start_date": "2000-01-03",
     "end_date": "2026-10-19",
     "start_price": 35.4391,
-    "end_price": 1329.5,
+    "end_price": 1332.5,
     "years": 26.8,
-    "cagr": 14.49,
-    "multiple": 37.5
+    "cagr": 14.5,
+    "multiple": 37.6
   },
   "stats": {
     "n": 23,
