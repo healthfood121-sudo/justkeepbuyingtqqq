@@ -54,7 +54,7 @@ function RollingChart({ data }: { data: StockData }) {
     })
   }, [])
 
-  const rows = data.rows10y
+  const rows = data.rows10y.filter(r => r.isComplete || r.yearsActual >= 9)
   const labels = rows.map(r => String(r.buyYear))
   const barColors = rows.map(r => cagrBarColor(r.cagr, r.isComplete))
 
@@ -269,16 +269,16 @@ function RollingTable({ data }: { data: StockData }) {
         </table>
       </div>
 
-      {/* 진행 중 */}
-      {prog.length > 0 && (
+      {/* 진행 중 — 9년 이상 경과 구간만 표시 */}
+      {prog.filter(r => r.yearsActual >= 9).length > 0 && (
         <div>
           <p className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-2">
-            진행 중 (10년 미완료)
+            진행 중 (9년 이상, 10년 미완료)
           </p>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                {prog.map(r => {
+                {prog.filter(r => r.yearsActual >= 9).map(r => {
                   const diff = 'diff' in r ? (r as any).diff as number : null
                   const bc   = 'benchCagr' in r ? (r as any).benchCagr as number : null
                   return (
