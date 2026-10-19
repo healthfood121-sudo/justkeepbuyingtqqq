@@ -332,7 +332,8 @@ function EpsDecompSection({ data }: { data: StockData }) {
           과거 수익률 분해 — EPS 성장 vs PER 변화
         </h3>
         <p className="text-xs text-gray-500 dark:text-gray-400">
-          주가 수익률 ≈ EPS 배수 × PER 배수. 총 수익률에는 배당 재투자 효과가 추가됨.
+          주가 상승 ≈ 순이익(EPS) 성장 × PER 변화. 총 수익률에는 배당 재투자 효과 포함.
+          PER = 주가 ÷ EPS (시장이 순이익 대비 몇 배를 쳐주는가).
         </p>
       </div>
 
@@ -340,50 +341,52 @@ function EpsDecompSection({ data }: { data: StockData }) {
         <table className="w-full text-xs">
           <thead>
             <tr className="border-b border-gray-200 dark:border-gray-700 text-gray-400 dark:text-gray-500">
-              <th className="text-left py-2 pr-2 font-medium">구간</th>
-              <th className="text-right py-2 pr-2 font-medium whitespace-nowrap">EPS 배수</th>
-              <th className="text-right py-2 pr-2 font-medium whitespace-nowrap">EPS 연복리</th>
-              <th className="text-right py-2 pr-2 font-medium whitespace-nowrap">PER 배수</th>
-              <th className="text-right py-2 pr-2 font-medium whitespace-nowrap">매수 PER</th>
-              <th className="text-right py-2 pr-2 font-medium whitespace-nowrap">매도 PER</th>
+              <th className="text-left py-2 pr-4 font-medium">구간</th>
+              <th className="text-right py-2 pr-4 font-medium whitespace-nowrap">
+                EPS 연복리
+                <span className="block font-normal opacity-60">순이익 성장</span>
+              </th>
+              <th className="text-right py-2 pr-4 font-medium whitespace-nowrap">
+                PER 변화
+                <span className="block font-normal opacity-60">매수→매도</span>
+              </th>
               <th className="text-right py-2 font-medium whitespace-nowrap">총 연복리</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-            {rows.map(r => (
-              <tr key={r.buyYear} className="hover:bg-gray-50 dark:hover:bg-gray-800/40">
-                <td className="py-1.5 pr-2 text-gray-600 dark:text-gray-300 tabular-nums whitespace-nowrap">
-                  {r.buyYear}→{r.sellYear}
-                  {r.note && (
-                    <span
-                      title={r.note}
-                      className="ml-1 text-amber-500 cursor-help"
-                    >⚠</span>
-                  )}
-                </td>
-                <td className={`py-1.5 pr-2 text-right tabular-nums font-medium ${multipleColor(r.epsMultiple)}`}>
-                  {r.epsMultiple.toFixed(2)}x
-                </td>
-                <td className={`py-1.5 pr-2 text-right tabular-nums ${growthColor(r.epsGrowthCagr)}`}>
-                  {r.epsGrowthCagr > 0 ? '+' : ''}{r.epsGrowthCagr.toFixed(1)}%
-                </td>
-                <td className={`py-1.5 pr-2 text-right tabular-nums font-medium ${multipleColor(r.peMultiple)}`}>
-                  {r.peMultiple.toFixed(2)}x
-                  {r.note && r.note.includes('매도') && (
-                    <span className="ml-0.5 text-amber-400 text-xs">*</span>
-                  )}
-                </td>
-                <td className="py-1.5 pr-2 text-right tabular-nums text-gray-400 dark:text-gray-500">
-                  {r.peBuy.toFixed(1)}
-                </td>
-                <td className="py-1.5 pr-2 text-right tabular-nums text-gray-400 dark:text-gray-500">
-                  {r.peSell.toFixed(1)}
-                </td>
-                <td className={`py-1.5 text-right tabular-nums font-semibold ${cagrTextColor(r.totalCagr, true)}`}>
-                  {r.totalCagr.toFixed(1)}%
-                </td>
-              </tr>
-            ))}
+            {rows.map(r => {
+              const peDir = r.peMultiple >= 1.1 ? '↑팽창' : r.peMultiple <= 0.9 ? '↓수축' : '→유지'
+              const peDirColor = r.peMultiple >= 1.1
+                ? 'text-blue-500 dark:text-blue-400'
+                : r.peMultiple <= 0.9
+                  ? 'text-red-500 dark:text-red-400'
+                  : 'text-gray-400'
+              return (
+                <tr key={r.buyYear} className="hover:bg-gray-50 dark:hover:bg-gray-800/40">
+                  <td className="py-2 pr-4 text-gray-600 dark:text-gray-300 tabular-nums whitespace-nowrap">
+                    {r.buyYear}→{r.sellYear}
+                    {r.note && (
+                      <span title={r.note} className="ml-1 text-amber-500 cursor-help">⚠</span>
+                    )}
+                  </td>
+                  <td className={`py-2 pr-4 text-right tabular-nums font-semibold ${growthColor(r.epsGrowthCagr)}`}>
+                    {r.epsGrowthCagr > 0 ? '+' : ''}{r.epsGrowthCagr.toFixed(1)}%/년
+                    <span className="block text-gray-400 dark:text-gray-500 font-normal">
+                      {r.epsBuy.toFixed(2)} → {r.epsSell.toFixed(2)}
+                    </span>
+                  </td>
+                  <td className="py-2 pr-4 text-right tabular-nums">
+                    <span className={`font-semibold ${peDirColor}`}>{peDir}</span>
+                    <span className="block text-gray-400 dark:text-gray-500">
+                      {r.peBuy.toFixed(0)}x → {r.peSell.toFixed(0)}x
+                    </span>
+                  </td>
+                  <td className={`py-2 text-right tabular-nums font-semibold ${cagrTextColor(r.totalCagr, true)}`}>
+                    {r.totalCagr.toFixed(1)}%/년
+                  </td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
       </div>
