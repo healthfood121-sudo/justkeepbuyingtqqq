@@ -822,6 +822,9 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 | `data/rolling/AMZN_10y_annual.csv` | `analyze_amzn.py` | AMZN (아마존) | 10년 연말 매수 롤링 (1997년부터) |
 | `data/rolling/AMZN_5y_annual.csv` | `analyze_amzn.py` | AMZN | 5년 연말 매수 롤링 |
 | `data/rolling/AMZN_10y_monthly.csv` | `analyze_amzn.py` | AMZN | 10년 월말 매수 롤링 |
+| `data/rolling/NVDA_10y_annual.csv` | `analyze_nvda.py` | NVDA (엔비디아) | 10년 연말 매수 롤링 (1999년부터) |
+| `data/rolling/NVDA_5y_annual.csv` | `analyze_nvda.py` | NVDA | 5년 연말 매수 롤링 |
+| `data/rolling/NVDA_10y_monthly.csv` | `analyze_nvda.py` | NVDA | 10년 월말 매수 롤링 |
 
 ### 롤링 JSON (export 스크립트 출력)
 
@@ -836,6 +839,7 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 | `web/public/data/rolling/KO_rolling.json` | ~50 KB | KO (코카콜라) | EDGAR XBRL (2007~2025) + macrotrends 역산 (1988~2006) |
 | `web/public/data/rolling/META_rolling.json` | ~20 KB | META (메타 플랫폼스) | EDGAR XBRL CIK 0001326801 (2012~2025, 분할 없음) |
 | `web/public/data/rolling/AMZN_rolling.json` | ~30 KB | AMZN (아마존) | EDGAR XBRL CIK 0001018724, FY2007~2019÷20, FY2020~2025 소급 반영 |
+| `web/public/data/rolling/NVDA_rolling.json` | ~50 KB | NVDA (엔비디아) | EDGAR XBRL CIK 0001045810, FY2008~2019÷40, FY2020~2022÷10, FY2023~조정없음 |
 
 **KO 파라미터:**
 - 매수 시작: 1988년 말 (연말 매수 기준)

@@ -16,13 +16,17 @@ import koData    from '@/public/data/rolling/KO_rolling.json'
 import googlData from '@/public/data/rolling/GOOGL_rolling.json'
 import metaData  from '@/public/data/rolling/META_rolling.json'
 import amznData  from '@/public/data/rolling/AMZN_rolling.json'
+import nvdaData  from '@/public/data/rolling/NVDA_rolling.json'
+import msftData  from '@/public/data/rolling/MSFT_rolling.json'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Tooltip, Legend)
 
 type StockData = typeof nkeData
 
 const STOCKS: Array<{ key: string; data: StockData }> = [
+  { key: 'MSFT',  data: msftData  as StockData },
   { key: 'AAPL',  data: aaplData  as StockData },
+  { key: 'NVDA',  data: nvdaData  as StockData },
   { key: 'AMZN',  data: amznData  as StockData },
   { key: 'META',  data: metaData  as StockData },
   { key: 'RMS',   data: rmsData   as StockData },

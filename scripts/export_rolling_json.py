@@ -170,7 +170,7 @@ def get_metrics(ticker: str) -> dict:
         "eps":      round(eps, 2) if eps else None,
     }
 
-print("[현재 지표 조회] NKE, RMS.PA, KO, AAPL, COST, GOOGL, META, NVDA, AMZN ...")
+print("[현재 지표 조회] NKE, RMS.PA, KO, AAPL, COST, GOOGL, META, NVDA, AMZN, MSFT, WMT ...")
 nke_metrics   = get_metrics("NKE")
 rms_metrics   = get_metrics("RMS.PA")
 ko_metrics    = get_metrics("KO")
@@ -180,6 +180,8 @@ googl_metrics = get_metrics("GOOGL")
 meta_metrics  = get_metrics("META")
 nvda_metrics  = get_metrics("NVDA")
 amzn_metrics  = get_metrics("AMZN")
+msft_metrics  = get_metrics("MSFT")
+wmt_metrics   = get_metrics("WMT")
 print(f"  NKE:    {nke_metrics}")
 print(f"  RMS.PA: {rms_metrics}")
 print(f"  KO:     {ko_metrics}")
@@ -189,6 +191,8 @@ print(f"  GOOGL:  {googl_metrics}")
 print(f"  META:   {meta_metrics}")
 print(f"  NVDA:   {nvda_metrics}")
 print(f"  AMZN:   {amzn_metrics}")
+print(f"  MSFT:   {msft_metrics}")
+print(f"  WMT:    {wmt_metrics}")
 
 nke_out = {
     "ticker":    "NKE",
@@ -895,5 +899,93 @@ nvda_out = {
 out_path9 = DST / "NVDA_rolling.json"
 out_path9.write_text(json.dumps(nvda_out, ensure_ascii=False, indent=2), encoding="utf-8")
 print(f"  저장 → {out_path9}")
+
+# ── MSFT EPS 데이터 ───────────────────────────────────────────
+# 마이크로소프트 회계연도(FY) = 7월~6월 말 종료. 달력 연도 Y → FY(Y) EPS (6월 30일 종료) 사용.
+#
+# 분할 이력:
+#   1987-09-21(2:1), 1990-04-16(2:1), 1991-06-27(2:1), 1992-06-15(3:2),
+#   1994-05-23(2:1), 1996-12-09(2:1), 1998-02-23(2:1), 1999-03-29(2:1),
+#   2003-02-18(2:1) → 누적 384:1
+#   마지막 분할 2003-02-18 이후 추가 분할 없음.
+#   FY2003 10-K(2003년 10월 제출) 이후 모든 10-K는 2003년 분할까지 소급 반영됨.
+#
+# 출처별:
+#   FY2008~FY2026: SEC EDGAR XBRL CIK 0000789019 (6월 말 연도 기준) → 조정 불필요
+#   FY1993~FY2007: AI 역산 추정치 (모든 분할 완전 반영 기준, macrotrends 참고)
+#
+# 주요 EPS 왜곡 연도 (달력 연도 = FY 종료 연도 기준):
+#   2002: 기술주 버블 붕괴 + 투자 손실·구조조정 비용 (EPS 전년 대비 급감)
+#   2012: aQuantive 인수 관련 굿윌 손상차손 $6.2B (EPS -$0.75)
+#   2015: Nokia 인수 관련 대규모 손상차손 ~$7.6B (EPS -$0.95 수준 영향)
+#   2018: TCJA 세금개혁 일회성 전환세 부담 $13.8B (EPS -$1.82 영향)
+MSFT_EPS = {
+    # FY1993~FY2007: AI 역산 추정치 (macrotrends 참고, 현재 분할 기준)
+    1993: 0.06,  1994: 0.08,  1995: 0.12,  1996: 0.18,
+    1997: 0.25,  1998: 0.32,  1999: 0.37,
+    2000: 0.53,  2001: 0.44,  2002: 0.38,
+    2003: 0.51,  2004: 0.75,
+    2005: 1.12,  2006: 1.20,  2007: 1.42,
+    # FY2008~FY2026: SEC EDGAR XBRL (조정 불필요)
+    2008: 1.87,  2009: 1.62,  2010: 2.10,
+    2011: 2.69,  2012: 2.00,  2013: 2.58,
+    2014: 2.63,  2015: 1.48,  2016: 2.56,
+    2017: 3.25,  2018: 2.13,  2019: 5.06,
+    2020: 5.76,  2021: 8.05,  2022: 9.65,
+    2023: 9.68,  2024: 11.80, 2025: 13.64,
+    2026: 17.95,
+}
+_MSFT_ONE_TIME = {
+    2002: "기술주 버블 붕괴 후 투자 손실 + 구조조정 비용 (EPS 급감)",
+    2012: "aQuantive 굿윌 손상차손 $6.2B (EPS 약 -$0.75 영향)",
+    2015: "Nokia 인수 손상차손 ~$7.6B (EPS 약 -$0.95 영향)",
+    2018: "세금개혁(TCJA) 일회성 전환세 $13.8B (EPS 약 -$1.82 영향)",
+}
+
+# ── MSFT ──────────────────────────────────────────────────────
+print("[MSFT] 데이터 로드...")
+az_msft = RollingAnalyzer("MSFT", benchmark="^SP500TR")
+df10a_msft = pd.read_csv(SRC / "MSFT_10y_annual.csv", parse_dates=["buy_date","sell_date"])
+df5a_msft  = pd.read_csv(SRC / "MSFT_5y_annual.csv",  parse_dates=["buy_date","sell_date"])
+fp_msft = az_msft.full_period()
+st_msft = summary_stats(df10a_msft, label="MSFT")
+
+loss5_msft = df5a_msft[df5a_msft["is_complete"] & (df5a_msft["cagr"] < 0)]
+
+msft_out = {
+    "ticker":    "MSFT",
+    "name":      "마이크로소프트",
+    "currency":  "USD",
+    "benchmark": "S&P 500",
+    "note":      "1986년 3월 상장. 분할 이력: 1987·1990·1991(2:1×3), 1992(3:2), 1994·1996·1998·1999·2003(2:1×5) → 누적 384:1. 마지막 분할 2003-02-18 이후 추가 분할 없음.",
+    "current":   msft_metrics,
+    "fullPeriod": fp_msft,
+    "stats": {
+        "n":        st_msft["n_complete"],
+        "min":      st_msft["min_cagr"],
+        "minBuy":   st_msft["min_buy"],
+        "median":   st_msft["median_cagr"],
+        "mean":     st_msft["mean_cagr"],
+        "max":      st_msft["max_cagr"],
+        "maxBuy":   st_msft["max_buy"],
+        "over10":   st_msft["pct_over_10"],
+        "over15":   st_msft["pct_over_15"],
+        "over20":   st_msft["pct_over_20"],
+        "losses":   st_msft["n_losses"],
+        "beatBench":  st_msft.get("n_beat_bench"),
+        "beatTotal":  st_msft.get("n_beat_bench_total"),
+    },
+    "rows10y": df_to_rows(df10a_msft, MSFT_EPS),
+    "loss5y": [
+        {"buyYear": int(r["buy_date"].year), "sellYear": int(r["sell_date"].year), "cagr": float(r["cagr"])}
+        for _, r in loss5_msft.iterrows()
+    ],
+    "epsDecomp": compute_eps_decomp(df10a_msft, MSFT_EPS, _MSFT_ONE_TIME),
+    "epsNote": "EPS 출처: SEC EDGAR XBRL (FY2008~FY2026, June 30 기준). FY1993~2007은 AI 역산 추정치 (macrotrends 참고, 384:1 분할 완전 반영). PER은 Yahoo Finance 배당조정 종가 기준.",
+}
+
+out_path10 = DST / "MSFT_rolling.json"
+out_path10.write_text(json.dumps(msft_out, ensure_ascii=False, indent=2), encoding="utf-8")
+print(f"  저장 → {out_path10}")
 
 print("\n[완료]")
