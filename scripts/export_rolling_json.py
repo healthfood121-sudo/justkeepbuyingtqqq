@@ -186,6 +186,22 @@ out_path = DST / "NKE_rolling.json"
 out_path.write_text(json.dumps(nke_out, ensure_ascii=False, indent=2), encoding="utf-8")
 print(f"  저장 → {out_path}")
 
+# ── RMS.PA EPS 데이터 ─────────────────────────────────────────
+# 출처: 사용자 제공 USD EPS → 연도별 평균 USD/EUR 환율로 EUR 환산
+# 에르메스는 파리증권거래소 상장 (RMS.PA), EUR 기준 재무제표
+# 주요 참고: 2020 COVID 영향(-0.6%), 2021 펜트업 수요 급등(+62.1%), 2014 소폭 역성장(-4.4%)
+_RMS_EUR_EPS = {
+    2001: 1.81,  2002: 2.30,  2003: 1.88,  2004: 1.95,  2005: 2.16,
+    2006: 2.77,  2007: 2.70,  2008: 2.64,  2009: 2.71,  2010: 4.02,
+    2011: 5.13,  2012: 6.88,  2013: 7.07,  2014: 6.76,  2015: 9.18,
+    2016: 11.38, 2017: 12.40, 2018: 13.06, 2019: 14.66, 2020: 14.29,
+    2021: 22.37, 2022: 32.80, 2023: 42.12, 2024: 43.00, 2025: 46.50,
+}
+_RMS_ONE_TIME = {
+    2020: "COVID-19 팬데믹(EPS -0.6%, PER 급등)",
+    2021: "코로나 펜트업 수요(EPS +62.1%, 일회성)",
+}
+
 # ── RMS.PA ────────────────────────────────────────────────────
 print("[RMS.PA] 데이터 로드...")
 df_rms = pd.read_csv(SRC / "RMS_10y_annual_full.csv", parse_dates=["buy_date","sell_date"])
@@ -218,8 +234,8 @@ rms_out = {
     },
     "rows10y": df_to_rows(df_rms),
     "loss5y": [],
-    "epsDecomp": [],
-    "epsNote": "EPS 이력 데이터 미확보 (에르메스는 SEC 미상장, EDGAR XBRL 없음). 향후 수동 입력 예정.",
+    "epsDecomp": compute_eps_decomp(df_rms, _RMS_EUR_EPS, _RMS_ONE_TIME),
+    "epsNote": "EUR EPS: 사용자 제공 USD EPS를 연도별 평균 USD/EUR 환율로 환산. PER은 Yahoo Finance EUR 종가(배당조정) 기준.",
 }
 
 out_path2 = DST / "RMS_rolling.json"
