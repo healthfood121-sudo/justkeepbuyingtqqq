@@ -155,7 +155,7 @@ nke_out = {
     "name":      "나이키",
     "currency":  "USD",
     "benchmark": "S&P 500",
-    "note":      "1980~1982 매수 구간은 Yahoo Finance 분할 이력 누락으로 macrotrends 대비 약 8~9pp 낮을 수 있음",
+    "note":      "1980~1982 매수 구간: TradingView adj-on 주가로 보정 완료 (+약 3pp). 단 macrotrends 기준값 대비 여전히 약 5~6pp 차이 존재 (분할 이력 완전 일치 불가)",
     "current":   nke_metrics,
     "fullPeriod": fp_nke,
     "stats": {
