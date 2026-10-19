@@ -63,6 +63,12 @@ export default function Header({ maxWidth = 'max-w-6xl', activePage }: HeaderPro
             >
               <span className="sm:hidden">S&amp;P500</span><span className="hidden sm:inline">S&amp;P500 구성종목</span>
             </Link>
+            <Link
+              href="/private"
+              className="transition-colors hover:text-gray-900 dark:hover:text-white"
+            >
+              Private
+            </Link>
           </nav>
           <button
             onClick={toggle}
