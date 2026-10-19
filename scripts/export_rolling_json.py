@@ -170,11 +170,13 @@ def get_metrics(ticker: str) -> dict:
         "eps":      round(eps, 2) if eps else None,
     }
 
-print("[현재 지표 조회] NKE, RMS.PA ...")
-nke_metrics = get_metrics("NKE")
-rms_metrics = get_metrics("RMS.PA")
+print("[현재 지표 조회] NKE, RMS.PA, AAPL ...")
+nke_metrics  = get_metrics("NKE")
+rms_metrics  = get_metrics("RMS.PA")
+aapl_metrics = get_metrics("AAPL")
 print(f"  NKE:    {nke_metrics}")
 print(f"  RMS.PA: {rms_metrics}")
+print(f"  AAPL:   {aapl_metrics}")
 
 nke_out = {
     "ticker":    "NKE",
@@ -271,4 +273,94 @@ rms_out = {
 out_path2 = DST / "RMS_rolling.json"
 out_path2.write_text(json.dumps(rms_out, ensure_ascii=False, indent=2), encoding="utf-8")
 print(f"  저장 → {out_path2}")
+
+# ── AAPL EPS 데이터 (SEC EDGAR XBRL) ─────────────────────────
+# Apple 회계연도(FY) = 10월~9월. 달력 연도 Y → FY(Y) EPS (9월 말 종료) 사용.
+#
+# Apple 주식 분할 이력:
+#   2000-06-21: 2:1  /  2005-02-28: 2:1  /  2014-06-09: 7:1  /  2020-08-31: 4:1
+#   → 2014년 이후 기준으로 누적 조정 배수: 2014 이전 ÷28, 2014~2020 ÷4, 2020 이후 무조정
+#
+# EDGAR 데이터 분할 반영 현황 (end 날짜 기준으로 FY 결정):
+#   FY2007~2011: FY2009~2013 10-K 비교 데이터 → 어떤 분할도 미적용 → ÷28 필요
+#   FY2012~2017: FY2014~2019 10-K 데이터 → 2014 7:1 반영, 2020 4:1 미반영 → ÷4 필요
+#   FY2018~2019: FY2020 10-K 데이터 → 2020 4:1까지 반영 → 추가 조정 없음
+#   FY2020+    : 모든 분할 반영 → 추가 조정 없음
+#
+# 참고: FY2001~2002 닷컴 버블 후폭풍으로 EPS 마이너스 (EPS 분해 해당 구간 제외됨)
+_AAPL_EDGAR_RAW = {
+    2007: 3.93,   # ÷28 필요 (pre 7:1, pre 4:1)
+    2008: 6.78,
+    2009: 9.08,
+    2010: 15.15,
+    2011: 27.68,
+    2012: 6.31,   # ÷4 필요 (post 7:1, pre 4:1)
+    2013: 5.68,
+    2014: 6.45,
+    2015: 9.22,
+    2016: 8.31,
+    2017: 9.21,
+    2018: 2.98,   # 추가 조정 없음 (FY2020 10-K, post 4:1)
+    2019: 2.97,
+    2020: 3.28,
+    2021: 5.61,
+    2022: 6.11,
+    2023: 6.13,
+    2024: 6.08,
+    2025: 7.46,
+}
+_AAPL_ONE_TIME = {}  # 주요 일회성 왜곡 없음
+
+def _aapl_split_adj(fy, raw):
+    if fy <= 2011: return raw / 28   # pre 7:1, pre 4:1
+    if fy <= 2017: return raw / 4    # post 7:1, pre 4:1
+    return raw
+
+AAPL_EPS = {yr: round(_aapl_split_adj(yr, v), 4) for yr, v in _AAPL_EDGAR_RAW.items()}
+
+# ── AAPL ──────────────────────────────────────────────────────
+print("[AAPL] 데이터 로드...")
+az_aapl = RollingAnalyzer("AAPL", benchmark="^SP500TR")
+df10a_aapl = pd.read_csv(SRC / "AAPL_10y_annual.csv", parse_dates=["buy_date","sell_date"])
+df5a_aapl  = pd.read_csv(SRC / "AAPL_5y_annual.csv",  parse_dates=["buy_date","sell_date"])
+fp_aapl = az_aapl.full_period()
+st_aapl = summary_stats(df10a_aapl, label="AAPL")
+
+loss5_aapl = df5a_aapl[df5a_aapl["is_complete"] & (df5a_aapl["cagr"] < 0)]
+
+aapl_out = {
+    "ticker":    "AAPL",
+    "name":      "애플",
+    "currency":  "USD",
+    "benchmark": "S&P 500",
+    "note":      "",
+    "current":   aapl_metrics,
+    "fullPeriod": fp_aapl,
+    "stats": {
+        "n":        st_aapl["n_complete"],
+        "min":      st_aapl["min_cagr"],
+        "minBuy":   st_aapl["min_buy"],
+        "median":   st_aapl["median_cagr"],
+        "mean":     st_aapl["mean_cagr"],
+        "max":      st_aapl["max_cagr"],
+        "maxBuy":   st_aapl["max_buy"],
+        "over10":   st_aapl["pct_over_10"],
+        "over15":   st_aapl["pct_over_15"],
+        "over20":   st_aapl["pct_over_20"],
+        "losses":   st_aapl["n_losses"],
+        "beatBench":  st_aapl.get("n_beat_bench"),
+        "beatTotal":  st_aapl.get("n_beat_bench_total"),
+    },
+    "rows10y": df_to_rows(df10a_aapl, AAPL_EPS),
+    "loss5y": [
+        {"buyYear": int(r["buy_date"].year), "sellYear": int(r["sell_date"].year), "cagr": float(r["cagr"])}
+        for _, r in loss5_aapl.iterrows()
+    ],
+    "epsDecomp": compute_eps_decomp(df10a_aapl, AAPL_EPS, _AAPL_ONE_TIME),
+    "epsNote": "EPS 출처: SEC EDGAR XBRL (FY2007~2025). 분할조정: FY2007~2011÷28(7:1·4:1 누적), FY2012~2017÷4(4:1). PER은 Yahoo Finance 배당조정 종가 기준.",
+}
+
+out_path3 = DST / "AAPL_rolling.json"
+out_path3.write_text(json.dumps(aapl_out, ensure_ascii=False, indent=2), encoding="utf-8")
+print(f"  저장 → {out_path3}")
 print("\n[완료]")
