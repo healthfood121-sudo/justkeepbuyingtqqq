@@ -8,11 +8,12 @@ import {
   Tooltip, Legend,
 } from 'chart.js'
 import { Chart } from 'react-chartjs-2'
-import nkeData  from '@/public/data/rolling/NKE_rolling.json'
-import rmsData  from '@/public/data/rolling/RMS_rolling.json'
-import aaplData from '@/public/data/rolling/AAPL_rolling.json'
-import costData from '@/public/data/rolling/COST_rolling.json'
-import koData   from '@/public/data/rolling/KO_rolling.json'
+import nkeData   from '@/public/data/rolling/NKE_rolling.json'
+import rmsData   from '@/public/data/rolling/RMS_rolling.json'
+import aaplData  from '@/public/data/rolling/AAPL_rolling.json'
+import costData  from '@/public/data/rolling/COST_rolling.json'
+import koData    from '@/public/data/rolling/KO_rolling.json'
+import googlData from '@/public/data/rolling/GOOGL_rolling.json'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Tooltip, Legend)
 
@@ -23,11 +24,12 @@ type StockData = typeof nkeData
 type Grade = 'great' | 'caution' | 'slow'
 
 const STOCKS: Array<{ key: string; data: StockData; grade: Grade }> = [
-  { key: 'AAPL', data: aaplData as StockData, grade: 'great'   }, // over20 100%
-  { key: 'RMS',  data: rmsData  as StockData, grade: 'great'   }, // over20 70%
-  { key: 'COST', data: costData as StockData, grade: 'great'   }, // over20 60%
-  { key: 'NKE',  data: nkeData  as StockData, grade: 'caution' }, // over20 40%, 최근 하락
-  { key: 'KO',   data: koData   as StockData, grade: 'slow'    }, // over20 0%
+  { key: 'AAPL',  data: aaplData  as StockData, grade: 'great'   }, // over20 100%
+  { key: 'RMS',   data: rmsData   as StockData, grade: 'great'   }, // over20 70%
+  { key: 'COST',  data: costData  as StockData, grade: 'great'   }, // over20 60%
+  { key: 'GOOGL', data: googlData as StockData, grade: 'caution' }, // over20 40% (최근 창 상승세)
+  { key: 'NKE',   data: nkeData   as StockData, grade: 'caution' }, // over20 40%, 최근 하락
+  { key: 'KO',    data: koData    as StockData, grade: 'slow'    }, // over20 0%
 ]
 
 const GRADE_META: Record<Grade, { dot: string; label: string }> = {

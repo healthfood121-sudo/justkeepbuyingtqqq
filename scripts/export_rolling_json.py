@@ -170,17 +170,19 @@ def get_metrics(ticker: str) -> dict:
         "eps":      round(eps, 2) if eps else None,
     }
 
-print("[현재 지표 조회] NKE, RMS.PA, KO, AAPL, COST ...")
-nke_metrics  = get_metrics("NKE")
-rms_metrics  = get_metrics("RMS.PA")
-ko_metrics   = get_metrics("KO")
-aapl_metrics = get_metrics("AAPL")
-cost_metrics = get_metrics("COST")
+print("[현재 지표 조회] NKE, RMS.PA, KO, AAPL, COST, GOOGL ...")
+nke_metrics   = get_metrics("NKE")
+rms_metrics   = get_metrics("RMS.PA")
+ko_metrics    = get_metrics("KO")
+aapl_metrics  = get_metrics("AAPL")
+cost_metrics  = get_metrics("COST")
+googl_metrics = get_metrics("GOOGL")
 print(f"  NKE:    {nke_metrics}")
 print(f"  RMS.PA: {rms_metrics}")
 print(f"  KO:     {ko_metrics}")
 print(f"  AAPL:   {aapl_metrics}")
 print(f"  COST:   {cost_metrics}")
+print(f"  GOOGL:  {googl_metrics}")
 
 nke_out = {
     "ticker":    "NKE",
@@ -522,5 +524,104 @@ ko_out = {
 out_path5 = DST / "KO_rolling.json"
 out_path5.write_text(json.dumps(ko_out, ensure_ascii=False, indent=2), encoding="utf-8")
 print(f"  저장 → {out_path5}")
+
+# ── GOOGL EPS 데이터 ──────────────────────────────────────────
+# 구글(Google Inc.) 상장: 2004년 8월 19일 (NASDAQ)
+# 2014년 4월: Class A+B → Class A+B+C 2:1 주식 분할 (= 주식 수 2배, EPS 1/2)
+# 2022년 7월: 20:1 주식 분할 (= 주식 수 20배, EPS 1/20)
+# 현재 기준 총 조정배수:
+#   2004~2011 (pre-2014 split): ÷40 (2014 2:1 × 2022 20:1)
+#   2012~2019 (post-2014, pre-2022): ÷20 (2022 20:1만)
+#   2020~     (post-2022 split): 조정 없음
+#
+# 출처:
+#   2004~2007: Google Inc. FY2007 10-K (diluted, pre-all-splits) ÷40
+#   2008~2011: SEC EDGAR XBRL CIK 0001288776 (pre-all-splits) ÷40
+#   2012:      Google FY2014 10-K (post-2014 split) ÷20
+#   2013~2014: Alphabet FY2015 10-K (post-2014 split) ÷20
+#   2015:      Alphabet FY2016 10-K XBRL (post-2014 split) ÷20
+#   2016~2019: Alphabet EDGAR XBRL CIK 0001652044 (post-2014, pre-2022) ÷20
+#   2020~2025: Alphabet EDGAR XBRL (post-2022 split)
+#
+# 주요 EPS 왜곡 연도:
+#   2017: TCJA 세금개혁 일회성 전환세 부과 (-35% EPS)
+#   2022: 디지털 광고 시장 침체 + 대규모 비용 증가 (-19% EPS)
+_GOOGL_RAW_PRE2012 = {
+    # FY2004~2007: Google Inc. FY2007 10-K diluted EPS (pre-2014, pre-2022) → ÷40
+    2004: 1.46, 2005: 5.02, 2006: 9.94, 2007: 13.29,
+    # FY2008~2011: EDGAR XBRL (pre-2014, pre-2022) → ÷40
+    2008: 13.31, 2009: 20.41, 2010: 26.31, 2011: 29.76,
+}
+_GOOGL_RAW_2012_2019 = {
+    # FY2012: Google FY2014 10-K (post-2014 split) → ÷20
+    2012: 16.16,
+    # FY2013~2014: Alphabet FY2015 10-K (post-2014 split) → ÷20
+    2013: 18.79, 2014: 20.57,
+    # FY2015: Alphabet FY2016 10-K XBRL (post-2014 split) → ÷20
+    2015: 22.84,
+    # FY2016~2019: Alphabet EDGAR XBRL (post-2014, pre-2022) → ÷20
+    2016: 27.85, 2017: 18.00, 2018: 43.70, 2019: 49.16,
+}
+GOOGL_EPS = {}
+for yr, raw in _GOOGL_RAW_PRE2012.items():
+    GOOGL_EPS[yr] = round(raw / 40, 4)
+for yr, raw in _GOOGL_RAW_2012_2019.items():
+    GOOGL_EPS[yr] = round(raw / 20, 4)
+# FY2020~2025: post-2022 split (조정 없음)
+GOOGL_EPS.update({
+    2020: 2.9300, 2021: 5.6100, 2022: 4.5600,
+    2023: 5.8000, 2024: 8.0400, 2025: 10.8100,
+})
+
+_GOOGL_ONE_TIME = {
+    2017: "TCJA 세금개혁 일회성 전환세(-35% EPS)",
+    2022: "디지털 광고 침체 + 비용 급증(-19% EPS)",
+}
+
+# ── GOOGL ─────────────────────────────────────────────────────
+print("[GOOGL] 데이터 로드...")
+az_googl = RollingAnalyzer("GOOGL", benchmark="^SP500TR")
+df10a_googl = pd.read_csv(SRC / "GOOGL_10y_annual.csv", parse_dates=["buy_date","sell_date"])
+df5a_googl  = pd.read_csv(SRC / "GOOGL_5y_annual.csv",  parse_dates=["buy_date","sell_date"])
+fp_googl = az_googl.full_period()
+st_googl = summary_stats(df10a_googl, label="GOOGL")
+
+loss5_googl = df5a_googl[df5a_googl["is_complete"] & (df5a_googl["cagr"] < 0)]
+
+googl_out = {
+    "ticker":    "GOOGL",
+    "name":      "구글(알파벳)",
+    "currency":  "USD",
+    "benchmark": "S&P 500",
+    "note":      "2004년 8월 상장. 분할 이력: 2014-04 2:1(Class C 분리), 2022-07 20:1. EPS는 현재 분할 기준으로 소급 조정.",
+    "current":   googl_metrics,
+    "fullPeriod": fp_googl,
+    "stats": {
+        "n":        st_googl["n_complete"],
+        "min":      st_googl["min_cagr"],
+        "minBuy":   st_googl["min_buy"],
+        "median":   st_googl["median_cagr"],
+        "mean":     st_googl["mean_cagr"],
+        "max":      st_googl["max_cagr"],
+        "maxBuy":   st_googl["max_buy"],
+        "over10":   st_googl["pct_over_10"],
+        "over15":   st_googl["pct_over_15"],
+        "over20":   st_googl["pct_over_20"],
+        "losses":   st_googl["n_losses"],
+        "beatBench":  st_googl.get("n_beat_bench"),
+        "beatTotal":  st_googl.get("n_beat_bench_total"),
+    },
+    "rows10y": df_to_rows(df10a_googl, GOOGL_EPS),
+    "loss5y": [
+        {"buyYear": int(r["buy_date"].year), "sellYear": int(r["sell_date"].year), "cagr": float(r["cagr"])}
+        for _, r in loss5_googl.iterrows()
+    ],
+    "epsDecomp": compute_eps_decomp(df10a_googl, GOOGL_EPS, _GOOGL_ONE_TIME),
+    "epsNote": "EPS 출처: 2004~2007 Google FY2007 10-K, 2008~2011 SEC EDGAR XBRL(Google Inc.), 2012~2019 Alphabet EDGAR XBRL. 분할 조정: 2004~2011÷40, 2012~2019÷20, 2020~ 조정 없음. PER은 Yahoo Finance 종가(배당없음) 기준.",
+}
+
+out_path6 = DST / "GOOGL_rolling.json"
+out_path6.write_text(json.dumps(googl_out, ensure_ascii=False, indent=2), encoding="utf-8")
+print(f"  저장 → {out_path6}")
 
 print("\n[완료]")
