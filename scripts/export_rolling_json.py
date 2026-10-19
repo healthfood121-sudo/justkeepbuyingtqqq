@@ -101,11 +101,12 @@ def compute_eps_decomp(df_annual: pd.DataFrame, eps_dict: dict, one_time: dict) 
         })
     return result
 
-def df_to_rows(df: pd.DataFrame) -> list:
+def df_to_rows(df: pd.DataFrame, eps_dict: dict = None) -> list:
     rows = []
     for _, r in df.iterrows():
+        buy_yr = int(r["buy_date"].year)
         row = {
-            "buyYear":    int(r["buy_date"].year),
+            "buyYear":    buy_yr,
             "sellYear":   int(r["sell_date"].year),
             "sellDate":   r["sell_date"].strftime("%Y-%m-%d"),
             "yearsActual": float(round(r["years_actual"], 1)),
@@ -116,6 +117,11 @@ def df_to_rows(df: pd.DataFrame) -> list:
         if "bench_cagr" in r and pd.notna(r["bench_cagr"]):
             row["benchCagr"] = float(r["bench_cagr"])
             row["diff"]      = float(r["diff_pct"])
+        # 매수 PER: EPS 데이터 있는 연도만 추가
+        if eps_dict and buy_yr in eps_dict and eps_dict[buy_yr]:
+            eps = eps_dict[buy_yr]
+            if eps > 0:
+                row["peBuy"] = round(float(r["buy_price"]) / eps, 1)
         rows.append(row)
     return rows
 
@@ -173,7 +179,7 @@ nke_out = {
         "beatBench":  st_nke.get("n_beat_bench"),
         "beatTotal":  st_nke.get("n_beat_bench_total"),
     },
-    "rows10y": df_to_rows(df10a),
+    "rows10y": df_to_rows(df10a, NKE_EPS),
     "loss5y": [
         {"buyYear": int(r["buy_date"].year), "sellYear": int(r["sell_date"].year), "cagr": float(r["cagr"])}
         for _, r in loss5.iterrows()
@@ -232,7 +238,7 @@ rms_out = {
         "beatBench":  st_rms.get("n_beat_bench"),
         "beatTotal":  st_rms.get("n_beat_bench_total"),
     },
-    "rows10y": df_to_rows(df_rms),
+    "rows10y": df_to_rows(df_rms, _RMS_EUR_EPS),
     "loss5y": [],
     "epsDecomp": compute_eps_decomp(df_rms, _RMS_EUR_EPS, _RMS_ONE_TIME),
     "epsNote": "EUR EPS: 사용자 제공 USD EPS를 연도별 평균 USD/EUR 환율로 환산. PER은 Yahoo Finance EUR 종가(배당조정) 기준.",

@@ -240,14 +240,16 @@ function RollingTable({ data }: { data: StockData }) {
               <th className="text-left py-2 pr-3 font-medium">평가</th>
               <th className="text-right py-2 pr-3 font-medium">연복리<br/><span className="font-normal opacity-60">(배당포함)</span></th>
               <th className="text-right py-2 pr-3 font-medium">누적 수익률</th>
+              <th className="text-right py-2 pr-3 font-medium">매수 PER<br/><span className="font-normal opacity-60">(진입 시점)</span></th>
               <th className="text-right py-2 pr-3 font-medium">S&P 500<br/><span className="font-normal opacity-60">(배당포함)</span></th>
               <th className="text-right py-2 font-medium">차이</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
             {rows.map(r => {
-              const diff = 'diff' in r ? (r as any).diff as number : null
-              const bc   = 'benchCagr' in r ? (r as any).benchCagr as number : null
+              const diff   = 'diff' in r ? (r as any).diff as number : null
+              const bc     = 'benchCagr' in r ? (r as any).benchCagr as number : null
+              const peBuy  = 'peBuy' in r ? (r as any).peBuy as number : null
               const inProg = !r.isComplete
               return (
                 <tr key={r.buyYear} className={`hover:bg-gray-50 dark:hover:bg-gray-800/40 ${inProg ? 'opacity-50' : ''}`}>
@@ -260,6 +262,9 @@ function RollingTable({ data }: { data: StockData }) {
                   </td>
                   <td className="py-1.5 pr-3 text-right tabular-nums text-gray-500 dark:text-gray-400">
                     {fmtTotalReturn(r.multiple)}
+                  </td>
+                  <td className="py-1.5 pr-3 text-right tabular-nums text-gray-400 dark:text-gray-500">
+                    {peBuy != null ? `${peBuy.toFixed(1)}x` : '—'}
                   </td>
                   <td className="py-1.5 pr-3 text-right tabular-nums text-gray-400 dark:text-gray-500">
                     {bc != null ? `${bc.toFixed(1)}%` : '—'}
