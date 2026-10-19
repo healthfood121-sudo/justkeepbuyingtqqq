@@ -440,32 +440,45 @@ function ScenarioTable({ data }: { data: StockData }) {
   )
 }
 
-// ── 분포 Range Bar ───────────────────────────────────────────
-// x축 고정 범위: 0% ~ 35%
-const BAR_MIN = 0
-const BAR_MAX = 35
-function RangeBar({ mn, med, mx }: { mn: number; med: number; mx: number }) {
+// ── 범용 Range Bar ───────────────────────────────────────────
+function RangeBar({
+  mn, med, mx,
+  vMin, vMax,
+  refVal, refLabel,
+  barColor = 'bg-blue-200 dark:bg-blue-900',
+  markerColor = 'bg-blue-500 dark:bg-blue-400',
+  refColor = 'bg-blue-400 dark:bg-blue-500',
+  unit = '%',
+  sign = false,
+}: {
+  mn: number; med: number; mx: number
+  vMin: number; vMax: number
+  refVal: number; refLabel: string
+  barColor?: string; markerColor?: string; refColor?: string
+  unit?: string; sign?: boolean
+}) {
   const toX = (v: number) =>
-    `${Math.max(0, Math.min(100, (v - BAR_MIN) / (BAR_MAX - BAR_MIN) * 100)).toFixed(2)}%`
-  const ref20 = ((20 - BAR_MIN) / (BAR_MAX - BAR_MIN) * 100).toFixed(2)
+    `${Math.max(0, Math.min(100, (v - vMin) / (vMax - vMin) * 100)).toFixed(2)}%`
+  const refPct = ((refVal - vMin) / (vMax - vMin) * 100).toFixed(2)
+  const fmt = (v: number) => `${sign && v > 0 ? '+' : ''}${v.toFixed(1)}${unit}`
 
   return (
-    <div className="relative group flex items-center" style={{ width: 320, height: 44 }}>
+    <div className="relative group flex items-center" style={{ width: 260, height: 44 }}>
       {/* 배경 트랙 */}
       <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-3 bg-gray-100 dark:bg-gray-800 rounded-full" />
       {/* min~max 구간 바 */}
       <div
-        className="absolute top-1/2 -translate-y-1/2 h-3 bg-blue-200 dark:bg-blue-900 rounded-full"
+        className={`absolute top-1/2 -translate-y-1/2 h-3 rounded-full ${barColor}`}
         style={{ left: toX(mn), right: `${(100 - parseFloat(toX(mx))).toFixed(2)}%` }}
       />
-      {/* 20% 기준선 */}
+      {/* 기준선 */}
       <div
-        className="absolute top-0 h-full w-0.5 bg-blue-400 dark:bg-blue-500 opacity-70"
-        style={{ left: `${ref20}%` }}
+        className={`absolute top-0 h-full w-0.5 opacity-70 ${refColor}`}
+        style={{ left: `${refPct}%` }}
       />
       {/* 중앙값 마커 */}
       <div
-        className="absolute top-1/2 w-5 h-5 rounded-full bg-blue-500 dark:bg-blue-400 border-2 border-white dark:border-gray-950"
+        className={`absolute top-1/2 w-5 h-5 rounded-full border-2 border-white dark:border-gray-950 ${markerColor}`}
         style={{ left: toX(med), transform: 'translateX(-50%) translateY(-50%)' }}
       />
       {/* 툴팁 */}
@@ -473,23 +486,22 @@ function RangeBar({ mn, med, mx }: { mn: number; med: number; mx: number }) {
                       invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity duration-150
                       bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg px-3 py-2
                       whitespace-nowrap shadow-lg pointer-events-none">
-        {/* 위 화살표 */}
         <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-900 dark:border-b-gray-700" />
         <div className="space-y-1">
           <div className="flex justify-between gap-4">
             <span className="text-gray-400">최솟값</span>
-            <span className="font-semibold">{mn.toFixed(1)}%</span>
+            <span className="font-semibold">{fmt(mn)}</span>
           </div>
           <div className="flex justify-between gap-4">
             <span className="text-gray-400">중앙값 ●</span>
-            <span className="font-semibold">{med.toFixed(1)}%</span>
+            <span className="font-semibold">{fmt(med)}</span>
           </div>
           <div className="flex justify-between gap-4">
             <span className="text-gray-400">최댓값</span>
-            <span className="font-semibold">{mx.toFixed(1)}%</span>
+            <span className="font-semibold">{fmt(mx)}</span>
           </div>
           <div className="border-t border-gray-600 pt-1 text-gray-400">
-            세로선 | = 연 20% 기준
+            세로선 | = {refLabel}
           </div>
         </div>
       </div>
@@ -498,6 +510,20 @@ function RangeBar({ mn, med, mx }: { mn: number; med: number; mx: number }) {
 }
 
 // ── 종목 비교 개요 ───────────────────────────────────────────
+function median(arr: number[]) {
+  const s = [...arr].sort((a, b) => a - b)
+  return s.length % 2 === 0
+    ? (s[s.length / 2 - 1] + s[s.length / 2]) / 2
+    : s[Math.floor(s.length / 2)]
+}
+
+function diffColor(v: number) {
+  if (v >= 10) return 'text-blue-600 dark:text-blue-400'
+  if (v >= 5)  return 'text-emerald-600 dark:text-emerald-400'
+  if (v >= 0)  return 'text-yellow-600 dark:text-yellow-400'
+  return 'text-red-500 dark:text-red-400'
+}
+
 function OverviewTable({
   activeStock,
   setActiveStock,
@@ -506,41 +532,47 @@ function OverviewTable({
   setActiveStock: (i: number) => void
 }) {
   const rows = STOCKS.map((s, i) => {
-    const completed = s.data.rows10y.filter((r: any) => r.isComplete)
-    const recent    = completed.slice(-10)
-    const unsorted  = recent.map((r: any) => r.cagr as number)
-    const cagrs     = [...unsorted].sort((a, b) => a - b)
-    const med = cagrs.length === 0 ? 0
-      : cagrs.length % 2 === 0
-        ? (cagrs[cagrs.length / 2 - 1] + cagrs[cagrs.length / 2]) / 2
-        : cagrs[Math.floor(cagrs.length / 2)]
-    const mn     = cagrs[0] ?? 0
-    const mx     = cagrs[cagrs.length - 1] ?? 0
-    const over20 = cagrs.length === 0 ? 0
-      : Math.round(cagrs.filter((c: number) => c >= 20).length / cagrs.length * 100)
-    const withDiff = recent.filter((r: any) => r.diff != null)
-    const beatSP   = withDiff.length === 0 ? null
-      : Math.round(withDiff.filter((r: any) => r.diff > 0).length / withDiff.length * 100)
-    return { i, s, med, mn, mx, over20, beatSP }
+    const completed  = s.data.rows10y.filter((r: any) => r.isComplete)
+    const recent     = completed.slice(-10)
+    const cagrs      = recent.map((r: any) => r.cagr as number)
+    const cagrMn     = Math.min(...cagrs)
+    const cagrMx     = Math.max(...cagrs)
+    const cagrMed    = median(cagrs)
+    const withDiff   = recent.filter((r: any) => r.diff != null)
+    const diffs      = withDiff.map((r: any) => r.diff as number)
+    const diffMn     = diffs.length ? Math.min(...diffs) : null
+    const diffMx     = diffs.length ? Math.max(...diffs) : null
+    const diffMed    = diffs.length ? median(diffs) : null
+    return { i, s, cagrMn, cagrMed, cagrMx, diffMn, diffMed, diffMx }
   })
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-sm">
+      <table className="text-sm">
         <thead>
-          <tr className="border-b border-gray-200 dark:border-gray-700 text-xs text-gray-400 dark:text-gray-500">
-            <th className="text-left py-2 pr-4 font-medium">종목</th>
-            <th className="text-right py-2 pr-4 font-medium">전체 기간<br/><span className="font-normal opacity-60">연평균 수익률</span></th>
-            <th className="text-left py-2 px-3 font-medium">분포<br/><span className="font-normal opacity-60">최근 10구간</span></th>
-            <th className="text-right py-2 pr-4 font-medium">최솟값</th>
-            <th className="text-right py-2 pr-4 font-medium">중앙값</th>
-            <th className="text-right py-2 pr-4 font-medium">최댓값</th>
-            <th className="text-right py-2 pr-4 font-medium">20%+<br/><span className="font-normal opacity-60">비율</span></th>
-            <th className="text-right py-2 font-medium">S&P500<br/><span className="font-normal opacity-60">초과 비율</span></th>
+          <tr className="text-xs text-gray-400 dark:text-gray-500">
+            <th className="text-left pb-1 pr-4" rowSpan={2}>종목</th>
+            <th className="text-right pb-1 pr-4" rowSpan={2}>전체 기간<br/><span className="font-normal opacity-60">연평균</span></th>
+            <th colSpan={4} className="text-center pb-1 px-3 border-b border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold">
+              절대 수익률 <span className="font-normal opacity-60">(배당 포함)</span>
+            </th>
+            <th colSpan={4} className="text-center pb-1 px-3 border-b border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold">
+              S&P 500 대비 초과수익
+            </th>
+          </tr>
+          <tr className="text-xs text-gray-400 dark:text-gray-500 border-b border-gray-200 dark:border-gray-700">
+            <th className="text-left py-1 px-3 font-medium">분포</th>
+            <th className="text-right py-1 pr-3 font-medium">최솟값</th>
+            <th className="text-right py-1 pr-3 font-medium">중앙값</th>
+            <th className="text-right py-1 pr-4 font-medium">최댓값</th>
+            <th className="text-left py-1 px-3 font-medium">분포</th>
+            <th className="text-right py-1 pr-3 font-medium">최솟값</th>
+            <th className="text-right py-1 pr-3 font-medium">중앙값</th>
+            <th className="text-right py-1 font-medium">최댓값</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-          {rows.map(({ i, s, med, mn, mx, over20, beatSP }) => {
+          {rows.map(({ i, s, cagrMn, cagrMed, cagrMx, diffMn, diffMed, diffMx }) => {
             const isActive = activeStock === i
             return (
               <tr
@@ -557,33 +589,39 @@ function OverviewTable({
                 <td className={`py-3 pr-4 text-right tabular-nums font-medium ${cagrTextColor(s.data.fullPeriod.cagr, true)}`}>
                   {s.data.fullPeriod.cagr}%
                 </td>
+                {/* 절대 수익률 섹션 */}
                 <td className="py-3 px-3">
-                  <RangeBar mn={mn} med={med} mx={mx} />
+                  <RangeBar mn={cagrMn} med={cagrMed} mx={cagrMx}
+                    vMin={0} vMax={35} refVal={20} refLabel="연 20% 기준" />
                 </td>
-                <td className={`py-3 pr-4 text-right tabular-nums ${cagrTextColor(mn, true)}`}>
-                  {mn.toFixed(1)}%
+                <td className={`py-3 pr-3 text-right tabular-nums ${cagrTextColor(cagrMn, true)}`}>
+                  {cagrMn.toFixed(1)}%
                 </td>
-                <td className={`py-3 pr-4 text-right tabular-nums font-semibold ${cagrTextColor(med, true)}`}>
-                  {med.toFixed(1)}%
+                <td className={`py-3 pr-3 text-right tabular-nums font-semibold ${cagrTextColor(cagrMed, true)}`}>
+                  {cagrMed.toFixed(1)}%
                 </td>
-                <td className={`py-3 pr-4 text-right tabular-nums ${cagrTextColor(mx, true)}`}>
-                  {mx.toFixed(1)}%
+                <td className={`py-3 pr-4 text-right tabular-nums ${cagrTextColor(cagrMx, true)}`}>
+                  {cagrMx.toFixed(1)}%
                 </td>
-                <td className={`py-3 pr-4 text-right tabular-nums font-medium ${
-                  over20 >= 50 ? 'text-blue-600 dark:text-blue-400'
-                  : over20 >= 20 ? 'text-yellow-600 dark:text-yellow-400'
-                  : 'text-gray-400 dark:text-gray-500'
-                }`}>
-                  {over20}%
+                {/* S&P500 초과수익 섹션 */}
+                <td className="py-3 px-3">
+                  {diffMn != null && diffMed != null && diffMx != null ? (
+                    <RangeBar mn={diffMn} med={diffMed} mx={diffMx}
+                      vMin={-15} vMax={25} refVal={0} refLabel="0pp = S&P500과 동일"
+                      barColor="bg-emerald-200 dark:bg-emerald-900"
+                      markerColor="bg-emerald-600 dark:bg-emerald-400"
+                      refColor="bg-gray-400 dark:bg-gray-500"
+                      sign unit="pp" />
+                  ) : <span className="text-gray-300 dark:text-gray-600 text-xs pl-3">—</span>}
                 </td>
-                <td className={`py-3 text-right tabular-nums font-medium ${
-                  beatSP == null       ? 'text-gray-300 dark:text-gray-600'
-                  : beatSP >= 80      ? 'text-blue-600 dark:text-blue-400'
-                  : beatSP >= 50      ? 'text-emerald-600 dark:text-emerald-400'
-                  : beatSP >= 30      ? 'text-yellow-600 dark:text-yellow-400'
-                  : 'text-gray-400 dark:text-gray-500'
-                }`}>
-                  {beatSP == null ? '—' : `${beatSP}%`}
+                <td className={`py-3 pr-3 text-right tabular-nums ${diffMn != null ? diffColor(diffMn) : 'text-gray-300'}`}>
+                  {diffMn != null ? `${diffMn > 0 ? '+' : ''}${diffMn.toFixed(1)}pp` : '—'}
+                </td>
+                <td className={`py-3 pr-3 text-right tabular-nums font-semibold ${diffMed != null ? diffColor(diffMed) : 'text-gray-300'}`}>
+                  {diffMed != null ? `${diffMed > 0 ? '+' : ''}${diffMed.toFixed(1)}pp` : '—'}
+                </td>
+                <td className={`py-3 text-right tabular-nums ${diffMx != null ? diffColor(diffMx) : 'text-gray-300'}`}>
+                  {diffMx != null ? `${diffMx > 0 ? '+' : ''}${diffMx.toFixed(1)}pp` : '—'}
                 </td>
               </tr>
             )
@@ -591,7 +629,7 @@ function OverviewTable({
         </tbody>
       </table>
       <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
-        행 클릭 시 상세 보기 · 분포 바의 세로선(|)은 연 20% 기준선 · 모두 최근 10개 완결 구간 기준
+        행 클릭 시 상세 보기 · 바의 세로선: 절대수익 = 연 20%, 초과수익 = 0pp(S&P500 동일) · 최근 10개 완결 구간 기준
       </p>
     </div>
   )
