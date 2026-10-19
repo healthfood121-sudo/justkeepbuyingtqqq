@@ -557,5 +557,120 @@
       "sellYear": 2025,
       "cagr": -13.53
     }
-  ]
+  ],
+  "epsDecomp": [
+    {
+      "buyYear": 2008,
+      "sellYear": 2018,
+      "epsBuy": 0.935,
+      "epsSell": 1.17,
+      "epsMultiple": 1.25,
+      "peBuy": 10.6,
+      "peSell": 56.4,
+      "peMultiple": 5.32,
+      "epsGrowthCagr": 2.27,
+      "peCagr": 18.2,
+      "totalCagr": 20.88,
+      "note": "매도연도 EPS: 세금개혁(TCJA)"
+    },
+    {
+      "buyYear": 2009,
+      "sellYear": 2019,
+      "epsBuy": 0.757,
+      "epsSell": 2.49,
+      "epsMultiple": 3.29,
+      "peBuy": 17.3,
+      "peSell": 36.6,
+      "peMultiple": 2.12,
+      "epsGrowthCagr": 12.64,
+      "peCagr": 7.8,
+      "totalCagr": 21.43,
+      "note": null
+    },
+    {
+      "buyYear": 2010,
+      "sellYear": 2020,
+      "epsBuy": 0.965,
+      "epsSell": 1.6,
+      "epsMultiple": 1.66,
+      "peBuy": 17.8,
+      "peSell": 80.2,
+      "peMultiple": 4.51,
+      "epsGrowthCagr": 5.19,
+      "peCagr": 16.27,
+      "totalCagr": 22.29,
+      "note": "매도연도 EPS: COVID-19"
+    },
+    {
+      "buyYear": 2011,
+      "sellYear": 2021,
+      "epsBuy": 1.1,
+      "epsSell": 3.56,
+      "epsMultiple": 3.24,
+      "peBuy": 17.8,
+      "peSell": 42.8,
+      "peMultiple": 2.4,
+      "epsGrowthCagr": 12.46,
+      "peCagr": 9.14,
+      "totalCagr": 22.74,
+      "note": null
+    },
+    {
+      "buyYear": 2012,
+      "sellYear": 2022,
+      "epsBuy": 1.175,
+      "epsSell": 3.75,
+      "epsMultiple": 3.19,
+      "peBuy": 18.2,
+      "peSell": 28.8,
+      "peMultiple": 1.59,
+      "epsGrowthCagr": 12.31,
+      "peCagr": 4.73,
+      "totalCagr": 17.62,
+      "note": null
+    },
+    {
+      "buyYear": 2013,
+      "sellYear": 2023,
+      "epsBuy": 1.35,
+      "epsSell": 3.23,
+      "epsMultiple": 2.39,
+      "peBuy": 24.4,
+      "peSell": 31.5,
+      "peMultiple": 1.29,
+      "epsGrowthCagr": 9.12,
+      "peCagr": 2.57,
+      "totalCagr": 11.92,
+      "note": null
+    },
+    {
+      "buyYear": 2014,
+      "sellYear": 2024,
+      "epsBuy": 1.49,
+      "epsSell": 3.73,
+      "epsMultiple": 2.5,
+      "peBuy": 27.4,
+      "peSell": 19.3,
+      "peMultiple": 0.71,
+      "epsGrowthCagr": 9.61,
+      "peCagr": -3.43,
+      "totalCagr": 5.85,
+      "note": null
+    },
+    {
+      "buyYear": 2015,
+      "sellYear": 2025,
+      "epsBuy": 1.85,
+      "epsSell": 2.16,
+      "epsMultiple": 1.17,
+      "peBuy": 29.0,
+      "peSell": 28.7,
+      "peMultiple": 0.99,
+      "epsGrowthCagr": 1.56,
+      "peCagr": -0.08,
+      "totalCagr": 1.48,
+      "note": null
+    }
+  ],
+  "epsNote": "EPS 출처: SEC EDGAR XBRL (FY2008~2026). 분할조정: FY2008-2010÷4, FY2011-2013÷2. PER은 Yahoo Finance 배당조정 종가 사용 → 실제 PER 대비 소폭 낮게 표시될 수 있음."
 }
