@@ -170,13 +170,15 @@ def get_metrics(ticker: str) -> dict:
         "eps":      round(eps, 2) if eps else None,
     }
 
-print("[현재 지표 조회] NKE, RMS.PA, AAPL ...")
+print("[현재 지표 조회] NKE, RMS.PA, AAPL, COST ...")
 nke_metrics  = get_metrics("NKE")
 rms_metrics  = get_metrics("RMS.PA")
 aapl_metrics = get_metrics("AAPL")
+cost_metrics = get_metrics("COST")
 print(f"  NKE:    {nke_metrics}")
 print(f"  RMS.PA: {rms_metrics}")
 print(f"  AAPL:   {aapl_metrics}")
+print(f"  COST:   {cost_metrics}")
 
 nke_out = {
     "ticker":    "NKE",
@@ -363,4 +365,81 @@ aapl_out = {
 out_path3 = DST / "AAPL_rolling.json"
 out_path3.write_text(json.dumps(aapl_out, ensure_ascii=False, indent=2), encoding="utf-8")
 print(f"  저장 → {out_path3}")
+
+# ── COST EPS 데이터 ───────────────────────────────────────────
+# COST 회계연도: 8월 말(마지막 일요일) 종료 → 달력 연도 Y = FY_Y
+# 출처: SEC EDGAR XBRL (FY2009~FY2026, USD/shares, 10-K 기준)
+# 분할 이력: 없음 (1993년 Price Club 합병 이후 주식 분할 없음)
+# 주의: 특별 배당($7/주 2012, $10/주 2020, $15/주 2023) → Yahoo Finance
+#       배당조정 주가 기준이므로 PER 절대값이 실제보다 소폭 낮게 표시될 수 있음
+_COST_EPS = {
+    2009: 2.47,
+    2010: 2.92,
+    2011: 3.30,
+    2012: 3.89,
+    2013: 4.63,
+    2014: 4.65,
+    2015: 5.37,
+    2016: 5.33,
+    2017: 6.08,
+    2018: 7.09,
+    2019: 8.26,
+    2020: 9.02,
+    2021: 11.27,
+    2022: 13.14,
+    2023: 14.16,
+    2024: 16.56,
+    2025: 18.21,
+    2026: 20.76,
+}
+_COST_ONE_TIME = {
+    2020: "COVID-19 영향 + 특별 배당 $10/주",
+}
+
+# ── COST ──────────────────────────────────────────────────────
+print("[COST] 데이터 로드...")
+az_cost = RollingAnalyzer("COST", benchmark="^SP500TR")
+df10a_cost = pd.read_csv(SRC / "COST_10y_annual.csv", parse_dates=["buy_date","sell_date"])
+df5a_cost  = pd.read_csv(SRC / "COST_5y_annual.csv",  parse_dates=["buy_date","sell_date"])
+fp_cost = az_cost.full_period()
+st_cost = summary_stats(df10a_cost, label="COST")
+
+loss5_cost = df5a_cost[df5a_cost["is_complete"] & (df5a_cost["cagr"] < 0)]
+
+cost_out = {
+    "ticker":    "COST",
+    "name":      "코스트코",
+    "currency":  "USD",
+    "benchmark": "S&P 500",
+    "note":      "1986~1992 구간은 Price Club(합병 전) 데이터 포함. 특별 배당($7/2012, $10/2020, $15/2023) 반영 총수익률 기준.",
+    "current":   cost_metrics,
+    "fullPeriod": fp_cost,
+    "stats": {
+        "n":       st_cost["n_complete"],
+        "min":     st_cost["min_cagr"],
+        "minBuy":  st_cost["min_buy"],
+        "median":  st_cost["median_cagr"],
+        "mean":    st_cost["mean_cagr"],
+        "max":     st_cost["max_cagr"],
+        "maxBuy":  st_cost["max_buy"],
+        "over10":  st_cost["pct_over_10"],
+        "over15":  st_cost["pct_over_15"],
+        "over20":  st_cost["pct_over_20"],
+        "losses":  st_cost["n_losses"],
+        "beatBench":  st_cost.get("n_beat_bench"),
+        "beatTotal":  st_cost.get("n_beat_bench_total"),
+    },
+    "rows10y": df_to_rows(df10a_cost, _COST_EPS),
+    "loss5y": [
+        {"buyYear": int(r["buy_date"].year), "sellYear": int(r["sell_date"].year), "cagr": float(r["cagr"])}
+        for _, r in loss5_cost.iterrows()
+    ],
+    "epsDecomp": compute_eps_decomp(df10a_cost, _COST_EPS, _COST_ONE_TIME),
+    "epsNote": "EPS 출처: SEC EDGAR XBRL (FY2009~FY2026, USD/shares). 코스트코 회계연도는 8월 말 종료. 분할 이력 없음. Yahoo Finance 배당조정 주가 기준 PER → 특별 배당 반영으로 PER 절대값이 실제보다 소폭 낮을 수 있음.",
+}
+
+out_path4 = DST / "COST_rolling.json"
+out_path4.write_text(json.dumps(cost_out, ensure_ascii=False, indent=2), encoding="utf-8")
+print(f"  저장 → {out_path4}")
+
 print("\n[완료]")

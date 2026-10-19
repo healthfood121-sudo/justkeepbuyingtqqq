@@ -11,6 +11,7 @@ import { Chart } from 'react-chartjs-2'
 import nkeData  from '@/public/data/rolling/NKE_rolling.json'
 import rmsData  from '@/public/data/rolling/RMS_rolling.json'
 import aaplData from '@/public/data/rolling/AAPL_rolling.json'
+import costData from '@/public/data/rolling/COST_rolling.json'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Tooltip, Legend)
 
@@ -20,6 +21,7 @@ const STOCKS = [
   { key: 'NKE',  data: nkeData  as StockData },
   { key: 'RMS',  data: rmsData  as StockData },
   { key: 'AAPL', data: aaplData as StockData },
+  { key: 'COST', data: costData as StockData },
 ]
 
 // ── 색상 유틸 ───────────────────────────────────────────────
