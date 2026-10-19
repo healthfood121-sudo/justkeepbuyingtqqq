@@ -819,10 +819,13 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 | `data/rolling/KO_10y_annual.csv` | `analyze_ko.py` | KO (코카콜라) | 10년 연말 매수 롤링 (1988년부터) |
 | `data/rolling/KO_5y_annual.csv` | `analyze_ko.py` | KO | 5년 연말 매수 롤링 |
 | `data/rolling/KO_10y_monthly.csv` | `analyze_ko.py` | KO | 10년 월말 매수 롤링 |
+| `data/rolling/AMZN_10y_annual.csv` | `analyze_amzn.py` | AMZN (아마존) | 10년 연말 매수 롤링 (1997년부터) |
+| `data/rolling/AMZN_5y_annual.csv` | `analyze_amzn.py` | AMZN | 5년 연말 매수 롤링 |
+| `data/rolling/AMZN_10y_monthly.csv` | `analyze_amzn.py` | AMZN | 10년 월말 매수 롤링 |
 
 ### 롤링 JSON (export 스크립트 출력)
 
-재실행: `python scripts/export_rolling_json.py` (NKE, RMS, AAPL, COST, KO 전부 재생성)
+재실행: `python scripts/export_rolling_json.py` (전 종목 재생성)
 
 | 파일 | 크기 | 종목 | EPS 출처 |
 |------|------|------|---------|
@@ -832,6 +835,7 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 | `web/public/data/rolling/COST_rolling.json` | ~50 KB | COST (코스트코) | EDGAR XBRL |
 | `web/public/data/rolling/KO_rolling.json` | ~50 KB | KO (코카콜라) | EDGAR XBRL (2007~2025) + macrotrends 역산 (1988~2006) |
 | `web/public/data/rolling/META_rolling.json` | ~20 KB | META (메타 플랫폼스) | EDGAR XBRL CIK 0001326801 (2012~2025, 분할 없음) |
+| `web/public/data/rolling/AMZN_rolling.json` | ~30 KB | AMZN (아마존) | EDGAR XBRL CIK 0001018724, FY2007~2019÷20, FY2020~2025 소급 반영 |
 
 **KO 파라미터:**
 - 매수 시작: 1988년 말 (연말 매수 기준)
@@ -839,5 +843,15 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 - 통화: USD
 - 완결 구간: 28개 (1988~2015 연말 매수), 중앙값 연평균 수익률 8.5%
 - EPS 일회성 왜곡: 1999(구조조정), 2000(병입업체 구조조정), 2017(TCJA), 2020(COVID-19)
+
+**AMZN 파라미터:**
+- 매수 시작: 1997년 말 (상장 첫 해)
+- 벤치마크: S&P 500 (^SP500TR)
+- 통화: USD
+- 완결 구간: 19개 (1997~2015 연말 매수), 중앙값 연평균 수익률 29.5%
+- 손실 구간: 1개 (1998년 말 매수, -0.4%)
+- S&P500 초과: 19/19개 (전 구간 시장 초과)
+- EPS 일회성 왜곡: 2012(적극 투자로 소폭 음수), 2014(파이어폰 + 인프라 투자, EPS 음수), 2022(Rivian 평가손실 ~$12.7B)
+- 분할 이력: 1998 2:1, 1999-01 3:1, 1999-09 2:1, 2022-06 20:1
 
 **사용처:** `/app/private` (개별 종목 10년 롤링 분석 페이지)

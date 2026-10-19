@@ -15,6 +15,7 @@ import costData  from '@/public/data/rolling/COST_rolling.json'
 import koData    from '@/public/data/rolling/KO_rolling.json'
 import googlData from '@/public/data/rolling/GOOGL_rolling.json'
 import metaData  from '@/public/data/rolling/META_rolling.json'
+import amznData  from '@/public/data/rolling/AMZN_rolling.json'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Tooltip, Legend)
 
@@ -22,6 +23,7 @@ type StockData = typeof nkeData
 
 const STOCKS: Array<{ key: string; data: StockData }> = [
   { key: 'AAPL',  data: aaplData  as StockData },
+  { key: 'AMZN',  data: amznData  as StockData },
   { key: 'META',  data: metaData  as StockData },
   { key: 'RMS',   data: rmsData   as StockData },
   { key: 'COST',  data: costData  as StockData },

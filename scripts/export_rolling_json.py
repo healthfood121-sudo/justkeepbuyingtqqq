@@ -170,7 +170,7 @@ def get_metrics(ticker: str) -> dict:
         "eps":      round(eps, 2) if eps else None,
     }
 
-print("[현재 지표 조회] NKE, RMS.PA, KO, AAPL, COST, GOOGL, META ...")
+print("[현재 지표 조회] NKE, RMS.PA, KO, AAPL, COST, GOOGL, META, NVDA, AMZN ...")
 nke_metrics   = get_metrics("NKE")
 rms_metrics   = get_metrics("RMS.PA")
 ko_metrics    = get_metrics("KO")
@@ -178,6 +178,8 @@ aapl_metrics  = get_metrics("AAPL")
 cost_metrics  = get_metrics("COST")
 googl_metrics = get_metrics("GOOGL")
 meta_metrics  = get_metrics("META")
+nvda_metrics  = get_metrics("NVDA")
+amzn_metrics  = get_metrics("AMZN")
 print(f"  NKE:    {nke_metrics}")
 print(f"  RMS.PA: {rms_metrics}")
 print(f"  KO:     {ko_metrics}")
@@ -185,6 +187,8 @@ print(f"  AAPL:   {aapl_metrics}")
 print(f"  COST:   {cost_metrics}")
 print(f"  GOOGL:  {googl_metrics}")
 print(f"  META:   {meta_metrics}")
+print(f"  NVDA:   {nvda_metrics}")
+print(f"  AMZN:   {amzn_metrics}")
 
 nke_out = {
     "ticker":    "NKE",
@@ -704,5 +708,192 @@ meta_out = {
 out_path7 = DST / "META_rolling.json"
 out_path7.write_text(json.dumps(meta_out, ensure_ascii=False, indent=2), encoding="utf-8")
 print(f"  저장 → {out_path7}")
+
+# ── AMZN EPS 데이터 ───────────────────────────────────────────
+# 아마존 회계연도 = 달력연도 (1월~12월)
+# 상장: 1997년 5월 15일 (NASDAQ)
+#
+# 아마존 주식 분할 이력:
+#   1998-06-02: 2:1  /  1999-01-05: 3:1  /  1999-09-02: 2:1  /  2022-06-06: 20:1
+#
+# EDGAR 데이터 분할 반영 현황 (filed 날짜 기준):
+#   FY2007~FY2019: 2022년 6월 이전 제출 → 20:1 미반영 → ÷20 필요
+#   FY2020~FY2025: 2022년 6월 이후 제출 → 이미 20:1 소급 반영
+#
+# 출처: SEC EDGAR XBRL CIK 0001018724 (us-gaap/EarningsPerShareDiluted, 10-K)
+#       end 날짜 기준 연도별 최신 filed 값 사용
+#
+# 주요 EPS 왜곡 연도:
+#   2012: EPS 소폭 음수 (아마존 적극적 투자 사이클)
+#   2014: EPS 음수 (파이어폰 실패 + 인프라 투자 급증)
+#   2022: Rivian Automotive 투자 평가손실 ~$12.7B → EPS -$0.270
+_AMZN_EDGAR_RAW = {
+    # FY2007~2019: EDGAR XBRL (÷20 필요)
+    2007:  1.120,
+    2008:  1.490,
+    2009:  2.040,
+    2010:  2.530,
+    2011:  1.370,
+    2012: -0.090,  # 소폭 음수 (투자 사이클)
+    2013:  0.590,
+    2014: -0.520,  # 음수 (파이어폰 + 인프라 투자)
+    2015:  1.250,
+    2016:  4.900,
+    2017:  6.150,
+    2018: 20.140,
+    2019: 23.010,
+}
+_AMZN_POST2022_EPS = {
+    # FY2020~2025: 2022-06 분할 이후 10-K에서 소급 반영된 값
+    2020:  2.090,
+    2021:  3.240,
+    2022: -0.270,  # Rivian 평가손실 (~$12.7B)
+    2023:  2.900,
+    2024:  5.530,
+    2025:  7.170,
+}
+
+AMZN_EPS = {}
+for yr, raw in _AMZN_EDGAR_RAW.items():
+    AMZN_EPS[yr] = round(raw / 20, 4)
+AMZN_EPS.update(_AMZN_POST2022_EPS)
+
+_AMZN_ONE_TIME = {
+    2012: "선제 투자 사이클 — EPS 소폭 음수",
+    2014: "파이어폰 실패 + AWS·물류 인프라 대규모 투자 — EPS 음수",
+    2022: "Rivian Automotive 투자 평가손실 ~$12.7B — EPS -0.27(영업이익은 흑자)",
+}
+
+# ── AMZN ──────────────────────────────────────────────────────
+print("[AMZN] 데이터 로드...")
+az_amzn = RollingAnalyzer("AMZN", benchmark="^SP500TR")
+df10a_amzn = pd.read_csv(SRC / "AMZN_10y_annual.csv", parse_dates=["buy_date","sell_date"])
+df5a_amzn  = pd.read_csv(SRC / "AMZN_5y_annual.csv",  parse_dates=["buy_date","sell_date"])
+fp_amzn = az_amzn.full_period()
+st_amzn = summary_stats(df10a_amzn, label="AMZN")
+
+loss5_amzn = df5a_amzn[df5a_amzn["is_complete"] & (df5a_amzn["cagr"] < 0)]
+
+amzn_out = {
+    "ticker":    "AMZN",
+    "name":      "아마존",
+    "currency":  "USD",
+    "benchmark": "S&P 500",
+    "note":      "1997년 5월 상장. 분할 이력: 1998 2:1, 1999-01 3:1, 1999-09 2:1, 2022-06 20:1. 초기(2007~2014) EPS가 극히 낮거나 음수여서 해당 구간 EPS 분해 일부 생략.",
+    "current":   amzn_metrics,
+    "fullPeriod": fp_amzn,
+    "stats": {
+        "n":        st_amzn["n_complete"],
+        "min":      st_amzn["min_cagr"],
+        "minBuy":   st_amzn["min_buy"],
+        "median":   st_amzn["median_cagr"],
+        "mean":     st_amzn["mean_cagr"],
+        "max":      st_amzn["max_cagr"],
+        "maxBuy":   st_amzn["max_buy"],
+        "over10":   st_amzn["pct_over_10"],
+        "over15":   st_amzn["pct_over_15"],
+        "over20":   st_amzn["pct_over_20"],
+        "losses":   st_amzn["n_losses"],
+        "beatBench":  st_amzn.get("n_beat_bench"),
+        "beatTotal":  st_amzn.get("n_beat_bench_total"),
+    },
+    "rows10y": df_to_rows(df10a_amzn, AMZN_EPS),
+    "loss5y": [
+        {"buyYear": int(r["buy_date"].year), "sellYear": int(r["sell_date"].year), "cagr": float(r["cagr"])}
+        for _, r in loss5_amzn.iterrows()
+    ],
+    "epsDecomp": compute_eps_decomp(df10a_amzn, AMZN_EPS, _AMZN_ONE_TIME),
+    "epsNote": "EPS 출처: SEC EDGAR XBRL CIK 0001018724 (달력연도 10-K). 분할 조정: FY2007~2019÷20(2022-06 20:1 미반영), FY2020~2025는 2022년 이후 제출 10-K 소급값. EPS 음수 연도(2012, 2014, 2022) 해당 구간 EPS·PER 분해 제외. PER은 Yahoo Finance 주가(배당 없음) 기준.",
+}
+
+out_path8 = DST / "AMZN_rolling.json"
+out_path8.write_text(json.dumps(amzn_out, ensure_ascii=False, indent=2), encoding="utf-8")
+print(f"  저장 → {out_path8}")
+
+# ── NVDA EPS 데이터 ───────────────────────────────────────────
+# 엔비디아 회계연도(FY) = 2월~1월 말 종료. 달력 연도 Y → FY(Y) EPS (Y년 1월 말 종료) 사용.
+#
+# 분할 이력: 2000-06-27(2:1), 2001-09-10(2:1), 2006-04-07(2:1),
+#            2007-09-11(1.5:1), 2021-07-20(4:1), 2024-06-10(10:1) → 누적 480:1
+#
+# EDGAR 데이터 분할 반영 현황 (filed 날짜 기준):
+#   FY2008~FY2019: filed ≤ 2021-02-26 → 2021·2024 분할 미반영 → ÷40 필요
+#   FY2020~FY2022: filed 2022-03 ~ 2024-02 → 2021 반영, 2024 미반영 → ÷10 필요
+#   FY2023~FY2026: filed ≥ 2025-02 → 2024 분할까지 반영 → 조정 없음
+#
+# 주요 EPS 왜곡 연도 (달력 연도 기준):
+#   달력 2009: FY2009 금융위기 EPS 음수
+#   달력 2010: FY2010 음수
+#   달력 2019: FY2020 게임 수요 감소 + AI 전환기 이익 급락(전년 대비 -32%)
+#   달력 2022: FY2023 중국 수출규제 + PC 시장 침체(전년 대비 -96%)
+_NVDA_EDGAR_RAW = {
+    # FY2008~FY2019: filed ≤ 2021-02-26 → ÷40 필요
+    2008: 1.31,  2009: -0.05, 2010: -0.12, 2011: 0.43,
+    2012: 0.94,  2013: 0.90,  2014: 0.74,  2015: 1.12,
+    2016: 1.08,  2017: 2.57,  2018: 4.82,  2019: 6.63,
+    # FY2020~FY2022: filed 2022-03 ~ 2024-02 → ÷10 필요
+    2020: 1.13,  2021: 1.73,  2022: 3.85,
+    # FY2023~FY2026: filed ≥ 2025-02 → 조정 없음
+    2023: 0.17,  2024: 1.19,  2025: 2.94,  2026: 4.90,
+}
+_NVDA_ONE_TIME = {
+    2009: "금융위기(FY2009 EPS 음수)",
+    2010: "수요 감소 + 전략 재편(FY2010 EPS 음수)",
+    2019: "게임 수요 급락 + AI 전환기(FY2020 EPS 전년 대비 -32%)",
+    2022: "중국 수출규제 + PC 시장 침체(FY2023 EPS 전년 대비 -96%)",
+}
+
+def _nvda_split_adj(fy, raw):
+    if fy <= 2019: return raw / 40   # pre-2021 split
+    if fy <= 2022: return raw / 10   # post-2021, pre-2024 split
+    return raw                        # post-2024 split
+
+NVDA_EPS = {yr: round(_nvda_split_adj(yr, v), 4) for yr, v in _NVDA_EDGAR_RAW.items()}
+
+# ── NVDA ──────────────────────────────────────────────────────
+print("[NVDA] 데이터 로드...")
+az_nvda = RollingAnalyzer("NVDA", benchmark="^SP500TR")
+df10a_nvda = pd.read_csv(SRC / "NVDA_10y_annual.csv", parse_dates=["buy_date","sell_date"])
+df5a_nvda  = pd.read_csv(SRC / "NVDA_5y_annual.csv",  parse_dates=["buy_date","sell_date"])
+fp_nvda = az_nvda.full_period()
+st_nvda = summary_stats(df10a_nvda, label="NVDA")
+
+loss5_nvda = df5a_nvda[df5a_nvda["is_complete"] & (df5a_nvda["cagr"] < 0)]
+
+nvda_out = {
+    "ticker":    "NVDA",
+    "name":      "엔비디아",
+    "currency":  "USD",
+    "benchmark": "S&P 500",
+    "note":      "1999년 1월 상장. 분할 이력: 2000·2001·2006(2:1×3), 2007(1.5:1), 2021(4:1), 2024(10:1) → 누적 480:1. FY2009·FY2010 EPS 음수 구간은 EPS 분해 제외.",
+    "current":   nvda_metrics,
+    "fullPeriod": fp_nvda,
+    "stats": {
+        "n":        st_nvda["n_complete"],
+        "min":      st_nvda["min_cagr"],
+        "minBuy":   st_nvda["min_buy"],
+        "median":   st_nvda["median_cagr"],
+        "mean":     st_nvda["mean_cagr"],
+        "max":      st_nvda["max_cagr"],
+        "maxBuy":   st_nvda["max_buy"],
+        "over10":   st_nvda["pct_over_10"],
+        "over15":   st_nvda["pct_over_15"],
+        "over20":   st_nvda["pct_over_20"],
+        "losses":   st_nvda["n_losses"],
+        "beatBench":  st_nvda.get("n_beat_bench"),
+        "beatTotal":  st_nvda.get("n_beat_bench_total"),
+    },
+    "rows10y": df_to_rows(df10a_nvda, NVDA_EPS),
+    "loss5y": [
+        {"buyYear": int(r["buy_date"].year), "sellYear": int(r["sell_date"].year), "cagr": float(r["cagr"])}
+        for _, r in loss5_nvda.iterrows()
+    ],
+    "epsDecomp": compute_eps_decomp(df10a_nvda, NVDA_EPS, _NVDA_ONE_TIME),
+    "epsNote": "EPS 출처: SEC EDGAR XBRL CIK 0001045810 (FY2008~FY2026). NVDA 회계연도(FY)는 1월 말 종료, 달력 연도 Y말 매수 시 FY(Y) EPS 기준. 분할 조정: FY2008~FY2019÷40, FY2020~FY2022÷10. PER은 Yahoo Finance 배당조정 종가 기준.",
+}
+
+out_path9 = DST / "NVDA_rolling.json"
+out_path9.write_text(json.dumps(nvda_out, ensure_ascii=False, indent=2), encoding="utf-8")
+print(f"  저장 → {out_path9}")
 
 print("\n[완료]")
