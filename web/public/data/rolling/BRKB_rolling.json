@@ -1,0 +1,367 @@
+{
+  "ticker": "BRK-B",
+  "name": "버크셔 해서웨이",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "1996년 5월 상장(BRK-B). 분할 이력: 2010-01-21 50:1(BRK-A 1주 = BRK-B 1500주). 배당 없음.",
+  "current": {
+    "price": 532.23,
+    "pe": 13.4,
+    "divYield": 0,
+    "eps": 39.76
+  },
+  "fullPeriod": {
+    "start_date": "1996-05-09",
+    "end_date": "2026-10-19",
+    "start_price": 23.2,
+    "end_price": 532.23,
+    "years": 30.4,
+    "cagr": 10.84,
+    "multiple": 22.9
+  },
+  "stats": {
+    "n": 20,
+    "min": 3.18,
+    "minBuy": "1998",
+    "median": 10.53,
+    "mean": 9.69,
+    "max": 14.63,
+    "maxBuy": "2011",
+    "over10": 50.0,
+    "over15": 0.0,
+    "over20": 0.0,
+    "losses": 0,
+    "beatBench": 11,
+    "beatTotal": 20
+  },
+  "rows10y": [
+    {
+      "buyYear": 1996,
+      "sellYear": 2006,
+      "sellDate": "2006-12-31",
+      "yearsActual": 10.0,
+      "cagr": 12.67,
+      "multiple": 3.3,
+      "isComplete": true,
+      "benchCagr": 8.42,
+      "diff": 4.25
+    },
+    {
+      "buyYear": 1997,
+      "sellYear": 2007,
+      "sellDate": "2007-12-31",
+      "yearsActual": 10.0,
+      "cagr": 11.9,
+      "multiple": 3.08,
+      "isComplete": true,
+      "benchCagr": 5.91,
+      "diff": 5.99
+    },
+    {
+      "buyYear": 1998,
+      "sellYear": 2008,
+      "sellDate": "2008-12-31",
+      "yearsActual": 10.0,
+      "cagr": 3.18,
+      "multiple": 1.37,
+      "isComplete": true,
+      "benchCagr": -1.38,
+      "diff": 4.56
+    },
+    {
+      "buyYear": 1999,
+      "sellYear": 2009,
+      "sellDate": "2009-12-31",
+      "yearsActual": 10.0,
+      "cagr": 6.03,
+      "multiple": 1.8,
+      "isComplete": true,
+      "benchCagr": -0.95,
+      "diff": 6.98
+    },
+    {
+      "buyYear": 2000,
+      "sellYear": 2010,
+      "sellDate": "2010-12-31",
+      "yearsActual": 10.0,
+      "cagr": 5.46,
+      "multiple": 1.7,
+      "isComplete": true,
+      "benchCagr": 1.41,
+      "diff": 4.05
+    },
+    {
+      "buyYear": 2001,
+      "sellYear": 2011,
+      "sellDate": "2011-12-31",
+      "yearsActual": 10.0,
+      "cagr": 4.21,
+      "multiple": 1.51,
+      "isComplete": true,
+      "benchCagr": 2.92,
+      "diff": 1.29
+    },
+    {
+      "buyYear": 2002,
+      "sellYear": 2012,
+      "sellDate": "2012-12-31",
+      "yearsActual": 10.0,
+      "cagr": 6.35,
+      "multiple": 1.85,
+      "isComplete": true,
+      "benchCagr": 7.1,
+      "diff": -0.75
+    },
+    {
+      "buyYear": 2003,
+      "sellYear": 2013,
+      "sellDate": "2013-12-31",
+      "yearsActual": 10.0,
+      "cagr": 7.73,
+      "multiple": 2.11,
+      "isComplete": true,
+      "benchCagr": 7.4,
+      "diff": 0.33
+    },
+    {
+      "buyYear": 2004,
+      "sellYear": 2014,
+      "sellDate": "2014-12-31",
+      "yearsActual": 10.0,
+      "cagr": 9.84,
+      "multiple": 2.56,
+      "isComplete": true,
+      "benchCagr": 7.68,
+      "diff": 2.17
+    },
+    {
+      "buyYear": 2005,
+      "sellYear": 2015,
+      "sellDate": "2015-12-31",
+      "yearsActual": 10.0,
+      "cagr": 8.44,
+      "multiple": 2.25,
+      "isComplete": true,
+      "benchCagr": 7.31,
+      "diff": 1.14
+    },
+    {
+      "buyYear": 2006,
+      "sellYear": 2016,
+      "sellDate": "2016-12-31",
+      "yearsActual": 10.0,
+      "cagr": 8.31,
+      "multiple": 2.22,
+      "isComplete": true,
+      "benchCagr": 6.94,
+      "diff": 1.37
+    },
+    {
+      "buyYear": 2007,
+      "sellYear": 2017,
+      "sellDate": "2017-12-31",
+      "yearsActual": 10.0,
+      "cagr": 7.66,
+      "multiple": 2.09,
+      "isComplete": true,
+      "benchCagr": 8.5,
+      "diff": -0.83
+    },
+    {
+      "buyYear": 2008,
+      "sellYear": 2018,
+      "sellDate": "2018-12-31",
+      "yearsActual": 10.0,
+      "cagr": 12.25,
+      "multiple": 3.18,
+      "isComplete": true,
+      "benchCagr": 13.12,
+      "diff": -0.87
+    },
+    {
+      "buyYear": 2009,
+      "sellYear": 2019,
+      "sellDate": "2019-12-31",
+      "yearsActual": 10.0,
+      "cagr": 13.17,
+      "multiple": 3.45,
+      "isComplete": true,
+      "benchCagr": 13.56,
+      "diff": -0.39
+    },
+    {
+      "buyYear": 2010,
+      "sellYear": 2020,
+      "sellDate": "2020-12-31",
+      "yearsActual": 10.0,
+      "cagr": 11.21,
+      "multiple": 2.89,
+      "isComplete": true,
+      "benchCagr": 13.88,
+      "diff": -2.67
+    },
+    {
+      "buyYear": 2011,
+      "sellYear": 2021,
+      "sellDate": "2021-12-31",
+      "yearsActual": 10.0,
+      "cagr": 14.63,
+      "multiple": 3.92,
+      "isComplete": true,
+      "benchCagr": 16.55,
+      "diff": -1.92
+    },
+    {
+      "buyYear": 2012,
+      "sellYear": 2022,
+      "sellDate": "2022-12-31",
+      "yearsActual": 10.0,
+      "cagr": 13.16,
+      "multiple": 3.44,
+      "isComplete": true,
+      "benchCagr": 12.56,
+      "diff": 0.6
+    },
+    {
+      "buyYear": 2013,
+      "sellYear": 2023,
+      "sellDate": "2023-12-31",
+      "yearsActual": 10.0,
+      "cagr": 11.64,
+      "multiple": 3.01,
+      "isComplete": true,
+      "benchCagr": 12.03,
+      "diff": -0.39
+    },
+    {
+      "buyYear": 2014,
+      "sellYear": 2024,
+      "sellDate": "2024-12-31",
+      "yearsActual": 10.0,
+      "cagr": 11.68,
+      "multiple": 3.02,
+      "isComplete": true,
+      "benchCagr": 13.1,
+      "diff": -1.42
+    },
+    {
+      "buyYear": 2015,
+      "sellYear": 2025,
+      "sellDate": "2025-12-31",
+      "yearsActual": 10.0,
+      "cagr": 14.3,
+      "multiple": 3.81,
+      "isComplete": true,
+      "benchCagr": 14.82,
+      "diff": -0.52
+    },
+    {
+      "buyYear": 2016,
+      "sellYear": 2026,
+      "sellDate": "2026-10-19",
+      "yearsActual": 9.8,
+      "cagr": 12.84,
+      "multiple": 3.27,
+      "isComplete": false,
+      "benchCagr": 14.97,
+      "diff": -2.13
+    },
+    {
+      "buyYear": 2017,
+      "sellYear": 2026,
+      "sellDate": "2026-10-19",
+      "yearsActual": 8.8,
+      "cagr": 11.88,
+      "multiple": 2.69,
+      "isComplete": false,
+      "benchCagr": 14.23,
+      "diff": -2.35
+    },
+    {
+      "buyYear": 2018,
+      "sellYear": 2026,
+      "sellDate": "2026-10-19",
+      "yearsActual": 7.8,
+      "cagr": 13.07,
+      "multiple": 2.61,
+      "isComplete": false,
+      "benchCagr": 16.79,
+      "diff": -3.72
+    },
+    {
+      "buyYear": 2019,
+      "sellYear": 2026,
+      "sellDate": "2026-10-19",
+      "yearsActual": 6.8,
+      "cagr": 13.39,
+      "multiple": 2.35,
+      "isComplete": false,
+      "benchCagr": 14.83,
+      "diff": -1.45
+    },
+    {
+      "buyYear": 2020,
+      "sellYear": 2026,
+      "sellDate": "2026-10-19",
+      "yearsActual": 5.8,
+      "cagr": 15.41,
+      "multiple": 2.3,
+      "isComplete": false,
+      "benchCagr": 14.25,
+      "diff": 1.15
+    },
+    {
+      "buyYear": 2021,
+      "sellYear": 2026,
+      "sellDate": "2026-10-19",
+      "yearsActual": 4.8,
+      "cagr": 12.77,
+      "multiple": 1.78,
+      "isComplete": false,
+      "benchCagr": 11.56,
+      "diff": 1.21
+    },
+    {
+      "buyYear": 2022,
+      "sellYear": 2026,
+      "sellDate": "2026-10-19",
+      "yearsActual": 3.8,
+      "cagr": 15.39,
+      "multiple": 1.72,
+      "isComplete": false,
+      "benchCagr": 20.52,
+      "diff": -5.13
+    },
+    {
+      "buyYear": 2023,
+      "sellYear": 2026,
+      "sellDate": "2026-10-19",
+      "yearsActual": 2.8,
+      "cagr": 15.36,
+      "multiple": 1.49,
+      "isComplete": false,
+      "benchCagr": 18.66,
+      "diff": -3.29
+    },
+    {
+      "buyYear": 2024,
+      "sellYear": 2026,
+      "sellDate": "2026-10-19",
+      "yearsActual": 1.8,
+      "cagr": 9.34,
+      "multiple": 1.17,
+      "isComplete": false,
+      "benchCagr": 15.62,
+      "diff": -6.28
+    }
+  ],
+  "loss5y": [
+    {
+      "buyYear": 2007,
+      "sellYear": 2012,
+      "cagr": -1.08
+    }
+  ],
+  "epsDecomp": [],
+  "epsNote": "EPS/PER 분해 미제공. 버크셔는 2018년부터 ASC 321 적용으로 보유 주식의 미실현 투자손익이 GAAP 순이익에 포함되어 EPS 변동이 극단적임(주식시장 등락에 직결). 워런 버핏은 GAAP EPS 대신 영업이익(Operating Earnings)을 참고하도록 권고. 이 페이지에서는 주가(배당재투자 포함) 기준 총수익률만 표시."
+}

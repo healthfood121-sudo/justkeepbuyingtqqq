@@ -170,7 +170,7 @@ def get_metrics(ticker: str) -> dict:
         "eps":      round(eps, 2) if eps else None,
     }
 
-print("[현재 지표 조회] NKE, RMS.PA, KO, AAPL, COST, GOOGL, META, NVDA, AMZN, MSFT, WMT ...")
+print("[현재 지표 조회] NKE, RMS.PA, KO, AAPL, COST, GOOGL, META, NVDA, AMZN, MSFT, WMT, BRK-B ...")
 nke_metrics   = get_metrics("NKE")
 rms_metrics   = get_metrics("RMS.PA")
 ko_metrics    = get_metrics("KO")
@@ -182,6 +182,7 @@ nvda_metrics  = get_metrics("NVDA")
 amzn_metrics  = get_metrics("AMZN")
 msft_metrics  = get_metrics("MSFT")
 wmt_metrics   = get_metrics("WMT")
+brkb_metrics  = get_metrics("BRK-B")
 print(f"  NKE:    {nke_metrics}")
 print(f"  RMS.PA: {rms_metrics}")
 print(f"  KO:     {ko_metrics}")
@@ -193,6 +194,7 @@ print(f"  NVDA:   {nvda_metrics}")
 print(f"  AMZN:   {amzn_metrics}")
 print(f"  MSFT:   {msft_metrics}")
 print(f"  WMT:    {wmt_metrics}")
+print(f"  BRK-B:  {brkb_metrics}")
 
 nke_out = {
     "ticker":    "NKE",
@@ -1074,5 +1076,69 @@ wmt_out = {
 out_path11 = DST / "WMT_rolling.json"
 out_path11.write_text(json.dumps(wmt_out, ensure_ascii=False, indent=2), encoding="utf-8")
 print(f"  저장 → {out_path11}")
+
+# ── BRK-B EPS 데이터 ─────────────────────────────────────────
+# 버크셔 해서웨이 클래스 B 회계연도 = 달력연도 (1월~12월)
+# 상장: 1996년 5월 9일 (NYSE)
+# 분할 이력: 2010-01-21 BRK-B 50:1 (BRK-A 1주 = BRK-B 1500주)
+#   → yfinance는 현재 기준 소급 조정 주가 제공
+#
+# EPS 특이사항:
+#   버크셔는 2018년부터 ASC 321 회계기준 적용으로 보유 주식의
+#   미실현 투자손익이 GAAP 순이익에 포함됨.
+#   이로 인해 2018년 이후 EPS는 주식시장 변동에 따라 극단적으로 움직여
+#   EPS/PER 분해가 무의미함.
+#   (예: 2022년 EPS 큰 폭 적자, 2023년 대폭 흑자)
+#   워런 버핏도 매년 주주서한에서 GAAP EPS 대신 영업이익을 참고하라고 강조.
+#
+# → EPS 분해 생략. epsNote에 이유 명시.
+_BRKB_EPS = {}
+_BRKB_ONE_TIME = {}
+
+# ── BRK-B ────────────────────────────────────────────────────
+print("[BRK-B] 데이터 로드...")
+az_brkb = RollingAnalyzer("BRK-B", benchmark="^SP500TR")
+df10a_brkb = pd.read_csv(SRC / "BRKB_10y_annual.csv", parse_dates=["buy_date","sell_date"])
+df5a_brkb  = pd.read_csv(SRC / "BRKB_5y_annual.csv",  parse_dates=["buy_date","sell_date"])
+fp_brkb = az_brkb.full_period()
+st_brkb = summary_stats(df10a_brkb, label="BRK-B")
+
+loss5_brkb = df5a_brkb[df5a_brkb["is_complete"] & (df5a_brkb["cagr"] < 0)]
+
+brkb_out = {
+    "ticker":    "BRK-B",
+    "name":      "버크셔 해서웨이",
+    "currency":  "USD",
+    "benchmark": "S&P 500",
+    "note":      "1996년 5월 상장(BRK-B). 분할 이력: 2010-01-21 50:1(BRK-A 1주 = BRK-B 1500주). 배당 없음.",
+    "current":   brkb_metrics,
+    "fullPeriod": fp_brkb,
+    "stats": {
+        "n":        st_brkb["n_complete"],
+        "min":      st_brkb["min_cagr"],
+        "minBuy":   st_brkb["min_buy"],
+        "median":   st_brkb["median_cagr"],
+        "mean":     st_brkb["mean_cagr"],
+        "max":      st_brkb["max_cagr"],
+        "maxBuy":   st_brkb["max_buy"],
+        "over10":   st_brkb["pct_over_10"],
+        "over15":   st_brkb["pct_over_15"],
+        "over20":   st_brkb["pct_over_20"],
+        "losses":   st_brkb["n_losses"],
+        "beatBench":  st_brkb.get("n_beat_bench"),
+        "beatTotal":  st_brkb.get("n_beat_bench_total"),
+    },
+    "rows10y": df_to_rows(df10a_brkb, _BRKB_EPS),
+    "loss5y": [
+        {"buyYear": int(r["buy_date"].year), "sellYear": int(r["sell_date"].year), "cagr": float(r["cagr"])}
+        for _, r in loss5_brkb.iterrows()
+    ],
+    "epsDecomp": [],
+    "epsNote": "EPS/PER 분해 미제공. 버크셔는 2018년부터 ASC 321 적용으로 보유 주식의 미실현 투자손익이 GAAP 순이익에 포함되어 EPS 변동이 극단적임(주식시장 등락에 직결). 워런 버핏은 GAAP EPS 대신 영업이익(Operating Earnings)을 참고하도록 권고. 이 페이지에서는 주가(배당재투자 포함) 기준 총수익률만 표시.",
+}
+
+out_path12 = DST / "BRKB_rolling.json"
+out_path12.write_text(json.dumps(brkb_out, ensure_ascii=False, indent=2), encoding="utf-8")
+print(f"  저장 → {out_path12}")
 
 print("\n[완료]")

@@ -19,6 +19,7 @@ import amznData  from '@/public/data/rolling/AMZN_rolling.json'
 import nvdaData  from '@/public/data/rolling/NVDA_rolling.json'
 import msftData  from '@/public/data/rolling/MSFT_rolling.json'
 import wmtData   from '@/public/data/rolling/WMT_rolling.json'
+import brkbData  from '@/public/data/rolling/BRKB_rolling.json'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Tooltip, Legend)
 
@@ -34,6 +35,7 @@ const STOCKS: Array<{ key: string; data: StockData }> = [
   { key: 'COST',  data: costData  as StockData },
   { key: 'GOOGL', data: googlData as StockData },
   { key: 'WMT',   data: wmtData   as StockData },
+  { key: 'BRK-B', data: brkbData  as StockData },
   { key: 'NKE',   data: nkeData   as StockData },
   { key: 'KO',    data: koData    as StockData },
 ]
