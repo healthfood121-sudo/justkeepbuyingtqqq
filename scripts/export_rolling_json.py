@@ -170,7 +170,7 @@ def get_metrics(ticker: str) -> dict:
         "eps":      round(eps, 2) if eps else None,
     }
 
-print("[현재 지표 조회] NKE, RMS.PA, KO, AAPL, COST, GOOGL, META, NVDA, AMZN, MSFT, WMT, BRK-B ...")
+print("[현재 지표 조회] NKE, RMS.PA, KO, AAPL, COST, GOOGL, META, NVDA, AMZN, MSFT, WMT, BRK-B, LLY, AVGO ...")
 nke_metrics   = get_metrics("NKE")
 rms_metrics   = get_metrics("RMS.PA")
 ko_metrics    = get_metrics("KO")
@@ -183,6 +183,8 @@ amzn_metrics  = get_metrics("AMZN")
 msft_metrics  = get_metrics("MSFT")
 wmt_metrics   = get_metrics("WMT")
 brkb_metrics  = get_metrics("BRK-B")
+lly_metrics   = get_metrics("LLY")
+avgo_metrics  = get_metrics("AVGO")
 print(f"  NKE:    {nke_metrics}")
 print(f"  RMS.PA: {rms_metrics}")
 print(f"  KO:     {ko_metrics}")
@@ -195,6 +197,8 @@ print(f"  AMZN:   {amzn_metrics}")
 print(f"  MSFT:   {msft_metrics}")
 print(f"  WMT:    {wmt_metrics}")
 print(f"  BRK-B:  {brkb_metrics}")
+print(f"  LLY:    {lly_metrics}")
+print(f"  AVGO:   {avgo_metrics}")
 
 nke_out = {
     "ticker":    "NKE",
@@ -1140,5 +1144,180 @@ brkb_out = {
 out_path12 = DST / "BRKB_rolling.json"
 out_path12.write_text(json.dumps(brkb_out, ensure_ascii=False, indent=2), encoding="utf-8")
 print(f"  저장 → {out_path12}")
+
+# ── LLY EPS 데이터 ────────────────────────────────────────────
+# 일라이릴리 회계연도 = 달력연도 (1월~12월)
+# 상장: NYSE, 오랜 역사 (1952년 이전 상장)
+#
+# 주식 분할 이력 (yfinance 확인):
+#   1986-01-30: 2:1 / 1989-05-01: 2:1 / 1995-12-21: 2:1 / 1997-10-16: 2:1
+#   → 누적 16:1, 마지막 분할 1997-10-16 이후 추가 분할 없음
+#   → 2000년 이후 제출된 10-K EPS는 모든 분할이 반영됨 → 추가 조정 불필요
+#
+# 출처: SEC EDGAR XBRL CIK 0000059478 (EarningsPerShareDiluted, USD/shares, 10-K)
+#       end 날짜 기준 최신 filed 값 사용
+#
+# 주요 EPS 왜곡 연도:
+#   2008: 일회성 손상차손 및 법적 비용으로 EPS 음수 (실제 영업 이익은 양수)
+#   2017: TCJA 세금개혁 일회성 전환세 부담 → EPS -0.19
+#   2019: Elanco Animal Health 분사 관련 일회성 이익 포함 가능성 (EPS 급등)
+_LLY_EPS = {
+    2008: -1.89,  # 일회성 음수 → EPS 분해 제외
+    2009:  3.94,
+    2010:  4.58,
+    2011:  3.90,
+    2012:  3.66,
+    2013:  4.32,
+    2014:  2.23,  # Cymbalta 특허 만료(2014) 등 특허 절벽 본격화
+    2015:  2.26,
+    2016:  2.58,
+    2017: -0.19,  # TCJA 세금개혁 일회성 전환세
+    2018:  3.13,
+    2019:  8.89,  # Elanco 분사 이익 등 일회성 요인 포함 가능
+    2020:  6.79,
+    2021:  6.12,
+    2022:  6.90,
+    2023:  5.80,
+    2024: 11.71,
+    2025: 22.95,
+}
+_LLY_ONE_TIME = {
+    2008: "일회성 손상차손 및 법적 비용(EPS 음수, 영업이익은 양수)",
+    2017: "TCJA 세금개혁 일회성 전환세(EPS -0.19)",
+    2019: "Elanco Animal Health 분사 관련 일회성 이익 가능성(EPS 대폭 증가)",
+}
+
+# ── LLY ──────────────────────────────────────────────────────
+print("[LLY] 데이터 로드...")
+az_lly = RollingAnalyzer("LLY", benchmark="^SP500TR")
+df10a_lly = pd.read_csv(SRC / "LLY_10y_annual.csv", parse_dates=["buy_date","sell_date"])
+df5a_lly  = pd.read_csv(SRC / "LLY_5y_annual.csv",  parse_dates=["buy_date","sell_date"])
+fp_lly = az_lly.full_period()
+st_lly = summary_stats(df10a_lly, label="LLY")
+
+loss5_lly = df5a_lly[df5a_lly["is_complete"] & (df5a_lly["cagr"] < 0)]
+
+lly_out = {
+    "ticker":    "LLY",
+    "name":      "일라이릴리",
+    "currency":  "USD",
+    "benchmark": "S&P 500",
+    "note":      "분할 이력: 1986·1989·1995·1997 각 2:1(누적 16:1). 1997년 이후 분할 없음. 2000~2013년은 특허 절벽(Prozac·Zyprexa·Cymbalta 순차 만료)으로 수익률이 저조했으나 2014년 이후 GLP-1·면역항암 신약으로 급반등.",
+    "current":   lly_metrics,
+    "fullPeriod": fp_lly,
+    "stats": {
+        "n":        st_lly["n_complete"],
+        "min":      st_lly["min_cagr"],
+        "minBuy":   st_lly["min_buy"],
+        "median":   st_lly["median_cagr"],
+        "mean":     st_lly["mean_cagr"],
+        "max":      st_lly["max_cagr"],
+        "maxBuy":   st_lly["max_buy"],
+        "over10":   st_lly["pct_over_10"],
+        "over15":   st_lly["pct_over_15"],
+        "over20":   st_lly["pct_over_20"],
+        "losses":   st_lly["n_losses"],
+        "beatBench":  st_lly.get("n_beat_bench"),
+        "beatTotal":  st_lly.get("n_beat_bench_total"),
+    },
+    "rows10y": df_to_rows(df10a_lly, _LLY_EPS),
+    "loss5y": [
+        {"buyYear": int(r["buy_date"].year), "sellYear": int(r["sell_date"].year), "cagr": float(r["cagr"])}
+        for _, r in loss5_lly.iterrows()
+    ],
+    "epsDecomp": compute_eps_decomp(df10a_lly, _LLY_EPS, _LLY_ONE_TIME),
+    "epsNote": "EPS 출처: SEC EDGAR XBRL CIK 0000059478 (달력연도 10-K, 2008~2025). 분할 이력(누적 16:1) 이미 반영 → 추가 조정 없음. 2008년·2017년 EPS 음수/왜곡 구간은 주석 표시. PER은 Yahoo Finance 배당조정 종가 기준.",
+}
+
+out_path13 = DST / "LLY_rolling.json"
+out_path13.write_text(json.dumps(lly_out, ensure_ascii=False, indent=2), encoding="utf-8")
+print(f"  저장 → {out_path13}")
+
+# ── AVGO EPS 데이터 ───────────────────────────────────────────
+# 브로드컴(Avago Technologies → Broadcom Inc.) 회계연도: 10월 말 종료
+# 달력연도 Y = FY(Y) EPS (Y년 10월 말 종료)
+#
+# 분할 이력: 2024-07-15 10:1
+#   FY2016~FY2023: 분할 전 기준 제출 → ÷10 필요
+#   FY2024~       : 분할 후 기준 (소급 조정) → 추가 조정 없음
+#
+# 출처: SEC EDGAR XBRL CIK 0001730168 (Broadcom Inc.)
+#   FY2016 이전 데이터 없음 (구 Avago Technologies 법인, 싱가포르 상장)
+#
+# 주요 EPS 왜곡 연도:
+#   FY2016: Avago-Broadcom 합병 무형자산 상각 + 통합비용 → EPS 음수
+#   FY2018: TCJA 세금개혁 혜택(이연법인세 재측정) → 이례적 고 EPS
+#   FY2024: VMware 인수 무형자산 상각 대규모 반영 → 이례적 저 EPS
+_AVGO_EPS_RAW = {
+    # FY2016~FY2023: 분할 전 기준 → ÷10
+    2016: -4.8600,   # 합병 비용 → EPS 음수
+    2017:  4.0200,
+    2018: 28.4400,   # TCJA 세금 혜택
+    2019:  6.4300,
+    2020:  6.3300,
+    2021: 15.0000,
+    2022: 26.5300,
+    2023: 32.9800,
+    # FY2024~: 분할 후 기준 (소급 조정) → 추가 조정 없음
+    2024:  1.2300,   # VMware 무형자산 상각 → 이례적 저 EPS
+    2025:  4.7700,
+}
+_AVGO_ONE_TIME = {
+    2016: "Avago-Broadcom 합병 관련 무형자산 상각 및 통합비용(EPS 음수)",
+    2018: "TCJA 세금개혁 이연법인세 재측정 혜택(이례적 고 EPS)",
+    2024: "VMware 인수 무형자산 상각 대규모 반영(이례적 저 EPS)",
+}
+
+def _avgo_split_adj(fy, raw):
+    if fy <= 2023: return raw / 10   # pre 2024-07 10:1 분할
+    return raw                        # FY2024~ 소급 조정 완료
+
+AVGO_EPS = {yr: round(_avgo_split_adj(yr, v), 4) for yr, v in _AVGO_EPS_RAW.items()}
+
+# ── AVGO ──────────────────────────────────────────────────────
+print("[AVGO] 데이터 로드...")
+az_avgo = RollingAnalyzer("AVGO", benchmark="^SP500TR")
+df10a_avgo = pd.read_csv(SRC / "AVGO_10y_annual.csv", parse_dates=["buy_date","sell_date"])
+df5a_avgo  = pd.read_csv(SRC / "AVGO_5y_annual.csv",  parse_dates=["buy_date","sell_date"])
+fp_avgo = az_avgo.full_period()
+st_avgo = summary_stats(df10a_avgo, label="AVGO")
+
+loss5_avgo = df5a_avgo[df5a_avgo["is_complete"] & (df5a_avgo["cagr"] < 0)]
+
+avgo_out = {
+    "ticker":    "AVGO",
+    "name":      "브로드컴",
+    "currency":  "USD",
+    "benchmark": "S&P 500",
+    "note":      "2009년 8월 상장(Avago Technologies). 2016년 Broadcom 합병, 2018년 미국 법인 전환. 2024년 7월 10:1 주식 분할.",
+    "current":   avgo_metrics,
+    "fullPeriod": fp_avgo,
+    "stats": {
+        "n":        st_avgo["n_complete"],
+        "min":      st_avgo["min_cagr"],
+        "minBuy":   st_avgo["min_buy"],
+        "median":   st_avgo["median_cagr"],
+        "mean":     st_avgo["mean_cagr"],
+        "max":      st_avgo["max_cagr"],
+        "maxBuy":   st_avgo["max_buy"],
+        "over10":   st_avgo["pct_over_10"],
+        "over15":   st_avgo["pct_over_15"],
+        "over20":   st_avgo["pct_over_20"],
+        "losses":   st_avgo["n_losses"],
+        "beatBench":  st_avgo.get("n_beat_bench"),
+        "beatTotal":  st_avgo.get("n_beat_bench_total"),
+    },
+    "rows10y": df_to_rows(df10a_avgo, AVGO_EPS),
+    "loss5y": [
+        {"buyYear": int(r["buy_date"].year), "sellYear": int(r["sell_date"].year), "cagr": float(r["cagr"])}
+        for _, r in loss5_avgo.iterrows()
+    ],
+    "epsDecomp": compute_eps_decomp(df10a_avgo, AVGO_EPS, _AVGO_ONE_TIME),
+    "epsNote": "EPS 출처: SEC EDGAR XBRL CIK 0001730168 (Broadcom Inc., FY2016~FY2025). 회계연도 10월 말 종료 기준. 분할조정: FY2016~FY2023 ÷10(2024-07 10:1 분할). FY2016 이전(Avago Technologies 싱가포르 법인) 데이터 미수집. PER은 Yahoo Finance 주가 기준.",
+}
+
+out_path14 = DST / "AVGO_rolling.json"
+out_path14.write_text(json.dumps(avgo_out, ensure_ascii=False, indent=2), encoding="utf-8")
+print(f"  저장 → {out_path14}")
 
 print("\n[완료]")
