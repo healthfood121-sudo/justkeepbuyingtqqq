@@ -556,13 +556,7 @@ function diffColor(v: number) {
   return 'text-red-500 dark:text-red-400'
 }
 
-type SortKey = 'diffMn' | 'diffMed' | 'cagrMed' | 'cagrMn'
-const SORT_OPTIONS: { key: SortKey; label: string }[] = [
-  { key: 'diffMn',  label: 'S&P500 초과 최솟값' },
-  { key: 'diffMed', label: 'S&P500 초과 중앙값' },
-  { key: 'cagrMed', label: '절대수익 중앙값' },
-  { key: 'cagrMn',  label: '절대수익 최솟값' },
-]
+type SortKey = 'fullCagr' | 'cagrMn' | 'cagrMed' | 'cagrMx' | 'diffMn' | 'diffMed' | 'diffMx'
 
 function OverviewTable({
   activeStock,
@@ -572,6 +566,32 @@ function OverviewTable({
   setActiveStock: (i: number) => void
 }) {
   const [sortKey, setSortKey] = useState<SortKey>('diffMn')
+  const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc')
+
+  function handleSort(key: SortKey) {
+    if (sortKey === key) {
+      setSortDir(d => d === 'desc' ? 'asc' : 'desc')
+    } else {
+      setSortKey(key)
+      setSortDir('desc')
+    }
+  }
+
+  function SortIcon({ col }: { col: SortKey }) {
+    if (sortKey !== col) return <span className="ml-0.5 opacity-30">↕</span>
+    return <span className="ml-0.5 text-blue-500">{sortDir === 'desc' ? '↓' : '↑'}</span>
+  }
+
+  function SortTh({ col, children, className }: { col: SortKey; children: React.ReactNode; className?: string }) {
+    return (
+      <th
+        className={`cursor-pointer select-none hover:text-gray-700 dark:hover:text-gray-200 transition-colors ${className ?? ''}`}
+        onClick={() => handleSort(col)}
+      >
+        {children}<SortIcon col={col} />
+      </th>
+    )
+  }
 
   const rows = STOCKS.map((s, i) => {
     const completed  = s.data.rows10y.filter((r: any) => r.isComplete)
@@ -584,37 +604,20 @@ function OverviewTable({
     const diffMn     = diffs.length ? Math.min(...diffs) : null
     const diffMx     = diffs.length ? Math.max(...diffs) : null
     const diffMed    = diffs.length ? median(diffs) : null
-    return { i, s, cagrMn, cagrMed, cagrMx, diffMn, diffMed, diffMx }
+    const fullCagr   = s.data.fullPeriod.cagr
+    return { i, s, fullCagr, cagrMn, cagrMed, cagrMx, diffMn, diffMed, diffMx }
   }).sort((a, b) => {
     const va = a[sortKey] ?? -Infinity
     const vb = b[sortKey] ?? -Infinity
-    return vb - va
+    return sortDir === 'desc' ? vb - va : va - vb
   })
 
   return (
     <div>
-      {/* 정렬 버튼 */}
-      <div className="flex items-center gap-1.5 mb-3 flex-wrap">
-        <span className="text-xs text-gray-400 dark:text-gray-500 mr-1">정렬:</span>
-        {SORT_OPTIONS.map(opt => (
-          <button
-            key={opt.key}
-            onClick={() => setSortKey(opt.key)}
-            className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${
-              sortKey === opt.key
-                ? 'bg-blue-500 border-blue-500 text-white'
-                : 'border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:border-gray-400 dark:hover:border-gray-500'
-            }`}
-          >
-            {opt.label}
-          </button>
-        ))}
-      </div>
       <table className="text-sm">
         <thead>
           <tr className="text-xs text-gray-400 dark:text-gray-500">
             <th className="text-left pb-1 pr-4" rowSpan={2}>종목</th>
-            <th className="text-right pb-1 pr-4" rowSpan={2}>상장~현재<br/><span className="font-normal opacity-60">단일 보유</span></th>
             <th colSpan={4} className="text-center pb-1 px-3 border-b border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold">
               절대 수익률 <span className="font-normal opacity-60">(배당 포함)</span>
             </th>
@@ -624,13 +627,13 @@ function OverviewTable({
           </tr>
           <tr className="text-xs text-gray-400 dark:text-gray-500 border-b border-gray-200 dark:border-gray-700">
             <th className="text-left py-1 px-3 font-medium">분포</th>
-            <th className="text-right py-1 pr-3 font-medium">최솟값</th>
-            <th className="text-right py-1 pr-3 font-medium">중앙값</th>
-            <th className="text-right py-1 pr-4 font-medium">최댓값</th>
+            <SortTh col="cagrMn"  className="text-right py-1 pr-3 font-medium">최솟값</SortTh>
+            <SortTh col="cagrMed" className="text-right py-1 pr-3 font-medium">중앙값</SortTh>
+            <SortTh col="cagrMx"  className="text-right py-1 pr-4 font-medium">최댓값</SortTh>
             <th className="text-left py-1 px-3 font-medium">분포</th>
-            <th className="text-right py-1 pr-3 font-medium">최솟값</th>
-            <th className="text-right py-1 pr-3 font-medium">중앙값</th>
-            <th className="text-right py-1 font-medium">최댓값</th>
+            <SortTh col="diffMn"  className="text-right py-1 pr-3 font-medium">최솟값</SortTh>
+            <SortTh col="diffMed" className="text-right py-1 pr-3 font-medium">중앙값</SortTh>
+            <SortTh col="diffMx"  className="text-right py-1 font-medium">최댓값</SortTh>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -648,10 +651,7 @@ function OverviewTable({
                   <span className="font-semibold text-gray-900 dark:text-white">{s.data.ticker}</span>
                   <span className="ml-1.5 text-xs text-gray-400 dark:text-gray-500">{s.data.name}</span>
                 </td>
-                <td className={`py-3 pr-4 text-right tabular-nums font-medium ${cagrTextColor(s.data.fullPeriod.cagr, true)}`}>
-                  {s.data.fullPeriod.cagr}%
-                </td>
-                {/* 절대 수익률 섹션 */}
+                {/* 절대 수익률 */}
                 <td className="py-3 px-3">
                   <RangeBar mn={cagrMn} med={cagrMed} mx={cagrMx}
                     vMin={0} vMax={35} refVal={20} refLabel="연 20% 기준" />
@@ -665,7 +665,7 @@ function OverviewTable({
                 <td className={`py-3 pr-4 text-right tabular-nums ${cagrTextColor(cagrMx, true)}`}>
                   {cagrMx.toFixed(1)}%
                 </td>
-                {/* S&P500 초과수익 섹션 */}
+                {/* S&P500 초과수익 */}
                 <td className="py-3 px-3">
                   {diffMn != null && diffMed != null && diffMx != null ? (
                     <RangeBar mn={diffMn} med={diffMed} mx={diffMx}
@@ -691,7 +691,7 @@ function OverviewTable({
         </tbody>
       </table>
       <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
-        행 클릭 시 상세 보기 · 바의 세로선: 절대수익 = 연 20%, 초과수익 = 0pp(S&P500 동일) · 분포는 완결 구간 전체 기준
+        행 클릭 시 상세 보기 · 헤더 클릭으로 정렬 · 바 세로선: 절대수익 = 연 20%, 초과수익 = 0pp
       </p>
     </div>
   )
