@@ -33,6 +33,15 @@ DST.mkdir(parents=True, exist_ok=True)
 #   FY1998: 아시아 금융위기 영향(-50%), FY2003: 사업부 손상차손(-28%)
 #   FY2018: 세금개혁(TCJA, -53%), FY2020: COVID-19
 _NKE_EDGAR_RAW = {
+    # FY1984-1988: pre-EDGAR 시대. FY1987은 UPI 1988 기사에서 $0.93/주(pre-1990 split) 확인.
+    #   FY1988은 Nike 1997 10-K에서 $0.34(post-1990+1995+1996) 확인.
+    #   FY1984-1986은 순이익(Motley Fool/UPI 확인) ÷ 추정 주식수(~38.1M, FY1987-1988 평균) 로 산출.
+    #   모두 post-1990+1995+1996 기준으로 환산 후 저장 (÷8 추가 필요).
+    1984: 0.134,  # NI $40.7M 확인, ~38.1M주 추정 → $1.07/주(pre-split) ÷8
+    1985: 0.034,  # NI $10.3M 확인, ~38.1M주 추정 → $0.27/주(pre-split) ÷8
+    1986: 0.194,  # NI $59.2M 확인, ~38.1M주 추정 → $1.55/주(pre-split) ÷8
+    1987: 0.116,  # $0.93/주 확인(UPI 1988.07 기사, pre-1990 split) ÷8
+    1988: 0.34,   # $0.34/주 확인(Nike 1997 10-K, post-1990+1995+1996 splits)
     # FY1989-1999: Nike 1999 Annual Report (post-1990+1995+1996 splits, ÷8 필요)
     1989: 0.56, 1990: 0.80, 1991: 0.94, 1992: 1.07, 1993: 1.18,
     1994: 0.99, 1995: 1.36, 1996: 1.88, 1997: 2.68, 1998: 1.35, 1999: 1.57,
@@ -51,6 +60,10 @@ _NKE_EDGAR_RAW = {
 }
 # 일회성 항목으로 EPS 왜곡이 심한 연도
 _NKE_ONE_TIME = {
+    1984: "이익 첫 감소(-29%: 경쟁 심화, 추정값)",
+    1985: "이익 급감(-75%: 리복 패권기, 일부 분기 적자, 추정값)",
+    1986: "이익 급회복(+474%: Air Jordan 효과, 추정값)",
+    1987: "이익 급감(-39%: 리복에 시장점유율 잠식)",
     1998: "아시아 금융위기(-50% EPS)",
     2003: "사업부 손상차손(Bauer Hockey 등, -28% EPS)",
     2018: "세금개혁(TCJA, -53% EPS)",
@@ -170,7 +183,7 @@ def get_metrics(ticker: str) -> dict:
         "eps":      round(eps, 2) if eps else None,
     }
 
-print("[현재 지표 조회] NKE, RMS.PA, KO, AAPL, COST, GOOGL, META, NVDA, AMZN, MSFT, WMT, BRK-B, LLY, AVGO, TSLA ...")
+print("[현재 지표 조회] NKE, RMS.PA, KO, AAPL, COST, GOOGL, META, NVDA, AMZN, MSFT, WMT, BRK-B, LLY, AVGO, TSLA, JNJ ...")
 nke_metrics   = get_metrics("NKE")
 rms_metrics   = get_metrics("RMS.PA")
 ko_metrics    = get_metrics("KO")
@@ -186,6 +199,7 @@ brkb_metrics  = get_metrics("BRK-B")
 lly_metrics   = get_metrics("LLY")
 avgo_metrics  = get_metrics("AVGO")
 tsla_metrics  = get_metrics("TSLA")
+jnj_metrics   = get_metrics("JNJ")
 print(f"  NKE:    {nke_metrics}")
 print(f"  RMS.PA: {rms_metrics}")
 print(f"  KO:     {ko_metrics}")
@@ -201,6 +215,7 @@ print(f"  BRK-B:  {brkb_metrics}")
 print(f"  LLY:    {lly_metrics}")
 print(f"  AVGO:   {avgo_metrics}")
 print(f"  TSLA:   {tsla_metrics}")
+print(f"  JNJ:    {jnj_metrics}")
 
 nke_out = {
     "ticker":    "NKE",
@@ -1423,5 +1438,99 @@ tsla_out = {
 out_path15 = DST / "TSLA_rolling.json"
 out_path15.write_text(json.dumps(tsla_out, ensure_ascii=False, indent=2), encoding="utf-8")
 print(f"  저장 → {out_path15}")
+
+# ── JNJ EPS 데이터 ────────────────────────────────────────────
+# 존슨앤존슨 회계연도 = 달력연도 (12월 말 종료, 정확히는 12월 마지막 일요일 근처)
+# 상장: NYSE, 1944년 이전 상장 (오랜 역사)
+#
+# 주식 분할 이력 (모두 2:1):
+#   1970-05-07 / 1981-05-07 / 1989-10-06 / 1992-05-22
+#   1996-06-12 / 1999-06-09 / 2001-06-04 → 누적 128:1
+#   마지막 분할 2001-06-04 이후 추가 분할 없음
+#   → 2002년 이후 제출된 10-K는 모든 분할이 소급 반영됨 → 추가 조정 불필요
+#
+# 출처: SEC EDGAR XBRL CIK 0000200406 (EarningsPerShareDiluted, USD/shares, 10-K)
+#       end 날짜 기반 FY 매핑 (1월 초 종료는 이전 연도로 처리)
+#
+# 주요 EPS 왜곡 연도:
+#   2011: 대규모 리콜(타이레놀·DePuy ASR 임플란트) + 법적 비용 → EPS $3.49
+#   2017: TCJA 세금개혁 일회성 전환세 → EPS $0.47
+#   2020: COVID-19 팬데믹
+#   2023: Kenvue(소비자 헬스케어 부문) 분사 일회성 이익 → EPS $13.72
+#   2025: 특별 항목 포함(EPS $11.03, 정상 운영 대비 높음)
+_JNJ_EPS = {
+    2007: 3.63,
+    2008: 4.57,
+    2009: 4.40,
+    2010: 4.78,
+    2011: 3.49,  # 리콜·법적 비용
+    2012: 3.86,
+    2013: 4.81,
+    2014: 5.70,
+    2015: 5.48,
+    2016: 5.93,
+    2017: 0.47,  # TCJA 일회성
+    2018: 5.61,
+    2019: 5.63,
+    2020: 5.51,  # COVID-19
+    2021: 7.81,
+    2022: 6.73,
+    2023: 13.72, # Kenvue 분사 일회성
+    2024: 5.79,
+    2025: 11.03, # 특별 항목 포함 가능성
+}
+_JNJ_ONE_TIME = {
+    2011: "대규모 리콜(타이레놀·DePuy ASR 임플란트) + 법적 비용(EPS $3.49)",
+    2017: "TCJA 세금개혁 일회성 전환세(EPS $0.47, 정상 기준 ~$6)",
+    2020: "COVID-19 팬데믹",
+    2023: "Kenvue(소비자 헬스케어) 분사 일회성 이익(EPS $13.72, 정상 운영 ~$5.8)",
+    2025: "특별 항목 포함 가능성(EPS $11.03, 정상 운영 대비 높음)",
+}
+
+# ── JNJ ──────────────────────────────────────────────────────
+print("[JNJ] 데이터 로드...")
+az_jnj = RollingAnalyzer("JNJ", benchmark="^SP500TR")
+df10a_jnj = pd.read_csv(SRC / "JNJ_10y_annual.csv", parse_dates=["buy_date","sell_date"])
+df5a_jnj  = pd.read_csv(SRC / "JNJ_5y_annual.csv",  parse_dates=["buy_date","sell_date"])
+fp_jnj = az_jnj.full_period()
+st_jnj = summary_stats(df10a_jnj, label="JNJ")
+
+loss5_jnj = df5a_jnj[df5a_jnj["is_complete"] & (df5a_jnj["cagr"] < 0)]
+
+jnj_out = {
+    "ticker":    "JNJ",
+    "name":      "존슨앤존슨",
+    "currency":  "USD",
+    "benchmark": "S&P 500",
+    "note":      "분할 이력: 1970·1981·1989·1992·1996·1999·2001 (각 2:1, 누적 128:1). 2001-06-04 이후 분할 없음. 2023년 소비자 헬스케어 부문을 Kenvue로 분사.",
+    "current":   jnj_metrics,
+    "fullPeriod": fp_jnj,
+    "stats": {
+        "n":        st_jnj["n_complete"],
+        "min":      st_jnj["min_cagr"],
+        "minBuy":   st_jnj["min_buy"],
+        "median":   st_jnj["median_cagr"],
+        "mean":     st_jnj["mean_cagr"],
+        "max":      st_jnj["max_cagr"],
+        "maxBuy":   st_jnj["max_buy"],
+        "over10":   st_jnj["pct_over_10"],
+        "over15":   st_jnj["pct_over_15"],
+        "over20":   st_jnj["pct_over_20"],
+        "losses":   st_jnj["n_losses"],
+        "beatBench":  st_jnj.get("n_beat_bench"),
+        "beatTotal":  st_jnj.get("n_beat_bench_total"),
+    },
+    "rows10y": df_to_rows(df10a_jnj, _JNJ_EPS),
+    "loss5y": [
+        {"buyYear": int(r["buy_date"].year), "sellYear": int(r["sell_date"].year), "cagr": float(r["cagr"])}
+        for _, r in loss5_jnj.iterrows()
+    ],
+    "epsDecomp": compute_eps_decomp(df10a_jnj, _JNJ_EPS, _JNJ_ONE_TIME),
+    "epsNote": "EPS 출처: SEC EDGAR XBRL CIK 0000200406 (달력연도 10-K, FY2007~FY2025). 분할 이력(2001년까지 누적 128:1) 이미 반영 → 추가 조정 없음. 2023년 Kenvue 분사 일회성 이익으로 EPS 급등. PER은 Yahoo Finance 배당조정 종가 기준.",
+}
+
+out_path16 = DST / "JNJ_rolling.json"
+out_path16.write_text(json.dumps(jnj_out, ensure_ascii=False, indent=2), encoding="utf-8")
+print(f"  저장 → {out_path16}")
 
 print("\n[완료]")

@@ -88,7 +88,8 @@
       "multiple": 20.11,
       "isComplete": true,
       "benchCagr": 13.99,
-      "diff": 21.01
+      "diff": 21.01,
+      "peBuy": 4.9
     },
     {
       "buyYear": 1985,
@@ -99,7 +100,8 @@
       "multiple": 20.96,
       "isComplete": true,
       "benchCagr": 14.45,
-      "diff": 21.11
+      "diff": 21.11,
+      "peBuy": 34.4
     },
     {
       "buyYear": 1986,
@@ -110,7 +112,8 @@
       "multiple": 43.52,
       "isComplete": true,
       "benchCagr": 14.88,
-      "diff": 30.95
+      "diff": 30.95,
+      "peBuy": 5.1
     },
     {
       "buyYear": 1987,
@@ -121,7 +124,8 @@
       "multiple": 16.99,
       "isComplete": true,
       "benchCagr": 17.63,
-      "diff": 15.11
+      "diff": 15.11,
+      "peBuy": 14.2
     },
     {
       "buyYear": 1988,
@@ -132,7 +136,8 @@
       "multiple": 12.84,
       "isComplete": true,
       "benchCagr": 19.21,
-      "diff": 9.87
+      "diff": 9.87,
+      "peBuy": 6.7
     },
     {
       "buyYear": 1989,
@@ -585,6 +590,76 @@
     }
   ],
   "epsDecomp": [
+    {
+      "buyYear": 1984,
+      "sellYear": 1994,
+      "epsBuy": 0.017,
+      "epsSell": 0.124,
+      "epsMultiple": 7.36,
+      "peBuy": 4.9,
+      "peSell": 13.4,
+      "peMultiple": 2.73,
+      "epsGrowthCagr": 22.1,
+      "peCagr": 10.58,
+      "totalCagr": 35.01,
+      "note": "매수연도 EPS: 이익 첫 감소(-29%: 경쟁 심화, 추정값)"
+    },
+    {
+      "buyYear": 1985,
+      "sellYear": 1995,
+      "epsBuy": 0.004,
+      "epsSell": 0.17,
+      "epsMultiple": 39.53,
+      "peBuy": 34.4,
+      "peSell": 18.2,
+      "peMultiple": 0.53,
+      "epsGrowthCagr": 44.44,
+      "peCagr": -6.15,
+      "totalCagr": 35.57,
+      "note": "매수연도 EPS: 이익 급감(-75%: 리복 패권기, 일부 분기 적자, 추정값)"
+    },
+    {
+      "buyYear": 1986,
+      "sellYear": 1996,
+      "epsBuy": 0.024,
+      "epsSell": 0.235,
+      "epsMultiple": 9.67,
+      "peBuy": 5.1,
+      "peSell": 22.8,
+      "peMultiple": 4.5,
+      "epsGrowthCagr": 25.47,
+      "peCagr": 16.23,
+      "totalCagr": 45.83,
+      "note": "매수연도 EPS: 이익 급회복(+474%: Air Jordan 효과, 추정값)"
+    },
+    {
+      "buyYear": 1987,
+      "sellYear": 1997,
+      "epsBuy": 0.015,
+      "epsSell": 0.335,
+      "epsMultiple": 23.1,
+      "peBuy": 14.2,
+      "peSell": 10.4,
+      "peMultiple": 0.74,
+      "epsGrowthCagr": 36.89,
+      "peCagr": -3.02,
+      "totalCagr": 32.74,
+      "note": "매수연도 EPS: 이익 급감(-39%: 리복에 시장점유율 잠식)"
+    },
+    {
+      "buyYear": 1988,
+      "sellYear": 1998,
+      "epsBuy": 0.043,
+      "epsSell": 0.169,
+      "epsMultiple": 3.97,
+      "peBuy": 6.7,
+      "peSell": 21.7,
+      "peMultiple": 3.23,
+      "epsGrowthCagr": 14.79,
+      "peCagr": 12.45,
+      "totalCagr": 29.08,
+      "note": "매도연도 EPS: 아시아 금융위기(-50% EPS)"
+    },
     {
       "buyYear": 1989,
       "sellYear": 1999,

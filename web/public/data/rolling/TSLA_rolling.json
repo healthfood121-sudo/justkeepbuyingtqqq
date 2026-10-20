@@ -1,0 +1,212 @@
+{
+  "ticker": "TSLA",
+  "name": "테슬라",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "2010년 6월 상장. 분할 이력: 2020-08-31 5:1, 2022-08-25 3:1(누적 15:1). 2010~2019년은 GAAP 순손실 → EPS 분해 해당 구간 제외.",
+  "current": {
+    "price": 368.06,
+    "pe": 340.8,
+    "divYield": 0,
+    "eps": 1.08
+  },
+  "fullPeriod": {
+    "start_date": "2010-06-29",
+    "end_date": "2026-10-19",
+    "start_price": 1.5927,
+    "end_price": 368.06,
+    "years": 16.3,
+    "cagr": 39.62,
+    "multiple": 231.1
+  },
+  "stats": {
+    "n": 6,
+    "min": 37.86,
+    "minBuy": "2013",
+    "median": 44.39,
+    "mean": 49.55,
+    "max": 68.53,
+    "maxBuy": "2011",
+    "over10": 100.0,
+    "over15": 100.0,
+    "over20": 100.0,
+    "losses": 0,
+    "beatBench": 6,
+    "beatTotal": 6
+  },
+  "rows10y": [
+    {
+      "buyYear": 2010,
+      "sellYear": 2020,
+      "sellDate": "2020-12-31",
+      "yearsActual": 10.0,
+      "cagr": 63.0,
+      "multiple": 132.5,
+      "isComplete": true,
+      "benchCagr": 13.88,
+      "diff": 49.12
+    },
+    {
+      "buyYear": 2011,
+      "sellYear": 2021,
+      "sellDate": "2021-12-31",
+      "yearsActual": 10.0,
+      "cagr": 68.53,
+      "multiple": 185.01,
+      "isComplete": true,
+      "benchCagr": 16.55,
+      "diff": 51.99
+    },
+    {
+      "buyYear": 2012,
+      "sellYear": 2022,
+      "sellDate": "2022-12-31",
+      "yearsActual": 10.0,
+      "cagr": 49.18,
+      "multiple": 54.55,
+      "isComplete": true,
+      "benchCagr": 12.56,
+      "diff": 36.61
+    },
+    {
+      "buyYear": 2013,
+      "sellYear": 2023,
+      "sellDate": "2023-12-31",
+      "yearsActual": 10.0,
+      "cagr": 37.86,
+      "multiple": 24.78,
+      "isComplete": true,
+      "benchCagr": 12.03,
+      "diff": 25.82
+    },
+    {
+      "buyYear": 2014,
+      "sellYear": 2024,
+      "sellDate": "2024-12-31",
+      "yearsActual": 10.0,
+      "cagr": 39.15,
+      "multiple": 27.24,
+      "isComplete": true,
+      "benchCagr": 13.1,
+      "diff": 26.05
+    },
+    {
+      "buyYear": 2015,
+      "sellYear": 2025,
+      "sellDate": "2025-12-31",
+      "yearsActual": 10.0,
+      "cagr": 39.59,
+      "multiple": 28.11,
+      "isComplete": true,
+      "benchCagr": 14.82,
+      "diff": 24.77
+    },
+    {
+      "buyYear": 2016,
+      "sellYear": 2026,
+      "sellDate": "2026-10-19",
+      "yearsActual": 9.8,
+      "cagr": 39.36,
+      "multiple": 25.84,
+      "isComplete": false,
+      "benchCagr": 14.97,
+      "diff": 24.39
+    },
+    {
+      "buyYear": 2017,
+      "sellYear": 2026,
+      "sellDate": "2026-10-19",
+      "yearsActual": 8.8,
+      "cagr": 38.65,
+      "multiple": 17.73,
+      "isComplete": false,
+      "benchCagr": 14.23,
+      "diff": 24.42
+    },
+    {
+      "buyYear": 2018,
+      "sellYear": 2026,
+      "sellDate": "2026-10-19",
+      "yearsActual": 7.8,
+      "cagr": 43.35,
+      "multiple": 16.59,
+      "isComplete": false,
+      "benchCagr": 16.79,
+      "diff": 26.55
+    },
+    {
+      "buyYear": 2019,
+      "sellYear": 2026,
+      "sellDate": "2026-10-19",
+      "yearsActual": 6.8,
+      "cagr": 46.14,
+      "multiple": 13.2,
+      "isComplete": false,
+      "benchCagr": 14.83,
+      "diff": 31.3
+    },
+    {
+      "buyYear": 2020,
+      "sellYear": 2026,
+      "sellDate": "2026-10-19",
+      "yearsActual": 5.8,
+      "cagr": 8.03,
+      "multiple": 1.56,
+      "isComplete": false,
+      "benchCagr": 14.25,
+      "diff": -6.23,
+      "peBuy": 1120.1
+    },
+    {
+      "buyYear": 2021,
+      "sellYear": 2026,
+      "sellDate": "2026-10-19",
+      "yearsActual": 4.8,
+      "cagr": 0.92,
+      "multiple": 1.04,
+      "isComplete": false,
+      "benchCagr": 11.56,
+      "diff": -10.64,
+      "peBuy": 216.1
+    },
+    {
+      "buyYear": 2022,
+      "sellYear": 2026,
+      "sellDate": "2026-10-19",
+      "yearsActual": 3.8,
+      "cagr": 33.38,
+      "multiple": 2.99,
+      "isComplete": false,
+      "benchCagr": 20.52,
+      "diff": 12.86,
+      "peBuy": 34.0
+    },
+    {
+      "buyYear": 2023,
+      "sellYear": 2026,
+      "sellDate": "2026-10-19",
+      "yearsActual": 2.8,
+      "cagr": 15.06,
+      "multiple": 1.48,
+      "isComplete": false,
+      "benchCagr": 18.66,
+      "diff": -3.6,
+      "peBuy": 57.8
+    },
+    {
+      "buyYear": 2024,
+      "sellYear": 2026,
+      "sellDate": "2026-10-19",
+      "yearsActual": 1.8,
+      "cagr": -5.03,
+      "multiple": 0.91,
+      "isComplete": false,
+      "benchCagr": 15.62,
+      "diff": -20.64,
+      "peBuy": 198.0
+    }
+  ],
+  "loss5y": [],
+  "epsDecomp": [],
+  "epsNote": "EPS 출처: SEC EDGAR XBRL CIK0001318605 (달력연도 10-K). 분할 조정: FY2015~2017÷15, FY2018~2019÷3, FY2020~2025 조정 없음. FY2010~2014 EDGAR 미수집(전기간 음수 EPS). EPS 음수 구간(2010~2019 매수) EPS·PER 분해 제외. PER은 Yahoo Finance 주가(배당 없음) 기준."
+}
