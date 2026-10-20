@@ -556,6 +556,14 @@ function diffColor(v: number) {
   return 'text-red-500 dark:text-red-400'
 }
 
+type SortKey = 'diffMn' | 'diffMed' | 'cagrMed' | 'cagrMn'
+const SORT_OPTIONS: { key: SortKey; label: string }[] = [
+  { key: 'diffMn',  label: 'S&P500 초과 최솟값' },
+  { key: 'diffMed', label: 'S&P500 초과 중앙값' },
+  { key: 'cagrMed', label: '절대수익 중앙값' },
+  { key: 'cagrMn',  label: '절대수익 최솟값' },
+]
+
 function OverviewTable({
   activeStock,
   setActiveStock,
@@ -563,6 +571,8 @@ function OverviewTable({
   activeStock: number
   setActiveStock: (i: number) => void
 }) {
+  const [sortKey, setSortKey] = useState<SortKey>('diffMn')
+
   const rows = STOCKS.map((s, i) => {
     const completed  = s.data.rows10y.filter((r: any) => r.isComplete)
     const cagrs      = completed.map((r: any) => r.cagr as number)
@@ -575,10 +585,31 @@ function OverviewTable({
     const diffMx     = diffs.length ? Math.max(...diffs) : null
     const diffMed    = diffs.length ? median(diffs) : null
     return { i, s, cagrMn, cagrMed, cagrMx, diffMn, diffMed, diffMx }
+  }).sort((a, b) => {
+    const va = a[sortKey] ?? -Infinity
+    const vb = b[sortKey] ?? -Infinity
+    return vb - va
   })
 
   return (
     <div>
+      {/* 정렬 버튼 */}
+      <div className="flex items-center gap-1.5 mb-3 flex-wrap">
+        <span className="text-xs text-gray-400 dark:text-gray-500 mr-1">정렬:</span>
+        {SORT_OPTIONS.map(opt => (
+          <button
+            key={opt.key}
+            onClick={() => setSortKey(opt.key)}
+            className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${
+              sortKey === opt.key
+                ? 'bg-blue-500 border-blue-500 text-white'
+                : 'border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:border-gray-400 dark:hover:border-gray-500'
+            }`}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
       <table className="text-sm">
         <thead>
           <tr className="text-xs text-gray-400 dark:text-gray-500">
