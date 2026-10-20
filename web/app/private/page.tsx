@@ -1347,7 +1347,7 @@ function RangeBar({
   const fmt = (v: number) => `${sign && v > 0 ? '+' : ''}${v.toFixed(1)}${unit}`
 
   return (
-    <div className="relative group flex items-center" style={{ width: 120, height: 44 }}>
+    <div className="relative group flex items-center" style={{ width: 165, height: 44 }}>
       {/* 배경 트랙 */}
       <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-3 bg-gray-100 dark:bg-gray-800 rounded-full" />
       {/* min~max 구간 바 */}
