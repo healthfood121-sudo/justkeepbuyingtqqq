@@ -1037,6 +1037,7 @@ function diffColor(v: number) {
 }
 
 type SortKey = 'fullCagr' | 'cagrMn' | 'cagrMed' | 'cagrMx' | 'diffMn' | 'diffMed' | 'diffMx'
+type QuickFilter = 'none' | 'struggling' | 'strong'
 
 function OverviewTable({
   activeStock,
@@ -1047,6 +1048,28 @@ function OverviewTable({
 }) {
   const [sortKey, setSortKey] = useState<SortKey>('diffMn')
   const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc')
+  const [search, setSearch] = useState('')
+  const [viewMode, setViewMode] = useState<'all' | 'starred'>('all')
+  const [quickFilter, setQuickFilter] = useState<QuickFilter>('none')
+  const [starred, setStarred] = useState<Set<string>>(new Set())
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('private_starred')
+      if (saved) setStarred(new Set(JSON.parse(saved)))
+    } catch {}
+  }, [])
+
+  function toggleStar(key: string, e: React.MouseEvent) {
+    e.stopPropagation()
+    setStarred(prev => {
+      const next = new Set(prev)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
+      try { localStorage.setItem('private_starred', JSON.stringify([...next])) } catch {}
+      return next
+    })
+  }
 
   function handleSort(key: SortKey) {
     if (sortKey === key) {
@@ -1077,7 +1100,7 @@ function OverviewTable({
     )
   }
 
-  const rows = STOCKS.map((s, i) => {
+  const allRows = STOCKS.map((s, i) => {
     const completed  = s.data.rows10y.filter((r: any) => r.isComplete).slice(-15)
     const cagrs      = completed.map((r: any) => r.cagr as number)
     const cagrMn     = Math.min(...cagrs)
@@ -1096,11 +1119,74 @@ function OverviewTable({
     return sortDir === 'desc' ? vb - va : va - vb
   })
 
+  const rows = allRows.filter(row => {
+    const q = search.trim().toLowerCase()
+    if (q && !row.s.key.toLowerCase().includes(q) && !row.s.data.name.toLowerCase().includes(q)) return false
+    if (viewMode === 'starred' && !starred.has(row.s.key)) return false
+    if (quickFilter === 'struggling' && !(row.diffMn != null && row.diffMn < 0)) return false
+    if (quickFilter === 'strong' && !(row.diffMed != null && row.diffMed > 10)) return false
+    return true
+  })
+
   return (
     <div>
+      {/* 툴바 */}
+      <div className="flex flex-wrap items-center gap-2 mb-3">
+        <input
+          type="text"
+          placeholder="티커·종목명 검색"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 w-44 focus:outline-none focus:ring-1 focus:ring-blue-400"
+        />
+        <button
+          onClick={() => setQuickFilter(f => f === 'struggling' ? 'none' : 'struggling')}
+          className={`px-3 py-1.5 text-xs rounded-lg border transition-colors ${
+            quickFilter === 'struggling'
+              ? 'bg-red-100 dark:bg-red-900/30 border-red-300 dark:border-red-700 text-red-700 dark:text-red-300'
+              : 'border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600'
+          }`}
+        >
+          현재 부진
+        </button>
+        <button
+          onClick={() => setQuickFilter(f => f === 'strong' ? 'none' : 'strong')}
+          className={`px-3 py-1.5 text-xs rounded-lg border transition-colors ${
+            quickFilter === 'strong'
+              ? 'bg-blue-100 dark:bg-blue-900/30 border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-300'
+              : 'border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600'
+          }`}
+        >
+          고수익 안정
+        </button>
+        <div className="ml-auto flex rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden text-xs">
+          <button
+            onClick={() => setViewMode('all')}
+            className={`px-3 py-1.5 transition-colors ${
+              viewMode === 'all'
+                ? 'bg-blue-500 text-white'
+                : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+            }`}
+          >
+            전체 {allRows.length}
+          </button>
+          <button
+            onClick={() => setViewMode('starred')}
+            className={`px-3 py-1.5 border-l border-gray-200 dark:border-gray-700 transition-colors ${
+              viewMode === 'starred'
+                ? 'bg-blue-500 text-white'
+                : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+            }`}
+          >
+            ★ 즐겨찾기 {starred.size > 0 ? `(${starred.size})` : ''}
+          </button>
+        </div>
+      </div>
+
       <table className="text-sm">
         <thead>
           <tr className="text-xs text-gray-400 dark:text-gray-500">
+            <th rowSpan={2} className="pb-1 pr-1 w-6" />
             <th className="text-left pb-1 pr-4" rowSpan={2}>종목</th>
             <th colSpan={4} className="text-center pb-1 px-3 border-b border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold">
               절대 수익률 <span className="font-normal opacity-60">(배당 포함)</span>
@@ -1121,8 +1207,16 @@ function OverviewTable({
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+          {rows.length === 0 && (
+            <tr>
+              <td colSpan={10} className="py-8 text-center text-sm text-gray-400 dark:text-gray-600">
+                조건에 맞는 종목이 없습니다
+              </td>
+            </tr>
+          )}
           {rows.map(({ i, s, cagrMn, cagrMed, cagrMx, diffMn, diffMed, diffMx }) => {
             const isActive = activeStock === i
+            const isStarred = starred.has(s.key)
             return (
               <tr
                 key={s.key}
@@ -1131,6 +1225,16 @@ function OverviewTable({
                   isActive ? 'bg-blue-50/60 dark:bg-blue-900/10' : ''
                 }`}
               >
+                <td className="py-1.5 pr-1">
+                  <button
+                    onClick={e => toggleStar(s.key, e)}
+                    className={`text-sm leading-none transition-colors ${
+                      isStarred ? 'text-yellow-400' : 'text-gray-200 dark:text-gray-700 hover:text-yellow-300'
+                    }`}
+                  >
+                    ★
+                  </button>
+                </td>
                 <td className="py-1.5 pr-4">
                   <div className="group/name relative inline-flex items-baseline gap-1.5 max-w-[140px]">
                     <span className="font-semibold text-gray-900 dark:text-white whitespace-nowrap">{s.data.ticker}</span>
@@ -1185,7 +1289,7 @@ function OverviewTable({
         </tbody>
       </table>
       <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
-        행 클릭 시 상세 보기 · 헤더 클릭으로 정렬 · 최근 15개 완결 구간 기준 · 바 세로선: 절대수익 = 연 20%, 초과수익 = 0pp
+        행 클릭 시 상세 보기 · ★ 클릭으로 즐겨찾기 · 최근 15개 완결 구간 기준 · 현재 부진 = 최솟값 &lt; 0pp
       </p>
     </div>
   )
