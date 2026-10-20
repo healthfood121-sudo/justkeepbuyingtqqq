@@ -170,7 +170,7 @@ def get_metrics(ticker: str) -> dict:
         "eps":      round(eps, 2) if eps else None,
     }
 
-print("[현재 지표 조회] NKE, RMS.PA, KO, AAPL, COST, GOOGL, META, NVDA, AMZN, MSFT, WMT, BRK-B, LLY, AVGO ...")
+print("[현재 지표 조회] NKE, RMS.PA, KO, AAPL, COST, GOOGL, META, NVDA, AMZN, MSFT, WMT, BRK-B, LLY, AVGO, TSLA ...")
 nke_metrics   = get_metrics("NKE")
 rms_metrics   = get_metrics("RMS.PA")
 ko_metrics    = get_metrics("KO")
@@ -185,6 +185,7 @@ wmt_metrics   = get_metrics("WMT")
 brkb_metrics  = get_metrics("BRK-B")
 lly_metrics   = get_metrics("LLY")
 avgo_metrics  = get_metrics("AVGO")
+tsla_metrics  = get_metrics("TSLA")
 print(f"  NKE:    {nke_metrics}")
 print(f"  RMS.PA: {rms_metrics}")
 print(f"  KO:     {ko_metrics}")
@@ -199,6 +200,7 @@ print(f"  WMT:    {wmt_metrics}")
 print(f"  BRK-B:  {brkb_metrics}")
 print(f"  LLY:    {lly_metrics}")
 print(f"  AVGO:   {avgo_metrics}")
+print(f"  TSLA:   {tsla_metrics}")
 
 nke_out = {
     "ticker":    "NKE",
@@ -1319,5 +1321,107 @@ avgo_out = {
 out_path14 = DST / "AVGO_rolling.json"
 out_path14.write_text(json.dumps(avgo_out, ensure_ascii=False, indent=2), encoding="utf-8")
 print(f"  저장 → {out_path14}")
+
+# ── TSLA EPS 데이터 ───────────────────────────────────────────
+# 테슬라 회계연도 = 달력연도 (1월~12월)
+# 상장: 2010-06-29 (NASDAQ)
+#
+# 주식 분할 이력:
+#   2020-08-31: 5:1 / 2022-08-25: 3:1 → 누적 15:1
+#
+# EDGAR 데이터 분할 반영 현황 (filed 날짜 기준):
+#   FY2015~FY2017: filed ≤ 2020-02-13 → 두 분할 모두 미반영 → ÷15 필요
+#   FY2018~FY2019: filed 2021-02-08 ~ 2022-02-07 → 2020 5:1 반영, 2022 3:1 미반영 → ÷3 필요
+#   FY2020~FY2025: filed ≥ 2023-01-31 → 두 분할 모두 반영 → 추가 조정 없음
+#
+# 출처: SEC EDGAR XBRL CIK0001318605 (us-gaap/EarningsPerShareDiluted, 10-K)
+#   FY2010~FY2014: EDGAR XBRL 미수집 (해당 기간 EPS 음수)
+#
+# 주요 EPS 왜곡 연도:
+#   FY2010~FY2019: 모두 GAAP 순손실(EPS 음수) — EPS 분해 해당 구간 제외
+#   FY2017: Model 3 양산 지연·개발비 집중 → 최대 적자(-$0.79 split-adj.)
+#   FY2020: 첫 연간 흑자 전환(EPS $0.21)
+#   FY2022: 공격적 가격 인하 시작 전 이익 정점(EPS $3.62)
+#   FY2023: 대규모 가격 인하 → 영업이익률 급감(EPS $4.30)
+#   FY2025: 가격 인하 지속·EPS 급락(EPS $1.08)
+_TSLA_EDGAR_RAW = {
+    # FY2015~FY2017: filed ≤ 2020-02-13 → ÷15 필요
+    2015: -6.9300,
+    2016: -4.6800,
+    2017: -11.8300,
+    # FY2018~FY2019: filed 2021-02-08 ~ 2022-02-07 → ÷3 필요
+    2018: -1.1400,
+    2019: -0.9800,
+}
+_TSLA_POST_SPLIT_EPS = {
+    # FY2020~FY2025: 두 분할 모두 반영 (소급 조정 완료)
+    2020:  0.2100,
+    2021:  1.6300,
+    2022:  3.6200,
+    2023:  4.3000,
+    2024:  2.0400,
+    2025:  1.0800,
+}
+_TSLA_ONE_TIME = {
+    2017: "Model 3 양산 지연·개발비 집중(분할조정 EPS -$0.79, 역대 최저)",
+    2020: "첫 연간 GAAP 흑자 전환(EPS +$0.21, 양전환)",
+    2022: "공격적 가격 인하 개시 직전 이익 정점(EPS $3.62)",
+    2023: "대규모 가격 인하로 영업이익률 급감",
+    2025: "가격 인하 지속 + 수요 불확실성 → EPS $1.08로 급락",
+}
+
+TSLA_EPS = {}
+for yr, raw in _TSLA_EDGAR_RAW.items():
+    if yr <= 2017:
+        TSLA_EPS[yr] = round(raw / 15, 4)   # ÷15
+    else:
+        TSLA_EPS[yr] = round(raw / 3, 4)    # ÷3
+TSLA_EPS.update(_TSLA_POST_SPLIT_EPS)
+
+# ── TSLA ──────────────────────────────────────────────────────
+print("[TSLA] 데이터 로드...")
+az_tsla = RollingAnalyzer("TSLA", benchmark="^SP500TR")
+df10a_tsla = pd.read_csv(SRC / "TSLA_10y_annual.csv", parse_dates=["buy_date","sell_date"])
+df5a_tsla  = pd.read_csv(SRC / "TSLA_5y_annual.csv",  parse_dates=["buy_date","sell_date"])
+fp_tsla = az_tsla.full_period()
+st_tsla = summary_stats(df10a_tsla, label="TSLA")
+
+loss5_tsla = df5a_tsla[df5a_tsla["is_complete"] & (df5a_tsla["cagr"] < 0)]
+
+tsla_out = {
+    "ticker":    "TSLA",
+    "name":      "테슬라",
+    "currency":  "USD",
+    "benchmark": "S&P 500",
+    "note":      "2010년 6월 상장. 분할 이력: 2020-08-31 5:1, 2022-08-25 3:1(누적 15:1). 2010~2019년은 GAAP 순손실 → EPS 분해 해당 구간 제외.",
+    "current":   tsla_metrics,
+    "fullPeriod": fp_tsla,
+    "stats": {
+        "n":        st_tsla["n_complete"],
+        "min":      st_tsla["min_cagr"],
+        "minBuy":   st_tsla["min_buy"],
+        "median":   st_tsla["median_cagr"],
+        "mean":     st_tsla["mean_cagr"],
+        "max":      st_tsla["max_cagr"],
+        "maxBuy":   st_tsla["max_buy"],
+        "over10":   st_tsla["pct_over_10"],
+        "over15":   st_tsla["pct_over_15"],
+        "over20":   st_tsla["pct_over_20"],
+        "losses":   st_tsla["n_losses"],
+        "beatBench":  st_tsla.get("n_beat_bench"),
+        "beatTotal":  st_tsla.get("n_beat_bench_total"),
+    },
+    "rows10y": df_to_rows(df10a_tsla, TSLA_EPS),
+    "loss5y": [
+        {"buyYear": int(r["buy_date"].year), "sellYear": int(r["sell_date"].year), "cagr": float(r["cagr"])}
+        for _, r in loss5_tsla.iterrows()
+    ],
+    "epsDecomp": compute_eps_decomp(df10a_tsla, TSLA_EPS, _TSLA_ONE_TIME),
+    "epsNote": "EPS 출처: SEC EDGAR XBRL CIK0001318605 (달력연도 10-K). 분할 조정: FY2015~2017÷15, FY2018~2019÷3, FY2020~2025 조정 없음. FY2010~2014 EDGAR 미수집(전기간 음수 EPS). EPS 음수 구간(2010~2019 매수) EPS·PER 분해 제외. PER은 Yahoo Finance 주가(배당 없음) 기준.",
+}
+
+out_path15 = DST / "TSLA_rolling.json"
+out_path15.write_text(json.dumps(tsla_out, ensure_ascii=False, indent=2), encoding="utf-8")
+print(f"  저장 → {out_path15}")
 
 print("\n[완료]")

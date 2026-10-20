@@ -21,6 +21,7 @@ import msftData  from '@/public/data/rolling/MSFT_rolling.json'
 import wmtData   from '@/public/data/rolling/WMT_rolling.json'
 import brkbData  from '@/public/data/rolling/BRKB_rolling.json'
 import llyData   from '@/public/data/rolling/LLY_rolling.json'
+import avgoData  from '@/public/data/rolling/AVGO_rolling.json'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Tooltip, Legend)
 
@@ -30,6 +31,7 @@ const STOCKS: Array<{ key: string; data: StockData }> = [
   { key: 'MSFT',  data: msftData  as StockData },
   { key: 'AAPL',  data: aaplData  as StockData },
   { key: 'NVDA',  data: nvdaData  as StockData },
+  { key: 'AVGO',  data: avgoData  as StockData },
   { key: 'AMZN',  data: amznData  as StockData },
   { key: 'META',  data: metaData  as StockData },
   { key: 'LLY',   data: llyData   as StockData },
