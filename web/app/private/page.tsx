@@ -34,9 +34,9 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointEleme
 type StockData = typeof nkeData
 
 const STOCKS: Array<{ key: string; data: StockData }> = [
-  { key: 'QQQ',   data: qqqData   as StockData },
-  { key: 'QLD',   data: qldData   as StockData },
-  { key: 'TQQQ',  data: tqqqData  as StockData },
+  { key: 'QQQ',   data: qqqData   as unknown as StockData },
+  { key: 'QLD',   data: qldData   as unknown as StockData },
+  { key: 'TQQQ',  data: tqqqData  as unknown as StockData },
   { key: 'MSFT',  data: msftData  as StockData },
   { key: 'AAPL',  data: aaplData  as StockData },
   { key: 'NVDA',  data: nvdaData  as StockData },
