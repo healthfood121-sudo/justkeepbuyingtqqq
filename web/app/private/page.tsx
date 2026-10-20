@@ -1491,6 +1491,10 @@ function OverviewTable({
     return sortDir === 'desc' ? vb - va : va - vb
   })
 
+  const cagrVMax = Math.ceil(Math.max(...allRows.map(r => r.cagrMx)) / 10) * 10
+  const diffVMax = Math.ceil(Math.max(...allRows.filter(r => r.diffMx != null).map(r => r.diffMx!)) / 10) * 10
+  const diffVMin = Math.floor(Math.min(...allRows.filter(r => r.diffMn != null).map(r => r.diffMn!)) / 10) * 10
+
   const rows = allRows.filter(row => {
     const q = search.trim().toLowerCase()
     if (q && !row.s.key.toLowerCase().includes(q) && !row.s.data.name.toLowerCase().includes(q)) return false
@@ -1624,7 +1628,7 @@ function OverviewTable({
                 {/* 절대 수익률 */}
                 <td className="py-1.5 px-3">
                   <RangeBar mn={cagrMn} med={cagrMed} mx={cagrMx}
-                    vMin={0} vMax={35} refVal={20} refLabel="연 20% 기준" />
+                    vMin={0} vMax={cagrVMax} refVal={20} refLabel="연 20% 기준" />
                 </td>
                 <td className={`py-1.5 pr-3 text-right tabular-nums ${cagrTextColor(cagrMn, true)} ${colBg('cagrMn')}`}>
                   {cagrMn.toFixed(1)}%
@@ -1639,7 +1643,7 @@ function OverviewTable({
                 <td className="py-1.5 px-3 border-l-2 border-gray-200 dark:border-gray-700">
                   {diffMn != null && diffMed != null && diffMx != null ? (
                     <RangeBar mn={diffMn} med={diffMed} mx={diffMx}
-                      vMin={-15} vMax={25} refVal={0} refLabel="0pp = S&P500과 동일"
+                      vMin={diffVMin} vMax={diffVMax} refVal={0} refLabel="0pp = S&P500과 동일"
                       barColor="bg-emerald-200 dark:bg-emerald-900"
                       markerColor="bg-emerald-600 dark:bg-emerald-400"
                       refColor="bg-gray-400 dark:bg-gray-500"
