@@ -565,12 +565,11 @@ function OverviewTable({
 }) {
   const rows = STOCKS.map((s, i) => {
     const completed  = s.data.rows10y.filter((r: any) => r.isComplete)
-    const recent     = completed.slice(-10)
-    const cagrs      = recent.map((r: any) => r.cagr as number)
+    const cagrs      = completed.map((r: any) => r.cagr as number)
     const cagrMn     = Math.min(...cagrs)
     const cagrMx     = Math.max(...cagrs)
     const cagrMed    = median(cagrs)
-    const withDiff   = recent.filter((r: any) => r.diff != null)
+    const withDiff   = completed.filter((r: any) => r.diff != null)
     const diffs      = withDiff.map((r: any) => r.diff as number)
     const diffMn     = diffs.length ? Math.min(...diffs) : null
     const diffMx     = diffs.length ? Math.max(...diffs) : null
@@ -584,7 +583,7 @@ function OverviewTable({
         <thead>
           <tr className="text-xs text-gray-400 dark:text-gray-500">
             <th className="text-left pb-1 pr-4" rowSpan={2}>종목</th>
-            <th className="text-right pb-1 pr-4" rowSpan={2}>전체 기간<br/><span className="font-normal opacity-60">연평균</span></th>
+            <th className="text-right pb-1 pr-4" rowSpan={2}>상장~현재<br/><span className="font-normal opacity-60">단일 보유</span></th>
             <th colSpan={4} className="text-center pb-1 px-3 border-b border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold">
               절대 수익률 <span className="font-normal opacity-60">(배당 포함)</span>
             </th>
@@ -661,7 +660,7 @@ function OverviewTable({
         </tbody>
       </table>
       <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
-        행 클릭 시 상세 보기 · 바의 세로선: 절대수익 = 연 20%, 초과수익 = 0pp(S&P500 동일) · 최근 10개 완결 구간 기준
+        행 클릭 시 상세 보기 · 바의 세로선: 절대수익 = 연 20%, 초과수익 = 0pp(S&P500 동일) · 분포는 완결 구간 전체 기준
       </p>
     </div>
   )

@@ -31,11 +31,13 @@ DATA_DIR = Path(__file__).parent.parent / "data"
 OUT_DIR  = Path(__file__).parent.parent / "output" / "shorts"
 
 W, H             = 1080, 1920
-TARGET_SEC       = 60          # 정확한 영상 길이 (BGM 1분에 맞춤)
-OUTRO_SEC        = 5           # 마지막 고정 프레임 시간
-INTRO_HOLD_SEC   = 5           # 인트로 텍스트 불투명 유지 시간
-INTRO_FADE_SEC   = 3           # 인트로 텍스트 fade out 시간
-ANIM_SEC         = TARGET_SEC - OUTRO_SEC   # 애니메이션 구간 (55초)
+MAX_SEC          = 60          # 영상 최대 길이
+MIN_SEC          = 40          # 영상 최소 길이
+OUTRO_SEC        = 2           # 마지막 고정 프레임 시간 (항상 2초 고정)
+INTRO_HOLD_SEC   = 2           # 인트로 텍스트 불투명 유지 시간
+INTRO_FADE_SEC   = 2           # 인트로 텍스트 fade out 시간
+ANIM_MAX_SEC     = MAX_SEC - OUTRO_SEC   # 애니메이션 최대 구간 (58초)
+ANIM_MIN_SEC     = MIN_SEC - OUTRO_SEC   # 애니메이션 최소 구간 (38초)
 BASE_FPS         = 30
 
 DAILY_INVEST_KRW = 200_000
@@ -379,27 +381,31 @@ def render_final(snap: dict, hp: list, hi: list, start_date, mode: str, total_da
 # 영상 생성
 # ════════════════════════════════════════════════════════════
 
-def make_video(start_ym: str, out_path: Path, mode: str = 'standard'):
-    print(f"[1/3] 데이터 로드 중... (mode={mode})")
-    df = load_tqqq(mode)
+def make_video(start_ym: str, out_path: Path, mode: str = 'standard', df: pd.DataFrame = None):
+    if df is None:
+        print(f"[1/3] 데이터 로드 중... (mode={mode})")
+        df = load_tqqq(mode)
 
     print(f"[2/3] {start_ym} 시뮬레이션 중...")
     snaps = simulate(df, start_ym)
     total = len(snaps)
     print(f"      → {total}거래일 ({total/250:.1f}년)")
 
-    # FPS 결정: 애니메이션 ANIM_SEC초 안에 담기
-    fps = max(BASE_FPS, math.ceil(total / ANIM_SEC))
-    step = max(1, math.ceil(total / (ANIM_SEC * fps)))
-    frames_to_render = list(range(0, total, step))
-    # 정확히 TARGET_SEC초가 되도록 아웃트로 프레임 수 역산
-    outro_frames = TARGET_SEC * fps - len(frames_to_render)
+    # step=1 고정 (날짜 건너뛰기 금지)
+    frames_to_render = list(range(total))
+    # 긴 케이스: fps를 올려서 ANIM_MAX_SEC 안에 담기
+    fps = max(BASE_FPS, math.ceil(total / ANIM_MAX_SEC))
+    # 짧은 케이스: 각 프레임을 repeat번 반복해 ANIM_MIN_SEC 보장
+    repeat = max(1, math.ceil(ANIM_MIN_SEC * fps / total))
+    # 아웃트로: 항상 OUTRO_SEC * fps 프레임 고정
+    outro_frames = OUTRO_SEC * fps
 
     # 인트로 fade 프레임 수
     intro_hold_f = int(INTRO_HOLD_SEC * fps)
     intro_fade_f = int(INTRO_FADE_SEC * fps)
 
-    print(f"      → FPS={fps}, step={step}, 총길이={TARGET_SEC}초 (애니={len(frames_to_render)/fps:.1f}s + 아웃트로={outro_frames/fps:.1f}s)")
+    total_sec = (total * repeat + outro_frames) / fps
+    print(f"      → FPS={fps}, repeat={repeat}, 총길이={total_sec:.1f}초 (애니={total*repeat/fps:.1f}s + 아웃트로={outro_frames/fps:.1f}s)")
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -429,24 +435,26 @@ def make_video(start_ym: str, out_path: Path, mode: str = 'standard'):
         hp = [snaps[j]["port_krw"] for j in range(0, i + 1, max(1, (i + 1) // 300))]
         hi = [snaps[j]["inv_krw"]  for j in range(0, i + 1, max(1, (i + 1) // 300))]
 
-        # 인트로 alpha 계산
-        if idx < intro_hold_f:
+        # 인트로 alpha 계산 (실제 출력 프레임 기준)
+        actual_f = idx * repeat
+        if actual_f < intro_hold_f:
             intro_alpha = 255
-        elif idx < intro_hold_f + intro_fade_f:
-            ratio = (idx - intro_hold_f) / intro_fade_f
+        elif actual_f < intro_hold_f + intro_fade_f:
+            ratio = (actual_f - intro_hold_f) / intro_fade_f
             intro_alpha = int(255 * (1.0 - ratio))
         else:
             intro_alpha = 0
 
         frame = render(snap, hp, hi, start_date, mode, intro_alpha=intro_alpha)
-        proc.stdin.write(frame)
+        for _ in range(repeat):
+            proc.stdin.write(frame)
         last_frame = frame
 
         if idx % 100 == 0:
-            pct = (idx + 1) / len(frames_to_render) * 100
+            pct = (idx + 1) / total * 100
             print(f"      {pct:5.1f}%  {snap['date'].strftime('%Y-%m-%d')}", end="\r")
 
-    # 아웃트로: 정확히 TARGET_SEC초가 되도록 역산된 프레임 수만큼 고정
+    # 아웃트로: 고정 2초
     last_snap = snaps[-1]
     hp_last = [snaps[j]["port_krw"] for j in range(0, total, max(1, total // 300))]
     hi_last = [snaps[j]["inv_krw"]  for j in range(0, total, max(1, total // 300))]
