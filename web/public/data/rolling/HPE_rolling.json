@@ -1,0 +1,152 @@
+{
+  "ticker": "HPE",
+  "name": "HP 엔터프라이즈",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "",
+  "current": {
+    "price": 56.49,
+    "pe": 29.1,
+    "divYield": 1.02,
+    "eps": 1.94
+  },
+  "fullPeriod": {
+    "start_date": "2015-10-19",
+    "end_date": "2026-10-20",
+    "start_price": 7.1869,
+    "end_price": 56.49,
+    "years": 11.0,
+    "cagr": 20.61,
+    "multiple": 7.9
+  },
+  "stats": {
+    "n": 1,
+    "min": 13.61,
+    "minBuy": "2015",
+    "median": 13.61,
+    "mean": 13.61,
+    "max": 13.61,
+    "maxBuy": "2015",
+    "over10": 100.0,
+    "over15": 0.0,
+    "over20": 0.0,
+    "losses": 0,
+    "beatBench": 0,
+    "beatTotal": 1
+  },
+  "rows10y": [
+    {
+      "buyYear": 2015,
+      "sellYear": 2025,
+      "sellDate": "2025-12-31",
+      "yearsActual": 10.0,
+      "cagr": 13.61,
+      "multiple": 3.58,
+      "isComplete": true,
+      "benchCagr": 14.82,
+      "diff": -1.21
+    },
+    {
+      "buyYear": 2016,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 9.8,
+      "cagr": 19.08,
+      "multiple": 5.54,
+      "isComplete": false,
+      "benchCagr": 15.01,
+      "diff": 4.07
+    },
+    {
+      "buyYear": 2017,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 8.8,
+      "cagr": 20.33,
+      "multiple": 5.1,
+      "isComplete": false,
+      "benchCagr": 14.28,
+      "diff": 6.05
+    },
+    {
+      "buyYear": 2018,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 7.8,
+      "cagr": 24.13,
+      "multiple": 5.4,
+      "isComplete": false,
+      "benchCagr": 16.85,
+      "diff": 7.28
+    },
+    {
+      "buyYear": 2019,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 6.8,
+      "cagr": 24.19,
+      "multiple": 4.37,
+      "isComplete": false,
+      "benchCagr": 14.89,
+      "diff": 9.29
+    },
+    {
+      "buyYear": 2020,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 5.8,
+      "cagr": 34.54,
+      "multiple": 5.59,
+      "isComplete": false,
+      "benchCagr": 14.33,
+      "diff": 20.22
+    },
+    {
+      "buyYear": 2021,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 4.8,
+      "cagr": 33.96,
+      "multiple": 4.07,
+      "isComplete": false,
+      "benchCagr": 11.65,
+      "diff": 22.31
+    },
+    {
+      "buyYear": 2022,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 3.8,
+      "cagr": 42.99,
+      "multiple": 3.9,
+      "isComplete": false,
+      "benchCagr": 20.64,
+      "diff": 22.35
+    },
+    {
+      "buyYear": 2023,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 2.8,
+      "cagr": 57.14,
+      "multiple": 3.55,
+      "isComplete": false,
+      "benchCagr": 18.81,
+      "diff": 38.33
+    },
+    {
+      "buyYear": 2024,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 1.8,
+      "cagr": 75.32,
+      "multiple": 2.75,
+      "isComplete": false,
+      "benchCagr": 15.84,
+      "diff": 59.48
+    }
+  ],
+  "loss5y": [],
+  "epsDecomp": [],
+  "epsNote": "EPS 데이터 미수집"
+}

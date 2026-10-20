@@ -1,0 +1,180 @@
+{
+  "ticker": "NWS",
+  "name": "뉴스 코퍼레이션 B",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "",
+  "current": {
+    "price": 33.46,
+    "pe": 32.5,
+    "divYield": 0.61,
+    "eps": 1.03
+  },
+  "fullPeriod": {
+    "start_date": "2013-06-19",
+    "end_date": "2026-10-20",
+    "start_price": 13.5935,
+    "end_price": 33.46,
+    "years": 13.3,
+    "cagr": 6.99,
+    "multiple": 2.5
+  },
+  "stats": {
+    "n": 3,
+    "min": 4.91,
+    "minBuy": "2013",
+    "median": 8.57,
+    "mean": 7.53,
+    "max": 9.1,
+    "maxBuy": "2015",
+    "over10": 0.0,
+    "over15": 0.0,
+    "over20": 0.0,
+    "losses": 0,
+    "beatBench": 0,
+    "beatTotal": 3
+  },
+  "rows10y": [
+    {
+      "buyYear": 2013,
+      "sellYear": 2023,
+      "sellDate": "2023-12-31",
+      "yearsActual": 10.0,
+      "cagr": 4.91,
+      "multiple": 1.61,
+      "isComplete": true,
+      "benchCagr": 12.03,
+      "diff": -7.12
+    },
+    {
+      "buyYear": 2014,
+      "sellYear": 2024,
+      "sellDate": "2024-12-31",
+      "yearsActual": 10.0,
+      "cagr": 8.57,
+      "multiple": 2.28,
+      "isComplete": true,
+      "benchCagr": 13.1,
+      "diff": -4.53
+    },
+    {
+      "buyYear": 2015,
+      "sellYear": 2025,
+      "sellDate": "2025-12-31",
+      "yearsActual": 10.0,
+      "cagr": 9.1,
+      "multiple": 2.39,
+      "isComplete": true,
+      "benchCagr": 14.82,
+      "diff": -5.71
+    },
+    {
+      "buyYear": 2016,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 9.8,
+      "cagr": 12.47,
+      "multiple": 3.16,
+      "isComplete": false,
+      "benchCagr": 15.01,
+      "diff": -2.54
+    },
+    {
+      "buyYear": 2017,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 8.8,
+      "cagr": 9.46,
+      "multiple": 2.22,
+      "isComplete": false,
+      "benchCagr": 14.28,
+      "diff": -4.82
+    },
+    {
+      "buyYear": 2018,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 7.8,
+      "cagr": 15.8,
+      "multiple": 3.14,
+      "isComplete": false,
+      "benchCagr": 16.85,
+      "diff": -1.06
+    },
+    {
+      "buyYear": 2019,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 6.8,
+      "cagr": 14.18,
+      "multiple": 2.46,
+      "isComplete": false,
+      "benchCagr": 14.9,
+      "diff": -0.72
+    },
+    {
+      "buyYear": 2020,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 5.8,
+      "cagr": 12.5,
+      "multiple": 1.98,
+      "isComplete": false,
+      "benchCagr": 14.33,
+      "diff": -1.84
+    },
+    {
+      "buyYear": 2021,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 4.8,
+      "cagr": 9.56,
+      "multiple": 1.55,
+      "isComplete": false,
+      "benchCagr": 11.65,
+      "diff": -2.09
+    },
+    {
+      "buyYear": 2022,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 3.8,
+      "cagr": 17.93,
+      "multiple": 1.87,
+      "isComplete": false,
+      "benchCagr": 20.65,
+      "diff": -2.72
+    },
+    {
+      "buyYear": 2023,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 2.8,
+      "cagr": 10.64,
+      "multiple": 1.33,
+      "isComplete": false,
+      "benchCagr": 18.82,
+      "diff": -8.18
+    },
+    {
+      "buyYear": 2024,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 1.8,
+      "cagr": 6.18,
+      "multiple": 1.11,
+      "isComplete": false,
+      "benchCagr": 15.86,
+      "diff": -9.68
+    }
+  ],
+  "loss5y": [
+    {
+      "buyYear": 2013,
+      "sellYear": 2018,
+      "cagr": -7.35
+    }
+  ],
+  "epsDecomp": [],
+  "epsNote": "EPS 데이터 미수집"
+}

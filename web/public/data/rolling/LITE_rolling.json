@@ -1,0 +1,152 @@
+{
+  "ticker": "LITE",
+  "name": "루멘텀 홀딩스",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "",
+  "current": {
+    "price": 831.74,
+    "pe": 23.1,
+    "divYield": 0,
+    "eps": -92.96
+  },
+  "fullPeriod": {
+    "start_date": "2015-07-23",
+    "end_date": "2026-10-20",
+    "start_price": 17.0,
+    "end_price": 831.735,
+    "years": 11.2,
+    "cagr": 41.34,
+    "multiple": 48.9
+  },
+  "stats": {
+    "n": 1,
+    "min": 32.54,
+    "minBuy": "2015",
+    "median": 32.54,
+    "mean": 32.54,
+    "max": 32.54,
+    "maxBuy": "2015",
+    "over10": 100.0,
+    "over15": 100.0,
+    "over20": 100.0,
+    "losses": 0,
+    "beatBench": 1,
+    "beatTotal": 1
+  },
+  "rows10y": [
+    {
+      "buyYear": 2015,
+      "sellYear": 2025,
+      "sellDate": "2025-12-31",
+      "yearsActual": 10.0,
+      "cagr": 32.54,
+      "multiple": 16.74,
+      "isComplete": true,
+      "benchCagr": 14.82,
+      "diff": 17.72
+    },
+    {
+      "buyYear": 2016,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 9.8,
+      "cagr": 36.77,
+      "multiple": 21.52,
+      "isComplete": false,
+      "benchCagr": 15.01,
+      "diff": 21.76
+    },
+    {
+      "buyYear": 2017,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 8.8,
+      "cagr": 37.98,
+      "multiple": 17.01,
+      "isComplete": false,
+      "benchCagr": 14.28,
+      "diff": 23.7
+    },
+    {
+      "buyYear": 2018,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 7.8,
+      "cagr": 46.61,
+      "multiple": 19.8,
+      "isComplete": false,
+      "benchCagr": 16.85,
+      "diff": 29.76
+    },
+    {
+      "buyYear": 2019,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 6.8,
+      "cagr": 41.26,
+      "multiple": 10.49,
+      "isComplete": false,
+      "benchCagr": 14.9,
+      "diff": 26.37
+    },
+    {
+      "buyYear": 2020,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 5.8,
+      "cagr": 45.4,
+      "multiple": 8.77,
+      "isComplete": false,
+      "benchCagr": 14.33,
+      "diff": 31.08
+    },
+    {
+      "buyYear": 2021,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 4.8,
+      "cagr": 53.64,
+      "multiple": 7.86,
+      "isComplete": false,
+      "benchCagr": 11.65,
+      "diff": 41.99
+    },
+    {
+      "buyYear": 2022,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 3.8,
+      "cagr": 107.12,
+      "multiple": 15.94,
+      "isComplete": false,
+      "benchCagr": 20.64,
+      "diff": 86.48
+    },
+    {
+      "buyYear": 2023,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 2.8,
+      "cagr": 168.04,
+      "multiple": 15.87,
+      "isComplete": false,
+      "benchCagr": 18.81,
+      "diff": 149.23
+    },
+    {
+      "buyYear": 2024,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 1.8,
+      "cagr": 257.15,
+      "multiple": 9.91,
+      "isComplete": false,
+      "benchCagr": 15.85,
+      "diff": 241.3
+    }
+  ],
+  "loss5y": [],
+  "epsDecomp": [],
+  "epsNote": "EPS 데이터 미수집"
+}

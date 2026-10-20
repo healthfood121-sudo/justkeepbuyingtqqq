@@ -1,0 +1,169 @@
+{
+  "ticker": "SYF",
+  "name": "싱크로니 파이낸셜",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "",
+  "current": {
+    "price": 73.66,
+    "pe": 7.5,
+    "divYield": 1.83,
+    "eps": 9.77
+  },
+  "fullPeriod": {
+    "start_date": "2014-07-31",
+    "end_date": "2026-10-20",
+    "start_price": 18.1267,
+    "end_price": 73.66,
+    "years": 12.2,
+    "cagr": 12.16,
+    "multiple": 4.1
+  },
+  "stats": {
+    "n": 2,
+    "min": 10.4,
+    "minBuy": "2014",
+    "median": 11.77,
+    "mean": 11.77,
+    "max": 13.14,
+    "maxBuy": "2015",
+    "over10": 100.0,
+    "over15": 0.0,
+    "over20": 0.0,
+    "losses": 0,
+    "beatBench": 0,
+    "beatTotal": 2
+  },
+  "rows10y": [
+    {
+      "buyYear": 2014,
+      "sellYear": 2024,
+      "sellDate": "2024-12-31",
+      "yearsActual": 10.0,
+      "cagr": 10.4,
+      "multiple": 2.69,
+      "isComplete": true,
+      "benchCagr": 13.1,
+      "diff": -2.7
+    },
+    {
+      "buyYear": 2015,
+      "sellYear": 2025,
+      "sellDate": "2025-12-31",
+      "yearsActual": 10.0,
+      "cagr": 13.14,
+      "multiple": 3.44,
+      "isComplete": true,
+      "benchCagr": 14.82,
+      "diff": -1.68
+    },
+    {
+      "buyYear": 2016,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 9.8,
+      "cagr": 10.04,
+      "multiple": 2.55,
+      "isComplete": false,
+      "benchCagr": 15.01,
+      "diff": -4.98
+    },
+    {
+      "buyYear": 2017,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 8.8,
+      "cagr": 10.23,
+      "multiple": 2.36,
+      "isComplete": false,
+      "benchCagr": 14.28,
+      "diff": -4.05
+    },
+    {
+      "buyYear": 2018,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 7.8,
+      "cagr": 18.62,
+      "multiple": 3.79,
+      "isComplete": false,
+      "benchCagr": 16.85,
+      "diff": 1.77
+    },
+    {
+      "buyYear": 2019,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 6.8,
+      "cagr": 13.78,
+      "multiple": 2.41,
+      "isComplete": false,
+      "benchCagr": 14.9,
+      "diff": -1.12
+    },
+    {
+      "buyYear": 2020,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 5.8,
+      "cagr": 16.36,
+      "multiple": 2.41,
+      "isComplete": false,
+      "benchCagr": 14.33,
+      "diff": 2.03
+    },
+    {
+      "buyYear": 2021,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 4.8,
+      "cagr": 12.58,
+      "multiple": 1.77,
+      "isComplete": false,
+      "benchCagr": 11.65,
+      "diff": 0.92
+    },
+    {
+      "buyYear": 2022,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 3.8,
+      "cagr": 26.35,
+      "multiple": 2.43,
+      "isComplete": false,
+      "benchCagr": 20.65,
+      "diff": 5.7
+    },
+    {
+      "buyYear": 2023,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 2.8,
+      "cagr": 28.78,
+      "multiple": 2.03,
+      "isComplete": false,
+      "benchCagr": 18.82,
+      "diff": 9.96
+    },
+    {
+      "buyYear": 2024,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 1.8,
+      "cagr": 8.99,
+      "multiple": 1.17,
+      "isComplete": false,
+      "benchCagr": 15.86,
+      "diff": -6.87
+    }
+  ],
+  "loss5y": [
+    {
+      "buyYear": 2017,
+      "sellYear": 2022,
+      "cagr": -0.64
+    }
+  ],
+  "epsDecomp": [],
+  "epsNote": "EPS 데이터 미수집"
+}
