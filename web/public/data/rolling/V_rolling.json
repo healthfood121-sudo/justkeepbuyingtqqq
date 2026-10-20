@@ -5,19 +5,19 @@
   "benchmark": "S&P 500",
   "note": "2008년 3월 IPO. 분할 이력: 2015-03-19 4:1. Class A 상장주 기준 수익률. EPS는 FY2008(IPO 연도) 제외 → 2009년 이후 매수 구간부터 EPS 분해 적용.",
   "current": {
-    "price": 402.92,
-    "pe": 34.3,
+    "price": 406.83,
+    "pe": 34.6,
     "divYield": 0.67,
-    "eps": 11.76
+    "eps": 11.75
   },
   "fullPeriod": {
     "start_date": "2008-03-19",
-    "end_date": "2026-10-19",
+    "end_date": "2026-10-20",
     "start_price": 12.3931,
-    "end_price": 402.92,
+    "end_price": 406.92,
     "years": 18.6,
-    "cagr": 20.6,
-    "multiple": 32.5
+    "cagr": 20.66,
+    "multiple": 32.8
   },
   "stats": {
     "n": 8,

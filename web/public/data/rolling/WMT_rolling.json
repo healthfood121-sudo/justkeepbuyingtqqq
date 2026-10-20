@@ -5,19 +5,19 @@
   "benchmark": "S&P 500",
   "note": "분할 이력: 2:1 × 11회(1971~1999) + 3:1(2024-02-26). EPS는 현재 분할 기준으로 소급 조정. EPS 커버리지는 2007년부터 (SEC EDGAR XBRL).",
   "current": {
-    "price": 118.7,
-    "pe": 43.0,
+    "price": 118.13,
+    "pe": 42.8,
     "divYield": 0.83,
     "eps": 2.76
   },
   "fullPeriod": {
     "start_date": "1972-08-25",
-    "end_date": "2026-10-19",
+    "end_date": "2026-10-20",
     "start_price": 0.0115,
-    "end_price": 118.7,
-    "years": 54.1,
-    "cagr": 18.62,
-    "multiple": 10361.9
+    "end_price": 118.12,
+    "years": 54.2,
+    "cagr": 18.61,
+    "multiple": 10311.3
   },
   "stats": {
     "n": 44,

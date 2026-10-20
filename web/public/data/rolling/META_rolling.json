@@ -5,19 +5,19 @@
   "benchmark": "S&P 500",
   "note": "2012년 5월 상장. 완결 구간 4개(2012~2015년 말 매수)로 아직 역사 짧음. 주식 분할 없음.",
   "current": {
-    "price": 705.44,
-    "pe": 26.7,
+    "price": 690.04,
+    "pe": 26.0,
     "divYield": 0.3,
-    "eps": 26.39
+    "eps": 26.54
   },
   "fullPeriod": {
     "start_date": "2012-05-18",
-    "end_date": "2026-10-19",
+    "end_date": "2026-10-20",
     "start_price": 37.8673,
-    "end_price": 705.44,
+    "end_price": 690.11,
     "years": 14.4,
-    "cagr": 22.49,
-    "multiple": 18.6
+    "cagr": 22.29,
+    "multiple": 18.2
   },
   "stats": {
     "n": 4,

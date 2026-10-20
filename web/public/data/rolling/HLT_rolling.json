@@ -1,0 +1,174 @@
+{
+  "ticker": "HLT",
+  "name": "힐튼 월드와이드",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "",
+  "current": {
+    "price": 359.75,
+    "pe": 52.7,
+    "divYield": 0.17,
+    "eps": 6.82
+  },
+  "fullPeriod": {
+    "start_date": "2013-12-12",
+    "end_date": "2026-10-20",
+    "start_price": 41.663,
+    "end_price": 359.75,
+    "years": 12.9,
+    "cagr": 18.26,
+    "multiple": 8.6
+  },
+  "stats": {
+    "n": 3,
+    "min": 15.42,
+    "minBuy": "2013",
+    "median": 17.15,
+    "mean": 17.94,
+    "max": 21.26,
+    "maxBuy": "2015",
+    "over10": 100.0,
+    "over15": 100.0,
+    "over20": 33.3,
+    "losses": 0,
+    "beatBench": 3,
+    "beatTotal": 3
+  },
+  "rows10y": [
+    {
+      "buyYear": 2013,
+      "sellYear": 2023,
+      "sellDate": "2023-12-31",
+      "yearsActual": 10.0,
+      "cagr": 15.42,
+      "multiple": 4.2,
+      "isComplete": true,
+      "benchCagr": 12.03,
+      "diff": 3.39
+    },
+    {
+      "buyYear": 2014,
+      "sellYear": 2024,
+      "sellDate": "2024-12-31",
+      "yearsActual": 10.0,
+      "cagr": 17.15,
+      "multiple": 4.87,
+      "isComplete": true,
+      "benchCagr": 13.1,
+      "diff": 4.05
+    },
+    {
+      "buyYear": 2015,
+      "sellYear": 2025,
+      "sellDate": "2025-12-31",
+      "yearsActual": 10.0,
+      "cagr": 21.26,
+      "multiple": 6.88,
+      "isComplete": true,
+      "benchCagr": 14.82,
+      "diff": 6.45
+    },
+    {
+      "buyYear": 2016,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 9.8,
+      "cagr": 21.42,
+      "multiple": 6.7,
+      "isComplete": false,
+      "benchCagr": 15.02,
+      "diff": 6.41
+    },
+    {
+      "buyYear": 2017,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 8.8,
+      "cagr": 19.05,
+      "multiple": 4.64,
+      "isComplete": false,
+      "benchCagr": 14.28,
+      "diff": 4.77
+    },
+    {
+      "buyYear": 2018,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 7.8,
+      "cagr": 23.29,
+      "multiple": 5.12,
+      "isComplete": false,
+      "benchCagr": 16.86,
+      "diff": 6.43
+    },
+    {
+      "buyYear": 2019,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 6.8,
+      "cagr": 19.15,
+      "multiple": 3.29,
+      "isComplete": false,
+      "benchCagr": 14.9,
+      "diff": 4.25
+    },
+    {
+      "buyYear": 2020,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 5.8,
+      "cagr": 22.71,
+      "multiple": 3.28,
+      "isComplete": false,
+      "benchCagr": 14.33,
+      "diff": 8.38
+    },
+    {
+      "buyYear": 2021,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 4.8,
+      "cagr": 19.35,
+      "multiple": 2.34,
+      "isComplete": false,
+      "benchCagr": 11.66,
+      "diff": 7.69
+    },
+    {
+      "buyYear": 2022,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 3.8,
+      "cagr": 32.03,
+      "multiple": 2.88,
+      "isComplete": false,
+      "benchCagr": 20.65,
+      "diff": 11.38
+    },
+    {
+      "buyYear": 2023,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 2.8,
+      "cagr": 27.78,
+      "multiple": 1.99,
+      "isComplete": false,
+      "benchCagr": 18.83,
+      "diff": 8.96
+    },
+    {
+      "buyYear": 2024,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 1.8,
+      "cagr": 23.42,
+      "multiple": 1.46,
+      "isComplete": false,
+      "benchCagr": 15.86,
+      "diff": 7.55
+    }
+  ],
+  "loss5y": [],
+  "epsDecomp": [],
+  "epsNote": "EPS 데이터 미수집"
+}

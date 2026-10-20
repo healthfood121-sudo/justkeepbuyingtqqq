@@ -5,19 +5,19 @@
   "benchmark": "S&P 500",
   "note": "1980년부터 Yahoo Finance 데이터. 현 법인(JPMorgan Chase)은 2001년 Chemical Banking + J.P. Morgan 합병, 2004년 Bank One 합병으로 완성. 주식 분할 없음. 2000년 이전 구간은 합병 전 법인 데이터 포함.",
   "current": {
-    "price": 333.53,
-    "pe": 14.0,
+    "price": 335.28,
+    "pe": 14.1,
     "divYield": 1.98,
     "eps": 23.84
   },
   "fullPeriod": {
     "start_date": "1980-03-17",
-    "end_date": "2026-10-19",
+    "end_date": "2026-10-20",
     "start_price": 1.0232,
-    "end_price": 333.53,
+    "end_price": 335.32,
     "years": 46.6,
-    "cagr": 13.23,
-    "multiple": 326.0
+    "cagr": 13.24,
+    "multiple": 327.7
   },
   "stats": {
     "n": 36,

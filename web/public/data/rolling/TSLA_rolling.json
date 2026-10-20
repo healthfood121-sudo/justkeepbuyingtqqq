@@ -5,19 +5,19 @@
   "benchmark": "S&P 500",
   "note": "2010년 6월 상장. 분할 이력: 2020-08-31 5:1, 2022-08-25 3:1(누적 15:1). 2010~2019년은 GAAP 순손실 → EPS 분해 해당 구간 제외.",
   "current": {
-    "price": 368.06,
-    "pe": 328.6,
+    "price": 374.23,
+    "pe": 346.5,
     "divYield": 0,
-    "eps": 1.12
+    "eps": 1.08
   },
   "fullPeriod": {
     "start_date": "2010-06-29",
-    "end_date": "2026-10-19",
+    "end_date": "2026-10-20",
     "start_price": 1.5927,
-    "end_price": 368.06,
+    "end_price": 374.1726,
     "years": 16.3,
-    "cagr": 39.62,
-    "multiple": 231.1
+    "cagr": 39.76,
+    "multiple": 234.9
   },
   "stats": {
     "n": 6,

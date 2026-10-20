@@ -1,0 +1,163 @@
+{
+  "ticker": "ANET",
+  "name": "아리스타 네트웍스",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "",
+  "current": {
+    "price": 180.58,
+    "pe": 57.0,
+    "divYield": 0,
+    "eps": 3.17
+  },
+  "fullPeriod": {
+    "start_date": "2014-06-06",
+    "end_date": "2026-10-20",
+    "start_price": 3.4375,
+    "end_price": 180.58,
+    "years": 12.4,
+    "cagr": 37.74,
+    "multiple": 52.5
+  },
+  "stats": {
+    "n": 2,
+    "min": 39.0,
+    "minBuy": "2015",
+    "median": 39.54,
+    "mean": 39.54,
+    "max": 40.08,
+    "maxBuy": "2014",
+    "over10": 100.0,
+    "over15": 100.0,
+    "over20": 100.0,
+    "losses": 0,
+    "beatBench": 2,
+    "beatTotal": 2
+  },
+  "rows10y": [
+    {
+      "buyYear": 2014,
+      "sellYear": 2024,
+      "sellDate": "2024-12-31",
+      "yearsActual": 10.0,
+      "cagr": 40.08,
+      "multiple": 29.11,
+      "isComplete": true,
+      "benchCagr": 13.1,
+      "diff": 26.98
+    },
+    {
+      "buyYear": 2015,
+      "sellYear": 2025,
+      "sellDate": "2025-12-31",
+      "yearsActual": 10.0,
+      "cagr": 39.0,
+      "multiple": 26.93,
+      "isComplete": true,
+      "benchCagr": 14.82,
+      "diff": 24.18
+    },
+    {
+      "buyYear": 2016,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 9.8,
+      "cagr": 41.41,
+      "multiple": 29.86,
+      "isComplete": false,
+      "benchCagr": 15.01,
+      "diff": 26.4
+    },
+    {
+      "buyYear": 2017,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 8.8,
+      "cagr": 32.95,
+      "multiple": 12.26,
+      "isComplete": false,
+      "benchCagr": 14.27,
+      "diff": 18.67
+    },
+    {
+      "buyYear": 2018,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 7.8,
+      "cagr": 39.87,
+      "multiple": 13.71,
+      "isComplete": false,
+      "benchCagr": 16.85,
+      "diff": 23.02
+    },
+    {
+      "buyYear": 2019,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 6.8,
+      "cagr": 47.7,
+      "multiple": 14.2,
+      "isComplete": false,
+      "benchCagr": 14.89,
+      "diff": 32.81
+    },
+    {
+      "buyYear": 2020,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 5.8,
+      "cagr": 48.57,
+      "multiple": 9.94,
+      "isComplete": false,
+      "benchCagr": 14.32,
+      "diff": 34.25
+    },
+    {
+      "buyYear": 2021,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 4.8,
+      "cagr": 39.96,
+      "multiple": 5.02,
+      "isComplete": false,
+      "benchCagr": 11.64,
+      "diff": 28.31
+    },
+    {
+      "buyYear": 2022,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 3.8,
+      "cagr": 59.85,
+      "multiple": 5.95,
+      "isComplete": false,
+      "benchCagr": 20.64,
+      "diff": 39.21
+    },
+    {
+      "buyYear": 2023,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 2.8,
+      "cagr": 49.14,
+      "multiple": 3.07,
+      "isComplete": false,
+      "benchCagr": 18.81,
+      "diff": 30.34
+    },
+    {
+      "buyYear": 2024,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 1.8,
+      "cagr": 31.32,
+      "multiple": 1.63,
+      "isComplete": false,
+      "benchCagr": 15.84,
+      "diff": 15.49
+    }
+  ],
+  "loss5y": [],
+  "epsDecomp": [],
+  "epsNote": "EPS 데이터 미수집"
+}

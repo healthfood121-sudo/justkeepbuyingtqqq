@@ -1,0 +1,163 @@
+{
+  "ticker": "CFG",
+  "name": "시티즌스 파이낸셜",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "",
+  "current": {
+    "price": 64.17,
+    "pe": 14.0,
+    "divYield": 3.31,
+    "eps": 4.59
+  },
+  "fullPeriod": {
+    "start_date": "2014-09-24",
+    "end_date": "2026-10-20",
+    "start_price": 15.3079,
+    "end_price": 64.165,
+    "years": 12.1,
+    "cagr": 12.61,
+    "multiple": 4.2
+  },
+  "stats": {
+    "n": 2,
+    "min": 9.57,
+    "minBuy": "2014",
+    "median": 11.0,
+    "mean": 11.0,
+    "max": 12.43,
+    "maxBuy": "2015",
+    "over10": 50.0,
+    "over15": 0.0,
+    "over20": 0.0,
+    "losses": 0,
+    "beatBench": 0,
+    "beatTotal": 2
+  },
+  "rows10y": [
+    {
+      "buyYear": 2014,
+      "sellYear": 2024,
+      "sellDate": "2024-12-31",
+      "yearsActual": 10.0,
+      "cagr": 9.57,
+      "multiple": 2.49,
+      "isComplete": true,
+      "benchCagr": 13.1,
+      "diff": -3.54
+    },
+    {
+      "buyYear": 2015,
+      "sellYear": 2025,
+      "sellDate": "2025-12-31",
+      "yearsActual": 10.0,
+      "cagr": 12.43,
+      "multiple": 3.23,
+      "isComplete": true,
+      "benchCagr": 14.82,
+      "diff": -2.39
+    },
+    {
+      "buyYear": 2016,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 9.8,
+      "cagr": 10.28,
+      "multiple": 2.61,
+      "isComplete": false,
+      "benchCagr": 15.01,
+      "diff": -4.73
+    },
+    {
+      "buyYear": 2017,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 8.8,
+      "cagr": 9.23,
+      "multiple": 2.18,
+      "isComplete": false,
+      "benchCagr": 14.27,
+      "diff": -5.04
+    },
+    {
+      "buyYear": 2018,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 7.8,
+      "cagr": 15.11,
+      "multiple": 3.0,
+      "isComplete": false,
+      "benchCagr": 16.85,
+      "diff": -1.74
+    },
+    {
+      "buyYear": 2019,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 6.8,
+      "cagr": 11.63,
+      "multiple": 2.11,
+      "isComplete": false,
+      "benchCagr": 14.89,
+      "diff": -3.27
+    },
+    {
+      "buyYear": 2020,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 5.8,
+      "cagr": 15.14,
+      "multiple": 2.27,
+      "isComplete": false,
+      "benchCagr": 14.32,
+      "diff": 0.82
+    },
+    {
+      "buyYear": 2021,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 4.8,
+      "cagr": 11.04,
+      "multiple": 1.65,
+      "isComplete": false,
+      "benchCagr": 11.64,
+      "diff": -0.6
+    },
+    {
+      "buyYear": 2022,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 3.8,
+      "cagr": 18.53,
+      "multiple": 1.91,
+      "isComplete": false,
+      "benchCagr": 20.64,
+      "diff": -2.1
+    },
+    {
+      "buyYear": 2023,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 2.8,
+      "cagr": 31.29,
+      "multiple": 2.15,
+      "isComplete": false,
+      "benchCagr": 18.8,
+      "diff": 12.48
+    },
+    {
+      "buyYear": 2024,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 1.8,
+      "cagr": 27.74,
+      "multiple": 1.55,
+      "isComplete": false,
+      "benchCagr": 15.83,
+      "diff": 11.91
+    }
+  ],
+  "loss5y": [],
+  "epsDecomp": [],
+  "epsNote": "EPS 데이터 미수집"
+}

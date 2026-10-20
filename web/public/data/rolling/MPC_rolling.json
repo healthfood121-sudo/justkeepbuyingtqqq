@@ -1,0 +1,202 @@
+{
+  "ticker": "MPC",
+  "name": "마라톤 페트롤리엄",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "",
+  "current": {
+    "price": 472.68,
+    "pe": 16.4,
+    "divYield": 0.84,
+    "eps": 28.88
+  },
+  "fullPeriod": {
+    "start_date": "2011-06-24",
+    "end_date": "2026-10-20",
+    "start_price": 12.1493,
+    "end_price": 472.68,
+    "years": 15.3,
+    "cagr": 26.99,
+    "multiple": 38.9
+  },
+  "stats": {
+    "n": 5,
+    "min": 15.52,
+    "minBuy": "2014",
+    "median": 16.06,
+    "mean": 16.58,
+    "max": 18.05,
+    "maxBuy": "2011",
+    "over10": 100.0,
+    "over15": 100.0,
+    "over20": 0.0,
+    "losses": 0,
+    "beatBench": 5,
+    "beatTotal": 5
+  },
+  "rows10y": [
+    {
+      "buyYear": 2011,
+      "sellYear": 2021,
+      "sellDate": "2021-12-31",
+      "yearsActual": 10.0,
+      "cagr": 18.05,
+      "multiple": 5.26,
+      "isComplete": true,
+      "benchCagr": 16.55,
+      "diff": 1.5
+    },
+    {
+      "buyYear": 2012,
+      "sellYear": 2022,
+      "sellDate": "2022-12-31",
+      "yearsActual": 10.0,
+      "cagr": 17.58,
+      "multiple": 5.05,
+      "isComplete": true,
+      "benchCagr": 12.56,
+      "diff": 5.02
+    },
+    {
+      "buyYear": 2013,
+      "sellYear": 2023,
+      "sellDate": "2023-12-31",
+      "yearsActual": 10.0,
+      "cagr": 16.06,
+      "multiple": 4.43,
+      "isComplete": true,
+      "benchCagr": 12.03,
+      "diff": 4.03
+    },
+    {
+      "buyYear": 2014,
+      "sellYear": 2024,
+      "sellDate": "2024-12-31",
+      "yearsActual": 10.0,
+      "cagr": 15.52,
+      "multiple": 4.23,
+      "isComplete": true,
+      "benchCagr": 13.1,
+      "diff": 2.42
+    },
+    {
+      "buyYear": 2015,
+      "sellYear": 2025,
+      "sellDate": "2025-12-31",
+      "yearsActual": 10.0,
+      "cagr": 15.7,
+      "multiple": 4.3,
+      "isComplete": true,
+      "benchCagr": 14.82,
+      "diff": 0.88
+    },
+    {
+      "buyYear": 2016,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 9.8,
+      "cagr": 29.45,
+      "multiple": 12.55,
+      "isComplete": false,
+      "benchCagr": 15.01,
+      "diff": 14.44
+    },
+    {
+      "buyYear": 2017,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 8.8,
+      "cagr": 28.85,
+      "multiple": 9.31,
+      "isComplete": false,
+      "benchCagr": 14.28,
+      "diff": 14.58
+    },
+    {
+      "buyYear": 2018,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 7.8,
+      "cagr": 34.58,
+      "multiple": 10.15,
+      "isComplete": false,
+      "benchCagr": 16.85,
+      "diff": 17.73
+    },
+    {
+      "buyYear": 2019,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 6.8,
+      "cagr": 39.37,
+      "multiple": 9.57,
+      "isComplete": false,
+      "benchCagr": 14.89,
+      "diff": 24.48
+    },
+    {
+      "buyYear": 2020,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 5.8,
+      "cagr": 55.96,
+      "multiple": 13.18,
+      "isComplete": false,
+      "benchCagr": 14.33,
+      "diff": 41.64
+    },
+    {
+      "buyYear": 2021,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 4.8,
+      "cagr": 54.93,
+      "multiple": 8.18,
+      "isComplete": false,
+      "benchCagr": 11.65,
+      "diff": 43.28
+    },
+    {
+      "buyYear": 2022,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 3.8,
+      "cagr": 47.51,
+      "multiple": 4.39,
+      "isComplete": false,
+      "benchCagr": 20.64,
+      "diff": 26.87
+    },
+    {
+      "buyYear": 2023,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 2.8,
+      "cagr": 54.11,
+      "multiple": 3.36,
+      "isComplete": false,
+      "benchCagr": 18.81,
+      "diff": 35.3
+    },
+    {
+      "buyYear": 2024,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 1.8,
+      "cagr": 100.57,
+      "multiple": 3.5,
+      "isComplete": false,
+      "benchCagr": 15.84,
+      "diff": 84.73
+    }
+  ],
+  "loss5y": [
+    {
+      "buyYear": 2015,
+      "sellYear": 2020,
+      "cagr": -0.83
+    }
+  ],
+  "epsDecomp": [],
+  "epsNote": "EPS 데이터 미수집"
+}

@@ -1,0 +1,196 @@
+{
+  "ticker": "HCA",
+  "name": "HCA 헬스케어",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "",
+  "current": {
+    "price": 462.57,
+    "pe": 15.5,
+    "divYield": 0.69,
+    "eps": 29.83
+  },
+  "fullPeriod": {
+    "start_date": "2011-03-10",
+    "end_date": "2026-10-20",
+    "start_price": 22.9862,
+    "end_price": 462.575,
+    "years": 15.6,
+    "cagr": 21.2,
+    "multiple": 20.1
+  },
+  "stats": {
+    "n": 5,
+    "min": 15.88,
+    "minBuy": "2014",
+    "median": 22.2,
+    "mean": 22.52,
+    "max": 31.2,
+    "maxBuy": "2011",
+    "over10": 100.0,
+    "over15": 100.0,
+    "over20": 60.0,
+    "losses": 0,
+    "beatBench": 5,
+    "beatTotal": 5
+  },
+  "rows10y": [
+    {
+      "buyYear": 2011,
+      "sellYear": 2021,
+      "sellDate": "2021-12-31",
+      "yearsActual": 10.0,
+      "cagr": 31.2,
+      "multiple": 15.12,
+      "isComplete": true,
+      "benchCagr": 16.55,
+      "diff": 14.65
+    },
+    {
+      "buyYear": 2012,
+      "sellYear": 2022,
+      "sellDate": "2022-12-31",
+      "yearsActual": 10.0,
+      "cagr": 23.65,
+      "multiple": 8.35,
+      "isComplete": true,
+      "benchCagr": 12.56,
+      "diff": 11.08
+    },
+    {
+      "buyYear": 2013,
+      "sellYear": 2023,
+      "sellDate": "2023-12-31",
+      "yearsActual": 10.0,
+      "cagr": 19.65,
+      "multiple": 6.01,
+      "isComplete": true,
+      "benchCagr": 12.03,
+      "diff": 7.61
+    },
+    {
+      "buyYear": 2014,
+      "sellYear": 2024,
+      "sellDate": "2024-12-31",
+      "yearsActual": 10.0,
+      "cagr": 15.88,
+      "multiple": 4.37,
+      "isComplete": true,
+      "benchCagr": 13.1,
+      "diff": 2.78
+    },
+    {
+      "buyYear": 2015,
+      "sellYear": 2025,
+      "sellDate": "2025-12-31",
+      "yearsActual": 10.0,
+      "cagr": 22.2,
+      "multiple": 7.43,
+      "isComplete": true,
+      "benchCagr": 14.82,
+      "diff": 7.38
+    },
+    {
+      "buyYear": 2016,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 9.8,
+      "cagr": 21.53,
+      "multiple": 6.76,
+      "isComplete": false,
+      "benchCagr": 15.01,
+      "diff": 6.51
+    },
+    {
+      "buyYear": 2017,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 8.8,
+      "cagr": 21.85,
+      "multiple": 5.7,
+      "isComplete": false,
+      "benchCagr": 14.28,
+      "diff": 7.58
+    },
+    {
+      "buyYear": 2018,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 7.8,
+      "cagr": 19.34,
+      "multiple": 3.97,
+      "isComplete": false,
+      "benchCagr": 16.85,
+      "diff": 2.49
+    },
+    {
+      "buyYear": 2019,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 6.8,
+      "cagr": 19.2,
+      "multiple": 3.3,
+      "isComplete": false,
+      "benchCagr": 14.9,
+      "diff": 4.31
+    },
+    {
+      "buyYear": 2020,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 5.8,
+      "cagr": 20.52,
+      "multiple": 2.95,
+      "isComplete": false,
+      "benchCagr": 14.33,
+      "diff": 6.19
+    },
+    {
+      "buyYear": 2021,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 4.8,
+      "cagr": 13.97,
+      "multiple": 1.87,
+      "isComplete": false,
+      "benchCagr": 11.65,
+      "diff": 2.32
+    },
+    {
+      "buyYear": 2022,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 3.8,
+      "cagr": 19.77,
+      "multiple": 1.99,
+      "isComplete": false,
+      "benchCagr": 20.64,
+      "diff": -0.87
+    },
+    {
+      "buyYear": 2023,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 2.8,
+      "cagr": 21.96,
+      "multiple": 1.74,
+      "isComplete": false,
+      "benchCagr": 18.81,
+      "diff": 3.14
+    },
+    {
+      "buyYear": 2024,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 1.8,
+      "cagr": 28.04,
+      "multiple": 1.56,
+      "isComplete": false,
+      "benchCagr": 15.84,
+      "diff": 12.2
+    }
+  ],
+  "loss5y": [],
+  "epsDecomp": [],
+  "epsNote": "EPS 데이터 미수집"
+}

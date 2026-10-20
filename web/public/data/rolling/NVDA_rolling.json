@@ -5,19 +5,19 @@
   "benchmark": "S&P 500",
   "note": "1999년 1월 상장. 분할 이력: 2000·2001·2006(2:1×3), 2007(1.5:1), 2021(4:1), 2024(10:1) → 누적 480:1. FY2009·FY2010 EPS 음수 구간은 EPS 분해 제외.",
   "current": {
-    "price": 217.09,
+    "price": 216.9,
     "pe": 27.4,
     "divYield": 0.46,
     "eps": 7.91
   },
   "fullPeriod": {
     "start_date": "1999-01-22",
-    "end_date": "2026-10-19",
+    "end_date": "2026-10-20",
     "start_price": 0.0375,
-    "end_price": 217.09,
+    "end_price": 216.91,
     "years": 27.7,
-    "cagr": 36.66,
-    "multiple": 5786.4
+    "cagr": 36.65,
+    "multiple": 5781.6
   },
   "stats": {
     "n": 17,

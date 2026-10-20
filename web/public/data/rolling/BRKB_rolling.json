@@ -5,19 +5,19 @@
   "benchmark": "S&P 500",
   "note": "1996년 5월 상장(BRK-B). 분할 이력: 2010-01-21 50:1(BRK-A 1주 = BRK-B 1500주). 배당 없음.",
   "current": {
-    "price": 532.23,
-    "pe": 13.4,
+    "price": 537.9,
+    "pe": 13.5,
     "divYield": 0,
     "eps": 39.76
   },
   "fullPeriod": {
     "start_date": "1996-05-09",
-    "end_date": "2026-10-19",
+    "end_date": "2026-10-20",
     "start_price": 23.2,
-    "end_price": 532.23,
+    "end_price": 537.93,
     "years": 30.4,
-    "cagr": 10.84,
-    "multiple": 22.9
+    "cagr": 10.88,
+    "multiple": 23.2
   },
   "stats": {
     "n": 20,

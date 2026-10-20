@@ -5,19 +5,19 @@
   "benchmark": "S&P 500",
   "note": "2009년 8월 상장(Avago Technologies). 2016년 Broadcom 합병, 2018년 미국 법인 전환. 2024년 7월 10:1 주식 분할.",
   "current": {
-    "price": 334.59,
-    "pe": 42.7,
+    "price": 335.39,
+    "pe": 42.8,
     "divYield": 0.78,
     "eps": 7.83
   },
   "fullPeriod": {
     "start_date": "2009-08-06",
-    "end_date": "2026-10-19",
+    "end_date": "2026-10-20",
     "start_price": 1.1335,
-    "end_price": 334.59,
+    "end_price": 335.2,
     "years": 17.2,
     "cagr": 39.19,
-    "multiple": 295.2
+    "multiple": 295.7
   },
   "stats": {
     "n": 7,

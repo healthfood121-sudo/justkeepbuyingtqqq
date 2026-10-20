@@ -5,19 +5,19 @@
   "benchmark": "S&P 500",
   "note": "분할 이력: 1986·1989·1995·1997 각 2:1(누적 16:1). 1997년 이후 분할 없음. 2000~2013년은 특허 절벽(Prozac·Zyprexa·Cymbalta 순차 만료)으로 수익률이 저조했으나 2014년 이후 GLP-1·면역항암 신약으로 급반등.",
   "current": {
-    "price": 1240.34,
-    "pe": 41.6,
+    "price": 1292.5,
+    "pe": 43.4,
     "divYield": 0.56,
     "eps": 29.79
   },
   "fullPeriod": {
     "start_date": "1972-06-01",
-    "end_date": "2026-10-19",
+    "end_date": "2026-10-20",
     "start_price": 0.891,
-    "end_price": 1240.34,
+    "end_price": 1292.895,
     "years": 54.4,
-    "cagr": 14.24,
-    "multiple": 1392.0
+    "cagr": 14.32,
+    "multiple": 1451.0
   },
   "stats": {
     "n": 44,

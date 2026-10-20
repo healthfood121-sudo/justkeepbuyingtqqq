@@ -1,0 +1,173 @@
+{
+  "ticker": "PYPL",
+  "name": "페이팔 홀딩스",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "",
+  "current": {
+    "price": 57.16,
+    "pe": 10.8,
+    "divYield": 0.99,
+    "eps": 5.29
+  },
+  "fullPeriod": {
+    "start_date": "2015-07-06",
+    "end_date": "2026-10-20",
+    "start_price": 36.3051,
+    "end_price": 57.165,
+    "years": 11.3,
+    "cagr": 4.1,
+    "multiple": 1.6
+  },
+  "stats": {
+    "n": 1,
+    "min": 4.92,
+    "minBuy": "2015",
+    "median": 4.92,
+    "mean": 4.92,
+    "max": 4.92,
+    "maxBuy": "2015",
+    "over10": 0.0,
+    "over15": 0.0,
+    "over20": 0.0,
+    "losses": 0,
+    "beatBench": 0,
+    "beatTotal": 1
+  },
+  "rows10y": [
+    {
+      "buyYear": 2015,
+      "sellYear": 2025,
+      "sellDate": "2025-12-31",
+      "yearsActual": 10.0,
+      "cagr": 4.92,
+      "multiple": 1.62,
+      "isComplete": true,
+      "benchCagr": 14.82,
+      "diff": -9.9
+    },
+    {
+      "buyYear": 2016,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 9.8,
+      "cagr": 3.97,
+      "multiple": 1.46,
+      "isComplete": false,
+      "benchCagr": 15.01,
+      "diff": -11.04
+    },
+    {
+      "buyYear": 2017,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 8.8,
+      "cagr": -2.71,
+      "multiple": 0.79,
+      "isComplete": false,
+      "benchCagr": 14.28,
+      "diff": -16.99
+    },
+    {
+      "buyYear": 2018,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 7.8,
+      "cagr": -4.69,
+      "multiple": 0.69,
+      "isComplete": false,
+      "benchCagr": 16.85,
+      "diff": -21.54
+    },
+    {
+      "buyYear": 2019,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 6.8,
+      "cagr": -8.8,
+      "multiple": 0.53,
+      "isComplete": false,
+      "benchCagr": 14.9,
+      "diff": -23.7
+    },
+    {
+      "buyYear": 2020,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 5.8,
+      "cagr": -21.43,
+      "multiple": 0.25,
+      "isComplete": false,
+      "benchCagr": 14.33,
+      "diff": -35.76
+    },
+    {
+      "buyYear": 2021,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 4.8,
+      "cagr": -21.83,
+      "multiple": 0.31,
+      "isComplete": false,
+      "benchCagr": 11.65,
+      "diff": -33.48
+    },
+    {
+      "buyYear": 2022,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 3.8,
+      "cagr": -5.34,
+      "multiple": 0.81,
+      "isComplete": false,
+      "benchCagr": 20.64,
+      "diff": -25.98
+    },
+    {
+      "buyYear": 2023,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 2.8,
+      "cagr": -2.14,
+      "multiple": 0.94,
+      "isComplete": false,
+      "benchCagr": 18.81,
+      "diff": -20.95
+    },
+    {
+      "buyYear": 2024,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 1.8,
+      "cagr": -19.45,
+      "multiple": 0.68,
+      "isComplete": false,
+      "benchCagr": 15.85,
+      "diff": -35.3
+    }
+  ],
+  "loss5y": [
+    {
+      "buyYear": 2017,
+      "sellYear": 2022,
+      "cagr": -0.66
+    },
+    {
+      "buyYear": 2018,
+      "sellYear": 2023,
+      "cagr": -6.09
+    },
+    {
+      "buyYear": 2019,
+      "sellYear": 2024,
+      "cagr": -4.63
+    },
+    {
+      "buyYear": 2020,
+      "sellYear": 2025,
+      "cagr": -24.23
+    }
+  ],
+  "epsDecomp": [],
+  "epsNote": "EPS 데이터 미수집"
+}

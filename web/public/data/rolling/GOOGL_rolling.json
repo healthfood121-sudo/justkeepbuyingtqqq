@@ -5,19 +5,19 @@
   "benchmark": "S&P 500",
   "note": "2004년 8월 상장. 분할 이력: 2014-04 2:1(Class C 분리), 2022-07 20:1. EPS는 현재 분할 기준으로 소급 조정.",
   "current": {
-    "price": 344.18,
-    "pe": 17.3,
+    "price": 341.21,
+    "pe": 17.1,
     "divYield": 0.26,
     "eps": 19.93
   },
   "fullPeriod": {
     "start_date": "2004-08-19",
-    "end_date": "2026-10-19",
+    "end_date": "2026-10-20",
     "start_price": 2.4873,
-    "end_price": 344.18,
+    "end_price": 341.21,
     "years": 22.2,
-    "cagr": 24.91,
-    "multiple": 138.4
+    "cagr": 24.86,
+    "multiple": 137.2
   },
   "stats": {
     "n": 12,

@@ -5,19 +5,19 @@
   "benchmark": "S&P 500",
   "note": "분할 이력: 1970·1981·1989·1992·1996·1999·2001 (각 2:1, 누적 128:1). 2001-06-04 이후 분할 없음. 2023년 소비자 헬스케어 부문을 Kenvue로 분사.",
   "current": {
-    "price": 253.79,
-    "pe": 38.5,
+    "price": 258.96,
+    "pe": 39.3,
     "divYield": 2.11,
     "eps": 6.59
   },
   "fullPeriod": {
     "start_date": "1970-01-02",
-    "end_date": "2026-10-19",
+    "end_date": "2026-10-20",
     "start_price": 0.3524,
-    "end_price": 253.79,
+    "end_price": 258.96,
     "years": 56.8,
-    "cagr": 12.28,
-    "multiple": 720.2
+    "cagr": 12.32,
+    "multiple": 734.9
   },
   "stats": {
     "n": 46,

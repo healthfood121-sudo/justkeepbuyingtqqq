@@ -1,0 +1,180 @@
+{
+  "ticker": "VEEV",
+  "name": "비바 시스템즈",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "",
+  "current": {
+    "price": 320.01,
+    "pe": 52.5,
+    "divYield": 0,
+    "eps": 6.1
+  },
+  "fullPeriod": {
+    "start_date": "2013-10-16",
+    "end_date": "2026-10-20",
+    "start_price": 37.16,
+    "end_price": 320.01,
+    "years": 13.0,
+    "cagr": 18.0,
+    "multiple": 8.6
+  },
+  "stats": {
+    "n": 3,
+    "min": 19.62,
+    "minBuy": "2013",
+    "median": 22.7,
+    "mean": 21.79,
+    "max": 23.05,
+    "maxBuy": "2014",
+    "over10": 100.0,
+    "over15": 100.0,
+    "over20": 66.7,
+    "losses": 0,
+    "beatBench": 3,
+    "beatTotal": 3
+  },
+  "rows10y": [
+    {
+      "buyYear": 2013,
+      "sellYear": 2023,
+      "sellDate": "2023-12-31",
+      "yearsActual": 10.0,
+      "cagr": 19.62,
+      "multiple": 6.0,
+      "isComplete": true,
+      "benchCagr": 12.03,
+      "diff": 7.59
+    },
+    {
+      "buyYear": 2014,
+      "sellYear": 2024,
+      "sellDate": "2024-12-31",
+      "yearsActual": 10.0,
+      "cagr": 23.05,
+      "multiple": 7.96,
+      "isComplete": true,
+      "benchCagr": 13.1,
+      "diff": 9.95
+    },
+    {
+      "buyYear": 2015,
+      "sellYear": 2025,
+      "sellDate": "2025-12-31",
+      "yearsActual": 10.0,
+      "cagr": 22.7,
+      "multiple": 7.74,
+      "isComplete": true,
+      "benchCagr": 14.82,
+      "diff": 7.88
+    },
+    {
+      "buyYear": 2016,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 9.8,
+      "cagr": 23.42,
+      "multiple": 7.86,
+      "isComplete": false,
+      "benchCagr": 15.01,
+      "diff": 8.4
+    },
+    {
+      "buyYear": 2017,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 8.8,
+      "cagr": 22.08,
+      "multiple": 5.79,
+      "isComplete": false,
+      "benchCagr": 14.28,
+      "diff": 7.8
+    },
+    {
+      "buyYear": 2018,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 7.8,
+      "cagr": 17.77,
+      "multiple": 3.58,
+      "isComplete": false,
+      "benchCagr": 16.85,
+      "diff": 0.91
+    },
+    {
+      "buyYear": 2019,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 6.8,
+      "cagr": 12.84,
+      "multiple": 2.28,
+      "isComplete": false,
+      "benchCagr": 14.9,
+      "diff": -2.06
+    },
+    {
+      "buyYear": 2020,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 5.8,
+      "cagr": 2.83,
+      "multiple": 1.18,
+      "isComplete": false,
+      "benchCagr": 14.33,
+      "diff": -11.51
+    },
+    {
+      "buyYear": 2021,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 4.8,
+      "cagr": 4.8,
+      "multiple": 1.25,
+      "isComplete": false,
+      "benchCagr": 11.65,
+      "diff": -6.85
+    },
+    {
+      "buyYear": 2022,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 3.8,
+      "cagr": 19.72,
+      "multiple": 1.98,
+      "isComplete": false,
+      "benchCagr": 20.65,
+      "diff": -0.92
+    },
+    {
+      "buyYear": 2023,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 2.8,
+      "cagr": 19.87,
+      "multiple": 1.66,
+      "isComplete": false,
+      "benchCagr": 18.82,
+      "diff": 1.05
+    },
+    {
+      "buyYear": 2024,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 1.8,
+      "cagr": 26.26,
+      "multiple": 1.52,
+      "isComplete": false,
+      "benchCagr": 15.85,
+      "diff": 10.41
+    }
+  ],
+  "loss5y": [
+    {
+      "buyYear": 2020,
+      "sellYear": 2025,
+      "cagr": -3.89
+    }
+  ],
+  "epsDecomp": [],
+  "epsNote": "EPS 데이터 미수집"
+}

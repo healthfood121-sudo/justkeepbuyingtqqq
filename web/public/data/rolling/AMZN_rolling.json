@@ -5,19 +5,19 @@
   "benchmark": "S&P 500",
   "note": "1997년 5월 상장. 분할 이력: 1998 2:1, 1999-01 3:1, 1999-09 2:1, 2022-06 20:1. 초기(2007~2014) EPS가 극히 낮거나 음수여서 해당 구간 EPS 분해 일부 생략.",
   "current": {
-    "price": 262.45,
-    "pe": 20.1,
+    "price": 263.09,
+    "pe": 21.2,
     "divYield": 0,
-    "eps": 13.05
+    "eps": 12.43
   },
   "fullPeriod": {
     "start_date": "1997-05-15",
-    "end_date": "2026-10-19",
+    "end_date": "2026-10-20",
     "start_price": 0.0979,
-    "end_price": 262.45,
+    "end_price": 263.07,
     "years": 29.4,
-    "cagr": 30.76,
-    "multiple": 2680.3
+    "cagr": 30.77,
+    "multiple": 2686.7
   },
   "stats": {
     "n": 19,

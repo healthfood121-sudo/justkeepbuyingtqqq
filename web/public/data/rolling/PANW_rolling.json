@@ -1,0 +1,185 @@
+{
+  "ticker": "PANW",
+  "name": "팔로알토 네트웍스",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "",
+  "current": {
+    "price": 341.23,
+    "pe": 853.1,
+    "divYield": 0,
+    "eps": 0.4
+  },
+  "fullPeriod": {
+    "start_date": "2012-07-20",
+    "end_date": "2026-10-20",
+    "start_price": 8.855,
+    "end_price": 341.16,
+    "years": 14.3,
+    "cagr": 29.2,
+    "multiple": 38.5
+  },
+  "stats": {
+    "n": 4,
+    "min": 20.16,
+    "minBuy": "2015",
+    "median": 23.64,
+    "mean": 24.72,
+    "max": 31.45,
+    "maxBuy": "2013",
+    "over10": 100.0,
+    "over15": 100.0,
+    "over20": 100.0,
+    "losses": 0,
+    "beatBench": 4,
+    "beatTotal": 4
+  },
+  "rows10y": [
+    {
+      "buyYear": 2012,
+      "sellYear": 2022,
+      "sellDate": "2022-12-31",
+      "yearsActual": 10.0,
+      "cagr": 22.84,
+      "multiple": 7.82,
+      "isComplete": true,
+      "benchCagr": 12.56,
+      "diff": 10.28
+    },
+    {
+      "buyYear": 2013,
+      "sellYear": 2023,
+      "sellDate": "2023-12-31",
+      "yearsActual": 10.0,
+      "cagr": 31.45,
+      "multiple": 15.39,
+      "isComplete": true,
+      "benchCagr": 12.03,
+      "diff": 19.41
+    },
+    {
+      "buyYear": 2014,
+      "sellYear": 2024,
+      "sellDate": "2024-12-31",
+      "yearsActual": 10.0,
+      "cagr": 24.44,
+      "multiple": 8.91,
+      "isComplete": true,
+      "benchCagr": 13.1,
+      "diff": 11.34
+    },
+    {
+      "buyYear": 2015,
+      "sellYear": 2025,
+      "sellDate": "2025-12-31",
+      "yearsActual": 10.0,
+      "cagr": 20.16,
+      "multiple": 6.27,
+      "isComplete": true,
+      "benchCagr": 14.82,
+      "diff": 5.34
+    },
+    {
+      "buyYear": 2016,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 9.8,
+      "cagr": 33.0,
+      "multiple": 16.37,
+      "isComplete": false,
+      "benchCagr": 15.01,
+      "diff": 17.99
+    },
+    {
+      "buyYear": 2017,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 8.8,
+      "cagr": 35.1,
+      "multiple": 14.12,
+      "isComplete": false,
+      "benchCagr": 14.27,
+      "diff": 20.82
+    },
+    {
+      "buyYear": 2018,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 7.8,
+      "cagr": 35.77,
+      "multiple": 10.87,
+      "isComplete": false,
+      "benchCagr": 16.85,
+      "diff": 18.92
+    },
+    {
+      "buyYear": 2019,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 6.8,
+      "cagr": 37.78,
+      "multiple": 8.85,
+      "isComplete": false,
+      "benchCagr": 14.89,
+      "diff": 22.89
+    },
+    {
+      "buyYear": 2020,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 5.8,
+      "cagr": 35.23,
+      "multiple": 5.76,
+      "isComplete": false,
+      "benchCagr": 14.32,
+      "diff": 20.91
+    },
+    {
+      "buyYear": 2021,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 4.8,
+      "cagr": 31.14,
+      "multiple": 3.68,
+      "isComplete": false,
+      "benchCagr": 11.64,
+      "diff": 19.5
+    },
+    {
+      "buyYear": 2022,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 3.8,
+      "cagr": 51.79,
+      "multiple": 4.89,
+      "isComplete": false,
+      "benchCagr": 20.64,
+      "diff": 31.16
+    },
+    {
+      "buyYear": 2023,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 2.8,
+      "cagr": 34.88,
+      "multiple": 2.31,
+      "isComplete": false,
+      "benchCagr": 18.8,
+      "diff": 16.08
+    },
+    {
+      "buyYear": 2024,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 1.8,
+      "cagr": 41.75,
+      "multiple": 1.87,
+      "isComplete": false,
+      "benchCagr": 15.83,
+      "diff": 25.92
+    }
+  ],
+  "loss5y": [],
+  "epsDecomp": [],
+  "epsNote": "EPS 데이터 미수집"
+}

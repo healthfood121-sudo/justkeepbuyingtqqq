@@ -5,19 +5,19 @@
   "benchmark": "S&P 500",
   "note": "",
   "current": {
-    "price": 342.94,
-    "pe": 39.3,
+    "price": 340.58,
+    "pe": 39.1,
     "divYield": 0.31,
     "eps": 8.72
   },
   "fullPeriod": {
     "start_date": "1980-12-12",
-    "end_date": "2026-10-19",
+    "end_date": "2026-10-20",
     "start_price": 0.0981,
-    "end_price": 342.94,
+    "end_price": 340.55,
     "years": 45.9,
-    "cagr": 19.48,
-    "multiple": 3495.0
+    "cagr": 19.46,
+    "multiple": 3470.7
   },
   "stats": {
     "n": 36,
