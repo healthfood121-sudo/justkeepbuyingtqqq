@@ -837,6 +837,9 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 | `data/rolling/V_10y_annual.csv` | `analyze_V.py` | V (비자) | 10년 연말 매수 롤링 (2008년부터) |
 | `data/rolling/V_5y_annual.csv` | `analyze_V.py` | V | 5년 연말 매수 롤링 |
 | `data/rolling/V_10y_monthly.csv` | `analyze_V.py` | V | 10년 월말 매수 롤링 |
+| `data/rolling/ORCL_10y_annual.csv` | `analyze_orcl.py` | ORCL (오라클) | 10년 연말 매수 롤링 (1986년부터) |
+| `data/rolling/ORCL_5y_annual.csv` | `analyze_orcl.py` | ORCL | 5년 연말 매수 롤링 |
+| `data/rolling/ORCL_10y_monthly.csv` | `analyze_orcl.py` | ORCL | 10년 월말 매수 롤링 |
 
 ### 롤링 JSON (export 스크립트 출력)
 
@@ -856,6 +859,7 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 | `web/public/data/rolling/JNJ_rolling.json` | ~60 KB | JNJ (존슨앤존슨) | EDGAR XBRL CIK 0000200406 (FY2007~2025), 2001년까지 128:1 분할 반영 완료 |
 | `web/public/data/rolling/JPM_rolling.json` | ~60 KB | JPM (JP모건 체이스) | EDGAR XBRL CIK 0000019617 (2007~2025) + AI 역산 추정 (2001~2006), 분할 없음 |
 | `web/public/data/rolling/V_rolling.json` | ~30 KB | V (비자) | EDGAR 10-K (FY2009~FY2014 분할 전 ÷4; FY2015~FY2025 분할 후), 2015-03-19 4:1 분할 |
+| `web/public/data/rolling/ORCL_rolling.json` | ~60 KB | ORCL (오라클) | EDGAR XBRL CIK 0001341439 (FY2008~FY2026) + 10-K 직접 파싱 (FY1997~FY2007); 분할 누적 48:1 (2000-01 마지막) |
 
 **JPM 파라미터:**
 - 매수 시작: 1980년 말 (Yahoo Finance 시작 시점)
@@ -903,5 +907,16 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 - S&P500 초과: 8/8개 (전 구간 시장 초과)
 - EPS 일회성 왜곡: FY2012(소송 충당금 $4.1B), FY2018(TCJA 세금 혜택), FY2020(COVID-19)
 - 분할 이력: 2015-03-19 4:1 (yfinance 자동 소급 조정)
+
+**ORCL 파라미터:**
+- 매수 시작: 1986년 말 (상장 첫 해)
+- 벤치마크: S&P 500 (^SP500TR)
+- 통화: USD
+- 완결 구간: 30개 (1986~2015 연말 매수), 중앙값 연평균 수익률 13.6%
+- 손실 구간: 1개 (1999년 말 매수, -1.2%)
+- S&P500 초과: 23/30개 (77%)
+- EPS 일회성 왜곡: FY2000(닷컴 버블 정점 EPS 급등), FY2001~2002(닷컴 붕괴), FY2018(TCJA), FY2022(Cerner 인수 PPA 상각)
+- 분할 이력: 1987·1989(×2)·1993·1996·2000 → 누적 48:1 (2000-01-18 이후 분할 없음)
+- 회계연도: 5월 31일 종료 (달력 연도 Y = FY(Y) EPS 기준)
 
 **사용처:** `/app/private` (개별 종목 10년 롤링 분석 페이지)

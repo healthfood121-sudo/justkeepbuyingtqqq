@@ -1859,4 +1859,117 @@ out_path_v = DST / "V_rolling.json"
 out_path_v.write_text(json.dumps(v_out, ensure_ascii=False, indent=2), encoding="utf-8")
 print(f"  저장 → {out_path_v}")
 
+# ── ORCL EPS 데이터 ───────────────────────────────────────────
+# 오라클 회계연도(FY) = 6월~5월 말 종료. 달력 연도 Y → FY(Y) EPS (Y년 5월 31일 종료) 사용.
+#
+# 분할 이력: 1987-10(2:1), 1989-01(2:1), 1989-09(2:1), 1993-10(3:2),
+#            1996-03(2:1), 2000-01(2:1) → 누적 48:1
+# 마지막 분할 2000-01-18 이후 추가 분할 없음.
+#
+# 출처별:
+#   FY1997~FY2001: Oracle FY2001 10-K (CIK 777676, 5년 요약) → 2000-01 분할까지 소급 반영 완료
+#   FY2002~FY2003: Oracle FY2003 10-K (CIK 777676, 3년 비교)
+#   FY2004~FY2005: Oracle FY2005 10-K (CIK 777676, 3년 비교)
+#   FY2006~FY2007: Oracle FY2007 10-K (CIK 1341439, 3년 비교)
+#   FY2008~FY2026: SEC EDGAR XBRL CIK 0001341439 (USD/shares, 10-K 최신 filed 기준)
+#
+# 주요 EPS 왜곡 연도:
+#   FY2000: 닷컴 버블 정점 — 소프트웨어 수요 폭증(EPS 1.05, 이후 급락)
+#   FY2001: 닷컴 버블 붕괴 + IT 예산 급감(EPS 0.44로 급락)
+#   FY2002: IT 경기침체 지속(EPS 0.39)
+#   FY2018: 세금개혁(TCJA) 일회성 세금 비용 — EPS 0.85 (정상 기준 ~2.2 수준)
+#   FY2022: Cerner 인수 완료 + PPA 상각·구조조정 비용 — EPS 2.41 (vs FY2021 4.55)
+_ORCL_EPS = {
+    # FY1997~FY2001: Oracle FY2001 10-K 5년 요약 (2000-01 분할까지 소급 반영)
+    1997: 0.14,
+    1998: 0.14,
+    1999: 0.22,
+    2000: 1.05,
+    2001: 0.44,
+    # FY2002~FY2003: Oracle FY2003 10-K
+    2002: 0.39,
+    2003: 0.43,
+    # FY2004~FY2005: Oracle FY2005 10-K
+    2004: 0.50,
+    2005: 0.55,
+    # FY2006~FY2007: Oracle FY2007 10-K (CIK 1341439)
+    2006: 0.64,
+    2007: 0.81,
+    # FY2008~FY2026: SEC EDGAR XBRL CIK 0001341439 (USD/shares)
+    2008: 1.06,
+    2009: 1.09,
+    2010: 1.21,
+    2011: 1.67,
+    2012: 1.96,
+    2013: 2.26,
+    2014: 2.38,
+    2015: 2.21,
+    2016: 2.07,
+    2017: 2.24,
+    2018: 0.85,
+    2019: 2.97,
+    2020: 3.08,
+    2021: 4.55,
+    2022: 2.41,
+    2023: 3.07,
+    2024: 3.71,
+    2025: 4.34,
+    2026: 5.83,
+}
+_ORCL_ONE_TIME = {
+    2000: "닷컴 버블 정점 — 소프트웨어 수요 폭증(EPS 1.05, 이후 급락)",
+    2001: "닷컴 버블 붕괴 + IT 예산 급감(EPS 0.44)",
+    2002: "IT 경기침체 지속(EPS 0.39)",
+    2018: "세금개혁(TCJA) 일회성 세금 비용(EPS 0.85, 정상 기준 ~2.2 수준)",
+    2022: "Cerner 인수 완료 + PPA 상각·구조조정 비용(EPS 2.41 vs FY2021 4.55)",
+}
+
+# ── ORCL ──────────────────────────────────────────────────────
+print("[ORCL] 데이터 로드...")
+az_orcl = RollingAnalyzer("ORCL", benchmark="^SP500TR")
+df10a_orcl = pd.read_csv(SRC / "ORCL_10y_annual.csv", parse_dates=["buy_date","sell_date"])
+df5a_orcl  = pd.read_csv(SRC / "ORCL_5y_annual.csv",  parse_dates=["buy_date","sell_date"])
+fp_orcl = az_orcl.full_period()
+st_orcl = summary_stats(df10a_orcl, label="ORCL")
+
+loss5_orcl = df5a_orcl[df5a_orcl["is_complete"] & (df5a_orcl["cagr"] < 0)]
+orcl_metrics = get_metrics("ORCL")
+print(f"  ORCL:  {orcl_metrics}")
+
+orcl_out = {
+    "ticker":    "ORCL",
+    "name":      "오라클",
+    "currency":  "USD",
+    "benchmark": "S&P 500",
+    "note":      "1986년 3월 상장. 분할 이력: 1987·1989(×2)·1993·1996·2000 → 누적 48:1. 마지막 분할 2000-01-18 이후 추가 분할 없음.",
+    "current":   orcl_metrics,
+    "fullPeriod": fp_orcl,
+    "stats": {
+        "n":        st_orcl["n_complete"],
+        "min":      st_orcl["min_cagr"],
+        "minBuy":   st_orcl["min_buy"],
+        "median":   st_orcl["median_cagr"],
+        "mean":     st_orcl["mean_cagr"],
+        "max":      st_orcl["max_cagr"],
+        "maxBuy":   st_orcl["max_buy"],
+        "over10":   st_orcl["pct_over_10"],
+        "over15":   st_orcl["pct_over_15"],
+        "over20":   st_orcl["pct_over_20"],
+        "losses":   st_orcl["n_losses"],
+        "beatBench":  st_orcl.get("n_beat_bench"),
+        "beatTotal":  st_orcl.get("n_beat_bench_total"),
+    },
+    "rows10y": df_to_rows(df10a_orcl, _ORCL_EPS),
+    "loss5y": [
+        {"buyYear": int(r["buy_date"].year), "sellYear": int(r["sell_date"].year), "cagr": float(r["cagr"])}
+        for _, r in loss5_orcl.iterrows()
+    ],
+    "epsDecomp": compute_eps_decomp(df10a_orcl, _ORCL_EPS, _ORCL_ONE_TIME),
+    "epsNote": "EPS 출처: FY1997~FY2007 Oracle 10-K (EDGAR, CIK 0000777676 / 0001341439), FY2008~FY2026 SEC EDGAR XBRL (USD/shares). 분할 이력: 1987·1989(×2)·1993·1996·2000, 누적 48:1. FY2001 10-K 5년 요약 기준으로 2000-01 분할까지 소급 반영 완료. PER은 Yahoo Finance 배당조정 종가 기준.",
+}
+
+out_path_orcl = DST / "ORCL_rolling.json"
+out_path_orcl.write_text(json.dumps(orcl_out, ensure_ascii=False, indent=2), encoding="utf-8")
+print(f"  저장 → {out_path_orcl}")
+
 print("\n[완료]")

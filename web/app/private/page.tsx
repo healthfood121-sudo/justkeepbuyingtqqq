@@ -29,6 +29,7 @@ import vData     from '@/public/data/rolling/V_rolling.json'
 import qqqData   from '@/public/data/rolling/QQQ_rolling.json'
 import qldData   from '@/public/data/rolling/QLD_rolling.json'
 import tqqqData  from '@/public/data/rolling/TQQQ_rolling.json'
+import orclData  from '@/public/data/rolling/ORCL_rolling.json'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Tooltip, Legend)
 
@@ -38,6 +39,7 @@ const STOCKS: Array<{ key: string; data: StockData }> = [
   { key: 'QQQ',   data: qqqData   as unknown as StockData },
   { key: 'QLD',   data: qldData   as unknown as StockData },
   { key: 'TQQQ',  data: tqqqData  as unknown as StockData },
+  { key: 'ORCL',  data: orclData  as StockData },
   { key: 'MSFT',  data: msftData  as StockData },
   { key: 'AAPL',  data: aaplData  as StockData },
   { key: 'NVDA',  data: nvdaData  as StockData },
