@@ -652,8 +652,18 @@ function OverviewTable({
                 }`}
               >
                 <td className="py-3 pr-4">
-                  <span className="font-semibold text-gray-900 dark:text-white">{s.data.ticker}</span>
-                  <span className="ml-1.5 text-xs text-gray-400 dark:text-gray-500">{s.data.name}</span>
+                  <div className="group/name relative inline-flex items-baseline gap-1.5 max-w-[140px]">
+                    <span className="font-semibold text-gray-900 dark:text-white whitespace-nowrap">{s.data.ticker}</span>
+                    <span className="text-xs text-gray-400 dark:text-gray-500 truncate">{s.data.name}</span>
+                    <div className="absolute bottom-full left-0 mb-1.5 z-50
+                                    invisible group-hover/name:visible opacity-0 group-hover/name:opacity-100
+                                    transition-opacity duration-150 pointer-events-none
+                                    bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-md px-2.5 py-1.5
+                                    whitespace-nowrap shadow-lg">
+                      {s.data.name}
+                      <div className="absolute top-full left-4 border-4 border-transparent border-t-gray-900 dark:border-t-gray-700" />
+                    </div>
+                  </div>
                 </td>
                 {/* 절대 수익률 */}
                 <td className="py-3 px-3">
