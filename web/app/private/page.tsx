@@ -8,536 +8,908 @@ import {
   Tooltip, Legend,
 } from 'chart.js'
 import { Chart } from 'react-chartjs-2'
-import qldData      from '@/public/data/rolling/QLD_rolling.json'
-import qqqData      from '@/public/data/rolling/QQQ_rolling.json'
-import tqqqData     from '@/public/data/rolling/TQQQ_rolling.json'
-import aData        from '@/public/data/rolling/A_rolling.json'
-import aaplData     from '@/public/data/rolling/AAPL_rolling.json'
-import abbvData     from '@/public/data/rolling/ABBV_rolling.json'
-import abtData      from '@/public/data/rolling/ABT_rolling.json'
-import acnData      from '@/public/data/rolling/ACN_rolling.json'
-import adbeData     from '@/public/data/rolling/ADBE_rolling.json'
-import adiData      from '@/public/data/rolling/ADI_rolling.json'
-import admData      from '@/public/data/rolling/ADM_rolling.json'
-import adpData      from '@/public/data/rolling/ADP_rolling.json'
-import adskData     from '@/public/data/rolling/ADSK_rolling.json'
-import aflData      from '@/public/data/rolling/AFL_rolling.json'
-import aigData      from '@/public/data/rolling/AIG_rolling.json'
-import ajgData      from '@/public/data/rolling/AJG_rolling.json'
-import albData      from '@/public/data/rolling/ALB_rolling.json'
-import allData      from '@/public/data/rolling/ALL_rolling.json'
-import amatData     from '@/public/data/rolling/AMAT_rolling.json'
-import amdData      from '@/public/data/rolling/AMD_rolling.json'
-import ameData      from '@/public/data/rolling/AME_rolling.json'
-import amgnData     from '@/public/data/rolling/AMGN_rolling.json'
-import ampData      from '@/public/data/rolling/AMP_rolling.json'
-import amtData      from '@/public/data/rolling/AMT_rolling.json'
-import amznData     from '@/public/data/rolling/AMZN_rolling.json'
-import anetData     from '@/public/data/rolling/ANET_rolling.json'
-import aonData      from '@/public/data/rolling/AON_rolling.json'
-import apdData      from '@/public/data/rolling/APD_rolling.json'
-import aphData      from '@/public/data/rolling/APH_rolling.json'
-import avgoData     from '@/public/data/rolling/AVGO_rolling.json'
-import axonData     from '@/public/data/rolling/AXON_rolling.json'
-import axpData      from '@/public/data/rolling/AXP_rolling.json'
-import azoData      from '@/public/data/rolling/AZO_rolling.json'
-import baData       from '@/public/data/rolling/BA_rolling.json'
-import bacData      from '@/public/data/rolling/BAC_rolling.json'
-import bbyData      from '@/public/data/rolling/BBY_rolling.json'
-import bdxData      from '@/public/data/rolling/BDX_rolling.json'
-import biibData     from '@/public/data/rolling/BIIB_rolling.json'
-import bkngData     from '@/public/data/rolling/BKNG_rolling.json'
-import blkData      from '@/public/data/rolling/BLK_rolling.json'
-import bmyData      from '@/public/data/rolling/BMY_rolling.json'
-import bnyData      from '@/public/data/rolling/BNY_rolling.json'
-import brkbData     from '@/public/data/rolling/BRKB_rolling.json'
-import bsxData      from '@/public/data/rolling/BSX_rolling.json'
-import bxData       from '@/public/data/rolling/BX_rolling.json'
-import cData        from '@/public/data/rolling/C_rolling.json'
-import cahData      from '@/public/data/rolling/CAH_rolling.json'
-import catData      from '@/public/data/rolling/CAT_rolling.json'
-import cbData       from '@/public/data/rolling/CB_rolling.json'
-import cbreData     from '@/public/data/rolling/CBRE_rolling.json'
-import cdnsData     from '@/public/data/rolling/CDNS_rolling.json'
-import cfgData      from '@/public/data/rolling/CFG_rolling.json'
-import chtrData     from '@/public/data/rolling/CHTR_rolling.json'
-import ciData       from '@/public/data/rolling/CI_rolling.json'
-import clData       from '@/public/data/rolling/CL_rolling.json'
-import cmcsaData    from '@/public/data/rolling/CMCSA_rolling.json'
-import cmeData      from '@/public/data/rolling/CME_rolling.json'
-import cmgData      from '@/public/data/rolling/CMG_rolling.json'
-import cmiData      from '@/public/data/rolling/CMI_rolling.json'
-import cncData      from '@/public/data/rolling/CNC_rolling.json'
-import cofData      from '@/public/data/rolling/COF_rolling.json'
-import copData      from '@/public/data/rolling/COP_rolling.json'
-import corData      from '@/public/data/rolling/COR_rolling.json'
-import costData     from '@/public/data/rolling/COST_rolling.json'
-import cprtData     from '@/public/data/rolling/CPRT_rolling.json'
-import crmData      from '@/public/data/rolling/CRM_rolling.json'
-import cscoData     from '@/public/data/rolling/CSCO_rolling.json'
-import csxData      from '@/public/data/rolling/CSX_rolling.json'
-import ctasData     from '@/public/data/rolling/CTAS_rolling.json'
-import ctshData     from '@/public/data/rolling/CTSH_rolling.json'
-import cvsData      from '@/public/data/rolling/CVS_rolling.json'
-import cvxData      from '@/public/data/rolling/CVX_rolling.json'
-import dData        from '@/public/data/rolling/D_rolling.json'
-import dalData      from '@/public/data/rolling/DAL_rolling.json'
-import deData       from '@/public/data/rolling/DE_rolling.json'
-import dgData       from '@/public/data/rolling/DG_rolling.json'
-import dhiData      from '@/public/data/rolling/DHI_rolling.json'
-import dhrData      from '@/public/data/rolling/DHR_rolling.json'
-import disData      from '@/public/data/rolling/DIS_rolling.json'
-import dlrData      from '@/public/data/rolling/DLR_rolling.json'
-import dukData      from '@/public/data/rolling/DUK_rolling.json'
-import eclData      from '@/public/data/rolling/ECL_rolling.json'
-import edData       from '@/public/data/rolling/ED_rolling.json'
-import efxData      from '@/public/data/rolling/EFX_rolling.json'
-import eixData      from '@/public/data/rolling/EIX_rolling.json'
-import elvData      from '@/public/data/rolling/ELV_rolling.json'
-import emeData      from '@/public/data/rolling/EME_rolling.json'
-import emrData      from '@/public/data/rolling/EMR_rolling.json'
-import eogData      from '@/public/data/rolling/EOG_rolling.json'
-import eqixData     from '@/public/data/rolling/EQIX_rolling.json'
-import etnData      from '@/public/data/rolling/ETN_rolling.json'
-import ewData       from '@/public/data/rolling/EW_rolling.json'
-import excData      from '@/public/data/rolling/EXC_rolling.json'
-import fData        from '@/public/data/rolling/F_rolling.json'
-import fangData     from '@/public/data/rolling/FANG_rolling.json'
-import fastData     from '@/public/data/rolling/FAST_rolling.json'
-import fcxData      from '@/public/data/rolling/FCX_rolling.json'
-import fdxData      from '@/public/data/rolling/FDX_rolling.json'
-import ficoData     from '@/public/data/rolling/FICO_rolling.json'
-import fisData      from '@/public/data/rolling/FIS_rolling.json'
-import fisvData     from '@/public/data/rolling/FISV_rolling.json'
-import fitbData     from '@/public/data/rolling/FITB_rolling.json'
-import fslrData     from '@/public/data/rolling/FSLR_rolling.json'
-import ftntData     from '@/public/data/rolling/FTNT_rolling.json'
-import gdData       from '@/public/data/rolling/GD_rolling.json'
-import gddyData     from '@/public/data/rolling/GDDY_rolling.json'
-import gildData     from '@/public/data/rolling/GILD_rolling.json'
-import glwData      from '@/public/data/rolling/GLW_rolling.json'
-import gmData       from '@/public/data/rolling/GM_rolling.json'
-import googlData    from '@/public/data/rolling/GOOGL_rolling.json'
-import grmnData     from '@/public/data/rolling/GRMN_rolling.json'
-import gsData       from '@/public/data/rolling/GS_rolling.json'
-import gwwData      from '@/public/data/rolling/GWW_rolling.json'
-import halData      from '@/public/data/rolling/HAL_rolling.json'
-import hcaData      from '@/public/data/rolling/HCA_rolling.json'
-import hdData       from '@/public/data/rolling/HD_rolling.json'
-import hltData      from '@/public/data/rolling/HLT_rolling.json'
-import honData      from '@/public/data/rolling/HON_rolling.json'
-import hpqData      from '@/public/data/rolling/HPQ_rolling.json'
-import hsyData      from '@/public/data/rolling/HSY_rolling.json'
-import humData      from '@/public/data/rolling/HUM_rolling.json'
-import ibmData      from '@/public/data/rolling/IBM_rolling.json'
-import iceData      from '@/public/data/rolling/ICE_rolling.json'
-import idxxData     from '@/public/data/rolling/IDXX_rolling.json'
-import intcData     from '@/public/data/rolling/INTC_rolling.json'
-import intuData     from '@/public/data/rolling/INTU_rolling.json'
-import isrgData     from '@/public/data/rolling/ISRG_rolling.json'
-import itwData      from '@/public/data/rolling/ITW_rolling.json'
-import jciData      from '@/public/data/rolling/JCI_rolling.json'
-import jnjData      from '@/public/data/rolling/JNJ_rolling.json'
-import jpmData      from '@/public/data/rolling/JPM_rolling.json'
-import keysData     from '@/public/data/rolling/KEYS_rolling.json'
-import kkrData      from '@/public/data/rolling/KKR_rolling.json'
-import klacData     from '@/public/data/rolling/KLAC_rolling.json'
-import kmiData      from '@/public/data/rolling/KMI_rolling.json'
-import koData       from '@/public/data/rolling/KO_rolling.json'
-import krData       from '@/public/data/rolling/KR_rolling.json'
-import lhData       from '@/public/data/rolling/LH_rolling.json'
-import llyData      from '@/public/data/rolling/LLY_rolling.json'
-import lmtData      from '@/public/data/rolling/LMT_rolling.json'
-import lowData      from '@/public/data/rolling/LOW_rolling.json'
-import lrcxData     from '@/public/data/rolling/LRCX_rolling.json'
-import luluData     from '@/public/data/rolling/LULU_rolling.json'
-import maData       from '@/public/data/rolling/MA_rolling.json'
-import marData      from '@/public/data/rolling/MAR_rolling.json'
-import mcdData      from '@/public/data/rolling/MCD_rolling.json'
-import mchpData     from '@/public/data/rolling/MCHP_rolling.json'
-import mckData      from '@/public/data/rolling/MCK_rolling.json'
-import mcoData      from '@/public/data/rolling/MCO_rolling.json'
-import mdlzData     from '@/public/data/rolling/MDLZ_rolling.json'
-import mdtData      from '@/public/data/rolling/MDT_rolling.json'
-import metData      from '@/public/data/rolling/MET_rolling.json'
-import metaData     from '@/public/data/rolling/META_rolling.json'
-import mmmData      from '@/public/data/rolling/MMM_rolling.json'
-import mnstData     from '@/public/data/rolling/MNST_rolling.json'
-import moData       from '@/public/data/rolling/MO_rolling.json'
-import mpcData      from '@/public/data/rolling/MPC_rolling.json'
-import mpwrData     from '@/public/data/rolling/MPWR_rolling.json'
-import mrkData      from '@/public/data/rolling/MRK_rolling.json'
-import mrvlData     from '@/public/data/rolling/MRVL_rolling.json'
-import msData       from '@/public/data/rolling/MS_rolling.json'
-import msciData     from '@/public/data/rolling/MSCI_rolling.json'
-import msftData     from '@/public/data/rolling/MSFT_rolling.json'
-import msiData      from '@/public/data/rolling/MSI_rolling.json'
-import muData       from '@/public/data/rolling/MU_rolling.json'
-import ndaqData     from '@/public/data/rolling/NDAQ_rolling.json'
-import ndsnData     from '@/public/data/rolling/NDSN_rolling.json'
-import neeData      from '@/public/data/rolling/NEE_rolling.json'
-import nemData      from '@/public/data/rolling/NEM_rolling.json'
-import nflxData     from '@/public/data/rolling/NFLX_rolling.json'
-import nkeData      from '@/public/data/rolling/NKE_rolling.json'
-import nocData      from '@/public/data/rolling/NOC_rolling.json'
-import nowData      from '@/public/data/rolling/NOW_rolling.json'
-import nscData      from '@/public/data/rolling/NSC_rolling.json'
-import nueData      from '@/public/data/rolling/NUE_rolling.json'
-import nvdaData     from '@/public/data/rolling/NVDA_rolling.json'
-import nxpiData     from '@/public/data/rolling/NXPI_rolling.json'
-import oData        from '@/public/data/rolling/O_rolling.json'
-import odflData     from '@/public/data/rolling/ODFL_rolling.json'
-import okeData      from '@/public/data/rolling/OKE_rolling.json'
-import orclData     from '@/public/data/rolling/ORCL_rolling.json'
-import orlyData     from '@/public/data/rolling/ORLY_rolling.json'
-import oxyData      from '@/public/data/rolling/OXY_rolling.json'
-import panwData     from '@/public/data/rolling/PANW_rolling.json'
-import payxData     from '@/public/data/rolling/PAYX_rolling.json'
-import pcarData     from '@/public/data/rolling/PCAR_rolling.json'
-import pepData      from '@/public/data/rolling/PEP_rolling.json'
-import pfeData      from '@/public/data/rolling/PFE_rolling.json'
-import pgData       from '@/public/data/rolling/PG_rolling.json'
-import pgrData      from '@/public/data/rolling/PGR_rolling.json'
-import phData       from '@/public/data/rolling/PH_rolling.json'
-import pldData      from '@/public/data/rolling/PLD_rolling.json'
-import pmData       from '@/public/data/rolling/PM_rolling.json'
-import pncData      from '@/public/data/rolling/PNC_rolling.json'
-import ppgData      from '@/public/data/rolling/PPG_rolling.json'
-import pruData      from '@/public/data/rolling/PRU_rolling.json'
-import psaData      from '@/public/data/rolling/PSA_rolling.json'
-import psxData      from '@/public/data/rolling/PSX_rolling.json'
-import pwrData      from '@/public/data/rolling/PWR_rolling.json'
-import pyplData     from '@/public/data/rolling/PYPL_rolling.json'
-import qcomData     from '@/public/data/rolling/QCOM_rolling.json'
-import rclData      from '@/public/data/rolling/RCL_rolling.json'
-import regnData     from '@/public/data/rolling/REGN_rolling.json'
-import rmdData      from '@/public/data/rolling/RMD_rolling.json'
-import rmsData      from '@/public/data/rolling/RMS_rolling.json'
-import rokData      from '@/public/data/rolling/ROK_rolling.json'
-import rolData      from '@/public/data/rolling/ROL_rolling.json'
-import rostData     from '@/public/data/rolling/ROST_rolling.json'
-import rsgData      from '@/public/data/rolling/RSG_rolling.json'
-import sbuxData     from '@/public/data/rolling/SBUX_rolling.json'
-import schwData     from '@/public/data/rolling/SCHW_rolling.json'
-import shwData      from '@/public/data/rolling/SHW_rolling.json'
-import slbData      from '@/public/data/rolling/SLB_rolling.json'
-import smciData     from '@/public/data/rolling/SMCI_rolling.json'
-import snpsData     from '@/public/data/rolling/SNPS_rolling.json'
-import soData       from '@/public/data/rolling/SO_rolling.json'
-import spgData      from '@/public/data/rolling/SPG_rolling.json'
-import spgiData     from '@/public/data/rolling/SPGI_rolling.json'
-import sreData      from '@/public/data/rolling/SRE_rolling.json'
-import sttData      from '@/public/data/rolling/STT_rolling.json'
-import stxData      from '@/public/data/rolling/STX_rolling.json'
-import sykData      from '@/public/data/rolling/SYK_rolling.json'
-import syyData      from '@/public/data/rolling/SYY_rolling.json'
-import tData        from '@/public/data/rolling/T_rolling.json'
-import tdgData      from '@/public/data/rolling/TDG_rolling.json'
-import telData      from '@/public/data/rolling/TEL_rolling.json'
-import terData      from '@/public/data/rolling/TER_rolling.json'
-import tgtData      from '@/public/data/rolling/TGT_rolling.json'
-import tjxData      from '@/public/data/rolling/TJX_rolling.json'
-import tmoData      from '@/public/data/rolling/TMO_rolling.json'
-import tmusData     from '@/public/data/rolling/TMUS_rolling.json'
-import trgpData     from '@/public/data/rolling/TRGP_rolling.json'
-import trowData     from '@/public/data/rolling/TROW_rolling.json'
-import trvData      from '@/public/data/rolling/TRV_rolling.json'
-import tslaData     from '@/public/data/rolling/TSLA_rolling.json'
-import ttData       from '@/public/data/rolling/TT_rolling.json'
-import txnData      from '@/public/data/rolling/TXN_rolling.json'
-import unhData      from '@/public/data/rolling/UNH_rolling.json'
-import unpData      from '@/public/data/rolling/UNP_rolling.json'
-import upsData      from '@/public/data/rolling/UPS_rolling.json'
-import uriData      from '@/public/data/rolling/URI_rolling.json'
-import usbData      from '@/public/data/rolling/USB_rolling.json'
-import vData        from '@/public/data/rolling/V_rolling.json'
-import veevData     from '@/public/data/rolling/VEEV_rolling.json'
-import vloData      from '@/public/data/rolling/VLO_rolling.json'
-import vrskData     from '@/public/data/rolling/VRSK_rolling.json'
-import vrsnData     from '@/public/data/rolling/VRSN_rolling.json'
-import vrtxData     from '@/public/data/rolling/VRTX_rolling.json'
-import vzData       from '@/public/data/rolling/VZ_rolling.json'
-import wabData      from '@/public/data/rolling/WAB_rolling.json'
-import wdayData     from '@/public/data/rolling/WDAY_rolling.json'
-import wdcData      from '@/public/data/rolling/WDC_rolling.json'
-import wellData     from '@/public/data/rolling/WELL_rolling.json'
-import wfcData      from '@/public/data/rolling/WFC_rolling.json'
-import wmData       from '@/public/data/rolling/WM_rolling.json'
-import wmbData      from '@/public/data/rolling/WMB_rolling.json'
-import wmtData      from '@/public/data/rolling/WMT_rolling.json'
-import wtwData      from '@/public/data/rolling/WTW_rolling.json'
-import xelData      from '@/public/data/rolling/XEL_rolling.json'
-import xomData      from '@/public/data/rolling/XOM_rolling.json'
-import yumData      from '@/public/data/rolling/YUM_rolling.json'
-import ztsData      from '@/public/data/rolling/ZTS_rolling.json'
+import qldData        from '@/public/data/rolling/QLD_rolling.json'
+import qqqData        from '@/public/data/rolling/QQQ_rolling.json'
+import tqqqData       from '@/public/data/rolling/TQQQ_rolling.json'
+import aData          from '@/public/data/rolling/A_rolling.json'
+import aaplData       from '@/public/data/rolling/AAPL_rolling.json'
+import abbvData       from '@/public/data/rolling/ABBV_rolling.json'
+import abtData        from '@/public/data/rolling/ABT_rolling.json'
+import acglData       from '@/public/data/rolling/ACGL_rolling.json'
+import acnData        from '@/public/data/rolling/ACN_rolling.json'
+import adbeData       from '@/public/data/rolling/ADBE_rolling.json'
+import adiData        from '@/public/data/rolling/ADI_rolling.json'
+import admData        from '@/public/data/rolling/ADM_rolling.json'
+import adpData        from '@/public/data/rolling/ADP_rolling.json'
+import adskData       from '@/public/data/rolling/ADSK_rolling.json'
+import aeeData        from '@/public/data/rolling/AEE_rolling.json'
+import aepData        from '@/public/data/rolling/AEP_rolling.json'
+import aesData        from '@/public/data/rolling/AES_rolling.json'
+import aflData        from '@/public/data/rolling/AFL_rolling.json'
+import aigData        from '@/public/data/rolling/AIG_rolling.json'
+import aizData        from '@/public/data/rolling/AIZ_rolling.json'
+import ajgData        from '@/public/data/rolling/AJG_rolling.json'
+import akamData       from '@/public/data/rolling/AKAM_rolling.json'
+import albData        from '@/public/data/rolling/ALB_rolling.json'
+import algnData       from '@/public/data/rolling/ALGN_rolling.json'
+import allData        from '@/public/data/rolling/ALL_rolling.json'
+import alleData       from '@/public/data/rolling/ALLE_rolling.json'
+import amatData       from '@/public/data/rolling/AMAT_rolling.json'
+import amcrData       from '@/public/data/rolling/AMCR_rolling.json'
+import amdData        from '@/public/data/rolling/AMD_rolling.json'
+import ameData        from '@/public/data/rolling/AME_rolling.json'
+import amgnData       from '@/public/data/rolling/AMGN_rolling.json'
+import ampData        from '@/public/data/rolling/AMP_rolling.json'
+import amtData        from '@/public/data/rolling/AMT_rolling.json'
+import amznData       from '@/public/data/rolling/AMZN_rolling.json'
+import anetData       from '@/public/data/rolling/ANET_rolling.json'
+import aonData        from '@/public/data/rolling/AON_rolling.json'
+import aosData        from '@/public/data/rolling/AOS_rolling.json'
+import apaData        from '@/public/data/rolling/APA_rolling.json'
+import apdData        from '@/public/data/rolling/APD_rolling.json'
+import aphData        from '@/public/data/rolling/APH_rolling.json'
+import apoData        from '@/public/data/rolling/APO_rolling.json'
+import aptvData       from '@/public/data/rolling/APTV_rolling.json'
+import areData        from '@/public/data/rolling/ARE_rolling.json'
+import aresData       from '@/public/data/rolling/ARES_rolling.json'
+import atoData        from '@/public/data/rolling/ATO_rolling.json'
+import avgoData       from '@/public/data/rolling/AVGO_rolling.json'
+import avyData        from '@/public/data/rolling/AVY_rolling.json'
+import awkData        from '@/public/data/rolling/AWK_rolling.json'
+import axonData       from '@/public/data/rolling/AXON_rolling.json'
+import axpData        from '@/public/data/rolling/AXP_rolling.json'
+import azoData        from '@/public/data/rolling/AZO_rolling.json'
+import baData         from '@/public/data/rolling/BA_rolling.json'
+import bacData        from '@/public/data/rolling/BAC_rolling.json'
+import ballData       from '@/public/data/rolling/BALL_rolling.json'
+import baxData        from '@/public/data/rolling/BAX_rolling.json'
+import bbyData        from '@/public/data/rolling/BBY_rolling.json'
+import bdxData        from '@/public/data/rolling/BDX_rolling.json'
+import benData        from '@/public/data/rolling/BEN_rolling.json'
+import bfbData        from '@/public/data/rolling/BF-B_rolling.json'
+import bgData         from '@/public/data/rolling/BG_rolling.json'
+import biibData       from '@/public/data/rolling/BIIB_rolling.json'
+import bkngData       from '@/public/data/rolling/BKNG_rolling.json'
+import bkrData        from '@/public/data/rolling/BKR_rolling.json'
+import blkData        from '@/public/data/rolling/BLK_rolling.json'
+import bmyData        from '@/public/data/rolling/BMY_rolling.json'
+import bnyData        from '@/public/data/rolling/BNY_rolling.json'
+import brData         from '@/public/data/rolling/BR_rolling.json'
+import brkbData       from '@/public/data/rolling/BRKB_rolling.json'
+import broData        from '@/public/data/rolling/BRO_rolling.json'
+import bsxData        from '@/public/data/rolling/BSX_rolling.json'
+import bxData         from '@/public/data/rolling/BX_rolling.json'
+import bxpData        from '@/public/data/rolling/BXP_rolling.json'
+import cData          from '@/public/data/rolling/C_rolling.json'
+import cahData        from '@/public/data/rolling/CAH_rolling.json'
+import casyData       from '@/public/data/rolling/CASY_rolling.json'
+import catData        from '@/public/data/rolling/CAT_rolling.json'
+import cbData         from '@/public/data/rolling/CB_rolling.json'
+import cboeData       from '@/public/data/rolling/CBOE_rolling.json'
+import cbreData       from '@/public/data/rolling/CBRE_rolling.json'
+import cciData        from '@/public/data/rolling/CCI_rolling.json'
+import cclData        from '@/public/data/rolling/CCL_rolling.json'
+import cdnsData       from '@/public/data/rolling/CDNS_rolling.json'
+import cdwData        from '@/public/data/rolling/CDW_rolling.json'
+import cfData         from '@/public/data/rolling/CF_rolling.json'
+import cfgData        from '@/public/data/rolling/CFG_rolling.json'
+import chdData        from '@/public/data/rolling/CHD_rolling.json'
+import chrwData       from '@/public/data/rolling/CHRW_rolling.json'
+import chtrData       from '@/public/data/rolling/CHTR_rolling.json'
+import ciData         from '@/public/data/rolling/CI_rolling.json'
+import cienData       from '@/public/data/rolling/CIEN_rolling.json'
+import cinfData       from '@/public/data/rolling/CINF_rolling.json'
+import clData         from '@/public/data/rolling/CL_rolling.json'
+import clxData        from '@/public/data/rolling/CLX_rolling.json'
+import cmcsaData      from '@/public/data/rolling/CMCSA_rolling.json'
+import cmeData        from '@/public/data/rolling/CME_rolling.json'
+import cmgData        from '@/public/data/rolling/CMG_rolling.json'
+import cmiData        from '@/public/data/rolling/CMI_rolling.json'
+import cmsData        from '@/public/data/rolling/CMS_rolling.json'
+import cncData        from '@/public/data/rolling/CNC_rolling.json'
+import cnpData        from '@/public/data/rolling/CNP_rolling.json'
+import cofData        from '@/public/data/rolling/COF_rolling.json'
+import cooData        from '@/public/data/rolling/COO_rolling.json'
+import copData        from '@/public/data/rolling/COP_rolling.json'
+import corData        from '@/public/data/rolling/COR_rolling.json'
+import costData       from '@/public/data/rolling/COST_rolling.json'
+import cpayData       from '@/public/data/rolling/CPAY_rolling.json'
+import cprtData       from '@/public/data/rolling/CPRT_rolling.json'
+import cptData        from '@/public/data/rolling/CPT_rolling.json'
+import crlData        from '@/public/data/rolling/CRL_rolling.json'
+import crmData        from '@/public/data/rolling/CRM_rolling.json'
+import cscoData       from '@/public/data/rolling/CSCO_rolling.json'
+import csgpData       from '@/public/data/rolling/CSGP_rolling.json'
+import csxData        from '@/public/data/rolling/CSX_rolling.json'
+import ctasData       from '@/public/data/rolling/CTAS_rolling.json'
+import ctshData       from '@/public/data/rolling/CTSH_rolling.json'
+import cvsData        from '@/public/data/rolling/CVS_rolling.json'
+import cvxData        from '@/public/data/rolling/CVX_rolling.json'
+import dData          from '@/public/data/rolling/D_rolling.json'
+import dalData        from '@/public/data/rolling/DAL_rolling.json'
+import ddData         from '@/public/data/rolling/DD_rolling.json'
+import deData         from '@/public/data/rolling/DE_rolling.json'
+import deckData       from '@/public/data/rolling/DECK_rolling.json'
+import dgData         from '@/public/data/rolling/DG_rolling.json'
+import dgxData        from '@/public/data/rolling/DGX_rolling.json'
+import dhiData        from '@/public/data/rolling/DHI_rolling.json'
+import dhrData        from '@/public/data/rolling/DHR_rolling.json'
+import disData        from '@/public/data/rolling/DIS_rolling.json'
+import dlrData        from '@/public/data/rolling/DLR_rolling.json'
+import dltrData       from '@/public/data/rolling/DLTR_rolling.json'
+import docData        from '@/public/data/rolling/DOC_rolling.json'
+import dovData        from '@/public/data/rolling/DOV_rolling.json'
+import dpzData        from '@/public/data/rolling/DPZ_rolling.json'
+import driData        from '@/public/data/rolling/DRI_rolling.json'
+import dteData        from '@/public/data/rolling/DTE_rolling.json'
+import dukData        from '@/public/data/rolling/DUK_rolling.json'
+import dvaData        from '@/public/data/rolling/DVA_rolling.json'
+import dvnData        from '@/public/data/rolling/DVN_rolling.json'
+import dxcmData       from '@/public/data/rolling/DXCM_rolling.json'
+import ebayData       from '@/public/data/rolling/EBAY_rolling.json'
+import eclData        from '@/public/data/rolling/ECL_rolling.json'
+import edData         from '@/public/data/rolling/ED_rolling.json'
+import efxData        from '@/public/data/rolling/EFX_rolling.json'
+import egData         from '@/public/data/rolling/EG_rolling.json'
+import eixData        from '@/public/data/rolling/EIX_rolling.json'
+import elData         from '@/public/data/rolling/EL_rolling.json'
+import elvData        from '@/public/data/rolling/ELV_rolling.json'
+import emeData        from '@/public/data/rolling/EME_rolling.json'
+import emrData        from '@/public/data/rolling/EMR_rolling.json'
+import eogData        from '@/public/data/rolling/EOG_rolling.json'
+import eqixData       from '@/public/data/rolling/EQIX_rolling.json'
+import eqtData        from '@/public/data/rolling/EQT_rolling.json'
+import erieData       from '@/public/data/rolling/ERIE_rolling.json'
+import esData         from '@/public/data/rolling/ES_rolling.json'
+import essData        from '@/public/data/rolling/ESS_rolling.json'
+import etnData        from '@/public/data/rolling/ETN_rolling.json'
+import etrData        from '@/public/data/rolling/ETR_rolling.json'
+import ewData         from '@/public/data/rolling/EW_rolling.json'
+import excData        from '@/public/data/rolling/EXC_rolling.json'
+import expdData       from '@/public/data/rolling/EXPD_rolling.json'
+import expeData       from '@/public/data/rolling/EXPE_rolling.json'
+import exrData        from '@/public/data/rolling/EXR_rolling.json'
+import fData          from '@/public/data/rolling/F_rolling.json'
+import fangData       from '@/public/data/rolling/FANG_rolling.json'
+import fastData       from '@/public/data/rolling/FAST_rolling.json'
+import fcxData        from '@/public/data/rolling/FCX_rolling.json'
+import fdsData        from '@/public/data/rolling/FDS_rolling.json'
+import fdxData        from '@/public/data/rolling/FDX_rolling.json'
+import feData         from '@/public/data/rolling/FE_rolling.json'
+import ffivData       from '@/public/data/rolling/FFIV_rolling.json'
+import ficoData       from '@/public/data/rolling/FICO_rolling.json'
+import fisData        from '@/public/data/rolling/FIS_rolling.json'
+import fisvData       from '@/public/data/rolling/FISV_rolling.json'
+import fitbData       from '@/public/data/rolling/FITB_rolling.json'
+import fixData        from '@/public/data/rolling/FIX_rolling.json'
+import flexData       from '@/public/data/rolling/FLEX_rolling.json'
+import frtData        from '@/public/data/rolling/FRT_rolling.json'
+import fslrData       from '@/public/data/rolling/FSLR_rolling.json'
+import ftntData       from '@/public/data/rolling/FTNT_rolling.json'
+import gdData         from '@/public/data/rolling/GD_rolling.json'
+import gddyData       from '@/public/data/rolling/GDDY_rolling.json'
+import geData         from '@/public/data/rolling/GE_rolling.json'
+import genData        from '@/public/data/rolling/GEN_rolling.json'
+import gildData       from '@/public/data/rolling/GILD_rolling.json'
+import gisData        from '@/public/data/rolling/GIS_rolling.json'
+import glData         from '@/public/data/rolling/GL_rolling.json'
+import glwData        from '@/public/data/rolling/GLW_rolling.json'
+import gmData         from '@/public/data/rolling/GM_rolling.json'
+import gnrcData       from '@/public/data/rolling/GNRC_rolling.json'
+import googlData      from '@/public/data/rolling/GOOGL_rolling.json'
+import gpcData        from '@/public/data/rolling/GPC_rolling.json'
+import gpnData        from '@/public/data/rolling/GPN_rolling.json'
+import grmnData       from '@/public/data/rolling/GRMN_rolling.json'
+import gsData         from '@/public/data/rolling/GS_rolling.json'
+import gwwData        from '@/public/data/rolling/GWW_rolling.json'
+import halData        from '@/public/data/rolling/HAL_rolling.json'
+import hasData        from '@/public/data/rolling/HAS_rolling.json'
+import hbanData       from '@/public/data/rolling/HBAN_rolling.json'
+import hcaData        from '@/public/data/rolling/HCA_rolling.json'
+import hdData         from '@/public/data/rolling/HD_rolling.json'
+import higData        from '@/public/data/rolling/HIG_rolling.json'
+import hiiData        from '@/public/data/rolling/HII_rolling.json'
+import hltData        from '@/public/data/rolling/HLT_rolling.json'
+import honData        from '@/public/data/rolling/HON_rolling.json'
+import hpeData        from '@/public/data/rolling/HPE_rolling.json'
+import hpqData        from '@/public/data/rolling/HPQ_rolling.json'
+import hrlData        from '@/public/data/rolling/HRL_rolling.json'
+import hsicData       from '@/public/data/rolling/HSIC_rolling.json'
+import hstData        from '@/public/data/rolling/HST_rolling.json'
+import hsyData        from '@/public/data/rolling/HSY_rolling.json'
+import hubbData       from '@/public/data/rolling/HUBB_rolling.json'
+import humData        from '@/public/data/rolling/HUM_rolling.json'
+import ibkrData       from '@/public/data/rolling/IBKR_rolling.json'
+import ibmData        from '@/public/data/rolling/IBM_rolling.json'
+import iceData        from '@/public/data/rolling/ICE_rolling.json'
+import idxxData       from '@/public/data/rolling/IDXX_rolling.json'
+import iexData        from '@/public/data/rolling/IEX_rolling.json'
+import iffData        from '@/public/data/rolling/IFF_rolling.json'
+import ilmnData       from '@/public/data/rolling/ILMN_rolling.json'
+import incyData       from '@/public/data/rolling/INCY_rolling.json'
+import intcData       from '@/public/data/rolling/INTC_rolling.json'
+import intuData       from '@/public/data/rolling/INTU_rolling.json'
+import ipData         from '@/public/data/rolling/IP_rolling.json'
+import irmData        from '@/public/data/rolling/IRM_rolling.json'
+import isrgData       from '@/public/data/rolling/ISRG_rolling.json'
+import itData         from '@/public/data/rolling/IT_rolling.json'
+import itwData        from '@/public/data/rolling/ITW_rolling.json'
+import ivzData        from '@/public/data/rolling/IVZ_rolling.json'
+import jData          from '@/public/data/rolling/J_rolling.json'
+import jbhtData       from '@/public/data/rolling/JBHT_rolling.json'
+import jblData        from '@/public/data/rolling/JBL_rolling.json'
+import jciData        from '@/public/data/rolling/JCI_rolling.json'
+import jkhyData       from '@/public/data/rolling/JKHY_rolling.json'
+import jnjData        from '@/public/data/rolling/JNJ_rolling.json'
+import jpmData        from '@/public/data/rolling/JPM_rolling.json'
+import keyData        from '@/public/data/rolling/KEY_rolling.json'
+import keysData       from '@/public/data/rolling/KEYS_rolling.json'
+import khcData        from '@/public/data/rolling/KHC_rolling.json'
+import kimData        from '@/public/data/rolling/KIM_rolling.json'
+import kkrData        from '@/public/data/rolling/KKR_rolling.json'
+import klacData       from '@/public/data/rolling/KLAC_rolling.json'
+import kmbData        from '@/public/data/rolling/KMB_rolling.json'
+import kmiData        from '@/public/data/rolling/KMI_rolling.json'
+import koData         from '@/public/data/rolling/KO_rolling.json'
+import krData         from '@/public/data/rolling/KR_rolling.json'
+import lData          from '@/public/data/rolling/L_rolling.json'
+import ldosData       from '@/public/data/rolling/LDOS_rolling.json'
+import lenData        from '@/public/data/rolling/LEN_rolling.json'
+import lhData         from '@/public/data/rolling/LH_rolling.json'
+import liiData        from '@/public/data/rolling/LII_rolling.json'
+import liteData       from '@/public/data/rolling/LITE_rolling.json'
+import llyData        from '@/public/data/rolling/LLY_rolling.json'
+import lmtData        from '@/public/data/rolling/LMT_rolling.json'
+import lntData        from '@/public/data/rolling/LNT_rolling.json'
+import lowData        from '@/public/data/rolling/LOW_rolling.json'
+import lrcxData       from '@/public/data/rolling/LRCX_rolling.json'
+import luluData       from '@/public/data/rolling/LULU_rolling.json'
+import luvData        from '@/public/data/rolling/LUV_rolling.json'
+import lvsData        from '@/public/data/rolling/LVS_rolling.json'
+import lybData        from '@/public/data/rolling/LYB_rolling.json'
+import lyvData        from '@/public/data/rolling/LYV_rolling.json'
+import maData         from '@/public/data/rolling/MA_rolling.json'
+import maaData        from '@/public/data/rolling/MAA_rolling.json'
+import marData        from '@/public/data/rolling/MAR_rolling.json'
+import masData        from '@/public/data/rolling/MAS_rolling.json'
+import mcdData        from '@/public/data/rolling/MCD_rolling.json'
+import mchpData       from '@/public/data/rolling/MCHP_rolling.json'
+import mckData        from '@/public/data/rolling/MCK_rolling.json'
+import mcoData        from '@/public/data/rolling/MCO_rolling.json'
+import mdlzData       from '@/public/data/rolling/MDLZ_rolling.json'
+import mdtData        from '@/public/data/rolling/MDT_rolling.json'
+import metData        from '@/public/data/rolling/MET_rolling.json'
+import metaData       from '@/public/data/rolling/META_rolling.json'
+import mgmData        from '@/public/data/rolling/MGM_rolling.json'
+import mkcData        from '@/public/data/rolling/MKC_rolling.json'
+import mlmData        from '@/public/data/rolling/MLM_rolling.json'
+import mmmData        from '@/public/data/rolling/MMM_rolling.json'
+import mnstData       from '@/public/data/rolling/MNST_rolling.json'
+import moData         from '@/public/data/rolling/MO_rolling.json'
+import mosData        from '@/public/data/rolling/MOS_rolling.json'
+import mpcData        from '@/public/data/rolling/MPC_rolling.json'
+import mpwrData       from '@/public/data/rolling/MPWR_rolling.json'
+import mrkData        from '@/public/data/rolling/MRK_rolling.json'
+import mrvlData       from '@/public/data/rolling/MRVL_rolling.json'
+import msData         from '@/public/data/rolling/MS_rolling.json'
+import msciData       from '@/public/data/rolling/MSCI_rolling.json'
+import msftData       from '@/public/data/rolling/MSFT_rolling.json'
+import msiData        from '@/public/data/rolling/MSI_rolling.json'
+import mtbData        from '@/public/data/rolling/MTB_rolling.json'
+import mtdData        from '@/public/data/rolling/MTD_rolling.json'
+import muData         from '@/public/data/rolling/MU_rolling.json'
+import nclhData       from '@/public/data/rolling/NCLH_rolling.json'
+import ndaqData       from '@/public/data/rolling/NDAQ_rolling.json'
+import ndsnData       from '@/public/data/rolling/NDSN_rolling.json'
+import neeData        from '@/public/data/rolling/NEE_rolling.json'
+import nemData        from '@/public/data/rolling/NEM_rolling.json'
+import nflxData       from '@/public/data/rolling/NFLX_rolling.json'
+import niData         from '@/public/data/rolling/NI_rolling.json'
+import nkeData        from '@/public/data/rolling/NKE_rolling.json'
+import nocData        from '@/public/data/rolling/NOC_rolling.json'
+import nowData        from '@/public/data/rolling/NOW_rolling.json'
+import nrgData        from '@/public/data/rolling/NRG_rolling.json'
+import nscData        from '@/public/data/rolling/NSC_rolling.json'
+import ntapData       from '@/public/data/rolling/NTAP_rolling.json'
+import ntrsData       from '@/public/data/rolling/NTRS_rolling.json'
+import nueData        from '@/public/data/rolling/NUE_rolling.json'
+import nvdaData       from '@/public/data/rolling/NVDA_rolling.json'
+import nvrData        from '@/public/data/rolling/NVR_rolling.json'
+import nwsData        from '@/public/data/rolling/NWS_rolling.json'
+import nwsaData       from '@/public/data/rolling/NWSA_rolling.json'
+import nxpiData       from '@/public/data/rolling/NXPI_rolling.json'
+import oData          from '@/public/data/rolling/O_rolling.json'
+import odflData       from '@/public/data/rolling/ODFL_rolling.json'
+import okeData        from '@/public/data/rolling/OKE_rolling.json'
+import omcData        from '@/public/data/rolling/OMC_rolling.json'
+import onData         from '@/public/data/rolling/ON_rolling.json'
+import orclData       from '@/public/data/rolling/ORCL_rolling.json'
+import orlyData       from '@/public/data/rolling/ORLY_rolling.json'
+import oxyData        from '@/public/data/rolling/OXY_rolling.json'
+import panwData       from '@/public/data/rolling/PANW_rolling.json'
+import payxData       from '@/public/data/rolling/PAYX_rolling.json'
+import pcarData       from '@/public/data/rolling/PCAR_rolling.json'
+import pcgData        from '@/public/data/rolling/PCG_rolling.json'
+import pegData        from '@/public/data/rolling/PEG_rolling.json'
+import pepData        from '@/public/data/rolling/PEP_rolling.json'
+import pfeData        from '@/public/data/rolling/PFE_rolling.json'
+import pfgData        from '@/public/data/rolling/PFG_rolling.json'
+import pgData         from '@/public/data/rolling/PG_rolling.json'
+import pgrData        from '@/public/data/rolling/PGR_rolling.json'
+import phData         from '@/public/data/rolling/PH_rolling.json'
+import phmData        from '@/public/data/rolling/PHM_rolling.json'
+import pkgData        from '@/public/data/rolling/PKG_rolling.json'
+import pldData        from '@/public/data/rolling/PLD_rolling.json'
+import pmData         from '@/public/data/rolling/PM_rolling.json'
+import pncData        from '@/public/data/rolling/PNC_rolling.json'
+import pnrData        from '@/public/data/rolling/PNR_rolling.json'
+import pnwData        from '@/public/data/rolling/PNW_rolling.json'
+import poddData       from '@/public/data/rolling/PODD_rolling.json'
+import ppgData        from '@/public/data/rolling/PPG_rolling.json'
+import pplData        from '@/public/data/rolling/PPL_rolling.json'
+import pruData        from '@/public/data/rolling/PRU_rolling.json'
+import psaData        from '@/public/data/rolling/PSA_rolling.json'
+import psxData        from '@/public/data/rolling/PSX_rolling.json'
+import ptcData        from '@/public/data/rolling/PTC_rolling.json'
+import pwrData        from '@/public/data/rolling/PWR_rolling.json'
+import pyplData       from '@/public/data/rolling/PYPL_rolling.json'
+import qcomData       from '@/public/data/rolling/QCOM_rolling.json'
+import rclData        from '@/public/data/rolling/RCL_rolling.json'
+import regData        from '@/public/data/rolling/REG_rolling.json'
+import regnData       from '@/public/data/rolling/REGN_rolling.json'
+import rfData         from '@/public/data/rolling/RF_rolling.json'
+import rjfData        from '@/public/data/rolling/RJF_rolling.json'
+import rlData         from '@/public/data/rolling/RL_rolling.json'
+import rmdData        from '@/public/data/rolling/RMD_rolling.json'
+import rmsData        from '@/public/data/rolling/RMS_rolling.json'
+import rokData        from '@/public/data/rolling/ROK_rolling.json'
+import rolData        from '@/public/data/rolling/ROL_rolling.json'
+import ropData        from '@/public/data/rolling/ROP_rolling.json'
+import rostData       from '@/public/data/rolling/ROST_rolling.json'
+import rsgData        from '@/public/data/rolling/RSG_rolling.json'
+import rvtyData       from '@/public/data/rolling/RVTY_rolling.json'
+import sbacData       from '@/public/data/rolling/SBAC_rolling.json'
+import sbuxData       from '@/public/data/rolling/SBUX_rolling.json'
+import schwData       from '@/public/data/rolling/SCHW_rolling.json'
+import shwData        from '@/public/data/rolling/SHW_rolling.json'
+import sjmData        from '@/public/data/rolling/SJM_rolling.json'
+import slbData        from '@/public/data/rolling/SLB_rolling.json'
+import smciData       from '@/public/data/rolling/SMCI_rolling.json'
+import snaData        from '@/public/data/rolling/SNA_rolling.json'
+import snpsData       from '@/public/data/rolling/SNPS_rolling.json'
+import soData         from '@/public/data/rolling/SO_rolling.json'
+import spgData        from '@/public/data/rolling/SPG_rolling.json'
+import spgiData       from '@/public/data/rolling/SPGI_rolling.json'
+import sreData        from '@/public/data/rolling/SRE_rolling.json'
+import steData        from '@/public/data/rolling/STE_rolling.json'
+import stldData       from '@/public/data/rolling/STLD_rolling.json'
+import sttData        from '@/public/data/rolling/STT_rolling.json'
+import stxData        from '@/public/data/rolling/STX_rolling.json'
+import stzData        from '@/public/data/rolling/STZ_rolling.json'
+import swkData        from '@/public/data/rolling/SWK_rolling.json'
+import swksData       from '@/public/data/rolling/SWKS_rolling.json'
+import syfData        from '@/public/data/rolling/SYF_rolling.json'
+import sykData        from '@/public/data/rolling/SYK_rolling.json'
+import syyData        from '@/public/data/rolling/SYY_rolling.json'
+import tData          from '@/public/data/rolling/T_rolling.json'
+import tdgData        from '@/public/data/rolling/TDG_rolling.json'
+import tdyData        from '@/public/data/rolling/TDY_rolling.json'
+import techData       from '@/public/data/rolling/TECH_rolling.json'
+import telData        from '@/public/data/rolling/TEL_rolling.json'
+import terData        from '@/public/data/rolling/TER_rolling.json'
+import tgtData        from '@/public/data/rolling/TGT_rolling.json'
+import tjxData        from '@/public/data/rolling/TJX_rolling.json'
+import tmoData        from '@/public/data/rolling/TMO_rolling.json'
+import tmusData       from '@/public/data/rolling/TMUS_rolling.json'
+import tplData        from '@/public/data/rolling/TPL_rolling.json'
+import tprData        from '@/public/data/rolling/TPR_rolling.json'
+import trgpData       from '@/public/data/rolling/TRGP_rolling.json'
+import trmbData       from '@/public/data/rolling/TRMB_rolling.json'
+import trowData       from '@/public/data/rolling/TROW_rolling.json'
+import trvData        from '@/public/data/rolling/TRV_rolling.json'
+import tscoData       from '@/public/data/rolling/TSCO_rolling.json'
+import tslaData       from '@/public/data/rolling/TSLA_rolling.json'
+import tsnData        from '@/public/data/rolling/TSN_rolling.json'
+import ttData         from '@/public/data/rolling/TT_rolling.json'
+import ttwoData       from '@/public/data/rolling/TTWO_rolling.json'
+import txnData        from '@/public/data/rolling/TXN_rolling.json'
+import txtData        from '@/public/data/rolling/TXT_rolling.json'
+import tylData        from '@/public/data/rolling/TYL_rolling.json'
+import ualData        from '@/public/data/rolling/UAL_rolling.json'
+import udrData        from '@/public/data/rolling/UDR_rolling.json'
+import uhsData        from '@/public/data/rolling/UHS_rolling.json'
+import ultaData       from '@/public/data/rolling/ULTA_rolling.json'
+import unhData        from '@/public/data/rolling/UNH_rolling.json'
+import unpData        from '@/public/data/rolling/UNP_rolling.json'
+import upsData        from '@/public/data/rolling/UPS_rolling.json'
+import uriData        from '@/public/data/rolling/URI_rolling.json'
+import usbData        from '@/public/data/rolling/USB_rolling.json'
+import vData          from '@/public/data/rolling/V_rolling.json'
+import veevData       from '@/public/data/rolling/VEEV_rolling.json'
+import vloData        from '@/public/data/rolling/VLO_rolling.json'
+import vmcData        from '@/public/data/rolling/VMC_rolling.json'
+import vrskData       from '@/public/data/rolling/VRSK_rolling.json'
+import vrsnData       from '@/public/data/rolling/VRSN_rolling.json'
+import vrtxData       from '@/public/data/rolling/VRTX_rolling.json'
+import vtrData        from '@/public/data/rolling/VTR_rolling.json'
+import vzData         from '@/public/data/rolling/VZ_rolling.json'
+import wabData        from '@/public/data/rolling/WAB_rolling.json'
+import watData        from '@/public/data/rolling/WAT_rolling.json'
+import wdayData       from '@/public/data/rolling/WDAY_rolling.json'
+import wdcData        from '@/public/data/rolling/WDC_rolling.json'
+import wecData        from '@/public/data/rolling/WEC_rolling.json'
+import wellData       from '@/public/data/rolling/WELL_rolling.json'
+import wfcData        from '@/public/data/rolling/WFC_rolling.json'
+import wmData         from '@/public/data/rolling/WM_rolling.json'
+import wmbData        from '@/public/data/rolling/WMB_rolling.json'
+import wmtData        from '@/public/data/rolling/WMT_rolling.json'
+import wrbData        from '@/public/data/rolling/WRB_rolling.json'
+import wsmData        from '@/public/data/rolling/WSM_rolling.json'
+import wstData        from '@/public/data/rolling/WST_rolling.json'
+import wtwData        from '@/public/data/rolling/WTW_rolling.json'
+import wyData         from '@/public/data/rolling/WY_rolling.json'
+import wynnData       from '@/public/data/rolling/WYNN_rolling.json'
+import xelData        from '@/public/data/rolling/XEL_rolling.json'
+import xomData        from '@/public/data/rolling/XOM_rolling.json'
+import xylData        from '@/public/data/rolling/XYL_rolling.json'
+import yumData        from '@/public/data/rolling/YUM_rolling.json'
+import zbhData        from '@/public/data/rolling/ZBH_rolling.json'
+import zbraData       from '@/public/data/rolling/ZBRA_rolling.json'
+import ztsData        from '@/public/data/rolling/ZTS_rolling.json'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Tooltip, Legend)
 
 type StockData = typeof nkeData
 
 const STOCKS: Array<{ key: string; data: StockData }> = [
-  { key: 'QLD',     data: qldData      as unknown as unknown as StockData },
-  { key: 'QQQ',     data: qqqData      as unknown as unknown as StockData },
-  { key: 'TQQQ',    data: tqqqData     as unknown as unknown as StockData },
-  { key: 'A',       data: aData        as unknown as StockData },
-  { key: 'AAPL',    data: aaplData     as unknown as StockData },
-  { key: 'ABBV',    data: abbvData     as unknown as StockData },
-  { key: 'ABT',     data: abtData      as unknown as StockData },
-  { key: 'ACN',     data: acnData      as unknown as StockData },
-  { key: 'ADBE',    data: adbeData     as unknown as StockData },
-  { key: 'ADI',     data: adiData      as unknown as StockData },
-  { key: 'ADM',     data: admData      as unknown as StockData },
-  { key: 'ADP',     data: adpData      as unknown as StockData },
-  { key: 'ADSK',    data: adskData     as unknown as StockData },
-  { key: 'AFL',     data: aflData      as unknown as StockData },
-  { key: 'AIG',     data: aigData      as unknown as StockData },
-  { key: 'AJG',     data: ajgData      as unknown as StockData },
-  { key: 'ALB',     data: albData      as unknown as StockData },
-  { key: 'ALL',     data: allData      as unknown as StockData },
-  { key: 'AMAT',    data: amatData     as unknown as StockData },
-  { key: 'AMD',     data: amdData      as unknown as StockData },
-  { key: 'AME',     data: ameData      as unknown as StockData },
-  { key: 'AMGN',    data: amgnData     as unknown as StockData },
-  { key: 'AMP',     data: ampData      as unknown as StockData },
-  { key: 'AMT',     data: amtData      as unknown as StockData },
-  { key: 'AMZN',    data: amznData     as unknown as StockData },
-  { key: 'ANET',    data: anetData     as unknown as StockData },
-  { key: 'AON',     data: aonData      as unknown as StockData },
-  { key: 'APD',     data: apdData      as unknown as StockData },
-  { key: 'APH',     data: aphData      as unknown as StockData },
-  { key: 'AVGO',    data: avgoData     as unknown as StockData },
-  { key: 'AXON',    data: axonData     as unknown as StockData },
-  { key: 'AXP',     data: axpData      as unknown as StockData },
-  { key: 'AZO',     data: azoData      as unknown as StockData },
-  { key: 'BA',      data: baData       as unknown as StockData },
-  { key: 'BAC',     data: bacData      as unknown as StockData },
-  { key: 'BBY',     data: bbyData      as unknown as StockData },
-  { key: 'BDX',     data: bdxData      as unknown as StockData },
-  { key: 'BIIB',    data: biibData     as unknown as StockData },
-  { key: 'BKNG',    data: bkngData     as unknown as StockData },
-  { key: 'BLK',     data: blkData      as unknown as StockData },
-  { key: 'BMY',     data: bmyData      as unknown as StockData },
-  { key: 'BNY',     data: bnyData      as unknown as StockData },
-  { key: 'BRK-B',   data: brkbData     as unknown as StockData },
-  { key: 'BSX',     data: bsxData      as unknown as StockData },
-  { key: 'BX',      data: bxData       as unknown as StockData },
-  { key: 'C',       data: cData        as unknown as StockData },
-  { key: 'CAH',     data: cahData      as unknown as StockData },
-  { key: 'CAT',     data: catData      as unknown as StockData },
-  { key: 'CB',      data: cbData       as unknown as StockData },
-  { key: 'CBRE',    data: cbreData     as unknown as StockData },
-  { key: 'CDNS',    data: cdnsData     as unknown as StockData },
-  { key: 'CFG',     data: cfgData      as unknown as StockData },
-  { key: 'CHTR',    data: chtrData     as unknown as StockData },
-  { key: 'CI',      data: ciData       as unknown as StockData },
-  { key: 'CL',      data: clData       as unknown as StockData },
-  { key: 'CMCSA',   data: cmcsaData    as unknown as StockData },
-  { key: 'CME',     data: cmeData      as unknown as StockData },
-  { key: 'CMG',     data: cmgData      as unknown as StockData },
-  { key: 'CMI',     data: cmiData      as unknown as StockData },
-  { key: 'CNC',     data: cncData      as unknown as StockData },
-  { key: 'COF',     data: cofData      as unknown as StockData },
-  { key: 'COP',     data: copData      as unknown as StockData },
-  { key: 'COR',     data: corData      as unknown as StockData },
-  { key: 'COST',    data: costData     as unknown as StockData },
-  { key: 'CPRT',    data: cprtData     as unknown as StockData },
-  { key: 'CRM',     data: crmData      as unknown as StockData },
-  { key: 'CSCO',    data: cscoData     as unknown as StockData },
-  { key: 'CSX',     data: csxData      as unknown as StockData },
-  { key: 'CTAS',    data: ctasData     as unknown as StockData },
-  { key: 'CTSH',    data: ctshData     as unknown as StockData },
-  { key: 'CVS',     data: cvsData      as unknown as StockData },
-  { key: 'CVX',     data: cvxData      as unknown as StockData },
-  { key: 'D',       data: dData        as unknown as StockData },
-  { key: 'DAL',     data: dalData      as unknown as StockData },
-  { key: 'DE',      data: deData       as unknown as StockData },
-  { key: 'DG',      data: dgData       as unknown as StockData },
-  { key: 'DHI',     data: dhiData      as unknown as StockData },
-  { key: 'DHR',     data: dhrData      as unknown as StockData },
-  { key: 'DIS',     data: disData      as unknown as StockData },
-  { key: 'DLR',     data: dlrData      as unknown as StockData },
-  { key: 'DUK',     data: dukData      as unknown as StockData },
-  { key: 'ECL',     data: eclData      as unknown as StockData },
-  { key: 'ED',      data: edData       as unknown as StockData },
-  { key: 'EFX',     data: efxData      as unknown as StockData },
-  { key: 'EIX',     data: eixData      as unknown as StockData },
-  { key: 'ELV',     data: elvData      as unknown as StockData },
-  { key: 'EME',     data: emeData      as unknown as StockData },
-  { key: 'EMR',     data: emrData      as unknown as StockData },
-  { key: 'EOG',     data: eogData      as unknown as StockData },
-  { key: 'EQIX',    data: eqixData     as unknown as StockData },
-  { key: 'ETN',     data: etnData      as unknown as StockData },
-  { key: 'EW',      data: ewData       as unknown as StockData },
-  { key: 'EXC',     data: excData      as unknown as StockData },
-  { key: 'F',       data: fData        as unknown as StockData },
-  { key: 'FANG',    data: fangData     as unknown as StockData },
-  { key: 'FAST',    data: fastData     as unknown as StockData },
-  { key: 'FCX',     data: fcxData      as unknown as StockData },
-  { key: 'FDX',     data: fdxData      as unknown as StockData },
-  { key: 'FICO',    data: ficoData     as unknown as StockData },
-  { key: 'FIS',     data: fisData      as unknown as StockData },
-  { key: 'FISV',    data: fisvData     as unknown as StockData },
-  { key: 'FITB',    data: fitbData     as unknown as StockData },
-  { key: 'FSLR',    data: fslrData     as unknown as StockData },
-  { key: 'FTNT',    data: ftntData     as unknown as StockData },
-  { key: 'GD',      data: gdData       as unknown as StockData },
-  { key: 'GDDY',    data: gddyData     as unknown as StockData },
-  { key: 'GILD',    data: gildData     as unknown as StockData },
-  { key: 'GLW',     data: glwData      as unknown as StockData },
-  { key: 'GM',      data: gmData       as unknown as StockData },
-  { key: 'GOOGL',   data: googlData    as unknown as StockData },
-  { key: 'GRMN',    data: grmnData     as unknown as StockData },
-  { key: 'GS',      data: gsData       as unknown as StockData },
-  { key: 'GWW',     data: gwwData      as unknown as StockData },
-  { key: 'HAL',     data: halData      as unknown as StockData },
-  { key: 'HCA',     data: hcaData      as unknown as StockData },
-  { key: 'HD',      data: hdData       as unknown as StockData },
-  { key: 'HLT',     data: hltData      as unknown as StockData },
-  { key: 'HON',     data: honData      as unknown as StockData },
-  { key: 'HPQ',     data: hpqData      as unknown as StockData },
-  { key: 'HSY',     data: hsyData      as unknown as StockData },
-  { key: 'HUM',     data: humData      as unknown as StockData },
-  { key: 'IBM',     data: ibmData      as unknown as StockData },
-  { key: 'ICE',     data: iceData      as unknown as StockData },
-  { key: 'IDXX',    data: idxxData     as unknown as StockData },
-  { key: 'INTC',    data: intcData     as unknown as StockData },
-  { key: 'INTU',    data: intuData     as unknown as StockData },
-  { key: 'ISRG',    data: isrgData     as unknown as StockData },
-  { key: 'ITW',     data: itwData      as unknown as StockData },
-  { key: 'JCI',     data: jciData      as unknown as StockData },
-  { key: 'JNJ',     data: jnjData      as unknown as StockData },
-  { key: 'JPM',     data: jpmData      as unknown as StockData },
-  { key: 'KEYS',    data: keysData     as unknown as StockData },
-  { key: 'KKR',     data: kkrData      as unknown as StockData },
-  { key: 'KLAC',    data: klacData     as unknown as StockData },
-  { key: 'KMI',     data: kmiData      as unknown as StockData },
-  { key: 'KO',      data: koData       as unknown as StockData },
-  { key: 'KR',      data: krData       as unknown as StockData },
-  { key: 'LH',      data: lhData       as unknown as StockData },
-  { key: 'LLY',     data: llyData      as unknown as StockData },
-  { key: 'LMT',     data: lmtData      as unknown as StockData },
-  { key: 'LOW',     data: lowData      as unknown as StockData },
-  { key: 'LRCX',    data: lrcxData     as unknown as StockData },
-  { key: 'LULU',    data: luluData     as unknown as StockData },
-  { key: 'MA',      data: maData       as unknown as StockData },
-  { key: 'MAR',     data: marData      as unknown as StockData },
-  { key: 'MCD',     data: mcdData      as unknown as StockData },
-  { key: 'MCHP',    data: mchpData     as unknown as StockData },
-  { key: 'MCK',     data: mckData      as unknown as StockData },
-  { key: 'MCO',     data: mcoData      as unknown as StockData },
-  { key: 'MDLZ',    data: mdlzData     as unknown as StockData },
-  { key: 'MDT',     data: mdtData      as unknown as StockData },
-  { key: 'MET',     data: metData      as unknown as StockData },
-  { key: 'META',    data: metaData     as unknown as StockData },
-  { key: 'MMM',     data: mmmData      as unknown as StockData },
-  { key: 'MNST',    data: mnstData     as unknown as StockData },
-  { key: 'MO',      data: moData       as unknown as StockData },
-  { key: 'MPC',     data: mpcData      as unknown as StockData },
-  { key: 'MPWR',    data: mpwrData     as unknown as StockData },
-  { key: 'MRK',     data: mrkData      as unknown as StockData },
-  { key: 'MRVL',    data: mrvlData     as unknown as StockData },
-  { key: 'MS',      data: msData       as unknown as StockData },
-  { key: 'MSCI',    data: msciData     as unknown as StockData },
-  { key: 'MSFT',    data: msftData     as unknown as StockData },
-  { key: 'MSI',     data: msiData      as unknown as StockData },
-  { key: 'MU',      data: muData       as unknown as StockData },
-  { key: 'NDAQ',    data: ndaqData     as unknown as StockData },
-  { key: 'NDSN',    data: ndsnData     as unknown as StockData },
-  { key: 'NEE',     data: neeData      as unknown as StockData },
-  { key: 'NEM',     data: nemData      as unknown as StockData },
-  { key: 'NFLX',    data: nflxData     as unknown as StockData },
-  { key: 'NKE',     data: nkeData      as unknown as StockData },
-  { key: 'NOC',     data: nocData      as unknown as StockData },
-  { key: 'NOW',     data: nowData      as unknown as StockData },
-  { key: 'NSC',     data: nscData      as unknown as StockData },
-  { key: 'NUE',     data: nueData      as unknown as StockData },
-  { key: 'NVDA',    data: nvdaData     as unknown as StockData },
-  { key: 'NXPI',    data: nxpiData     as unknown as StockData },
-  { key: 'O',       data: oData        as unknown as StockData },
-  { key: 'ODFL',    data: odflData     as unknown as StockData },
-  { key: 'OKE',     data: okeData      as unknown as StockData },
-  { key: 'ORCL',    data: orclData     as unknown as StockData },
-  { key: 'ORLY',    data: orlyData     as unknown as StockData },
-  { key: 'OXY',     data: oxyData      as unknown as StockData },
-  { key: 'PANW',    data: panwData     as unknown as StockData },
-  { key: 'PAYX',    data: payxData     as unknown as StockData },
-  { key: 'PCAR',    data: pcarData     as unknown as StockData },
-  { key: 'PEP',     data: pepData      as unknown as StockData },
-  { key: 'PFE',     data: pfeData      as unknown as StockData },
-  { key: 'PG',      data: pgData       as unknown as StockData },
-  { key: 'PGR',     data: pgrData      as unknown as StockData },
-  { key: 'PH',      data: phData       as unknown as StockData },
-  { key: 'PLD',     data: pldData      as unknown as StockData },
-  { key: 'PM',      data: pmData       as unknown as StockData },
-  { key: 'PNC',     data: pncData      as unknown as StockData },
-  { key: 'PPG',     data: ppgData      as unknown as StockData },
-  { key: 'PRU',     data: pruData      as unknown as StockData },
-  { key: 'PSA',     data: psaData      as unknown as StockData },
-  { key: 'PSX',     data: psxData      as unknown as StockData },
-  { key: 'PWR',     data: pwrData      as unknown as StockData },
-  { key: 'PYPL',    data: pyplData     as unknown as StockData },
-  { key: 'QCOM',    data: qcomData     as unknown as StockData },
-  { key: 'RCL',     data: rclData      as unknown as StockData },
-  { key: 'REGN',    data: regnData     as unknown as StockData },
-  { key: 'RMD',     data: rmdData      as unknown as StockData },
-  { key: 'RMS',     data: rmsData      as unknown as StockData },
-  { key: 'ROK',     data: rokData      as unknown as StockData },
-  { key: 'ROL',     data: rolData      as unknown as StockData },
-  { key: 'ROST',    data: rostData     as unknown as StockData },
-  { key: 'RSG',     data: rsgData      as unknown as StockData },
-  { key: 'SBUX',    data: sbuxData     as unknown as StockData },
-  { key: 'SCHW',    data: schwData     as unknown as StockData },
-  { key: 'SHW',     data: shwData      as unknown as StockData },
-  { key: 'SLB',     data: slbData      as unknown as StockData },
-  { key: 'SMCI',    data: smciData     as unknown as StockData },
-  { key: 'SNPS',    data: snpsData     as unknown as StockData },
-  { key: 'SO',      data: soData       as unknown as StockData },
-  { key: 'SPG',     data: spgData      as unknown as StockData },
-  { key: 'SPGI',    data: spgiData     as unknown as StockData },
-  { key: 'SRE',     data: sreData      as unknown as StockData },
-  { key: 'STT',     data: sttData      as unknown as StockData },
-  { key: 'STX',     data: stxData      as unknown as StockData },
-  { key: 'SYK',     data: sykData      as unknown as StockData },
-  { key: 'SYY',     data: syyData      as unknown as StockData },
-  { key: 'T',       data: tData        as unknown as StockData },
-  { key: 'TDG',     data: tdgData      as unknown as StockData },
-  { key: 'TEL',     data: telData      as unknown as StockData },
-  { key: 'TER',     data: terData      as unknown as StockData },
-  { key: 'TGT',     data: tgtData      as unknown as StockData },
-  { key: 'TJX',     data: tjxData      as unknown as StockData },
-  { key: 'TMO',     data: tmoData      as unknown as StockData },
-  { key: 'TMUS',    data: tmusData     as unknown as StockData },
-  { key: 'TRGP',    data: trgpData     as unknown as StockData },
-  { key: 'TROW',    data: trowData     as unknown as StockData },
-  { key: 'TRV',     data: trvData      as unknown as StockData },
-  { key: 'TSLA',    data: tslaData     as unknown as StockData },
-  { key: 'TT',      data: ttData       as unknown as StockData },
-  { key: 'TXN',     data: txnData      as unknown as StockData },
-  { key: 'UNH',     data: unhData      as unknown as StockData },
-  { key: 'UNP',     data: unpData      as unknown as StockData },
-  { key: 'UPS',     data: upsData      as unknown as StockData },
-  { key: 'URI',     data: uriData      as unknown as StockData },
-  { key: 'USB',     data: usbData      as unknown as StockData },
-  { key: 'V',       data: vData        as unknown as StockData },
-  { key: 'VEEV',    data: veevData     as unknown as StockData },
-  { key: 'VLO',     data: vloData      as unknown as StockData },
-  { key: 'VRSK',    data: vrskData     as unknown as StockData },
-  { key: 'VRSN',    data: vrsnData     as unknown as StockData },
-  { key: 'VRTX',    data: vrtxData     as unknown as StockData },
-  { key: 'VZ',      data: vzData       as unknown as StockData },
-  { key: 'WAB',     data: wabData      as unknown as StockData },
-  { key: 'WDAY',    data: wdayData     as unknown as StockData },
-  { key: 'WDC',     data: wdcData      as unknown as StockData },
-  { key: 'WELL',    data: wellData     as unknown as StockData },
-  { key: 'WFC',     data: wfcData      as unknown as StockData },
-  { key: 'WM',      data: wmData       as unknown as StockData },
-  { key: 'WMB',     data: wmbData      as unknown as StockData },
-  { key: 'WMT',     data: wmtData      as unknown as StockData },
-  { key: 'WTW',     data: wtwData      as unknown as StockData },
-  { key: 'XEL',     data: xelData      as unknown as StockData },
-  { key: 'XOM',     data: xomData      as unknown as StockData },
-  { key: 'YUM',     data: yumData      as unknown as StockData },
-  { key: 'ZTS',     data: ztsData      as unknown as StockData },
+  { key: 'QLD',      data: qldData        as unknown as StockData },
+  { key: 'QQQ',      data: qqqData        as unknown as StockData },
+  { key: 'TQQQ',     data: tqqqData       as unknown as StockData },
+  { key: 'A',        data: aData          as StockData },
+  { key: 'AAPL',     data: aaplData       as StockData },
+  { key: 'ABBV',     data: abbvData       as StockData },
+  { key: 'ABT',      data: abtData        as StockData },
+  { key: 'ACGL',     data: acglData       as StockData },
+  { key: 'ACN',      data: acnData        as StockData },
+  { key: 'ADBE',     data: adbeData       as StockData },
+  { key: 'ADI',      data: adiData        as StockData },
+  { key: 'ADM',      data: admData        as StockData },
+  { key: 'ADP',      data: adpData        as StockData },
+  { key: 'ADSK',     data: adskData       as StockData },
+  { key: 'AEE',      data: aeeData        as StockData },
+  { key: 'AEP',      data: aepData        as StockData },
+  { key: 'AES',      data: aesData        as StockData },
+  { key: 'AFL',      data: aflData        as StockData },
+  { key: 'AIG',      data: aigData        as StockData },
+  { key: 'AIZ',      data: aizData        as StockData },
+  { key: 'AJG',      data: ajgData        as StockData },
+  { key: 'AKAM',     data: akamData       as StockData },
+  { key: 'ALB',      data: albData        as StockData },
+  { key: 'ALGN',     data: algnData       as StockData },
+  { key: 'ALL',      data: allData        as StockData },
+  { key: 'ALLE',     data: alleData       as StockData },
+  { key: 'AMAT',     data: amatData       as StockData },
+  { key: 'AMCR',     data: amcrData       as StockData },
+  { key: 'AMD',      data: amdData        as StockData },
+  { key: 'AME',      data: ameData        as StockData },
+  { key: 'AMGN',     data: amgnData       as StockData },
+  { key: 'AMP',      data: ampData        as StockData },
+  { key: 'AMT',      data: amtData        as StockData },
+  { key: 'AMZN',     data: amznData       as StockData },
+  { key: 'ANET',     data: anetData       as StockData },
+  { key: 'AON',      data: aonData        as StockData },
+  { key: 'AOS',      data: aosData        as StockData },
+  { key: 'APA',      data: apaData        as StockData },
+  { key: 'APD',      data: apdData        as StockData },
+  { key: 'APH',      data: aphData        as StockData },
+  { key: 'APO',      data: apoData        as StockData },
+  { key: 'APTV',     data: aptvData       as StockData },
+  { key: 'ARE',      data: areData        as StockData },
+  { key: 'ARES',     data: aresData       as StockData },
+  { key: 'ATO',      data: atoData        as StockData },
+  { key: 'AVGO',     data: avgoData       as StockData },
+  { key: 'AVY',      data: avyData        as StockData },
+  { key: 'AWK',      data: awkData        as StockData },
+  { key: 'AXON',     data: axonData       as StockData },
+  { key: 'AXP',      data: axpData        as StockData },
+  { key: 'AZO',      data: azoData        as StockData },
+  { key: 'BA',       data: baData         as StockData },
+  { key: 'BAC',      data: bacData        as StockData },
+  { key: 'BALL',     data: ballData       as StockData },
+  { key: 'BAX',      data: baxData        as StockData },
+  { key: 'BBY',      data: bbyData        as StockData },
+  { key: 'BDX',      data: bdxData        as StockData },
+  { key: 'BEN',      data: benData        as StockData },
+  { key: 'BF-B',     data: bfbData        as StockData },
+  { key: 'BG',       data: bgData         as StockData },
+  { key: 'BIIB',     data: biibData       as StockData },
+  { key: 'BKNG',     data: bkngData       as StockData },
+  { key: 'BKR',      data: bkrData        as StockData },
+  { key: 'BLK',      data: blkData        as StockData },
+  { key: 'BMY',      data: bmyData        as StockData },
+  { key: 'BNY',      data: bnyData        as StockData },
+  { key: 'BR',       data: brData         as StockData },
+  { key: 'BRK-B',    data: brkbData       as StockData },
+  { key: 'BRO',      data: broData        as StockData },
+  { key: 'BSX',      data: bsxData        as StockData },
+  { key: 'BX',       data: bxData         as StockData },
+  { key: 'BXP',      data: bxpData        as StockData },
+  { key: 'C',        data: cData          as StockData },
+  { key: 'CAH',      data: cahData        as StockData },
+  { key: 'CASY',     data: casyData       as StockData },
+  { key: 'CAT',      data: catData        as StockData },
+  { key: 'CB',       data: cbData         as StockData },
+  { key: 'CBOE',     data: cboeData       as StockData },
+  { key: 'CBRE',     data: cbreData       as StockData },
+  { key: 'CCI',      data: cciData        as StockData },
+  { key: 'CCL',      data: cclData        as StockData },
+  { key: 'CDNS',     data: cdnsData       as StockData },
+  { key: 'CDW',      data: cdwData        as StockData },
+  { key: 'CF',       data: cfData         as StockData },
+  { key: 'CFG',      data: cfgData        as StockData },
+  { key: 'CHD',      data: chdData        as StockData },
+  { key: 'CHRW',     data: chrwData       as StockData },
+  { key: 'CHTR',     data: chtrData       as StockData },
+  { key: 'CI',       data: ciData         as StockData },
+  { key: 'CIEN',     data: cienData       as StockData },
+  { key: 'CINF',     data: cinfData       as StockData },
+  { key: 'CL',       data: clData         as StockData },
+  { key: 'CLX',      data: clxData        as StockData },
+  { key: 'CMCSA',    data: cmcsaData      as StockData },
+  { key: 'CME',      data: cmeData        as StockData },
+  { key: 'CMG',      data: cmgData        as StockData },
+  { key: 'CMI',      data: cmiData        as StockData },
+  { key: 'CMS',      data: cmsData        as StockData },
+  { key: 'CNC',      data: cncData        as StockData },
+  { key: 'CNP',      data: cnpData        as StockData },
+  { key: 'COF',      data: cofData        as StockData },
+  { key: 'COO',      data: cooData        as StockData },
+  { key: 'COP',      data: copData        as StockData },
+  { key: 'COR',      data: corData        as StockData },
+  { key: 'COST',     data: costData       as StockData },
+  { key: 'CPAY',     data: cpayData       as StockData },
+  { key: 'CPRT',     data: cprtData       as StockData },
+  { key: 'CPT',      data: cptData        as StockData },
+  { key: 'CRL',      data: crlData        as StockData },
+  { key: 'CRM',      data: crmData        as StockData },
+  { key: 'CSCO',     data: cscoData       as StockData },
+  { key: 'CSGP',     data: csgpData       as StockData },
+  { key: 'CSX',      data: csxData        as StockData },
+  { key: 'CTAS',     data: ctasData       as StockData },
+  { key: 'CTSH',     data: ctshData       as StockData },
+  { key: 'CVS',      data: cvsData        as StockData },
+  { key: 'CVX',      data: cvxData        as StockData },
+  { key: 'D',        data: dData          as StockData },
+  { key: 'DAL',      data: dalData        as StockData },
+  { key: 'DD',       data: ddData         as StockData },
+  { key: 'DE',       data: deData         as StockData },
+  { key: 'DECK',     data: deckData       as StockData },
+  { key: 'DG',       data: dgData         as StockData },
+  { key: 'DGX',      data: dgxData        as StockData },
+  { key: 'DHI',      data: dhiData        as StockData },
+  { key: 'DHR',      data: dhrData        as StockData },
+  { key: 'DIS',      data: disData        as StockData },
+  { key: 'DLR',      data: dlrData        as StockData },
+  { key: 'DLTR',     data: dltrData       as StockData },
+  { key: 'DOC',      data: docData        as StockData },
+  { key: 'DOV',      data: dovData        as StockData },
+  { key: 'DPZ',      data: dpzData        as StockData },
+  { key: 'DRI',      data: driData        as StockData },
+  { key: 'DTE',      data: dteData        as StockData },
+  { key: 'DUK',      data: dukData        as StockData },
+  { key: 'DVA',      data: dvaData        as StockData },
+  { key: 'DVN',      data: dvnData        as StockData },
+  { key: 'DXCM',     data: dxcmData       as StockData },
+  { key: 'EBAY',     data: ebayData       as StockData },
+  { key: 'ECL',      data: eclData        as StockData },
+  { key: 'ED',       data: edData         as StockData },
+  { key: 'EFX',      data: efxData        as StockData },
+  { key: 'EG',       data: egData         as StockData },
+  { key: 'EIX',      data: eixData        as StockData },
+  { key: 'EL',       data: elData         as StockData },
+  { key: 'ELV',      data: elvData        as StockData },
+  { key: 'EME',      data: emeData        as StockData },
+  { key: 'EMR',      data: emrData        as StockData },
+  { key: 'EOG',      data: eogData        as StockData },
+  { key: 'EQIX',     data: eqixData       as StockData },
+  { key: 'EQT',      data: eqtData        as StockData },
+  { key: 'ERIE',     data: erieData       as StockData },
+  { key: 'ES',       data: esData         as StockData },
+  { key: 'ESS',      data: essData        as StockData },
+  { key: 'ETN',      data: etnData        as StockData },
+  { key: 'ETR',      data: etrData        as StockData },
+  { key: 'EW',       data: ewData         as StockData },
+  { key: 'EXC',      data: excData        as StockData },
+  { key: 'EXPD',     data: expdData       as StockData },
+  { key: 'EXPE',     data: expeData       as StockData },
+  { key: 'EXR',      data: exrData        as StockData },
+  { key: 'F',        data: fData          as StockData },
+  { key: 'FANG',     data: fangData       as StockData },
+  { key: 'FAST',     data: fastData       as StockData },
+  { key: 'FCX',      data: fcxData        as StockData },
+  { key: 'FDS',      data: fdsData        as StockData },
+  { key: 'FDX',      data: fdxData        as StockData },
+  { key: 'FE',       data: feData         as StockData },
+  { key: 'FFIV',     data: ffivData       as StockData },
+  { key: 'FICO',     data: ficoData       as StockData },
+  { key: 'FIS',      data: fisData        as StockData },
+  { key: 'FISV',     data: fisvData       as StockData },
+  { key: 'FITB',     data: fitbData       as StockData },
+  { key: 'FIX',      data: fixData        as StockData },
+  { key: 'FLEX',     data: flexData       as StockData },
+  { key: 'FRT',      data: frtData        as StockData },
+  { key: 'FSLR',     data: fslrData       as StockData },
+  { key: 'FTNT',     data: ftntData       as StockData },
+  { key: 'GD',       data: gdData         as StockData },
+  { key: 'GDDY',     data: gddyData       as StockData },
+  { key: 'GE',       data: geData         as StockData },
+  { key: 'GEN',      data: genData        as StockData },
+  { key: 'GILD',     data: gildData       as StockData },
+  { key: 'GIS',      data: gisData        as StockData },
+  { key: 'GL',       data: glData         as StockData },
+  { key: 'GLW',      data: glwData        as StockData },
+  { key: 'GM',       data: gmData         as StockData },
+  { key: 'GNRC',     data: gnrcData       as StockData },
+  { key: 'GOOGL',    data: googlData      as StockData },
+  { key: 'GPC',      data: gpcData        as StockData },
+  { key: 'GPN',      data: gpnData        as StockData },
+  { key: 'GRMN',     data: grmnData       as StockData },
+  { key: 'GS',       data: gsData         as StockData },
+  { key: 'GWW',      data: gwwData        as StockData },
+  { key: 'HAL',      data: halData        as StockData },
+  { key: 'HAS',      data: hasData        as StockData },
+  { key: 'HBAN',     data: hbanData       as StockData },
+  { key: 'HCA',      data: hcaData        as StockData },
+  { key: 'HD',       data: hdData         as StockData },
+  { key: 'HIG',      data: higData        as StockData },
+  { key: 'HII',      data: hiiData        as StockData },
+  { key: 'HLT',      data: hltData        as StockData },
+  { key: 'HON',      data: honData        as StockData },
+  { key: 'HPE',      data: hpeData        as StockData },
+  { key: 'HPQ',      data: hpqData        as StockData },
+  { key: 'HRL',      data: hrlData        as StockData },
+  { key: 'HSIC',     data: hsicData       as StockData },
+  { key: 'HST',      data: hstData        as StockData },
+  { key: 'HSY',      data: hsyData        as StockData },
+  { key: 'HUBB',     data: hubbData       as StockData },
+  { key: 'HUM',      data: humData        as StockData },
+  { key: 'IBKR',     data: ibkrData       as StockData },
+  { key: 'IBM',      data: ibmData        as StockData },
+  { key: 'ICE',      data: iceData        as StockData },
+  { key: 'IDXX',     data: idxxData       as StockData },
+  { key: 'IEX',      data: iexData        as StockData },
+  { key: 'IFF',      data: iffData        as StockData },
+  { key: 'ILMN',     data: ilmnData       as StockData },
+  { key: 'INCY',     data: incyData       as StockData },
+  { key: 'INTC',     data: intcData       as StockData },
+  { key: 'INTU',     data: intuData       as StockData },
+  { key: 'IP',       data: ipData         as StockData },
+  { key: 'IRM',      data: irmData        as StockData },
+  { key: 'ISRG',     data: isrgData       as StockData },
+  { key: 'IT',       data: itData         as StockData },
+  { key: 'ITW',      data: itwData        as StockData },
+  { key: 'IVZ',      data: ivzData        as StockData },
+  { key: 'J',        data: jData          as StockData },
+  { key: 'JBHT',     data: jbhtData       as StockData },
+  { key: 'JBL',      data: jblData        as StockData },
+  { key: 'JCI',      data: jciData        as StockData },
+  { key: 'JKHY',     data: jkhyData       as StockData },
+  { key: 'JNJ',      data: jnjData        as StockData },
+  { key: 'JPM',      data: jpmData        as StockData },
+  { key: 'KEY',      data: keyData        as StockData },
+  { key: 'KEYS',     data: keysData       as StockData },
+  { key: 'KHC',      data: khcData        as StockData },
+  { key: 'KIM',      data: kimData        as StockData },
+  { key: 'KKR',      data: kkrData        as StockData },
+  { key: 'KLAC',     data: klacData       as StockData },
+  { key: 'KMB',      data: kmbData        as StockData },
+  { key: 'KMI',      data: kmiData        as StockData },
+  { key: 'KO',       data: koData         as StockData },
+  { key: 'KR',       data: krData         as StockData },
+  { key: 'L',        data: lData          as StockData },
+  { key: 'LDOS',     data: ldosData       as StockData },
+  { key: 'LEN',      data: lenData        as StockData },
+  { key: 'LH',       data: lhData         as StockData },
+  { key: 'LII',      data: liiData        as StockData },
+  { key: 'LITE',     data: liteData       as StockData },
+  { key: 'LLY',      data: llyData        as StockData },
+  { key: 'LMT',      data: lmtData        as StockData },
+  { key: 'LNT',      data: lntData        as StockData },
+  { key: 'LOW',      data: lowData        as StockData },
+  { key: 'LRCX',     data: lrcxData       as StockData },
+  { key: 'LULU',     data: luluData       as StockData },
+  { key: 'LUV',      data: luvData        as StockData },
+  { key: 'LVS',      data: lvsData        as StockData },
+  { key: 'LYB',      data: lybData        as StockData },
+  { key: 'LYV',      data: lyvData        as StockData },
+  { key: 'MA',       data: maData         as StockData },
+  { key: 'MAA',      data: maaData        as StockData },
+  { key: 'MAR',      data: marData        as StockData },
+  { key: 'MAS',      data: masData        as StockData },
+  { key: 'MCD',      data: mcdData        as StockData },
+  { key: 'MCHP',     data: mchpData       as StockData },
+  { key: 'MCK',      data: mckData        as StockData },
+  { key: 'MCO',      data: mcoData        as StockData },
+  { key: 'MDLZ',     data: mdlzData       as StockData },
+  { key: 'MDT',      data: mdtData        as StockData },
+  { key: 'MET',      data: metData        as StockData },
+  { key: 'META',     data: metaData       as StockData },
+  { key: 'MGM',      data: mgmData        as StockData },
+  { key: 'MKC',      data: mkcData        as StockData },
+  { key: 'MLM',      data: mlmData        as StockData },
+  { key: 'MMM',      data: mmmData        as StockData },
+  { key: 'MNST',     data: mnstData       as StockData },
+  { key: 'MO',       data: moData         as StockData },
+  { key: 'MOS',      data: mosData        as StockData },
+  { key: 'MPC',      data: mpcData        as StockData },
+  { key: 'MPWR',     data: mpwrData       as StockData },
+  { key: 'MRK',      data: mrkData        as StockData },
+  { key: 'MRVL',     data: mrvlData       as StockData },
+  { key: 'MS',       data: msData         as StockData },
+  { key: 'MSCI',     data: msciData       as StockData },
+  { key: 'MSFT',     data: msftData       as StockData },
+  { key: 'MSI',      data: msiData        as StockData },
+  { key: 'MTB',      data: mtbData        as StockData },
+  { key: 'MTD',      data: mtdData        as StockData },
+  { key: 'MU',       data: muData         as StockData },
+  { key: 'NCLH',     data: nclhData       as StockData },
+  { key: 'NDAQ',     data: ndaqData       as StockData },
+  { key: 'NDSN',     data: ndsnData       as StockData },
+  { key: 'NEE',      data: neeData        as StockData },
+  { key: 'NEM',      data: nemData        as StockData },
+  { key: 'NFLX',     data: nflxData       as StockData },
+  { key: 'NI',       data: niData         as StockData },
+  { key: 'NKE',      data: nkeData        as StockData },
+  { key: 'NOC',      data: nocData        as StockData },
+  { key: 'NOW',      data: nowData        as StockData },
+  { key: 'NRG',      data: nrgData        as StockData },
+  { key: 'NSC',      data: nscData        as StockData },
+  { key: 'NTAP',     data: ntapData       as StockData },
+  { key: 'NTRS',     data: ntrsData       as StockData },
+  { key: 'NUE',      data: nueData        as StockData },
+  { key: 'NVDA',     data: nvdaData       as StockData },
+  { key: 'NVR',      data: nvrData        as StockData },
+  { key: 'NWS',      data: nwsData        as StockData },
+  { key: 'NWSA',     data: nwsaData       as StockData },
+  { key: 'NXPI',     data: nxpiData       as StockData },
+  { key: 'O',        data: oData          as StockData },
+  { key: 'ODFL',     data: odflData       as StockData },
+  { key: 'OKE',      data: okeData        as StockData },
+  { key: 'OMC',      data: omcData        as StockData },
+  { key: 'ON',       data: onData         as StockData },
+  { key: 'ORCL',     data: orclData       as StockData },
+  { key: 'ORLY',     data: orlyData       as StockData },
+  { key: 'OXY',      data: oxyData        as StockData },
+  { key: 'PANW',     data: panwData       as StockData },
+  { key: 'PAYX',     data: payxData       as StockData },
+  { key: 'PCAR',     data: pcarData       as StockData },
+  { key: 'PCG',      data: pcgData        as StockData },
+  { key: 'PEG',      data: pegData        as StockData },
+  { key: 'PEP',      data: pepData        as StockData },
+  { key: 'PFE',      data: pfeData        as StockData },
+  { key: 'PFG',      data: pfgData        as StockData },
+  { key: 'PG',       data: pgData         as StockData },
+  { key: 'PGR',      data: pgrData        as StockData },
+  { key: 'PH',       data: phData         as StockData },
+  { key: 'PHM',      data: phmData        as StockData },
+  { key: 'PKG',      data: pkgData        as StockData },
+  { key: 'PLD',      data: pldData        as StockData },
+  { key: 'PM',       data: pmData         as StockData },
+  { key: 'PNC',      data: pncData        as StockData },
+  { key: 'PNR',      data: pnrData        as StockData },
+  { key: 'PNW',      data: pnwData        as StockData },
+  { key: 'PODD',     data: poddData       as StockData },
+  { key: 'PPG',      data: ppgData        as StockData },
+  { key: 'PPL',      data: pplData        as StockData },
+  { key: 'PRU',      data: pruData        as StockData },
+  { key: 'PSA',      data: psaData        as StockData },
+  { key: 'PSX',      data: psxData        as StockData },
+  { key: 'PTC',      data: ptcData        as StockData },
+  { key: 'PWR',      data: pwrData        as StockData },
+  { key: 'PYPL',     data: pyplData       as StockData },
+  { key: 'QCOM',     data: qcomData       as StockData },
+  { key: 'RCL',      data: rclData        as StockData },
+  { key: 'REG',      data: regData        as StockData },
+  { key: 'REGN',     data: regnData       as StockData },
+  { key: 'RF',       data: rfData         as StockData },
+  { key: 'RJF',      data: rjfData        as StockData },
+  { key: 'RL',       data: rlData         as StockData },
+  { key: 'RMD',      data: rmdData        as StockData },
+  { key: 'RMS',      data: rmsData        as StockData },
+  { key: 'ROK',      data: rokData        as StockData },
+  { key: 'ROL',      data: rolData        as StockData },
+  { key: 'ROP',      data: ropData        as StockData },
+  { key: 'ROST',     data: rostData       as StockData },
+  { key: 'RSG',      data: rsgData        as StockData },
+  { key: 'RVTY',     data: rvtyData       as StockData },
+  { key: 'SBAC',     data: sbacData       as StockData },
+  { key: 'SBUX',     data: sbuxData       as StockData },
+  { key: 'SCHW',     data: schwData       as StockData },
+  { key: 'SHW',      data: shwData        as StockData },
+  { key: 'SJM',      data: sjmData        as StockData },
+  { key: 'SLB',      data: slbData        as StockData },
+  { key: 'SMCI',     data: smciData       as StockData },
+  { key: 'SNA',      data: snaData        as StockData },
+  { key: 'SNPS',     data: snpsData       as StockData },
+  { key: 'SO',       data: soData         as StockData },
+  { key: 'SPG',      data: spgData        as StockData },
+  { key: 'SPGI',     data: spgiData       as StockData },
+  { key: 'SRE',      data: sreData        as StockData },
+  { key: 'STE',      data: steData        as StockData },
+  { key: 'STLD',     data: stldData       as StockData },
+  { key: 'STT',      data: sttData        as StockData },
+  { key: 'STX',      data: stxData        as StockData },
+  { key: 'STZ',      data: stzData        as StockData },
+  { key: 'SWK',      data: swkData        as StockData },
+  { key: 'SWKS',     data: swksData       as StockData },
+  { key: 'SYF',      data: syfData        as StockData },
+  { key: 'SYK',      data: sykData        as StockData },
+  { key: 'SYY',      data: syyData        as StockData },
+  { key: 'T',        data: tData          as StockData },
+  { key: 'TDG',      data: tdgData        as StockData },
+  { key: 'TDY',      data: tdyData        as StockData },
+  { key: 'TECH',     data: techData       as StockData },
+  { key: 'TEL',      data: telData        as StockData },
+  { key: 'TER',      data: terData        as StockData },
+  { key: 'TGT',      data: tgtData        as StockData },
+  { key: 'TJX',      data: tjxData        as StockData },
+  { key: 'TMO',      data: tmoData        as StockData },
+  { key: 'TMUS',     data: tmusData       as StockData },
+  { key: 'TPL',      data: tplData        as StockData },
+  { key: 'TPR',      data: tprData        as StockData },
+  { key: 'TRGP',     data: trgpData       as StockData },
+  { key: 'TRMB',     data: trmbData       as StockData },
+  { key: 'TROW',     data: trowData       as StockData },
+  { key: 'TRV',      data: trvData        as StockData },
+  { key: 'TSCO',     data: tscoData       as StockData },
+  { key: 'TSLA',     data: tslaData       as StockData },
+  { key: 'TSN',      data: tsnData        as StockData },
+  { key: 'TT',       data: ttData         as StockData },
+  { key: 'TTWO',     data: ttwoData       as StockData },
+  { key: 'TXN',      data: txnData        as StockData },
+  { key: 'TXT',      data: txtData        as StockData },
+  { key: 'TYL',      data: tylData        as StockData },
+  { key: 'UAL',      data: ualData        as StockData },
+  { key: 'UDR',      data: udrData        as StockData },
+  { key: 'UHS',      data: uhsData        as StockData },
+  { key: 'ULTA',     data: ultaData       as StockData },
+  { key: 'UNH',      data: unhData        as StockData },
+  { key: 'UNP',      data: unpData        as StockData },
+  { key: 'UPS',      data: upsData        as StockData },
+  { key: 'URI',      data: uriData        as StockData },
+  { key: 'USB',      data: usbData        as StockData },
+  { key: 'V',        data: vData          as StockData },
+  { key: 'VEEV',     data: veevData       as StockData },
+  { key: 'VLO',      data: vloData        as StockData },
+  { key: 'VMC',      data: vmcData        as StockData },
+  { key: 'VRSK',     data: vrskData       as StockData },
+  { key: 'VRSN',     data: vrsnData       as StockData },
+  { key: 'VRTX',     data: vrtxData       as StockData },
+  { key: 'VTR',      data: vtrData        as StockData },
+  { key: 'VZ',       data: vzData         as StockData },
+  { key: 'WAB',      data: wabData        as StockData },
+  { key: 'WAT',      data: watData        as StockData },
+  { key: 'WDAY',     data: wdayData       as StockData },
+  { key: 'WDC',      data: wdcData        as StockData },
+  { key: 'WEC',      data: wecData        as StockData },
+  { key: 'WELL',     data: wellData       as StockData },
+  { key: 'WFC',      data: wfcData        as StockData },
+  { key: 'WM',       data: wmData         as StockData },
+  { key: 'WMB',      data: wmbData        as StockData },
+  { key: 'WMT',      data: wmtData        as StockData },
+  { key: 'WRB',      data: wrbData        as StockData },
+  { key: 'WSM',      data: wsmData        as StockData },
+  { key: 'WST',      data: wstData        as StockData },
+  { key: 'WTW',      data: wtwData        as StockData },
+  { key: 'WY',       data: wyData         as StockData },
+  { key: 'WYNN',     data: wynnData       as StockData },
+  { key: 'XEL',      data: xelData        as StockData },
+  { key: 'XOM',      data: xomData        as StockData },
+  { key: 'XYL',      data: xylData        as StockData },
+  { key: 'YUM',      data: yumData        as StockData },
+  { key: 'ZBH',      data: zbhData        as StockData },
+  { key: 'ZBRA',     data: zbraData       as StockData },
+  { key: 'ZTS',      data: ztsData        as StockData },
 ]
 
 // ── 색상 유틸 ───────────────────────────────────────────────
@@ -975,7 +1347,7 @@ function RangeBar({
   const fmt = (v: number) => `${sign && v > 0 ? '+' : ''}${v.toFixed(1)}${unit}`
 
   return (
-    <div className="relative group flex items-center" style={{ width: 180, height: 44 }}>
+    <div className="relative group flex items-center" style={{ width: 120, height: 44 }}>
       {/* 배경 트랙 */}
       <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-3 bg-gray-100 dark:bg-gray-800 rounded-full" />
       {/* min~max 구간 바 */}
