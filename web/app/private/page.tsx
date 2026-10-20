@@ -23,6 +23,7 @@ import brkbData  from '@/public/data/rolling/BRKB_rolling.json'
 import llyData   from '@/public/data/rolling/LLY_rolling.json'
 import avgoData  from '@/public/data/rolling/AVGO_rolling.json'
 import tslaData  from '@/public/data/rolling/TSLA_rolling.json'
+import jnjData   from '@/public/data/rolling/JNJ_rolling.json'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Tooltip, Legend)
 
@@ -44,6 +45,7 @@ const STOCKS: Array<{ key: string; data: StockData }> = [
   { key: 'BRK-B', data: brkbData  as StockData },
   { key: 'NKE',   data: nkeData   as StockData },
   { key: 'KO',    data: koData    as StockData },
+  { key: 'JNJ',   data: jnjData   as StockData },
 ]
 
 // ── 색상 유틸 ───────────────────────────────────────────────

@@ -828,6 +828,9 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 | `data/rolling/MSFT_10y_annual.csv` | `analyze_msft.py` | MSFT (마이크로소프트) | 10년 연말 매수 롤링 (1986년부터) |
 | `data/rolling/MSFT_5y_annual.csv` | `analyze_msft.py` | MSFT | 5년 연말 매수 롤링 |
 | `data/rolling/MSFT_10y_monthly.csv` | `analyze_msft.py` | MSFT | 10년 월말 매수 롤링 |
+| `data/rolling/JNJ_10y_annual.csv` | `analyze_jnj.py` | JNJ (존슨앤존슨) | 10년 연말 매수 롤링 (1970년부터) |
+| `data/rolling/JNJ_5y_annual.csv` | `analyze_jnj.py` | JNJ | 5년 연말 매수 롤링 |
+| `data/rolling/JNJ_10y_monthly.csv` | `analyze_jnj.py` | JNJ | 10년 월말 매수 롤링 |
 
 ### 롤링 JSON (export 스크립트 출력)
 
@@ -844,6 +847,17 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 | `web/public/data/rolling/AMZN_rolling.json` | ~30 KB | AMZN (아마존) | EDGAR XBRL CIK 0001018724, FY2007~2019÷20, FY2020~2025 소급 반영 |
 | `web/public/data/rolling/NVDA_rolling.json` | ~50 KB | NVDA (엔비디아) | EDGAR XBRL CIK 0001045810, FY2008~2019÷40, FY2020~2022÷10, FY2023~조정없음 |
 | `web/public/data/rolling/MSFT_rolling.json` | ~60 KB | MSFT (마이크로소프트) | EDGAR XBRL (FY2008~2026), FY1993~2007 AI 역산 추정 (384:1 분할 반영) |
+| `web/public/data/rolling/JNJ_rolling.json` | ~60 KB | JNJ (존슨앤존슨) | EDGAR XBRL CIK 0000200406 (FY2007~2025), 2001년까지 128:1 분할 반영 완료 |
+
+**JNJ 파라미터:**
+- 매수 시작: 1970년 말 (Yahoo Finance 시작 시점)
+- 벤치마크: S&P 500 (^SP500TR)
+- 통화: USD
+- 완결 구간: 46개 (1970~2015 연말 매수), 중앙값 연평균 수익률 12.3%
+- 손실 구간: 0개 (10년 기준)
+- S&P500 초과: 30/46개 (65%)
+- EPS 일회성 왜곡: 2011(리콜·법적 비용), 2017(TCJA), 2020(COVID-19), 2023(Kenvue 분사 이익)
+- 분할 이력: 2:1×7회(1970·1981·1989·1992·1996·1999·2001) → 누적 128:1, 2001-06-04 이후 분할 없음
 
 **KO 파라미터:**
 - 매수 시작: 1988년 말 (연말 매수 기준)
