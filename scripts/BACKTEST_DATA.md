@@ -920,3 +920,25 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 - 회계연도: 5월 31일 종료 (달력 연도 Y = FY(Y) EPS 기준)
 
 **사용처:** `/app/private` (개별 종목 10년 롤링 분석 페이지)
+
+### S&P500 전 종목 배치 롤링 JSON
+
+재실행: `python scripts/generate_all_sp500.py`  
+(이미 존재하는 파일은 건너뜀 — 강제 재생성 시 `ALREADY_DONE` 집합 비우거나 해당 JSON 삭제 후 실행)
+
+| 파일 패턴 | 스크립트 | 종목 수 | 내용 |
+|-----------|----------|---------|------|
+| `web/public/data/rolling/{TICKER}_rolling.json` | `generate_all_sp500.py` | 448개 | S&P500 전 종목 10년 롤링 연평균 수익률 (연말 매수, ^SP500TR 벤치마크) |
+
+**1차 배치 (2026-10):** 233개 신규 생성, 7개 건너뜀(기존), 3개 오류 (MMC·DVN·EBAY)  
+**2차 배치 (2026-10):** 186개 신규 생성, 240개 건너뜀(기존), 7개 오류 (MMC·VST·HWM·BE·EXE·FTV·TWLO)  
+
+**오류 원인:**
+- `MMC`: yfinance 데이터 없음 (sp500-holdings data.ts에 잘못된 티커 `MRSH` 등록 — 실제 티커는 `MMC`인데 yfinance 조회 실패)
+- `VST·HWM·BE·EXE·FTV·TWLO`: `'n_complete'` KeyError — 완결된 10년 롤링 구간이 0개 (상장·분사 시점이 너무 최근)
+
+**제외 종목 (~55개):** ABNB, CARR, CEG, GEV, GEHC 등 2019년 이후 상장/분사된 종목은 10년 롤링 분석 불가로 처음부터 제외
+
+**JSON 구조:** `{ ticker, name, rows10y, stats, fullPeriod, epsDecomp }` (epsDecomp는 배치 생성 시 빈 배열)
+
+**사용처:** `/app/private` (드롭다운에서 448개 종목 선택 → 10년 롤링 차트 + 분포 바 표시)
