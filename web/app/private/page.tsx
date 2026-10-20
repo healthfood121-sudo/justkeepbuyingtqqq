@@ -1491,9 +1491,13 @@ function OverviewTable({
     return sortDir === 'desc' ? vb - va : va - vb
   })
 
-  const cagrVMax = Math.ceil(Math.max(...allRows.map(r => r.cagrMx)) / 10) * 10
-  const diffVMax = Math.ceil(Math.max(...allRows.filter(r => r.diffMx != null).map(r => r.diffMx!)) / 10) * 10
-  const diffVMin = Math.floor(Math.min(...allRows.filter(r => r.diffMn != null).map(r => r.diffMn!)) / 10) * 10
+  function percentile(arr: number[], p: number) {
+    const s = [...arr].sort((a, b) => a - b)
+    return s[Math.min(Math.floor(s.length * p), s.length - 1)]
+  }
+  const cagrVMax = Math.ceil(percentile(allRows.map(r => r.cagrMx), 0.95) / 10) * 10
+  const diffVMax = Math.ceil(percentile(allRows.filter(r => r.diffMx != null).map(r => r.diffMx!), 0.95) / 10) * 10
+  const diffVMin = Math.floor(percentile(allRows.filter(r => r.diffMn != null).map(r => r.diffMn!), 0.05) / 10) * 10
 
   const rows = allRows.filter(row => {
     const q = search.trim().toLowerCase()
