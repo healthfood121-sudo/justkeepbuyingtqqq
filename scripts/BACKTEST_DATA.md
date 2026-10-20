@@ -831,6 +831,9 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 | `data/rolling/JNJ_10y_annual.csv` | `analyze_jnj.py` | JNJ (존슨앤존슨) | 10년 연말 매수 롤링 (1970년부터) |
 | `data/rolling/JNJ_5y_annual.csv` | `analyze_jnj.py` | JNJ | 5년 연말 매수 롤링 |
 | `data/rolling/JNJ_10y_monthly.csv` | `analyze_jnj.py` | JNJ | 10년 월말 매수 롤링 |
+| `data/rolling/JPM_10y_annual.csv` | `analyze_jpm.py` | JPM (JP모건 체이스) | 10년 연말 매수 롤링 (1980년부터) |
+| `data/rolling/JPM_5y_annual.csv` | `analyze_jpm.py` | JPM | 5년 연말 매수 롤링 |
+| `data/rolling/JPM_10y_monthly.csv` | `analyze_jpm.py` | JPM | 10년 월말 매수 롤링 |
 
 ### 롤링 JSON (export 스크립트 출력)
 
@@ -848,6 +851,17 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 | `web/public/data/rolling/NVDA_rolling.json` | ~50 KB | NVDA (엔비디아) | EDGAR XBRL CIK 0001045810, FY2008~2019÷40, FY2020~2022÷10, FY2023~조정없음 |
 | `web/public/data/rolling/MSFT_rolling.json` | ~60 KB | MSFT (마이크로소프트) | EDGAR XBRL (FY2008~2026), FY1993~2007 AI 역산 추정 (384:1 분할 반영) |
 | `web/public/data/rolling/JNJ_rolling.json` | ~60 KB | JNJ (존슨앤존슨) | EDGAR XBRL CIK 0000200406 (FY2007~2025), 2001년까지 128:1 분할 반영 완료 |
+| `web/public/data/rolling/JPM_rolling.json` | ~60 KB | JPM (JP모건 체이스) | EDGAR XBRL CIK 0000019617 (2007~2025) + AI 역산 추정 (2001~2006), 분할 없음 |
+
+**JPM 파라미터:**
+- 매수 시작: 1980년 말 (Yahoo Finance 시작 시점)
+- 벤치마크: S&P 500 (^SP500TR)
+- 통화: USD
+- 완결 구간: 36개 (1980~2015 연말 매수), 중앙값 연평균 수익률 10.6%
+- 손실 구간: 2개 (1980년 말 매수 -0.3%, 1998년 말 매수 -0.6%)
+- S&P500 초과: 26/36개 (72%)
+- EPS 일회성 왜곡: 2002(WorldCom 손실), 2008(금융위기), 2013(London Whale + DOJ), 2020(COVID-19)
+- 현 법인(JPMorgan Chase) 완성: 2001년 Chemical Banking + J.P. Morgan 합병, 2004년 Bank One 합병. 주식 분할 없음.
 
 **JNJ 파라미터:**
 - 매수 시작: 1970년 말 (Yahoo Finance 시작 시점)
