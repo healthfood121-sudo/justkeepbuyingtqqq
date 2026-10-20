@@ -621,7 +621,7 @@ function OverviewTable({
             <th colSpan={4} className="text-center pb-1 px-3 border-b border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold">
               절대 수익률 <span className="font-normal opacity-60">(배당 포함)</span>
             </th>
-            <th colSpan={4} className="text-center pb-1 px-3 border-b border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold">
+            <th colSpan={4} className="text-center pb-1 px-3 border-b border-l-2 border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold">
               S&P 500 대비 초과수익
             </th>
           </tr>
@@ -630,7 +630,7 @@ function OverviewTable({
             <SortTh col="cagrMn"  className="text-right py-1 pr-3 font-medium">최솟값</SortTh>
             <SortTh col="cagrMed" className="text-right py-1 pr-3 font-medium">중앙값</SortTh>
             <SortTh col="cagrMx"  className="text-right py-1 pr-4 font-medium">최댓값</SortTh>
-            <th className="text-left py-1 px-3 font-medium">분포</th>
+            <th className="text-left py-1 px-3 font-medium border-l-2 border-gray-200 dark:border-gray-700">분포</th>
             <SortTh col="diffMn"  className="text-right py-1 pr-3 font-medium">최솟값</SortTh>
             <SortTh col="diffMed" className="text-right py-1 pr-3 font-medium">중앙값</SortTh>
             <SortTh col="diffMx"  className="text-right py-1 font-medium">최댓값</SortTh>
@@ -666,7 +666,7 @@ function OverviewTable({
                   {cagrMx.toFixed(1)}%
                 </td>
                 {/* S&P500 초과수익 */}
-                <td className="py-3 px-3">
+                <td className="py-3 px-3 border-l-2 border-gray-200 dark:border-gray-700">
                   {diffMn != null && diffMed != null && diffMx != null ? (
                     <RangeBar mn={diffMn} med={diffMed} mx={diffMx}
                       vMin={-15} vMax={25} refVal={0} refLabel="0pp = S&P500과 동일"
