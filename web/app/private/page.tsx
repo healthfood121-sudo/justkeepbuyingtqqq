@@ -651,7 +651,7 @@ function OverviewTable({
                   isActive ? 'bg-blue-50/60 dark:bg-blue-900/10' : ''
                 }`}
               >
-                <td className="py-3 pr-4">
+                <td className="py-1.5 pr-4">
                   <div className="group/name relative inline-flex items-baseline gap-1.5 max-w-[140px]">
                     <span className="font-semibold text-gray-900 dark:text-white whitespace-nowrap">{s.data.ticker}</span>
                     <span className="text-xs text-gray-400 dark:text-gray-500 truncate">{s.data.name}</span>
@@ -666,21 +666,21 @@ function OverviewTable({
                   </div>
                 </td>
                 {/* 절대 수익률 */}
-                <td className="py-3 px-3">
+                <td className="py-1.5 px-3">
                   <RangeBar mn={cagrMn} med={cagrMed} mx={cagrMx}
                     vMin={0} vMax={35} refVal={20} refLabel="연 20% 기준" />
                 </td>
-                <td className={`py-3 pr-3 text-right tabular-nums ${cagrTextColor(cagrMn, true)} ${colBg('cagrMn')}`}>
+                <td className={`py-1.5 pr-3 text-right tabular-nums ${cagrTextColor(cagrMn, true)} ${colBg('cagrMn')}`}>
                   {cagrMn.toFixed(1)}%
                 </td>
-                <td className={`py-3 pr-3 text-right tabular-nums font-semibold ${cagrTextColor(cagrMed, true)} ${colBg('cagrMed')}`}>
+                <td className={`py-1.5 pr-3 text-right tabular-nums font-semibold ${cagrTextColor(cagrMed, true)} ${colBg('cagrMed')}`}>
                   {cagrMed.toFixed(1)}%
                 </td>
-                <td className={`py-3 pr-4 text-right tabular-nums ${cagrTextColor(cagrMx, true)} ${colBg('cagrMx')}`}>
+                <td className={`py-1.5 pr-4 text-right tabular-nums ${cagrTextColor(cagrMx, true)} ${colBg('cagrMx')}`}>
                   {cagrMx.toFixed(1)}%
                 </td>
                 {/* S&P500 초과수익 */}
-                <td className="py-3 px-3 border-l-2 border-gray-200 dark:border-gray-700">
+                <td className="py-1.5 px-3 border-l-2 border-gray-200 dark:border-gray-700">
                   {diffMn != null && diffMed != null && diffMx != null ? (
                     <RangeBar mn={diffMn} med={diffMed} mx={diffMx}
                       vMin={-15} vMax={25} refVal={0} refLabel="0pp = S&P500과 동일"
@@ -690,13 +690,13 @@ function OverviewTable({
                       sign unit="pp" />
                   ) : <span className="text-gray-300 dark:text-gray-600 text-xs pl-3">—</span>}
                 </td>
-                <td className={`py-3 pr-3 text-right tabular-nums ${diffMn != null ? diffColor(diffMn) : 'text-gray-300'} ${colBg('diffMn')}`}>
+                <td className={`py-1.5 pr-3 text-right tabular-nums ${diffMn != null ? diffColor(diffMn) : 'text-gray-300'} ${colBg('diffMn')}`}>
                   {diffMn != null ? `${diffMn > 0 ? '+' : ''}${diffMn.toFixed(1)}pp` : '—'}
                 </td>
-                <td className={`py-3 pr-3 text-right tabular-nums font-semibold ${diffMed != null ? diffColor(diffMed) : 'text-gray-300'} ${colBg('diffMed')}`}>
+                <td className={`py-1.5 pr-3 text-right tabular-nums font-semibold ${diffMed != null ? diffColor(diffMed) : 'text-gray-300'} ${colBg('diffMed')}`}>
                   {diffMed != null ? `${diffMed > 0 ? '+' : ''}${diffMed.toFixed(1)}pp` : '—'}
                 </td>
-                <td className={`py-3 text-right tabular-nums ${diffMx != null ? diffColor(diffMx) : 'text-gray-300'} ${colBg('diffMx')}`}>
+                <td className={`py-1.5 text-right tabular-nums ${diffMx != null ? diffColor(diffMx) : 'text-gray-300'} ${colBg('diffMx')}`}>
                   {diffMx != null ? `${diffMx > 0 ? '+' : ''}${diffMx.toFixed(1)}pp` : '—'}
                 </td>
               </tr>
