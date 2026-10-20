@@ -183,7 +183,7 @@ def get_metrics(ticker: str) -> dict:
         "eps":      round(eps, 2) if eps else None,
     }
 
-print("[현재 지표 조회] NKE, RMS.PA, KO, AAPL, COST, GOOGL, META, NVDA, AMZN, MSFT, WMT, BRK-B, LLY, AVGO, TSLA, JNJ ...")
+print("[현재 지표 조회] NKE, RMS.PA, KO, AAPL, COST, GOOGL, META, NVDA, AMZN, MSFT, WMT, BRK-B, LLY, AVGO, TSLA, JNJ, JPM ...")
 nke_metrics   = get_metrics("NKE")
 rms_metrics   = get_metrics("RMS.PA")
 ko_metrics    = get_metrics("KO")
@@ -200,6 +200,7 @@ lly_metrics   = get_metrics("LLY")
 avgo_metrics  = get_metrics("AVGO")
 tsla_metrics  = get_metrics("TSLA")
 jnj_metrics   = get_metrics("JNJ")
+jpm_metrics   = get_metrics("JPM")
 print(f"  NKE:    {nke_metrics}")
 print(f"  RMS.PA: {rms_metrics}")
 print(f"  KO:     {ko_metrics}")
@@ -216,6 +217,7 @@ print(f"  LLY:    {lly_metrics}")
 print(f"  AVGO:   {avgo_metrics}")
 print(f"  TSLA:   {tsla_metrics}")
 print(f"  JNJ:    {jnj_metrics}")
+print(f"  JPM:    {jpm_metrics}")
 
 nke_out = {
     "ticker":    "NKE",
@@ -1532,5 +1534,233 @@ jnj_out = {
 out_path16 = DST / "JNJ_rolling.json"
 out_path16.write_text(json.dumps(jnj_out, ensure_ascii=False, indent=2), encoding="utf-8")
 print(f"  저장 → {out_path16}")
+
+# ── JPM EPS 데이터 ─────────────────────────────────────────────
+# JP모건 체이스 회계연도 = 달력연도 (12월 31일 종료)
+# 현 법인(JPMorgan Chase & Co.) 탄생: 2001년 Chemical Banking + J.P. Morgan 합병
+# 2004년 Bank One 추가 합병 (현재 구조 완성)
+#
+# 주식 분할 이력:
+#   JPMorgan Chase(2001 이후) 및 직전 법인 모두 추가 분할 없음
+#   → EPS 추가 조정 불필요
+#
+# 출처:
+#   2007~2025: SEC EDGAR XBRL CIK 0000019617 (EarningsPerShareDiluted, USD/shares, 10-K)
+#   2001~2006: AI 역산 추정치 (macrotrends 참고, JPMorgan Chase 합병 이후 기준)
+#   2000년 이전: 합병 전 법인(Chemical Banking/Chase Manhattan) EPS는 현재 기준 비교 불가로 미수록
+#
+# 주요 EPS 왜곡 연도:
+#   2002: 텔레콤 버블 붕괴(WorldCom 손실 등) + 9/11 여파로 신용 손실 급증 → EPS $0.80
+#   2008: 금융위기 — Bear Stearns·WaMu 인수, 모기지 손실 → EPS $1.35
+#   2013: London Whale 거래 손실 + DOJ 합의금 $13B 일회성 비용 → EPS $4.34
+#   2020: COVID-19 — 대규모 대손충당금 설정 → EPS $8.88(정상화 전 $10.72)
+_JPM_EPS = {
+    # 2001~2006: AI 역산 추정치 (macrotrends 참고)
+    2001:  1.76,
+    2002:  0.80,
+    2003:  2.26,
+    2004:  2.31,
+    2005:  3.37,
+    2006:  4.04,
+    # 2007~2025: SEC EDGAR XBRL (추가 조정 불필요)
+    2007:  4.33,
+    2008:  1.35,
+    2009:  2.26,
+    2010:  3.96,
+    2011:  4.48,
+    2012:  5.20,
+    2013:  4.34,
+    2014:  5.29,
+    2015:  6.00,
+    2016:  6.19,
+    2017:  6.31,
+    2018:  9.00,
+    2019: 10.72,
+    2020:  8.88,
+    2021: 15.36,
+    2022: 12.09,
+    2023: 16.23,
+    2024: 19.75,
+    2025: 20.02,
+}
+_JPM_ONE_TIME = {
+    2002: "텔레콤 버블 붕괴 + WorldCom 손실 + 9/11 여파(EPS $0.80, 전년 대비 -55%)",
+    2008: "금융위기 — Bear Stearns·WaMu 인수, 모기지 손실(EPS $1.35)",
+    2013: "London Whale 거래 손실 + DOJ 합의금 $13B 일회성 비용(EPS $4.34)",
+    2020: "COVID-19 대규모 대손충당금 설정(EPS $8.88, 정상 수준 대비 약 -17%)",
+}
+
+# ── JPM ───────────────────────────────────────────────────────
+print("[JPM] 데이터 로드...")
+az_jpm = RollingAnalyzer("JPM", benchmark="^SP500TR")
+df10a_jpm = pd.read_csv(SRC / "JPM_10y_annual.csv", parse_dates=["buy_date","sell_date"])
+df5a_jpm  = pd.read_csv(SRC / "JPM_5y_annual.csv",  parse_dates=["buy_date","sell_date"])
+fp_jpm = az_jpm.full_period()
+st_jpm = summary_stats(df10a_jpm, label="JPM")
+
+loss5_jpm = df5a_jpm[df5a_jpm["is_complete"] & (df5a_jpm["cagr"] < 0)]
+
+jpm_out = {
+    "ticker":    "JPM",
+    "name":      "JP모건 체이스",
+    "currency":  "USD",
+    "benchmark": "S&P 500",
+    "note":      "1980년부터 Yahoo Finance 데이터. 현 법인(JPMorgan Chase)은 2001년 Chemical Banking + J.P. Morgan 합병, 2004년 Bank One 합병으로 완성. 주식 분할 없음. 2000년 이전 구간은 합병 전 법인 데이터 포함.",
+    "current":   jpm_metrics,
+    "fullPeriod": fp_jpm,
+    "stats": {
+        "n":        st_jpm["n_complete"],
+        "min":      st_jpm["min_cagr"],
+        "minBuy":   st_jpm["min_buy"],
+        "median":   st_jpm["median_cagr"],
+        "mean":     st_jpm["mean_cagr"],
+        "max":      st_jpm["max_cagr"],
+        "maxBuy":   st_jpm["max_buy"],
+        "over10":   st_jpm["pct_over_10"],
+        "over15":   st_jpm["pct_over_15"],
+        "over20":   st_jpm["pct_over_20"],
+        "losses":   st_jpm["n_losses"],
+        "beatBench":  st_jpm.get("n_beat_bench"),
+        "beatTotal":  st_jpm.get("n_beat_bench_total"),
+    },
+    "rows10y": df_to_rows(df10a_jpm, _JPM_EPS),
+    "loss5y": [
+        {"buyYear": int(r["buy_date"].year), "sellYear": int(r["sell_date"].year), "cagr": float(r["cagr"])}
+        for _, r in loss5_jpm.iterrows()
+    ],
+    "epsDecomp": compute_eps_decomp(df10a_jpm, _JPM_EPS, _JPM_ONE_TIME),
+    "epsNote": "EPS 출처: SEC EDGAR XBRL CIK 0000019617 (2007~2025). 2001~2006년은 AI 역산 추정치 (macrotrends 참고). 주식 분할 없어 조정 불필요. EPS 분해는 2001년 이후 매수 구간에만 적용. PER은 Yahoo Finance 배당조정 종가 기준.",
+}
+
+out_path17 = DST / "JPM_rolling.json"
+out_path17.write_text(json.dumps(jpm_out, ensure_ascii=False, indent=2), encoding="utf-8")
+print(f"  저장 → {out_path17}")
+
+# ── 레버리지 ETF (QQQ / QLD / TQQQ) ─────────────────────────
+# 합성가격 방식: data_loader.py 'with_costs' 모드
+#   QQQ  (1x): NDX × 1 − 운용보수 0.20%/년
+#   QLD  (2x): NDX × 2 − (SOFR + 0.50%) × 1 − 운용보수 0.95%/년
+#   TQQQ (3x): NDX × 3 − (SOFR + 0.50%) × 2 − 운용보수 0.88%/년
+# NDX 데이터: 1971-02-05~ (1985-10-01 이전은 스플라이스 전 구간)
+# 벤치마크: S&P 500 TR (기존 종목과 동일 기준)
+# EPS 분해 없음 (ETF는 개별 주식 EPS 개념 없음)
+# type: "etf" 플래그 → UI에서 시나리오 테이블 숨김
+
+import sys as _sys
+_sys.path.insert(0, str(Path(__file__).parent))
+from data_loader import load_ndx_prices as _load_ndx
+from rolling_analysis import full_period_cagr as _fp_cagr
+
+print("[레버리지 ETF] 합성가격 로드 (with_costs)...")
+_etf_d     = _load_ndx('with_costs')
+_etf_dates = _etf_d['dates']
+_qqq_s  = pd.Series(_etf_d['ndx1x'], index=_etf_dates, name='QQQ')
+_qld_s  = pd.Series(_etf_d['ndx2x'], index=_etf_dates, name='QLD')
+_tqqq_s = pd.Series(_etf_d['ndx3x'], index=_etf_dates, name='TQQQ')
+
+print("[현재 지표 조회] QQQ, QLD, TQQQ ...")
+qqq_metrics  = get_metrics("QQQ")
+qld_metrics  = get_metrics("QLD")
+tqqq_metrics = get_metrics("TQQQ")
+print(f"  QQQ:  {qqq_metrics}")
+print(f"  QLD:  {qld_metrics}")
+print(f"  TQQQ: {tqqq_metrics}")
+
+fp_qqq_etf  = _fp_cagr(_qqq_s)
+fp_qld_etf  = _fp_cagr(_qld_s)
+fp_tqqq_etf = _fp_cagr(_tqqq_s)
+
+df10a_qqq  = pd.read_csv(SRC / "QQQ_10y_annual.csv",  parse_dates=["buy_date","sell_date"])
+df5a_qqq   = pd.read_csv(SRC / "QQQ_5y_annual.csv",   parse_dates=["buy_date","sell_date"])
+df10a_qld  = pd.read_csv(SRC / "QLD_10y_annual.csv",  parse_dates=["buy_date","sell_date"])
+df5a_qld   = pd.read_csv(SRC / "QLD_5y_annual.csv",   parse_dates=["buy_date","sell_date"])
+df10a_tqqq = pd.read_csv(SRC / "TQQQ_10y_annual.csv", parse_dates=["buy_date","sell_date"])
+df5a_tqqq  = pd.read_csv(SRC / "TQQQ_5y_annual.csv",  parse_dates=["buy_date","sell_date"])
+
+st_qqq  = summary_stats(df10a_qqq,  "QQQ")
+st_qld  = summary_stats(df10a_qld,  "QLD")
+st_tqqq = summary_stats(df10a_tqqq, "TQQQ")
+
+loss5_qqq  = df5a_qqq [df5a_qqq ["is_complete"] & (df5a_qqq ["cagr"] < 0)]
+loss5_qld  = df5a_qld [df5a_qld ["is_complete"] & (df5a_qld ["cagr"] < 0)]
+loss5_tqqq = df5a_tqqq[df5a_tqqq["is_complete"] & (df5a_tqqq["cagr"] < 0)]
+
+_ETF_COMMON_NOTE = "합성가격: NDX 일별수익률 기반, 스왑금리(SOFR+0.50%/년)·운용보수 차감. 1985-10-01 이전은 스플라이스 전 구간 (NDX 공식 출범 전). 실제 ETF 상장일과 무관하게 NDX 역사 전체 시뮬레이션."
+
+def _etf_stats(st):
+    return {
+        "n":        st["n_complete"],
+        "min":      st["min_cagr"],
+        "minBuy":   st["min_buy"],
+        "median":   st["median_cagr"],
+        "mean":     st["mean_cagr"],
+        "max":      st["max_cagr"],
+        "maxBuy":   st["max_buy"],
+        "over10":   st["pct_over_10"],
+        "over15":   st["pct_over_15"],
+        "over20":   st["pct_over_20"],
+        "losses":   st["n_losses"],
+        "beatBench":  st.get("n_beat_bench"),
+        "beatTotal":  st.get("n_beat_bench_total"),
+    }
+
+def _loss5_rows(df):
+    return [
+        {"buyYear": int(r["buy_date"].year), "sellYear": int(r["sell_date"].year), "cagr": float(r["cagr"])}
+        for _, r in df.iterrows()
+    ]
+
+qqq_out = {
+    "ticker":     "QQQ",
+    "name":       "나스닥100",
+    "currency":   "USD",
+    "benchmark":  "S&P 500",
+    "type":       "etf",
+    "note":       _ETF_COMMON_NOTE + " | QQQ 운용보수: 0.20%/년",
+    "current":    qqq_metrics,
+    "fullPeriod": fp_qqq_etf,
+    "stats":      _etf_stats(st_qqq),
+    "rows10y":    df_to_rows(df10a_qqq),
+    "loss5y":     _loss5_rows(loss5_qqq),
+    "epsDecomp":  [],
+    "epsNote":    "",
+}
+
+qld_out = {
+    "ticker":     "QLD",
+    "name":       "나스닥100 2배",
+    "currency":   "USD",
+    "benchmark":  "S&P 500",
+    "type":       "etf",
+    "note":       _ETF_COMMON_NOTE + " | QLD 운용보수: 0.95%/년, 스왑비용: SOFR+0.50%×1",
+    "current":    qld_metrics,
+    "fullPeriod": fp_qld_etf,
+    "stats":      _etf_stats(st_qld),
+    "rows10y":    df_to_rows(df10a_qld),
+    "loss5y":     _loss5_rows(loss5_qld),
+    "epsDecomp":  [],
+    "epsNote":    "",
+}
+
+tqqq_out = {
+    "ticker":     "TQQQ",
+    "name":       "나스닥100 3배",
+    "currency":   "USD",
+    "benchmark":  "S&P 500",
+    "type":       "etf",
+    "note":       _ETF_COMMON_NOTE + " | TQQQ 운용보수: 0.88%/년, 스왑비용: SOFR+0.50%×2",
+    "current":    tqqq_metrics,
+    "fullPeriod": fp_tqqq_etf,
+    "stats":      _etf_stats(st_tqqq),
+    "rows10y":    df_to_rows(df10a_tqqq),
+    "loss5y":     _loss5_rows(loss5_tqqq),
+    "epsDecomp":  [],
+    "epsNote":    "",
+}
+
+for ticker, out_obj in [("QQQ", qqq_out), ("QLD", qld_out), ("TQQQ", tqqq_out)]:
+    p = DST / f"{ticker}_rolling.json"
+    p.write_text(json.dumps(out_obj, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"  저장 → {p}")
 
 print("\n[완료]")

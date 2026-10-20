@@ -24,12 +24,19 @@ import llyData   from '@/public/data/rolling/LLY_rolling.json'
 import avgoData  from '@/public/data/rolling/AVGO_rolling.json'
 import tslaData  from '@/public/data/rolling/TSLA_rolling.json'
 import jnjData   from '@/public/data/rolling/JNJ_rolling.json'
+import jpmData   from '@/public/data/rolling/JPM_rolling.json'
+import qqqData   from '@/public/data/rolling/QQQ_rolling.json'
+import qldData   from '@/public/data/rolling/QLD_rolling.json'
+import tqqqData  from '@/public/data/rolling/TQQQ_rolling.json'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Tooltip, Legend)
 
 type StockData = typeof nkeData
 
 const STOCKS: Array<{ key: string; data: StockData }> = [
+  { key: 'QQQ',   data: qqqData   as StockData },
+  { key: 'QLD',   data: qldData   as StockData },
+  { key: 'TQQQ',  data: tqqqData  as StockData },
   { key: 'MSFT',  data: msftData  as StockData },
   { key: 'AAPL',  data: aaplData  as StockData },
   { key: 'NVDA',  data: nvdaData  as StockData },
@@ -46,6 +53,7 @@ const STOCKS: Array<{ key: string; data: StockData }> = [
   { key: 'NKE',   data: nkeData   as StockData },
   { key: 'KO',    data: koData    as StockData },
   { key: 'JNJ',   data: jnjData   as StockData },
+  { key: 'JPM',   data: jpmData   as StockData },
 ]
 
 // ── 색상 유틸 ───────────────────────────────────────────────
@@ -716,8 +724,10 @@ export default function PrivatePage() {
         {/* 구분선 */}
         <div className="border-t border-gray-200 dark:border-gray-800 pt-2" />
 
-        {/* 시나리오 테이블 */}
-        <ScenarioTable key={`scenario-${current.key}`} data={current.data} />
+        {/* 시나리오 테이블 — ETF는 미래 P/E 시나리오 의미 없으므로 숨김 */}
+        {(current.data as any).type !== 'etf' && (
+          <ScenarioTable key={`scenario-${current.key}`} data={current.data} />
+        )}
 
       </div>
     </div>
