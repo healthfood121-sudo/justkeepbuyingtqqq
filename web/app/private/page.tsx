@@ -577,6 +577,10 @@ function OverviewTable({
     }
   }
 
+  function colBg(col: SortKey) {
+    return sortKey === col ? 'bg-blue-50 dark:bg-blue-900/25' : ''
+  }
+
   function SortIcon({ col }: { col: SortKey }) {
     if (sortKey !== col) return <span className="ml-0.5 opacity-30">↕</span>
     return <span className="ml-0.5 text-blue-500">{sortDir === 'desc' ? '↓' : '↑'}</span>
@@ -585,7 +589,7 @@ function OverviewTable({
   function SortTh({ col, children, className }: { col: SortKey; children: React.ReactNode; className?: string }) {
     return (
       <th
-        className={`cursor-pointer select-none hover:text-gray-700 dark:hover:text-gray-200 transition-colors ${className ?? ''}`}
+        className={`cursor-pointer select-none hover:text-gray-700 dark:hover:text-gray-200 transition-colors ${colBg(col)} ${className ?? ''}`}
         onClick={() => handleSort(col)}
       >
         {children}<SortIcon col={col} />
@@ -656,13 +660,13 @@ function OverviewTable({
                   <RangeBar mn={cagrMn} med={cagrMed} mx={cagrMx}
                     vMin={0} vMax={35} refVal={20} refLabel="연 20% 기준" />
                 </td>
-                <td className={`py-3 pr-3 text-right tabular-nums ${cagrTextColor(cagrMn, true)}`}>
+                <td className={`py-3 pr-3 text-right tabular-nums ${cagrTextColor(cagrMn, true)} ${colBg('cagrMn')}`}>
                   {cagrMn.toFixed(1)}%
                 </td>
-                <td className={`py-3 pr-3 text-right tabular-nums font-semibold ${cagrTextColor(cagrMed, true)}`}>
+                <td className={`py-3 pr-3 text-right tabular-nums font-semibold ${cagrTextColor(cagrMed, true)} ${colBg('cagrMed')}`}>
                   {cagrMed.toFixed(1)}%
                 </td>
-                <td className={`py-3 pr-4 text-right tabular-nums ${cagrTextColor(cagrMx, true)}`}>
+                <td className={`py-3 pr-4 text-right tabular-nums ${cagrTextColor(cagrMx, true)} ${colBg('cagrMx')}`}>
                   {cagrMx.toFixed(1)}%
                 </td>
                 {/* S&P500 초과수익 */}
@@ -676,13 +680,13 @@ function OverviewTable({
                       sign unit="pp" />
                   ) : <span className="text-gray-300 dark:text-gray-600 text-xs pl-3">—</span>}
                 </td>
-                <td className={`py-3 pr-3 text-right tabular-nums ${diffMn != null ? diffColor(diffMn) : 'text-gray-300'}`}>
+                <td className={`py-3 pr-3 text-right tabular-nums ${diffMn != null ? diffColor(diffMn) : 'text-gray-300'} ${colBg('diffMn')}`}>
                   {diffMn != null ? `${diffMn > 0 ? '+' : ''}${diffMn.toFixed(1)}pp` : '—'}
                 </td>
-                <td className={`py-3 pr-3 text-right tabular-nums font-semibold ${diffMed != null ? diffColor(diffMed) : 'text-gray-300'}`}>
+                <td className={`py-3 pr-3 text-right tabular-nums font-semibold ${diffMed != null ? diffColor(diffMed) : 'text-gray-300'} ${colBg('diffMed')}`}>
                   {diffMed != null ? `${diffMed > 0 ? '+' : ''}${diffMed.toFixed(1)}pp` : '—'}
                 </td>
-                <td className={`py-3 text-right tabular-nums ${diffMx != null ? diffColor(diffMx) : 'text-gray-300'}`}>
+                <td className={`py-3 text-right tabular-nums ${diffMx != null ? diffColor(diffMx) : 'text-gray-300'} ${colBg('diffMx')}`}>
                   {diffMx != null ? `${diffMx > 0 ? '+' : ''}${diffMx.toFixed(1)}pp` : '—'}
                 </td>
               </tr>
