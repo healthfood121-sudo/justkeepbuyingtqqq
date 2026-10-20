@@ -594,7 +594,7 @@ function OverviewTable({
   }
 
   const rows = STOCKS.map((s, i) => {
-    const completed  = s.data.rows10y.filter((r: any) => r.isComplete)
+    const completed  = s.data.rows10y.filter((r: any) => r.isComplete).slice(-15)
     const cagrs      = completed.map((r: any) => r.cagr as number)
     const cagrMn     = Math.min(...cagrs)
     const cagrMx     = Math.max(...cagrs)
@@ -691,7 +691,7 @@ function OverviewTable({
         </tbody>
       </table>
       <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
-        행 클릭 시 상세 보기 · 헤더 클릭으로 정렬 · 바 세로선: 절대수익 = 연 20%, 초과수익 = 0pp
+        행 클릭 시 상세 보기 · 헤더 클릭으로 정렬 · 최근 15개 완결 구간 기준 · 바 세로선: 절대수익 = 연 20%, 초과수익 = 0pp
       </p>
     </div>
   )
