@@ -1409,7 +1409,6 @@ function diffColor(v: number) {
 }
 
 type SortKey = 'fullCagr' | 'cagrMn' | 'cagrMed' | 'cagrMx' | 'diffMn' | 'diffMed' | 'diffMx'
-type QuickFilter = 'none' | 'struggling' | 'strong'
 
 function OverviewTable({
   activeStock,
@@ -1422,7 +1421,6 @@ function OverviewTable({
   const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc')
   const [search, setSearch] = useState('')
   const [viewMode, setViewMode] = useState<'all' | 'starred'>('all')
-  const [quickFilter, setQuickFilter] = useState<QuickFilter>('none')
   const [starred, setStarred] = useState<Set<string>>(new Set())
 
   useEffect(() => {
@@ -1503,8 +1501,6 @@ function OverviewTable({
     const q = search.trim().toLowerCase()
     if (q && !row.s.key.toLowerCase().includes(q) && !row.s.data.name.toLowerCase().includes(q)) return false
     if (viewMode === 'starred' && !starred.has(row.s.key)) return false
-    if (quickFilter === 'struggling' && !(row.diffMn != null && row.diffMn < 0)) return false
-    if (quickFilter === 'strong' && !(row.diffMed != null && row.diffMed > 10)) return false
     return true
   })
 
@@ -1519,27 +1515,7 @@ function OverviewTable({
           onChange={e => setSearch(e.target.value)}
           className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 w-44 focus:outline-none focus:ring-1 focus:ring-blue-400"
         />
-        <button
-          onClick={() => setQuickFilter(f => f === 'struggling' ? 'none' : 'struggling')}
-          className={`px-3 py-1.5 text-xs rounded-lg border transition-colors ${
-            quickFilter === 'struggling'
-              ? 'bg-red-100 dark:bg-red-900/30 border-red-300 dark:border-red-700 text-red-700 dark:text-red-300'
-              : 'border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600'
-          }`}
-        >
-          현재 부진
-        </button>
-        <button
-          onClick={() => setQuickFilter(f => f === 'strong' ? 'none' : 'strong')}
-          className={`px-3 py-1.5 text-xs rounded-lg border transition-colors ${
-            quickFilter === 'strong'
-              ? 'bg-blue-100 dark:bg-blue-900/30 border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-300'
-              : 'border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600'
-          }`}
-        >
-          고수익 안정
-        </button>
-        <div className="ml-auto flex rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden text-xs">
+<div className="ml-auto flex rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden text-xs">
           <button
             onClick={() => setViewMode('all')}
             className={`px-3 py-1.5 transition-colors ${
@@ -1669,7 +1645,7 @@ function OverviewTable({
         </tbody>
       </table>
       <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
-        행 클릭 시 상세 보기 · ★ 클릭으로 즐겨찾기 · 최근 15개 완결 구간 기준 · 현재 부진 = 최솟값 &lt; 0pp
+        행 클릭 시 상세 보기 · ★ 클릭으로 즐겨찾기 · 최근 15개 완결 구간 기준
       </p>
     </div>
   )
