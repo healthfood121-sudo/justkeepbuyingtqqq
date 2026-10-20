@@ -183,7 +183,7 @@ def get_metrics(ticker: str) -> dict:
         "eps":      round(eps, 2) if eps else None,
     }
 
-print("[현재 지표 조회] NKE, RMS.PA, KO, AAPL, COST, GOOGL, META, NVDA, AMZN, MSFT, WMT, BRK-B, LLY, AVGO, TSLA, JNJ, JPM ...")
+print("[현재 지표 조회] NKE, RMS.PA, KO, AAPL, COST, GOOGL, META, NVDA, AMZN, MSFT, WMT, BRK-B, LLY, AVGO, TSLA, JNJ, JPM, V ...")
 nke_metrics   = get_metrics("NKE")
 rms_metrics   = get_metrics("RMS.PA")
 ko_metrics    = get_metrics("KO")
@@ -201,6 +201,7 @@ avgo_metrics  = get_metrics("AVGO")
 tsla_metrics  = get_metrics("TSLA")
 jnj_metrics   = get_metrics("JNJ")
 jpm_metrics   = get_metrics("JPM")
+v_metrics     = get_metrics("V")
 print(f"  NKE:    {nke_metrics}")
 print(f"  RMS.PA: {rms_metrics}")
 print(f"  KO:     {ko_metrics}")
@@ -218,6 +219,7 @@ print(f"  AVGO:   {avgo_metrics}")
 print(f"  TSLA:   {tsla_metrics}")
 print(f"  JNJ:    {jnj_metrics}")
 print(f"  JPM:    {jpm_metrics}")
+print(f"  V:      {v_metrics}")
 
 nke_out = {
     "ticker":    "NKE",
@@ -1762,5 +1764,99 @@ for ticker, out_obj in [("QQQ", qqq_out), ("QLD", qld_out), ("TQQQ", tqqq_out)]:
     p = DST / f"{ticker}_rolling.json"
     p.write_text(json.dumps(out_obj, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"  저장 → {p}")
+
+# ── V EPS 데이터 ──────────────────────────────────────────────
+# 비자(Visa Inc.) 회계연도: 9월 30일 종료 (FY = 달력연도 Y)
+# 상장: 2008-03-19 (NYSE, Class A common stock)
+#
+# 주식 분할 이력:
+#   2015-03-19: 4:1 분할
+#   → FY2015 이후: 분할 후 기준 (소급 조정)
+#   → FY2009~FY2014: SEC EDGAR 10-K 신고 기준 "diluted earnings per share
+#                    class A common stock" ÷ 4
+#
+# 비자 주식 구조 특성: Class A(상장)·B(은행)·C(가맹점) 3종.
+#   Class A diluted EPS = Class A 귀속 순이익 ÷ Class A equivalent diluted shares.
+#   Yahoo Finance 주가(V)는 Class A 기준 → 이 EPS와 일관성 있음.
+#
+# 주요 EPS 왜곡 연도:
+#   FY2012(end Sep-2012): 미국 소송 충당금 $4.1B → EPS 급락
+#   FY2018(end Sep-2018): TCJA 세금개혁 일회성 세금 혜택 → EPS 급등
+#   FY2020(end Sep-2020): COVID-19 여행·결제 감소 → EPS 감소
+#
+# FY2008(end Sep-2008): IPO 직후 회계연도, EPS 불안정 → EPS 분해에서 제외
+# FY2026(end Sep-2026): Q4 미발표(예정 2026-10-27) → 미수록
+_V_EPS = {
+    # FY2009~FY2014: EDGAR 10-K 분할 전 Class A diluted EPS ÷ 4
+    2009: round(3.10 / 4, 4),   # FY2011 10-K 3년 비교에서 확인
+    2010: round(4.01 / 4, 4),   # FY2011 10-K
+    2011: round(5.16 / 4, 4),   # FY2011 10-K
+    2012: round(3.16 / 4, 4),   # FY2013 10-K 3년 비교에서 확인 (소송 충당금)
+    2013: round(7.59 / 4, 4),   # FY2013 10-K
+    2014: round(8.62 / 4, 4),   # FY2014 10-K
+    # FY2015~FY2025: 분할 후 기준 (10-K 및 yfinance 확인)
+    2015: 2.58,
+    2016: 2.48,
+    2017: 2.80,
+    2018: 4.42,   # TCJA 세금개혁 일회성 혜택 포함
+    2019: 5.32,
+    2020: 4.89,   # COVID-19 영향
+    2021: 5.63,
+    2022: 7.00,
+    2023: 8.28,
+    2024: 9.73,
+    2025: 10.20,
+}
+_V_ONE_TIME = {
+    2012: "미국 소송 충당금 $4.1B 설정 → EPS 급락(FY12 end Sep-2012)",
+    2018: "TCJA 세금개혁 일회성 세금 혜택 → EPS 급등(FY18 end Sep-2018)",
+    2020: "COVID-19 여행·결제 감소 → EPS 감소(FY20 end Sep-2020)",
+}
+
+# ── V ─────────────────────────────────────────────────────────
+print("[V] 데이터 로드...")
+az_v = RollingAnalyzer("V", benchmark="^SP500TR")
+df10a_v = pd.read_csv(SRC / "V_10y_annual.csv", parse_dates=["buy_date","sell_date"])
+df5a_v  = pd.read_csv(SRC / "V_5y_annual.csv",  parse_dates=["buy_date","sell_date"])
+fp_v = az_v.full_period()
+st_v = summary_stats(df10a_v, label="V")
+
+loss5_v = df5a_v[df5a_v["is_complete"] & (df5a_v["cagr"] < 0)]
+
+v_out = {
+    "ticker":    "V",
+    "name":      "비자",
+    "currency":  "USD",
+    "benchmark": "S&P 500",
+    "note":      "2008년 3월 IPO. 분할 이력: 2015-03-19 4:1. Class A 상장주 기준 수익률. EPS는 FY2008(IPO 연도) 제외 → 2009년 이후 매수 구간부터 EPS 분해 적용.",
+    "current":   v_metrics,
+    "fullPeriod": fp_v,
+    "stats": {
+        "n":       st_v["n_complete"],
+        "min":     st_v["min_cagr"],
+        "minBuy":  st_v["min_buy"],
+        "median":  st_v["median_cagr"],
+        "mean":    st_v["mean_cagr"],
+        "max":     st_v["max_cagr"],
+        "maxBuy":  st_v["max_buy"],
+        "over10":  st_v["pct_over_10"],
+        "over15":  st_v["pct_over_15"],
+        "over20":  st_v["pct_over_20"],
+        "losses":  st_v["n_losses"],
+        "beatBench":  st_v.get("n_beat_bench"),
+        "beatTotal":  st_v.get("n_beat_bench_total"),
+    },
+    "rows10y": df_to_rows(df10a_v, _V_EPS),
+    "loss5y": [
+        {"buyYear": int(r["buy_date"].year), "sellYear": int(r["sell_date"].year), "cagr": float(r["cagr"])}
+        for _, r in loss5_v.iterrows()
+    ],
+    "epsDecomp": compute_eps_decomp(df10a_v, _V_EPS, _V_ONE_TIME),
+    "epsNote": "EPS 출처: SEC EDGAR 10-K (FY2009~FY2014 분할 전 Class A diluted EPS ÷4; FY2015~FY2025 분할 후). 분할: 2015-03-19 4:1. FY2008(IPO 연도) EPS 제외. PER은 Yahoo Finance 배당조정 종가 기준.",
+}
+
+out_path_v = DST / "V_rolling.json"
+out_path_v.write_text(json.dumps(v_out, ensure_ascii=False, indent=2), encoding="utf-8")
+print(f"  저장 → {out_path_v}")
 
 print("\n[완료]")

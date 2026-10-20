@@ -25,6 +25,7 @@ import avgoData  from '@/public/data/rolling/AVGO_rolling.json'
 import tslaData  from '@/public/data/rolling/TSLA_rolling.json'
 import jnjData   from '@/public/data/rolling/JNJ_rolling.json'
 import jpmData   from '@/public/data/rolling/JPM_rolling.json'
+import vData     from '@/public/data/rolling/V_rolling.json'
 import qqqData   from '@/public/data/rolling/QQQ_rolling.json'
 import qldData   from '@/public/data/rolling/QLD_rolling.json'
 import tqqqData  from '@/public/data/rolling/TQQQ_rolling.json'
@@ -54,6 +55,7 @@ const STOCKS: Array<{ key: string; data: StockData }> = [
   { key: 'KO',    data: koData    as StockData },
   { key: 'JNJ',   data: jnjData   as StockData },
   { key: 'JPM',   data: jpmData   as StockData },
+  { key: 'V',     data: vData     as StockData },
 ]
 
 // ── 색상 유틸 ───────────────────────────────────────────────
