@@ -710,7 +710,7 @@ export default function PrivatePage() {
         <div>
           <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-1">위대한 기업</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            연말 매수 기준 10년 보유 연환산 수익률
+            매년 연말 매수 후 10년 보유하는 시나리오 · 최근 15가지 진입 시점 기준
           </p>
           <p className="text-xs text-blue-500 dark:text-blue-400 mt-0.5">
             ★ 모든 수익률은 배당 재투자 포함 총수익률 (Yahoo Finance 수정주가 기준)
