@@ -942,3 +942,12 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 **JSON 구조:** `{ ticker, name, rows10y, stats, fullPeriod, epsDecomp }` (epsDecomp는 배치 생성 시 빈 배열)
 
 **사용처:** `/app/private` (드롭다운에서 448개 종목 선택 → 10년 롤링 차트 + 분포 바 표시)
+
+### 배당 분해 JSON (데이터 생성)
+
+| 파일 | 스크립트 | 종목 | 내용 | 사용처 |
+|------|---------|------|------|--------|
+| `web/public/data/rolling/RMS_dividend.json` | `export_dividend_decomp.py RMS:RMS.PA` | 에르메스 | 매수 연도별 10년 배당 미포함 상승률·배당 포함 수익률·배당 효과 (2000~2015년 매수) | `/private` 에르메스 인사이트 |
+| `web/public/data/rolling/NKE_dividend.json` | `export_dividend_decomp.py NKE:NKE` | 나이키 | 동일 (1980~2015년 매수) | `/private` 나이키 인사이트 |
+
+실행: GitHub Actions `배당 분해 데이터 생성` (workflow_dispatch, 입력 `tickers` 예: `RMS:RMS.PA NKE:NKE`). 이 세션 환경은 Yahoo 접속이 막혀 있어 Actions로 생성했다.

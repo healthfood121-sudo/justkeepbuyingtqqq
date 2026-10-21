@@ -307,6 +307,7 @@ import nemData        from '@/public/data/rolling/NEM_rolling.json'
 import nflxData       from '@/public/data/rolling/NFLX_rolling.json'
 import niData         from '@/public/data/rolling/NI_rolling.json'
 import nkeData        from '@/public/data/rolling/NKE_rolling.json'
+import nkeDiv         from '@/public/data/rolling/NKE_dividend.json'
 import nocData        from '@/public/data/rolling/NOC_rolling.json'
 import nowData        from '@/public/data/rolling/NOW_rolling.json'
 import nrgData        from '@/public/data/rolling/NRG_rolling.json'
@@ -363,6 +364,7 @@ import rjfData        from '@/public/data/rolling/RJF_rolling.json'
 import rlData         from '@/public/data/rolling/RL_rolling.json'
 import rmdData        from '@/public/data/rolling/RMD_rolling.json'
 import rmsData        from '@/public/data/rolling/RMS_rolling.json'
+import rmsDiv         from '@/public/data/rolling/RMS_dividend.json'
 import rokData        from '@/public/data/rolling/ROK_rolling.json'
 import rolData        from '@/public/data/rolling/ROL_rolling.json'
 import ropData        from '@/public/data/rolling/ROP_rolling.json'
@@ -1873,51 +1875,56 @@ function OverviewTable({
 }
 
 // ── 에르메스(RMS) 인사이트 (2026-10-21 분석, 정적 텍스트) ───────────
-type RmsDecomp = {
+// ── 연도별 수익률 분해 (EPS 몫 + 배당 몫 + PER 몫) — 종목 인사이트 공통 ─────────
+type Decomp = {
   buyYear: number; sellYear: number; peBuy: number; peSell: number
-  epsGrowthCagr: number; peCagr: number; totalCagr: number
+  epsGrowthCagr: number; peCagr: number; totalCagr: number; note?: string | null
+}
+type DivRow = { buyYear: number; priceCagr: number; totalCagr: number; divCagr: number }
+type Shares = { eps: number; div: number | null; pe: number }
+
+// 곱셈 관계 (1+수익률) = (1+EPS 성장)(1+배당)(1+순수 PER 변화)를 로그 비율로 배분 → 몫의 합 = 연평균 수익률
+// epsDecomp의 PER은 배당 조정 주가 기준이라 배당이 섞여 있음 → 배당 데이터가 있으면 분리
+function decompShares(d: Decomp, divCagr: number | null): Shares {
+  const T = d.totalCagr
+  const lt = Math.log(1 + T / 100)
+  if (Math.abs(lt) < 1e-9) return { eps: 0, div: divCagr == null ? null : 0, pe: 0 }
+  const part = (r: number) => T * Math.log(1 + r / 100) / lt
+  const eps = part(d.epsGrowthCagr)
+  if (divCagr == null) return { eps, div: null, pe: part(d.peCagr) }
+  const div = part(divCagr)
+  return { eps, div, pe: T - eps - div }
 }
 
-// 연평균 수익률을 EPS 몫 + PER 몫으로 나눔 (곱셈 관계를 로그 비율로 배분 → 두 몫의 합 = 연평균 수익률)
-function rmsShares(d: RmsDecomp) {
-  const t = d.totalCagr / 100
-  const lt = Math.log(1 + t)
-  if (Math.abs(lt) < 1e-9) return { eps: 0, pe: 0 }
-  return {
-    eps: d.totalCagr * Math.log(1 + d.epsGrowthCagr / 100) / lt,
-    pe:  d.totalCagr * Math.log(1 + d.peCagr / 100) / lt,
-  }
+// 막대에 쌓을 칸: 막대 높이 = 연평균 수익률. PER 하락분은 막대 위 빨간 점선 칸
+function barParts(t: number, sh: Shares) {
+  const div = sh.div ?? 0
+  if (sh.pe >= 0) return { eps: sh.eps, div, pe: sh.pe, cut: 0 }
+  const eps = Math.min(sh.eps, t)
+  return { eps, div: Math.max(0, Math.min(div, t - eps)), pe: 0, cut: -sh.pe }
 }
 
-function RmsDecompChart({ decomp }: { decomp: RmsDecomp[] }) {
+function DecompChart({ decomp, divMap }: { decomp: Decomp[]; divMap: Map<number, number> }) {
   const chartRef = useRef<ChartJS | null>(null)
   const [pluginLoaded, setPluginLoaded] = useState(false)
   useEffect(() => {
     import('chartjs-plugin-zoom').then(({ default: z }) => { ChartJS.register(z); setPluginLoaded(true) })
   }, [])
 
-  const shares = decomp.map(rmsShares)
-  const sgnPct = (v: number) => `${v > 0 ? '+' : ''}${v.toFixed(1)}%`
+  const shares = decomp.map(d => decompShares(d, divMap.get(d.buyYear) ?? null))
+  const parts = decomp.map((d, i) => barParts(d.totalCagr, shares[i]))
+  const hasDiv = shares.some(sh => sh.div != null)
+  const sgnPct = (v: number) => `${v > 0 ? '+' : ''}${v.toFixed(1)}`
+
   const chartData = {
     labels: decomp.map(d => String(d.buyYear)),
     datasets: [
-      {
-        // PER이 오른 경우: 초록(EPS 몫) + 보라(PER 몫) = 막대 전체 = 연평균 수익률
-        // PER이 내린 경우: 막대 = 연평균 수익률(초록만), 그 위 빨간 점선 칸 = PER 하락으로 깎인 몫
-        label: 'EPS 몫',
-        data: shares.map((sh, i) => sh.pe >= 0 ? sh.eps : decomp[i].totalCagr),
-        backgroundColor: 'rgba(16,185,129,0.8)',
-        stack: 'ret',
-      },
-      {
-        label: 'PER 몫 (배당 포함)',
-        data: shares.map(sh => sh.pe >= 0 ? sh.pe : 0),
-        backgroundColor: 'rgba(168,85,247,0.8)',
-        stack: 'ret',
-      },
+      { label: 'EPS 몫', data: parts.map(p => p.eps), backgroundColor: 'rgba(16,185,129,0.8)', stack: 'ret' },
+      ...(hasDiv ? [{ label: '배당 몫', data: parts.map(p => p.div), backgroundColor: 'rgba(14,165,233,0.8)', stack: 'ret' }] : []),
+      { label: hasDiv ? 'PER 몫' : 'PER 몫 (배당 포함)', data: parts.map(p => p.pe), backgroundColor: 'rgba(168,85,247,0.8)', stack: 'ret' },
       {
         label: 'PER 하락으로 깎인 몫',
-        data: shares.map(sh => sh.pe < 0 ? -sh.pe : 0),
+        data: parts.map(p => p.cut),
         backgroundColor: 'rgba(239,68,68,0.12)',
         borderColor: 'rgba(239,68,68,0.8)',
         borderWidth: 1,
@@ -1948,9 +1955,18 @@ function RmsDecompChart({ decomp }: { decomp: RmsDecomp[] }) {
           label: (ctx: any) => {
             const d = decomp[ctx.dataIndex]
             const sh = shares[ctx.dataIndex]
-            if (ctx.datasetIndex === 0) return `EPS 몫 ${sh.eps.toFixed(1)}%p (EPS 연 ${sgnPct(d.epsGrowthCagr)} 성장)`
-            if (ctx.datasetIndex === 1) return sh.pe >= 0 ? `PER 몫 +${sh.pe.toFixed(1)}%p (PER ${d.peBuy.toFixed(0)}배 → ${d.peSell.toFixed(0)}배)` : ''
-            return sh.pe < 0 ? `PER 하락 ${sh.pe.toFixed(1)}%p (PER ${d.peBuy.toFixed(0)}배 → ${d.peSell.toFixed(0)}배)` : ''
+            const name = ctx.dataset.label as string
+            if (name === 'EPS 몫') return `EPS 몫 ${sgnPct(sh.eps)}%p (EPS 연 ${sgnPct(d.epsGrowthCagr)}% 성장)`
+            if (name === '배당 몫') return `배당 몫 ${sgnPct(sh.div ?? 0)}%p`
+            if (name.startsWith('PER 몫')) return `${name} ${sgnPct(sh.pe)}%p (PER ${d.peBuy.toFixed(0)}배 → ${d.peSell.toFixed(0)}배)`
+            return `PER 하락 ${sgnPct(sh.pe)}%p (PER ${d.peBuy.toFixed(0)}배 → ${d.peSell.toFixed(0)}배)`
+          },
+          afterBody: (items: any[]) => {
+            const d = decomp[items[0].dataIndex]
+            const out: string[] = []
+            if (shares[items[0].dataIndex].div == null && hasDiv) out.push('배당 데이터 없음 → PER 몫에 배당 포함')
+            if (d.note) out.push(`⚠ ${d.note}`)
+            return out
           },
         },
       },
@@ -1979,14 +1995,127 @@ function RmsDecompChart({ decomp }: { decomp: RmsDecomp[] }) {
   )
 }
 
+// 차트 읽는 법 + 차트 + 표 + 계산 설명 묶음
+function DecompSection({
+  title, decomp, divRows, exampleYear, noDivNote,
+}: {
+  title: string
+  decomp: Decomp[]
+  divRows?: DivRow[]
+  exampleYear: number
+  noDivNote?: string   // 배당 데이터가 없는 구간 설명
+}) {
+  const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
+  const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500'
+  const td = 'py-1.5 px-2 tabular-nums text-gray-700 dark:text-gray-200'
+  const sgn = (v: number) => `${v > 0 ? '+' : ''}${v.toFixed(1)}`
+
+  const sorted = [...decomp].sort((a, b) => a.buyYear - b.buyYear)
+  const divMap = new Map((divRows ?? []).map(r => [r.buyYear, r.divCagr]))
+  const hasDiv = divMap.size > 0
+  const cutYears = sorted.filter(d => decompShares(d, divMap.get(d.buyYear) ?? null).pe < 0).map(d => d.buyYear)
+  const ex = sorted.find(d => d.buyYear === exampleYear) ?? sorted[sorted.length - 1]
+  const exDiv = divMap.get(ex.buyYear) ?? null
+  const exSh = decompShares(ex, exDiv)
+  const exPurePe = exDiv != null ? ((1 + ex.peCagr / 100) / (1 + exDiv / 100) - 1) * 100 : ex.peCagr
+  const divVals = [...divMap.values()]
+
+  return (
+    <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-2">
+      <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">{title}</h4>
+      <div className="rounded bg-gray-50 dark:bg-gray-800/50 p-3 space-y-1.5">
+        <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">차트 읽는 법</p>
+        <ul className={`${p} list-disc pl-4 space-y-1`}>
+          <li><b>막대 높이 = 연평균 수익률.</b> 그해 연말에 사서 10년 보유했을 때의 연평균 수익률(배당 재투자 포함)과 정확히 같다.</li>
+          <li><b className="text-emerald-600 dark:text-emerald-400">초록 칸 = EPS 몫.</b> 회사 이익이 늘어서 생긴 수익.</li>
+          {hasDiv && <li><b className="text-sky-600 dark:text-sky-400">하늘색 칸 = 배당 몫.</b> 받은 배당을 다시 투자해서 생긴 수익.</li>}
+          <li><b className="text-purple-600 dark:text-purple-400">보라 칸 = PER 몫.</b> 시장이 같은 이익에 더 비싼 값을 매겨줘서 생긴 수익.
+            예: {ex.buyYear}년 매수 연 {ex.totalCagr.toFixed(1)}% = EPS 몫 {exSh.eps.toFixed(1)}%p
+            {exSh.div != null && <> + 배당 몫 {exSh.div.toFixed(1)}%p</>} + PER 몫 {exSh.pe.toFixed(1)}%p.</li>
+          {cutYears.length > 0 && (
+            <li><b className="text-red-500">빨간 점선 칸 = PER 하락으로 깎인 몫.</b> PER이 떨어진 해({cutYears.join('·')}년 매수)에만 있다.
+              이때는 색칠된 막대 높이가 곧 연평균 수익률이고, 빨간 칸만큼 이익 성장과 배당을 PER 하락이 깎아 먹었다는 뜻이다.</li>
+          )}
+          <li>막대를 누르거나 마우스를 올리면 나누기 전 원래 EPS 성장률과 PER 변화(예: {ex.peBuy.toFixed(0)}배 → {ex.peSell.toFixed(0)}배)도 함께 보인다.</li>
+        </ul>
+      </div>
+      <DecompChart decomp={sorted} divMap={divMap} />
+      <div className="overflow-x-auto">
+        <table className="text-xs">
+          <thead>
+            <tr>
+              <th className={`${th} text-left whitespace-nowrap`}>보유 구간</th>
+              <th className={`${th} text-right whitespace-nowrap`}>연평균 수익률</th>
+              <th className={`${th} text-right whitespace-nowrap`}>= EPS 몫</th>
+              {hasDiv && <th className={`${th} text-right whitespace-nowrap`}>+ 배당 몫</th>}
+              <th className={`${th} text-right whitespace-nowrap`}>+ PER 몫</th>
+              <th className={`${th} text-right whitespace-nowrap`}>EPS 성장(연)</th>
+              <th className={`${th} text-right whitespace-nowrap`}>PER 변화</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+            {sorted.map(d => {
+              const sh = decompShares(d, divMap.get(d.buyYear) ?? null)
+              return (
+                <tr key={d.buyYear}>
+                  <td className={`${td} whitespace-nowrap`}>
+                    {d.buyYear} → {d.sellYear}
+                    {d.note && <span title={d.note} className="ml-1 text-amber-500 cursor-help">⚠</span>}
+                  </td>
+                  <td className={`${td} text-right font-semibold`}>{d.totalCagr.toFixed(1)}%</td>
+                  <td className={`${td} text-right text-emerald-600 dark:text-emerald-400`}>{sgn(sh.eps)}%p</td>
+                  {hasDiv && (
+                    <td className={`${td} text-right text-sky-600 dark:text-sky-400`}>{sh.div != null ? `${sgn(sh.div)}%p` : '—'}</td>
+                  )}
+                  <td className={`${td} text-right ${sh.pe >= 0 ? 'text-purple-600 dark:text-purple-400' : 'text-red-500'}`}>
+                    {sgn(sh.pe)}%p{hasDiv && sh.div == null ? '*' : ''}
+                  </td>
+                  <td className={`${td} text-right text-gray-500 dark:text-gray-400`}>{sgn(d.epsGrowthCagr)}%</td>
+                  <td className={`${td} text-right whitespace-nowrap text-gray-500 dark:text-gray-400`}>{d.peBuy.toFixed(0)}배 → {d.peSell.toFixed(0)}배</td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+      {hasDiv && noDivNote && <p className="text-xs text-gray-400 dark:text-gray-500">* {noDivNote}</p>}
+      <div className="rounded bg-gray-50 dark:bg-gray-800/50 p-3 space-y-1.5">
+        <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">어떻게 나눴나</p>
+        <p className="text-xs leading-relaxed text-gray-600 dark:text-gray-300">
+          <b>① 실제 관계는 덧셈이 아니라 곱셈이다.</b> 주가 = EPS × PER 이고 배당은 재투자되므로
+          (1 + 연평균 수익률) = (1 + EPS 성장률) × (1 + PER 변화율){hasDiv && ' × (1 + 배당 효과)'}.
+          예: {ex.buyYear}년 매수는 EPS 연 {ex.epsGrowthCagr.toFixed(1)}% 성장
+          {exDiv != null ? <>, 배당 연 {exDiv.toFixed(1)}%, PER 연 {exPurePe.toFixed(1)}% 변화 → {(1 + ex.epsGrowthCagr / 100).toFixed(3)} × {(1 + exDiv / 100).toFixed(3)} × {(1 + exPurePe / 100).toFixed(3)}</>
+            : <>, PER 연 {ex.peCagr.toFixed(1)}% 변화 → {(1 + ex.epsGrowthCagr / 100).toFixed(3)} × {(1 + ex.peCagr / 100).toFixed(3)}</>}
+          {' '}= {(1 + ex.totalCagr / 100).toFixed(3)} → 연 {ex.totalCagr.toFixed(1)}%.
+          그냥 더하면 {(ex.epsGrowthCagr + ex.peCagr).toFixed(1)}%로 조금 모자란다(서로 곱해지며 붙는 몫).
+        </p>
+        <p className="text-xs leading-relaxed text-gray-600 dark:text-gray-300">
+          <b>② 막대에서는 그 차이를 각 칸에 비율대로 나눠 담았다.</b> 그래서 칸을 모두 더하면 정확히 연평균 수익률과 같다.
+          표의 &lsquo;EPS 성장(연)&rsquo;은 나누기 전 원래 이익 성장률이다.
+        </p>
+        {hasDiv ? (
+          <p className="text-xs leading-relaxed text-gray-600 dark:text-gray-300">
+            <b>③ 배당은 따로 뺐다.</b> 배당을 뺀 주가와 배당을 재투자한 주가(Yahoo Finance)의 10년 상승률 차이로 배당 몫을 계산했다
+            (연 {Math.min(...divVals).toFixed(1)}~{Math.max(...divVals).toFixed(1)}%). 보라 칸은 배당을 뺀 순수한 PER 변화다.
+          </p>
+        ) : (
+          <p className="text-xs leading-relaxed text-gray-600 dark:text-gray-300">
+            <b>③ PER 몫에는 배당이 들어 있다.</b> 수익률과 PER을 모두 배당을 반영해 조정한 주가로 계산했기 때문이다.
+          </p>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function RmsInsight({ data }: { data: StockData }) {
-  const decomp = ((data as any).epsDecomp ?? []) as RmsDecomp[]
+  const decomp = ((data as any).epsDecomp ?? []) as Decomp[]
   // 연말 PER 흐름: 매수 연도 PER + 매도 연도 PER을 합쳐 연도별로 정리
   const yearPE = new Map<number, number>()
   decomp.forEach(d => { yearPE.set(d.buyYear, d.peBuy); yearPE.set(d.sellYear, d.peSell) })
   const peTimeline = [...yearPE.entries()].sort((a, b) => a[0] - b[0])
   const sgn = (v: number) => `${v > 0 ? '+' : ''}${v.toFixed(1)}`
-  const sortedDecomp = [...decomp].sort((a, b) => a.buyYear - b.buyYear)
   const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-2'
   const h4 = 'text-sm font-semibold text-gray-800 dark:text-gray-100'
   const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
@@ -2116,69 +2245,13 @@ function RmsInsight({ data }: { data: StockData }) {
         </p>
       </div>
 
-      <div className={box}>
-        <h4 className={h4}>3. 연도별 수익률 분해 — 막대 하나 = EPS 몫 + PER 몫</h4>
-        <div className="rounded bg-gray-50 dark:bg-gray-800/50 p-3 space-y-1.5">
-          <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">차트 읽는 법</p>
-          <ul className={`${p} list-disc pl-4 space-y-1`}>
-            <li><b>막대 높이 = 연평균 수익률.</b> 그해 연말에 사서 10년 보유했을 때의 연평균 수익률(배당 재투자 포함)과 정확히 같다.</li>
-            <li><b className="text-emerald-600 dark:text-emerald-400">초록 칸 = EPS 몫.</b> 회사 이익이 늘어서 생긴 수익.</li>
-            <li><b className="text-purple-600 dark:text-purple-400">보라 칸 = PER 몫(배당 포함).</b> 시장이 같은 이익에 더 비싼 값을 매겨줘서 생긴 수익.
-              예: 2012년 매수 연 21.8% = EPS 몫 17.3%p + PER 몫 4.5%p.</li>
-            <li><b className="text-red-500">빨간 점선 칸 = PER 하락으로 깎인 몫.</b> PER이 떨어진 1996년·1999년 매수에만 있다.
-              이때는 초록 막대 높이가 곧 연평균 수익률이고, 빨간 칸만큼 이익 성장분을 PER 하락이 깎아 먹었다는 뜻이다.</li>
-            <li>막대를 누르거나 마우스를 올리면 나누기 전 원래 EPS 성장률과 PER 변화(예: 28배 → 42배)도 함께 보인다.</li>
-          </ul>
-        </div>
-        <RmsDecompChart decomp={sortedDecomp} />
-        <div className="overflow-x-auto">
-          <table className="text-xs">
-            <thead>
-              <tr>
-                <th className={`${th} text-left whitespace-nowrap`}>보유 구간</th>
-                <th className={`${th} text-right whitespace-nowrap`}>연평균 수익률</th>
-                <th className={`${th} text-right whitespace-nowrap`}>= EPS 몫</th>
-                <th className={`${th} text-right whitespace-nowrap`}>+ PER 몫</th>
-                <th className={`${th} text-right whitespace-nowrap`}>EPS 성장(연)</th>
-                <th className={`${th} text-right whitespace-nowrap`}>PER 변화</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-              {sortedDecomp.map(d => {
-                const sh = rmsShares(d)
-                return (
-                  <tr key={d.buyYear}>
-                    <td className={`${td} whitespace-nowrap`}>{d.buyYear} → {d.sellYear}</td>
-                    <td className={`${td} text-right font-semibold`}>{d.totalCagr.toFixed(1)}%</td>
-                    <td className={`${td} text-right text-emerald-600 dark:text-emerald-400`}>{sh.eps.toFixed(1)}%p</td>
-                    <td className={`${td} text-right ${sh.pe >= 0 ? 'text-purple-600 dark:text-purple-400' : 'text-red-500'}`}>{sgn(sh.pe)}%p</td>
-                    <td className={`${td} text-right text-gray-500 dark:text-gray-400`}>{sgn(d.epsGrowthCagr)}%</td>
-                    <td className={`${td} text-right whitespace-nowrap text-gray-500 dark:text-gray-400`}>{d.peBuy.toFixed(0)}배 → {d.peSell.toFixed(0)}배</td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
-        </div>
-        <div className="rounded bg-gray-50 dark:bg-gray-800/50 p-3 space-y-1.5">
-          <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">어떻게 나눴나</p>
-          <p className="text-xs leading-relaxed text-gray-600 dark:text-gray-300">
-            <b>① 실제 관계는 덧셈이 아니라 곱셈이다.</b> 주가 = EPS × PER 이므로
-            (1 + 연평균 수익률) = (1 + EPS 성장률) × (1 + PER 변화율).
-            예: 2012년 매수는 EPS 연 16.9% 성장, PER 연 4.2% 상승 → 1.169 × 1.042 = 1.218 → 연 21.8%.
-            그냥 더하면 21.1%로 0.7%p 모자란다(서로 곱해지며 붙는 몫).
-          </p>
-          <p className="text-xs leading-relaxed text-gray-600 dark:text-gray-300">
-            <b>② 막대에서는 그 차이를 두 칸에 비율대로 나눠 담았다.</b> 그래서 EPS 몫 + PER 몫이 정확히 연평균 수익률과 같다.
-            표의 &lsquo;EPS 성장(연)&rsquo;은 나누기 전 원래 이익 성장률이다.
-          </p>
-          <p className="text-xs leading-relaxed text-gray-600 dark:text-gray-300">
-            <b>③ PER 몫에는 배당이 들어 있다.</b> 수익률은 배당을 재투자한 기준(배당을 반영해 조정한 주가)으로 계산했고,
-            PER도 그 조정 주가로 계산했다. 따라서 배당 효과(에르메스는 연 약 1%p 안팎)가 별도 칸 없이 PER 몫에 섞여 있다.
-            순수한 PER 변화만 보면 보라색 칸보다 약 1%p 작다고 보면 된다.
-          </p>
-        </div>
-      </div>
+      <DecompSection
+        title="3. 연도별 수익률 분해 — 막대 하나 = EPS 몫 + 배당 몫 + PER 몫"
+        decomp={decomp}
+        divRows={(rmsDiv as any).rows}
+        exampleYear={2012}
+        noDivNote="1993~1999년 매수는 주가 출처(TradingView)가 달라 배당을 분리하지 못했다. 이 구간의 PER 몫에는 배당이 포함돼 있다."
+      />
 
       <div className={box}>
         <h4 className={h4}>4. 과거 성과를 만든 두 가지 순풍</h4>
@@ -2227,6 +2300,179 @@ function RmsInsight({ data }: { data: StockData }) {
         참고: 주가는 배당을 반영해 조정한 종가라 실제 PER과 1~2% 차이가 날 수 있다.
         2026년 상반기 EPS는 언론 보도 기준(회사 반기 보고서와 대조 필요). 1993~2000년 EPS는 AI가 역산한 추정치다.
         참고용 분석이며 미래를 보장하지 않는다.
+      </p>
+    </div>
+  )
+}
+
+// ── 나이키(NKE) 인사이트 (2026-10-21 분석, 정적 텍스트) ───────────
+function NkeInsight({ data }: { data: StockData }) {
+  const decomp = ((data as any).epsDecomp ?? []) as Decomp[]
+  const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-2'
+  const h4 = 'text-sm font-semibold text-gray-800 dark:text-gray-100'
+  const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
+  const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500'
+  const td = 'py-1.5 px-2 tabular-nums text-gray-700 dark:text-gray-200'
+  const sgn = (v: number) => `${v > 0 ? '+' : ''}${v.toFixed(1)}`
+  const avg = (a: number[]) => a.reduce((x, y) => x + y, 0) / a.length
+
+  const peBuckets = [
+    { label: '15배 미만', lo: 0, hi: 15 },
+    { label: '15~20배 (지금 구간)', lo: 15, hi: 20, hl: true },
+    { label: '20~25배', lo: 20, hi: 25 },
+    { label: '25배 이상', lo: 25, hi: 999 },
+  ].map(b => {
+    const rows = decomp.filter(d => d.peBuy >= b.lo && d.peBuy < b.hi)
+    const tot = rows.map(d => d.totalCagr)
+    return {
+      ...b,
+      n: rows.length,
+      avg: avg(tot),
+      range: `${Math.min(...tot).toFixed(1)}~${Math.max(...tot).toFixed(1)}%`,
+      eps: avg(rows.map(d => d.epsGrowthCagr)),
+      pe: avg(rows.map(d => d.peCagr)),
+      years: rows.map(d => d.buyYear).sort((x, y) => x - y),
+    }
+  }).filter(b => b.n > 0)
+
+  const scenarioPEs = ['12배', '18배 (유지)', '24배']
+  const scenarios = [
+    { g: '연 0% (제자리)', v: ['0%', '4%', '7%'] },
+    { g: '연 3%', v: ['3%', '8%', '11%'] },
+    { g: '연 6% (2024년 이익 회복)', v: ['6%', '11%', '14%'], hl: true },
+    { g: '연 9%', v: ['9%', '14%', '17%'] },
+  ]
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white">인사이트</h3>
+        <p className="text-xs text-gray-400 dark:text-gray-500">2026년 10월 21일 기준 분석</p>
+      </div>
+
+      <div className={box}>
+        <h4 className={h4}>1. 현재 PER 18배 — 싸 보이지만, 주가 하락의 원인은 PER이 아니라 이익 감소</h4>
+        <p className={p}>
+          주가 37.5달러 ÷ 최근 1년 주당순이익(EPS) 2.08달러 = PER 약 18배. 에르메스는 이익이 늘었는데 PER이 떨어져서 주가가 빠졌지만,
+          나이키는 최근 2년 동안 PER은 거의 그대로고 <b>이익 자체가 줄었다.</b>
+        </p>
+        <div className="overflow-x-auto">
+          <table className="text-xs">
+            <thead>
+              <tr>
+                <th className={`${th} text-left`}></th>
+                <th className={`${th} text-right whitespace-nowrap`}>2021년 말 (정점)</th>
+                <th className={`${th} text-right whitespace-nowrap`}>2024년 말</th>
+                <th className={`${th} text-right`}>지금</th>
+                <th className={`${th} text-right whitespace-nowrap`}>2024년 말 대비</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+              <tr><td className={td}>주가</td><td className={`${td} text-right`}>약 152</td><td className={`${td} text-right`}>약 72</td><td className={`${td} text-right`}>37.5</td><td className={`${td} text-right text-red-500 font-semibold`}>-48%</td></tr>
+              <tr><td className={td}>EPS</td><td className={`${td} text-right`}>3.56</td><td className={`${td} text-right`}>3.73</td><td className={`${td} text-right`}>2.08</td><td className={`${td} text-right text-red-500 font-semibold`}>-44%</td></tr>
+              <tr><td className={td}>PER</td><td className={`${td} text-right`}>42.8배</td><td className={`${td} text-right`}>19.3배</td><td className={`${td} text-right`}>18.0배</td><td className={`${td} text-right`}>-7%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <ul className={`${p} list-disc pl-4 space-y-1`}>
+          <li>2021년 말 → 2024년 말 하락은 PER(43배 → 19배) 때문이었고, 2024년 말 이후 하락은 이익 감소 때문이다.</li>
+          <li><b>이익이 더 줄어들 전망이다.</b> 2026년 10월 발표에서 회사는 2027 회계연도 조정 EPS를 1.15~1.35달러로 제시했다(매출은 한 자릿수 후반 감소).
+            이 기준이면 지금 주가는 <b>내년 이익 대비 PER 28~33배</b>로, 결코 싸지 않다.</li>
+          <li>배당수익률 4.3%(주당 약 1.6달러)는 높지만, 내년 예상 이익(1.15~1.35달러)보다 배당이 더 많다. 이익이 회복되지 않으면 배당이 유지될지 지켜봐야 한다.</li>
+        </ul>
+      </div>
+
+      <div className={box}>
+        <h4 className={h4}>2. 과거: 매수 시점 PER별 10년 연평균 수익률 ({decomp.length}개 경우)</h4>
+        <div className="overflow-x-auto">
+          <table className="text-xs">
+            <thead>
+              <tr>
+                <th className={`${th} text-left whitespace-nowrap`}>매수 시 PER</th>
+                <th className={`${th} text-right whitespace-nowrap`}>경우 수</th>
+                <th className={`${th} text-right whitespace-nowrap`}>평균 수익률</th>
+                <th className={`${th} text-right whitespace-nowrap`}>수익률 범위</th>
+                <th className={`${th} text-right whitespace-nowrap`}>EPS 효과(평균)</th>
+                <th className={`${th} text-right whitespace-nowrap`}>PER 효과(평균)</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+              {peBuckets.map(b => (
+                <tr key={b.label} className={b.hl ? 'bg-blue-50 dark:bg-blue-900/20' : ''}>
+                  <td className={`${td} whitespace-nowrap ${b.hl ? 'font-semibold' : ''}`}>{b.label}</td>
+                  <td className={`${td} text-right`}>{b.n}</td>
+                  <td className={`${td} text-right ${b.hl ? 'font-semibold' : ''}`}>{b.avg.toFixed(1)}%</td>
+                  <td className={`${td} text-right whitespace-nowrap`}>{b.range}</td>
+                  <td className={`${td} text-right`}>{sgn(b.eps)}%</td>
+                  <td className={`${td} text-right font-semibold ${b.pe >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'}`}>{sgn(b.pe)}%p</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className={p}>
+          지금과 같은 15~20배 구간에서 산 경우({peBuckets.find(b => b.hl)?.years.join('·')}년)는 평균 연 17% 안팎이었다.
+          다만 그때는 이후 10년 동안 이익이 매년 5~15% 늘었다. PER 20배 이상에서 산 경우는 PER이 내려오면서 수익률이 크게 낮았다.
+        </p>
+      </div>
+
+      <DecompSection
+        title="3. 연도별 수익률 분해 — 막대 하나 = EPS 몫 + 배당 몫 + PER 몫"
+        decomp={decomp}
+        divRows={(nkeDiv as any).rows}
+        exampleYear={2011}
+      />
+
+      <div className={box}>
+        <h4 className={h4}>4. 이익 성장이 계속 느려지고 있다</h4>
+        <ul className={`${p} list-disc pl-4 space-y-1`}>
+          <li><b>10년 EPS 성장률이 줄고 있다.</b> 2000~2012년 매수 구간은 일회성 요인이 낀 해(2008·2010년)를 빼면 대부분 연 12~15%였지만, 2013·2014년 매수는 연 9~10%, 2015년 매수는 연 1.6%로 떨어졌다.</li>
+          <li>그 결과 2015년에 사서 10년 보유하면 연 1.5%에 그쳤다(배당 포함). 2016~2024년 매수는 아직 10년이 안 됐지만 지금 기준으로 모두 손실이다.</li>
+          <li>과거 높은 수익을 낸 1984~1990년 매수(연 19~46%)는 대부분 PER 5~14배의 싼 값에 사서 이익이 폭발적으로 늘었던 시기다. 지금과는 출발점이 다르다.</li>
+          <li>표의 ⚠ 표시는 세금 개혁(2017년), 코로나(2020년), 사업부 손상 등 일회성 요인으로 EPS가 크게 흔들린 해다. 이런 구간은 PER 몫이 부풀거나 줄어 보일 수 있다.</li>
+        </ul>
+      </div>
+
+      <div className={box}>
+        <h4 className={h4}>5. 지금(PER 18배) 사서 10년 보유 시 예상 연평균 수익률</h4>
+        <p className={p}>최근 1년 EPS 2.08달러, 배당수익률 4.3%가 유지된다고 가정. 행 = 연 EPS 성장률, 열 = 10년 뒤 PER.</p>
+        <div className="overflow-x-auto">
+          <table className="text-xs">
+            <thead>
+              <tr>
+                <th className={`${th} text-left whitespace-nowrap`}>EPS 성장 ↓ / 10년 뒤 PER →</th>
+                {scenarioPEs.map(pe => <th key={pe} className={`${th} text-right whitespace-nowrap`}>{pe}</th>)}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+              {scenarios.map(s => (
+                <tr key={s.g}>
+                  <td className={`${td} whitespace-nowrap ${s.hl ? 'font-semibold' : ''}`}>{s.g}</td>
+                  {s.v.map((v, i) => (
+                    <td key={i} className={`${td} text-right ${s.hl && i === 1 ? 'bg-blue-50 dark:bg-blue-900/20 font-semibold' : ''}`}>{v}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className={p}>
+          연 6% 성장은 10년 뒤 EPS가 2024년 수준(3.73달러)으로 돌아오는 정도다. 내년 이익이 1.15~1.35달러로 더 줄어들면 출발점이 낮아져 이 표보다 결과가 나빠진다.
+        </p>
+      </div>
+
+      <div className={box}>
+        <h4 className={h4}>결론</h4>
+        <ul className={`${p} list-disc pl-4 space-y-1`}>
+          <li>나이키는 <b>PER이 아니라 이익이 문제</b>다. 지금 PER 18배는 과거 기준으로 낮아 보이지만, 내년 예상 이익 기준으로는 28~33배다.</li>
+          <li>이익이 2024년 수준으로만 회복돼도(연 6%) PER 유지 시 연 10~11% 정도. 배당 4.3%가 하단을 받쳐준다.</li>
+          <li>이익 회복이 늦어지면 연 4~8% 수준에 머물 수 있다. 앞으로 볼 것은 <b>매출 감소가 멈추고 EPS가 다시 늘어나는지</b>, 그리고 <b>배당이 유지되는지</b>다.</li>
+        </ul>
+      </div>
+
+      <p className="text-xs text-gray-400 dark:text-gray-500">
+        참고: 나이키 회계연도는 5월 말 결산이며, 표의 연도별 EPS는 회계연도 기준이다. 1980년대 일부 EPS는 추정값이다.
+        2027 회계연도 전망은 언론 보도(2026년 10월 1일 실적 발표) 기준이며 회사 발표 자료와 대조가 필요하다. 참고용 분석이며 미래를 보장하지 않는다.
       </p>
     </div>
   )
@@ -2304,6 +2550,7 @@ export default function PrivatePage() {
 
         {/* 에르메스 전용 인사이트 */}
         {current.key === 'RMS' && <RmsInsight data={current.data} />}
+        {current.key === 'NKE' && <NkeInsight data={current.data} />}
 
         {/* 구분선 */}
         <div className="border-t border-gray-200 dark:border-gray-800 pt-2" />
