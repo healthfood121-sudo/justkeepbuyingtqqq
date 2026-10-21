@@ -57,16 +57,17 @@ def fetch_eps(cik: int) -> dict:
     best = {}
     for concept in CONCEPTS:
         url = f"https://data.sec.gov/api/xbrl/companyconcept/CIK{cik:010d}/us-gaap/{concept}.json"
-        for attempt in range(3):
+        resp = None
+        for attempt in range(5):  # SEC가 순간적으로 403/429를 줄 때가 있어 재시도
             try:
                 resp = requests.get(url, headers=UA, timeout=30)
-                break
             except requests.RequestException:
-                time.sleep(2 * (attempt + 1))
-        else:
-            continue
-        time.sleep(0.12)  # SEC 초당 10회 제한
-        if resp.status_code != 200:
+                resp = None
+            if resp is not None and resp.status_code in (200, 404):
+                break
+            time.sleep(3 * (attempt + 1))
+        time.sleep(0.15)  # SEC 초당 10회 제한
+        if resp is None or resp.status_code != 200:
             continue
         for unit, items in resp.json().get("units", {}).items():
             if "/shares" not in unit:
@@ -134,6 +135,8 @@ def process(key: str, roll: dict, prices: pd.DataFrame, cik_map: dict) -> dict |
         print(f"  {key}: EPS 없음")
         return None
     eps_adj = split_adjust(eps_raw, splits)
+    if key == "BRKB":  # 버크셔는 A주 기준 EPS 공시 → B주(1/1500)로 환산
+        eps_adj = {k: v / 1500 for k, v in eps_adj.items()}
     eps_y = annual_eps_by_year(eps_adj)
 
     ye_close = close.groupby(close.index.year).last()
