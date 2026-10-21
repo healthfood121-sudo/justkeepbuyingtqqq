@@ -1638,7 +1638,7 @@ function OverviewTable({
                          transition-colors text-gray-600 dark:text-gray-400">
               <span onClick={() => applyPreset(p.f)}>{p.name}</span>
               <button onClick={() => deletePreset(p.name)}
-                className="ml-0.5 text-gray-300 dark:text-gray-700 hover:text-red-400 dark:hover:text-red-500 transition-colors leading-none">
+                className="ml-0.5 text-gray-400 dark:text-gray-500 hover:text-red-400 dark:hover:text-red-500 transition-colors leading-none">
                 ×
               </button>
             </span>
