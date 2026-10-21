@@ -1,0 +1,49 @@
+name: 롤링 데이터 연간 전체 갱신 (1월 2일)
+
+on:
+  schedule:
+    # 매년 1월 2일 KST 11:00 (UTC 02:00) — 12/31 종가 반영 후 실행
+    - cron: '0 2 2 1 *'
+  workflow_dispatch:  # 수동 실행 가능
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    timeout-minutes: 180  # 최대 3시간
+
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Python 3.12 설정
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 의존성 설치
+        run: pip install -r scripts/requirements.txt
+
+      - name: CSV + JSON 전체 재생성 (새 완결 구간 반영)
+        run: python scripts/generate_all_sp500.py --force-csv --force-json
+        env:
+          PYTHONUNBUFFERED: "1"
+
+      - name: 변경사항 커밋 & 푸시
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add scripts/data/rolling/
+          git add web/public/data/rolling/
+
+          if git diff --cached --quiet; then
+            echo "변경사항 없음 — 스킵"
+          else
+            YEAR=$(date +'%Y')
+            git commit -m "auto: 롤링 데이터 연간 갱신 ${YEAR} (완결 구간 추가)"
+            git pull --rebase origin master
+            git push origin HEAD:master
+            echo "✅ 커밋 & 푸시 완료"
+          fi
