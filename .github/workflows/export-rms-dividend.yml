@@ -1,0 +1,27 @@
+name: RMS 배당 분해 데이터 생성
+
+on:
+  workflow_dispatch:  # 수동 실행 전용
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r scripts/requirements.txt
+      - run: python scripts/export_rms_dividend.py
+      - name: 커밋 & 푸시
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add web/public/data/rolling/RMS_dividend.json
+          if git diff --cached --quiet; then echo "변경 없음"; else
+            git commit -m "auto: RMS 배당 분해 데이터 생성"
+            git pull --rebase origin master
+            git push
+          fi
