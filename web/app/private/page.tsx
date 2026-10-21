@@ -974,15 +974,6 @@ function RollingChart({ data }: { data: StockData }) {
     'benchCagr' in r && r.benchCagr != null ? (r as any).benchCagr : null
   )
 
-  // 수익률 분해 (EPS 효과 / PER 효과) — epsDecomp가 있는 종목만
-  const decompMap = new Map(
-    (((data as any).epsDecomp ?? []) as Array<{ buyYear: number; epsGrowthCagr: number; peCagr: number }>)
-      .map(d => [d.buyYear, d])
-  )
-  const epsPoints = rows.map(r => decompMap.get(r.buyYear)?.epsGrowthCagr ?? null)
-  const pePoints  = rows.map(r => decompMap.get(r.buyYear)?.peCagr ?? null)
-  const hasDecomp = epsPoints.some(v => v != null)
-
   // 가로선 플러그인 (0%, 10%, 15%, 20%)
   const refLinesPlugin = {
     id: 'refLines',
@@ -1038,35 +1029,6 @@ function RollingChart({ data }: { data: StockData }) {
         spanGaps: false,
         order: 1,
       },
-      ...(hasDecomp ? [
-        {
-          type: 'line' as const,
-          label: 'EPS 효과',
-          data: epsPoints,
-          borderColor: 'rgba(16,185,129,0.9)',
-          backgroundColor: 'rgba(16,185,129,0.9)',
-          pointStyle: 'rectRot' as const,
-          pointRadius: 4,
-          pointHoverRadius: 6,
-          borderWidth: 1.5,
-          spanGaps: false,
-          order: 0,
-        },
-        {
-          type: 'line' as const,
-          label: 'PER 효과',
-          data: pePoints,
-          borderColor: 'rgba(168,85,247,0.9)',
-          backgroundColor: 'rgba(168,85,247,0.9)',
-          borderDash: [4, 3],
-          pointStyle: 'triangle' as const,
-          pointRadius: 4,
-          pointHoverRadius: 6,
-          borderWidth: 1.5,
-          spanGaps: false,
-          order: 0,
-        },
-      ] : []),
     ],
   }
 
@@ -1091,8 +1053,7 @@ function RollingChart({ data }: { data: StockData }) {
       legend: { position: 'top' as const, labels: { font: { size: 11 }, boxWidth: 12 } },
       tooltip: {
         callbacks: {
-          label: (ctx: any) => ctx.parsed.y == null ? '' :
-            `${ctx.dataset.label}: ${ctx.parsed.y > 0 && ctx.dataset.label === 'PER 효과' ? '+' : ''}${ctx.parsed.y.toFixed(1)}${ctx.dataset.label === 'PER 효과' ? '%p' : '%'}`,
+          label: (ctx: any) => `${ctx.dataset.label}: ${ctx.parsed.y?.toFixed(1)}%`,
           afterLabel: (ctx: any) => {
             const r = rows[ctx.dataIndex]
             if (ctx.datasetIndex === 0) {
@@ -1155,7 +1116,7 @@ function RollingTable({ data }: { data: StockData }) {
   ]
   const s = data.stats
   const epsDecomp = (data as any).epsDecomp as Array<{
-    buyYear: number; epsGrowthCagr: number; peCagr: number; peSell: number; note: string | null
+    buyYear: number; epsGrowthCagr: number; peSell: number; note: string | null
   }>
   const epsNote: string | undefined = (data as any).epsNote
   const epsMap = new Map(epsDecomp?.map(e => [e.buyYear, e]) ?? [])
@@ -1196,10 +1157,9 @@ function RollingTable({ data }: { data: StockData }) {
               <th className="text-left py-2 pr-3 font-medium">평가</th>
               <th className="text-right py-2 pr-3 font-medium">연복리<br/><span className="font-normal opacity-60">(배당포함)</span></th>
               <th className="text-right py-2 pr-3 font-medium">누적 수익률</th>
-              <th className="text-right py-2 pr-3 font-medium">EPS 효과<br/><span className="font-normal opacity-60">(연, EPS 성장)</span></th>
+              <th className="text-right py-2 pr-3 font-medium">EPS 성장<br/><span className="font-normal opacity-60">(연복리)</span></th>
               <th className="text-right py-2 pr-3 font-medium">매수 PER</th>
               <th className="text-right py-2 pr-3 font-medium">매도 PER</th>
-              <th className="text-right py-2 pr-3 font-medium">PER 효과<br/><span className="font-normal opacity-60">(연)</span></th>
               <th className="text-right py-2 pr-3 font-medium">S&P 500<br/><span className="font-normal opacity-60">(배당포함)</span></th>
               <th className="text-right py-2 font-medium">차이</th>
             </tr>
@@ -1227,16 +1187,13 @@ function RollingTable({ data }: { data: StockData }) {
                     {fmtTotalReturn(r.multiple)}
                   </td>
                   <td className={`py-1.5 pr-3 text-right tabular-nums ${eps ? epsGrowthColor(eps.epsGrowthCagr) : 'text-gray-300 dark:text-gray-600'}`}>
-                    {eps ? `${eps.epsGrowthCagr > 0 ? '+' : ''}${eps.epsGrowthCagr.toFixed(1)}%` : '—'}
+                    {eps ? `+${eps.epsGrowthCagr.toFixed(1)}%` : '—'}
                   </td>
                   <td className="py-1.5 pr-3 text-right tabular-nums text-gray-400 dark:text-gray-500">
                     {peBuy != null ? `${peBuy.toFixed(0)}x` : '—'}
                   </td>
                   <td className="py-1.5 pr-3 text-right tabular-nums text-gray-400 dark:text-gray-500">
                     {eps ? `${eps.peSell.toFixed(0)}x` : '—'}
-                  </td>
-                  <td className={`py-1.5 pr-3 text-right tabular-nums ${eps?.peCagr == null ? 'text-gray-300 dark:text-gray-600' : eps.peCagr >= 0 ? 'text-purple-600 dark:text-purple-400' : 'text-red-500 dark:text-red-400'}`}>
-                    {eps?.peCagr != null ? `${eps.peCagr > 0 ? '+' : ''}${eps.peCagr.toFixed(1)}%p` : '—'}
                   </td>
                   <td className="py-1.5 pr-3 text-right tabular-nums text-gray-400 dark:text-gray-500">
                     {bc != null ? `${bc.toFixed(1)}%` : '—'}
@@ -1251,12 +1208,6 @@ function RollingTable({ data }: { data: StockData }) {
         </table>
       </div>
 
-
-      {epsMap.size > 0 && (
-        <p className="text-xs text-gray-400 dark:text-gray-500">
-          연복리 수익률 ≈ EPS 효과(이익 성장) + PER 효과(시장이 매기는 가격 배수의 변화). PER 효과가 플러스면 그 10년 동안 시장이 더 비싸게 쳐줬다는 뜻이다.
-        </p>
-      )}
 
       {/* EPS 주석 */}
       {epsNote && (
