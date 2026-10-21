@@ -104,10 +104,11 @@ def split_adjust(eps_raw: dict, splits: pd.Series) -> dict:
 
 
 def annual_eps_by_year(eps_adj: dict) -> dict:
-    """회계연도 종료일이 속한 해 → EPS (한 해에 둘이면 늦은 것)."""
+    """회계연도 → EPS. 1~3월에 끝나는 회계연도(월마트·엔비디아 등)는 대부분이 전년도에 속하므로 전년도로 매김."""
     by = {}
     for end in sorted(eps_adj):
-        by[end.year] = eps_adj[end]
+        y = end.year - 1 if end.month <= 3 else end.year
+        by[y] = eps_adj[end]
     return by
 
 
