@@ -2118,14 +2118,18 @@ function RmsInsight({ data }: { data: StockData }) {
 
       <div className={box}>
         <h4 className={h4}>3. 연도별 수익률 분해 — 막대 하나 = EPS 몫 + PER 몫</h4>
-        <p className={p}>
-          막대 하나가 그해 연말에 사서 10년 보유했을 때의 연평균 수익률이다. 그 막대를 두 칸으로 나눴다.
-        </p>
-        <ul className={`${p} list-disc pl-4 space-y-0.5`}>
-          <li><b className="text-emerald-600 dark:text-emerald-400">EPS 몫</b>: 회사 이익이 늘어서 생긴 수익</li>
-          <li><b className="text-purple-600 dark:text-purple-400">PER 몫</b>: 시장이 같은 이익에 더 비싼 값을 매겨줘서 생긴 수익 (배당 포함)</li>
-          <li><b className="text-red-500">빨간 점선 칸</b>: PER이 떨어져서 깎인 수익 (1996년, 1999년 매수). 이때는 초록 막대 높이가 곧 연평균 수익률이다.</li>
-        </ul>
+        <div className="rounded bg-gray-50 dark:bg-gray-800/50 p-3 space-y-1.5">
+          <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">차트 읽는 법</p>
+          <ul className={`${p} list-disc pl-4 space-y-1`}>
+            <li><b>막대 높이 = 연평균 수익률.</b> 그해 연말에 사서 10년 보유했을 때의 연평균 수익률(배당 재투자 포함)과 정확히 같다.</li>
+            <li><b className="text-emerald-600 dark:text-emerald-400">초록 칸 = EPS 몫.</b> 회사 이익이 늘어서 생긴 수익.</li>
+            <li><b className="text-purple-600 dark:text-purple-400">보라 칸 = PER 몫(배당 포함).</b> 시장이 같은 이익에 더 비싼 값을 매겨줘서 생긴 수익.
+              예: 2012년 매수 연 21.8% = EPS 몫 17.3%p + PER 몫 4.5%p.</li>
+            <li><b className="text-red-500">빨간 점선 칸 = PER 하락으로 깎인 몫.</b> PER이 떨어진 1996년·1999년 매수에만 있다.
+              이때는 초록 막대 높이가 곧 연평균 수익률이고, 빨간 칸만큼 이익 성장분을 PER 하락이 깎아 먹었다는 뜻이다.</li>
+            <li>막대를 누르거나 마우스를 올리면 나누기 전 원래 EPS 성장률과 PER 변화(예: 28배 → 42배)도 함께 보인다.</li>
+          </ul>
+        </div>
         <RmsDecompChart decomp={sortedDecomp} />
         <div className="overflow-x-auto">
           <table className="text-xs">
