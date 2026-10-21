@@ -9,6 +9,8 @@ import {
 } from 'chart.js'
 import { Chart } from 'react-chartjs-2'
 import spDesc from '@/app/sp500-holdings/descriptions.json'
+import PrivateTabs from '@/components/PrivateTabs'
+import { classify, GROUPS, GRADE_LABEL, gradeColor, groupColor, qualityScore, fmt, fmtSgn, type Metrics, type Quality } from '@/lib/ideas'
 import qldData        from '@/public/data/rolling/QLD_rolling.json'
 import qqqData        from '@/public/data/rolling/QQQ_rolling.json'
 import tqqqData       from '@/public/data/rolling/TQQQ_rolling.json'
@@ -2652,6 +2654,212 @@ function NkeInsight({ data }: { data: StockData }) {
   )
 }
 
+// ── 전 종목 자동 인사이트 (사업성 평가 + EDGAR EPS 기반 숫자 분석) ─────────
+let qualityCache: Promise<Record<string, Quality>> | null = null
+function loadQuality() {
+  if (!qualityCache) {
+    qualityCache = fetch('/data/fundamentals/_quality.json')
+      .then(r => r.json()).then(j => j.stocks as Record<string, Quality>)
+      .catch(() => ({}))
+  }
+  return qualityCache
+}
+
+type Fundamentals = {
+  eps: Record<string, number | null>
+  pe: Record<string, number | null>
+  decomp: Array<Decomp & { divCagr: number | null; priceCagr: number | null }>
+  metrics: Metrics
+  generated: string
+}
+
+function ScoreBar({ label, v }: { label: string; v: number }) {
+  return (
+    <div className="flex items-center gap-2 text-xs">
+      <span className="w-20 shrink-0 text-gray-500 dark:text-gray-400">{label}</span>
+      <div className="flex gap-0.5">
+        {[1, 2, 3, 4, 5].map(i => (
+          <span key={i} className={`h-2 w-5 rounded-sm ${i <= v ? 'bg-emerald-500' : 'bg-gray-200 dark:bg-gray-700'}`} />
+        ))}
+      </div>
+      <span className="tabular-nums text-gray-600 dark:text-gray-300">{v}</span>
+    </div>
+  )
+}
+
+function QualityCard({ stockKey }: { stockKey: string }) {
+  const [q, setQ] = useState<Quality | null | undefined>(undefined)
+  useEffect(() => { loadQuality().then(all => setQ(all[stockKey] ?? null)) }, [stockKey])
+  if (!q) return null
+  return (
+    <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-3">
+      <div className="flex flex-wrap items-center gap-2">
+        <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">사업성 평가</h4>
+        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${gradeColor(q.grade)}`}>{q.grade} · {GRADE_LABEL[q.grade]}</span>
+        <span className="text-xs text-gray-400">점수 합 {qualityScore(q)} / 25</span>
+      </div>
+      <p className="text-xs text-gray-600 dark:text-gray-300"><b>사업:</b> {q.business}</p>
+      <div className="grid sm:grid-cols-2 gap-x-6 gap-y-1">
+        <ScoreBar label="경쟁우위(해자)" v={q.moat} />
+        <ScoreBar label="가격결정력" v={q.pricing} />
+        <ScoreBar label="수익성" v={q.profit} />
+        <ScoreBar label="성장성" v={q.growth} />
+        <ScoreBar label="지속가능성" v={q.durability} />
+      </div>
+      <p className="text-xs text-gray-600 dark:text-gray-300"><b className="text-emerald-600 dark:text-emerald-400">강점:</b> {q.strength}</p>
+      <p className="text-xs text-gray-600 dark:text-gray-300"><b className="text-red-500">위험:</b> {q.risk}</p>
+      <p className="text-[11px] text-gray-400 dark:text-gray-500">
+        버핏·멍거식 기준(오래가는 경쟁우위, 가격을 올려도 고객이 떠나지 않는 힘, 높은 이익률, 성장 여력, 10년 뒤에도 건재할지)으로 Claude가 매긴 정성 평가다. 2026년 10월 기준이며 투자 판단의 참고용이다.
+      </p>
+    </div>
+  )
+}
+
+function AutoInsight({ stockKey }: { stockKey: string }) {
+  const [f, setF] = useState<Fundamentals | null | undefined>(undefined)
+  const [q, setQ] = useState<Quality | undefined>(undefined)
+  useEffect(() => {
+    let alive = true
+    setF(undefined)
+    fetch(`/data/fundamentals/${stockKey}.json`)
+      .then(r => (r.ok ? r.json() : null))
+      .then(j => { if (alive) setF(j) })
+      .catch(() => { if (alive) setF(null) })
+    loadQuality().then(all => { if (alive) setQ(all[stockKey]) })
+    return () => { alive = false }
+  }, [stockKey])
+
+  const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-2'
+  const h4 = 'text-sm font-semibold text-gray-800 dark:text-gray-100'
+  const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
+  const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500'
+  const td = 'py-1.5 px-2 tabular-nums text-gray-700 dark:text-gray-200'
+
+  if (f === undefined) return <p className="text-xs text-gray-400">인사이트 불러오는 중…</p>
+
+  const header = (
+    <div>
+      <h3 className="text-base font-semibold text-gray-900 dark:text-white">인사이트</h3>
+      <p className="text-xs text-gray-400 dark:text-gray-500">
+        자동 분석{f ? ` · 데이터 ${f.generated}` : ''} · EPS는 SEC 공시(10-K) 기준
+      </p>
+    </div>
+  )
+
+  if (!f) {
+    return (
+      <div className="space-y-4">
+        {header}
+        <QualityCard stockKey={stockKey} />
+        <p className="text-xs text-gray-400">이 종목은 연도별 EPS 공시 데이터를 찾지 못해 숫자 분석을 생략했다.</p>
+      </div>
+    )
+  }
+
+  const m = f.metrics
+  const group = classify(m, q)
+  const years = Object.keys(f.pe).map(Number).sort((a, b) => a - b).slice(-6)
+  const decomp = f.decomp.filter(d => !d.inProgress || (d.years ?? 0) >= 9)
+  const divRows = decomp.filter(d => d.divCagr != null).map(d => ({
+    buyYear: d.buyYear, priceCagr: d.priceCagr ?? 0, totalCagr: d.totalCagr, divCagr: d.divCagr as number,
+  }))
+  const complete = decomp.filter(d => !d.inProgress)
+  const exampleYear = complete.length ? complete[complete.length - 1].buyYear : (decomp[0]?.buyYear ?? 0)
+
+  // 3년 전 대비 무엇이 움직였나 (연말 기준)
+  const y0 = years.length >= 4 ? years[years.length - 4] : years[0]
+  const pe0 = y0 != null ? f.pe[String(y0)] : null
+  const eps0 = y0 != null ? f.eps[String(y0)] : null
+  const epsChg = eps0 && m.ttmEps && eps0 > 0 ? (m.ttmEps / eps0 - 1) * 100 : null
+  const peChg = pe0 && m.pe ? (m.pe / pe0 - 1) * 100 : null
+
+  const lines: string[] = []
+  if (m.pe != null && m.peMed10 != null) {
+    lines.push(`현재 PER ${m.pe.toFixed(1)}배는 최근 10년 연말 PER 중간값(${m.peMed10.toFixed(1)}배)의 ${(m.peVsMed! * 100).toFixed(0)}% 수준이다.`)
+  }
+  if (epsChg != null && peChg != null && y0 != null) {
+    const main = Math.abs(epsChg) > Math.abs(peChg) ? '이익(EPS) 변화' : 'PER 변화'
+    lines.push(`${y0}년 말 이후 EPS ${fmtSgn(epsChg, 0)}, PER ${fmtSgn(peChg, 0)} → 주가를 움직인 건 주로 ${main}다.`)
+  }
+  if (m.epsCagr10 != null) {
+    lines.push(`EPS는 10년간 연 ${fmtSgn(m.epsCagr10)}${m.epsCagr5 != null ? `, 최근 5년 연 ${fmtSgn(m.epsCagr5)}` : ''} 늘었고, 10년 중 ${m.epsDownYears10}번 감소했다.`)
+  }
+  if (m.epsVsPeak != null) {
+    lines.push(m.epsVsPeak >= 0.95 ? '최근 1년 이익은 10년 내 최고 수준이다.'
+      : `최근 1년 이익은 10년 내 고점의 ${(m.epsVsPeak * 100).toFixed(0)}% 수준이다.`)
+  }
+
+  return (
+    <div className="space-y-4">
+      {header}
+      <QualityCard stockKey={stockKey} />
+
+      <div className={box}>
+        <div className="flex flex-wrap items-center gap-2">
+          <h4 className={h4}>지금 상태 요약</h4>
+          {group && <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${groupColor(group)}`}>{GROUPS[group].label}</span>}
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <StatCard label="현재 PER" value={m.pe != null ? `${m.pe.toFixed(1)}배` : '—'} />
+          <StatCard label="10년 중간 PER" value={m.peMed10 != null ? `${m.peMed10.toFixed(1)}배` : '—'} />
+          <StatCard label="EPS 10년 성장(연)" value={fmtSgn(m.epsCagr10)} />
+          <StatCard label="3년 고점 대비 주가" value={fmtSgn(m.fromHigh3y, 0)} />
+          <StatCard label="이익 / 10년 고점" value={m.epsVsPeak != null ? `${(m.epsVsPeak * 100).toFixed(0)}%` : '—'} />
+          <StatCard label="배당수익률" value={fmt(m.divYield, 2, '%')} />
+          <StatCard label="1년 주가 변화" value={fmtSgn(m.chg1y, 0)} />
+          <StatCard label="단순 기대수익률(연)" value={fmtSgn(m.expRet10)} />
+        </div>
+        <ul className={`${p} list-disc pl-4 space-y-1`}>
+          {lines.map((l, i) => <li key={i}>{l}</li>)}
+          {group && <li><b>{GROUPS[group].label}:</b> {GROUPS[group].desc}</li>}
+        </ul>
+        <p className="text-[11px] text-gray-400 dark:text-gray-500">
+          단순 기대수익률 = EPS가 최근 5년·10년 성장률 중 낮은 값(최대 연 15%)으로 10년 더 늘고, PER이 10년 중간값(최대 35배)으로 돌아가며, 배당이 유지된다고 가정한 연평균. 방향을 보는 참고값이다.
+        </p>
+      </div>
+
+      {years.length > 0 && (
+        <div className={box}>
+          <h4 className={h4}>최근 연말 주가·EPS·PER</h4>
+          <div className="overflow-x-auto">
+            <table className="text-xs">
+              <thead>
+                <tr>
+                  <th className={`${th} text-left`}>연도</th>
+                  {years.map(y => <th key={y} className={`${th} text-right`}>{y}</th>)}
+                  <th className={`${th} text-right`}>지금</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                <tr>
+                  <td className={td}>EPS</td>
+                  {years.map(y => <td key={y} className={`${td} text-right`}>{fmt(f.eps[String(y)], 2)}</td>)}
+                  <td className={`${td} text-right font-semibold`}>{fmt(m.ttmEps, 2)}</td>
+                </tr>
+                <tr>
+                  <td className={td}>PER</td>
+                  {years.map(y => <td key={y} className={`${td} text-right`}>{f.pe[String(y)] != null ? `${f.pe[String(y)]!.toFixed(1)}배` : '—'}</td>)}
+                  <td className={`${td} text-right font-semibold`}>{m.pe != null ? `${m.pe.toFixed(1)}배` : '—'}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p className="text-[11px] text-gray-400 dark:text-gray-500">EPS는 각 회계연도 기준(분할 반영), PER은 연말 주가 ÷ 그해 회계연도 EPS. &lsquo;지금&rsquo;은 최근 1년 EPS.</p>
+        </div>
+      )}
+
+      {decomp.length > 0 && (
+        <DecompSection
+          title="연도별 수익률 분해 — 막대 하나 = EPS 몫 + 배당 몫 + PER 몫"
+          decomp={decomp}
+          divRows={divRows}
+          exampleYear={exampleYear}
+        />
+      )}
+    </div>
+  )
+}
+
 // ── 메인 페이지 ──────────────────────────────────────────────
 export default function PrivatePage() {
   const [activeStock, setActiveStock] = useState(0)
@@ -2660,6 +2868,8 @@ export default function PrivatePage() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 space-y-8">
+
+        <PrivateTabs active="stocks" />
 
         {/* 헤더 */}
         <div>
@@ -2723,8 +2933,13 @@ export default function PrivatePage() {
         <RollingTable data={current.data} />
 
         {/* 에르메스 전용 인사이트 */}
+        {current.key === 'RMS' && <QualityCard stockKey="RMS" />}
         {current.key === 'RMS' && <RmsInsight data={current.data} />}
+        {current.key === 'NKE' && <QualityCard stockKey="NKE" />}
         {current.key === 'NKE' && <NkeInsight data={current.data} />}
+        {current.key !== 'RMS' && current.key !== 'NKE' && (current.data as any).type !== 'etf' && (
+          <AutoInsight key={current.key} stockKey={current.key} />
+        )}
 
         {/* 구분선 */}
         <div className="border-t border-gray-200 dark:border-gray-800 pt-2" />

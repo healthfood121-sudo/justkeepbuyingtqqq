@@ -1,0 +1,228 @@
+'use client'
+
+import { useEffect, useMemo, useState } from 'react'
+import PrivateTabs from '@/components/PrivateTabs'
+import { PICKS, PICKS_AS_OF, PICK_SECTIONS } from './picks'
+import {
+  classify, GROUPS, GRADE_LABEL, gradeColor, groupColor, qualityScore, fmt, fmtSgn,
+  type GroupKey, type Metrics, type Quality,
+} from '@/lib/ideas'
+
+type Row = Metrics & { q?: Quality; group: GroupKey | null; score: number }
+type SortKey = 'score' | 'pe' | 'peVsMed' | 'epsCagr10' | 'epsVsPeak' | 'fromHigh3y' | 'roll10Median' | 'expRet10' | 'name'
+
+export default function IdeasPage() {
+  const [rows, setRows] = useState<Row[] | null>(null)
+  const [generated, setGenerated] = useState('')
+  const [grade, setGrade] = useState<'all' | 'A' | 'AB'>('AB')
+  const [group, setGroup] = useState<'all' | GroupKey>('all')
+  const [query, setQuery] = useState('')
+  const [sort, setSort] = useState<{ key: SortKey; desc: boolean }>({ key: 'expRet10', desc: true })
+
+  useEffect(() => {
+    Promise.all([
+      fetch('/data/fundamentals/_summary.json').then(r => r.json()),
+      fetch('/data/fundamentals/_quality.json').then(r => r.json()),
+    ]).then(([s, q]) => {
+      const qs = q.stocks as Record<string, Quality>
+      setGenerated(s.generated)
+      setRows((s.stocks as Metrics[]).map(m => ({
+        ...m, q: qs[m.key], group: classify(m, qs[m.key]), score: qualityScore(qs[m.key]),
+      })))
+    }).catch(() => setRows([]))
+  }, [])
+
+  const byKey = useMemo(() => new Map((rows ?? []).map(r => [r.key, r])), [rows])
+
+  const filtered = useMemo(() => {
+    if (!rows) return []
+    const ql = query.trim().toLowerCase()
+    const list = rows.filter(r =>
+      (grade === 'all' || (grade === 'A' ? r.q?.grade === 'A' : r.q?.grade === 'A' || r.q?.grade === 'B')) &&
+      (group === 'all' || r.group === group) &&
+      (!ql || r.key.toLowerCase().includes(ql) || (r.name ?? '').toLowerCase().includes(ql)))
+    const val = (r: Row): number | string | null => sort.key === 'name' ? r.name : (r as any)[sort.key]
+    return [...list].sort((a, b) => {
+      const va = val(a), vb = val(b)
+      if (va == null) return 1
+      if (vb == null) return -1
+      const c = typeof va === 'string' ? va.localeCompare(vb as string) : (va as number) - (vb as number)
+      return sort.desc ? -c : c
+    })
+  }, [rows, grade, group, query, sort])
+
+  const counts = useMemo(() => {
+    const c: Record<string, number> = {}
+    rows?.forEach(r => { if (r.group) c[r.group] = (c[r.group] ?? 0) + 1 })
+    return c
+  }, [rows])
+
+  const th = 'py-2 px-2 font-medium text-gray-400 dark:text-gray-500 whitespace-nowrap'
+  const td = 'py-1.5 px-2 tabular-nums text-gray-700 dark:text-gray-200 whitespace-nowrap'
+  const SortTh = ({ k, children, left }: { k: SortKey; children: React.ReactNode; left?: boolean }) => (
+    <th
+      onClick={() => setSort(s => ({ key: k, desc: s.key === k ? !s.desc : k !== 'name' }))}
+      className={`${th} ${left ? 'text-left' : 'text-right'} cursor-pointer select-none hover:text-gray-700 dark:hover:text-gray-200 ${sort.key === k ? 'text-gray-800 dark:text-gray-100' : ''}`}
+    >
+      {children}{sort.key === k ? (sort.desc ? ' ↓' : ' ↑') : ''}
+    </th>
+  )
+
+  return (
+    <div className="min-h-screen bg-white dark:bg-gray-950">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 space-y-8">
+        <PrivateTabs active="ideas" />
+
+        <div className="space-y-1">
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white">종목 아이디어</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            {rows ? `${rows.length}개 종목` : '전 종목'}을 같은 기준으로 훑었다. 사업이 좋은가(정성 평가) × 지금 값이 어떤가(PER·이익 흐름)를 함께 본다.
+          </p>
+          {generated && <p className="text-xs text-gray-400">숫자 데이터 {generated} · 정성 평가·추천 {PICKS_AS_OF}</p>}
+        </div>
+
+        {/* ── 추천 정리 ── */}
+        <section className="space-y-5">
+          <h2 className="text-base font-semibold text-gray-900 dark:text-white">Claude가 고른 종목 정리</h2>
+          {PICK_SECTIONS.map(sec => {
+            const picks = PICKS.filter(p => p.section === sec.key)
+            if (!picks.length) return null
+            return (
+              <div key={sec.key} className="space-y-2">
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-100">{sec.title}</h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{sec.desc}</p>
+                </div>
+                <div className="grid sm:grid-cols-2 gap-3">
+                  {picks.map(pk => {
+                    const r = byKey.get(pk.key)
+                    return (
+                      <div key={pk.key} className="rounded-lg border border-gray-200 dark:border-gray-800 p-3 space-y-1.5">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="text-sm font-semibold text-gray-900 dark:text-white">{r?.name ?? pk.key}</span>
+                          <span className="text-xs text-gray-400">{pk.key}</span>
+                          {r?.q && <span className={`text-[11px] px-1.5 py-0.5 rounded ${gradeColor(r.q.grade)}`}>{GRADE_LABEL[r.q.grade]}</span>}
+                        </div>
+                        {r && (
+                          <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-gray-500 dark:text-gray-400 tabular-nums">
+                            <span>PER {fmt(r.pe)}배 (10년 중간 {fmt(r.peMed10)}배)</span>
+                            <span>EPS 10년 {fmtSgn(r.epsCagr10)}/년</span>
+                            <span>3년 고점 대비 {fmtSgn(r.fromHigh3y, 0)}</span>
+                          </div>
+                        )}
+                        <p className="text-xs leading-relaxed text-gray-700 dark:text-gray-200">{pk.why}</p>
+                        <p className="text-xs leading-relaxed text-red-500/90"><b>볼 것:</b> {pk.watch}</p>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )
+          })}
+        </section>
+
+        {/* ── 자동 선별 기준 ── */}
+        <section className="space-y-2">
+          <h2 className="text-base font-semibold text-gray-900 dark:text-white">자동 분류 기준</h2>
+          <div className="grid sm:grid-cols-2 gap-2">
+            {(Object.keys(GROUPS) as GroupKey[]).map(g => (
+              <button
+                key={g}
+                onClick={() => setGroup(group === g ? 'all' : g)}
+                className={`text-left rounded-lg border p-3 transition-colors ${group === g ? 'border-gray-900 dark:border-white' : 'border-gray-200 dark:border-gray-800 hover:border-gray-400'}`}
+              >
+                <div className="flex items-center gap-2">
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${groupColor(g)}`}>{GROUPS[g].label}</span>
+                  <span className="text-xs text-gray-400">{counts[g] ?? 0}개</span>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{GROUPS[g].desc}</p>
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-gray-400 dark:text-gray-500">
+            &lsquo;위대한 기업&rsquo; = 정성 평가 A등급 또는 경쟁우위 4점 이상인 B등급. 카드를 누르면 아래 표가 그 분류로 걸러진다.
+          </p>
+        </section>
+
+        {/* ── 전체 표 ── */}
+        <section className="space-y-3">
+          <h2 className="text-base font-semibold text-gray-900 dark:text-white">전체 종목 표</h2>
+          <div className="flex flex-wrap gap-2 items-center text-xs">
+            {([['AB', '위대한·좋은 기업'], ['A', '위대한 기업만'], ['all', '전체']] as const).map(([k, l]) => (
+              <button key={k} onClick={() => setGrade(k)}
+                className={`px-2.5 py-1 rounded-md border ${grade === k ? 'bg-gray-900 text-white border-gray-900 dark:bg-white dark:text-gray-900' : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300'}`}>
+                {l}
+              </button>
+            ))}
+            {group !== 'all' && (
+              <button onClick={() => setGroup('all')} className="px-2.5 py-1 rounded-md border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300">
+                분류: {GROUPS[group].short} ✕
+              </button>
+            )}
+            <input
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              placeholder="종목 검색"
+              className="px-2.5 py-1 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white w-32"
+            />
+            <span className="text-gray-400">{filtered.length}개</span>
+          </div>
+
+          {rows === null ? (
+            <p className="text-xs text-gray-400">불러오는 중…</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="text-xs w-full">
+                <thead>
+                  <tr className="border-b border-gray-200 dark:border-gray-700">
+                    <SortTh k="name" left>종목</SortTh>
+                    <th className={`${th} text-left`}>등급</th>
+                    <SortTh k="score">사업성</SortTh>
+                    <th className={`${th} text-left`}>분류</th>
+                    <SortTh k="pe">PER</SortTh>
+                    <SortTh k="peVsMed">PER/10년 중간</SortTh>
+                    <SortTh k="epsCagr10">EPS 10년(연)</SortTh>
+                    <SortTh k="epsVsPeak">이익/고점</SortTh>
+                    <SortTh k="fromHigh3y">3년 고점 대비</SortTh>
+                    <SortTh k="roll10Median">과거 10년 보유(중간)</SortTh>
+                    <SortTh k="expRet10">단순 기대(연)</SortTh>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                  {filtered.map(r => (
+                    <tr key={r.key} className="hover:bg-gray-50 dark:hover:bg-gray-800/40" title={r.q ? `${r.q.business}\n강점: ${r.q.strength}\n위험: ${r.q.risk}` : ''}>
+                      <td className={`${td} text-left`}>
+                        <span className="font-medium text-gray-900 dark:text-white">{r.name}</span>
+                        <span className="ml-1 text-gray-400">{r.key}</span>
+                      </td>
+                      <td className={td}>{r.q && <span className={`px-1.5 py-0.5 rounded ${gradeColor(r.q.grade)}`}>{r.q.grade}</span>}</td>
+                      <td className={`${td} text-right`}>{r.score || '—'}</td>
+                      <td className={td}>{r.group && <span className={`px-1.5 py-0.5 rounded ${groupColor(r.group)}`}>{GROUPS[r.group].short}</span>}</td>
+                      <td className={`${td} text-right`}>{fmt(r.pe)}</td>
+                      <td className={`${td} text-right ${r.peVsMed == null ? '' : r.peVsMed <= 0.85 ? 'text-emerald-600 dark:text-emerald-400' : r.peVsMed >= 1.3 ? 'text-red-500' : ''}`}>
+                        {r.peVsMed != null ? `${(r.peVsMed * 100).toFixed(0)}%` : '—'}
+                      </td>
+                      <td className={`${td} text-right`}>{fmtSgn(r.epsCagr10)}</td>
+                      <td className={`${td} text-right ${r.epsVsPeak != null && r.epsVsPeak < 0.85 ? 'text-amber-600 dark:text-amber-400' : ''}`}>
+                        {r.epsVsPeak != null ? `${(r.epsVsPeak * 100).toFixed(0)}%` : '—'}
+                      </td>
+                      <td className={`${td} text-right`}>{fmtSgn(r.fromHigh3y, 0)}</td>
+                      <td className={`${td} text-right`}>{fmt(r.roll10Median, 1, '%')}</td>
+                      <td className={`${td} text-right font-semibold`}>{fmtSgn(r.expRet10)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          <div className="text-[11px] text-gray-400 dark:text-gray-500 space-y-1">
+            <p>사업성 = 경쟁우위·가격결정력·수익성·성장성·지속가능성 점수 합(25점 만점, Claude 정성 평가). 행에 마우스를 올리면 사업·강점·위험이 보인다.</p>
+            <p>PER/10년 중간 = 현재 PER ÷ 최근 10년 연말 PER의 중간값. 이익/고점 = 최근 1년 EPS ÷ 최근 10년 연간 EPS 최고치.</p>
+            <p>단순 기대(연) = EPS가 최근 5년·10년 성장률 중 낮은 값(최대 15%)으로 늘고, PER이 10년 중간값(최대 35배)으로 돌아가며, 배당이 유지된다는 가정의 10년 연평균. 일회성 손익·적자 이력이 있는 종목은 왜곡될 수 있다.</p>
+            <p>EPS: SEC 공시(10-K, 희석 EPS, 분할 반영) · 주가: Yahoo Finance. 에르메스·ETF는 표에서 빠진다(위대한 기업 탭에서 확인).</p>
+          </div>
+        </section>
+      </div>
+    </div>
+  )
+}
