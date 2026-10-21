@@ -272,13 +272,18 @@ def process(key: str, roll: dict, prices: pd.DataFrame, cik_map: dict) -> dict |
         exit_pe = min(pe_med, 35)
         exp_ret = (((1 + g_use / 100) ** 10 * exit_pe / pe_now) ** 0.1 * (1 + div_y / 100) - 1) * 100
 
+    stale = last_fy < LAST_FULL - 1  # 공시 EPS가 오래돼 지금과 비교할 수 없음
+    if stale:
+        g = g5 = exp_ret = pe_med = None
+        decomp = [d for d in decomp if not d["inProgress"]]
     metrics = {
         "key": key, "ticker": roll["ticker"], "name": roll.get("name"),
         "price": r2(price_now), "ttmEps": r2(ttm), "pe": r2(pe_now, 1), "divYield": r2(div_y),
         "peMed10": r2(pe_med, 1),
         "peVsMed": r2(pe_now / pe_med if pe_now and pe_med else None),
         "epsCagr10": r2(g), "epsCagr5": r2(g5), "epsDownYears10": down_years,
-        "epsVsPeak": r2(ttm / peak if ttm and peak and peak > 0 else None),
+        "epsVsPeak": None if stale else r2(ttm / peak if ttm and peak and peak > 0 else None),
+        "stale": stale,
         "lastFy": last_fy, "fromHigh3y": r2((price_now / hi3 - 1) * 100),
         "chg1y": r2(chg(365)), "chg3y": r2(chg(365 * 3)),
         "roll10Median": st.get("median"), "roll10Min": st.get("min"), "roll10N": st.get("n"),

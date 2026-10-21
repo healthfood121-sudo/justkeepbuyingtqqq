@@ -2809,6 +2809,11 @@ function AutoInsight({ stockKey }: { stockKey: string }) {
           <StatCard label="1년 주가 변화" value={fmtSgn(m.chg1y, 0)} />
           <StatCard label="단순 기대수익률(연)" value={fmtSgn(m.expRet10)} />
         </div>
+        {m.stale && (
+          <p className="text-xs text-amber-600 dark:text-amber-400">
+            SEC 공시에서 찾은 EPS가 {m.lastFy}년까지만 있어 PER 비교·성장률·기대수익률은 생략했다.
+          </p>
+        )}
         <ul className={`${p} list-disc pl-4 space-y-1`}>
           {lines.map((l, i) => <li key={i}>{l}</li>)}
           {group && <li><b>{GROUPS[group].label}:</b> {GROUPS[group].desc}</li>}

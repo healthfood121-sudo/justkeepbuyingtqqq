@@ -10,6 +10,7 @@ export type Metrics = {
   roll10Median: number | null; roll10Min: number | null; roll10N: number | null
   roll10Over10: number | null; beatBench: number | null; beatTotal: number | null
   expRet10: number | null
+  stale?: boolean   // 공시 EPS가 오래돼 숫자 비교 제외
 }
 
 export type Quality = {
