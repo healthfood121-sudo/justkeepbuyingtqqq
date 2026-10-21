@@ -49,6 +49,26 @@ def export(key: str, yf_ticker: str) -> None:
       })
       print(buy, sell, rows[-1])
 
+  # 진행 중 구간 (연말 매수 → 최근 종가). 10년 미만이라 연환산 기간은 실제 경과 연수
+  last_date = close.index[-1]
+  for buy in range(last_full_year - 9, last_full_year + 1):
+      if buy not in ye_close.index:
+          continue
+      yrs = (last_date - pd.Timestamp(f"{buy}-12-31")).days / 365.25
+      price_cagr = (close.iloc[-1] / ye_close[buy]) ** (1 / yrs) - 1
+      total_cagr = (adj.iloc[-1] / ye_adj[buy]) ** (1 / yrs) - 1
+      div_cagr = (1 + total_cagr) / (1 + price_cagr) - 1
+      rows.append({
+          "buyYear": buy,
+          "sellDate": last_date.strftime("%Y-%m-%d"),
+          "isComplete": False,
+          "years": round(yrs, 1),
+          "priceCagr": round(price_cagr * 100, 2),
+          "totalCagr": round(total_cagr * 100, 2),
+          "divCagr": round(div_cagr * 100, 2),
+      })
+      print("진행 중", buy, rows[-1])
+
   OUT.write_text(json.dumps({
       "ticker": yf_ticker,
       "source": "Yahoo Finance 연말 Close(배당 미포함) vs Adj Close(배당 재투자)",
