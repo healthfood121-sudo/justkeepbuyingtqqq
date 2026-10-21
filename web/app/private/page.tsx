@@ -1553,9 +1553,9 @@ function OverviewTable({
     const completedCount = allCompleted.length
     const completed  = allCompleted.slice(-15)
     const cagrs      = completed.map((r: any) => r.cagr as number)
-    const cagrMn     = Math.min(...cagrs)
-    const cagrMx     = Math.max(...cagrs)
-    const cagrMed    = median(cagrs)
+    const cagrMn     = cagrs.length ? Math.min(...cagrs) : null
+    const cagrMx     = cagrs.length ? Math.max(...cagrs) : null
+    const cagrMed    = cagrs.length ? median(cagrs)      : null
     const withDiff   = completed.filter((r: any) => r.diff != null)
     const diffs      = withDiff.map((r: any) => r.diff as number)
     const diffMn     = diffs.length ? Math.min(...diffs) : null
@@ -1826,17 +1826,19 @@ function OverviewTable({
                 </td>
                 {/* 절대 수익률 */}
                 <td className="py-1.5 px-3">
-                  <RangeBar mn={cagrMn} med={cagrMed} mx={cagrMx}
-                    vMin={0} vMax={cagrVMax} refVal={20} refLabel="연 20% 기준" />
+                  {cagrMn != null && cagrMed != null && cagrMx != null
+                    ? <RangeBar mn={cagrMn} med={cagrMed} mx={cagrMx}
+                        vMin={0} vMax={cagrVMax} refVal={20} refLabel="연 20% 기준" />
+                    : <span className="text-gray-300 dark:text-gray-600 text-xs pl-3">진행 중</span>}
                 </td>
-                <td className={`py-1.5 pr-3 text-right tabular-nums ${cagrTextColor(cagrMn, true)} ${colBg('cagrMn')}`}>
-                  {cagrMn.toFixed(1)}%
+                <td className={`py-1.5 pr-3 text-right tabular-nums ${cagrMn != null ? cagrTextColor(cagrMn, true) : 'text-gray-300 dark:text-gray-600'} ${colBg('cagrMn')}`}>
+                  {cagrMn != null ? `${cagrMn.toFixed(1)}%` : '진행 중'}
                 </td>
-                <td className={`py-1.5 pr-3 text-right tabular-nums font-semibold ${cagrTextColor(cagrMed, true)} ${colBg('cagrMed')}`}>
-                  {cagrMed.toFixed(1)}%
+                <td className={`py-1.5 pr-3 text-right tabular-nums font-semibold ${cagrMed != null ? cagrTextColor(cagrMed, true) : 'text-gray-300 dark:text-gray-600'} ${colBg('cagrMed')}`}>
+                  {cagrMed != null ? `${cagrMed.toFixed(1)}%` : '진행 중'}
                 </td>
-                <td className={`py-1.5 pr-4 text-right tabular-nums ${cagrTextColor(cagrMx, true)} ${colBg('cagrMx')}`}>
-                  {cagrMx.toFixed(1)}%
+                <td className={`py-1.5 pr-4 text-right tabular-nums ${cagrMx != null ? cagrTextColor(cagrMx, true) : 'text-gray-300 dark:text-gray-600'} ${colBg('cagrMx')}`}>
+                  {cagrMx != null ? `${cagrMx.toFixed(1)}%` : '진행 중'}
                 </td>
                 {/* S&P500 초과수익 */}
                 <td className="py-1.5 px-3 border-l-2 border-gray-200 dark:border-gray-700">
