@@ -1717,7 +1717,10 @@ function OverviewTable({
         </tbody>
       </table>
       <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
-        행 클릭 시 상세 보기 · ★ 클릭으로 즐겨찾기 · 최근 15개 완결 구간 기준
+        <span className={rows.length < allRows.length ? 'text-blue-500 dark:text-blue-400 font-medium' : ''}>
+          {rows.length < allRows.length ? `${rows.length} / ${allRows.length}개` : `${allRows.length}개`}
+        </span>
+        {' '}· 행 클릭 시 상세 보기 · ★ 클릭으로 즐겨찾기 · 최근 15개 완결 구간 기준
       </p>
     </div>
   )
