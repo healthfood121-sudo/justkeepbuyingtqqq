@@ -1438,6 +1438,7 @@ function OverviewTable({
   const [noLoss, setNoLoss] = useState(false)
   const [alwaysBeatSP, setAlwaysBeatSP] = useState(false)
   const [minMedian, setMinMedian] = useState(0)
+  const [minDiffMedian, setMinDiffMedian] = useState(0)
   const [excludeEtf, setExcludeEtf] = useState(false)
 
   useEffect(() => {
@@ -1524,6 +1525,7 @@ function OverviewTable({
     if (noLoss && row.cagrMn <= 0) return false
     if (alwaysBeatSP && (row.diffMn == null || row.diffMn <= 0)) return false
     if (minMedian > 0 && row.cagrMed < minMedian) return false
+    if (minDiffMedian !== 0 && (row.diffMed == null || row.diffMed < minDiffMedian)) return false
     if (excludeEtf && (row.s.data as any).type === 'etf') return false
     return true
   })
@@ -1576,9 +1578,9 @@ function OverviewTable({
           />
           개 이상
         </label>
-        {/* 중앙값 기준 */}
+        {/* 절대수익 중앙값 */}
         <label className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700 rounded-lg px-2.5 py-1.5">
-          중앙값 ≥
+          절대수익 중앙값 ≥
           <input
             type="number" min={0} max={100} value={minMedian || ''}
             placeholder="0"
@@ -1586,6 +1588,17 @@ function OverviewTable({
             className="w-8 text-center bg-transparent text-gray-900 dark:text-white focus:outline-none"
           />
           %
+        </label>
+        {/* 초과수익 중앙값 */}
+        <label className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700 rounded-lg px-2.5 py-1.5">
+          초과수익 중앙값 ≥
+          <input
+            type="number" min={-20} max={100} value={minDiffMedian || ''}
+            placeholder="0"
+            onChange={e => setMinDiffMedian(Number(e.target.value) || 0)}
+            className="w-8 text-center bg-transparent text-gray-900 dark:text-white focus:outline-none"
+          />
+          pp
         </label>
         {/* 토글 버튼들 */}
         {([
@@ -1608,8 +1621,8 @@ function OverviewTable({
               ? `${rows.length} / ${allRows.length}개`
               : `${allRows.length}개`}
           </span>
-          {(minPeriods > 0 || minMedian > 0 || noLoss || alwaysBeatSP || excludeEtf) && (
-            <button onClick={() => { setMinPeriods(0); setMinMedian(0); setNoLoss(false); setAlwaysBeatSP(false); setExcludeEtf(false) }}
+          {(minPeriods > 0 || minMedian > 0 || minDiffMedian !== 0 || noLoss || alwaysBeatSP || excludeEtf) && (
+            <button onClick={() => { setMinPeriods(0); setMinMedian(0); setMinDiffMedian(0); setNoLoss(false); setAlwaysBeatSP(false); setExcludeEtf(false) }}
               className="text-xs text-gray-400 dark:text-gray-600 hover:text-red-400 dark:hover:text-red-500 transition-colors">
               필터 초기화
             </button>
