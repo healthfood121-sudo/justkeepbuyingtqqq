@@ -71,7 +71,9 @@ def fetch_eps(cik: int) -> dict:
         log.append(f"{concept}:{resp.status_code if resp is not None else 'ERR'}")
         if resp is None or resp.status_code != 200:
             continue
-        for unit, items in resp.json().get("units", {}).items():
+        units = resp.json().get("units", {})
+        for unit, items in units.items():
+            log.append(f"  {unit} n={len(items)} 예: {items[-1] if items else None}")
             if "/shares" not in unit:
                 continue
             for it in items:
