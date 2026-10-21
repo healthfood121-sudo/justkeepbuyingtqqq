@@ -951,3 +951,15 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 | `web/public/data/rolling/NKE_dividend.json` | `export_dividend_decomp.py NKE:NKE` | 나이키 | 동일 (1980~2015년 매수) | `/private` 나이키 인사이트 |
 
 실행: GitHub Actions `배당 분해 데이터 생성` (workflow_dispatch, 입력 `tickers` 예: `RMS:RMS.PA NKE:NKE`). 이 세션 환경은 Yahoo 접속이 막혀 있어 Actions로 생성했다.
+
+### 전 종목 펀더멘털 JSON (데이터 생성)
+
+| 파일 | 크기 | 스크립트 | 내용 | 사용처 |
+|------|------|---------|------|--------|
+| `web/public/data/fundamentals/{KEY}.json` | 종목당 ~3 KB × 444개 | `export_fundamentals.py` | 연도별 EPS(SEC 10-K, 분할 보정)·연말 PER, 10년 수익률 분해(EPS·배당·PER, 완결+진행 중), 지표 | `/private` 자동 인사이트 |
+| `web/public/data/fundamentals/_summary.json` | ~200 KB | `export_fundamentals.py` | 전 종목 지표 요약(PER vs 10년 중간값, EPS 성장, 이익/고점, 3년 고점 대비, 단순 기대수익률) | `/private/ideas` |
+| `web/public/data/fundamentals/_quality.json` | ~80 KB | `build_quality_json.py` (원본 `scripts/data/quality/quality.tsv`) | 기업별 정성 평가: 해자·가격결정력·수익성·성장성·지속가능성(1~5), 등급, 강점·위험 | `/private`, `/private/ideas` |
+
+- 실행: GitHub Actions `전 종목 펀더멘털 데이터 생성` (workflow_dispatch, 입력 `tickers` 비우면 전 종목). 이 세션 환경은 SEC·Yahoo 접속이 막혀 있어 Actions로 생성.
+- EPS 없음(6개: ARES, ERIE, KKR, STZ, V, XOM), 공시 EPS가 오래된 종목(12개)은 숫자 비교에서 제외(`stale`).
+- 1~3월 결산 회사는 회계연도를 전년도로 매김. 버크셔는 A주 EPS ÷ 1500.
