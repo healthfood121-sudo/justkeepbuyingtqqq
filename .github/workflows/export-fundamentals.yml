@@ -1,0 +1,35 @@
+name: 전 종목 펀더멘털 데이터 생성
+
+on:
+  workflow_dispatch:  # 수동 실행
+    inputs:
+      tickers:
+        description: '일부 종목만 (공백 구분, 비우면 전 종목)'
+        required: false
+        default: ''
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r scripts/requirements.txt
+      - run: python scripts/export_fundamentals.py ${{ inputs.tickers }}
+        env:
+          PYTHONUNBUFFERED: "1"
+      - name: 커밋 & 푸시
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add web/public/data/fundamentals/
+          if git diff --cached --quiet; then echo "변경 없음"; else
+            git commit -m "auto: 전 종목 펀더멘털 데이터 생성"
+            git pull --rebase origin master
+            git push origin HEAD:master
+          fi
