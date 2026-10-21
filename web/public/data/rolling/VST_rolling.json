@@ -1,0 +1,141 @@
+{
+  "ticker": "VST",
+  "name": "비스트라",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "",
+  "current": {
+    "price": 155.03,
+    "pe": 26.1,
+    "divYield": 0.61,
+    "eps": 5.93
+  },
+  "fullPeriod": {
+    "start_date": "2016-10-05",
+    "end_date": "2026-10-21",
+    "start_price": 11.3191,
+    "end_price": 155.035,
+    "years": 10.0,
+    "cagr": 29.77,
+    "multiple": 13.7
+  },
+  "stats": {
+    "n": 0,
+    "min": null,
+    "minBuy": "",
+    "median": null,
+    "mean": null,
+    "max": null,
+    "maxBuy": "",
+    "over10": null,
+    "over15": null,
+    "over20": null,
+    "losses": 0,
+    "beatBench": null,
+    "beatTotal": null
+  },
+  "rows10y": [
+    {
+      "buyYear": 2016,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 9.8,
+      "cagr": 28.15,
+      "multiple": 11.37,
+      "isComplete": false,
+      "benchCagr": 15.01,
+      "diff": 13.14
+    },
+    {
+      "buyYear": 2017,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 8.8,
+      "cagr": 29.33,
+      "multiple": 9.62,
+      "isComplete": false,
+      "benchCagr": 14.28,
+      "diff": 15.05
+    },
+    {
+      "buyYear": 2018,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 7.8,
+      "cagr": 29.9,
+      "multiple": 7.7,
+      "isComplete": false,
+      "benchCagr": 16.85,
+      "diff": 13.05
+    },
+    {
+      "buyYear": 2019,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 6.8,
+      "cagr": 34.51,
+      "multiple": 7.51,
+      "isComplete": false,
+      "benchCagr": 14.89,
+      "diff": 19.61
+    },
+    {
+      "buyYear": 2020,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 5.8,
+      "cagr": 44.69,
+      "multiple": 8.53,
+      "isComplete": false,
+      "benchCagr": 14.33,
+      "diff": 30.37
+    },
+    {
+      "buyYear": 2021,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 4.8,
+      "cagr": 50.54,
+      "multiple": 7.13,
+      "isComplete": false,
+      "benchCagr": 11.65,
+      "diff": 38.9
+    },
+    {
+      "buyYear": 2022,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 3.8,
+      "cagr": 65.46,
+      "multiple": 6.79,
+      "isComplete": false,
+      "benchCagr": 20.64,
+      "diff": 44.82
+    },
+    {
+      "buyYear": 2023,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 2.8,
+      "cagr": 63.6,
+      "multiple": 3.97,
+      "isComplete": false,
+      "benchCagr": 18.81,
+      "diff": 44.79
+    },
+    {
+      "buyYear": 2024,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 1.8,
+      "cagr": 5.41,
+      "multiple": 1.1,
+      "isComplete": false,
+      "benchCagr": 15.84,
+      "diff": -10.43
+    }
+  ],
+  "loss5y": [],
+  "epsDecomp": [],
+  "epsNote": "EPS 데이터 미수집"
+}

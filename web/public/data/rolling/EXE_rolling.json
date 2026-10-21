@@ -1,0 +1,86 @@
+{
+  "ticker": "EXE",
+  "name": "익스팬드 에너지",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "",
+  "current": {
+    "price": 92.07,
+    "pe": 7.9,
+    "divYield": 2.48,
+    "eps": 11.6
+  },
+  "fullPeriod": {
+    "start_date": "2021-02-10",
+    "end_date": "2026-10-21",
+    "start_price": 35.1584,
+    "end_price": 92.06,
+    "years": 5.7,
+    "cagr": 18.43,
+    "multiple": 2.6
+  },
+  "stats": {
+    "n": 0,
+    "min": null,
+    "minBuy": "",
+    "median": null,
+    "mean": null,
+    "max": null,
+    "maxBuy": "",
+    "over10": null,
+    "over15": null,
+    "over20": null,
+    "losses": 0,
+    "beatBench": null,
+    "beatTotal": null
+  },
+  "rows10y": [
+    {
+      "buyYear": 2021,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 4.8,
+      "cagr": 13.04,
+      "multiple": 1.8,
+      "isComplete": false,
+      "benchCagr": 11.65,
+      "diff": 1.38
+    },
+    {
+      "buyYear": 2022,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 3.8,
+      "cagr": 2.77,
+      "multiple": 1.11,
+      "isComplete": false,
+      "benchCagr": 20.65,
+      "diff": -17.88
+    },
+    {
+      "buyYear": 2023,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 2.8,
+      "cagr": 9.87,
+      "multiple": 1.3,
+      "isComplete": false,
+      "benchCagr": 18.82,
+      "diff": -8.96
+    },
+    {
+      "buyYear": 2024,
+      "sellYear": 2026,
+      "sellDate": "2026-10-20",
+      "yearsActual": 1.8,
+      "cagr": -1.25,
+      "multiple": 0.98,
+      "isComplete": false,
+      "benchCagr": 15.86,
+      "diff": -17.11
+    }
+  ],
+  "loss5y": [],
+  "epsDecomp": [],
+  "epsNote": "EPS 데이터 미수집"
+}

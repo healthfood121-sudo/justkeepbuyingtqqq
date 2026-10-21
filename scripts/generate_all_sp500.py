@@ -591,17 +591,17 @@ def main():
                 "current":   metrics,
                 "fullPeriod": fp,
                 "stats": {
-                    "n":        st["n_complete"],
-                    "min":      st["min_cagr"],
-                    "minBuy":   st["min_buy"],
-                    "median":   st["median_cagr"],
-                    "mean":     st["mean_cagr"],
-                    "max":      st["max_cagr"],
-                    "maxBuy":   st["max_buy"],
-                    "over10":   st["pct_over_10"],
-                    "over15":   st["pct_over_15"],
-                    "over20":   st["pct_over_20"],
-                    "losses":   st["n_losses"],
+                    "n":        st.get("n_complete", 0),
+                    "min":      st.get("min_cagr"),
+                    "minBuy":   st.get("min_buy", ""),
+                    "median":   st.get("median_cagr"),
+                    "mean":     st.get("mean_cagr"),
+                    "max":      st.get("max_cagr"),
+                    "maxBuy":   st.get("max_buy", ""),
+                    "over10":   st.get("pct_over_10"),
+                    "over15":   st.get("pct_over_15"),
+                    "over20":   st.get("pct_over_20"),
+                    "losses":   st.get("n_losses", 0),
                     "beatBench":  st.get("n_beat_bench"),
                     "beatTotal":  st.get("n_beat_bench_total"),
                 },
@@ -615,8 +615,8 @@ def main():
                 json.dumps(out, ensure_ascii=False, indent=2),
                 encoding="utf-8"
             )
-            n_comp = st["n_complete"]
-            med = st["median_cagr"]
+            n_comp = st.get("n_complete", 0)
+            med = st.get("median_cagr", "N/A")
             print(f"  JSON 저장 완료: 완결 {n_comp}개, 중앙값 {med}%")
 
         except Exception as e:

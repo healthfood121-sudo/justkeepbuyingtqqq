@@ -456,6 +456,12 @@ import yumData        from '@/public/data/rolling/YUM_rolling.json'
 import zbhData        from '@/public/data/rolling/ZBH_rolling.json'
 import zbraData       from '@/public/data/rolling/ZBRA_rolling.json'
 import ztsData        from '@/public/data/rolling/ZTS_rolling.json'
+import vstData        from '@/public/data/rolling/VST_rolling.json'
+import hwmData        from '@/public/data/rolling/HWM_rolling.json'
+import beData         from '@/public/data/rolling/BE_rolling.json'
+import exeData        from '@/public/data/rolling/EXE_rolling.json'
+import ftvData        from '@/public/data/rolling/FTV_rolling.json'
+import twloData       from '@/public/data/rolling/TWLO_rolling.json'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Tooltip, Legend)
 
@@ -910,6 +916,12 @@ const STOCKS: Array<{ key: string; data: StockData }> = [
   { key: 'ZBH',      data: zbhData        as unknown as StockData },
   { key: 'ZBRA',     data: zbraData       as unknown as StockData },
   { key: 'ZTS',      data: ztsData        as unknown as StockData },
+  { key: 'VST',      data: vstData        as unknown as StockData },
+  { key: 'HWM',      data: hwmData        as unknown as StockData },
+  { key: 'BE',       data: beData         as unknown as StockData },
+  { key: 'EXE',      data: exeData        as unknown as StockData },
+  { key: 'FTV',      data: ftvData        as unknown as StockData },
+  { key: 'TWLO',     data: twloData       as unknown as StockData },
 ]
 
 // ── 색상 유틸 ───────────────────────────────────────────────
@@ -1113,13 +1125,13 @@ function RollingTable({ data }: { data: StockData }) {
       {/* 요약 카드 */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
         <StatCard label="완결 구간" value={`${s.n}개`} />
-        <StatCard label="중앙값 CAGR" value={`${s.median}%`} />
-        <StatCard label="최저" value={`${s.min}% (${s.minBuy}년)`} />
-        <StatCard label="최고" value={`${s.max}% (${s.maxBuy}년)`} />
+        <StatCard label="중앙값 CAGR" value={s.median != null ? `${s.median}%` : '-'} />
+        <StatCard label="최저" value={s.min != null ? `${s.min}% (${s.minBuy}년)` : '-'} />
+        <StatCard label="최고" value={s.max != null ? `${s.max}% (${s.maxBuy}년)` : '-'} />
         <StatCard label="손실 구간" value={`${s.losses}개`} />
-        <StatCard label="연 10% 초과" value={`${s.over10}%`} />
-        <StatCard label="연 15% 초과" value={`${s.over15}%`} />
-        <StatCard label="연 20% 초과" value={`${s.over20}%`} />
+        <StatCard label="연 10% 초과" value={s.over10 != null ? `${s.over10}%` : '-'} />
+        <StatCard label="연 15% 초과" value={s.over15 != null ? `${s.over15}%` : '-'} />
+        <StatCard label="연 20% 초과" value={s.over20 != null ? `${s.over20}%` : '-'} />
         {s.beatBench != null && (
           <StatCard label="S&P 500 초과" value={`${s.beatBench} / ${s.beatTotal}개`} />
         )}
