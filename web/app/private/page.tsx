@@ -1872,6 +1872,132 @@ function OverviewTable({
   )
 }
 
+// ── 에르메스(RMS) 인사이트 (2026-10-21 분석, 정적 텍스트) ───────────
+function RmsInsight() {
+  const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-2'
+  const h4 = 'text-sm font-semibold text-gray-800 dark:text-gray-100'
+  const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
+  const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500'
+  const td = 'py-1.5 px-2 tabular-nums text-gray-700 dark:text-gray-200'
+
+  const peBuckets = [
+    { label: '20배 미만', n: 4, avg: '20.0%', range: '18.0~21.4%' },
+    { label: '20~27배', n: 8, avg: '17.6%', range: '16.0~19.6%' },
+    { label: '27~32배 (지금 구간)', n: 6, avg: '19.2%', range: '13.7~23.4%', hl: true },
+    { label: '32배 이상', n: 5, avg: '19.6%', range: '7.8~24.2%' },
+  ]
+  const scenarioPEs = ['22배', '29배 (유지)', '35배', '45배']
+  const scenarios = [
+    { g: '연 8%', v: ['6%', '9%', '11%', '14%'] },
+    { g: '연 12%', v: ['10%', '13%', '15%', '18%'] },
+    { g: '연 15% (과거 평균)', v: ['13%', '16%', '18%', '21%'], hl: true },
+    { g: '연 18%', v: ['16%', '19%', '22%', '25%'] },
+  ]
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white">인사이트</h3>
+        <p className="text-xs text-gray-400 dark:text-gray-500">2026년 10월 21일 기준 분석</p>
+      </div>
+
+      <div className={box}>
+        <h4 className={h4}>1. 현재 PER 약 29배 — 주가 하락은 이익이 아니라 PER 하락 때문</h4>
+        <p className={p}>
+          주가 1,356.5유로 ÷ 최근 1년 주당순이익(EPS) 약 46.4유로 = PER 약 29.2배.
+          (2025년 연간 EPS 46.5 − 2025년 상반기 21.43 + 2026년 상반기 21.36)
+        </p>
+        <div className="overflow-x-auto">
+          <table className="text-xs">
+            <thead><tr><th className={`${th} text-left`}></th><th className={`${th} text-right`}>2024년 말</th><th className={`${th} text-right`}>지금</th><th className={`${th} text-right`}>변화</th></tr></thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+              <tr><td className={td}>주가</td><td className={`${td} text-right`}>약 2,275</td><td className={`${td} text-right`}>1,356.5</td><td className={`${td} text-right text-red-500`}>-40%</td></tr>
+              <tr><td className={td}>EPS</td><td className={`${td} text-right`}>43.0</td><td className={`${td} text-right`}>약 46.4</td><td className={`${td} text-right text-emerald-600 dark:text-emerald-400 font-semibold`}>+8%</td></tr>
+              <tr><td className={td}>PER</td><td className={`${td} text-right`}>52.9배</td><td className={`${td} text-right`}>29.2배</td><td className={`${td} text-right text-red-500 font-semibold`}>-45%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p className={p}>
+          다만 2026년 상반기 EPS(21.36유로)는 1년 전(21.43유로)과 거의 같다. 이익이 줄지는 않았지만 성장이 멈춘 상태다.
+        </p>
+      </div>
+
+      <div className={box}>
+        <h4 className={h4}>2. 과거: 매수 시점 PER별 10년 연평균 수익률 (23개 경우)</h4>
+        <div className="overflow-x-auto">
+          <table className="text-xs">
+            <thead><tr><th className={`${th} text-left`}>매수 시 PER</th><th className={`${th} text-right`}>경우 수</th><th className={`${th} text-right`}>평균</th><th className={`${th} text-right`}>범위</th></tr></thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+              {peBuckets.map(b => (
+                <tr key={b.label} className={b.hl ? 'bg-blue-50 dark:bg-blue-900/20' : ''}>
+                  <td className={`${td} ${b.hl ? 'font-semibold' : ''}`}>{b.label}</td>
+                  <td className={`${td} text-right`}>{b.n}</td>
+                  <td className={`${td} text-right ${b.hl ? 'font-semibold' : ''}`}>{b.avg}</td>
+                  <td className={`${td} text-right`}>{b.range}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className={p}>
+          지금과 비슷한 PER에서 산 경우: 2012년(28.2배) 21.8% · 2009년(28.5배) 23.4% · 2015년(31.0배) 22.1% ·
+          2008년(31.2배) 18.7% · 1996년(30.6배) 15.4% · 2000년(30.5배) 13.7%.
+          과거 기준으로는 연 17~20% 기대가 무리는 아니다.
+        </p>
+      </div>
+
+      <div className={box}>
+        <h4 className={h4}>3. 과거 성과를 만든 두 가지 순풍</h4>
+        <ul className={`${p} list-disc pl-4 space-y-1`}>
+          <li><b>EPS가 10년 동안 매년 11~20% 성장</b>했다(23개 경우 중 최저 11%). 하지만 최근 약 3년(2023 → 2026년 중반)은 연 3~4% 수준이다.</li>
+          <li><b>팔 때 PER이 거의 항상 올라 있었다.</b> 23개 중 20개가 매수 때보다 높았고, 2010년대 매수는 팔 때 42~66배였다. 이 효과가 연 +2~7%p를 더해줬다.</li>
+        </ul>
+      </div>
+
+      <div className={box}>
+        <h4 className={h4}>4. 지금(PER 29배) 사서 10년 보유 시 예상 연평균 수익률</h4>
+        <p className={p}>배당 약 1.35% 포함. 행 = 연 EPS 성장률, 열 = 10년 뒤 PER.</p>
+        <div className="overflow-x-auto">
+          <table className="text-xs">
+            <thead>
+              <tr>
+                <th className={`${th} text-left whitespace-nowrap`}>EPS 성장 ↓ / 10년 뒤 PER →</th>
+                {scenarioPEs.map(pe => <th key={pe} className={`${th} text-right whitespace-nowrap`}>{pe}</th>)}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+              {scenarios.map(s => (
+                <tr key={s.g}>
+                  <td className={`${td} whitespace-nowrap ${s.hl ? 'font-semibold' : ''}`}>{s.g}</td>
+                  {s.v.map((v, i) => (
+                    <td key={i} className={`${td} text-right ${s.hl && i === 1 ? 'bg-blue-50 dark:bg-blue-900/20 font-semibold' : ''}`}>{v}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className={box}>
+        <h4 className={h4}>결론</h4>
+        <ul className={`${p} list-disc pl-4 space-y-1`}>
+          <li>연 17~20%가 나오려면 <b>EPS 성장이 연 15% 이상으로 회복</b>하고 PER도 지금 수준 이상을 유지해야 한다.</li>
+          <li>이익 성장이 과거처럼 크다면 지금 PER은 과거 좋은 매수 시점과 비슷한 수준이다.</li>
+          <li>지금처럼 이익 성장이 한 자릿수에 머물면 연 9~13% 정도가 현실적이다.</li>
+          <li>앞으로 볼 것은 PER보다 <b>EPS 성장률이 다시 오르는지</b>다.</li>
+        </ul>
+      </div>
+
+      <p className="text-xs text-gray-400 dark:text-gray-500">
+        참고: 주가는 배당을 반영해 조정한 종가라 실제 PER과 1~2% 차이가 날 수 있다.
+        2026년 상반기 EPS는 언론 보도 기준(회사 반기 보고서와 대조 필요). 1993~2000년 EPS는 AI가 역산한 추정치다.
+        참고용 분석이며 미래를 보장하지 않는다.
+      </p>
+    </div>
+  )
+}
+
 // ── 메인 페이지 ──────────────────────────────────────────────
 export default function PrivatePage() {
   const [activeStock, setActiveStock] = useState(0)
@@ -1941,6 +2067,9 @@ export default function PrivatePage() {
 
         {/* 롤링 테이블 */}
         <RollingTable data={current.data} />
+
+        {/* 에르메스 전용 인사이트 */}
+        {current.key === 'RMS' && <RmsInsight />}
 
         {/* 구분선 */}
         <div className="border-t border-gray-200 dark:border-gray-800 pt-2" />
