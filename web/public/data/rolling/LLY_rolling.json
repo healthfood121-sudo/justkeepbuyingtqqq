@@ -5,7 +5,7 @@
   "benchmark": "S&P 500",
   "note": "분할 이력: 1986·1989·1995·1997 각 2:1(누적 16:1). 1997년 이후 분할 없음. 2000~2013년은 특허 절벽(Prozac·Zyprexa·Cymbalta 순차 만료)으로 수익률이 저조했으나 2014년 이후 GLP-1·면역항암 신약으로 급반등.",
   "current": {
-    "price": 1271.64,
+    "price": 1272.01,
     "pe": 42.7,
     "divYield": 0.54,
     "eps": 29.79
@@ -14,10 +14,10 @@
     "start_date": "1972-06-01",
     "end_date": "2026-10-21",
     "start_price": 0.891,
-    "end_price": 1271.645,
+    "end_price": 1272.005,
     "years": 54.4,
     "cagr": 14.29,
-    "multiple": 1427.211
+    "multiple": 1427.615
   },
   "stats": {
     "n": 44,
@@ -532,10 +532,10 @@
       "sellDate": "2026-10-21",
       "yearsActual": 9.8,
       "cagr": 35.8,
-      "multiple": 20.0873,
+      "multiple": 20.0929,
       "isComplete": false,
-      "benchCagr": 15.39,
-      "diff": 20.41,
+      "benchCagr": 15.4,
+      "diff": 20.4,
       "peBuy": 24.5
     },
     {
@@ -543,10 +543,10 @@
       "sellYear": 2026,
       "sellDate": "2026-10-21",
       "yearsActual": 8.8,
-      "cagr": 38.0,
-      "multiple": 17.047,
+      "cagr": 38.01,
+      "multiple": 17.0519,
       "isComplete": false,
-      "benchCagr": 14.68,
+      "benchCagr": 14.69,
       "diff": 23.32
     },
     {
@@ -555,10 +555,10 @@
       "sellDate": "2026-10-21",
       "yearsActual": 7.8,
       "cagr": 37.69,
-      "multiple": 12.137,
+      "multiple": 12.1405,
       "isComplete": false,
-      "benchCagr": 17.38,
-      "diff": 20.31,
+      "benchCagr": 17.39,
+      "diff": 20.3,
       "peBuy": 33.5
     },
     {
@@ -567,10 +567,10 @@
       "sellDate": "2026-10-21",
       "yearsActual": 6.8,
       "cagr": 41.17,
-      "multiple": 10.4503,
+      "multiple": 10.4533,
       "isComplete": false,
-      "benchCagr": 15.43,
-      "diff": 25.74,
+      "benchCagr": 15.45,
+      "diff": 25.72,
       "peBuy": 13.7
     },
     {
@@ -579,10 +579,10 @@
       "sellDate": "2026-10-21",
       "yearsActual": 5.8,
       "cagr": 43.01,
-      "multiple": 7.9749,
+      "multiple": 7.9772,
       "isComplete": false,
-      "benchCagr": 14.94,
-      "diff": 28.07,
+      "benchCagr": 14.95,
+      "diff": 28.06,
       "peBuy": 23.5
     },
     {
@@ -591,10 +591,10 @@
       "sellDate": "2026-10-21",
       "yearsActual": 4.8,
       "cagr": 38.62,
-      "multiple": 4.8019,
+      "multiple": 4.8033,
       "isComplete": false,
-      "benchCagr": 12.26,
-      "diff": 26.36,
+      "benchCagr": 12.28,
+      "diff": 26.34,
       "peBuy": 43.3
     },
     {
@@ -602,11 +602,11 @@
       "sellYear": 2026,
       "sellDate": "2026-10-21",
       "yearsActual": 3.8,
-      "cagr": 39.78,
-      "multiple": 3.5767,
+      "cagr": 39.79,
+      "multiple": 3.5777,
       "isComplete": false,
-      "benchCagr": 21.96,
-      "diff": 17.82,
+      "benchCagr": 21.99,
+      "diff": 17.8,
       "peBuy": 51.5
     },
     {
@@ -614,11 +614,11 @@
       "sellYear": 2026,
       "sellDate": "2026-10-21",
       "yearsActual": 2.8,
-      "cagr": 32.93,
-      "multiple": 2.2228,
+      "cagr": 32.94,
+      "multiple": 2.2234,
       "isComplete": false,
-      "benchCagr": 20.45,
-      "diff": 12.48,
+      "benchCagr": 20.49,
+      "diff": 12.45,
       "peBuy": 98.6
     },
     {
@@ -626,11 +626,11 @@
       "sellYear": 2026,
       "sellDate": "2026-10-21",
       "yearsActual": 1.8,
-      "cagr": 32.76,
-      "multiple": 1.6675,
+      "cagr": 32.79,
+      "multiple": 1.668,
       "isComplete": false,
-      "benchCagr": 18.01,
-      "diff": 14.75,
+      "benchCagr": 18.07,
+      "diff": 14.72,
       "peBuy": 65.1
     }
   ],

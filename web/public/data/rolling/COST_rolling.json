@@ -5,7 +5,7 @@
   "benchmark": "S&P 500",
   "note": "1986~1992 구간은 Price Club(합병 전) 데이터 포함. 특별 배당($7/2012, $10/2020, $15/2023) 반영 총수익률 기준.",
   "current": {
-    "price": 997.39,
+    "price": 996.93,
     "pe": 48.0,
     "divYield": 0.59,
     "eps": 20.76
@@ -14,10 +14,10 @@
     "start_date": "1986-07-09",
     "end_date": "2026-10-21",
     "start_price": 7.3166,
-    "end_price": 997.3851,
+    "end_price": 996.935,
     "years": 40.3,
-    "cagr": 12.98,
-    "multiple": 136.3181
+    "cagr": 12.97,
+    "multiple": 136.2566
   },
   "stats": {
     "n": 30,
@@ -377,11 +377,11 @@
       "sellYear": 2026,
       "sellDate": "2026-10-21",
       "yearsActual": 9.8,
-      "cagr": 22.57,
-      "multiple": 7.3514,
+      "cagr": 22.56,
+      "multiple": 7.3481,
       "isComplete": false,
-      "benchCagr": 15.39,
-      "diff": 7.18,
+      "benchCagr": 15.4,
+      "diff": 7.16,
       "peBuy": 25.5
     },
     {
@@ -389,11 +389,11 @@
       "sellYear": 2026,
       "sellDate": "2026-10-21",
       "yearsActual": 8.8,
-      "cagr": 22.59,
-      "multiple": 6.0075,
+      "cagr": 22.58,
+      "multiple": 6.0047,
       "isComplete": false,
-      "benchCagr": 14.68,
-      "diff": 7.91,
+      "benchCagr": 14.69,
+      "diff": 7.89,
       "peBuy": 27.3
     },
     {
@@ -401,11 +401,11 @@
       "sellYear": 2026,
       "sellDate": "2026-10-21",
       "yearsActual": 7.8,
-      "cagr": 24.21,
-      "multiple": 5.4317,
+      "cagr": 24.2,
+      "multiple": 5.4293,
       "isComplete": false,
-      "benchCagr": 17.38,
-      "diff": 6.83,
+      "benchCagr": 17.39,
+      "diff": 6.81,
       "peBuy": 25.9
     },
     {
@@ -413,11 +413,11 @@
       "sellYear": 2026,
       "sellDate": "2026-10-21",
       "yearsActual": 6.8,
-      "cagr": 21.33,
-      "multiple": 3.728,
+      "cagr": 21.32,
+      "multiple": 3.7263,
       "isComplete": false,
-      "benchCagr": 15.43,
-      "diff": 5.9,
+      "benchCagr": 15.45,
+      "diff": 5.87,
       "peBuy": 32.4
     },
     {
@@ -425,11 +425,11 @@
       "sellYear": 2026,
       "sellDate": "2026-10-21",
       "yearsActual": 5.8,
-      "cagr": 19.48,
-      "multiple": 2.8101,
+      "cagr": 19.47,
+      "multiple": 2.8088,
       "isComplete": false,
-      "benchCagr": 14.94,
-      "diff": 4.54,
+      "benchCagr": 14.95,
+      "diff": 4.52,
       "peBuy": 39.3
     },
     {
@@ -437,11 +437,11 @@
       "sellYear": 2026,
       "sellDate": "2026-10-21",
       "yearsActual": 4.8,
-      "cagr": 13.67,
-      "multiple": 1.8509,
+      "cagr": 13.66,
+      "multiple": 1.8501,
       "isComplete": false,
-      "benchCagr": 12.26,
-      "diff": 1.41,
+      "benchCagr": 12.28,
+      "diff": 1.38,
       "peBuy": 47.8
     },
     {
@@ -449,11 +449,11 @@
       "sellYear": 2026,
       "sellDate": "2026-10-21",
       "yearsActual": 3.8,
-      "cagr": 24.27,
-      "multiple": 2.2865,
+      "cagr": 24.26,
+      "multiple": 2.2854,
       "isComplete": false,
-      "benchCagr": 21.96,
-      "diff": 2.31,
+      "benchCagr": 21.99,
+      "diff": 2.27,
       "peBuy": 33.2
     },
     {
@@ -461,11 +461,11 @@
       "sellYear": 2026,
       "sellDate": "2026-10-21",
       "yearsActual": 2.8,
-      "cagr": 16.48,
-      "multiple": 1.5345,
+      "cagr": 16.47,
+      "multiple": 1.5338,
       "isComplete": false,
-      "benchCagr": 20.45,
-      "diff": -3.97,
+      "benchCagr": 20.49,
+      "diff": -4.02,
       "peBuy": 45.9
     },
     {
@@ -473,11 +473,11 @@
       "sellYear": 2026,
       "sellDate": "2026-10-21",
       "yearsActual": 1.8,
-      "cagr": 5.37,
-      "multiple": 1.099,
+      "cagr": 5.35,
+      "multiple": 1.0985,
       "isComplete": false,
-      "benchCagr": 18.01,
-      "diff": -12.64,
+      "benchCagr": 18.07,
+      "diff": -12.72,
       "peBuy": 54.8
     }
   ],

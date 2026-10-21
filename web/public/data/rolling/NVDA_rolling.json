@@ -5,7 +5,7 @@
   "benchmark": "S&P 500",
   "note": "1999년 1월 상장. 분할 이력: 2000·2001·2006(2:1×3), 2007(1.5:1), 2021(4:1), 2024(10:1) → 누적 480:1. FY2009·FY2010 EPS 음수 구간은 EPS 분해 제외.",
   "current": {
-    "price": 221.22,
+    "price": 221.67,
     "pe": 28.0,
     "divYield": 0.46,
     "eps": 7.91
@@ -14,10 +14,10 @@
     "start_date": "1999-01-22",
     "end_date": "2026-10-21",
     "start_price": 0.0375,
-    "end_price": 221.21,
+    "end_price": 221.67,
     "years": 27.7,
-    "cagr": 36.74,
-    "multiple": 5898.9335
+    "cagr": 36.75,
+    "multiple": 5911.2
   },
   "stats": {
     "n": 17,
@@ -233,11 +233,11 @@
       "sellYear": 2026,
       "sellDate": "2026-10-21",
       "yearsActual": 9.8,
-      "cagr": 57.2,
-      "multiple": 84.349,
+      "cagr": 57.23,
+      "multiple": 84.5244,
       "isComplete": false,
-      "benchCagr": 15.39,
-      "diff": 41.81,
+      "benchCagr": 15.4,
+      "diff": 41.83,
       "peBuy": 97.1
     },
     {
@@ -245,11 +245,11 @@
       "sellYear": 2026,
       "sellDate": "2026-10-21",
       "yearsActual": 8.8,
-      "cagr": 54.6,
-      "multiple": 46.3487,
+      "cagr": 54.64,
+      "multiple": 46.4451,
       "isComplete": false,
-      "benchCagr": 14.68,
-      "diff": 39.92,
+      "benchCagr": 14.69,
+      "diff": 39.95,
       "peBuy": 74.2
     },
     {
@@ -257,11 +257,11 @@
       "sellYear": 2026,
       "sellDate": "2026-10-21",
       "yearsActual": 7.8,
-      "cagr": 71.37,
-      "multiple": 66.9926,
+      "cagr": 71.42,
+      "multiple": 67.1319,
       "isComplete": false,
-      "benchCagr": 17.38,
-      "diff": 53.99,
+      "benchCagr": 17.39,
+      "diff": 54.03,
       "peBuy": 27.4
     },
     {
@@ -269,11 +269,11 @@
       "sellYear": 2026,
       "sellDate": "2026-10-21",
       "yearsActual": 6.8,
-      "cagr": 70.56,
-      "multiple": 37.8611,
+      "cagr": 70.61,
+      "multiple": 37.9399,
       "isComplete": false,
-      "benchCagr": 15.43,
-      "diff": 55.13,
+      "benchCagr": 15.45,
+      "diff": 55.16,
       "peBuy": 35.2
     },
     {
@@ -281,11 +281,11 @@
       "sellYear": 2026,
       "sellDate": "2026-10-21",
       "yearsActual": 5.8,
-      "cagr": 62.98,
-      "multiple": 17.0319,
+      "cagr": 63.04,
+      "multiple": 17.0673,
       "isComplete": false,
-      "benchCagr": 14.94,
-      "diff": 48.04,
+      "benchCagr": 14.95,
+      "diff": 48.09,
       "peBuy": 114.9
     },
     {
@@ -293,11 +293,11 @@
       "sellYear": 2026,
       "sellDate": "2026-10-21",
       "yearsActual": 4.8,
-      "cagr": 52.32,
-      "multiple": 7.5535,
+      "cagr": 52.39,
+      "multiple": 7.5692,
       "isComplete": false,
-      "benchCagr": 12.26,
-      "diff": 40.06,
+      "benchCagr": 12.28,
+      "diff": 40.11,
       "peBuy": 169.3
     },
     {
@@ -305,11 +305,11 @@
       "sellYear": 2026,
       "sellDate": "2026-10-21",
       "yearsActual": 3.8,
-      "cagr": 104.39,
-      "multiple": 15.1875,
+      "cagr": 104.5,
+      "multiple": 15.219,
       "isComplete": false,
-      "benchCagr": 21.96,
-      "diff": 82.43,
+      "benchCagr": 21.99,
+      "diff": 82.51,
       "peBuy": 37.8
     },
     {
@@ -317,11 +317,11 @@
       "sellYear": 2026,
       "sellDate": "2026-10-21",
       "yearsActual": 2.8,
-      "cagr": 70.64,
-      "multiple": 4.4799,
+      "cagr": 70.76,
+      "multiple": 4.4892,
       "isComplete": false,
-      "benchCagr": 20.45,
-      "diff": 50.19,
+      "benchCagr": 20.49,
+      "diff": 50.27,
       "peBuy": 290.5
     },
     {
@@ -329,11 +329,11 @@
       "sellYear": 2026,
       "sellDate": "2026-10-21",
       "yearsActual": 1.8,
-      "cagr": 32.06,
-      "multiple": 1.6516,
+      "cagr": 32.21,
+      "multiple": 1.655,
       "isComplete": false,
-      "benchCagr": 18.01,
-      "diff": 14.05,
+      "benchCagr": 18.07,
+      "diff": 14.14,
       "peBuy": 112.6
     }
   ],

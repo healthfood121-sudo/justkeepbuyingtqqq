@@ -5,7 +5,7 @@
   "benchmark": "S&P 500",
   "note": "2008년 3월 IPO. 분할 이력: 2015-03-19 4:1. Class A 상장주 기준 수익률. EPS는 FY2008(IPO 연도) 제외 → 2009년 이후 매수 구간부터 EPS 분해 적용.",
   "current": {
-    "price": 409.24,
+    "price": 408.68,
     "pe": 34.8,
     "divYield": 0.66,
     "eps": 11.75
@@ -14,10 +14,10 @@
     "start_date": "2008-03-19",
     "end_date": "2026-10-21",
     "start_price": 12.3931,
-    "end_price": 409.24,
+    "end_price": 408.675,
     "years": 18.6,
-    "cagr": 20.7,
-    "multiple": 33.0216
+    "cagr": 20.69,
+    "multiple": 32.976
   },
   "stats": {
     "n": 8,
@@ -135,11 +135,11 @@
       "sellYear": 2026,
       "sellDate": "2026-10-21",
       "yearsActual": 9.8,
-      "cagr": 19.25,
-      "multiple": 5.6171,
+      "cagr": 19.23,
+      "multiple": 5.6093,
       "isComplete": false,
-      "benchCagr": 15.39,
-      "diff": 3.86,
+      "benchCagr": 15.4,
+      "diff": 3.83,
       "peBuy": 29.4
     },
     {
@@ -147,11 +147,11 @@
       "sellYear": 2026,
       "sellDate": "2026-10-21",
       "yearsActual": 8.8,
-      "cagr": 16.43,
-      "multiple": 3.8166,
+      "cagr": 16.41,
+      "multiple": 3.8113,
       "isComplete": false,
-      "benchCagr": 14.68,
-      "diff": 1.75,
+      "benchCagr": 14.69,
+      "diff": 1.72,
       "peBuy": 38.3
     },
     {
@@ -159,11 +159,11 @@
       "sellYear": 2026,
       "sellDate": "2026-10-21",
       "yearsActual": 7.8,
-      "cagr": 16.42,
-      "multiple": 3.2764,
+      "cagr": 16.4,
+      "multiple": 3.2718,
       "isComplete": false,
-      "benchCagr": 17.38,
-      "diff": -0.96,
+      "benchCagr": 17.39,
+      "diff": -0.99,
       "peBuy": 28.3
     },
     {
@@ -171,11 +171,11 @@
       "sellYear": 2026,
       "sellDate": "2026-10-21",
       "yearsActual": 6.8,
-      "cagr": 12.92,
-      "multiple": 2.2859,
+      "cagr": 12.89,
+      "multiple": 2.2828,
       "isComplete": false,
-      "benchCagr": 15.43,
-      "diff": -2.51,
+      "benchCagr": 15.45,
+      "diff": -2.56,
       "peBuy": 33.7
     },
     {
@@ -183,11 +183,11 @@
       "sellYear": 2026,
       "sellDate": "2026-10-21",
       "yearsActual": 5.8,
-      "cagr": 12.21,
-      "multiple": 1.9517,
+      "cagr": 12.18,
+      "multiple": 1.949,
       "isComplete": false,
-      "benchCagr": 14.94,
-      "diff": -2.73,
+      "benchCagr": 14.95,
+      "diff": -2.77,
       "peBuy": 42.9
     },
     {
@@ -195,11 +195,11 @@
       "sellYear": 2026,
       "sellDate": "2026-10-21",
       "yearsActual": 4.8,
-      "cagr": 15.01,
-      "multiple": 1.9579,
+      "cagr": 14.97,
+      "multiple": 1.9552,
       "isComplete": false,
-      "benchCagr": 12.26,
-      "diff": 2.75,
+      "benchCagr": 12.28,
+      "diff": 2.69,
       "peBuy": 37.1
     },
     {
@@ -207,11 +207,11 @@
       "sellYear": 2026,
       "sellDate": "2026-10-21",
       "yearsActual": 3.8,
-      "cagr": 20.4,
-      "multiple": 2.0269,
+      "cagr": 20.36,
+      "multiple": 2.0241,
       "isComplete": false,
-      "benchCagr": 21.96,
-      "diff": -1.56,
+      "benchCagr": 21.99,
+      "diff": -1.63,
       "peBuy": 28.8
     },
     {
@@ -219,11 +219,11 @@
       "sellYear": 2026,
       "sellDate": "2026-10-21",
       "yearsActual": 2.8,
-      "cagr": 18.36,
-      "multiple": 1.6047,
+      "cagr": 18.3,
+      "multiple": 1.6025,
       "isComplete": false,
-      "benchCagr": 20.45,
-      "diff": -2.09,
+      "benchCagr": 20.49,
+      "diff": -2.19,
       "peBuy": 30.8
     },
     {
@@ -231,11 +231,11 @@
       "sellYear": 2026,
       "sellDate": "2026-10-21",
       "yearsActual": 1.8,
-      "cagr": 16.24,
-      "multiple": 1.3119,
+      "cagr": 16.15,
+      "multiple": 1.3101,
       "isComplete": false,
-      "benchCagr": 18.01,
-      "diff": -1.77,
+      "benchCagr": 18.07,
+      "diff": -1.92,
       "peBuy": 32.1
     }
   ],
