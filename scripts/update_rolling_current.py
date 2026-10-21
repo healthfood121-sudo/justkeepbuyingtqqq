@@ -19,6 +19,12 @@ from datetime import date
 DST  = Path(__file__).parent.parent / "web" / "public" / "data" / "rolling"
 BENCH = "^SP500TR"
 
+# 파일명 티커 → Yahoo Finance 실제 티커 매핑
+TICKER_MAP = {
+    "BRKB": "BRK-B",
+    "RMS":  "RMS.PA",
+}
+
 
 def to_close_series(hist: pd.DataFrame) -> pd.Series:
     """yfinance MultiIndex 컬럼 대응 — Close를 flat Series로 변환"""
@@ -68,7 +74,8 @@ def main():
     errors  = []
 
     for idx, json_file in enumerate(json_files, 1):
-        ticker = json_file.stem.replace("_rolling", "")
+        ticker    = json_file.stem.replace("_rolling", "")
+        yf_ticker = TICKER_MAP.get(ticker, ticker)
         print(f"[{idx:3d}/{total}] {ticker}", end="", flush=True)
 
         try:
@@ -82,7 +89,7 @@ def main():
                 continue
 
             # 현재가 (fast_info — 빠름)
-            t = yf.Ticker(ticker)
+            t = yf.Ticker(yf_ticker)
             current_price = t.fast_info.last_price
             if not current_price:
                 print(" → 현재가 조회 실패")
@@ -92,7 +99,7 @@ def main():
             # 진행 중 행 재계산에 필요한 기간만 다운로드
             earliest_year = min(r["buyYear"] for r in ongoing)
             hist  = yf.download(
-                ticker,
+                yf_ticker,
                 start=f"{earliest_year}-12-25",
                 auto_adjust=True, progress=False
             )
