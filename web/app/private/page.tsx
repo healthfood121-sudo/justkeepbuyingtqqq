@@ -1602,13 +1602,19 @@ function OverviewTable({
             {label}
           </button>
         ))}
-        {/* 필터 초기화 */}
-        {(minPeriods > 0 || minMedian > 0 || noLoss || alwaysBeatSP || excludeEtf) && (
-          <button onClick={() => { setMinPeriods(0); setMinMedian(0); setNoLoss(false); setAlwaysBeatSP(false); setExcludeEtf(false) }}
-            className="ml-auto text-xs text-gray-400 dark:text-gray-600 hover:text-red-400 dark:hover:text-red-500 transition-colors">
-            필터 초기화
-          </button>
-        )}
+        <div className="ml-auto flex items-center gap-3">
+          <span className="text-xs font-medium text-blue-500 dark:text-blue-400">
+            {rows.length < allRows.length
+              ? `${rows.length} / ${allRows.length}개`
+              : `${allRows.length}개`}
+          </span>
+          {(minPeriods > 0 || minMedian > 0 || noLoss || alwaysBeatSP || excludeEtf) && (
+            <button onClick={() => { setMinPeriods(0); setMinMedian(0); setNoLoss(false); setAlwaysBeatSP(false); setExcludeEtf(false) }}
+              className="text-xs text-gray-400 dark:text-gray-600 hover:text-red-400 dark:hover:text-red-500 transition-colors">
+              필터 초기화
+            </button>
+          )}
+        </div>
       </div>
 
       <table className="text-sm">
@@ -1717,10 +1723,7 @@ function OverviewTable({
         </tbody>
       </table>
       <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
-        <span className={rows.length < allRows.length ? 'text-blue-500 dark:text-blue-400 font-medium' : ''}>
-          {rows.length < allRows.length ? `${rows.length} / ${allRows.length}개` : `${allRows.length}개`}
-        </span>
-        {' '}· 행 클릭 시 상세 보기 · ★ 클릭으로 즐겨찾기 · 최근 15개 완결 구간 기준
+        행 클릭 시 상세 보기 · ★ 클릭으로 즐겨찾기 · 최근 15개 완결 구간 기준
       </p>
     </div>
   )
