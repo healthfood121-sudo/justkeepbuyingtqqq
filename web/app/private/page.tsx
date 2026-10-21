@@ -1897,12 +1897,27 @@ function RmsInsight({ data }: { data: StockData }) {
   const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500'
   const td = 'py-1.5 px-2 tabular-nums text-gray-700 dark:text-gray-200'
 
-  const peBuckets = [
-    { label: '20배 미만', n: 4, avg: '20.0%', range: '18.0~21.4%' },
-    { label: '20~27배', n: 8, avg: '17.6%', range: '16.0~19.6%' },
-    { label: '27~32배 (지금 구간)', n: 6, avg: '19.2%', range: '13.7~23.4%', hl: true },
-    { label: '32배 이상', n: 5, avg: '19.6%', range: '7.8~24.2%' },
+  const bucketDefs = [
+    { label: '20배 미만', lo: 0, hi: 20 },
+    { label: '20~27배', lo: 20, hi: 27 },
+    { label: '27~32배 (지금 구간)', lo: 27, hi: 32, hl: true },
+    { label: '32배 이상', lo: 32, hi: 999 },
   ]
+  const avg = (a: number[]) => a.reduce((x, y) => x + y, 0) / a.length
+  const peBuckets = bucketDefs.map(b => {
+    const rows = decomp.filter(d => d.peBuy >= b.lo && d.peBuy < b.hi)
+    const tot = rows.map(d => d.totalCagr)
+    const pe = rows.map(d => d.peCagr)
+    return {
+      ...b,
+      n: rows.length,
+      avg: avg(tot),
+      range: `${Math.min(...tot).toFixed(1)}~${Math.max(...tot).toFixed(1)}%`,
+      eps: avg(rows.map(d => d.epsGrowthCagr)),
+      pe: avg(pe),
+      peRange: `${sgn(Math.min(...pe))}~${sgn(Math.max(...pe))}`,
+    }
+  }).filter(b => b.n > 0)
   const scenarioPEs = ['22배', '29배 (유지)', '35배', '45배']
   const scenarios = [
     { g: '연 8%', v: ['6%', '9%', '11%', '14%'] },
@@ -1943,19 +1958,37 @@ function RmsInsight({ data }: { data: StockData }) {
         <h4 className={h4}>2. 과거: 매수 시점 PER별 10년 연평균 수익률 (23개 경우)</h4>
         <div className="overflow-x-auto">
           <table className="text-xs">
-            <thead><tr><th className={`${th} text-left`}>매수 시 PER</th><th className={`${th} text-right`}>경우 수</th><th className={`${th} text-right`}>평균</th><th className={`${th} text-right`}>범위</th></tr></thead>
+            <thead>
+              <tr>
+                <th className={`${th} text-left whitespace-nowrap`}>매수 시 PER</th>
+                <th className={`${th} text-right whitespace-nowrap`}>경우 수</th>
+                <th className={`${th} text-right whitespace-nowrap`}>평균 수익률</th>
+                <th className={`${th} text-right whitespace-nowrap`}>수익률 범위</th>
+                <th className={`${th} text-right whitespace-nowrap`}>EPS 효과(평균)</th>
+                <th className={`${th} text-right whitespace-nowrap`}>PER 효과(평균)</th>
+                <th className={`${th} text-right whitespace-nowrap`}>PER 효과 범위</th>
+              </tr>
+            </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
               {peBuckets.map(b => (
                 <tr key={b.label} className={b.hl ? 'bg-blue-50 dark:bg-blue-900/20' : ''}>
-                  <td className={`${td} ${b.hl ? 'font-semibold' : ''}`}>{b.label}</td>
+                  <td className={`${td} whitespace-nowrap ${b.hl ? 'font-semibold' : ''}`}>{b.label}</td>
                   <td className={`${td} text-right`}>{b.n}</td>
-                  <td className={`${td} text-right ${b.hl ? 'font-semibold' : ''}`}>{b.avg}</td>
-                  <td className={`${td} text-right`}>{b.range}</td>
+                  <td className={`${td} text-right ${b.hl ? 'font-semibold' : ''}`}>{b.avg.toFixed(1)}%</td>
+                  <td className={`${td} text-right whitespace-nowrap`}>{b.range}</td>
+                  <td className={`${td} text-right`}>{sgn(b.eps)}%</td>
+                  <td className={`${td} text-right font-semibold ${b.pe >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'}`}>{sgn(b.pe)}%p</td>
+                  <td className={`${td} text-right whitespace-nowrap`}>{b.peRange}%p</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+
+        <p className={p}>
+          PER이 쌀 때(20배 미만) 산 경우는 PER 상승 효과가 연 +5.5%p로 가장 컸다. 지금과 같은 27~32배 구간은 PER 효과가 평균 +2.1%p에 그쳤고,
+          수익률 대부분(연 +16.7%)이 EPS 성장에서 나왔다. 즉 지금 구간에서는 이익 성장이 거의 전부다.
+        </p>
 
         <p className={`${p} pt-2 font-semibold`}>경우별 상세 — 10년 동안 PER이 어떻게 변했나</p>
         <p className={p}>
