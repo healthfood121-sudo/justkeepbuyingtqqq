@@ -2522,6 +2522,63 @@ function NkeInsight({ data }: { data: StockData }) {
       </div>
 
       <div className={box}>
+        <h4 className={h4}>6. 과거 저점 직후 매수 vs 지금</h4>
+        <p className={p}>
+          10년 수익률이 바닥을 찍은 직후에 산 사람은 과거 두 번 모두 연 16~18%를 냈다. 지금(2015년 매수 연 1.5%, 역대 최저)도 그럴까?
+        </p>
+        <div className="overflow-x-auto">
+          <table className="text-xs">
+            <thead>
+              <tr>
+                <th className={`${th} text-left whitespace-nowrap`}>저점 구간</th>
+                <th className={`${th} text-right whitespace-nowrap`}>그 구간 수익률</th>
+                <th className={`${th} text-right whitespace-nowrap`}>저점 원인</th>
+                <th className={`${th} text-right whitespace-nowrap`}>직후 매수 (PER)</th>
+                <th className={`${th} text-right whitespace-nowrap`}>이후 10년 수익률</th>
+                <th className={`${th} text-right whitespace-nowrap`}>이후 10년 EPS 성장</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+              <tr>
+                <td className={`${td} whitespace-nowrap`}>1992 → 2002</td>
+                <td className={`${td} text-right`}>8.3%</td>
+                <td className={`${td} text-right whitespace-nowrap`}>PER 하락 (이익은 연 +8.7%)</td>
+                <td className={`${td} text-right whitespace-nowrap`}>2002년 말 (13배)</td>
+                <td className={`${td} text-right font-semibold text-emerald-600 dark:text-emerald-400`}>17.9%</td>
+                <td className={`${td} text-right`}>연 +14.4%</td>
+              </tr>
+              <tr>
+                <td className={`${td} whitespace-nowrap`}>1996 → 2006</td>
+                <td className={`${td} text-right`}>5.7%</td>
+                <td className={`${td} text-right whitespace-nowrap`}>PER 하락 (이익은 연 +10.9%)</td>
+                <td className={`${td} text-right whitespace-nowrap`}>2006년 말 (14배) · 2007년 말 (17배)</td>
+                <td className={`${td} text-right font-semibold text-emerald-600 dark:text-emerald-400`}>16.8% · 16.2%</td>
+                <td className={`${td} text-right`}>연 +12.6% · +13.1%</td>
+              </tr>
+              <tr className="bg-blue-50 dark:bg-blue-900/20">
+                <td className={`${td} whitespace-nowrap font-semibold`}>2015 → 2025</td>
+                <td className={`${td} text-right`}>1.5%</td>
+                <td className={`${td} text-right whitespace-nowrap font-semibold text-red-500`}>이익 정체 (연 +1.6%)</td>
+                <td className={`${td} text-right whitespace-nowrap`}>지금 (18배, 내년 기준 28~33배)</td>
+                <td className={`${td} text-right font-semibold`}>?</td>
+                <td className={`${td} text-right`}>?</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ul className={`${p} list-disc pl-4 space-y-1`}>
+          <li><b>저점 매수가 유리하다는 방향은 맞다.</b> 10년 수익률이 바닥이면 기대와 가격이 낮아진 상태라, 이후 수익이 좋아질 여지가 크다.</li>
+          <li><b>하지만 저점의 원인이 반대다.</b> 과거 두 번은 이익이 잘 늘었는데 PER만 떨어진 것이라, PER이 회복되며 반등했다.
+            이번에는 PER은 그대로고 이익이 10년간 제자리였다. 이익 정체는 PER처럼 저절로 돌아오지 않고, 사업이 회복돼야 풀린다.</li>
+          <li><b>출발점도 다르다.</b> 과거에는 PER 13~17배에 샀고 이후 이익이 연 13~14% 늘었다. 지금은 PER 18배인데 내년 이익이 더 줄 전망이다.</li>
+          <li><b>연 17%가 나오려면</b> PER 18배 유지·배당 4.3% 가정에서 이익이 10년간 연 약 12%씩 늘어야 한다(2.08 → 약 6.5달러).
+            나이키 EPS 최고치는 3.73달러(2024년)였고, 2016년(2.16달러)부터 10년간 제자리였다.</li>
+          <li><b>현실적인 범위:</b> 이익이 회복되면 연 10~13%, 회복이 더디면 연 4~8%. 과거 사례가 두 번뿐이라 패턴으로 확신하기엔 표본이 적다.</li>
+          <li><b>확인할 신호:</b> 분기 매출이 다시 플러스로 돌아서는지, 2027 회계연도 이후 EPS가 다시 늘어나는지, 배당이 유지되는지.</li>
+        </ul>
+      </div>
+
+      <div className={box}>
         <h4 className={h4}>결론</h4>
         <ul className={`${p} list-disc pl-4 space-y-1`}>
           <li>나이키는 <b>PER이 아니라 이익이 문제</b>다. 지금 PER 18배는 과거 기준으로 낮아 보이지만, 내년 예상 이익 기준으로는 28~33배다.</li>
