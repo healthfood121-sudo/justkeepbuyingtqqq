@@ -1448,7 +1448,28 @@ function OverviewTable({
       const saved = localStorage.getItem('private_starred')
       if (saved) setStarred(new Set(JSON.parse(saved)))
     } catch {}
+    try {
+      const f = JSON.parse(localStorage.getItem('private_filters') ?? '{}')
+      if (f.minPeriods != null)  setMinPeriods(f.minPeriods)
+      if (f.minCagrMin != null)  setMinCagrMin(f.minCagrMin)
+      if (f.minMedian != null)   setMinMedian(f.minMedian)
+      if (f.minDiffMin != null)  setMinDiffMin(f.minDiffMin)
+      if (f.minDiffMedian != null) setMinDiffMedian(f.minDiffMedian)
+      if (f.maxRange != null)    setMaxRange(f.maxRange)
+      if (f.excludeEtf != null)  setExcludeEtf(f.excludeEtf)
+      if (f.sortKey)             setSortKey(f.sortKey)
+      if (f.sortDir)             setSortDir(f.sortDir)
+      if (f.viewMode)            setViewMode(f.viewMode)
+    } catch {}
   }, [])
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('private_filters', JSON.stringify({
+        minPeriods, minCagrMin, minMedian, minDiffMin, minDiffMedian, maxRange, excludeEtf, sortKey, sortDir, viewMode,
+      }))
+    } catch {}
+  }, [minPeriods, minCagrMin, minMedian, minDiffMin, minDiffMedian, maxRange, excludeEtf, sortKey, sortDir, viewMode])
 
   function toggleStar(key: string, e: React.MouseEvent) {
     e.stopPropagation()
