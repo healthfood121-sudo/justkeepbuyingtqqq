@@ -1573,7 +1573,7 @@ function OverviewTable({
     const s = [...arr].sort((a, b) => a - b)
     return s[Math.min(Math.floor(s.length * p), s.length - 1)]
   }
-  const cagrVMax = Math.ceil(percentile(allRows.map(r => r.cagrMx), 0.95) / 10) * 10
+  const cagrVMax = Math.ceil(percentile(allRows.map(r => r.cagrMx).filter((v): v is number => v != null), 0.95) / 10) * 10
   const diffVMax = Math.ceil(percentile(allRows.filter(r => r.diffMx != null).map(r => r.diffMx!), 0.95) / 10) * 10
   const diffVMin = Math.floor(percentile(allRows.filter(r => r.diffMn != null).map(r => r.diffMn!), 0.05) / 10) * 10
 
@@ -1582,11 +1582,11 @@ function OverviewTable({
     if (q && !row.s.key.toLowerCase().includes(q) && !row.s.data.name.toLowerCase().includes(q)) return false
     if (viewMode === 'starred' && !starred.has(row.s.key)) return false
     if (minPeriods > 0 && row.completedCount < minPeriods) return false
-    if (minCagrMin !== '' && row.cagrMn < minCagrMin) return false
-    if (minMedian > 0 && row.cagrMed < minMedian) return false
+    if (minCagrMin !== '' && (row.cagrMn == null || row.cagrMn < minCagrMin)) return false
+    if (minMedian > 0 && (row.cagrMed == null || row.cagrMed < minMedian)) return false
     if (minDiffMin !== '' && (row.diffMn == null || row.diffMn < minDiffMin)) return false
     if (minDiffMedian !== 0 && (row.diffMed == null || row.diffMed < minDiffMedian)) return false
-    if (maxRange !== '' && (row.cagrMx - row.cagrMn) > maxRange) return false
+    if (maxRange !== '' && (row.cagrMx == null || row.cagrMn == null || (row.cagrMx - row.cagrMn) > maxRange)) return false
     if (excludeEtf && (row.s.data as any).type === 'etf') return false
     return true
   })
