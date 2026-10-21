@@ -8,6 +8,7 @@ import {
   Tooltip, Legend,
 } from 'chart.js'
 import { Chart } from 'react-chartjs-2'
+import spDesc from '@/app/sp500-holdings/descriptions.json'
 import qldData        from '@/public/data/rolling/QLD_rolling.json'
 import qqqData        from '@/public/data/rolling/QQQ_rolling.json'
 import tqqqData       from '@/public/data/rolling/TQQQ_rolling.json'
@@ -1689,14 +1690,21 @@ function OverviewTable({
                   <div className="group/name relative inline-flex items-baseline gap-1.5 max-w-[140px]">
                     <span className="font-semibold text-gray-900 dark:text-white whitespace-nowrap">{s.data.ticker}</span>
                     <span className="text-xs text-gray-400 dark:text-gray-500 truncate">{s.data.name}</span>
-                    <div className="absolute bottom-full left-0 mb-1.5 z-50
-                                    invisible group-hover/name:visible opacity-0 group-hover/name:opacity-100
-                                    transition-opacity duration-150 pointer-events-none
-                                    bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-md px-2.5 py-1.5
-                                    whitespace-nowrap shadow-lg">
-                      {s.data.name}
-                      <div className="absolute top-full left-4 border-4 border-transparent border-t-gray-900 dark:border-t-gray-700" />
-                    </div>
+                    {(() => {
+                      const desc = (spDesc as any)[s.data.ticker]
+                      return (
+                        <div className="absolute bottom-full left-0 mb-1.5 z-50 w-64
+                                        invisible group-hover/name:visible opacity-0 group-hover/name:opacity-100
+                                        transition-opacity duration-150 pointer-events-none
+                                        bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-md px-3 py-2
+                                        shadow-lg">
+                          <p className="font-semibold mb-1">{s.data.ticker} · {desc?.name ?? s.data.name}</p>
+                          {desc?.sector && <p className="text-gray-300 mb-0.5">섹터: {desc.sector}</p>}
+                          {desc?.products && <p className="text-gray-400 leading-relaxed">{desc.products}</p>}
+                          <div className="absolute top-full left-4 border-4 border-transparent border-t-gray-900 dark:border-t-gray-700" />
+                        </div>
+                      )
+                    })()}
                   </div>
                 </td>
                 {/* 절대 수익률 */}
@@ -1786,11 +1794,27 @@ export default function PrivatePage() {
         </div>
 
         {/* 종목명 */}
-        <div className="flex items-baseline gap-2">
-          <h2 className="text-base font-semibold text-gray-900 dark:text-white">
-            {current.data.name} ({current.data.ticker})
-          </h2>
-          <span className="text-xs text-gray-400">{current.data.currency} · 벤치마크: {current.data.benchmark}</span>
+        <div className="space-y-0.5">
+          <div className="flex items-baseline gap-2">
+            <h2 className="text-base font-semibold text-gray-900 dark:text-white">
+              {current.data.name} ({current.data.ticker})
+            </h2>
+            <span className="text-xs text-gray-400">{current.data.currency} · 벤치마크: {current.data.benchmark}</span>
+          </div>
+          {(() => {
+            const desc = (spDesc as any)[current.data.ticker]
+            if (!desc) return null
+            return (
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5">
+                {desc.sector && (
+                  <span className="text-xs text-blue-500 dark:text-blue-400 font-medium">{desc.sector}</span>
+                )}
+                {desc.products && (
+                  <span className="text-xs text-gray-400 dark:text-gray-500">{desc.products}</span>
+                )}
+              </div>
+            )
+          })()}
         </div>
 
         {/* 차트 */}
