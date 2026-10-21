@@ -2347,6 +2347,63 @@ function RmsInsight({ data }: { data: StockData }) {
       </div>
 
       <div className={box}>
+        <h4 className={h4}>6. 과거 저점 직후 매수 vs 지금</h4>
+        <p className={p}>
+          에르메스의 10년 수익률 바닥은 1999년 매수(연 7.8%)와 2000년 매수(연 13.7%)였다. 둘 다 PER이 비쌀 때(38배·31배) 산 경우다.
+          그 바닥이 확인된 직후에 산 사람은 어땠을까?
+        </p>
+        <div className="overflow-x-auto">
+          <table className="text-xs">
+            <thead>
+              <tr>
+                <th className={`${th} text-left whitespace-nowrap`}>저점 구간</th>
+                <th className={`${th} text-right whitespace-nowrap`}>그 구간 수익률</th>
+                <th className={`${th} text-right whitespace-nowrap`}>저점 원인</th>
+                <th className={`${th} text-right whitespace-nowrap`}>직후 매수 (PER)</th>
+                <th className={`${th} text-right whitespace-nowrap`}>이후 10년 수익률</th>
+                <th className={`${th} text-right whitespace-nowrap`}>이후 10년 EPS 성장</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+              <tr>
+                <td className={`${td} whitespace-nowrap`}>1999 → 2009</td>
+                <td className={`${td} text-right`}>7.8%</td>
+                <td className={`${td} text-right whitespace-nowrap`}>PER 하락 38 → 29배 (이익은 연 +11%)</td>
+                <td className={`${td} text-right whitespace-nowrap`}>2009년 말 (28.5배)</td>
+                <td className={`${td} text-right font-semibold text-emerald-600 dark:text-emerald-400`}>23.4%</td>
+                <td className={`${td} text-right`}>연 +18.4%</td>
+              </tr>
+              <tr>
+                <td className={`${td} whitespace-nowrap`}>2000 → 2010</td>
+                <td className={`${td} text-right`}>13.7%</td>
+                <td className={`${td} text-right whitespace-nowrap`}>PER 제자리 31 → 33배 (이익은 연 +12.9%)</td>
+                <td className={`${td} text-right whitespace-nowrap`}>2010년 말 (32.8배)</td>
+                <td className={`${td} text-right font-semibold text-emerald-600 dark:text-emerald-400`}>20.3%</td>
+                <td className={`${td} text-right`}>연 +13.5%</td>
+              </tr>
+              <tr className="bg-blue-50 dark:bg-blue-900/20">
+                <td className={`${td} whitespace-nowrap font-semibold`}>2019~2024년 매수 (진행 중)</td>
+                <td className={`${td} text-right whitespace-nowrap`}>연 -25% ~ +12%</td>
+                <td className={`${td} text-right whitespace-nowrap font-semibold text-purple-600 dark:text-purple-400`}>PER 하락 43~66 → 29배</td>
+                <td className={`${td} text-right whitespace-nowrap`}>지금 (29배)</td>
+                <td className={`${td} text-right font-semibold`}>?</td>
+                <td className={`${td} text-right`}>?</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ul className={`${p} list-disc pl-4 space-y-1`}>
+          <li><b>10년 완결 기준으로는 아직 바닥이 보이지 않는다.</b> 가장 최근 완결(2015년 매수)도 연 22%다.
+            바닥은 아직 10년이 안 된 2019~2024년 매수에서 만들어지고 있다. PER 43~66배에 산 구간이라, 1999년(38배)처럼 낮은 10년 수익률로 끝날 가능성이 크다.</li>
+          <li><b>저점의 원인이 과거와 같다.</b> 1999년처럼 이익은 늘었는데 PER이 떨어져서 수익률이 낮아진 경우다. 나이키(이익 정체가 원인)와 다른 점이다.</li>
+          <li><b>지금 PER 29배는 2009년 말(28.5배)과 거의 같다.</b> 그때 산 사람은 이후 10년간 연 23.4%를 냈다. 다만 그 10년은 이익이 연 18% 늘고, PER도 29배에서 43배로 올랐던 시기다.</li>
+          <li><b>다른 점:</b> 2009년은 금융위기로 이익이 잠시 눌려 있던 때라 이후 반등 폭이 컸다. 지금은 이익이 높은 수준에서 성장만 느려진 상태(최근 약 3년 연 3~4%)다.</li>
+          <li><b>숫자로 보면:</b> PER 29배 유지·배당 1.35% 가정에서 연 17%가 나오려면 이익이 연 약 15%, 연 20%가 나오려면 연 약 18% 늘어야 한다. 과거 10년 이익 성장률(연 11~20%, 보통 15% 안팎)로는 가능한 범위다.</li>
+          <li><b>확인할 신호:</b> 환율 영향을 뺀 매출 성장이 다시 두 자릿수로 올라오는지, 순이익이 다시 연 10% 이상 늘어나는지.</li>
+        </ul>
+      </div>
+
+      <div className={box}>
         <h4 className={h4}>결론</h4>
         <ul className={`${p} list-disc pl-4 space-y-1`}>
           <li>연 17~20%가 나오려면 <b>EPS 성장이 연 15% 이상으로 회복</b>하고 PER도 지금 수준 이상을 유지해야 한다.</li>
