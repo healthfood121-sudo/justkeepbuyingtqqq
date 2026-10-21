@@ -73,7 +73,6 @@ def fetch_eps(cik: int) -> dict:
             continue
         units = resp.json().get("units", {})
         for unit, items in units.items():
-            log.append(f"  {unit} n={len(items)} 예: {items[-1] if items else None}")
             if "/shares" not in unit:
                 continue
             for it in items:
@@ -90,7 +89,60 @@ def fetch_eps(cik: int) -> dict:
                 if prev is None or (prev[2] == concept and filed > prev[1]):
                     best[end] = (float(it["val"]), filed, concept)
     if not best:
-        print("    EDGAR 응답:", ", ".join(log), flush=True)
+        best = fetch_eps_companyfacts(cik)
+        print(f"    개별 항목 비어 있음({', '.join(log)}) → 전체 공시 보완: {len(best)}개", flush=True)
+    return best
+
+
+def _annual_items(units: dict):
+    for unit, items in units.items():
+        for it in items:
+            if it.get("form") not in ("10-K", "10-K/A", "10-KT", "20-F", "40-F"):
+                continue
+            if not it.get("start") or not it.get("end"):
+                continue
+            days = (pd.Timestamp(it["end"]) - pd.Timestamp(it["start"])).days
+            if 340 <= days <= 390:
+                yield unit, it
+
+
+def fetch_eps_companyfacts(cik: int) -> dict:
+    """companyconcept가 비어 있을 때: companyfacts 전체에서 EPS 계열 항목, 없으면 순이익 ÷ 희석 주식수."""
+    try:
+        resp = requests.get(f"https://data.sec.gov/api/xbrl/companyfacts/CIK{cik:010d}.json", headers=UA, timeout=60)
+        time.sleep(0.15)
+        if resp.status_code != 200:
+            return {}
+        gaap = resp.json().get("facts", {}).get("us-gaap", {})
+    except Exception:
+        return {}
+    best = {}
+    names = sorted((n for n in gaap if n.startswith("EarningsPerShare")),
+                   key=lambda n: (0 if "Diluted" in n else 1, n))
+    for n in names:
+        for unit, it in _annual_items(gaap[n].get("units", {})):
+            if "/shares" not in unit:
+                continue
+            prev = best.get(it["end"])
+            if prev is None or (prev[2] == n and it["filed"] > prev[1]):
+                best[it["end"]] = (float(it["val"]), it["filed"], n)
+    if best:
+        return best
+    # 순이익 ÷ 희석 가중평균 주식수
+    ni = {}
+    for unit, it in _annual_items(gaap.get("NetIncomeLoss", {}).get("units", {})):
+        if unit == "USD" and (it["end"] not in ni or it["filed"] > ni[it["end"]][1]):
+            ni[it["end"]] = (float(it["val"]), it["filed"])
+    sh = {}
+    for cname in ("WeightedAverageNumberOfDilutedSharesOutstanding", "WeightedAverageNumberOfSharesOutstandingBasic"):
+        for unit, it in _annual_items(gaap.get(cname, {}).get("units", {})):
+            if it["end"] not in sh or it["filed"] > sh[it["end"]][1]:
+                sh[it["end"]] = (float(it["val"]), it["filed"])
+        if sh:
+            break
+    for end, (v, filed) in ni.items():
+        if end in sh and sh[end][0] > 0:
+            best[end] = (v / sh[end][0], max(filed, sh[end][1]), "NetIncome/Shares")
     return best
 
 
