@@ -1627,7 +1627,17 @@ function OverviewTable({
               pp
             </label>
             <label className={labelCls}>
-              수익 범위 ≤
+              <span className="relative group/tip">
+                수익 범위 ≤
+                <span className="ml-0.5 text-gray-400 cursor-help">?</span>
+                <span className="absolute bottom-full left-0 mb-2 w-56 z-50
+                                 invisible group-hover/tip:visible opacity-0 group-hover/tip:opacity-100
+                                 transition-opacity duration-150 pointer-events-none
+                                 bg-gray-900 text-white text-xs rounded-md px-2.5 py-2 shadow-lg leading-relaxed">
+                  최댓값 − 최솟값. 작을수록 언제 사도 결과가 비슷한 일관된 기업. 클수록 타이밍에 따라 수익 차이가 큰 기업.
+                  <span className="absolute top-full left-4 border-4 border-transparent border-t-gray-900" />
+                </span>
+              </span>
               <input type="number" min={0} max={200} value={maxRange} placeholder="—"
                 onChange={e => setMaxRange(e.target.value === '' ? '' : Number(e.target.value))} className={inputCls} />
               %
