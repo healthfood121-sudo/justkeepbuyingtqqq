@@ -1435,10 +1435,11 @@ function OverviewTable({
   const [viewMode, setViewMode] = useState<'all' | 'starred'>('all')
   const [starred, setStarred] = useState<Set<string>>(new Set())
   const [minPeriods, setMinPeriods] = useState(0)
-  const [noLoss, setNoLoss] = useState(false)
-  const [alwaysBeatSP, setAlwaysBeatSP] = useState(false)
+  const [minCagrMin, setMinCagrMin] = useState<number | ''>('')
   const [minMedian, setMinMedian] = useState(0)
+  const [minDiffMin, setMinDiffMin] = useState<number | ''>('')
   const [minDiffMedian, setMinDiffMedian] = useState(0)
+  const [maxRange, setMaxRange] = useState<number | ''>('')
   const [excludeEtf, setExcludeEtf] = useState(false)
 
   useEffect(() => {
@@ -1522,10 +1523,11 @@ function OverviewTable({
     if (q && !row.s.key.toLowerCase().includes(q) && !row.s.data.name.toLowerCase().includes(q)) return false
     if (viewMode === 'starred' && !starred.has(row.s.key)) return false
     if (minPeriods > 0 && row.completedCount < minPeriods) return false
-    if (noLoss && row.cagrMn <= 0) return false
-    if (alwaysBeatSP && (row.diffMn == null || row.diffMn <= 0)) return false
+    if (minCagrMin !== '' && row.cagrMn < minCagrMin) return false
     if (minMedian > 0 && row.cagrMed < minMedian) return false
+    if (minDiffMin !== '' && (row.diffMn == null || row.diffMn < minDiffMin)) return false
     if (minDiffMedian !== 0 && (row.diffMed == null || row.diffMed < minDiffMedian)) return false
+    if (maxRange !== '' && (row.cagrMx - row.cagrMn) > maxRange) return false
     if (excludeEtf && (row.s.data as any).type === 'etf') return false
     return true
   })
@@ -1566,69 +1568,70 @@ function OverviewTable({
       </div>
 
       {/* 필터 행 */}
-      <div className="flex flex-wrap items-center gap-2 mb-3 pb-3 border-b border-gray-100 dark:border-gray-800">
-        {/* 완결 구간 수 */}
-        <label className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700 rounded-lg px-2.5 py-1.5">
-          완결 구간
-          <input
-            type="number" min={0} max={40} value={minPeriods || ''}
-            placeholder="0"
-            onChange={e => setMinPeriods(Number(e.target.value) || 0)}
-            className="w-8 text-center bg-transparent text-gray-900 dark:text-white focus:outline-none"
-          />
-          개 이상
-        </label>
-        {/* 절대수익 중앙값 */}
-        <label className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700 rounded-lg px-2.5 py-1.5">
-          절대수익 중앙값 ≥
-          <input
-            type="number" min={0} max={100} value={minMedian || ''}
-            placeholder="0"
-            onChange={e => setMinMedian(Number(e.target.value) || 0)}
-            className="w-8 text-center bg-transparent text-gray-900 dark:text-white focus:outline-none"
-          />
-          %
-        </label>
-        {/* 초과수익 중앙값 */}
-        <label className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700 rounded-lg px-2.5 py-1.5">
-          초과수익 중앙값 ≥
-          <input
-            type="number" min={-20} max={100} value={minDiffMedian || ''}
-            placeholder="0"
-            onChange={e => setMinDiffMedian(Number(e.target.value) || 0)}
-            className="w-8 text-center bg-transparent text-gray-900 dark:text-white focus:outline-none"
-          />
-          pp
-        </label>
-        {/* 토글 버튼들 */}
-        {([
-          { label: '10년 손실 없음', active: noLoss, toggle: () => setNoLoss(v => !v) },
-          { label: 'S&P500 항상 초과', active: alwaysBeatSP, toggle: () => setAlwaysBeatSP(v => !v) },
-          { label: 'ETF 제외', active: excludeEtf, toggle: () => setExcludeEtf(v => !v) },
-        ] as const).map(({ label, active, toggle }) => (
-          <button key={label} onClick={toggle}
-            className={`px-2.5 py-1.5 text-xs rounded-lg border transition-colors ${
-              active
-                ? 'bg-blue-500 border-blue-500 text-white'
-                : 'border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600'
-            }`}>
-            {label}
-          </button>
-        ))}
-        <div className="ml-auto flex items-center gap-3">
-          <span className="text-xs font-medium text-blue-500 dark:text-blue-400">
-            {rows.length < allRows.length
-              ? `${rows.length} / ${allRows.length}개`
-              : `${allRows.length}개`}
-          </span>
-          {(minPeriods > 0 || minMedian > 0 || minDiffMedian !== 0 || noLoss || alwaysBeatSP || excludeEtf) && (
-            <button onClick={() => { setMinPeriods(0); setMinMedian(0); setMinDiffMedian(0); setNoLoss(false); setAlwaysBeatSP(false); setExcludeEtf(false) }}
-              className="text-xs text-gray-400 dark:text-gray-600 hover:text-red-400 dark:hover:text-red-500 transition-colors">
-              필터 초기화
+      {(() => {
+        const inputCls = "w-9 text-center bg-transparent text-gray-900 dark:text-white focus:outline-none"
+        const labelCls = "flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700 rounded-lg px-2.5 py-1.5"
+        const hasFilter = minPeriods > 0 || minCagrMin !== '' || minMedian > 0 || minDiffMin !== '' || minDiffMedian !== 0 || maxRange !== '' || excludeEtf
+        return (
+          <div className="flex flex-wrap items-center gap-2 mb-3 pb-3 border-b border-gray-100 dark:border-gray-800">
+            <label className={labelCls}>
+              완결 구간
+              <input type="number" min={0} max={40} value={minPeriods || ''} placeholder="0"
+                onChange={e => setMinPeriods(Number(e.target.value) || 0)} className={inputCls} />
+              개 이상
+            </label>
+            <label className={labelCls}>
+              절대수익 최솟값 ≥
+              <input type="number" min={-30} max={100} value={minCagrMin} placeholder="—"
+                onChange={e => setMinCagrMin(e.target.value === '' ? '' : Number(e.target.value))} className={inputCls} />
+              %
+            </label>
+            <label className={labelCls}>
+              절대수익 중앙값 ≥
+              <input type="number" min={0} max={100} value={minMedian || ''} placeholder="0"
+                onChange={e => setMinMedian(Number(e.target.value) || 0)} className={inputCls} />
+              %
+            </label>
+            <label className={labelCls}>
+              초과수익 최솟값 ≥
+              <input type="number" min={-50} max={100} value={minDiffMin} placeholder="—"
+                onChange={e => setMinDiffMin(e.target.value === '' ? '' : Number(e.target.value))} className={inputCls} />
+              pp
+            </label>
+            <label className={labelCls}>
+              초과수익 중앙값 ≥
+              <input type="number" min={-20} max={100} value={minDiffMedian || ''} placeholder="0"
+                onChange={e => setMinDiffMedian(Number(e.target.value) || 0)} className={inputCls} />
+              pp
+            </label>
+            <label className={labelCls}>
+              수익 범위 ≤
+              <input type="number" min={0} max={200} value={maxRange} placeholder="—"
+                onChange={e => setMaxRange(e.target.value === '' ? '' : Number(e.target.value))} className={inputCls} />
+              %
+            </label>
+            <button onClick={() => setExcludeEtf(v => !v)}
+              className={`px-2.5 py-1.5 text-xs rounded-lg border transition-colors ${
+                excludeEtf
+                  ? 'bg-blue-500 border-blue-500 text-white'
+                  : 'border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600'
+              }`}>
+              ETF 제외
             </button>
-          )}
-        </div>
-      </div>
+            <div className="ml-auto flex items-center gap-3">
+              <span className="text-xs font-medium text-blue-500 dark:text-blue-400">
+                {rows.length < allRows.length ? `${rows.length} / ${allRows.length}개` : `${allRows.length}개`}
+              </span>
+              {hasFilter && (
+                <button onClick={() => { setMinPeriods(0); setMinCagrMin(''); setMinMedian(0); setMinDiffMin(''); setMinDiffMedian(0); setMaxRange(''); setExcludeEtf(false) }}
+                  className="text-xs text-gray-400 dark:text-gray-600 hover:text-red-400 dark:hover:text-red-500 transition-colors">
+                  초기화
+                </button>
+              )}
+            </div>
+          </div>
+        )
+      })()}
 
       <table className="text-sm">
         <thead>
