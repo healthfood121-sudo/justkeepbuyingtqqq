@@ -2384,7 +2384,7 @@ function RmsInsight({ data }: { data: StockData }) {
               <tr className="bg-blue-50 dark:bg-blue-900/20">
                 <td className={`${td} whitespace-nowrap font-semibold`}>2019~2024년 매수 (진행 중)</td>
                 <td className={`${td} text-right whitespace-nowrap`}>연 -25% ~ +12%</td>
-                <td className={`${td} text-right whitespace-nowrap font-semibold text-purple-600 dark:text-purple-400`}>PER 하락 43~66 → 29배</td>
+                <td className={`${td} text-right whitespace-nowrap font-semibold text-purple-600 dark:text-purple-400`}>PER 하락 42~66 → 29배</td>
                 <td className={`${td} text-right whitespace-nowrap`}>지금 (29배)</td>
                 <td className={`${td} text-right font-semibold`}>?</td>
                 <td className={`${td} text-right`}>?</td>
@@ -2394,7 +2394,7 @@ function RmsInsight({ data }: { data: StockData }) {
         </div>
         <ul className={`${p} list-disc pl-4 space-y-1`}>
           <li><b>10년 완결 기준으로는 아직 바닥이 보이지 않는다.</b> 가장 최근 완결(2015년 매수)도 연 22%다.
-            바닥은 아직 10년이 안 된 2019~2024년 매수에서 만들어지고 있다. PER 43~66배에 산 구간이라, 1999년(38배)처럼 낮은 10년 수익률로 끝날 가능성이 크다.</li>
+            바닥은 아직 10년이 안 된 2019~2024년 매수에서 만들어지고 있다. PER 42~66배에 산 구간이라, 1999년(38배)처럼 낮은 10년 수익률로 끝날 가능성이 크다.</li>
           <li><b>저점의 원인이 과거와 같다.</b> 1999년처럼 이익은 늘었는데 PER이 떨어져서 수익률이 낮아진 경우다. 나이키(이익 정체가 원인)와 다른 점이다.</li>
           <li><b>지금 PER 29배는 2009년 말(28.5배)과 거의 같다.</b> 그때 산 사람은 이후 10년간 연 23.4%를 냈다. 다만 그 10년은 이익이 연 18% 늘고, PER도 29배에서 43배로 올랐던 시기다.</li>
           <li><b>다른 점:</b> 2009년은 금융위기로 이익이 잠시 눌려 있던 때라 이후 반등 폭이 컸다. 지금은 이익이 높은 수준에서 성장만 느려진 상태(최근 약 3년 연 3~4%)다.</li>
