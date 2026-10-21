@@ -1873,7 +1873,24 @@ function OverviewTable({
 }
 
 // ── 에르메스(RMS) 인사이트 (2026-10-21 분석, 정적 텍스트) ───────────
-function RmsInsight() {
+type RmsDecomp = {
+  buyYear: number; sellYear: number; peBuy: number; peSell: number
+  epsGrowthCagr: number; peCagr: number; totalCagr: number
+}
+
+function RmsInsight({ data }: { data: StockData }) {
+  const decomp = ((data as any).epsDecomp ?? []) as RmsDecomp[]
+  // 연말 PER 흐름: 매수 연도 PER + 매도 연도 PER을 합쳐 연도별로 정리
+  const yearPE = new Map<number, number>()
+  decomp.forEach(d => { yearPE.set(d.buyYear, d.peBuy); yearPE.set(d.sellYear, d.peSell) })
+  const peTimeline = [...yearPE.entries()].sort((a, b) => a[0] - b[0])
+  const groups = [
+    { label: '매수 PER 20배 미만', lo: 0, hi: 20 },
+    { label: '매수 PER 20~27배', lo: 20, hi: 27 },
+    { label: '매수 PER 27~32배 (지금 구간)', lo: 27, hi: 32, hl: true },
+    { label: '매수 PER 32배 이상', lo: 32, hi: 999 },
+  ]
+  const sgn = (v: number) => `${v > 0 ? '+' : ''}${v.toFixed(1)}`
   const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-2'
   const h4 = 'text-sm font-semibold text-gray-800 dark:text-gray-100'
   const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
@@ -1939,6 +1956,71 @@ function RmsInsight() {
             </tbody>
           </table>
         </div>
+
+        <p className={`${p} pt-2 font-semibold`}>경우별 상세 — 10년 동안 PER이 어떻게 변했나</p>
+        <p className={p}>
+          연평균 수익률 ≈ EPS 성장 효과 + PER 변화 효과. PER 효과가 플러스면 시장이 그 10년 동안 더 비싸게 쳐줬다는 뜻이다.
+        </p>
+        <div className="overflow-x-auto">
+          <table className="text-xs">
+            <thead>
+              <tr>
+                <th className={`${th} text-left whitespace-nowrap`}>보유 구간</th>
+                <th className={`${th} text-right whitespace-nowrap`}>매수 PER</th>
+                <th className={`${th} text-right whitespace-nowrap`}>매도 PER</th>
+                <th className={`${th} text-right whitespace-nowrap`}>EPS 효과(연)</th>
+                <th className={`${th} text-right whitespace-nowrap`}>PER 효과(연)</th>
+                <th className={`${th} text-right whitespace-nowrap`}>연평균 수익률</th>
+              </tr>
+            </thead>
+            {groups.map(g => {
+              const rows = decomp.filter(d => d.peBuy >= g.lo && d.peBuy < g.hi).sort((x, y) => x.peBuy - y.peBuy)
+              return (
+                <tbody key={g.label} className="divide-y divide-gray-100 dark:divide-gray-800">
+                  <tr className={g.hl ? 'bg-blue-50 dark:bg-blue-900/20' : 'bg-gray-50 dark:bg-gray-800/40'}>
+                    <td colSpan={6} className="py-1.5 px-2 font-semibold text-gray-700 dark:text-gray-200">{g.label}</td>
+                  </tr>
+                  {rows.map(d => (
+                    <tr key={d.buyYear}>
+                      <td className={`${td} whitespace-nowrap`}>{d.buyYear} → {d.sellYear}</td>
+                      <td className={`${td} text-right`}>{d.peBuy.toFixed(1)}배</td>
+                      <td className={`${td} text-right ${d.peSell > d.peBuy ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'}`}>
+                        {d.peSell.toFixed(1)}배 {d.peSell > d.peBuy ? '↑' : '↓'}
+                      </td>
+                      <td className={`${td} text-right`}>{sgn(d.epsGrowthCagr)}%</td>
+                      <td className={`${td} text-right ${d.peCagr >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'}`}>{sgn(d.peCagr)}%p</td>
+                      <td className={`${td} text-right font-semibold`}>{d.totalCagr.toFixed(1)}%</td>
+                    </tr>
+                  ))}
+                </tbody>
+              )
+            })}
+          </table>
+        </div>
+
+        <p className={`${p} pt-2 font-semibold`}>연말 PER 흐름 (1993~2025)</p>
+        <div className="flex flex-wrap gap-1">
+          {peTimeline.map(([y, pe]) => (
+            <span
+              key={y}
+              className={`text-[11px] tabular-nums px-1.5 py-0.5 rounded ${
+                pe >= 40 ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
+                : pe >= 30 ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300'
+                : pe >= 20 ? 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300'
+                : 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300'}`}
+            >
+              {y} {pe.toFixed(0)}배
+            </span>
+          ))}
+          <span className="text-[11px] tabular-nums px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold">
+            2026.10 29배
+          </span>
+        </div>
+        <p className={p}>
+          1993~2007년에는 대체로 14~27배였다(1996·1999·2000년 30배 이상은 예외). 2008~2018년에는 28~39배로 올라섰고,
+          2019~2025년에는 42~66배까지 치솟았다(정점 2021년 66배). 지금은 29배로 2009년 수준까지 내려왔다.
+          2010~2015년에 산 경우들이 높은 수익을 낸 데는 팔 때 PER이 42~66배까지 올라 있었던 영향이 크다.
+        </p>
         <p className={p}>
           지금과 비슷한 PER에서 산 경우: 2012년(28.2배) 21.8% · 2009년(28.5배) 23.4% · 2015년(31.0배) 22.1% ·
           2008년(31.2배) 18.7% · 1996년(30.6배) 15.4% · 2000년(30.5배) 13.7%.
@@ -1950,7 +2032,7 @@ function RmsInsight() {
         <h4 className={h4}>3. 과거 성과를 만든 두 가지 순풍</h4>
         <ul className={`${p} list-disc pl-4 space-y-1`}>
           <li><b>EPS가 10년 동안 매년 11~20% 성장</b>했다(23개 경우 중 최저 11%). 하지만 최근 약 3년(2023 → 2026년 중반)은 연 3~4% 수준이다.</li>
-          <li><b>팔 때 PER이 거의 항상 올라 있었다.</b> 23개 중 20개가 매수 때보다 높았고, 2010년대 매수는 팔 때 42~66배였다. 이 효과가 연 +2~7%p를 더해줬다.</li>
+          <li><b>팔 때 PER이 거의 항상 올라 있었다.</b> 23개 중 21개가 매수 때보다 높았고(예외: 1996년, 1999년 매수), 2010~2015년 매수는 팔 때 42~66배였다. 이 효과가 대부분 연 +1~7%p를 더해줬다(중간값 약 +3%p). 위 상세 표의 &lsquo;PER 효과&rsquo; 열 참고.</li>
         </ul>
       </div>
 
@@ -2069,7 +2151,7 @@ export default function PrivatePage() {
         <RollingTable data={current.data} />
 
         {/* 에르메스 전용 인사이트 */}
-        {current.key === 'RMS' && <RmsInsight />}
+        {current.key === 'RMS' && <RmsInsight data={current.data} />}
 
         {/* 구분선 */}
         <div className="border-t border-gray-200 dark:border-gray-800 pt-2" />
