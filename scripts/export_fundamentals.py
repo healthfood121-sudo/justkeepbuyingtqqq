@@ -55,6 +55,7 @@ def load_cik_map():
 def fetch_eps(cik: int) -> dict:
     """회계연도 종료일 → (EPS, 공시일). 같은 종료일은 가장 최근 공시값(분할 재작성 반영)."""
     best = {}
+    log = []
     for concept in CONCEPTS:
         url = f"https://data.sec.gov/api/xbrl/companyconcept/CIK{cik:010d}/us-gaap/{concept}.json"
         resp = None
@@ -67,6 +68,7 @@ def fetch_eps(cik: int) -> dict:
                 break
             time.sleep(3 * (attempt + 1))
         time.sleep(0.15)  # SEC 초당 10회 제한
+        log.append(f"{concept}:{resp.status_code if resp is not None else 'ERR'}")
         if resp is None or resp.status_code != 200:
             continue
         for unit, items in resp.json().get("units", {}).items():
@@ -85,6 +87,8 @@ def fetch_eps(cik: int) -> dict:
                 prev = best.get(end)
                 if prev is None or (prev[2] == concept and filed > prev[1]):
                     best[end] = (float(it["val"]), filed, concept)
+    if not best:
+        print("    EDGAR 응답:", ", ".join(log), flush=True)
     return best
 
 
