@@ -4,11 +4,13 @@ generate_all_sp500.py  —  SP500 상위 종목 롤링 CSV + JSON 일괄 생성
 - JSON이 이미 있으면 재생성 안 함
 - 오류 발생 종목은 스킵 후 계속 진행
 """
-import sys, os, json, traceback, argparse
+import sys, os, json, traceback, argparse, time
 sys.path.insert(0, os.path.dirname(__file__))
 
 import pandas as pd
 import yfinance as yf
+import matplotlib
+matplotlib.use('Agg')  # headless 환경 (GitHub Actions 등)
 from pathlib import Path
 from rolling_analysis import RollingAnalyzer, summary_stats
 
@@ -623,6 +625,8 @@ def main():
             print(f"  ⚠ JSON 오류: {e}")
             traceback.print_exc()
             errors.append((ticker, f"JSON 오류: {e}"))
+
+        time.sleep(0.5)  # Yahoo Finance 레이트 리밋 방지
 
     # ── 결과 요약 ──────────────────────────────────────────────
     print(f"\n{'='*60}")
