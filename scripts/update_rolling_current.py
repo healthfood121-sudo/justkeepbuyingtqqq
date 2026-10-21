@@ -20,15 +20,23 @@ DST  = Path(__file__).parent.parent / "web" / "public" / "data" / "rolling"
 BENCH = "^SP500TR"
 
 
-def get_price_at(hist: pd.DataFrame, target: date) -> float | None:
-    """DataFrame에서 target 날짜 이전 가장 가까운 종가 반환"""
-    idx = hist.index
-    if hasattr(idx, 'tz') and idx.tz is not None:
-        idx = idx.tz_localize(None)
-    before = hist[idx <= pd.Timestamp(target)]
+def to_close_series(hist: pd.DataFrame) -> pd.Series:
+    """yfinance MultiIndex 컬럼 대응 — Close를 flat Series로 변환"""
+    close = hist['Close']
+    if isinstance(close, pd.DataFrame):
+        close = close.iloc[:, 0]  # 단일 ticker: 첫 번째 열
+    if hasattr(close.index, 'tz') and close.index.tz is not None:
+        close = close.copy()
+        close.index = close.index.tz_localize(None)
+    return close
+
+
+def get_price_at(close: pd.Series, target: date) -> float | None:
+    """Close Series에서 target 날짜 이전 가장 가까운 종가 반환"""
+    before = close[close.index <= pd.Timestamp(target)]
     if before.empty:
         return None
-    return float(before['Close'].iloc[-1])
+    return float(before.iloc[-1])
 
 
 def cagr_stats(buy_p: float, sell_p: float, buy_d: date, sell_d: date) -> tuple:
@@ -51,7 +59,8 @@ def main():
     # ^SP500TR 한 번만 다운로드 (전체 ticker 공유)
     print("벤치마크(^SP500TR) 다운로드 중...")
     bench_hist    = yf.download(BENCH, period="20y", auto_adjust=True, progress=False)
-    bench_current = float(bench_hist['Close'].iloc[-1])
+    bench_close   = to_close_series(bench_hist)
+    bench_current = float(bench_close.iloc[-1])
     print(f"벤치마크 현재가: {bench_current:.2f}\n")
 
     updated = 0
@@ -82,25 +91,26 @@ def main():
 
             # 진행 중 행 재계산에 필요한 기간만 다운로드
             earliest_year = min(r["buyYear"] for r in ongoing)
-            hist = yf.download(
+            hist  = yf.download(
                 ticker,
                 start=f"{earliest_year}-12-25",
                 auto_adjust=True, progress=False
             )
+            close = to_close_series(hist)
 
             for row in data["rows10y"]:
                 if row["isComplete"]:
                     continue
 
                 buy_date  = date(row["buyYear"], 12, 31)
-                buy_price = get_price_at(hist, buy_date)
+                buy_price = get_price_at(close, buy_date)
                 if not buy_price:
                     continue
 
                 cagr, multiple, years = cagr_stats(buy_price, current_price, buy_date, today)
 
                 # 벤치마크 재계산
-                bench_buy = get_price_at(bench_hist, buy_date)
+                bench_buy = get_price_at(bench_close, buy_date)
                 if bench_buy:
                     bench_cagr, _, _ = cagr_stats(bench_buy, bench_current, buy_date, today)
                     row["benchCagr"] = bench_cagr
