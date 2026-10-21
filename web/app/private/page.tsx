@@ -1878,19 +1878,99 @@ type RmsDecomp = {
   epsGrowthCagr: number; peCagr: number; totalCagr: number
 }
 
+function RmsDecompChart({ decomp }: { decomp: RmsDecomp[] }) {
+  const chartRef = useRef<ChartJS | null>(null)
+  const [pluginLoaded, setPluginLoaded] = useState(false)
+  useEffect(() => {
+    import('chartjs-plugin-zoom').then(({ default: z }) => { ChartJS.register(z); setPluginLoaded(true) })
+  }, [])
+
+  const chartData = {
+    labels: decomp.map(d => String(d.buyYear)),
+    datasets: [
+      {
+        type: 'line' as const,
+        label: '연평균 수익률',
+        data: decomp.map(d => d.totalCagr),
+        borderColor: 'rgba(59,130,246,0.9)',
+        backgroundColor: 'rgba(59,130,246,0.9)',
+        showLine: false,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        order: 0,
+      },
+      {
+        type: 'bar' as const,
+        label: 'EPS 효과',
+        data: decomp.map(d => d.epsGrowthCagr),
+        backgroundColor: 'rgba(16,185,129,0.75)',
+        stack: 'ret',
+        order: 1,
+      },
+      {
+        type: 'bar' as const,
+        label: 'PER 효과',
+        data: decomp.map(d => d.peCagr),
+        backgroundColor: 'rgba(168,85,247,0.75)',
+        stack: 'ret',
+        order: 1,
+      },
+    ],
+  }
+
+  const options: any = {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: { stacked: true, grid: { display: false }, ticks: { font: { size: 11 }, maxRotation: 45 } },
+      y: { stacked: true, ticks: { font: { size: 11 }, callback: (v: number) => `${v}%` }, grid: { color: 'rgba(128,128,128,0.1)' } },
+    },
+    plugins: {
+      legend: { position: 'top' as const, labels: { font: { size: 11 }, boxWidth: 12 } },
+      tooltip: {
+        mode: 'index' as const,
+        intersect: false,
+        callbacks: {
+          title: (items: any[]) => {
+            const d = decomp[items[0].dataIndex]
+            return `${d.buyYear} → ${d.sellYear} (PER ${d.peBuy.toFixed(0)}배 → ${d.peSell.toFixed(0)}배)`
+          },
+          label: (ctx: any) => `${ctx.dataset.label}: ${ctx.parsed.y > 0 ? '+' : ''}${ctx.parsed.y.toFixed(1)}%`,
+        },
+      },
+      zoom: pluginLoaded ? {
+        pan: { enabled: true, mode: 'x' },
+        zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' },
+      } : {},
+    },
+  }
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => (chartRef.current as any)?.resetZoom?.()}
+        className="absolute top-0 right-0 z-10 px-2 py-0.5 text-xs text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 border border-gray-200 dark:border-gray-700 rounded"
+      >
+        줌 초기화
+      </button>
+      <div style={{ height: 300 }}>
+        <Chart ref={chartRef as any} type="bar" data={chartData} options={options} />
+      </div>
+      <p className="text-xs text-gray-400 dark:text-gray-600 text-right mt-1">
+        휠: 확대/축소 &nbsp;|&nbsp; 드래그: 이동
+      </p>
+    </div>
+  )
+}
+
 function RmsInsight({ data }: { data: StockData }) {
   const decomp = ((data as any).epsDecomp ?? []) as RmsDecomp[]
   // 연말 PER 흐름: 매수 연도 PER + 매도 연도 PER을 합쳐 연도별로 정리
   const yearPE = new Map<number, number>()
   decomp.forEach(d => { yearPE.set(d.buyYear, d.peBuy); yearPE.set(d.sellYear, d.peSell) })
   const peTimeline = [...yearPE.entries()].sort((a, b) => a[0] - b[0])
-  const groups = [
-    { label: '매수 PER 20배 미만', lo: 0, hi: 20 },
-    { label: '매수 PER 20~27배', lo: 20, hi: 27 },
-    { label: '매수 PER 27~32배 (지금 구간)', lo: 27, hi: 32, hl: true },
-    { label: '매수 PER 32배 이상', lo: 32, hi: 999 },
-  ]
   const sgn = (v: number) => `${v > 0 ? '+' : ''}${v.toFixed(1)}`
+  const sortedDecomp = [...decomp].sort((a, b) => a.buyYear - b.buyYear)
   const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-2'
   const h4 = 'text-sm font-semibold text-gray-800 dark:text-gray-100'
   const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
@@ -1990,47 +2070,6 @@ function RmsInsight({ data }: { data: StockData }) {
           수익률 대부분(연 +16.7%)이 EPS 성장에서 나왔다. 즉 지금 구간에서는 이익 성장이 거의 전부다.
         </p>
 
-        <p className={`${p} pt-2 font-semibold`}>경우별 상세 — 10년 동안 PER이 어떻게 변했나</p>
-        <p className={p}>
-          연평균 수익률 ≈ EPS 성장 효과 + PER 변화 효과. PER 효과가 플러스면 시장이 그 10년 동안 더 비싸게 쳐줬다는 뜻이다.
-        </p>
-        <div className="overflow-x-auto">
-          <table className="text-xs">
-            <thead>
-              <tr>
-                <th className={`${th} text-left whitespace-nowrap`}>보유 구간</th>
-                <th className={`${th} text-right whitespace-nowrap`}>매수 PER</th>
-                <th className={`${th} text-right whitespace-nowrap`}>매도 PER</th>
-                <th className={`${th} text-right whitespace-nowrap`}>EPS 효과(연)</th>
-                <th className={`${th} text-right whitespace-nowrap`}>PER 효과(연)</th>
-                <th className={`${th} text-right whitespace-nowrap`}>연평균 수익률</th>
-              </tr>
-            </thead>
-            {groups.map(g => {
-              const rows = decomp.filter(d => d.peBuy >= g.lo && d.peBuy < g.hi).sort((x, y) => x.peBuy - y.peBuy)
-              return (
-                <tbody key={g.label} className="divide-y divide-gray-100 dark:divide-gray-800">
-                  <tr className={g.hl ? 'bg-blue-50 dark:bg-blue-900/20' : 'bg-gray-50 dark:bg-gray-800/40'}>
-                    <td colSpan={6} className="py-1.5 px-2 font-semibold text-gray-700 dark:text-gray-200">{g.label}</td>
-                  </tr>
-                  {rows.map(d => (
-                    <tr key={d.buyYear}>
-                      <td className={`${td} whitespace-nowrap`}>{d.buyYear} → {d.sellYear}</td>
-                      <td className={`${td} text-right`}>{d.peBuy.toFixed(1)}배</td>
-                      <td className={`${td} text-right ${d.peSell > d.peBuy ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'}`}>
-                        {d.peSell.toFixed(1)}배 {d.peSell > d.peBuy ? '↑' : '↓'}
-                      </td>
-                      <td className={`${td} text-right`}>{sgn(d.epsGrowthCagr)}%</td>
-                      <td className={`${td} text-right ${d.peCagr >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'}`}>{sgn(d.peCagr)}%p</td>
-                      <td className={`${td} text-right font-semibold`}>{d.totalCagr.toFixed(1)}%</td>
-                    </tr>
-                  ))}
-                </tbody>
-              )
-            })}
-          </table>
-        </div>
-
         <p className={`${p} pt-2 font-semibold`}>연말 PER 흐름 (1993~2025)</p>
         <div className="flex flex-wrap gap-1">
           {peTimeline.map(([y, pe]) => (
@@ -2062,15 +2101,53 @@ function RmsInsight({ data }: { data: StockData }) {
       </div>
 
       <div className={box}>
-        <h4 className={h4}>3. 과거 성과를 만든 두 가지 순풍</h4>
+        <h4 className={h4}>3. 연도별 수익률 분해 — EPS 효과 + PER 효과</h4>
+        <p className={p}>
+          10년 연평균 수익률을 두 부분으로 나눴다. <b className="text-emerald-600 dark:text-emerald-400">EPS 효과</b> = 이익이 매년 몇 % 늘었나,
+          <b className="text-purple-600 dark:text-purple-400"> PER 효과</b> = 시장이 매기는 가격 배수(PER)가 매년 몇 % 변했나.
+          두 막대를 쌓은 높이가 대략 그해 매수의 연평균 수익률(파란 점)이다.
+        </p>
+        <RmsDecompChart decomp={sortedDecomp} />
+        <div className="overflow-x-auto">
+          <table className="text-xs">
+            <thead>
+              <tr>
+                <th className={`${th} text-left whitespace-nowrap`}>보유 구간</th>
+                <th className={`${th} text-right whitespace-nowrap`}>PER 변화</th>
+                <th className={`${th} text-right whitespace-nowrap`}>EPS 효과</th>
+                <th className={`${th} text-right whitespace-nowrap`}>PER 효과</th>
+                <th className={`${th} text-right whitespace-nowrap`}>연평균 수익률</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+              {sortedDecomp.map(d => (
+                <tr key={d.buyYear}>
+                  <td className={`${td} whitespace-nowrap`}>{d.buyYear} → {d.sellYear}</td>
+                  <td className={`${td} text-right whitespace-nowrap`}>{d.peBuy.toFixed(0)}배 → {d.peSell.toFixed(0)}배</td>
+                  <td className={`${td} text-right text-emerald-600 dark:text-emerald-400`}>{sgn(d.epsGrowthCagr)}%</td>
+                  <td className={`${td} text-right ${d.peCagr >= 0 ? 'text-purple-600 dark:text-purple-400' : 'text-red-500'}`}>{sgn(d.peCagr)}%</td>
+                  <td className={`${td} text-right font-semibold`}>{d.totalCagr.toFixed(1)}%</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="text-xs text-gray-400 dark:text-gray-500">
+          두 효과를 더하면 대략 맞고, 정확히는 곱해서 계산한다. 예: 2012년 매수 (1 + 16.9%) × (1 + 4.2%) = 1.218 → 연 21.8%.
+          주가는 배당을 반영해 조정한 값이라 PER 효과에는 배당 효과(연 약 1%p)도 섞여 있다.
+        </p>
+      </div>
+
+      <div className={box}>
+        <h4 className={h4}>4. 과거 성과를 만든 두 가지 순풍</h4>
         <ul className={`${p} list-disc pl-4 space-y-1`}>
           <li><b>EPS가 10년 동안 매년 11~20% 성장</b>했다(23개 경우 중 최저 11%). 하지만 최근 약 3년(2023 → 2026년 중반)은 연 3~4% 수준이다.</li>
-          <li><b>팔 때 PER이 거의 항상 올라 있었다.</b> 23개 중 21개가 매수 때보다 높았고(예외: 1996년, 1999년 매수), 2010~2015년 매수는 팔 때 42~66배였다. 이 효과가 대부분 연 +1~7%p를 더해줬다(중간값 약 +3%p). 위 상세 표의 &lsquo;PER 효과&rsquo; 열 참고.</li>
+          <li><b>팔 때 PER이 거의 항상 올라 있었다.</b> 23개 중 21개가 매수 때보다 높았고(예외: 1996년, 1999년 매수), 2010~2015년 매수는 팔 때 42~66배였다. 이 효과가 대부분 연 +1~7%p를 더해줬다(중간값 약 +3%p). 위 3번 연도별 분해 참고.</li>
         </ul>
       </div>
 
       <div className={box}>
-        <h4 className={h4}>4. 지금(PER 29배) 사서 10년 보유 시 예상 연평균 수익률</h4>
+        <h4 className={h4}>5. 지금(PER 29배) 사서 10년 보유 시 예상 연평균 수익률</h4>
         <p className={p}>배당 약 1.35% 포함. 행 = 연 EPS 성장률, 열 = 10년 뒤 PER.</p>
         <div className="overflow-x-auto">
           <table className="text-xs">
