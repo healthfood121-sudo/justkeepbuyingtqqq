@@ -1879,6 +1879,7 @@ function OverviewTable({
 type Decomp = {
   buyYear: number; sellYear: number; peBuy: number; peSell: number
   epsGrowthCagr: number; peCagr: number; totalCagr: number; note?: string | null
+  inProgress?: boolean; years?: number   // 진행 중 구간 (10년 미만, 현재가 기준)
 }
 type DivRow = { buyYear: number; priceCagr: number; totalCagr: number; divCagr: number }
 type Shares = { eps: number; div: number | null; pe: number }
@@ -1896,9 +1897,40 @@ function decompShares(d: Decomp, divCagr: number | null): Shares {
   return { eps, div, pe: T - eps - div }
 }
 
+// 완결 구간 + 진행 중 구간(9년 이상 경과, 메인 차트와 동일 기준)을 합친 분해 데이터
+// 진행 중: 매수 EPS = 배당조정 매수가 ÷ 매수 PER, 현재 EPS·PER = 자동 갱신된 current 값
+function buildDecomp(data: StockData): Decomp[] {
+  const done = (((data as any).epsDecomp ?? []) as Decomp[])
+  const c = data.current as { price?: number; eps?: number }
+  if (!c?.price || !c?.eps || c.eps <= 0) return done
+  const prog = (data.rows10y as any[])
+    .filter(r => !r.isComplete && r.yearsActual >= 9 && r.peBuy && r.multiple > 0)
+    .map(r => {
+      const yrs = Math.log(r.multiple) / Math.log(1 + r.cagr / 100)
+      const buyPrice = c.price! / r.multiple
+      const epsBuy = buyPrice / r.peBuy
+      const peSell = c.price! / c.eps!
+      return {
+        buyYear: r.buyYear,
+        sellYear: Number(String(r.sellDate).slice(0, 4)),
+        peBuy: r.peBuy,
+        peSell,
+        epsGrowthCagr: (Math.pow(c.eps! / epsBuy, 1 / yrs) - 1) * 100,
+        peCagr: (Math.pow(peSell / r.peBuy, 1 / yrs) - 1) * 100,
+        totalCagr: r.cagr,
+        note: null,
+        inProgress: true,
+        years: Math.round(yrs * 10) / 10,
+      } as Decomp
+    })
+  return [...done, ...prog]
+}
+
 // 막대에 쌓을 칸: 막대 높이 = 연평균 수익률. PER 하락분은 막대 위 빨간 점선 칸
+// 수익률이 마이너스면: 더해준 몫은 0 위, 깎은 몫은 0 아래에 쌓고 점으로 연평균 수익률 표시
 function barParts(t: number, sh: Shares) {
   const div = sh.div ?? 0
+  if (t < 0) return { eps: sh.eps, div, pe: sh.pe, cut: 0 }
   if (sh.pe >= 0) return { eps: sh.eps, div, pe: sh.pe, cut: 0 }
   const eps = Math.min(sh.eps, t)
   return { eps, div: Math.max(0, Math.min(div, t - eps)), pe: 0, cut: -sh.pe }
@@ -1915,13 +1947,25 @@ function DecompChart({ decomp, divMap }: { decomp: Decomp[]; divMap: Map<number,
   const parts = decomp.map((d, i) => barParts(d.totalCagr, shares[i]))
   const hasDiv = shares.some(sh => sh.div != null)
   const sgnPct = (v: number) => `${v > 0 ? '+' : ''}${v.toFixed(1)}`
+  // 진행 중 구간은 옅게
+  const fill = (rgb: string) => decomp.map(d => `rgba(${rgb},${d.inProgress ? 0.35 : 0.8})`)
 
   const chartData = {
-    labels: decomp.map(d => String(d.buyYear)),
+    labels: decomp.map(d => d.inProgress ? `${d.buyYear}(진행)` : String(d.buyYear)),
     datasets: [
-      { label: 'EPS 몫', data: parts.map(p => p.eps), backgroundColor: 'rgba(16,185,129,0.8)', stack: 'ret' },
-      ...(hasDiv ? [{ label: '배당 몫', data: parts.map(p => p.div), backgroundColor: 'rgba(14,165,233,0.8)', stack: 'ret' }] : []),
-      { label: hasDiv ? 'PER 몫' : 'PER 몫 (배당 포함)', data: parts.map(p => p.pe), backgroundColor: 'rgba(168,85,247,0.8)', stack: 'ret' },
+      { label: 'EPS 몫', data: parts.map(p => p.eps), backgroundColor: fill('16,185,129'), stack: 'ret' },
+      ...(hasDiv ? [{ label: '배당 몫', data: parts.map(p => p.div), backgroundColor: fill('14,165,233'), stack: 'ret' }] : []),
+      { label: hasDiv ? 'PER 몫' : 'PER 몫 (배당 포함)', data: parts.map(p => p.pe), backgroundColor: fill('168,85,247'), stack: 'ret' },
+      ...(decomp.some(d => d.totalCagr < 0) ? [{
+        type: 'line' as const,
+        label: '연평균 수익률 (마이너스)',
+        data: decomp.map(d => d.totalCagr < 0 ? d.totalCagr : null),
+        borderColor: 'rgba(17,24,39,0.9)',
+        backgroundColor: 'rgba(17,24,39,0.9)',
+        showLine: false,
+        pointRadius: 5,
+        pointStyle: 'rectRot' as const,
+      }] : []),
       {
         label: 'PER 하락으로 깎인 몫',
         data: parts.map(p => p.cut),
@@ -1950,7 +1994,9 @@ function DecompChart({ decomp, divMap }: { decomp: Decomp[]; divMap: Map<number,
         callbacks: {
           title: (items: any[]) => {
             const d = decomp[items[0].dataIndex]
-            return `${d.buyYear} → ${d.sellYear} · 연평균 수익률 ${d.totalCagr.toFixed(1)}%`
+            return d.inProgress
+              ? `${d.buyYear} → 현재 (${d.years}년 경과, 진행 중) · 연평균 수익률 ${d.totalCagr.toFixed(1)}%`
+              : `${d.buyYear} → ${d.sellYear} · 연평균 수익률 ${d.totalCagr.toFixed(1)}%`
           },
           label: (ctx: any) => {
             const d = decomp[ctx.dataIndex]
@@ -1958,6 +2004,7 @@ function DecompChart({ decomp, divMap }: { decomp: Decomp[]; divMap: Map<number,
             const name = ctx.dataset.label as string
             if (name === 'EPS 몫') return `EPS 몫 ${sgnPct(sh.eps)}%p (EPS 연 ${sgnPct(d.epsGrowthCagr)}% 성장)`
             if (name === '배당 몫') return `배당 몫 ${sgnPct(sh.div ?? 0)}%p`
+            if (name.startsWith('연평균 수익률')) return `연평균 수익률 ${sgnPct(d.totalCagr)}%`
             if (name.startsWith('PER 몫')) return `${name} ${sgnPct(sh.pe)}%p (PER ${d.peBuy.toFixed(0)}배 → ${d.peSell.toFixed(0)}배)`
             return `PER 하락 ${sgnPct(sh.pe)}%p (PER ${d.peBuy.toFixed(0)}배 → ${d.peSell.toFixed(0)}배)`
           },
@@ -2013,8 +2060,8 @@ function DecompSection({
   const sorted = [...decomp].sort((a, b) => a.buyYear - b.buyYear)
   const divMap = new Map((divRows ?? []).map(r => [r.buyYear, r.divCagr]))
   const hasDiv = divMap.size > 0
-  const cutYears = sorted.filter(d => decompShares(d, divMap.get(d.buyYear) ?? null).pe < 0).map(d => d.buyYear)
-  const ex = sorted.find(d => d.buyYear === exampleYear) ?? sorted[sorted.length - 1]
+  const cutYears = sorted.filter(d => decompShares(d, divMap.get(d.buyYear) ?? null).pe < 0 && d.totalCagr >= 0).map(d => d.buyYear)
+  const ex = sorted.find(d => d.buyYear === exampleYear) ?? sorted.filter(d => !d.inProgress)[0] ?? sorted[0]
   const exDiv = divMap.get(ex.buyYear) ?? null
   const exSh = decompShares(ex, exDiv)
   const exPurePe = exDiv != null ? ((1 + ex.peCagr / 100) / (1 + exDiv / 100) - 1) * 100 : ex.peCagr
@@ -2035,6 +2082,14 @@ function DecompSection({
           {cutYears.length > 0 && (
             <li><b className="text-red-500">빨간 점선 칸 = PER 하락으로 깎인 몫.</b> PER이 떨어진 해({cutYears.join('·')}년 매수)에만 있다.
               이때는 색칠된 막대 높이가 곧 연평균 수익률이고, 빨간 칸만큼 이익 성장과 배당을 PER 하락이 깎아 먹었다는 뜻이다.</li>
+          )}
+          {sorted.some(d => d.totalCagr < 0) && (
+            <li><b>수익률이 마이너스인 경우</b>({sorted.filter(d => d.totalCagr < 0).map(d => `${d.buyYear}년`).join('·')} 매수): 0 위는 수익을 더해준 몫, 0 아래는 깎아 먹은 몫이고,
+              <b> 검은 마름모 점</b>이 실제 연평균 수익률이다.</li>
+          )}
+          {sorted.some(d => d.inProgress) && (
+            <li><b>옅은 막대 = 진행 중 구간.</b> 아직 10년이 안 된 매수({sorted.filter(d => d.inProgress).map(d => `${d.buyYear}년`).join('·')})를
+              지금 주가·최근 1년 EPS 기준으로 계산했다. 경과 기간 기준 연평균이라 앞으로 바뀔 수 있다.</li>
           )}
           <li>막대를 누르거나 마우스를 올리면 나누기 전 원래 EPS 성장률과 PER 변화(예: {ex.peBuy.toFixed(0)}배 → {ex.peSell.toFixed(0)}배)도 함께 보인다.</li>
         </ul>
@@ -2057,9 +2112,9 @@ function DecompSection({
             {sorted.map(d => {
               const sh = decompShares(d, divMap.get(d.buyYear) ?? null)
               return (
-                <tr key={d.buyYear}>
+                <tr key={d.buyYear} className={d.inProgress ? 'opacity-60 italic' : ''}>
                   <td className={`${td} whitespace-nowrap`}>
-                    {d.buyYear} → {d.sellYear}
+                    {d.inProgress ? `${d.buyYear} → 현재 (${d.years}년, 진행 중)` : `${d.buyYear} → ${d.sellYear}`}
                     {d.note && <span title={d.note} className="ml-1 text-amber-500 cursor-help">⚠</span>}
                   </td>
                   <td className={`${td} text-right font-semibold`}>{d.totalCagr.toFixed(1)}%</td>
@@ -2079,6 +2134,11 @@ function DecompSection({
         </table>
       </div>
       {hasDiv && noDivNote && <p className="text-xs text-gray-400 dark:text-gray-500">* {noDivNote}</p>}
+      {sorted.some(d => d.inProgress) && (
+        <p className="text-xs text-gray-400 dark:text-gray-500">
+          진행 중 구간의 현재 EPS·PER은 페이지 데이터에 자동 갱신되는 값(Yahoo Finance 최근 1년 EPS)을 썼다. 위 1번 분석의 EPS와 조금 다를 수 있다.
+        </p>
+      )}
       <div className="rounded bg-gray-50 dark:bg-gray-800/50 p-3 space-y-1.5">
         <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">어떻게 나눴나</p>
         <p className="text-xs leading-relaxed text-gray-600 dark:text-gray-300">
@@ -2247,7 +2307,7 @@ function RmsInsight({ data }: { data: StockData }) {
 
       <DecompSection
         title="3. 연도별 수익률 분해 — 막대 하나 = EPS 몫 + 배당 몫 + PER 몫"
-        decomp={decomp}
+        decomp={buildDecomp(data)}
         divRows={(rmsDiv as any).rows}
         exampleYear={2012}
         noDivNote="1993~1999년 매수는 주가 출처(TradingView)가 달라 배당을 분리하지 못했다. 이 구간의 PER 몫에는 배당이 포함돼 있다."
@@ -2418,7 +2478,7 @@ function NkeInsight({ data }: { data: StockData }) {
 
       <DecompSection
         title="3. 연도별 수익률 분해 — 막대 하나 = EPS 몫 + 배당 몫 + PER 몫"
-        decomp={decomp}
+        decomp={buildDecomp(data)}
         divRows={(nkeDiv as any).rows}
         exampleYear={2011}
       />
