@@ -1442,6 +1442,9 @@ function OverviewTable({
   const [minDiffMedian, setMinDiffMedian] = useState(0)
   const [maxRange, setMaxRange] = useState<number | ''>('')
   const [excludeEtf, setExcludeEtf] = useState(false)
+  const [presets, setPresets] = useState<Array<{name: string; f: Record<string, unknown>}>>([])
+  const [presetInput, setPresetInput] = useState('')
+  const [savingPreset, setSavingPreset] = useState(false)
 
   useEffect(() => {
     try {
@@ -1461,6 +1464,10 @@ function OverviewTable({
       if (f.sortDir)             setSortDir(f.sortDir)
       if (f.viewMode)            setViewMode(f.viewMode)
     } catch {}
+    try {
+      const p = JSON.parse(localStorage.getItem('private_presets') ?? '[]')
+      if (Array.isArray(p)) setPresets(p)
+    } catch {}
   }, [])
 
   useEffect(() => {
@@ -1470,6 +1477,36 @@ function OverviewTable({
       }))
     } catch {}
   }, [minPeriods, minCagrMin, minMedian, minDiffMin, minDiffMedian, maxRange, excludeEtf, sortKey, sortDir, viewMode])
+
+  function currentFilterSnapshot() {
+    return { minPeriods, minCagrMin, minMedian, minDiffMin, minDiffMedian, maxRange, excludeEtf }
+  }
+
+  function applyPreset(f: Record<string, unknown>) {
+    if (f.minPeriods != null)    setMinPeriods(f.minPeriods as number)
+    if (f.minCagrMin != null)    setMinCagrMin(f.minCagrMin as number | '')
+    if (f.minMedian != null)     setMinMedian(f.minMedian as number)
+    if (f.minDiffMin != null)    setMinDiffMin(f.minDiffMin as number | '')
+    if (f.minDiffMedian != null) setMinDiffMedian(f.minDiffMedian as number)
+    if (f.maxRange != null)      setMaxRange(f.maxRange as number | '')
+    if (f.excludeEtf != null)    setExcludeEtf(f.excludeEtf as boolean)
+  }
+
+  function savePreset() {
+    const name = presetInput.trim()
+    if (!name) return
+    const next = [...presets.filter(p => p.name !== name), { name, f: currentFilterSnapshot() }]
+    setPresets(next)
+    try { localStorage.setItem('private_presets', JSON.stringify(next)) } catch {}
+    setPresetInput('')
+    setSavingPreset(false)
+  }
+
+  function deletePreset(name: string) {
+    const next = presets.filter(p => p.name !== name)
+    setPresets(next)
+    try { localStorage.setItem('private_presets', JSON.stringify(next)) } catch {}
+  }
 
   function toggleStar(key: string, e: React.MouseEvent) {
     e.stopPropagation()
@@ -1588,6 +1625,55 @@ function OverviewTable({
           </button>
         </div>
       </div>
+
+      {/* 프리셋 행 */}
+      {(presets.length > 0 || true) && (
+        <div className="flex flex-wrap items-center gap-2 mb-2">
+          <span className="text-xs text-gray-400 dark:text-gray-600 shrink-0">필터 프리셋:</span>
+          {presets.map(p => (
+            <span key={p.name}
+              className="inline-flex items-center gap-1 text-xs border border-gray-200 dark:border-gray-700
+                         rounded-full px-2.5 py-1 cursor-pointer
+                         hover:border-blue-400 hover:text-blue-500 dark:hover:border-blue-500 dark:hover:text-blue-400
+                         transition-colors text-gray-600 dark:text-gray-400">
+              <span onClick={() => applyPreset(p.f)}>{p.name}</span>
+              <button onClick={() => deletePreset(p.name)}
+                className="ml-0.5 text-gray-300 dark:text-gray-700 hover:text-red-400 dark:hover:text-red-500 transition-colors leading-none">
+                ×
+              </button>
+            </span>
+          ))}
+          {savingPreset ? (
+            <span className="inline-flex items-center gap-1">
+              <input
+                autoFocus
+                value={presetInput}
+                onChange={e => setPresetInput(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter') savePreset(); if (e.key === 'Escape') { setSavingPreset(false); setPresetInput('') } }}
+                placeholder="이름 입력..."
+                className="text-xs border border-blue-400 dark:border-blue-500 rounded px-2 py-1 bg-transparent
+                           text-gray-900 dark:text-white focus:outline-none w-28"
+              />
+              <button onClick={savePreset}
+                className="text-xs text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 transition-colors px-1">
+                저장
+              </button>
+              <button onClick={() => { setSavingPreset(false); setPresetInput('') }}
+                className="text-xs text-gray-400 hover:text-gray-500 transition-colors px-1">
+                취소
+              </button>
+            </span>
+          ) : (
+            <button onClick={() => setSavingPreset(true)}
+              className="text-xs text-gray-400 dark:text-gray-600 hover:text-blue-500 dark:hover:text-blue-400
+                         border border-dashed border-gray-200 dark:border-gray-800
+                         hover:border-blue-400 dark:hover:border-blue-500
+                         rounded-full px-2.5 py-1 transition-colors">
+              + 저장
+            </button>
+          )}
+        </div>
+      )}
 
       {/* 필터 행 */}
       {(() => {
