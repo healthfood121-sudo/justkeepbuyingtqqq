@@ -96,6 +96,10 @@ export default function IdeasPage() {
               분류 안의 순위는 가격 매력(지금 PER과 자기 평소 PER), 이익 흐름(지금도 늘고 있나), 사업의 질, 투자 논리가 깨질 위험을 함께 본 판단이다.
               1위가 가장 먼저 살 만하다는 뜻이고, 숫자 하나로 정한 순위가 아니다.
             </p>
+            <p className="text-xs text-amber-700 dark:text-amber-400 mt-1">
+              ⓪~⑤ 번호는 기업의 등급이 아니라 &lsquo;지금 어떤 상황인가&rsquo;(값이 싼지, 이익이 흔들리는지)에 따른 분류다. 기업 자체의 질은 카드의 등급 배지(위대한 기업·좋은 기업·보통)로 본다.
+              대부분 위대한 기업(A)이지만 도미노·데커스·태피스트리·유나이티드헬스·가트너·블랙스톤은 좋은 기업(B), 나이키는 보통(C)이다.
+            </p>
           </div>
           {PICK_SECTIONS.map(sec => {
             const picks = PICKS.filter(p => p.section === sec.key)
