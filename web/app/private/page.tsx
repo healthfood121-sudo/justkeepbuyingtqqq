@@ -2650,7 +2650,7 @@ function ValueClockCore({ cur, anchors, monthly, last, g, sharesOut, divYield, s
   const saveShares = (v: number) => { setShares(v); try { localStorage.setItem(storageKey, String(v)) } catch {} }
 
   const epsAt = makeEpsAt(anchors, g)
-  const tStart = Math.max(anchors[0]?.[0] ?? 0, monthly[0]?.t ?? 0, tNow - 25)
+  const tStart = Math.max(anchors[0]?.[0] ?? 0, monthly[0]?.t ?? 0, tNow - 35)
   const hist = monthly.filter(r => r.t >= tStart).map(r => {
     const e = epsAt(r.t)
     return { t: r.t, price: r.price, pe: e && e > 0 ? r.price / e : null }
@@ -2874,7 +2874,7 @@ type ClockFund = Fundamentals & {
   shares?: { count: number; asOf: string } | null
 }
 
-function StockValueClock({ f, stockKey }: { f: ClockFund; stockKey: string }) {
+function StockValueClock({ f, stockKey, rolling }: { f: ClockFund; stockKey: string; rolling?: StockData }) {
   const m = f.metrics
   const clamp = (v: number) => Math.max(0, Math.min(15, v))
   const g10 = m.epsCagr10, g5 = m.epsCagr5
@@ -2887,6 +2887,20 @@ function StockValueClock({ f, stockKey }: { f: ClockFund; stockKey: string }) {
     .filter(([y, e]) => e != null && f.epsEnd![y])
     .map(([y, e]) => [decYear(Date.parse(f.epsEnd![y])), e as number] as ClockAnchor)
     .sort((a, b) => a[0] - b[0])
+  // SEC 전자 공시(2008년 무렵~) 이전 EPS: 롤링 데이터에 있으면 앞에 이어 붙임 (같은 결산 월 기준)
+  const older = new Map<number, number>()
+  for (const d of (((rolling as any)?.epsDecomp ?? []) as Decomp[])) {
+    if ((d as any).epsBuy != null) older.set(d.buyYear, (d as any).epsBuy)
+    if ((d as any).epsSell != null) older.set(d.sellYear, (d as any).epsSell)
+  }
+  const firstSecYear = Math.min(...Object.keys(f.epsEnd).map(Number))
+  if (anchors.length && older.size) {
+    const mmdd = f.epsEnd[String(firstSecYear)].slice(4)
+    for (const [y, e] of older) {
+      if (y < firstSecYear && e != null) anchors.push([decYear(Date.parse(`${y}${mmdd}`)), e])
+    }
+    anchors.sort((a, b) => a[0] - b[0])
+  }
   if (anchors.length < 3) return null
   if (f.ttmAsOf) {
     const tT = decYear(Date.parse(f.ttmAsOf))
@@ -2896,6 +2910,13 @@ function StockValueClock({ f, stockKey }: { f: ClockFund; stockKey: string }) {
   const monthly = f.monthly.c
     .map((c, i) => ({ t: y0 + (m0 + i) / 12, price: c }))
     .filter((r): r is { t: number; price: number } => r.price != null && r.price > 0)
+
+  // 장기 성장률: 처음 흑자 EPS(주가 기록이 있는 1995년 이후) → 최근 1년 EPS
+  const lastA = anchors[anchors.length - 1]
+  const firstA = anchors.find(a => a[1] > 0 && a[0] >= 1995)
+  const gLong = firstA && lastA[1] > 0 && lastA[0] - firstA[0] >= 12
+    ? { g: (Math.pow(lastA[1] / firstA[1], 1 / (lastA[0] - firstA[0])) - 1) * 100, yrs: Math.round(lastA[0] - firstA[0]) }
+    : null
 
   const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-3'
   const btn = (label: string, v: number | null) => v == null ? null : (
@@ -2914,6 +2935,7 @@ function StockValueClock({ f, stockKey }: { f: ClockFund; stockKey: string }) {
           {btn('보수적', base)}
           {btn('과거 5년', g5)}
           {btn('과거 10년', g10)}
+          {gLong && btn(`장기 ${gLong.yrs}년`, gLong.g)}
         </div>
         <label className="block">
           <div className="flex justify-between text-xs">
@@ -2922,23 +2944,23 @@ function StockValueClock({ f, stockKey }: { f: ClockFund; stockKey: string }) {
           </div>
           <input type="range" min={-5} max={30} step={0.5} value={g} onChange={e => setG(Number(e.target.value))} className="w-full accent-blue-600" />
         </label>
-        <p className="text-[11px] text-gray-400 dark:text-gray-500">보수적 = 과거 5년·10년 성장률 중 낮은 값(0~15%로 제한). 과거 성장률이 앞으로도 이어진다는 보장은 없다.</p>
+        <p className="text-[11px] text-gray-400 dark:text-gray-500">보수적 = 과거 5년·10년 성장률 중 낮은 값(0~15%로 제한). 장기 = 그래프 처음 흑자 해부터 지금까지. 최근 몇 년이 부진했던 기업은 장기 값과 차이가 크다 — 어느 쪽이 앞으로에 가까운지는 직접 판단한다.</p>
       </div>
       <ValueClockCore
         cur="$" anchors={anchors} monthly={monthly} last={f.lastPrice} g={g}
         sharesOut={f.shares?.count ?? null} divYield={m.divYield ?? 0} storageKey={`clock-shares-${stockKey}`}
-        notes={`EPS는 SEC 공시(10-K) 회계연도 값을 마감일 기준으로 이은 근사치이고, ${f.ttmAsOf ?? '최근'} 이후는 정한 성장률로 연장했다. 주가는 배당을 반영하지 않은 월말 종가(분할 반영). 일회성 손익이 큰 해는 선이 출렁인다. 회사 전체 숫자는 공시 유통 주식 수${f.shares ? `(${f.shares.asOf})` : ''} × 최근 1년 EPS로 계산한 근사치.`}
+        notes={`EPS는 SEC 공시(10-K) 회계연도 값을 마감일 기준으로 이은 근사치이고(SEC 전자 공시는 2008년 무렵부터라 그 이전은 따로 모은 값이 있는 종목만 표시), ${f.ttmAsOf ?? '최근'} 이후는 정한 성장률로 연장했다. 주가는 배당을 반영하지 않은 월말 종가(분할 반영). 일회성 손익이 큰 해는 선이 출렁인다. 회사 전체 숫자는 공시 유통 주식 수${f.shares ? `(${f.shares.asOf})` : ''} × 최근 1년 EPS로 계산한 근사치.`}
       />
     </div>
   )
 }
 
-function StockValueClockByKey({ stockKey }: { stockKey: string }) {
+function StockValueClockByKey({ stockKey, rolling }: { stockKey: string; rolling?: StockData }) {
   const [f, setF] = useState<ClockFund | null>(null)
   useEffect(() => {
     fetch(`/data/fundamentals/${stockKey}.json`).then(r => (r.ok ? r.json() : null)).then(setF).catch(() => {})
   }, [stockKey])
-  return f ? <StockValueClock f={f} stockKey={stockKey} /> : null
+  return f ? <StockValueClock f={f} stockKey={stockKey} rolling={rolling} /> : null
 }
 
 function RmsInsight({ data }: { data: StockData }) {
@@ -3858,7 +3880,7 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
         </p>
       </div>
 
-      {!m.stale && <StockValueClock f={f as ClockFund} stockKey={stockKey} />}
+      {!m.stale && <StockValueClock f={f as ClockFund} stockKey={stockKey} rolling={data} />}
 
       {years.length > 0 && (
         <div className={box}>
@@ -4025,7 +4047,7 @@ export default function PrivatePage() {
         {current.key === 'RMS' && <RmsInsight data={current.data} />}
         {current.key === 'NKE' && <QualityCard stockKey="NKE" />}
         {current.key === 'NKE' && <NkeInsight data={current.data} />}
-        {current.key === 'NKE' && <StockValueClockByKey stockKey="NKE" />}
+        {current.key === 'NKE' && <StockValueClockByKey stockKey="NKE" rolling={current.data} />}
         {current.key !== 'RMS' && current.key !== 'NKE' && (current.data as any).type !== 'etf' && (
           <AutoInsight key={current.key} stockKey={current.key} data={current.data} />
         )}
