@@ -94,6 +94,25 @@ def fetch_eps(cik: int) -> dict:
     return best
 
 
+def fetch_shares(cik: int):
+    """최근 공시 유통 주식 수(dei). 주식 종류가 여러 개면 같은 날짜 값을 합산."""
+    try:
+        r = requests.get(f"https://data.sec.gov/api/xbrl/companyconcept/CIK{cik:010d}/dei/EntityCommonStockSharesOutstanding.json",
+                         headers=UA, timeout=30)
+        time.sleep(0.15)
+        if r.status_code != 200:
+            return None
+        items = [it for v in r.json().get("units", {}).values() for it in v]
+        if not items:
+            return None
+        last = max(it["end"] for it in items)
+        latest = [it for it in items if it["end"] == last]
+        accn = max(it["accn"] for it in latest)
+        return float(sum(it["val"] for it in latest if it["accn"] == accn)), last
+    except Exception:
+        return None
+
+
 def _annual_items(units: dict):
     for unit, items in units.items():
         for it in items:
@@ -171,6 +190,27 @@ def annual_eps_by_year(eps_adj: dict) -> dict:
     return by
 
 
+def ttm_asof() -> str:
+    """최근 1년 EPS가 끝나는 분기말 추정: 오늘보다 45일 이상 지난 가장 최근 분기말(실적 발표 시차)."""
+    t = TODAY - pd.Timedelta(days=45)
+    q = pd.Timestamp(year=t.year, month=((t.month - 1) // 3) * 3 + 1, day=1) - pd.Timedelta(days=1)
+    return q.strftime("%Y-%m-%d")
+
+
+def monthly_close(close: pd.Series) -> dict:
+    """월말 종가(분할 반영, 배당 미반영). 첫 달과 값 목록만 저장해 용량을 줄임."""
+    me = close.groupby([close.index.year, close.index.month]).last()
+    (y0, m0) = me.index[0]
+    return {"start": f"{y0}-{m0:02d}", "c": [r2(v, 2) for v in me.values]}
+
+
+def shares_info(cik: int, key: str):
+    if key == "BRKB":  # A·B주가 섞여 있어 제외
+        return None
+    s = fetch_shares(cik)
+    return {"count": s[0], "asOf": s[1]} if s else None
+
+
 def process(key: str, roll: dict, prices: pd.DataFrame, cik_map: dict) -> dict | None:
     yf_t = roll["ticker"].replace(".", "-")
     cik = cik_map.get(yf_t.upper()) or cik_map.get(yf_t.upper().replace("-", "."))
@@ -196,6 +236,9 @@ def process(key: str, roll: dict, prices: pd.DataFrame, cik_map: dict) -> dict |
     if key == "BRKB":  # 버크셔는 A주 기준 EPS 공시 → B주(1/1500)로 환산
         eps_adj = {k: v / 1500 for k, v in eps_adj.items()}
     eps_y = annual_eps_by_year(eps_adj)
+    eps_end = {}
+    for end in sorted(eps_adj):
+        eps_end[end.year - 1 if end.month <= 3 else end.year] = end.strftime("%Y-%m-%d")
 
     ye_close = close.groupby(close.index.year).last()
     ye_adj = adj.groupby(adj.index.year).last()
@@ -298,6 +341,12 @@ def process(key: str, roll: dict, prices: pd.DataFrame, cik_map: dict) -> dict |
         "pe": {str(y): r2(v, 1) for y, v in pe_y.items()},
         "decomp": decomp,
         "metrics": metrics,
+        # 이익 시계(적정가 선 vs 주가)용
+        "epsEnd": {str(y): d for y, d in eps_end.items()},
+        "ttmAsOf": ttm_asof(),
+        "monthly": monthly_close(close),
+        "lastPrice": {"date": close.index[-1].strftime("%Y-%m-%d"), "close": r2(price_now)},
+        "shares": shares_info(cik, key),
     }
     (OUT / f"{key}.json").write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")))
     return metrics
