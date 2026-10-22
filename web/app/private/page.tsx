@@ -10,6 +10,7 @@ import {
 import { Chart } from 'react-chartjs-2'
 import spDesc from '@/app/sp500-holdings/descriptions.json'
 import PrivateTabs from '@/components/PrivateTabs'
+import { WRITTEN_INSIGHTS, WRITTEN_AS_OF } from './insights'
 import { classify, GROUPS, GRADE_LABEL, gradeColor, groupColor, qualityScore, fmt, fmtSgn, type Metrics, type Quality } from '@/lib/ideas'
 import qldData        from '@/public/data/rolling/QLD_rolling.json'
 import qqqData        from '@/public/data/rolling/QQQ_rolling.json'
@@ -2673,6 +2674,28 @@ type Fundamentals = {
   generated: string
 }
 
+function WrittenInsightBox({ stockKey }: { stockKey: string }) {
+  const w = WRITTEN_INSIGHTS[stockKey]
+  if (!w) return null
+  return (
+    <div className="rounded-lg border-2 border-amber-200 dark:border-amber-900/60 p-4 space-y-3">
+      <div>
+        <p className="text-[11px] font-medium text-amber-600 dark:text-amber-400">Claude 직접 분석 · {WRITTEN_AS_OF}</p>
+        <h4 className="text-sm font-semibold text-gray-900 dark:text-white">{w.headline}</h4>
+      </div>
+      {w.sections.map(sec => (
+        <div key={sec.title} className="space-y-1">
+          <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">{sec.title}</p>
+          <ul className="text-xs leading-relaxed text-gray-600 dark:text-gray-300 list-disc pl-4 space-y-0.5">
+            {sec.items.map((it, i) => <li key={i}>{it}</li>)}
+          </ul>
+        </div>
+      ))}
+      <p className="text-[11px] text-gray-400 dark:text-gray-500">뉴스와 공시 숫자를 바탕으로 쓴 판단이다. 자세한 수치는 아래 자동 분석 참고.</p>
+    </div>
+  )
+}
+
 function ScoreBar({ label, v }: { label: string; v: number }) {
   return (
     <div className="flex items-center gap-2 text-xs">
@@ -3032,6 +3055,7 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
   return (
     <div className="space-y-4">
       {header}
+      <WrittenInsightBox stockKey={stockKey} />
       <QualityCard stockKey={stockKey} />
 
       <div className={box}>
