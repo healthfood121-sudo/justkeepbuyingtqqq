@@ -227,7 +227,9 @@ def reconcile(found, known, factor):
         if not ov:
             continue
         diffs = [abs(f2[y] / known[y] - 1) for y in ov]
-        if all(d < 0.12 for d in diffs) and min(diffs) < 0.04:
+        # 회사가 과거 실적을 재작성한 해가 섞일 수 있어, 겹치는 해의 2/3 이상이 12% 안이면 인정
+        need = -(-2 * len(ov) // 3)
+        if sum(d < 0.12 for d in diffs) >= need and min(diffs) < 0.04 and max(diffs) < 0.6:
             ref = sum(abs(known[y]) for y in ov) / len(ov)
             rest = [v for y, v in f2.items() if y not in known]
             if sum(1 for v in rest if v < 0) >= 3 or any(abs(v) > 15 * ref for v in rest):
@@ -248,6 +250,12 @@ PREDECESSOR = {
     "TPL": 97517,      # Texas Pacific Land Trust → Corp (2021)
     "AVGO": 1441634,   # Avago Technologies → Broadcom (2016)
     "STE": 815065,     # STERIS Corp → STERIS plc
+    "ETN": 31277,      # Eaton Corp → Eaton plc (2012)
+    "CI": 701221,      # Cigna Corp (구) → 새 Cigna (2018)
+    "MRVL": 1058057,   # Marvell Technology Group → Marvell Technology (2021)
+    "BKR": 808362,     # Baker Hughes Inc → Baker Hughes Co (2017)
+    "ICE": 1174746,    # IntercontinentalExchange Inc → ICE Inc (2013)
+    "CHTR": 1091667,   # Charter Communications (구) → 새 Charter (2016)
 }
 
 
