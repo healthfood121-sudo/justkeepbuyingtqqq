@@ -2295,6 +2295,118 @@ function HermesHistory() {
   )
 }
 
+// ── 에르메스 EPS 증가율 분해: 가격 몫 + 판매량 몫 + 이익률·환율·기타 몫 (연도별) ─────────
+const HERMES_EPS: Record<number, number> = { 2018: 13.06, 2019: 14.66, 2020: 14.29, 2021: 22.37, 2022: 32.8, 2023: 42.12, 2024: 43.0, 2025: 46.5 }
+
+function HermesEpsQP() {
+  // 2026 상반기: 주당이익 21.36 vs 21.43(전년 상반기)
+  const years = [2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026]
+  const rows = years.map(y => {
+    const h = HERMES_HISTORY.find(r => r.y === y)!
+    const eps = y === 2026 ? (21.36 / 21.43 - 1) * 100 : (HERMES_EPS[y] / HERMES_EPS[y - 1] - 1) * 100
+    const p = h.price ?? 0
+    const rev = h.rev ?? 0
+    const v = ((1 + rev / 100) / (1 + p / 100) - 1) * 100
+    // 곱셈 관계를 로그 비율로 배분 → 세 몫의 합 = EPS 증가율
+    const lt = Math.log(1 + eps / 100)
+    const part = (r: number) => (Math.abs(lt) < 1e-6 ? r : eps * Math.log(1 + r / 100) / lt)
+    const ps = part(p), vs = part(v)
+    return { y, eps, p, v, rev, hnwiG: h.hnwiG, ps, vs, os: eps - ps - vs }
+  })
+  const sg = (x: number) => `${x > 0 ? '+' : ''}${x.toFixed(1)}`
+
+  const chartData = {
+    labels: rows.map(r => (r.y === 2026 ? '2026상' : String(r.y))),
+    datasets: [
+      { type: 'bar' as const, label: '가격 몫(P)', data: rows.map(r => r.ps), backgroundColor: 'rgba(168,85,247,0.8)', stack: 'eps', order: 2 },
+      { type: 'bar' as const, label: '판매량 몫(Q)', data: rows.map(r => r.vs), backgroundColor: 'rgba(16,185,129,0.8)', stack: 'eps', order: 2 },
+      { type: 'bar' as const, label: '이익률·환율·기타 몫', data: rows.map(r => r.os), backgroundColor: 'rgba(148,163,184,0.7)', stack: 'eps', order: 2 },
+      { type: 'line' as const, label: 'EPS 증가율(합계)', data: rows.map(r => r.eps), borderColor: 'rgba(17,24,39,0.9)', backgroundColor: 'rgba(17,24,39,0.9)', showLine: false, pointRadius: 5, pointStyle: 'rectRot' as const, order: 0 },
+      { type: 'line' as const, label: '자산가 인구 증가율', data: rows.map(r => r.hnwiG), borderColor: 'rgba(234,88,12,0.9)', backgroundColor: 'rgba(234,88,12,0.9)', borderDash: [4, 3], pointRadius: 3, borderWidth: 2, order: 1, spanGaps: false },
+    ],
+  }
+  const options: any = {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: { stacked: true, grid: { display: false }, ticks: { font: { size: 11 } } },
+      y: { stacked: true, ticks: { font: { size: 11 }, callback: (v: number) => `${v}%` }, grid: { color: 'rgba(128,128,128,0.1)' } },
+    },
+    plugins: {
+      legend: { position: 'top' as const, labels: { font: { size: 11 }, boxWidth: 12 } },
+      tooltip: {
+        mode: 'index' as const, intersect: false,
+        callbacks: {
+          label: (c: any) => {
+            const r = rows[c.dataIndex]
+            const l = c.dataset.label as string
+            if (l.startsWith('가격')) return `가격 몫 ${sg(r.ps)}%p (가격 인상 ${sg(r.p)}%)`
+            if (l.startsWith('판매량')) return `판매량 몫 ${sg(r.vs)}%p (판매량 ${sg(r.v)}%)`
+            if (l.startsWith('이익률')) return `이익률·환율·기타 몫 ${sg(r.os)}%p`
+            if (l.startsWith('EPS')) return `EPS 증가율 ${sg(r.eps)}%`
+            return c.parsed.y == null ? '' : `자산가 인구 ${sg(c.parsed.y)}%`
+          },
+        },
+      },
+    },
+  }
+  const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500 whitespace-nowrap'
+  const td = 'py-1 px-2 tabular-nums text-gray-700 dark:text-gray-200 whitespace-nowrap'
+
+  return (
+    <div className="space-y-3">
+      <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">EPS 증가율을 쪼개 보기 — 막대 하나 = 가격 몫 + 판매량 몫 + 이익률·환율·기타 몫 (연도별)</p>
+      <div className="rounded bg-gray-50 dark:bg-gray-800/50 p-3">
+        <p className="text-xs leading-relaxed text-gray-600 dark:text-gray-300">
+          위 3번 차트는 <b>주가 수익률 = EPS 몫 + 배당 몫 + PER 몫</b>이었다. 여기서는 그중 <b>EPS 몫을 한 번 더</b> 쪼갠다:
+          EPS 증가율 ≈ <b className="text-purple-600 dark:text-purple-400">가격 인상(P)</b> × <b className="text-emerald-600 dark:text-emerald-400">판매량 증가(Q)</b> × 이익률·환율·기타.
+          <b className="text-orange-600"> 주황 점선</b>은 자산가 인구 증가율 — 초록 칸(판매량)이 주황 선을 따라가면 &lsquo;고객층이 느는 만큼 판다&rsquo;는 뜻이다.
+          <b> 검은 마름모</b>가 그해 실제 EPS 증가율(세 칸의 합)이다.
+        </p>
+      </div>
+      <div style={{ height: 300 }}>
+        <Chart type="bar" data={chartData} options={options} />
+      </div>
+      <div className="overflow-x-auto">
+        <table className="text-xs">
+          <thead>
+            <tr>
+              <th className={`${th} text-left`}>연도</th>
+              <th className={`${th} text-right`}>EPS 증가</th>
+              <th className={`${th} text-right`}>= 가격 몫</th>
+              <th className={`${th} text-right`}>+ 판매량 몫</th>
+              <th className={`${th} text-right`}>+ 이익률·환율·기타</th>
+              <th className={`${th} text-right`}>자산가 인구</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+            {rows.map(r => (
+              <tr key={r.y}>
+                <td className={td}>{r.y === 2026 ? '2026 상반기' : r.y}</td>
+                <td className={`${td} text-right font-semibold`}>{sg(r.eps)}%</td>
+                <td className={`${td} text-right text-purple-600 dark:text-purple-400`}>{sg(r.ps)}%p</td>
+                <td className={`${td} text-right text-emerald-600 dark:text-emerald-400`}>{sg(r.vs)}%p</td>
+                <td className={`${td} text-right ${r.os < 0 ? 'text-red-500' : 'text-gray-500'}`}>{sg(r.os)}%p</td>
+                <td className={`${td} text-right text-orange-600`}>{r.hnwiG != null ? `${sg(r.hnwiG)}%` : '—'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <ul className="text-xs leading-relaxed text-gray-600 dark:text-gray-300 list-disc pl-4 space-y-1">
+        <li><b>가격 몫(보라)은 매년 꾸준히 +2~7%p.</b> 에르메스가 스스로 정하는 부분이라 가장 믿을 만한 성장 엔진이다.</li>
+        <li><b>판매량 몫(초록)은 들쭉날쭉.</b> 2021~2023년은 자산가 증가율(주황)을 크게 웃돌았고, 2025년부터는 그 아래로 내려갔다.</li>
+        <li><b>회색 칸(이익률·환율·기타)</b>은 2024년·2026년 상반기에 크게 마이너스다. 2024년은 환율(보고 매출 +13% vs 환율 제외 +15%)과 영업이익률 하락, 2025년부터는 프랑스 대기업 특별 법인세가 이익을 깎았다. 2021~2022년은 반대로 이익률 상승이 크게 더해졌다.</li>
+        <li>정리: 앞으로 EPS 증가율 ≈ 가격 5~6% + 판매량(자산가 증가 5% 안팎이 기준) − 일회성 부담. 판매량이 자산가 증가율로 돌아오면 EPS는 연 10%대 초반이 된다.</li>
+      </ul>
+      <p className="text-[11px] text-gray-400 dark:text-gray-500">
+        EPS는 연간(유로, 보고 기준), 매출 성장은 환율 제외 기준이라 환율 효과는 회색 칸에 들어간다. 2026년은 상반기 전년 대비. 세 칸은 곱셈 관계를 로그 비율로 나눠 합이 정확히 EPS 증가율이 되게 했다.
+        가격 인상률은 근사값이라 판매량 몫도 근사다. EPS는 이 페이지 데이터(2001년 이후 사용자 제공 값) 기준이라 회사 발표 주당이익과 조금 다를 수 있다.
+      </p>
+    </div>
+  )
+}
+
 // ── 에르메스: 고객 수(Q) × 가격(P)으로 본 성장 추정 ─────────
 function HermesQP() {
   const [q, setQ] = useState(5)          // 판매량(고객 수) 증가율 %
@@ -2367,6 +2479,7 @@ function HermesQP() {
       </div>
 
       <HermesHistory />
+      <HermesEpsQP />
 
       <div className="rounded bg-amber-50 dark:bg-amber-900/10 p-3 space-y-1">
         <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">실제 매출로 맞춰 보기 (환율 영향 제외 성장률 − 가격 인상 ≈ 판매량)</p>
