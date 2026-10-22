@@ -2139,7 +2139,7 @@ function DecompSection({
       {hasDiv && noDivNote && <p className="text-xs text-gray-400 dark:text-gray-500">* {noDivNote}</p>}
       {sorted.some(d => d.inProgress) && (
         <p className="text-xs text-gray-400 dark:text-gray-500">
-          진행 중 구간의 현재 EPS·PER은 페이지 데이터에 자동 갱신되는 값(Yahoo Finance 최근 1년 EPS)을 썼다. 위 1번 분석의 EPS와 조금 다를 수 있다.
+          진행 중 구간의 현재 EPS·PER은 페이지 데이터에 자동 갱신되는 값(Yahoo Finance 최근 1년 EPS)을 썼다.
         </p>
       )}
       <div className="rounded bg-gray-50 dark:bg-gray-800/50 p-3 space-y-1.5">
@@ -2296,7 +2296,7 @@ function HermesHistory() {
 }
 
 // ── 에르메스 EPS 증가율 분해: 가격 몫 + 판매량 몫 + 이익률·환율·기타 몫 (연도별) ─────────
-const HERMES_EPS: Record<number, number> = { 2018: 13.06, 2019: 14.66, 2020: 14.29, 2021: 22.37, 2022: 32.8, 2023: 42.12, 2024: 43.0, 2025: 46.5 }
+const HERMES_EPS: Record<number, number> = { 2018: 13.43, 2019: 14.66, 2020: 13.21, 2021: 23.37, 2022: 32.2, 2023: 41.19, 2024: 43.93, 2025: 43.15 }
 
 function HermesEpsQP() {
   // 2026 상반기: 주당이익 21.36 vs 21.43(전년 상반기)
@@ -2396,12 +2396,12 @@ function HermesEpsQP() {
       <ul className="text-xs leading-relaxed text-gray-600 dark:text-gray-300 list-disc pl-4 space-y-1">
         <li><b>가격 몫(보라)은 매년 꾸준히 +2~7%p.</b> 에르메스가 스스로 정하는 부분이라 가장 믿을 만한 성장 엔진이다.</li>
         <li><b>판매량 몫(초록)은 들쭉날쭉.</b> 2021~2023년은 자산가 증가율(주황)을 크게 웃돌았고, 2025년부터는 그 아래로 내려갔다.</li>
-        <li><b>회색 칸(이익률·환율·기타)</b>은 2024년·2026년 상반기에 크게 마이너스다. 2024년은 환율(보고 매출 +13% vs 환율 제외 +15%)과 영업이익률 하락, 2025년부터는 프랑스 대기업 특별 법인세가 이익을 깎았다. 2021~2022년은 반대로 이익률 상승이 크게 더해졌다.</li>
+        <li><b>회색 칸(이익률·환율·기타)</b>은 2024년·2026년 상반기에 크게 마이너스다. 2024년은 환율(보고 매출 +13% vs 환율 제외 +15%)과 영업이익률 하락, 2025년·2026년 상반기는 프랑스 대기업 특별 법인세(2025년 EPS -1.8%)가 이익을 깎았다. 2021~2022년은 반대로 이익률 상승이 크게 더해졌다.</li>
         <li>정리: 앞으로 EPS 증가율 ≈ 가격 5~6% + 판매량(자산가 증가 5% 안팎이 기준) − 일회성 부담. 판매량이 자산가 증가율로 돌아오면 EPS는 연 10%대 초반이 된다.</li>
       </ul>
       <p className="text-[11px] text-gray-400 dark:text-gray-500">
         EPS는 연간(유로, 보고 기준), 매출 성장은 환율 제외 기준이라 환율 효과는 회색 칸에 들어간다. 2026년은 상반기 전년 대비. 세 칸은 곱셈 관계를 로그 비율로 나눠 합이 정확히 EPS 증가율이 되게 했다.
-        가격 인상률은 근사값이라 판매량 몫도 근사다. EPS는 이 페이지 데이터(2001년 이후 사용자 제공 값) 기준이라 회사 발표 주당이익과 조금 다를 수 있다.
+        가격 인상률은 근사값이라 판매량 몫도 근사다. EPS는 회사 발표 기준(2019·2021~2025년 주당이익, 그 외 순이익÷주식 수).
       </p>
     </div>
   )
@@ -2412,8 +2412,8 @@ function HermesQP() {
   const [q, setQ] = useState(5)          // 판매량(고객 수) 증가율 %
   const [pr, setPr] = useState(6)        // 가격 인상률 %
   const [margin, setMargin] = useState(0) // 연간 이익률 변화 %p 효과(연 EPS 성장에 더해짐)
-  const [exitPe, setExitPe] = useState(29)
-  const curPe = 29.2
+  const [exitPe, setExitPe] = useState(31)
+  const curPe = 31.5
   const div = 1.35
   const rev = ((1 + q / 100) * (1 + pr / 100) - 1) * 100
   const eps = rev + margin
@@ -2494,7 +2494,7 @@ function HermesQP() {
         {slider('Q: 판매량(고객 수) 증가율', q, setQ, -3, 10, 0.5, '%', '자산가 인구 장기 증가율 약 5%, 2026년 상반기 실제 약 0%')}
         {slider('P: 연간 가격 인상률', pr, setPr, 0, 10, 0.5, '%', '2023~2025년 6~7%, 2026년 5~6%')}
         {slider('이익률 변화 효과', margin, setMargin, -3, 3, 0.5, '%p', '영업이익률 약 41% 유지면 0. 프랑스 법인세 부담 등이 있으면 마이너스')}
-        {slider('10년 뒤 PER', exitPe, setExitPe, 15, 50, 1, '배', '지금 약 29배, 10년 중간값 약 44배, 2009년 저점 28.5배')}
+        {slider('10년 뒤 PER', exitPe, setExitPe, 15, 50, 1, '배', '지금 약 31.5배, 10년 중간값 약 44배, 2009년 말 28배')}
       </div>
 
       <div className="grid grid-cols-3 gap-2">
@@ -2503,11 +2503,11 @@ function HermesQP() {
         <StatCard label="10년 연평균 수익률" value={`${ret.toFixed(1)}%`} />
       </div>
       <p className="text-[11px] text-gray-400 dark:text-gray-500">
-        매출 성장 = (1+Q)×(1+P)−1, EPS 성장 = 매출 성장 + 이익률 효과, 수익률 = [(1+EPS 성장)^10 × (10년 뒤 PER ÷ 지금 29.2배)]^(1/10) × (1+배당 1.35%) − 1.
+        매출 성장 = (1+Q)×(1+P)−1, EPS 성장 = 매출 성장 + 이익률 효과, 수익률 = [(1+EPS 성장)^10 × (10년 뒤 PER ÷ 지금 31.5배)]^(1/10) × (1+배당 1.35%) − 1.
       </p>
 
       <div className="overflow-x-auto">
-        <p className="text-xs font-semibold text-gray-700 dark:text-gray-200 mb-1">한눈에 보기: Q × P별 10년 연평균 수익률 (이익률 유지, 10년 뒤 PER 29배 유지)</p>
+        <p className="text-xs font-semibold text-gray-700 dark:text-gray-200 mb-1">한눈에 보기: Q × P별 10년 연평균 수익률 (이익률 유지, 10년 뒤 PER 지금 수준 유지)</p>
         <table className="text-xs">
           <thead>
             <tr>
@@ -2522,7 +2522,7 @@ function HermesQP() {
                   판매량 +{qq}%{qq === 0 ? ' (2026 상반기)' : qq === 5 ? ' (자산가 증가율)' : qq === 2.5 ? ' (2025년)' : ''}
                 </td>
                 {[3, 5, 7, 9].map(pp => {
-                  const r = ((1 + qq / 100) * (1 + pp / 100) * (1 + div / 100) * Math.pow(29 / curPe, 0.1) - 1) * 100
+                  const r = ((1 + qq / 100) * (1 + pp / 100) * (1 + div / 100) - 1) * 100
                   return <td key={pp} className={`${td} text-right ${cell(r)}`}>{r.toFixed(1)}%</td>
                 })}
               </tr>
@@ -2533,8 +2533,8 @@ function HermesQP() {
 
       <ul className={`${p} list-disc pl-4 space-y-1`}>
         <li><b>자산가 증가(5%) × 평소 가격 인상(7%)</b>이면 매출이 연 약 12% 늘고, PER이 지금 수준만 유지해도 10년 연 약 13~14%다.</li>
-        <li><b>연 17~20%</b>가 나오려면 여기에 PER 재평가(29배 → 35~40배 이상)가 더해지거나, 판매량이 자산가 증가보다 빨라야 한다(신흥국 자산가 유입, 공방 증설).</li>
-        <li><b>지금(2026년 상반기)처럼 판매량이 멈추고 가격만 오르면</b> 연 8% 안팎. 핵심은 판매량(Q)이 자산가 증가율 쪽으로 돌아오는지다.</li>
+        <li><b>연 17~20%</b>가 나오려면 여기에 PER 재평가(31배 → 35~40배 이상)가 더해지거나, 판매량이 자산가 증가보다 빨라야 한다(신흥국 자산가 유입, 공방 증설).</li>
+        <li><b>지금(2026년 상반기)처럼 판매량이 멈추고 가격만 오르면</b> 연 7~8%. 핵심은 판매량(Q)이 자산가 증가율 쪽으로 돌아오는지다.</li>
       </ul>
       <p className="text-[11px] text-gray-400 dark:text-gray-500">
         자산가 통계: Capgemini 세계 부 보고서(2016·2026), Knight Frank 부 보고서 2026, UBS 세계 부 보고서 2026. 가격 인상률은 리셀·전문 매체가 집계한 대표 제품 기준이며 회사 공식 수치가 아니다.
@@ -2578,12 +2578,12 @@ function RmsInsight({ data }: { data: StockData }) {
       peRange: `${sgn(Math.min(...pe))}~${sgn(Math.max(...pe))}`,
     }
   }).filter(b => b.n > 0)
-  const scenarioPEs = ['22배', '29배 (유지)', '35배', '45배']
+  const scenarioPEs = ['22배', '31배 (유지)', '35배', '45배']
   const scenarios = [
-    { g: '연 8%', v: ['6%', '9%', '11%', '14%'] },
-    { g: '연 12%', v: ['10%', '13%', '15%', '18%'] },
-    { g: '연 15% (과거 평균)', v: ['13%', '16%', '18%', '21%'], hl: true },
-    { g: '연 18%', v: ['16%', '19%', '22%', '25%'] },
+    { g: '연 8%', v: ['6%', '10%', '11%', '13%'] },
+    { g: '연 12%', v: ['10%', '14%', '15%', '18%'] },
+    { g: '연 15% (과거 평균)', v: ['12%', '17%', '18%', '21%'], hl: true },
+    { g: '연 18%', v: ['15%', '20%', '21%', '24%'] },
   ]
 
   return (
@@ -2594,23 +2594,23 @@ function RmsInsight({ data }: { data: StockData }) {
       </div>
 
       <div className={box}>
-        <h4 className={h4}>1. 현재 PER 약 29배 — 주가 하락은 이익이 아니라 PER 하락 때문</h4>
+        <h4 className={h4}>1. 현재 PER 약 31.5배 — 주가 하락은 이익이 아니라 PER 하락 때문</h4>
         <p className={p}>
-          주가 1,356.5유로 ÷ 최근 1년 주당순이익(EPS) 약 46.4유로 = PER 약 29.2배.
-          (2025년 연간 EPS 46.5 − 2025년 상반기 21.43 + 2026년 상반기 21.36)
+          주가 1,356.5유로 ÷ 최근 1년 주당순이익(EPS) 약 43.1유로 = PER 약 31.5배.
+          (회사 발표 2025년 연간 EPS 43.15 − 2025년 상반기 21.43 + 2026년 상반기 21.36)
         </p>
         <div className="overflow-x-auto">
           <table className="text-xs">
             <thead><tr><th className={`${th} text-left`}></th><th className={`${th} text-right`}>2024년 말</th><th className={`${th} text-right`}>지금</th><th className={`${th} text-right`}>변화</th></tr></thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
               <tr><td className={td}>주가</td><td className={`${td} text-right`}>약 2,275</td><td className={`${td} text-right`}>1,356.5</td><td className={`${td} text-right text-red-500`}>-40%</td></tr>
-              <tr><td className={td}>EPS</td><td className={`${td} text-right`}>43.0</td><td className={`${td} text-right`}>약 46.4</td><td className={`${td} text-right text-emerald-600 dark:text-emerald-400 font-semibold`}>+8%</td></tr>
-              <tr><td className={td}>PER</td><td className={`${td} text-right`}>52.9배</td><td className={`${td} text-right`}>29.2배</td><td className={`${td} text-right text-red-500 font-semibold`}>-45%</td></tr>
+              <tr><td className={td}>EPS</td><td className={`${td} text-right`}>43.93</td><td className={`${td} text-right`}>약 43.1</td><td className={`${td} text-right font-semibold`}>-2%</td></tr>
+              <tr><td className={td}>PER</td><td className={`${td} text-right`}>51.8배</td><td className={`${td} text-right`}>31.5배</td><td className={`${td} text-right text-red-500 font-semibold`}>-39%</td></tr>
             </tbody>
           </table>
         </div>
         <p className={p}>
-          다만 2026년 상반기 EPS(21.36유로)는 1년 전(21.43유로)과 거의 같다. 이익이 줄지는 않았지만 성장이 멈춘 상태다.
+          이익은 2024년 43.93유로 → 2025년 43.15유로(-1.8%, 프랑스 대기업 특별 법인세 영향. 제외하면 순이익 +5.5%) → 2026년 상반기도 1년 전과 거의 같다(21.36 vs 21.43유로). 이익이 무너지진 않았지만 성장이 멈춘 상태다.
         </p>
       </div>
 
@@ -2646,7 +2646,7 @@ function RmsInsight({ data }: { data: StockData }) {
         </div>
 
         <p className={p}>
-          PER이 쌀 때(20배 미만) 산 경우는 PER 상승 효과가 연 +5.5%p로 가장 컸다. 지금과 같은 27~32배 구간은 PER 효과가 평균 +2.1%p에 그쳤고,
+          PER이 쌀 때(20배 미만) 산 경우는 PER 상승 효과가 연 +4.9%p로 가장 컸다. 지금과 같은 27~32배 구간은 PER 효과가 평균 +2.9%p였고,
           수익률 대부분(연 +16.7%)이 EPS 성장에서 나왔다. 즉 지금 구간에서는 이익 성장이 거의 전부다.
         </p>
 
@@ -2665,17 +2665,17 @@ function RmsInsight({ data }: { data: StockData }) {
             </span>
           ))}
           <span className="text-[11px] tabular-nums px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold">
-            2026.10 29배
+            2026.10 31.5배
           </span>
         </div>
         <p className={p}>
           1993~2007년에는 대체로 14~27배였다(1996·1999·2000년 30배 이상은 예외). 2008~2018년에는 28~39배로 올라섰고,
-          2019~2025년에는 42~66배까지 치솟았다(정점 2021년 66배). 지금은 29배로 2009년 수준까지 내려왔다.
-          2010~2015년에 산 경우들이 높은 수익을 낸 데는 팔 때 PER이 42~66배까지 올라 있었던 영향이 크다.
+          2019~2025년에는 43~63배까지 치솟았다(정점 2020년 63배). 지금은 31.5배로 2013~2016년 수준까지 내려왔다.
+          2010~2015년에 산 경우들이 높은 수익을 낸 데는 팔 때 PER이 43~63배까지 올라 있었던 영향이 크다.
         </p>
         <p className={p}>
-          지금과 비슷한 PER에서 산 경우: 2012년(28.2배) 21.8% · 2009년(28.5배) 23.4% · 2015년(31.0배) 22.1% ·
-          2008년(31.2배) 18.7% · 1996년(30.6배) 15.4% · 2000년(30.5배) 13.7%.
+          지금과 비슷한 PER에서 산 경우: 2012년(27.6배) 21.8% · 2009년(28.2배) 23.4% · 2013년(30.6배) 23.2% · 2015년(30.7배) 22.1% ·
+          2008년(31.2배) 18.7% · 2014년(31.8배) 24.2% · 1996년(30.6배) 15.4% · 2000년(30.5배) 13.7%.
           과거 기준으로는 연 17~20% 기대가 무리는 아니다.
         </p>
       </div>
@@ -2691,13 +2691,13 @@ function RmsInsight({ data }: { data: StockData }) {
       <div className={box}>
         <h4 className={h4}>4. 과거 성과를 만든 두 가지 순풍</h4>
         <ul className={`${p} list-disc pl-4 space-y-1`}>
-          <li><b>EPS가 10년 동안 매년 11~20% 성장</b>했다(23개 경우 중 최저 11%). 하지만 최근 약 3년(2023 → 2026년 중반)은 연 3~4% 수준이다.</li>
-          <li><b>팔 때 PER이 거의 항상 올라 있었다.</b> 23개 중 21개가 매수 때보다 높았고(예외: 1996년, 1999년 매수), 2010~2015년 매수는 팔 때 42~66배였다. 이 효과가 대부분 연 +1~7%p를 더해줬다(중간값 약 +3%p). 위 3번 연도별 분해 참고.</li>
+          <li><b>EPS가 10년 동안 매년 11~19% 성장</b>했다(23개 경우 중 최저 11%). 하지만 2023년 이후는 연 1~2% 수준이다(2025년은 프랑스 특별 법인세로 감소).</li>
+          <li><b>팔 때 PER이 거의 항상 올라 있었다.</b> 23개 중 21개가 매수 때보다 높았고(예외: 1996년, 1999년 매수), 2010~2015년 매수는 팔 때 43~63배였다. 이 효과가 대부분 연 +1~7%p를 더해줬다(중간값 약 +4%p). 위 3번 연도별 분해 참고.</li>
         </ul>
       </div>
 
       <div className={box}>
-        <h4 className={h4}>5. 지금(PER 29배) 사서 10년 보유 시 예상 연평균 수익률</h4>
+        <h4 className={h4}>5. 지금(PER 31.5배) 사서 10년 보유 시 예상 연평균 수익률</h4>
         <p className={p}>배당 약 1.35% 포함. 행 = 연 EPS 성장률, 열 = 10년 뒤 PER.</p>
         <div className="overflow-x-auto">
           <table className="text-xs">
@@ -2743,24 +2743,24 @@ function RmsInsight({ data }: { data: StockData }) {
               <tr>
                 <td className={`${td} whitespace-nowrap`}>1999 → 2009</td>
                 <td className={`${td} text-right`}>7.8%</td>
-                <td className={`${td} text-right whitespace-nowrap`}>PER 하락 38 → 29배 (이익은 연 +11%)</td>
-                <td className={`${td} text-right whitespace-nowrap`}>2009년 말 (28.5배)</td>
+                <td className={`${td} text-right whitespace-nowrap`}>PER 하락 38 → 28배 (이익은 연 +11%)</td>
+                <td className={`${td} text-right whitespace-nowrap`}>2009년 말 (28.2배)</td>
                 <td className={`${td} text-right font-semibold text-emerald-600 dark:text-emerald-400`}>23.4%</td>
-                <td className={`${td} text-right`}>연 +18.4%</td>
+                <td className={`${td} text-right`}>연 +18.3%</td>
               </tr>
               <tr>
                 <td className={`${td} whitespace-nowrap`}>2000 → 2010</td>
                 <td className={`${td} text-right`}>13.7%</td>
-                <td className={`${td} text-right whitespace-nowrap`}>PER 제자리 31 → 33배 (이익은 연 +12.9%)</td>
-                <td className={`${td} text-right whitespace-nowrap`}>2010년 말 (32.8배)</td>
+                <td className={`${td} text-right whitespace-nowrap`}>PER 제자리 31 → 33배 (이익은 연 +12.8%)</td>
+                <td className={`${td} text-right whitespace-nowrap`}>2010년 말 (32.9배)</td>
                 <td className={`${td} text-right font-semibold text-emerald-600 dark:text-emerald-400`}>20.3%</td>
-                <td className={`${td} text-right`}>연 +13.5%</td>
+                <td className={`${td} text-right`}>연 +12.7%</td>
               </tr>
               <tr className="bg-blue-50 dark:bg-blue-900/20">
                 <td className={`${td} whitespace-nowrap font-semibold`}>2019~2024년 매수 (진행 중)</td>
                 <td className={`${td} text-right whitespace-nowrap`}>연 -25% ~ +12%</td>
-                <td className={`${td} text-right whitespace-nowrap font-semibold text-purple-600 dark:text-purple-400`}>PER 하락 42~66 → 29배</td>
-                <td className={`${td} text-right whitespace-nowrap`}>지금 (29배)</td>
+                <td className={`${td} text-right whitespace-nowrap font-semibold text-purple-600 dark:text-purple-400`}>PER 하락 43~63 → 31배</td>
+                <td className={`${td} text-right whitespace-nowrap`}>지금 (31.5배)</td>
                 <td className={`${td} text-right font-semibold`}>?</td>
                 <td className={`${td} text-right`}>?</td>
               </tr>
@@ -2769,11 +2769,11 @@ function RmsInsight({ data }: { data: StockData }) {
         </div>
         <ul className={`${p} list-disc pl-4 space-y-1`}>
           <li><b>10년 완결 기준으로는 아직 바닥이 보이지 않는다.</b> 가장 최근 완결(2015년 매수)도 연 22%다.
-            바닥은 아직 10년이 안 된 2019~2024년 매수에서 만들어지고 있다. PER 42~66배에 산 구간이라, 1999년(38배)처럼 낮은 10년 수익률로 끝날 가능성이 크다.</li>
+            바닥은 아직 10년이 안 된 2019~2024년 매수에서 만들어지고 있다. PER 43~63배에 산 구간이라, 1999년(38배)처럼 낮은 10년 수익률로 끝날 가능성이 크다.</li>
           <li><b>저점의 원인이 과거와 같다.</b> 1999년처럼 이익은 늘었는데 PER이 떨어져서 수익률이 낮아진 경우다. 나이키(이익 정체가 원인)와 다른 점이다.</li>
-          <li><b>지금 PER 29배는 2009년 말(28.5배)과 거의 같다.</b> 그때 산 사람은 이후 10년간 연 23.4%를 냈다. 다만 그 10년은 이익이 연 18% 늘고, PER도 29배에서 43배로 올랐던 시기다.</li>
-          <li><b>다른 점:</b> 2009년은 금융위기로 이익이 잠시 눌려 있던 때라 이후 반등 폭이 컸다. 지금은 이익이 높은 수준에서 성장만 느려진 상태(최근 약 3년 연 3~4%)다.</li>
-          <li><b>숫자로 보면:</b> PER 29배 유지·배당 1.35% 가정에서 연 17%가 나오려면 이익이 연 약 15%, 연 20%가 나오려면 연 약 18% 늘어야 한다. 과거 10년 이익 성장률(연 11~20%, 보통 15% 안팎)로는 가능한 범위다.</li>
+          <li><b>지금 PER 31.5배는 2009년 말(28.2배)보다 조금 높은 수준이다.</b> 그때 산 사람은 이후 10년간 연 23.4%를 냈다. 다만 그 10년은 이익이 연 18% 늘고, PER도 28배에서 43배로 올랐던 시기다.</li>
+          <li><b>다른 점:</b> 2009년은 금융위기로 이익이 잠시 눌려 있던 때라 이후 반등 폭이 컸다. 지금은 이익이 높은 수준에서 성장만 멈춘 상태(2023년 이후 연 1~2%)다.</li>
+          <li><b>숫자로 보면:</b> PER 31.5배 유지·배당 1.35% 가정에서 연 17%가 나오려면 이익이 연 약 15%, 연 20%가 나오려면 연 약 18% 늘어야 한다. 과거 10년 이익 성장률(연 11~19%, 보통 15% 안팎)로는 가능한 범위다.</li>
           <li><b>확인할 신호:</b> 환율 영향을 뺀 매출 성장이 다시 두 자릿수로 올라오는지, 순이익이 다시 연 10% 이상 늘어나는지.</li>
         </ul>
       </div>
@@ -2785,14 +2785,14 @@ function RmsInsight({ data }: { data: StockData }) {
         <ul className={`${p} list-disc pl-4 space-y-1`}>
           <li>연 17~20%가 나오려면 <b>EPS 성장이 연 15% 이상으로 회복</b>하고 PER도 지금 수준 이상을 유지해야 한다.</li>
           <li>이익 성장이 과거처럼 크다면 지금 PER은 과거 좋은 매수 시점과 비슷한 수준이다.</li>
-          <li>지금처럼 이익 성장이 한 자릿수에 머물면 연 9~13% 정도가 현실적이다.</li>
+          <li>이익 성장이 한 자릿수(연 5~8%)에 머물면 PER 유지 시 연 6~10% 정도다.</li>
           <li>앞으로 볼 것은 PER보다 <b>EPS 성장률이 다시 오르는지</b>다.</li>
         </ul>
       </div>
 
       <p className="text-xs text-gray-400 dark:text-gray-500">
         참고: 주가는 배당을 반영해 조정한 종가라 실제 PER과 1~2% 차이가 날 수 있다.
-        2026년 상반기 EPS는 언론 보도 기준(회사 반기 보고서와 대조 필요). 1993~2000년 EPS는 AI가 역산한 추정치다.
+        EPS는 2009년 이후 회사 발표 기준(주당이익 또는 순이익÷주식 수)으로 정정했다. 2001~2008년은 대조하지 못한 값, 1993~2000년은 AI가 역산한 추정치다.
         참고용 분석이며 미래를 보장하지 않는다.
       </p>
     </div>

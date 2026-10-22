@@ -9,14 +9,14 @@ export const PICKS_AS_OF = '2026년 10월'
 export const EXTRA_METRICS: Metrics[] = [
   {
     key: 'RMS', ticker: 'RMS.PA', name: '에르메스',
-    price: 1356.5, ttmEps: 46.4, pe: 29.2, divYield: 1.35,
-    peMed10: 43.6, peVsMed: 0.67,
-    epsCagr10: 17.6, epsCagr5: 26.6, epsDownYears10: 1,
-    epsVsPeak: 1.0, lastFy: 2025,
+    price: 1356.5, ttmEps: 43.08, pe: 31.5, divYield: 1.35,
+    peMed10: 44.2, peVsMed: 0.71,
+    epsCagr10: 16.6, epsCagr5: 26.7, epsDownYears10: 2,
+    epsVsPeak: 0.98, lastFy: 2025,
     fromHigh3y: -40, chg1y: null, chg3y: null,
     roll10Median: 19.55, roll10Min: 7.84, roll10N: 23, roll10Over10: 95.7,
     beatBench: 23, beatTotal: 23,
-    expRet10: 18.7,
+    expRet10: 17.8,
   },
 ]
 
@@ -59,9 +59,9 @@ export type Pick = { key: string; section: typeof PICK_SECTIONS[number]['key']; 
 export const PICKS: Pick[] = [
   {
     key: 'RMS', section: 'brand',
-    why: "희소성 전략과 최고 수준의 가격결정력, 가족 경영. 이익은 사상 최고, PER은 53배→29배로 평소(43.6배)의 3분의 2. 소비자 브랜드 중 사업의 질 1등.",
+    why: "희소성 전략과 최고 수준의 가격결정력, 가족 경영. 이익은 고점 수준(2025년은 프랑스 특별 법인세로 -1.8%), PER은 52배→31.5배로 평소(44배)의 약 70%. 소비자 브랜드 중 사업의 질 1등.",
     watch: "최근 약 3년 이익 성장이 연 3~4%로 느려졌다. 매출 성장이 다시 두 자릿수로 돌아오는지.",
-    rankNote: "사업의 질은 비교 불가. 할인 폭(평소의 67%)과 이익 흐름(정체)이 펩시코보다 조금 약해 2위가 아니라 공동 1위로 본다 — 에르메스형의 기준점.",
+    rankNote: "사업의 질은 비교 불가. 할인 폭(평소의 71%)과 이익 흐름(정체)이 펩시코보다 조금 약해 2위가 아니라 공동 1위로 본다 — 에르메스형의 기준점.",
   },
   {
     key: 'PEP', section: 'brand',
@@ -143,9 +143,9 @@ export const PICKS: Pick[] = [
   },
   {
     key: 'RMS', section: 'core',
-    why: '버킨백으로 대표되는 희소성 전략과 최고 수준의 가격결정력, 가족 경영. 이익은 사상 최고인데 PER이 53배(2024년 말)에서 29배로 내려와 10년 중간값의 약 3분의 2. 과거 비슷한 PER(2009년 말 28.5배)에 산 경우 이후 10년 연 23%였다.',
+    why: '버킨백으로 대표되는 희소성 전략과 최고 수준의 가격결정력, 가족 경영. 이익은 고점 수준인데 PER이 52배(2024년 말)에서 31.5배로 내려와 10년 중간값의 약 70%. 과거 비슷한 PER(2009년 말 28배)에 산 경우 이후 10년 연 23%였다.',
     watch: '최근 약 3년 이익 성장이 연 3~4%로 느려졌다. 환율 영향을 뺀 매출 성장이 두 자릿수로 돌아오는지, 중국 수요. 자세한 분석은 위대한 기업 탭의 에르메스 인사이트.',
-    rankNote: '사업의 질은 전체 1등. 하지만 절대 PER(29배)이 위 종목들보다 높고 최근 이익 성장이 연 3~4%로 멈춰 있다. 이익 성장이 돌아오면 순위가 오른다.',
+    rankNote: '사업의 질은 전체 1등. 하지만 절대 PER(31.5배)이 위 종목들보다 높고 2023년 이후 이익 성장이 연 1~2%로 멈춰 있다(2025년은 특별 법인세로 감소). 이익 성장이 돌아오면 순위가 오른다.',
   },
   {
     key: 'MCD', section: 'core',

@@ -963,3 +963,7 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 - 실행: GitHub Actions `전 종목 펀더멘털 데이터 생성` (workflow_dispatch, 입력 `tickers` 비우면 전 종목). 이 세션 환경은 SEC·Yahoo 접속이 막혀 있어 Actions로 생성.
 - EPS 없음(6개: ARES, ERIE, KKR, STZ, V, XOM), 공시 EPS가 오래된 종목(12개)은 숫자 비교에서 제외(`stale`).
 - 1~3월 결산 회사는 회계연도를 전년도로 매김. 버크셔는 A주 EPS ÷ 1500.
+
+#### RMS_rolling.json EPS 정정 (2026-10)
+- 2009~2025년 EPS를 회사 발표 기준으로 정정(주당이익: 2019·2021~2025년, 그 외 순이익(그룹 몫)÷주식 수). 2025년 46.50→43.15, 2024년 43.00→43.93, 2023년 42.12→41.19, 2020년 14.29→13.21, 2014년 6.76→8.19 등.
+- 가격 데이터(CSV)는 그대로 두고 `epsDecomp`와 `rows10y.peBuy`만 다시 계산. `export_rolling_json.py`의 `_RMS_EUR_EPS`도 같이 수정.
