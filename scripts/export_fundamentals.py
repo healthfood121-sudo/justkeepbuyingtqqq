@@ -94,23 +94,53 @@ def fetch_eps(cik: int) -> dict:
     return best
 
 
-def fetch_shares(cik: int):
-    """최근 공시 유통 주식 수(dei). 주식 종류가 여러 개면 같은 날짜 값을 합산."""
+def _latest_shares(url: str, recent_only: bool):
     try:
-        r = requests.get(f"https://data.sec.gov/api/xbrl/companyconcept/CIK{cik:010d}/dei/EntityCommonStockSharesOutstanding.json",
-                         headers=UA, timeout=30)
+        r = requests.get(url, headers=UA, timeout=30)
         time.sleep(0.15)
         if r.status_code != 200:
             return None
         items = [it for v in r.json().get("units", {}).values() for it in v]
+        if recent_only:  # 분기·연간 보고서의 값만
+            items = [it for it in items if it.get("form") in ("10-Q", "10-K", "10-Q/A", "10-K/A")]
         if not items:
             return None
         last = max(it["end"] for it in items)
         latest = [it for it in items if it["end"] == last]
         accn = max(it["accn"] for it in latest)
-        return float(sum(it["val"] for it in latest if it["accn"] == accn)), last
+        vals = [it["val"] for it in latest if it["accn"] == accn]
+        return (float(sum(vals)) if not recent_only else float(max(vals))), last
     except Exception:
         return None
+
+
+def fetch_shares(cik: int):
+    """유통 주식 수. 표지(dei) 값이 2년 넘게 오래됐거나 없으면(주식 종류별로만 공시하는 회사 등)
+    최근 보고서의 희석 가중평균 주식 수로 대신한다."""
+    cutoff = (TODAY - pd.Timedelta(days=730)).strftime("%Y-%m-%d")
+    s = _latest_shares(f"https://data.sec.gov/api/xbrl/companyconcept/CIK{cik:010d}/dei/EntityCommonStockSharesOutstanding.json", False)
+    if s and s[1] >= cutoff:
+        return s
+    for c in ("WeightedAverageNumberOfDilutedSharesOutstanding", "WeightedAverageNumberOfSharesOutstandingBasic"):
+        w = _latest_shares(f"https://data.sec.gov/api/xbrl/companyconcept/CIK{cik:010d}/us-gaap/{c}.json", True)
+        if w and w[1] >= cutoff:
+            return w
+    return None
+
+
+def patch_shares_only(keys):
+    """이미 만든 종목 파일의 shares만 다시 채움 (전체 재생성 없이)."""
+    cik_map = load_cik_map()
+    for i, k in enumerate(keys, 1):
+        path = OUT / f"{k}.json"
+        if not path.exists():
+            continue
+        d = json.loads(path.read_text())
+        t = d["ticker"].replace(".", "-").upper()
+        cik = cik_map.get(t) or cik_map.get(t.replace("-", "."))
+        d["shares"] = shares_info(cik, k) if cik else None
+        path.write_text(json.dumps(d, ensure_ascii=False, separators=(",", ":")))
+        print(f"[{i}/{len(keys)}] {k} {d['shares']}", flush=True)
 
 
 def _annual_items(units: dict):
@@ -353,9 +383,15 @@ def process(key: str, roll: dict, prices: pd.DataFrame, cik_map: dict) -> dict |
 
 
 def main():
+    args = sys.argv[1:]
+    if args and args[0] == "--shares-only":  # 주식 수만 다시 채우기
+        only = set(args[1:])
+        keys = sorted(f.stem for f in OUT.glob("*.json") if not f.stem.startswith("_"))
+        patch_shares_only([k for k in keys if not only or k in only])
+        return
     files = sorted(ROLL.glob("*_rolling.json"))
     keys = [f.stem.replace("_rolling", "") for f in files]
-    only = set(sys.argv[1:])
+    only = set(args)
     keys = [k for k in keys if k not in SKIP and (not only or k in only)]
     rolls = {k: json.loads((ROLL / f"{k}_rolling.json").read_text()) for k in keys}
     keys = [k for k in keys if rolls[k].get("type") != "etf"]
