@@ -2172,6 +2172,140 @@ function DecompSection({
   )
 }
 
+// ── 에르메스: 고객 수(Q) × 가격(P)으로 본 성장 추정 ─────────
+function HermesQP() {
+  const [q, setQ] = useState(5)          // 판매량(고객 수) 증가율 %
+  const [pr, setPr] = useState(6)        // 가격 인상률 %
+  const [margin, setMargin] = useState(0) // 연간 이익률 변화 %p 효과(연 EPS 성장에 더해짐)
+  const [exitPe, setExitPe] = useState(29)
+  const curPe = 29.2
+  const div = 1.35
+  const rev = ((1 + q / 100) * (1 + pr / 100) - 1) * 100
+  const eps = rev + margin
+  const ret = ((Math.pow(1 + eps / 100, 10) * exitPe / curPe) ** 0.1 * (1 + div / 100) - 1) * 100
+
+  const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-3'
+  const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
+  const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500 whitespace-nowrap'
+  const td = 'py-1.5 px-2 tabular-nums text-gray-700 dark:text-gray-200 whitespace-nowrap'
+  const cell = (v: number) =>
+    v < 5 ? 'text-orange-500' : v < 10 ? 'text-yellow-600 dark:text-yellow-400'
+      : v < 15 ? 'text-emerald-600 dark:text-emerald-400' : 'text-blue-600 dark:text-blue-400 font-semibold'
+  const slider = (label: string, v: number, set: (n: number) => void, min: number, max: number, step: number, unit: string, hint: string) => (
+    <label className="block space-y-1">
+      <div className="flex justify-between text-xs">
+        <span className="font-medium text-gray-700 dark:text-gray-200">{label}</span>
+        <span className="tabular-nums font-semibold text-gray-900 dark:text-white">{v > 0 && unit === '%p' ? '+' : ''}{v}{unit}</span>
+      </div>
+      <input type="range" min={min} max={max} step={step} value={v} onChange={e => set(Number(e.target.value))} className="w-full accent-blue-600" />
+      <p className="text-[11px] text-gray-400 dark:text-gray-500">{hint}</p>
+    </label>
+  )
+
+  return (
+    <div className={box}>
+      <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">7. 고객 수(Q) × 가격(P)으로 본 성장 추정</h4>
+      <p className={p}>
+        매출 = 판매량(Q) × 가격(P). 에르메스의 고객은 자산가 계층이라, <b>자산가 인구가 얼마나 늘어나는지</b>가 수요(Q)의 바탕이고,
+        <b> 매년 얼마나 값을 올리는지</b>가 가격(P)이다. 이 둘로 앞으로의 이익 성장과 10년 수익률을 추정해 본다.
+      </p>
+
+      <div className="grid sm:grid-cols-2 gap-3">
+        <div className="rounded bg-gray-50 dark:bg-gray-800/50 p-3 space-y-1.5">
+          <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">Q의 바탕: 자산가 인구 증가율</p>
+          <table className="text-xs w-full">
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+              <tr><td className={td}>금융자산 100만 달러+ (Capgemini)</td><td className={`${td} text-right`}>1,540만(2015) → 2,530만(2025)</td><td className={`${td} text-right font-semibold`}>연 5.1%</td></tr>
+              <tr><td className={td}>순자산 3천만 달러+ (Knight Frank)</td><td className={`${td} text-right`}>55.1만(2021) → 71.4만(2026)</td><td className={`${td} text-right font-semibold`}>연 5.3%</td></tr>
+              <tr><td className={td}>2025년 한 해 (Capgemini 100만+)</td><td className={`${td} text-right`}>증시 호황</td><td className={`${td} text-right`}>+7.9%</td></tr>
+              <tr><td className={td}>2025년 한 해 (UBS 달러 백만장자)</td><td className={`${td} text-right`}>약 100만 명 증가</td><td className={`${td} text-right`}>+1.5%</td></tr>
+            </tbody>
+          </table>
+          <p className="text-[11px] text-gray-400 dark:text-gray-500">
+            장기로는 자산가가 연 5% 안팎 늘어난다. 한 해 단위로는 증시에 따라 크게 흔들린다(기관마다 기준도 다르다).
+            메인 페이지의 세계 인구는 연 1% 미만으로 늘지만, 에르메스가 보는 고객층은 그보다 약 5배 빠르게 늘어난다.
+          </p>
+        </div>
+        <div className="rounded bg-gray-50 dark:bg-gray-800/50 p-3 space-y-1.5">
+          <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">P: 에르메스 연간 가격 인상률</p>
+          <table className="text-xs w-full">
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+              <tr><td className={td}>2022년</td><td className={`${td} text-right`}>약 2~5%</td></tr>
+              <tr><td className={td}>2023년</td><td className={`${td} text-right`}>5~10% (유럽 가방 8~10%)</td></tr>
+              <tr><td className={td}>2024년</td><td className={`${td} text-right`}>평균 약 7%</td></tr>
+              <tr><td className={td}>2025년</td><td className={`${td} text-right`}>6~7% (+미국 관세분 5%)</td></tr>
+              <tr><td className={td}>2026년</td><td className={`${td} text-right`}>1.5~10% (버킨 7~9%)</td></tr>
+            </tbody>
+          </table>
+          <p className="text-[11px] text-gray-400 dark:text-gray-500">
+            최근 몇 년 평균 연 6~7%. 경영진은 &ldquo;가격은 인기가 아니라 생산 원가에 맞춰 올린다&rdquo;고 말한다 — 올릴 여력을 일부러 남겨 두는 셈이다.
+          </p>
+        </div>
+      </div>
+
+      <div className="rounded bg-amber-50 dark:bg-amber-900/10 p-3 space-y-1">
+        <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">실제 매출로 맞춰 보기 (환율 영향 제외 성장률 − 가격 인상 ≈ 판매량)</p>
+        <ul className={`${p} list-disc pl-4 space-y-0.5`}>
+          <li>2025년: 전체 매출 +9% − 가격 약 6.5% → 판매량·구성 약 +2.5%. 가죽제품만 보면 +13% − 6.5% → 약 +6% (공방 증설로 생산 능력이 늘어난 몫).</li>
+          <li>2026년 상반기: 전체 매출 +6% − 가격 6~7% → 판매량은 거의 제자리. 자산가는 늘었는데 판매량이 멈췄다 — 중국 수요 약화와 &lsquo;열망 고객층&rsquo;(자산가 아래 계층)의 소비 위축이 원인으로 보인다.</li>
+          <li>가죽제품은 공급이 수요보다 적어(대기 고객) 판매량이 공방 증설 속도에 묶여 있다. 신규 공방: 2025년 24번째, 2026년 루프, 2027년 샤를빌메지에르, 2028년 콜롱벨, 2030년까지 레장들리.</li>
+        </ul>
+      </div>
+
+      <div className="grid sm:grid-cols-2 gap-x-6 gap-y-3">
+        {slider('Q: 판매량(고객 수) 증가율', q, setQ, -3, 10, 0.5, '%', '자산가 인구 장기 증가율 약 5%, 2026년 상반기 실제 약 0%')}
+        {slider('P: 연간 가격 인상률', pr, setPr, 0, 10, 0.5, '%', '최근 평균 6~7%')}
+        {slider('이익률 변화 효과', margin, setMargin, -3, 3, 0.5, '%p', '영업이익률 약 41% 유지면 0. 프랑스 법인세 부담 등이 있으면 마이너스')}
+        {slider('10년 뒤 PER', exitPe, setExitPe, 15, 50, 1, '배', '지금 약 29배, 10년 중간값 약 44배, 2009년 저점 28.5배')}
+      </div>
+
+      <div className="grid grid-cols-3 gap-2">
+        <StatCard label="예상 매출 성장(연)" value={`${rev.toFixed(1)}%`} />
+        <StatCard label="예상 EPS 성장(연)" value={`${eps.toFixed(1)}%`} />
+        <StatCard label="10년 연평균 수익률" value={`${ret.toFixed(1)}%`} />
+      </div>
+      <p className="text-[11px] text-gray-400 dark:text-gray-500">
+        매출 성장 = (1+Q)×(1+P)−1, EPS 성장 = 매출 성장 + 이익률 효과, 수익률 = [(1+EPS 성장)^10 × (10년 뒤 PER ÷ 지금 29.2배)]^(1/10) × (1+배당 1.35%) − 1.
+      </p>
+
+      <div className="overflow-x-auto">
+        <p className="text-xs font-semibold text-gray-700 dark:text-gray-200 mb-1">한눈에 보기: Q × P별 10년 연평균 수익률 (이익률 유지, 10년 뒤 PER 29배 유지)</p>
+        <table className="text-xs">
+          <thead>
+            <tr>
+              <th className={`${th} text-left`}>Q ↓ / P →</th>
+              {[3, 5, 7, 9].map(pp => <th key={pp} className={`${th} text-right`}>가격 +{pp}%</th>)}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+            {[0, 2.5, 5, 7].map(qq => (
+              <tr key={qq} className={qq === 5 ? 'bg-blue-50 dark:bg-blue-900/20' : ''}>
+                <td className={td}>
+                  판매량 +{qq}%{qq === 0 ? ' (2026 상반기)' : qq === 5 ? ' (자산가 증가율)' : qq === 2.5 ? ' (2025년)' : ''}
+                </td>
+                {[3, 5, 7, 9].map(pp => {
+                  const r = ((1 + qq / 100) * (1 + pp / 100) * (1 + div / 100) * Math.pow(29 / curPe, 0.1) - 1) * 100
+                  return <td key={pp} className={`${td} text-right ${cell(r)}`}>{r.toFixed(1)}%</td>
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <ul className={`${p} list-disc pl-4 space-y-1`}>
+        <li><b>자산가 증가(5%) × 평소 가격 인상(7%)</b>이면 매출이 연 약 12% 늘고, PER이 지금 수준만 유지해도 10년 연 약 13~14%다.</li>
+        <li><b>연 17~20%</b>가 나오려면 여기에 PER 재평가(29배 → 35~40배 이상)가 더해지거나, 판매량이 자산가 증가보다 빨라야 한다(신흥국 자산가 유입, 공방 증설).</li>
+        <li><b>지금(2026년 상반기)처럼 판매량이 멈추고 가격만 오르면</b> 연 8% 안팎. 핵심은 판매량(Q)이 자산가 증가율 쪽으로 돌아오는지다.</li>
+      </ul>
+      <p className="text-[11px] text-gray-400 dark:text-gray-500">
+        자산가 통계: Capgemini 세계 부 보고서(2016·2026), Knight Frank 부 보고서 2026, UBS 세계 부 보고서 2026. 가격 인상률은 리셀·전문 매체가 집계한 대표 제품 기준이며 회사 공식 수치가 아니다.
+        판매량은 매출 성장에서 가격 인상을 뺀 근사치(제품 구성 변화 포함)다.
+      </p>
+    </div>
+  )
+}
+
 function RmsInsight({ data }: { data: StockData }) {
   const decomp = ((data as any).epsDecomp ?? []) as Decomp[]
   // 연말 PER 흐름: 매수 연도 PER + 매도 연도 PER을 합쳐 연도별로 정리
@@ -2405,6 +2539,8 @@ function RmsInsight({ data }: { data: StockData }) {
           <li><b>확인할 신호:</b> 환율 영향을 뺀 매출 성장이 다시 두 자릿수로 올라오는지, 순이익이 다시 연 10% 이상 늘어나는지.</li>
         </ul>
       </div>
+
+      <HermesQP />
 
       <div className={box}>
         <h4 className={h4}>결론</h4>
