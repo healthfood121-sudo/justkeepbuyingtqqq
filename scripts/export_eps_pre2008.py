@@ -105,7 +105,7 @@ def parse_num(s):
     s = s.replace("$", "").replace(",", "").replace(" ", "").strip()
     if not s or s in ("-", "—", "–"):
         return None
-    neg = s.startswith("(") and s.endswith(")") or s.startswith("-")
+    neg = s.startswith("(") or s.startswith("-")  # 닫는 괄호가 다음 칸으로 갈라진 경우도 음수
     s = s.strip("()-")
     try:
         v = float(s)
@@ -218,7 +218,8 @@ def split_factor(splits, filed):
 
 
 def reconcile(found, known, factor):
-    """분할 보정 후 겹치는 해가 모두 12% 안, 최소 한 해는 4% 안이면 채택. 회사 연도 표기 차이(0/−1)도 판별."""
+    """분할 보정 후 겹치는 해가 모두 12% 안, 최소 한 해는 4% 안이면 채택 → (보정된 전체 값, 겹친 해 수).
+    회사 연도 표기 차이(0/−1)도 판별."""
     adj = {y: v / factor for y, v in found.items()}
     for shift in (0, -1):
         f2 = {y + shift: v for y, v in adj.items()}
@@ -227,12 +228,11 @@ def reconcile(found, known, factor):
             continue
         diffs = [abs(f2[y] / known[y] - 1) for y in ov]
         if all(d < 0.12 for d in diffs) and min(diffs) < 0.04:
-            new = {y: v for y, v in f2.items() if y not in known}
-            # 이상치: 음수가 2개 이상이거나 겹치는 해 평균의 10배를 넘으면 버림
             ref = sum(abs(known[y]) for y in ov) / len(ov)
-            if sum(1 for v in new.values() if v < 0) >= 2 or any(abs(v) > 10 * ref for v in new.values()):
+            rest = [v for y, v in f2.items() if y not in known]
+            if sum(1 for v in rest if v < 0) >= 3 or any(abs(v) > 15 * ref for v in rest):
                 continue
-            return new, len(ov)
+            return f2, len(ov)
     return None, 0
 
 
@@ -300,58 +300,81 @@ def process(key, cik):
             by[y] = v / split_factor(splits, filed)
         new, nov = reconcile(by, known, 1.0)
         if new:
-            added.update({y: v for y, v in new.items() if y >= 1995})
+            added.update({y: v for y, v in new.items() if y >= 1995 and y not in known})
             print(f"  {key}: 예전 회사 XBRL 채택 (겹침 {nov}) → {sorted(added.items())}", flush=True)
         else:
             print(f"  {key}: 예전 회사 XBRL 불일치 {sorted(by.items())[-6:]} / 지금 {sorted(known.items())[:4]}", flush=True)
     filings = list_10k(cik) + (list_10k(pred) if pred else [])
-    filings.sort(reverse=True)
+    filings = sorted({f[1]: f for f in filings if f[3] != "10-K/A"}.values(), reverse=True)
+    base = {**known, **added}
+    first_all = min(base)
+    filings = [f for f in filings if int(f[0][:4]) <= first_all + 2]
     if not filings:
         print(f"  {key}: 10-K 목록 없음", flush=True)
         return
-    target = min([first] + list(added))  # 이 해보다 이전을 채우는 중
-    tried = set()
-    while target > 1995:
-        # 회계연도 target 무렵 끝난 보고서(접수는 그다음 해) 중 가장 가까운 것부터
-        cands = [f for f in filings if f[1] not in tried and int(f[0][:4]) in (target + 1, target + 2, target)]
-        got = False
-        for date, accn, doc, form, fcik in cands[:5]:
-            tried.add(accn)
-            founds = eps_from_filing(fcik, accn)
-            if not founds:
-                print(f"  {key}: {date} {form} 표 못 찾음 {LAST_DIAG.get('msg', '')}", flush=True)
-                continue
-            base = {**known, **added}
-            fac = split_factor(splits, date)
-            new = None
-            for found in founds:
-                new, nov = reconcile(found, base, fac)
-                if new is not None:
-                    break
-            if not new:
-                print(f"  {key}: {date} 겹치는 해 불일치 (분할 {fac:g}배) 첫 후보 {founds[0]}", flush=True)
-                continue
-            new = {y: v for y, v in new.items() if 1995 <= y < target + 1}
-            if not new:
-                continue
-            added.update(new)
-            print(f"  {key}: {date} 채택 (겹침 {nov}) → {sorted(new.items())}", flush=True)
-            got = True
-            break
+    obs = {}  # 연도 → [(접수일, 값, 겹친 해 수)]
+    fails = 0
+    for date, accn, doc, form, fcik in filings:
+        founds = eps_from_filing(fcik, accn)
+        if not founds:
+            print(f"  {key}: {date} {form} 표 못 찾음 {LAST_DIAG.get('msg', '')[:400]}", flush=True)
+            fails += 1
+            if fails >= 6 and not obs:
+                break
+            continue
+        ref = dict(base)
+        for y, lst in obs.items():
+            ref.setdefault(y, lst[0][1])
+        fac = split_factor(splits, date)
+        got = None
+        for found in founds:
+            f2, nov = reconcile(found, ref, fac)
+            if f2 is not None:
+                got = (f2, nov)
+                break
         if not got:
-            break
-        target = min(added)
+            print(f"  {key}: {date} 겹치는 해 불일치 (분할 {fac:g}배) 첫 후보 {founds[0]}", flush=True)
+            fails += 1
+            if fails >= 6 and not obs:
+                break
+            continue
+        f2, nov = got
+        fresh = []
+        for y, v in f2.items():
+            if y in base or not (1995 <= y < first_all):
+                continue
+            obs.setdefault(y, []).append((date, v, nov))
+            fresh.append(y)
+        print(f"  {key}: {date} 채택 (겹침 {nov}) → {sorted((y, round(f2[y], 3)) for y in fresh)}", flush=True)
+    # 판정: 가장 최근 보고서 값 기준으로 7% 안에서 맞는 보고서가 2개 이상, 또는 1개라도 겹친 해가 2개 이상인 보고서
+    for y, lst in obs.items():
+        lst.sort(reverse=True)
+        v0 = lst[0][1]
+        agree = [v for _, v, _ in lst if (abs(v0) < 0.02 and abs(v) < 0.02) or (v0 != 0 and abs(v / v0 - 1) < 0.07)]
+        if len(agree) >= 2 or (len(lst) == 1 and lst[0][2] >= 2):
+            added[y] = v0
+        else:
+            print(f"  {key}: {y}년 보고서끼리 불일치·근거 부족 {[(d, round(v, 3)) for d, v, _ in lst]}", flush=True)
     if added:
-        d["epsOld"] = {str(y): round(v, 3) for y, v in sorted(added.items())}
-        d["epsOldSrc"] = "SEC 10-K 원문의 5년 요약 표(희석 EPS), 겹치는 해로 분할·연도 보정"
-        path.write_text(json.dumps(d, ensure_ascii=False, separators=(",", ":")))
+        d["epsOld"] = {str(y): round(v, 4) for y, v in sorted(added.items())}
+        d["epsOldSrc"] = "SEC 10-K 원문의 5년 요약 표(희석 EPS). 매년 보고서를 대조해 2개 이상 일치한 값, 겹치는 해로 분할·연도 보정"
+    else:
+        d.pop("epsOld", None)
+        d.pop("epsOldSrc", None)
+    path.write_text(json.dumps(d, ensure_ascii=False, separators=(",", ":")))
+    print(f"  {key}: 최종 {sorted((y, round(v, 3)) for y, v in added.items())}", flush=True)
 
 
 def main():
-    only = set(sys.argv[1:])
+    args = sys.argv[1:]
+    shard = next((a for a in args if a.startswith("--shard=")), None)
+    only = {a for a in args if not a.startswith("--")}
     keys = sorted(f.stem for f in OUT.glob("*.json") if not f.stem.startswith("_"))
     if only:
         keys = [k for k in keys if k in only]
+    if shard:  # 예: --shard=2/4 → 4묶음 중 2번째
+        i, n = map(int, shard.split("=")[1].split("/"))
+        keys = [k for j, k in enumerate(keys) if j % n == i - 1]
     cik_map = load_cik_map()
     for i, k in enumerate(keys, 1):
         d = json.loads((OUT / f"{k}.json").read_text())
