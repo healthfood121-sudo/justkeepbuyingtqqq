@@ -80,6 +80,48 @@ export default function IdeasPage() {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 space-y-8">
         <PrivateTabs active="ideas" />
 
+        {/* ── 사용 방법 ── */}
+        <section className="rounded-xl border-2 border-blue-200 dark:border-blue-900/60 bg-blue-50/60 dark:bg-blue-950/30 p-4 space-y-3">
+          <h2 className="text-base font-bold text-gray-900 dark:text-white">사용 방법 — 3단계로 보면 된다</h2>
+          <ol className="space-y-2.5 text-sm text-gray-700 dark:text-gray-200">
+            <li className="flex gap-2">
+              <span className="shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center">1</span>
+              <div>
+                <b>아래 &lsquo;Claude가 고른 종목 정리&rsquo;부터 본다.</b>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                  ⓪~⑤는 <b>지금 상황</b>별 묶음이다(⓪ 브랜드 기업이 싸진 경우 · ① 이익은 그대로인데 값만 내려옴 · ② 싸졌지만 이유가 있음 · ③ 값이 평소 수준 · ④ 이익이 줄어듦 · ⑤ 지금은 비쌈).
+                  묶음 안의 <b>1위·2위</b>는 먼저 살 만한 순서다.
+                </p>
+              </div>
+            </li>
+            <li className="flex gap-2">
+              <span className="shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center">2</span>
+              <div>
+                <b>카드의 배지로 회사 자체가 얼마나 좋은지 확인한다.</b>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                  <span className="px-1 rounded bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">위대한 기업</span>(A) ·
+                  <span className="px-1 rounded bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 ml-1">좋은 기업</span>(B) ·
+                  <span className="px-1 rounded bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300 ml-1">보통</span>(C).
+                  등급은 주가와 상관없이 사업만 보고 먼저 매긴 것이다. 카드의 <b>왜</b>는 고른 이유, <b className="text-red-500">볼 것</b>은 확인할 위험이다.
+                </p>
+              </div>
+            </li>
+            <li className="flex gap-2">
+              <span className="shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center">3</span>
+              <div>
+                <b>궁금한 종목은 위 &lsquo;위대한 기업&rsquo; 탭에서 종목을 골라 자세히 본다.</b>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                  노란 박스(직접 쓴 분석) → 사업성 평가 → 지금 상태 요약 → 연도별 수익률 분해 → 시나리오 표 순서로 나온다.
+                </p>
+              </div>
+            </li>
+          </ol>
+          <div className="text-xs text-gray-500 dark:text-gray-400 border-t border-blue-200 dark:border-blue-900/60 pt-2 space-y-1">
+            <p><b>더 파고들고 싶다면:</b> 아래 &lsquo;자동 분류&rsquo;에서 위대한 기업의 기준(브랜드형·성장형·버핏형 등)을 바꿔 보고, &lsquo;전체 종목 표&rsquo;에서 열 제목을 눌러 정렬하거나 종목을 검색한다.</p>
+            <p><b>숫자 읽는 법:</b> PER/10년 중간 100% 미만이면 평소보다 싸다는 뜻. 이익/고점 100%면 이익이 최고 수준, 85% 미만이면 이익이 꺾인 상태.</p>
+          </div>
+        </section>
+
         <div className="space-y-1">
           <h1 className="text-xl font-bold text-gray-900 dark:text-white">종목 아이디어</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">
