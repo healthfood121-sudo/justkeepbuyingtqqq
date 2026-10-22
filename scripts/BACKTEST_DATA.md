@@ -962,7 +962,7 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 | `web/public/data/fundamentals/_quality.json` | ~80 KB | `build_quality_json.py` (원본 `scripts/data/quality/quality.tsv`) | 기업별 정성 평가: 해자·가격결정력·수익성·성장성·지속가능성(1~5), 등급, 강점·위험 | `/private`, `/private/ideas` |
 
 - 실행: GitHub Actions `전 종목 펀더멘털 데이터 생성` (workflow_dispatch, 입력 `tickers` 비우면 전 종목). 이 세션 환경은 SEC·Yahoo 접속이 막혀 있어 Actions로 생성.
-- 2026-10 추가 필드(이익 시계용): `epsEnd`(회계연도 마감일), `ttmAsOf`(최근 1년 EPS 기준 분기말 추정), `monthly`(월말 종가, 배당 미반영), `lastPrice`, `shares`(SEC dei 유통 주식 수).
+- 2026-10 추가 필드(이익 시계용): `epsEnd`(회계연도 마감일), `ttmAsOf`(최근 1년 EPS 기준 분기말 추정), `monthly`(월말 종가, 배당 미반영), `lastPrice`, `shares`(SEC dei 유통 주식 수, 2년 넘게 오래됐거나 없으면 최근 희석 가중평균 주식 수). 주식 수만 다시 채우기: 워크플로 입력 `--shares-only`.
 - EPS 없음(6개: ARES, ERIE, KKR, STZ, V, XOM), 공시 EPS가 오래된 종목(12개)은 숫자 비교에서 제외(`stale`).
 - 1~3월 결산 회사는 회계연도를 전년도로 매김. 버크셔는 A주 EPS ÷ 1500.
 
