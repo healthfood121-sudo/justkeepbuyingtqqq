@@ -1,7 +1,8 @@
 """
 analyze_ko.py  —  코카콜라(KO) 롤링 CAGR 분석
-매수 시작 연도: 1988년 말 (연말 매수 기준)
-Yahoo Finance 데이터 1962년부터 제공, 1980년 이전 데이터는 신뢰성 낮음.
+매수 시작 연도: 1972년 말 (연말 매수 기준)
+Yahoo Finance KO 데이터는 1970년부터 제공 (분할 조정 완비).
+10년 롤링이므로 1972년 말 매수 → 1982년이 첫 완결 구간.
 """
 
 import sys
@@ -27,12 +28,12 @@ df5a  = az.rolling(years=5,  freq="annual")
 # 10년 월말 매수
 df10m = az.rolling(years=10, freq="monthly")
 
-# ── 매수 시작 연도 필터: 1988년 이후만 유효 ────────────────────
-# Yahoo Finance KO는 1962년부터 데이터가 있으나 1980년 이전은 신뢰성 낮음.
-# 분석은 1988년 말 매수부터 시작.
-df10a = df10a[df10a["buy_date"].dt.year >= 1988].reset_index(drop=True)
-df5a  = df5a[df5a["buy_date"].dt.year  >= 1988].reset_index(drop=True)
-df10m = df10m[df10m["buy_date"].dt.year >= 1988].reset_index(drop=True)
+# ── 매수 시작 연도 필터: 1972년 이후만 유효 ────────────────────
+# Yahoo Finance KO는 1970년부터 데이터가 있으며 분할 조정 완비.
+# 10년 롤링이므로 1972년 말 매수 → 1982년이 첫 완결 구간.
+df10a = df10a[df10a["buy_date"].dt.year >= 1972].reset_index(drop=True)
+df5a  = df5a[df5a["buy_date"].dt.year  >= 1972].reset_index(drop=True)
+df10m = df10m[df10m["buy_date"].dt.year >= 1972].reset_index(drop=True)
 
 # CSV 저장
 az.save_csv(df10a, OUT / "KO_10y_annual.csv")
