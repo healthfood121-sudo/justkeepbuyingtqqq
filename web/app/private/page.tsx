@@ -2415,7 +2415,7 @@ const epsGrowthOf = (f: Factors) =>
   ((1 + f.q / 100) * (1 + f.pr / 100) * (1 + f.mg / 100) * (1 + f.ot / 100) - 1) * 100
 
 const HERMES_SCENARIOS: Array<{ label: string; f: Factors; desc: string }> = [
-  { label: '기본', f: { q: 4.5, pr: 5.5, mg: 0, ot: 0 }, desc: '판매량은 공급 반·수요 반, 이익률은 지금(41%) 유지' },
+  { label: '기본', f: { q: 4.5, pr: 5.5, mg: 0, ot: 0 }, desc: '판매량은 지금(0~2.5%)과 공방 증설 한도(6~7%)의 중간, 이익률 41% 유지' },
   { label: '낙관', f: { q: 6.5, pr: 6, mg: 1, ot: 0 }, desc: '대기 고객이 다시 넘쳐 판매량 = 공방 증설 속도, 이익률도 조금 상승' },
   { label: '지금 상태 지속', f: { q: 1, pr: 5.5, mg: 0, ot: 0 }, desc: '2026년 상반기처럼 판매량이 거의 멈추고 가격만 오름' },
 ]
@@ -2441,10 +2441,10 @@ function HermesForecast() {
     </label>
   )
   const past = [
-    { k: '① 판매량', v: '+8.5%', note: '환율 뺀 매출 13.5% ÷ 가격' },
+    { k: '① 판매량', v: '+8.5%', note: '환율 뺀 매출 연 13.5% ÷ 가격 인상' },
     { k: '② 가격 인상', v: '+4.6%', note: '2019~2025년 평균 (그 이전은 기록 없음)' },
-    { k: '③ 이익률 변화', v: '+3.0%', note: '영업이익률 25% → 41%' },
-    { k: '④ 기타 (환율·세금·이자)', v: '+1.6%', note: '환율 +0.6, 나머지 +1.0' },
+    { k: '③ 이익률 변화', v: '+3.4%', note: '영업이익률 24.2%(2009) → 41.0%(2025)' },
+    { k: '④ 기타', v: '+1.3%', note: '환율 +0.6, 세금·이자 등 +0.7' },
   ]
 
   return (
@@ -2466,6 +2466,16 @@ function HermesForecast() {
               <tr className="bg-gray-50 dark:bg-gray-800/50"><td className={`${td} font-semibold`}>EPS 성장</td><td className={`${td} text-right font-semibold`}>+18.8%</td><td className={td}></td></tr>
             </tbody>
           </table>
+        </div>
+
+        <div className="rounded bg-amber-50 dark:bg-amber-900/10 p-3 space-y-1">
+          <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">① 판매량에 자산가 수를 그대로 넣지 않는 이유</p>
+          <ul className={`${p} list-disc pl-4 space-y-0.5`}>
+            <li>자산가 수(금융자산 100만 달러 이상)는 연 5~6% 늘었다. 그런데 그중 약 3%p는 <b>물가가 올라 숫자로만 기준선을 넘은 사람</b>이다. 실제로 더 부유해진 게 아니라 에르메스를 더 사지 않는다.</li>
+            <li>물가는 이미 ② 가격 인상에 들어 있다. ①에도 넣으면 물가를 두 번 센다. 그래서 물가를 뺀 &lsquo;실제 자산가 증가&rsquo;는 연 2% 안팎이다.</li>
+            <li>그런데 과거 판매량은 <b>연 8.5%</b>로 그보다 훨씬 빨랐다. 공방 증설, 새 시장(중국·중동), 다른 브랜드 고객 흡수 덕분이다.</li>
+            <li>그래서 자산가 수는 판매량의 바닥값으로만 보고, 판매량은 <b>&lsquo;환율 뺀 매출 성장 − 가격 인상&rsquo;</b>으로 직접 확인한다. 2025년 약 2.5%, 2026년 상반기 약 0~1%.</li>
+          </ul>
         </div>
 
         <div className="rounded bg-gray-50 dark:bg-gray-800/50 p-3 space-y-1">
@@ -2495,10 +2505,10 @@ function HermesForecast() {
         </div>
 
         <div className="grid sm:grid-cols-2 gap-x-6 gap-y-3">
-          {slider('① 판매량', f.q, set('q'), -3, 10, '공방 증설 6~7% · 물가 뺀 자산가 증가 약 2% · 2026년 상반기 약 0~1%')}
+          {slider('① 판매량', f.q, set('q'), -3, 10, '과거 16년 연 8.5% · 공방 증설 한도 6~7% · 2025년 약 2.5% · 2026년 상반기 약 0~1%')}
           {slider('② 가격 인상', f.pr, set('pr'), 0, 10, '2023~2025년 6~7%, 2026년 5~6% (회사 발표)')}
-          {slider('③ 이익률 변화 (연)', f.mg, set('mg'), -3, 3, '영업이익률 41% 유지면 0. 연 +1%면 10년 뒤 45%')}
-          {slider('④ 기타', f.ot, set('ot'), -2, 2, '환율·세금·이자. 길게 보면 0에 가깝다')}
+          {slider('③ 이익률 변화 (연)', f.mg, set('mg'), -3, 3, '과거 16년 연 +3.4%. 41% 유지면 0. 연 +1%면 10년 뒤 45%')}
+          {slider('④ 기타', f.ot, set('ot'), -2, 2, '과거 16년 연 +1.3%(환율·세금·이자). 앞으로는 0으로 본다')}
         </div>
 
         <div className="grid grid-cols-2 gap-2">
@@ -2513,7 +2523,6 @@ function HermesForecast() {
           <summary className="text-xs font-semibold text-gray-700 dark:text-gray-200 cursor-pointer">근거 자료 보기 (자산가 인구·가격 인상·연도별 매출·EPS 분해)</summary>
           <div className="space-y-3 mt-3">
             <ul className={`${p} list-disc pl-4 space-y-0.5`}>
-              <li><b>물가는 한 번만 센다.</b> 자산가 수(명목 연 5%)에는 물가가 섞여 있고, 가격 인상(②)에도 물가가 들어 있다. 물가를 뺀 실제 자산가 증가는 연 2% 안팎이다.</li>
               <li><b>판매량을 정하는 것:</b> 수요가 공급보다 많으면 공방 증설 속도(연 6~7%), 적으면 실제 자산가 증가 + 새 시장 + 다른 브랜드 고객 흡수. 지금은 매출 절반쯤(가죽제품)이 공급에 묶여 있어 &lsquo;공급 반·수요 반&rsquo;으로 본다.</li>
               <li><b>이익률은 판매량과 같이 움직인다.</b> 공방·매장은 고정비라 매출이 빨리 크면 이익률이 오르고, 판매량이 멈추면 이익률도 멈춘다.</li>
             </ul>
@@ -2924,7 +2933,7 @@ function RmsInsight({ data }: { data: StockData }) {
         <p className={p}>
           지금과 비슷한 PER에서 산 경우: 2012년(27.6배) 21.8% · 2009년(28.2배) 23.4% · 2013년(30.6배) 23.2% · 2015년(30.7배) 22.1% ·
           2008년(31.2배) 18.7% · 2014년(31.8배) 24.2% · 1996년(30.6배) 15.4% · 2000년(30.5배) 13.7%.
-          다만 그 시기는 이익률이 25% → 41%로 오르고 PER도 올랐던 때라, 같은 결과를 기대하긴 어렵다(7번 참고).
+          다만 그 시기는 이익률이 24% → 41%로 오르고 PER도 올랐던 때라, 같은 결과를 기대하긴 어렵다(7번 참고).
         </p>
       </div>
 
@@ -3031,7 +3040,7 @@ function RmsInsight({ data }: { data: StockData }) {
       <div className={box}>
         <h4 className={h4}>결론</h4>
         <ul className={`${p} list-disc pl-4 space-y-1`}>
-          <li><b>앞으로 EPS는 연 10% 안팎(±3%p)</b>이 중심이다. 과거 18.8%는 이익률이 25% → 41%로 오른 덕이 커서 그대로 반복되긴 어렵다.</li>
+          <li><b>앞으로 EPS는 연 10% 안팎(±3%p)</b>이 중심이다. 과거 18.8%는 이익률이 24% → 41%로 오른 덕이 커서 그대로 반복되긴 어렵다.</li>
           <li>PER 31.5배가 그대로면 10년 연 약 11~12%. 연 17~20%는 판매량 회복(낙관)과 PER 재평가가 함께 와야 나온다.</li>
           <li>매일 볼 것은 8번 그래프: 주가가 적정가 띠 아래면 싼 구간, 위면 비싼 구간.</li>
           <li>반기마다 볼 것: <b>판매량(매출 성장 − 가격 인상)이 다시 늘어나는지</b>, 영업이익률 41%가 유지되는지.</li>
