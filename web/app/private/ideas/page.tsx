@@ -83,7 +83,13 @@ export default function IdeasPage() {
 
         {/* ── 추천 정리 ── */}
         <section className="space-y-5">
-          <h2 className="text-base font-semibold text-gray-900 dark:text-white">Claude가 고른 종목 정리</h2>
+          <div>
+            <h2 className="text-base font-semibold text-gray-900 dark:text-white">Claude가 고른 종목 정리</h2>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              분류 안의 순위는 가격 매력(지금 PER과 자기 평소 PER), 이익 흐름(지금도 늘고 있나), 사업의 질, 투자 논리가 깨질 위험을 함께 본 판단이다.
+              1위가 가장 먼저 살 만하다는 뜻이고, 숫자 하나로 정한 순위가 아니다.
+            </p>
+          </div>
           {PICK_SECTIONS.map(sec => {
             const picks = PICKS.filter(p => p.section === sec.key)
             if (!picks.length) return null
@@ -94,11 +100,12 @@ export default function IdeasPage() {
                   <p className="text-xs text-gray-500 dark:text-gray-400">{sec.desc}</p>
                 </div>
                 <div className="grid sm:grid-cols-2 gap-3">
-                  {picks.map(pk => {
+                  {picks.map((pk, idx) => {
                     const r = byKey.get(pk.key)
                     return (
                       <div key={pk.key} className="rounded-lg border border-gray-200 dark:border-gray-800 p-3 space-y-1.5">
                         <div className="flex flex-wrap items-center gap-2">
+                          <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${idx === 0 ? 'bg-amber-400 text-white' : idx < 3 ? 'bg-gray-800 text-white dark:bg-gray-200 dark:text-gray-900' : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300'}`}>{idx + 1}위</span>
                           <span className="text-sm font-semibold text-gray-900 dark:text-white">{r?.name ?? pk.key}</span>
                           <span className="text-xs text-gray-400">{pk.key}</span>
                           {r?.q && <span className={`text-[11px] px-1.5 py-0.5 rounded ${gradeColor(r.q.grade)}`}>{GRADE_LABEL[r.q.grade]}</span>}
@@ -111,6 +118,7 @@ export default function IdeasPage() {
                           </div>
                         )}
                         <p className="text-xs leading-relaxed text-gray-700 dark:text-gray-200">{pk.why}</p>
+                        {pk.rankNote && <p className="text-xs leading-relaxed text-amber-700 dark:text-amber-400"><b>이 순위인 이유:</b> {pk.rankNote}</p>}
                         <p className="text-xs leading-relaxed text-red-500/90"><b>볼 것:</b> {pk.watch}</p>
                       </div>
                     )
