@@ -5,19 +5,19 @@
   "benchmark": "S&P 500",
   "note": "",
   "current": {
-    "price": 92.54,
+    "price": 92.96,
     "pe": 8.0,
     "divYield": 2.48,
     "eps": 11.6
   },
   "fullPeriod": {
     "start_date": "2021-02-10",
-    "end_date": "2026-10-21",
+    "end_date": "2026-10-22",
     "start_price": 35.1584,
-    "end_price": 92.54,
+    "end_price": 92.96,
     "years": 5.7,
-    "cagr": 18.53,
-    "multiple": 2.6321
+    "cagr": 18.62,
+    "multiple": 2.644
   },
   "stats": {
     "n": 0,
@@ -38,46 +38,46 @@
     {
       "buyYear": 2021,
       "sellYear": 2026,
-      "sellDate": "2026-10-21",
+      "sellDate": "2026-10-22",
       "yearsActual": 4.8,
-      "cagr": 12.99,
-      "multiple": 1.798,
+      "cagr": 13.09,
+      "multiple": 1.81,
       "isComplete": false,
-      "benchCagr": 12.28,
-      "diff": 0.71
+      "benchCagr": 11.97,
+      "diff": 1.12
     },
     {
       "buyYear": 2022,
       "sellYear": 2026,
-      "sellDate": "2026-10-21",
+      "sellDate": "2026-10-22",
       "yearsActual": 3.8,
-      "cagr": 2.72,
-      "multiple": 1.1075,
+      "cagr": 2.84,
+      "multiple": 1.11,
       "isComplete": false,
-      "benchCagr": 21.99,
-      "diff": -19.27
+      "benchCagr": 21.55,
+      "diff": -18.71
     },
     {
       "buyYear": 2023,
       "sellYear": 2026,
-      "sellDate": "2026-10-21",
+      "sellDate": "2026-10-22",
       "yearsActual": 2.8,
-      "cagr": 9.78,
-      "multiple": 1.2995,
+      "cagr": 9.95,
+      "multiple": 1.31,
       "isComplete": false,
-      "benchCagr": 20.49,
-      "diff": -10.71
+      "benchCagr": 19.9,
+      "diff": -9.95
     },
     {
       "buyYear": 2024,
       "sellYear": 2026,
-      "sellDate": "2026-10-21",
+      "sellDate": "2026-10-22",
       "yearsActual": 1.8,
-      "cagr": -1.35,
-      "multiple": 0.9758,
+      "cagr": -1.1,
+      "multiple": 0.98,
       "isComplete": false,
-      "benchCagr": 18.07,
-      "diff": -19.42
+      "benchCagr": 17.18,
+      "diff": -18.28
     }
   ],
   "loss5y": [],
