@@ -70,7 +70,7 @@ def list_10k(cik):
     for b in blocks:
         for form, date, accn, doc in zip(b["form"], b["filingDate"], b["accessionNumber"], b["primaryDocument"]):
             if form in FORMS and "1996-01-01" <= date <= "2011-12-31":
-                out.append((date, accn, doc, form))
+                out.append((date, accn, doc, form, cik))
     out.sort(reverse=True)
     return out
 
@@ -99,6 +99,9 @@ def filing_docs(cik, accn):
 
 
 def parse_num(s):
+    s = re.sub(r"\((?:[a-zA-Z]|\d{1,2})\)$|\*+$", "", s.strip())  # 각주 표시 (1) (a) * 제거
+    if "." not in s:  # EPS는 소수점이 있는 숫자만 (각주 번호·연도·퍼센트 오인 방지)
+        return None
     s = s.replace("$", "").replace(",", "").replace(" ", "").strip()
     if not s or s in ("-", "—", "–"):
         return None
@@ -163,7 +166,7 @@ def find_eps(rows, max_gap=80):
         sc = label_score(cells[0])
         if sc <= 0:
             continue
-        nums = [parse_num(c) for c in cells[1:]]
+        nums = [parse_num(c) for c in cells[1:] if not re.fullmatch(r"\((?:[a-zA-Z]|\d{1,2})\)|\*+", c.strip())]
         nums = [n for n in nums if n is not None]
         if not (len(years) <= len(nums) <= len(years) + 1):  # 증감률 등 다른 칸이 섞인 행은 제외
             continue
@@ -175,19 +178,29 @@ def find_eps(rows, max_gap=80):
     return [c[1] for c in cands]
 
 
+LAST_DIAG = {}
+
+
 def eps_from_filing(cik, accn):
     """보고서의 EPS 후보들(점수 높은 순)."""
     out = []
+    diag = []
     for url in filing_docs(cik, accn):
         r = get(url)
         if not r:
+            diag.append(f"{url.rsplit('/', 1)[-1]}:없음")
             continue
         txt = r.text
+        low = txt.lower()
+        i = low.find("diluted")
+        diag.append(f"{url.rsplit('/', 1)[-1]}:{len(txt)//1000}KB tr={'<tr' in low} 희석={i >= 0}"
+                    + (f" «{re.sub(r'<[^>]+>|\s+', ' ', txt[max(0, i - 150):i + 250])[:300]}»" if i >= 0 else ""))
         if "<tr" in txt.lower():
             out += find_eps(rows_from_html(txt), max_gap=60)
         else:  # 옛날 SGML 텍스트: 표 표시 태그 제거
             txt = re.sub(r"</?(TABLE|CAPTION|S|C|FN|PAGE)>", "", txt, flags=re.I)
             out += find_eps(rows_from_text(txt), max_gap=80)
+    LAST_DIAG["msg"] = " | ".join(diag)
     return out
 
 
@@ -223,6 +236,45 @@ def reconcile(found, known, factor):
     return None, 0
 
 
+# 지주사 전환·본사 이전으로 SEC 등록번호가 바뀐 회사: 예전 회사의 등록번호
+PREDECESSOR = {
+    "GOOGL": 1288776,  # Google Inc. → Alphabet (2015)
+    "GOOG": 1288776,
+    "DIS": 1001039,    # Walt Disney Co (현 TWDC Enterprises 18) → 새 지주사 (2019)
+    "MDT": 64670,      # Medtronic Inc → Medtronic plc (2015)
+    "BG": 1144519,     # Bunge Ltd → Bunge Global (2023)
+    "APA": 6769,       # Apache Corp → APA Corp (2021)
+    "BLK": 1364742,    # BlackRock Inc (구) → 새 지주사 (2024)
+    "TPL": 97517,      # Texas Pacific Land Trust → Corp (2021)
+    "AVGO": 1441634,   # Avago Technologies → Broadcom (2016)
+    "STE": 815065,     # STERIS Corp → STERIS plc
+}
+
+
+def xbrl_eps(cik):
+    """회계연도 종료일 → (EPS, 공시일): 연간(10-K) 희석 EPS."""
+    best = {}
+    for concept in ("EarningsPerShareDiluted", "EarningsPerShareBasicAndDiluted", "EarningsPerShareBasic"):
+        r = get(f"https://data.sec.gov/api/xbrl/companyconcept/CIK{cik:010d}/us-gaap/{concept}.json")
+        if not r:
+            continue
+        for unit, items in r.json().get("units", {}).items():
+            if "/shares" not in unit:
+                continue
+            for it in items:
+                if it.get("form") not in ("10-K", "10-K/A", "20-F") or not it.get("start"):
+                    continue
+                days = (pd.Timestamp(it["end"]) - pd.Timestamp(it["start"])).days
+                if not 340 <= days <= 390:
+                    continue
+                prev = best.get(it["end"])
+                if prev is None or (prev[2] == concept and it["filed"] > prev[1]):
+                    best[it["end"]] = (float(it["val"]), it["filed"], concept)
+        if best:
+            break
+    return best
+
+
 def process(key, cik):
     path = OUT / f"{key}.json"
     d = json.loads(path.read_text())
@@ -236,22 +288,38 @@ def process(key, cik):
         splits = yf.Ticker(d["ticker"].replace(".", "-")).splits
     except Exception:
         splits = pd.Series(dtype=float)
-    filings = list_10k(cik)
+    added = {}
+    pred = PREDECESSOR.get(key)
+    if pred:
+        # 예전 회사의 XBRL EPS로 2008~전환 전 구간부터 채움 (겹치는 해로 검증)
+        raw = xbrl_eps(pred)
+        by = {}
+        for end, (v, filed, _) in sorted(raw.items()):
+            t = pd.Timestamp(end)
+            y = t.year - 1 if t.month <= 3 else t.year
+            by[y] = v / split_factor(splits, filed)
+        new, nov = reconcile(by, known, 1.0)
+        if new:
+            added.update({y: v for y, v in new.items() if y >= 1995})
+            print(f"  {key}: 예전 회사 XBRL 채택 (겹침 {nov}) → {sorted(added.items())}", flush=True)
+        else:
+            print(f"  {key}: 예전 회사 XBRL 불일치 {sorted(by.items())[-6:]} / 지금 {sorted(known.items())[:4]}", flush=True)
+    filings = list_10k(cik) + (list_10k(pred) if pred else [])
+    filings.sort(reverse=True)
     if not filings:
         print(f"  {key}: 10-K 목록 없음", flush=True)
         return
-    added = {}
-    target = first  # 이 해보다 이전을 채우는 중
+    target = min([first] + list(added))  # 이 해보다 이전을 채우는 중
     tried = set()
     while target > 1995:
         # 회계연도 target 무렵 끝난 보고서(접수는 그다음 해) 중 가장 가까운 것부터
         cands = [f for f in filings if f[1] not in tried and int(f[0][:4]) in (target + 1, target + 2, target)]
         got = False
-        for date, accn, doc, form in cands[:5]:
+        for date, accn, doc, form, fcik in cands[:5]:
             tried.add(accn)
-            founds = eps_from_filing(cik, accn)
+            founds = eps_from_filing(fcik, accn)
             if not founds:
-                print(f"  {key}: {date} {form} 표 못 찾음", flush=True)
+                print(f"  {key}: {date} {form} 표 못 찾음 {LAST_DIAG.get('msg', '')}", flush=True)
                 continue
             base = {**known, **added}
             fac = split_factor(splits, date)
