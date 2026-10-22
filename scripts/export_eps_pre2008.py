@@ -19,7 +19,9 @@ import time
 from html import unescape
 from pathlib import Path
 
+import pandas as pd
 import requests
+import yfinance as yf
 from bs4 import BeautifulSoup
 
 ROOT = Path(__file__).parent.parent
@@ -126,97 +128,95 @@ def label_score(label):
 
 
 def rows_from_html(html):
+    """문서 전체의 표 행을 순서대로 (표 번호, 칸 목록)."""
     soup = BeautifulSoup(html, "html.parser")
-    for t in soup.find_all("table"):
-        rows = []
+    for ti, t in enumerate(soup.find_all("table")):
         for tr in t.find_all("tr"):
             cells = [unescape(td.get_text(" ", strip=True)) for td in tr.find_all(["td", "th"])]
-            cells = [c for c in cells if c and c not in ("$", ")", "%")]
+            cells = [c for c in cells if c and c not in ("$", ")", "%", "(")]
             if cells:
-                rows.append(cells)
-        if rows:
-            yield rows
+                yield cells
 
 
 def rows_from_text(text):
-    """고정폭 텍스트 표: 빈 줄로 나뉜 블록을 표로 보고, 2칸 이상 공백으로 칸을 나눈다."""
-    block = []
-    for line in text.splitlines() + [""]:
-        if line.strip():
-            block.append(line)
-            continue
-        if len(block) >= 3:
-            yield [[c for c in re.split(r"\s{2,}", ln.strip()) if c and c not in ("$",)] for ln in block]
-        block = []
+    """고정폭 텍스트: 줄마다 2칸 이상 공백으로 칸을 나눔."""
+    for ln in text.splitlines():
+        if ln.strip():
+            yield [c for c in re.split(r"\s{2,}", ln.strip()) if c and c not in ("$",)]
 
 
-def find_eps(rows):
-    """표에서 (연도 목록, EPS 값 목록, 점수). 연도 머리줄 아래 EPS 행을 찾는다."""
-    best = None
-    years = None
+def find_eps(rows, max_gap=80):
+    """연도 머리줄 아래(max_gap 줄 이내) EPS 후보 행들을 점수순으로."""
+    cands = []
+    years, since = None, 0
     for cells in rows:
+        since += 1
         ys = [int(m) for c in cells for m in YEAR_RE.findall(c)]
-        # 머리줄: 서로 다른 연도 4개 이상, 연속(1년 간격)
         if len(ys) >= 4 and len(set(ys)) == len(ys) and all(abs(a - b) == 1 for a, b in zip(ys, ys[1:])):
-            years = ys
+            years, since = ys, 0
             continue
-        if not years or not cells:
+        if not years or since > max_gap or not cells:
             continue
-        label = cells[0]
-        sc = label_score(label)
+        sc = label_score(cells[0])
         if sc <= 0:
             continue
         nums = [parse_num(c) for c in cells[1:]]
         nums = [n for n in nums if n is not None]
-        if len(nums) < len(years):
+        if not (len(years) <= len(nums) <= len(years) + 1):  # 증감률 등 다른 칸이 섞인 행은 제외
             continue
         vals = nums[: len(years)]
         if any(abs(v) > 200 for v in vals):
             continue
-        cand = (years, vals, sc)
-        if best is None or sc > best[2]:
-            best = cand
-    return best
+        cands.append((sc, {y: v for y, v in zip(years, vals)}))
+    cands.sort(key=lambda c: -c[0])
+    return [c[1] for c in cands]
 
 
 def eps_from_filing(cik, accn):
-    best = None
+    """보고서의 EPS 후보들(점수 높은 순)."""
+    out = []
     for url in filing_docs(cik, accn):
         r = get(url)
         if not r:
             continue
         txt = r.text
-        is_html = "<tr" in txt.lower()
-        if not is_html:  # 옛날 SGML 텍스트: 표 표시 태그 제거
+        if "<tr" in txt.lower():
+            out += find_eps(rows_from_html(txt), max_gap=60)
+        else:  # 옛날 SGML 텍스트: 표 표시 태그 제거
             txt = re.sub(r"</?(TABLE|CAPTION|S|C|FN|PAGE)>", "", txt, flags=re.I)
-        tables = rows_from_html(txt) if is_html else rows_from_text(txt)
-        for rows in tables:
-            f = find_eps(rows)
-            if f and (best is None or f[2] > best[2] or (f[2] == best[2] and len(f[0]) > len(best[0]))):
-                best = f
-    if not best:
-        return None
-    return {y: v for y, v in zip(best[0], best[1])}
+            out += find_eps(rows_from_text(txt), max_gap=80)
+    return out
 
 
-def reconcile(found, known):
-    """found(회사 표기 연도)를 known(확정 값)에 맞춤: 연도 차이(0/−1)와 분할 비율을 겹치는 해로 판별."""
+def split_factor(splits, filed):
+    """공시일 이후 일어난 분할 배수의 곱 (예: 2:1 두 번 → 4)."""
+    f = 1.0
+    t0 = pd.Timestamp(filed)
+    for d, r in splits.items():
+        t = pd.Timestamp(d)
+        if t.tzinfo is not None:
+            t = t.tz_localize(None)
+        if t > t0 and r > 0:
+            f *= float(r)
+    return f
+
+
+def reconcile(found, known, factor):
+    """분할 보정 후 겹치는 해가 모두 12% 안, 최소 한 해는 4% 안이면 채택. 회사 연도 표기 차이(0/−1)도 판별."""
+    adj = {y: v / factor for y, v in found.items()}
     for shift in (0, -1):
-        f2 = {y + shift: v for y, v in found.items()}
-        ov = [y for y in f2 if y in known and f2[y] and known[y] and abs(known[y]) > 0.005]
-        if len(ov) < 1:
+        f2 = {y + shift: v for y, v in adj.items()}
+        ov = [y for y in f2 if y in known and known[y] and abs(known[y]) > 0.01]
+        if not ov:
             continue
-        ratios = [known[y] / f2[y] for y in ov]
-        if any(r <= 0 for r in ratios):
-            continue
-        med = sorted(ratios)[len(ratios) // 2]
-        if not all(abs(r / med - 1) < 0.04 for r in ratios):
-            continue
-        if len(ov) == 1:  # 겹치는 해가 하나면 비율이 1 또는 흔한 분할 비율일 때만
-            ok = any(abs(med * k - 1) < 0.03 for k in (1, 2, 3, 4, 5, 6, 8, 10, 1.5, 1.25, 2.5, 1 / 1.5))
-            if not ok:
+        diffs = [abs(f2[y] / known[y] - 1) for y in ov]
+        if all(d < 0.12 for d in diffs) and min(diffs) < 0.04:
+            new = {y: v for y, v in f2.items() if y not in known}
+            # 이상치: 음수가 2개 이상이거나 겹치는 해 평균의 10배를 넘으면 버림
+            ref = sum(abs(known[y]) for y in ov) / len(ov)
+            if sum(1 for v in new.values() if v < 0) >= 2 or any(abs(v) > 10 * ref for v in new.values()):
                 continue
-        return {y: v * med for y, v in f2.items() if y not in known}, len(ov)
+            return new, len(ov)
     return None, 0
 
 
@@ -229,6 +229,10 @@ def process(key, cik):
     first = min(known)
     if first <= 1995:
         return
+    try:
+        splits = yf.Ticker(d["ticker"].replace(".", "-")).splits
+    except Exception:
+        splits = pd.Series(dtype=float)
     filings = list_10k(cik)
     if not filings:
         print(f"  {key}: 10-K 목록 없음", flush=True)
@@ -240,16 +244,21 @@ def process(key, cik):
         # 회계연도 target 무렵 끝난 보고서(접수는 그다음 해) 중 가장 가까운 것부터
         cands = [f for f in filings if f[1] not in tried and int(f[0][:4]) in (target + 1, target + 2, target)]
         got = False
-        for date, accn, doc, form in cands[:3]:
+        for date, accn, doc, form in cands[:5]:
             tried.add(accn)
-            found = eps_from_filing(cik, accn)
-            if not found:
+            founds = eps_from_filing(cik, accn)
+            if not founds:
                 print(f"  {key}: {date} {form} 표 못 찾음", flush=True)
                 continue
             base = {**known, **added}
-            new, nov = reconcile(found, base)
+            fac = split_factor(splits, date)
+            new = None
+            for found in founds:
+                new, nov = reconcile(found, base, fac)
+                if new is not None:
+                    break
             if not new:
-                print(f"  {key}: {date} 겹치는 해 불일치 {found}", flush=True)
+                print(f"  {key}: {date} 겹치는 해 불일치 (분할 {fac:g}배) 첫 후보 {founds[0]}", flush=True)
                 continue
             new = {y: v for y, v in new.items() if 1995 <= y < target + 1}
             if not new:
