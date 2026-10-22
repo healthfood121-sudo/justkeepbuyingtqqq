@@ -5,108 +5,36 @@
   "benchmark": "S&P 500",
   "note": "",
   "current": {
-    "price": 147.25,
+    "price": 147.24,
     "pe": 116.9,
     "divYield": 2.27,
     "eps": 1.26
   },
   "fullPeriod": {
-    "start_date": "1962-01-02",
+    "start_date": "1970-01-02",
     "end_date": "2026-10-22",
-    "start_price": 0.0629,
-    "end_price": 147.25,
-    "years": 64.8,
-    "cagr": 12.72,
-    "multiple": 2340.4254
+    "start_price": 0.277,
+    "end_price": 147.24,
+    "years": 56.8,
+    "cagr": 11.68,
+    "multiple": 531.5024
   },
   "stats": {
-    "n": 54,
+    "n": 46,
     "min": -5.14,
     "minBuy": "2000",
-    "median": 10.7,
-    "mean": 12.22,
+    "median": 11.23,
+    "mean": 12.46,
     "max": 31.37,
     "maxBuy": "1981",
-    "over10": 55.6,
-    "over15": 31.5,
-    "over20": 27.8,
+    "over10": 58.7,
+    "over15": 32.6,
+    "over20": 30.4,
     "losses": 3,
     "beatBench": 22,
     "beatTotal": 46
   },
   "rows10y": [
-    {
-      "buyYear": 1962,
-      "sellYear": 1972,
-      "sellDate": "1972-12-31",
-      "yearsActual": 10.0,
-      "cagr": 23.66,
-      "multiple": 8.36,
-      "isComplete": true
-    },
-    {
-      "buyYear": 1963,
-      "sellYear": 1973,
-      "sellDate": "1973-12-31",
-      "yearsActual": 10.0,
-      "cagr": 18.28,
-      "multiple": 5.36,
-      "isComplete": true
-    },
-    {
-      "buyYear": 1964,
-      "sellYear": 1974,
-      "sellDate": "1974-12-31",
-      "yearsActual": 10.0,
-      "cagr": 12.37,
-      "multiple": 3.21,
-      "isComplete": true
-    },
-    {
-      "buyYear": 1965,
-      "sellYear": 1975,
-      "sellDate": "1975-12-31",
-      "yearsActual": 10.0,
-      "cagr": 8.93,
-      "multiple": 2.35,
-      "isComplete": true
-    },
-    {
-      "buyYear": 1966,
-      "sellYear": 1976,
-      "sellDate": "1976-12-31",
-      "yearsActual": 10.0,
-      "cagr": 7.84,
-      "multiple": 2.13,
-      "isComplete": true
-    },
-    {
-      "buyYear": 1967,
-      "sellYear": 1977,
-      "sellDate": "1977-12-31",
-      "yearsActual": 10.0,
-      "cagr": 4.75,
-      "multiple": 1.59,
-      "isComplete": true
-    },
-    {
-      "buyYear": 1968,
-      "sellYear": 1978,
-      "sellDate": "1978-12-31",
-      "yearsActual": 10.0,
-      "cagr": 6.24,
-      "multiple": 1.83,
-      "isComplete": true
-    },
-    {
-      "buyYear": 1969,
-      "sellYear": 1979,
-      "sellDate": "1979-12-31",
-      "yearsActual": 10.0,
-      "cagr": 4.62,
-      "multiple": 1.57,
-      "isComplete": true
-    },
     {
       "buyYear": 1970,
       "sellYear": 1980,
@@ -618,7 +546,7 @@
       "sellYear": 2026,
       "sellDate": "2026-10-22",
       "yearsActual": 9.8,
-      "cagr": 13.73,
+      "cagr": 13.72,
       "multiple": 3.53,
       "isComplete": false,
       "benchCagr": 15.24,
@@ -640,7 +568,7 @@
       "sellYear": 2026,
       "sellDate": "2026-10-22",
       "yearsActual": 7.8,
-      "cagr": 12.8,
+      "cagr": 12.79,
       "multiple": 2.56,
       "isComplete": false,
       "benchCagr": 17.19,
@@ -662,7 +590,7 @@
       "sellYear": 2026,
       "sellDate": "2026-10-22",
       "yearsActual": 5.8,
-      "cagr": 15.05,
+      "cagr": 15.04,
       "multiple": 2.26,
       "isComplete": false,
       "benchCagr": 14.69,
@@ -684,11 +612,11 @@
       "sellYear": 2026,
       "sellDate": "2026-10-22",
       "yearsActual": 3.8,
-      "cagr": 10.93,
+      "cagr": 10.92,
       "multiple": 1.48,
       "isComplete": false,
       "benchCagr": 21.55,
-      "diff": -10.62
+      "diff": -10.63
     },
     {
       "buyYear": 2023,

@@ -5,7 +5,7 @@
   "benchmark": "S&P 500",
   "note": "",
   "current": {
-    "price": 676.55,
+    "price": 676.54,
     "pe": 35.7,
     "divYield": 0.27,
     "eps": 18.96
@@ -14,10 +14,10 @@
     "start_date": "1980-03-17",
     "end_date": "2026-10-22",
     "start_price": 1.6718,
-    "end_price": 676.5525,
+    "end_price": 676.54,
     "years": 46.6,
     "cagr": 13.75,
-    "multiple": 404.6876
+    "multiple": 404.6801
   },
   "stats": {
     "n": 36,
@@ -469,7 +469,7 @@
       "sellYear": 2026,
       "sellDate": "2026-10-22",
       "yearsActual": 6.8,
-      "cagr": 11.68,
+      "cagr": 11.67,
       "multiple": 2.12,
       "isComplete": false,
       "benchCagr": 15.22,

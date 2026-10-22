@@ -5,7 +5,7 @@
   "benchmark": "S&P 500",
   "note": "",
   "current": {
-    "price": 891.27,
+    "price": 891.3,
     "pe": 12.8,
     "divYield": 2.21,
     "eps": 69.55
@@ -14,10 +14,10 @@
     "start_date": "1999-05-04",
     "end_date": "2026-10-22",
     "start_price": 47.994,
-    "end_price": 891.27,
+    "end_price": 891.3,
     "years": 27.5,
     "cagr": 11.22,
-    "multiple": 18.5704
+    "multiple": 18.5711
   },
   "stats": {
     "n": 17,
@@ -264,7 +264,7 @@
       "multiple": 4.54,
       "isComplete": false,
       "benchCagr": 15.22,
-      "diff": 9.64
+      "diff": 9.65
     },
     {
       "buyYear": 2020,
@@ -282,7 +282,7 @@
       "sellYear": 2026,
       "sellDate": "2026-10-22",
       "yearsActual": 4.8,
-      "cagr": 22.14,
+      "cagr": 22.15,
       "multiple": 2.62,
       "isComplete": false,
       "benchCagr": 11.97,
@@ -304,11 +304,11 @@
       "sellYear": 2026,
       "sellDate": "2026-10-22",
       "yearsActual": 2.8,
-      "cagr": 37.57,
+      "cagr": 37.58,
       "multiple": 2.45,
       "isComplete": false,
       "benchCagr": 19.9,
-      "diff": 17.67
+      "diff": 17.68
     },
     {
       "buyYear": 2024,
