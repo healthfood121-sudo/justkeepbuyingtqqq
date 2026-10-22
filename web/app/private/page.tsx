@@ -2282,10 +2282,10 @@ function HermesHistory() {
       </div>
 
       <ul className="text-xs leading-relaxed text-gray-600 dark:text-gray-300 list-disc pl-4 space-y-1">
-        <li><b>장기 공식이 맞아떨어진다.</b> 자산가 인구 연 5.6% + 가격 연 5~6% ≈ 연 11~12%. 에르메스 매출은 2010년 이후 연 약 13% — 나머지 1~2%p는 신흥국 신규 고객과 점유율 확대 몫으로 볼 수 있다.</li>
+        <li><b>숫자상으로는 맞아떨어진다.</b> 자산가 인구 연 5.6% + 가격 연 5~6% ≈ 연 11~12%, 에르메스 매출은 2010년 이후 연 약 13%. 다만 두 숫자 모두 물가가 들어 있어(아래 &lsquo;물가는 한 번만&rsquo; 참고), 실제로는 &lsquo;실질 자산가 연 2% + 공급 제약 속 판매량 연 7% + 가격 연 5%&rsquo;로 읽는 게 정확하다.</li>
         <li><b>2021~2023년은 예외적인 호황.</b> 코로나 이후 보복 소비로 판매량이 연 13~38% 늘었다. 이 시기의 높은 성장과 PER(43~63배)을 기준으로 삼으면 기대가 과해진다.</li>
         <li><b>2024년부터 판매량이 빠르게 식었다.</b> +7.5% → +2.3%(2025) → 거의 0%(2026 상반기). 자산가는 계속 늘었는데(2025년 +7.9%) 판매량이 멈춘 건, 자산가보다 아래의 &lsquo;열망 고객층&rsquo;과 중국 수요가 줄었기 때문으로 보인다.</li>
-        <li><b>가격 인상 폭도 줄이는 중.</b> 2023~2025년 6~7% → 2026년 5~6%(CFO). 판매량이 다시 자산가 증가율(연 5%대)로 돌아오느냐가 앞으로 10년 수익률을 가른다.</li>
+        <li><b>가격 인상 폭도 줄이는 중.</b> 2023~2025년 6~7% → 2026년 5~6%(CFO). 판매량이 다시 늘어날지(수요 &lt; 공급이면 실질 자산가 속도 연 2~3%, 대기 고객이 다시 넘치면 공방 속도 연 6~7%)가 앞으로 10년 수익률을 가른다.</li>
       </ul>
       <p className="text-[11px] text-gray-400 dark:text-gray-500">
         * 표시는 근사값(회사 발표로 다시 확인하지 못함). 2010~2018년 가격 인상률은 연도별 자료를 찾지 못해 비워 뒀다 — 장기로는 버킨 가격이 연 5~7%(달러 기준, 환율 포함) 올랐다.
@@ -2397,7 +2397,7 @@ function HermesEpsQP() {
         <li><b>가격 몫(보라)은 매년 꾸준히 +2~8%p.</b> 에르메스가 스스로 정하는 부분이라 가장 믿을 만한 성장 엔진이다.</li>
         <li><b>판매량 몫(초록)은 들쭉날쭉.</b> 2021~2023년은 자산가 증가율(주황)을 크게 웃돌았고, 2025년부터는 그 아래로 내려갔다.</li>
         <li><b>회색 칸(이익률·환율·기타)</b>은 2024년(-8%p)·2025년(-10%p)·2026년 상반기(-6%p)에 크게 마이너스다. 2024년은 환율(보고 매출 +13% vs 환율 제외 +15%)과 영업이익률 하락, 2025년·2026년 상반기는 프랑스 대기업 특별 법인세(2025년 EPS -1.8%)가 이익을 깎았다. 2021~2022년은 반대로 이익률 상승이 크게 더해졌다(+13~30%p).</li>
-        <li>정리: 앞으로 EPS 증가율 ≈ 가격 5~6% + 판매량(자산가 증가 5% 안팎이 기준) − 일회성 부담. 판매량이 자산가 증가율로 돌아오면 EPS는 연 10%대 초반이 된다.</li>
+        <li>정리: 앞으로 EPS 증가율 ≈ 가격 5~6% + 판매량(기본 2~3%, 낙관 6~7%) − 일회성 부담. 기본이면 EPS 연 8% 안팎, 낙관이면 연 12~13%.</li>
       </ul>
       <p className="text-[11px] text-gray-400 dark:text-gray-500">
         EPS는 연간(유로, 보고 기준), 매출 성장은 환율 제외 기준이라 환율 효과는 회색 칸에 들어간다. 2026년은 상반기 전년 대비. 세 칸은 곱셈 관계를 로그 비율로 나눠 합이 정확히 EPS 증가율이 되게 했다.
@@ -2409,8 +2409,8 @@ function HermesEpsQP() {
 
 // ── 에르메스: 고객 수(Q) × 가격(P)으로 본 성장 추정 ─────────
 function HermesQP() {
-  const [q, setQ] = useState(5)          // 판매량(고객 수) 증가율 %
-  const [pr, setPr] = useState(6)        // 가격 인상률 %
+  const [q, setQ] = useState(2.5)        // 판매량(고객 수) 증가율 % — 기본: 실질 자산가 증가 + 신흥국 신규 고객
+  const [pr, setPr] = useState(5.5)        // 가격 인상률 %
   const [margin, setMargin] = useState(0) // 연간 이익률 변화 %p 효과(연 EPS 성장에 더해짐)
   const [exitPe, setExitPe] = useState(31)
   const curPe = 31.5
@@ -2457,8 +2457,8 @@ function HermesQP() {
             </tbody>
           </table>
           <p className="text-[11px] text-gray-400 dark:text-gray-500">
-            장기로는 자산가가 연 5% 안팎 늘어난다. 한 해 단위로는 증시에 따라 크게 흔들린다(기관마다 기준도 다르다).
-            메인 페이지의 세계 인구는 연 1% 미만으로 늘지만, 에르메스가 보는 고객층은 그보다 약 5배 빠르게 늘어난다.
+            장기로는 자산가가 연 5% 안팎 늘어난다(명목 기준). 한 해 단위로는 증시에 따라 크게 흔들린다(기관마다 기준도 다르다).
+            메인 페이지의 세계 인구는 연 1% 미만으로 늘지만, 자산가 수는 사람 수가 아니라 재산이 불어나는 속도를 따라가서 훨씬 빠르다 — 다만 이 5%에는 물가 효과가 섞여 있다(아래).
           </p>
         </div>
         <div className="rounded bg-gray-50 dark:bg-gray-800/50 p-3 space-y-1.5">
@@ -2481,6 +2481,34 @@ function HermesQP() {
       <HermesHistory />
       <HermesEpsQP />
 
+      <div className="rounded border border-rose-200 dark:border-rose-900/50 bg-rose-50/60 dark:bg-rose-950/20 p-3 space-y-1.5">
+        <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">주의: 물가는 한 번만 세야 한다 — 명목 자산가 연 5.6%를 그대로 Q로 쓰면 과대평가</p>
+        <ul className={`${p} list-disc pl-4 space-y-0.5`}>
+          <li><b>왜 자산가는 인구보다 빨리 늘까?</b> ① 기준선(금융자산 100만 달러)이 고정돼 있어 물가·자산 가격만 올라도 새로 넘는 사람이 생기고, ② 부자의 재산은 주식·부동산이라 월급보다 빨리 불어나며, ③ 기준선 바로 아래에 사람이 몰려 있어 재산이 1% 늘면 자산가 수는 약 1.4% 늘어난다(증폭 효과). 여기에 신흥국의 새 부자가 더해진다.</li>
+          <li><b>그런데 P(가격)에도 물가가 들어 있다.</b> 에르메스 가격 인상 5~7%에는 물가 상승(연 2~3%)이 포함된다. 버킨을 살 수 있는 &lsquo;실제 기준선&rsquo;도 버킨 가격과 함께 매년 올라간다.</li>
+          <li><b>그래서 명목 자산가 수 × 명목 가격 = 물가를 두 번 센 것.</b> 물가를 반영해 기준선을 올리면, 물가로 생긴 몫은 대략 1.4 × 2.5%(미국 물가 연평균) ≈ 3.5%p. 실질 자산가 증가율은 <b>5.6% − 3.5% ≈ 연 2% 안팎</b>(근사 추정)이다.</li>
+          <li><b>그런데도 에르메스 판매량은 장기로 연 약 7%</b>(매출 연 13% ÷ 가격 연 5.4%) 늘었다. 실질 자산가(2%)보다 훨씬 빠른 이유: 수요가 공급보다 많아 판매량이 고객 수가 아니라 <b>장인·공방 증설 속도(연 6~7%)</b>에 묶여 있었고, 중국·중동·인도 등 새 시장의 첫 구매 고객이 늘었기 때문이다.</li>
+        </ul>
+      </div>
+
+      <div className="rounded bg-gray-50 dark:bg-gray-800/50 p-3 space-y-2">
+        <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">Q는 두 경우로 나눠 봐야 한다 — 버튼을 누르면 아래 계산기에 바로 들어간다</p>
+        <div className="grid sm:grid-cols-3 gap-2">
+          {([
+            { label: '수요 > 공급 (낙관)', qv: 6.5, pv: 6, desc: '대기 고객이 넘치는 상태. 판매량 = 공방 증설 속도 연 6~7%. 2010년대 대부분.' },
+            { label: '수요 < 공급 (기본)', qv: 2.5, pv: 5.5, desc: '판매량 = 실질 자산가 증가 약 2% + 신흥국 신규 고객 약 0.5~1%.' },
+            { label: '지금 (2026 상반기)', qv: 0, pv: 5.5, desc: '판매량 거의 0%. 가격만 오르는 상태. 수요가 처음으로 공급 아래로 내려왔을 수 있다.' },
+          ] as const).map(sc => (
+            <button key={sc.label} onClick={() => { setQ(sc.qv); setPr(sc.pv) }}
+              className={`text-left rounded border p-2 transition-colors ${q === sc.qv && pr === sc.pv ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-200 dark:border-gray-700 hover:border-gray-400'}`}>
+              <p className="text-xs font-semibold text-gray-800 dark:text-gray-100">{sc.label}</p>
+              <p className="text-[11px] text-gray-500 dark:text-gray-400">Q {sc.qv}% · P {sc.pv}%</p>
+              <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">{sc.desc}</p>
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div className="rounded bg-amber-50 dark:bg-amber-900/10 p-3 space-y-1">
         <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">실제 매출로 맞춰 보기 (환율 영향 제외 성장률 − 가격 인상 ≈ 판매량)</p>
         <ul className={`${p} list-disc pl-4 space-y-0.5`}>
@@ -2491,7 +2519,7 @@ function HermesQP() {
       </div>
 
       <div className="grid sm:grid-cols-2 gap-x-6 gap-y-3">
-        {slider('Q: 판매량(고객 수) 증가율', q, setQ, -3, 10, 0.5, '%', '자산가 인구 장기 증가율 약 5%, 2026년 상반기 실제 약 0%')}
+        {slider('Q: 판매량(고객 수) 증가율', q, setQ, -3, 10, 0.5, '%', '실질 자산가 증가 약 2%(물가 보정), 공방 증설 속도 6~7%, 2026년 상반기 실제 약 0%')}
         {slider('P: 연간 가격 인상률', pr, setPr, 0, 10, 0.5, '%', '2023~2025년 6~7%, 2026년 5~6%')}
         {slider('이익률 변화 효과', margin, setMargin, -3, 3, 0.5, '%p', '영업이익률 약 41% 유지면 0. 프랑스 법인세 부담 등이 있으면 마이너스')}
         {slider('10년 뒤 PER', exitPe, setExitPe, 15, 50, 1, '배', '지금 약 31.5배, 10년 중간값 약 44배, 2009년 말 28배')}
@@ -2516,10 +2544,10 @@ function HermesQP() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-            {[0, 2.5, 5, 7].map(qq => (
-              <tr key={qq} className={qq === 5 ? 'bg-blue-50 dark:bg-blue-900/20' : ''}>
+            {[0, 2.5, 4, 6.5].map(qq => (
+              <tr key={qq} className={qq === 2.5 ? 'bg-blue-50 dark:bg-blue-900/20' : ''}>
                 <td className={td}>
-                  판매량 +{qq}%{qq === 0 ? ' (2026 상반기)' : qq === 5 ? ' (자산가 증가율)' : qq === 2.5 ? ' (2025년)' : ''}
+                  판매량 +{qq}%{qq === 0 ? ' (2026 상반기)' : qq === 2.5 ? ' (기본: 실질 자산가+신흥국)' : qq === 6.5 ? ' (낙관: 공방 증설 속도)' : ''}
                 </td>
                 {[3, 5, 7, 9].map(pp => {
                   const r = ((1 + qq / 100) * (1 + pp / 100) * (1 + div / 100) - 1) * 100
@@ -2532,9 +2560,10 @@ function HermesQP() {
       </div>
 
       <ul className={`${p} list-disc pl-4 space-y-1`}>
-        <li><b>자산가 증가(5%) × 평소 가격 인상(7%)</b>이면 매출이 연 약 12% 늘고, PER이 지금 수준만 유지해도 10년 연 약 13~14%다.</li>
-        <li><b>연 17~20%</b>가 나오려면 여기에 PER 재평가(31배 → 35~40배 이상)가 더해지거나, 판매량이 자산가 증가보다 빨라야 한다(신흥국 자산가 유입, 공방 증설).</li>
-        <li><b>지금(2026년 상반기)처럼 판매량이 멈추고 가격만 오르면</b> 연 7~8%. 핵심은 판매량(Q)이 자산가 증가율 쪽으로 돌아오는지다.</li>
+        <li><b>기본 (수요 &lt; 공급):</b> 판매량 2.5% × 가격 5.5% → 매출 연 약 8%, PER 유지 시 10년 연 <b>약 9.6%</b>. 물가를 한 번만 센 현실적인 기본값이다.</li>
+        <li><b>낙관 (수요 &gt; 공급):</b> 판매량 6.5%(공방 속도) × 가격 6% → 매출 연 약 13%, 10년 연 <b>약 14%</b>. 대기 고객이 다시 넘치는 상태로 돌아가야 한다.</li>
+        <li><b>지금 (2026년 상반기):</b> 판매량 0% × 가격 5.5% → 10년 연 <b>약 7%</b>.</li>
+        <li><b>연 17~20%</b>는 낙관 시나리오에 PER 재평가(31배 → 40배 이상)까지 더해져야 나온다. 앞서 단순히 &lsquo;자산가 5% × 가격 7%&rsquo;로 본 연 13~14%는 물가를 두 번 센 낙관값이었다.</li>
       </ul>
       <p className="text-[11px] text-gray-400 dark:text-gray-500">
         자산가 통계: Capgemini 세계 부 보고서(2016·2026), Knight Frank 부 보고서 2026, UBS 세계 부 보고서 2026. 가격 인상률은 리셀·전문 매체가 집계한 대표 제품 기준이며 회사 공식 수치가 아니다.
