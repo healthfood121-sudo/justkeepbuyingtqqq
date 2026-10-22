@@ -322,7 +322,7 @@ def plot_rolling(df: pd.DataFrame, title: str, path: Path | str) -> Path:
 
 class RollingAnalyzer:
     def __init__(self, ticker: str, benchmark: str | None = "^SP500TR",
-                 start: str = "1900-01-01"):
+                 start: str = "1970-01-01"):
         self.ticker = ticker
         self.benchmark = benchmark
         self.start = start

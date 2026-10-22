@@ -23,6 +23,7 @@ BENCH = "^SP500TR"
 TICKER_MAP = {
     "BRKB": "BRK-B",
     "RMS":  "RMS.PA",
+    "MMC":  "MRSH",  # 마쉬 맥레넌, 2026년 티커 변경
 }
 
 

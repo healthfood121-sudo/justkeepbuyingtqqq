@@ -472,11 +472,16 @@ SP500_INFO = {
 
 NEW_TICKERS = [t for t in SP500_INFO if t not in ALREADY_DONE]
 
+# 파일명 티커 → 야후 파이낸스 티커 (티커가 바뀐 종목)
+YF_TICKER = {
+    "MMC": "MRSH",  # 마쉬 맥레넌, 2026년 티커 변경
+}
+
 # ── 헬퍼 함수 ─────────────────────────────────────────────────
 
 def get_metrics(ticker: str) -> dict:
     try:
-        info = yf.Ticker(ticker).info
+        info = yf.Ticker(YF_TICKER.get(ticker, ticker)).info
         pe  = info.get("trailingPE") or info.get("forwardPE")
         div = (info.get("dividendYield") or 0)
         eps = info.get("trailingEps") or info.get("forwardEps")
@@ -551,7 +556,7 @@ def main():
                 print(f"  CSV 이미 존재, 스킵")
             else:
                 try:
-                    az = RollingAnalyzer(ticker, benchmark="^SP500TR")
+                    az = RollingAnalyzer(YF_TICKER.get(ticker, ticker), benchmark="^SP500TR")
                     df10a = az.rolling(years=10, freq="annual")
                     df5a  = az.rolling(years=5,  freq="annual")
                     az.save_csv(df10a, csv_10y)
@@ -578,7 +583,7 @@ def main():
             df10a = pd.read_csv(csv_10y, parse_dates=["buy_date","sell_date"])
             df5a  = pd.read_csv(csv_5y,  parse_dates=["buy_date","sell_date"]) if csv_5y.exists() else df10a.iloc[:0].copy()
 
-            az  = RollingAnalyzer(ticker, benchmark="^SP500TR")
+            az  = RollingAnalyzer(YF_TICKER.get(ticker, ticker), benchmark="^SP500TR")
             fp  = az.full_period()
             st  = summary_stats(df10a, label=ticker)
 
