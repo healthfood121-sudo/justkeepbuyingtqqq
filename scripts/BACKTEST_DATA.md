@@ -816,7 +816,7 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 | `data/rolling/NKE_10y_monthly.csv` | `analyze_nke.py` | NKE | 10년 월말 매수 롤링 |
 | `data/rolling/RMS_10y_annual_full.csv` | (별도) | RMS.PA (에르메스) | 10년 연말 매수 롤링 (1993~포함) |
 | `data/rolling/RMS_10y_monthly.csv` | (별도) | RMS.PA | 10년 월말 매수 롤링 |
-| `data/rolling/KO_10y_annual.csv` | `analyze_ko.py` | KO (코카콜라) | 10년 연말 매수 롤링 (1988년부터) |
+| `data/rolling/KO_10y_annual.csv` | `analyze_ko.py` | KO (코카콜라) | 10년 연말 매수 롤링 (1972년부터) |
 | `data/rolling/KO_5y_annual.csv` | `analyze_ko.py` | KO | 5년 연말 매수 롤링 |
 | `data/rolling/KO_10y_monthly.csv` | `analyze_ko.py` | KO | 10년 월말 매수 롤링 |
 | `data/rolling/AMZN_10y_annual.csv` | `analyze_amzn.py` | AMZN (아마존) | 10년 연말 매수 롤링 (1997년부터) |
@@ -882,10 +882,11 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 - 분할 이력: 2:1×7회(1970·1981·1989·1992·1996·1999·2001) → 누적 128:1, 2001-06-04 이후 분할 없음
 
 **KO 파라미터:**
-- 매수 시작: 1988년 말 (연말 매수 기준)
+- 매수 시작: 1972년 말 (Yahoo Finance KO 1970년부터 분할조정 완비, 10년 롤링 첫 완결 구간 1972→1982)
 - 벤치마크: S&P 500 (^SP500TR)
 - 통화: USD
-- 완결 구간: 28개 (1988~2015 연말 매수), 중앙값 연평균 수익률 8.5%
+- 완결 구간: 44개 (1972~2015 연말 매수), 중앙값 연평균 수익률 (전체 포함)
+- EPS 데이터: 1988년부터만 존재 (1972~1987 구간은 peBuy/epsDecomp 없음)
 - EPS 일회성 왜곡: 1999(구조조정), 2000(병입업체 구조조정), 2017(TCJA), 2020(COVID-19)
 
 **AMZN 파라미터:**
