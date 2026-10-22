@@ -14,6 +14,7 @@ export_eps_pre2008.py — SEC 전자 데이터(XBRL, 2008년 무렵~) 이전의 
 """
 import json
 import re
+import warnings
 import sys
 import time
 from html import unescape
@@ -23,6 +24,8 @@ import pandas as pd
 import requests
 import yfinance as yf
 from bs4 import BeautifulSoup
+
+warnings.filterwarnings("ignore")
 
 ROOT = Path(__file__).parent.parent
 OUT = ROOT / "web" / "public" / "data" / "fundamentals"
