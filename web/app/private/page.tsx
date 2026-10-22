@@ -2872,6 +2872,7 @@ type ClockFund = Fundamentals & {
   monthly?: { start: string; c: Array<number | null> }
   lastPrice?: { date: string; close: number }
   shares?: { count: number; asOf: string } | null
+  epsOld?: Record<string, number>   // SEC 10-K 원문에서 읽은 2008년 이전 EPS
 }
 
 function StockValueClock({ f, stockKey, rolling }: { f: ClockFund; stockKey: string; rolling?: StockData }) {
@@ -2887,12 +2888,13 @@ function StockValueClock({ f, stockKey, rolling }: { f: ClockFund; stockKey: str
     .filter(([y, e]) => e != null && f.epsEnd![y])
     .map(([y, e]) => [decYear(Date.parse(f.epsEnd![y])), e as number] as ClockAnchor)
     .sort((a, b) => a[0] - b[0])
-  // SEC 전자 공시(2008년 무렵~) 이전 EPS: 롤링 데이터에 있으면 앞에 이어 붙임 (같은 결산 월 기준)
+  // SEC 전자 공시(2008년 무렵~) 이전 EPS: 10-K 원문에서 읽은 값(우선), 없으면 롤링 데이터 값을 앞에 이어 붙임 (같은 결산 월 기준)
   const older = new Map<number, number>()
   for (const d of (((rolling as any)?.epsDecomp ?? []) as Decomp[])) {
     if ((d as any).epsBuy != null) older.set(d.buyYear, (d as any).epsBuy)
     if ((d as any).epsSell != null) older.set(d.sellYear, (d as any).epsSell)
   }
+  for (const [y, e] of Object.entries(f.epsOld ?? {})) older.set(Number(y), e)
   const firstSecYear = Math.min(...Object.keys(f.epsEnd).map(Number))
   if (anchors.length && older.size) {
     const mmdd = f.epsEnd[String(firstSecYear)].slice(4)
@@ -2949,7 +2951,7 @@ function StockValueClock({ f, stockKey, rolling }: { f: ClockFund; stockKey: str
       <ValueClockCore
         cur="$" anchors={anchors} monthly={monthly} last={f.lastPrice} g={g}
         sharesOut={f.shares?.count ?? null} divYield={m.divYield ?? 0} storageKey={`clock-shares-${stockKey}`}
-        notes={`EPS는 SEC 공시(10-K) 회계연도 값을 마감일 기준으로 이은 근사치이고(SEC 전자 공시는 2008년 무렵부터라 그 이전은 따로 모은 값이 있는 종목만 표시), ${f.ttmAsOf ?? '최근'} 이후는 정한 성장률로 연장했다. 주가는 배당을 반영하지 않은 월말 종가(분할 반영). 일회성 손익이 큰 해는 선이 출렁인다. 회사 전체 숫자는 공시 유통 주식 수${f.shares ? `(${f.shares.asOf})` : ''} × 최근 1년 EPS로 계산한 근사치.`}
+        notes={`EPS는 SEC 공시(10-K) 회계연도 값을 마감일 기준으로 이은 근사치이고(2008년 무렵 이전은 10-K 원문의 5년 요약 표에서 읽고 겹치는 해로 맞춘 값), ${f.ttmAsOf ?? '최근'} 이후는 정한 성장률로 연장했다. 주가는 배당을 반영하지 않은 월말 종가(분할 반영). 일회성 손익이 큰 해는 선이 출렁인다. 회사 전체 숫자는 공시 유통 주식 수${f.shares ? `(${f.shares.asOf})` : ''} × 최근 1년 EPS로 계산한 근사치.`}
       />
     </div>
   )
