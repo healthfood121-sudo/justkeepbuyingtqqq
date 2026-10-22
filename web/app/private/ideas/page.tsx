@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import PrivateTabs from '@/components/PrivateTabs'
-import { PICKS, PICKS_AS_OF, PICK_SECTIONS } from './picks'
+import { EXTRA_METRICS, PICKS, PICKS_AS_OF, PICK_SECTIONS } from './picks'
 import {
   classify, GROUPS, GRADE_LABEL, gradeColor, groupColor, qualityScore, fmt, fmtSgn,
   type GroupKey, type Metrics, type Quality,
@@ -26,7 +26,7 @@ export default function IdeasPage() {
     ]).then(([s, q]) => {
       const qs = q.stocks as Record<string, Quality>
       setGenerated(s.generated)
-      setRows((s.stocks as Metrics[]).map(m => ({
+      setRows([...(s.stocks as Metrics[]), ...EXTRA_METRICS].map(m => ({
         ...m, q: qs[m.key], group: classify(m, qs[m.key]), score: qualityScore(qs[m.key]),
       })))
     }).catch(() => setRows([]))
@@ -219,7 +219,7 @@ export default function IdeasPage() {
             <p>사업성 = 경쟁우위·가격결정력·수익성·성장성·지속가능성 점수 합(25점 만점, Claude 정성 평가). 행에 마우스를 올리면 사업·강점·위험이 보인다.</p>
             <p>PER/10년 중간 = 현재 PER ÷ 최근 10년 연말 PER의 중간값. 이익/고점 = 최근 1년 EPS ÷ 최근 10년 연간 EPS 최고치.</p>
             <p>단순 기대(연) = EPS가 최근 5년·10년 성장률 중 낮은 값(최대 15%)으로 늘고, PER이 10년 중간값(최대 35배)으로 돌아가며, 배당이 유지된다는 가정의 10년 연평균. 일회성 손익·적자 이력이 있는 종목은 왜곡될 수 있다.</p>
-            <p>EPS: SEC 공시(10-K, 희석 EPS, 분할 반영) · 주가: Yahoo Finance. 에르메스·ETF는 표에서 빠진다(위대한 기업 탭에서 확인).</p>
+            <p>EPS: SEC 공시(10-K, 희석 EPS, 분할 반영) · 주가: Yahoo Finance. 에르메스는 SEC 공시가 없어 위대한 기업 탭의 분석값을 직접 넣었다(3년 고점 대비는 연말 주가 기준 근사치). ETF는 표에서 빠진다.</p>
           </div>
         </section>
       </div>

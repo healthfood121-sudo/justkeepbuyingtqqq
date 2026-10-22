@@ -1,7 +1,24 @@
 // Claude가 고른 종목 정리 (정성 평가 + 숫자 + 하락 원인 조사). 2026년 10월 기준.
 // 숫자(PER·EPS 등)는 페이지에서 데이터 파일로 함께 보여주므로 여기에는 판단 근거만 적는다.
 
+import type { Metrics } from '@/lib/ideas'
+
 export const PICKS_AS_OF = '2026년 10월'
+
+// SEC 공시가 없는 비미국 종목: /private 에르메스 인사이트의 분석값(2026-10-21)을 직접 넣음
+export const EXTRA_METRICS: Metrics[] = [
+  {
+    key: 'RMS', ticker: 'RMS.PA', name: '에르메스',
+    price: 1356.5, ttmEps: 46.4, pe: 29.2, divYield: 1.35,
+    peMed10: 43.6, peVsMed: 0.67,
+    epsCagr10: 17.6, epsCagr5: 26.6, epsDownYears10: 1,
+    epsVsPeak: 1.0, lastFy: 2025,
+    fromHigh3y: -40, chg1y: null, chg3y: null,
+    roll10Median: 19.55, roll10Min: 7.84, roll10N: 23, roll10Over10: 95.7,
+    beatBench: 23, beatTotal: 23,
+    expRet10: 18.7,
+  },
+]
 
 export const PICK_SECTIONS = [
   {
@@ -35,6 +52,11 @@ export type Pick = { key: string; section: typeof PICK_SECTIONS[number]['key']; 
 
 export const PICKS: Pick[] = [
   // ① 1순위
+  {
+    key: 'RMS', section: 'core',
+    why: '버킨백으로 대표되는 희소성 전략과 최고 수준의 가격결정력, 가족 경영. 이익은 사상 최고인데 PER이 53배(2024년 말)에서 29배로 내려와 10년 중간값의 약 3분의 2. 과거 비슷한 PER(2009년 말 28.5배)에 산 경우 이후 10년 연 23%였다.',
+    watch: '최근 약 3년 이익 성장이 연 3~4%로 느려졌다. 환율 영향을 뺀 매출 성장이 두 자릿수로 돌아오는지, 중국 수요. 자세한 분석은 위대한 기업 탭의 에르메스 인사이트.',
+  },
   {
     key: 'MSFT', section: 'core',
     why: '기업용 SW 표준(오피스·윈도)과 클라우드 2위(애저). 이익은 사상 최고인데 PER은 10년 중간값보다 낮다. 위대한 기업 중 가장 안정적인 할인.',
