@@ -99,6 +99,7 @@ def _latest_shares(url: str, recent_only: bool):
         r = requests.get(url, headers=UA, timeout=30)
         time.sleep(0.15)
         if r.status_code != 200:
+            print(f"    주식 수 {url.rsplit('/', 1)[-1]}: HTTP {r.status_code}", flush=True)
             return None
         items = [it for v in r.json().get("units", {}).values() for it in v]
         if recent_only:  # 분기·연간 보고서의 값만
@@ -110,7 +111,8 @@ def _latest_shares(url: str, recent_only: bool):
         accn = max(it["accn"] for it in latest)
         vals = [it["val"] for it in latest if it["accn"] == accn]
         return (float(sum(vals)) if not recent_only else float(max(vals))), last
-    except Exception:
+    except Exception as e:
+        print(f"    주식 수 오류: {e}", flush=True)
         return None
 
 
@@ -138,7 +140,7 @@ def patch_shares_only(keys):
         d = json.loads(path.read_text())
         t = d["ticker"].replace(".", "-").upper()
         cik = cik_map.get(t) or cik_map.get(t.replace("-", "."))
-        d["shares"] = shares_info(cik, k) if cik else None
+        d["shares"] = shares_info(cik, k, d["ticker"])
         path.write_text(json.dumps(d, ensure_ascii=False, separators=(",", ":")))
         print(f"[{i}/{len(keys)}] {k} {d['shares']}", flush=True)
 
@@ -234,11 +236,32 @@ def monthly_close(close: pd.Series) -> dict:
     return {"start": f"{y0}-{m0:02d}", "c": [r2(v, 2) for v in me.values]}
 
 
-def shares_info(cik: int, key: str):
+def shares_from_yahoo(ticker: str):
+    """SEC에서 못 찾으면 Yahoo의 유통 주식 수(여러 종류 합산 값)."""
+    try:
+        t = yf.Ticker(ticker.replace(".", "-"))
+        n = None
+        try:
+            n = t.fast_info.get("shares")
+        except Exception:
+            n = None
+        if not n:
+            n = (t.info or {}).get("sharesOutstanding")
+        return (float(n), TODAY.strftime("%Y-%m-%d")) if n else None
+    except Exception as e:
+        print(f"    Yahoo 주식 수 오류: {e}", flush=True)
+        return None
+
+
+def shares_info(cik: int, key: str, ticker: str = ""):
     if key == "BRKB":  # A·B주가 섞여 있어 제외
         return None
-    s = fetch_shares(cik)
-    return {"count": s[0], "asOf": s[1]} if s else None
+    s = fetch_shares(cik) if cik else None
+    src = "SEC"
+    if not s and ticker:
+        s, src = shares_from_yahoo(ticker), "Yahoo"
+    print(f"    주식 수: {s} ({src if s else '없음'})", flush=True)
+    return {"count": s[0], "asOf": s[1], "src": src} if s else None
 
 
 def process(key: str, roll: dict, prices: pd.DataFrame, cik_map: dict) -> dict | None:
@@ -376,7 +399,7 @@ def process(key: str, roll: dict, prices: pd.DataFrame, cik_map: dict) -> dict |
         "ttmAsOf": ttm_asof(),
         "monthly": monthly_close(close),
         "lastPrice": {"date": close.index[-1].strftime("%Y-%m-%d"), "close": r2(price_now)},
-        "shares": shares_info(cik, key),
+        "shares": shares_info(cik, key, roll["ticker"]),
     }
     (OUT / f"{key}.json").write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")))
     return metrics
@@ -387,6 +410,8 @@ def main():
     if args and args[0] == "--shares-only":  # 주식 수만 다시 채우기
         only = set(args[1:])
         keys = sorted(f.stem for f in OUT.glob("*.json") if not f.stem.startswith("_"))
+        if "MISSING" in only:  # 주식 수가 비어 있는 종목만
+            only = {k for k in keys if not json.loads((OUT / f"{k}.json").read_text()).get("shares")}
         patch_shares_only([k for k in keys if not only or k in only])
         return
     files = sorted(ROLL.glob("*_rolling.json"))
