@@ -2282,10 +2282,7 @@ function HermesHistory() {
       </div>
 
       <ul className="text-xs leading-relaxed text-gray-600 dark:text-gray-300 list-disc pl-4 space-y-1">
-        <li><b>숫자상으로는 맞아떨어진다.</b> 자산가 인구 연 5.6% + 가격 연 5~6% ≈ 연 11~12%, 에르메스 매출은 2010년 이후 연 약 13%. 이론상 두 숫자 모두 물가가 들어 있지만, 과거엔 새 시장·고객 흡수가 그만큼을 채워 이 단순 계산이 가장 잘 맞았다(7번 참고).</li>
         <li><b>2021~2023년은 예외적인 호황.</b> 코로나 이후 보복 소비로 판매량이 연 13~38% 늘었다. 이 시기의 높은 성장과 PER(43~63배)을 기준으로 삼으면 기대가 과해진다.</li>
-        <li><b>2024년부터 판매량이 빠르게 식었다.</b> +7.5% → +2.3%(2025) → 거의 0%(2026 상반기). 자산가는 계속 늘었는데(2025년 +7.9%) 판매량이 멈춘 건, 자산가보다 아래의 &lsquo;열망 고객층&rsquo;과 중국 수요가 줄었기 때문으로 보인다.</li>
-        <li><b>가격 인상 폭도 줄이는 중.</b> 2023~2025년 6~7% → 2026년 5~6%(CFO). 판매량이 다시 자산가 증가 속도(연 4~6%)로 돌아오는지가 앞으로 10년 수익률을 가른다.</li>
       </ul>
       <p className="text-[11px] text-gray-400 dark:text-gray-500">
         * 표시는 근사값(회사 발표로 다시 확인하지 못함). 2010~2018년 가격 인상률은 연도별 자료를 찾지 못해 비워 뒀다 — 장기로는 버킨 가격이 연 5~7%(달러 기준, 환율 포함) 올랐다.
@@ -2394,10 +2391,8 @@ function HermesEpsQP() {
         </table>
       </div>
       <ul className="text-xs leading-relaxed text-gray-600 dark:text-gray-300 list-disc pl-4 space-y-1">
-        <li><b>가격 몫(보라)은 매년 꾸준히 +2~8%p.</b> 에르메스가 스스로 정하는 부분이라 가장 믿을 만한 성장 엔진이다.</li>
-        <li><b>판매량 몫(초록)은 들쭉날쭉.</b> 2021~2023년은 자산가 증가율(주황)을 크게 웃돌았고, 2025년부터는 그 아래로 내려갔다.</li>
+        <li><b>가격 몫(보라)</b>은 매년 +2~8%p로 꾸준하고, <b>판매량 몫(초록)</b>은 해마다 들쭉날쭉하다.</li>
         <li><b>회색 칸(이익률·환율·기타)</b>은 2024년(-8%p)·2025년(-10%p)·2026년 상반기(-6%p)에 크게 마이너스다. 2024년은 환율(보고 매출 +13% vs 환율 제외 +15%)과 영업이익률 하락, 2025년·2026년 상반기는 프랑스 대기업 특별 법인세(2025년 EPS -1.8%)가 이익을 깎았다. 2021~2022년은 반대로 이익률 상승이 크게 더해졌다(+13~30%p).</li>
-        <li>정리: 앞으로 EPS 증가율 ≈ 판매량 × 가격 × 이익률 × 기타. 기본이면 EPS 연 10% 안팎, 낙관이면 연 14% 안팎(7번 계산기).</li>
       </ul>
       <p className="text-[11px] text-gray-400 dark:text-gray-500">
         EPS는 연간(유로, 보고 기준), 매출 성장은 환율 제외 기준이라 환율 효과는 회색 칸에 들어간다. 2026년은 상반기 전년 대비. 세 칸은 곱셈 관계를 로그 비율로 나눠 합이 정확히 EPS 증가율이 되게 했다.
@@ -2487,11 +2482,9 @@ function HermesForecast() {
             <li><b>③ 이익률 = 판매량을 따라간다.</b> 공방·매장은 고정비라 판매량이 빨리 늘면 이익률이 오르고, 멈추면 이익률도 멈춘다. 과거 연 +3.4%는 매출이 연 13~14% 크던 시기다. 지금은 41%로 최고 수준이라 기본은 0.</li>
             <li><b>④ 기타 = 0.</b> 환율·세금·이자는 길게 보면 서로 상쇄된다(과거 +1.3%).</li>
           </ul>
-          <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">이 방식의 한계</p>
-          <ul className={`${p} list-disc pl-4 space-y-0.5`}>
-            <li>한 해 단위로는 맞지 않는다. 2025년 자산가는 +7.9%였는데 판매량은 약 +2.5%, 2026년 상반기는 0~1%였다. <b>10년 평균으로만</b> 쓴다.</li>
-            <li>그래도 실제가 예측보다 조금 좋았고, 이익률(③)을 빼고 보면 EPS를 매년 3~5%p 낮게 봤다. 그래서 답은 <b>중심값 ±3%p</b>로 본다.</li>
-          </ul>
+          <p className={p}>
+            <b>한계:</b> 한 해 단위로는 맞지 않는다(2025년 자산가 +7.9%, 판매량 약 +2.5% — 중국과 &lsquo;열망 고객층&rsquo; 수요 둔화). 10년 평균으로만 쓰고, 답은 <b>중심값 ±3%p</b>로 본다.
+          </p>
         </div>
 
         <div className="space-y-2">
@@ -2528,13 +2521,9 @@ function HermesForecast() {
         <details className="rounded bg-gray-50 dark:bg-gray-800/50 p-3">
           <summary className="text-xs font-semibold text-gray-700 dark:text-gray-200 cursor-pointer">근거 자료 보기 (자산가 인구·가격 인상·연도별 매출·EPS 분해)</summary>
           <div className="space-y-3 mt-3">
-            <ul className={`${p} list-disc pl-4 space-y-0.5`}>
-              <li><b>판매량 뒤에 있는 것:</b> 수요가 공급보다 많던 시기엔 판매량이 공방 증설 속도(연 6~7%)로 늘었다. 여기에 새 시장과 다른 브랜드 고객 흡수가 더해져 자산가 수 증가율(물가 포함)과 비슷한 속도가 됐다. 2024년부터는 중국 수요와 자산가 아래 &lsquo;열망 고객층&rsquo;이 약해져 판매량이 자산가 증가보다 느리다.</li>
-              <li><b>이익률은 판매량과 같이 움직인다.</b> 공방·매장은 고정비라 매출이 빨리 크면 이익률이 오르고, 판매량이 멈추면 이익률도 멈춘다.</li>
-            </ul>
       <div className="grid sm:grid-cols-2 gap-3">
         <div className="rounded bg-gray-50 dark:bg-gray-800/50 p-3 space-y-1.5">
-          <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">Q의 바탕: 자산가 인구 증가율</p>
+          <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">자산가 수 (기관별, 물가 포함)</p>
           <table className="text-xs w-full">
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
               <tr><td className={td}>금융자산 100만 달러+ (Capgemini)</td><td className={`${td} text-right`}>1,540만(2015) → 2,530만(2025)</td><td className={`${td} text-right font-semibold`}>연 5.1%</td></tr>
@@ -2543,13 +2532,9 @@ function HermesForecast() {
               <tr><td className={td}>2025년 한 해 (UBS 달러 백만장자)</td><td className={`${td} text-right`}>약 100만 명 증가</td><td className={`${td} text-right`}>+1.5%</td></tr>
             </tbody>
           </table>
-          <p className="text-[11px] text-gray-400 dark:text-gray-500">
-            장기로는 자산가가 연 5% 안팎 늘어난다(명목 기준). 한 해 단위로는 증시에 따라 크게 흔들린다(기관마다 기준도 다르다).
-            메인 페이지의 세계 인구는 연 1% 미만으로 늘지만, 자산가 수는 사람 수가 아니라 재산이 불어나는 속도를 따라가서 훨씬 빠르다 — 물가가 포함된 숫자다.
-          </p>
         </div>
         <div className="rounded bg-gray-50 dark:bg-gray-800/50 p-3 space-y-1.5">
-          <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">P: 에르메스 연간 가격 인상률</p>
+          <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">에르메스 연간 가격 인상률</p>
           <table className="text-xs w-full">
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
               <tr><td className={td}>2022년</td><td className={`${td} text-right`}>약 2~5%</td></tr>
@@ -2559,9 +2544,6 @@ function HermesForecast() {
               <tr><td className={td}>2026년</td><td className={`${td} text-right`}>평균 5~6% (CFO), 버킨 7~9%</td></tr>
             </tbody>
           </table>
-          <p className="text-[11px] text-gray-400 dark:text-gray-500">
-            2023~2025년 평균 연 6~7%, 2026년은 5~6%로 낮췄다. 경영진은 &ldquo;가격은 인기가 아니라 생산 원가에 맞춰 올린다&rdquo;고 말한다 — 올릴 여력을 일부러 남겨 두는 셈이다.
-          </p>
         </div>
       </div>
 
@@ -2863,7 +2845,7 @@ function HermesValueClock({ g, f }: { g: number; f: Factors }) {
         <p className={p}>
           <b>자산가 시계:</b> 금융자산 100만 달러 이상 자산가는 지금 약 {(hnwiNow / 1e6).toFixed(1)}백만 명. 직전 5년 속도(연 4%, 물가 포함)로 늘면 <b>하루 약 {Math.round(hnwiPerDay).toLocaleString()}명</b>,
           {' '}약 {(86400 / hnwiPerDay).toFixed(0)}초에 1명이다. 오늘 0시 이후 <b>{Math.floor(hnwiToday).toLocaleString()}명</b> 늘었다.
-          7번 기본값은 이 증가율을 ① 판매량으로 쓴다. 다만 한 해 단위로는 어긋날 수 있다(2025년 자산가 +7.9%, 판매량 약 +2.5%).
+          7번 기본값은 이 증가율을 ① 판매량으로 쓴다.
         </p>
       </div>
     )
