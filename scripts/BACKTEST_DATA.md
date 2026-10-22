@@ -977,3 +977,13 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 
 - 실행: GitHub Actions `월별 주가 데이터 생성` (workflow_dispatch, 입력 `tickers`). 이 세션 환경은 Yahoo 접속이 막혀 있어 Actions로 생성.
 - PER 비교는 실제 종가로 해야 해서 배당 조정 전 Close를 쓴다. 최신 주가로 갱신하려면 같은 워크플로를 다시 실행.
+
+#### 2008년 이전 EPS (2026-10)
+| 파일 | 스크립트 | 내용 | 사용처 |
+|---|---|---|---|
+| `web/public/data/fundamentals/{KEY}.json`의 `epsOld` | `export_eps_pre2008.py` | SEC 전자 데이터(XBRL) 이전 연도별 희석 EPS (1995년~) | `/private` 이익 시계(적정가 선) |
+
+- 방법: 10-K(또는 첨부 EX-13)의 5년 요약 표에서 희석 EPS 행을 읽고, 4년 간격 보고서로 거슬러 올라감.
+- 검증: Yahoo 분할 이력으로 보정한 뒤 이미 확정된 해와 겹치는 해가 모두 12% 안, 최소 한 해는 4% 안일 때만 채택. 회사 연도 표기 1년 차이도 겹치는 해로 판별. 맞지 않으면 버림(채우지 않음).
+- 실행: GitHub Actions `SEC 이전 EPS 채우기` (입력 `tickers` 비우면 전 종목, `commit` yes/no).
+- 한계: 회사가 과거 실적을 재작성한 경우 겹치는 해가 안 맞아 못 채우는 종목이 있다(예: 맥도날드, 홈디포).
