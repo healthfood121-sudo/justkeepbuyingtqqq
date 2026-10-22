@@ -254,8 +254,13 @@ def shares_from_yahoo(ticker: str):
 
 
 def shares_info(cik: int, key: str, ticker: str = ""):
-    if key == "BRKB":  # A·B주가 섞여 있어 제외
-        return None
+    if key == "BRKB":  # A·B주가 섞여 있음 → Yahoo의 B주 환산 주식 수(A주 1주 = B주 1,500주)
+        try:
+            n = (yf.Ticker("BRK-B").info or {}).get("impliedSharesOutstanding")
+            print(f"    주식 수(B주 환산): {n}", flush=True)
+            return {"count": float(n), "asOf": TODAY.strftime("%Y-%m-%d"), "src": "Yahoo"} if n else None
+        except Exception:
+            return None
     s = fetch_shares(cik) if cik else None
     src = "SEC"
     if not s and ticker:
