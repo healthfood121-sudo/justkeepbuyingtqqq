@@ -54,16 +54,56 @@ export const qualityScore = (q?: Quality) =>
 // 경쟁우위가 확실한 기업: A등급 또는 해자 4점 이상 B등급
 export const isGreat = (q?: Quality) => !!q && (q.grade === 'A' || (q.grade === 'B' && q.moat >= 4))
 
-export function classify(m: Metrics, q?: Quality): GroupKey | null {
+// 소비자가 브랜드를 보고 고르는 기업 (에르메스형 기준에 사용)
+export const CONSUMER_BRANDS = new Set([
+  'RMS', 'AAPL', 'KO', 'PEP', 'MCD', 'CMG', 'NKE', 'LULU', 'DECK', 'RL', 'TPR', 'EL', 'COST', 'SBUX',
+  'HSY', 'MDLZ', 'CL', 'PG', 'CHD', 'CLX', 'KMB', 'MNST', 'BF-B', 'STZ', 'PM', 'MO', 'YUM', 'DPZ',
+  'ORLY', 'AZO', 'TSCO', 'ULTA', 'TJX', 'ROST', 'DIS', 'NFLX', 'WMT', 'MAR', 'HLT', 'RCL', 'BKNG',
+  'HD', 'LOW', 'MKC', 'GRMN', 'HAS', 'SHW', 'AXP', 'DRI', 'WSM', 'TSLA', 'LVS', 'WYNN', 'CCL', 'GIS',
+  'KHC', 'SJM', 'HRL', 'TGT', 'DG', 'DLTR', 'BBY', 'EBAY', 'EXPE', 'LYV', 'TTWO', 'HSY',
+])
+
+export type LensKey = 'moat' | 'brand' | 'profit' | 'growth' | 'durable'
+
+export const LENSES: Record<LensKey, { label: string; desc: string; test: (q: Quality, key: string) => boolean }> = {
+  moat: {
+    label: '경쟁우위 종합 (기본)',
+    desc: '정성 평가 A등급, 또는 경쟁우위 4점 이상인 B등급',
+    test: q => isGreat(q),
+  },
+  brand: {
+    label: '브랜드·가격결정력형 (에르메스형)',
+    desc: '소비자가 브랜드를 보고 고르는 기업 중 가격결정력 4점 이상 + 경쟁우위 4점 이상',
+    test: (q, key) => CONSUMER_BRANDS.has(key) && q.pricing >= 4 && q.moat >= 4,
+  },
+  profit: {
+    label: '고수익·현금창출형',
+    desc: '수익성 5점(최상) + 경쟁우위 4점 이상',
+    test: q => q.profit >= 5 && q.moat >= 4,
+  },
+  growth: {
+    label: '성장형',
+    desc: '성장성 4점 이상 + 경쟁우위 4점 이상',
+    test: q => q.growth >= 4 && q.moat >= 4,
+  },
+  durable: {
+    label: '오래가는 기업형 (버핏형)',
+    desc: '지속가능성 5점(10년 뒤에도 건재) + 가격결정력 4점 이상',
+    test: q => q.durability >= 5 && q.pricing >= 4,
+  },
+}
+
+export function classify(m: Metrics, q?: Quality, lens: LensKey = 'moat'): GroupKey | null {
   if (!q) return null
-  const great = isGreat(q)
+  const great = LENSES[lens].test(q, m.key)
   const epsOk = m.epsVsPeak != null && m.epsVsPeak >= 0.9
   const cheap = m.peVsMed != null && m.peVsMed <= 0.85
   const down = m.fromHigh3y != null && m.fromHigh3y <= -20
   if (great && epsOk && (cheap || down) && (m.epsCagr5 ?? -1) > 0) return 'pause'
   if (great && m.epsVsPeak != null && m.epsVsPeak < 0.85) return 'stumble'
-  if (q.grade === 'A' && epsOk && m.peVsMed != null && m.peVsMed <= 1.1 && (m.epsCagr5 ?? 0) >= 5) return 'steady'
-  if (q.grade === 'A' && m.peVsMed != null && m.peVsMed >= 1.3) return 'pricey'
+  const top = lens === 'moat' ? q.grade === 'A' : great
+  if (top && epsOk && m.peVsMed != null && m.peVsMed <= 1.1 && (m.epsCagr5 ?? 0) >= 5) return 'steady'
+  if (top && m.peVsMed != null && m.peVsMed >= 1.3) return 'pricey'
   return null
 }
 

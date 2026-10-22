@@ -4,17 +4,18 @@ import { useEffect, useMemo, useState } from 'react'
 import PrivateTabs from '@/components/PrivateTabs'
 import { EXTRA_METRICS, PICKS, PICKS_AS_OF, PICK_SECTIONS } from './picks'
 import {
-  classify, GROUPS, GRADE_LABEL, gradeColor, groupColor, qualityScore, fmt, fmtSgn,
-  type GroupKey, type Metrics, type Quality,
+  classify, GROUPS, GRADE_LABEL, gradeColor, groupColor, qualityScore, fmt, fmtSgn, LENSES,
+  type GroupKey, type LensKey, type Metrics, type Quality,
 } from '@/lib/ideas'
 
-type Row = Metrics & { q?: Quality; group: GroupKey | null; score: number }
+type Row = Metrics & { q?: Quality; group: GroupKey | null; score: number; great: boolean }
 type SortKey = 'score' | 'pe' | 'peVsMed' | 'epsCagr10' | 'epsVsPeak' | 'fromHigh3y' | 'roll10Median' | 'expRet10' | 'name'
 
 export default function IdeasPage() {
-  const [rows, setRows] = useState<Row[] | null>(null)
+  const [base, setBase] = useState<Array<Metrics & { q?: Quality }> | null>(null)
+  const [lens, setLens] = useState<LensKey>('moat')
   const [generated, setGenerated] = useState('')
-  const [grade, setGrade] = useState<'all' | 'A' | 'AB'>('AB')
+  const [grade, setGrade] = useState<'all' | 'great' | 'AB'>('great')
   const [group, setGroup] = useState<'all' | GroupKey>('all')
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState<{ key: SortKey; desc: boolean }>({ key: 'expRet10', desc: true })
@@ -26,11 +27,17 @@ export default function IdeasPage() {
     ]).then(([s, q]) => {
       const qs = q.stocks as Record<string, Quality>
       setGenerated(s.generated)
-      setRows([...(s.stocks as Metrics[]), ...EXTRA_METRICS].map(m => ({
-        ...m, q: qs[m.key], group: classify(m, qs[m.key]), score: qualityScore(qs[m.key]),
-      })))
-    }).catch(() => setRows([]))
+      setBase([...(s.stocks as Metrics[]), ...EXTRA_METRICS].map(m => ({ ...m, q: qs[m.key] })))
+    }).catch(() => setBase([]))
   }, [])
+
+  // 선택한 '위대한 기업' 기준으로 분류를 다시 계산
+  const rows = useMemo<Row[] | null>(() => base && base.map(m => ({
+    ...m,
+    group: classify(m, m.q, lens),
+    score: qualityScore(m.q),
+    great: !!m.q && LENSES[lens].test(m.q, m.key),
+  })), [base, lens])
 
   const byKey = useMemo(() => new Map((rows ?? []).map(r => [r.key, r])), [rows])
 
@@ -38,7 +45,7 @@ export default function IdeasPage() {
     if (!rows) return []
     const ql = query.trim().toLowerCase()
     const list = rows.filter(r =>
-      (grade === 'all' || (grade === 'A' ? r.q?.grade === 'A' : r.q?.grade === 'A' || r.q?.grade === 'B')) &&
+      (grade === 'all' || (grade === 'great' ? r.great : r.q?.grade === 'A' || r.q?.grade === 'B')) &&
       (group === 'all' || r.group === group) &&
       (!ql || r.key.toLowerCase().includes(ql) || (r.name ?? '').toLowerCase().includes(ql)))
     const val = (r: Row): number | string | null => sort.key === 'name' ? r.name : (r as any)[sort.key]
@@ -131,7 +138,18 @@ export default function IdeasPage() {
 
         {/* ── 자동 선별 기준 ── */}
         <section className="space-y-2">
-          <h2 className="text-base font-semibold text-gray-900 dark:text-white">자동 분류 기준</h2>
+          <h2 className="text-base font-semibold text-gray-900 dark:text-white">자동 분류 — &lsquo;위대한 기업&rsquo; 기준 고르기</h2>
+          <div className="flex flex-wrap gap-1.5">
+            {(Object.keys(LENSES) as LensKey[]).map(k => (
+              <button key={k} onClick={() => setLens(k)}
+                className={`px-2.5 py-1 text-xs rounded-md border ${lens === k ? 'bg-gray-900 text-white border-gray-900 dark:bg-white dark:text-gray-900' : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300'}`}>
+                {LENSES[k].label}
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            지금 기준: <b>{LENSES[lens].label}</b> — {LENSES[lens].desc}. 이 기준을 통과한 기업 {rows ? rows.filter(r => r.great).length : 0}개를 아래 네 가지로 나눴다.
+          </p>
           <div className="grid sm:grid-cols-2 gap-2">
             {(Object.keys(GROUPS) as GroupKey[]).map(g => (
               <button
@@ -148,7 +166,7 @@ export default function IdeasPage() {
             ))}
           </div>
           <p className="text-xs text-gray-400 dark:text-gray-500">
-            &lsquo;위대한 기업&rsquo; = 정성 평가 A등급 또는 경쟁우위 4점 이상인 B등급. 카드를 누르면 아래 표가 그 분류로 걸러진다.
+            기준마다 &lsquo;위대한 기업&rsquo;이 달라진다. 예: 애플은 어느 기준이든 통과하지만 PER이 평소보다 40% 높아 &lsquo;지금은 비쌈&rsquo;으로 분류된다. 카드를 누르면 아래 표가 그 분류로 걸러진다.
           </p>
         </section>
 
@@ -156,7 +174,7 @@ export default function IdeasPage() {
         <section className="space-y-3">
           <h2 className="text-base font-semibold text-gray-900 dark:text-white">전체 종목 표</h2>
           <div className="flex flex-wrap gap-2 items-center text-xs">
-            {([['AB', '위대한·좋은 기업'], ['A', '위대한 기업만'], ['all', '전체']] as const).map(([k, l]) => (
+            {([['great', '선택한 기준 통과'], ['AB', 'A·B 등급'], ['all', '전체']] as const).map(([k, l]) => (
               <button key={k} onClick={() => setGrade(k)}
                 className={`px-2.5 py-1 rounded-md border ${grade === k ? 'bg-gray-900 text-white border-gray-900 dark:bg-white dark:text-gray-900' : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300'}`}>
                 {l}
