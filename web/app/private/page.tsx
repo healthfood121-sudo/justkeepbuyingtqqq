@@ -2715,7 +2715,247 @@ function QualityCard({ stockKey }: { stockKey: string }) {
   )
 }
 
-function AutoInsight({ stockKey }: { stockKey: string }) {
+// ── 자동 심화 분석: PER별 과거 수익률 · 과거 저점 비교 · 시나리오 · 자동 결론 ─────────
+function AutoDeep({ f, data }: { f: Fundamentals; data: StockData }) {
+  const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-2'
+  const h4 = 'text-sm font-semibold text-gray-800 dark:text-gray-100'
+  const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
+  const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500 whitespace-nowrap'
+  const td = 'py-1.5 px-2 tabular-nums text-gray-700 dark:text-gray-200 whitespace-nowrap'
+  const sgn = (v: number) => `${v > 0 ? '+' : ''}${v.toFixed(1)}`
+  const avg = (a: number[]) => a.reduce((x, y) => x + y, 0) / a.length
+
+  const m = f.metrics
+  const curPe = m.pe
+  const div = m.divYield ?? 0
+  const complete = f.decomp.filter(d => !d.inProgress && d.peBuy != null && d.peBuy > 0 && d.peBuy < 150)
+  const byPe = [...complete].sort((a, b) => a.peBuy - b.peBuy)
+
+  // 지금과 비슷한 PER(±20%)에서 산 경우
+  const similar = curPe ? complete.filter(d => d.peBuy >= curPe * 0.8 && d.peBuy <= curPe * 1.2) : []
+  const cheaper = curPe ? complete.filter(d => d.peBuy < curPe * 0.8) : []
+  const pricier = curPe ? complete.filter(d => d.peBuy > curPe * 1.2) : []
+
+  // 10년 PER 범위
+  const peHist = Object.entries(f.pe)
+    .filter(([y, v]) => v != null && v > 0 && v < 150 && Number(y) >= m.lastFy - 10)
+    .map(([, v]) => v as number).sort((a, b) => a - b)
+  const peMin = peHist.length ? peHist[0] : null
+  const peMax = peHist.length ? peHist[peHist.length - 1] : null
+
+  // 과거 저점 (주가 롤링 데이터: EPS 없이도 긴 역사)
+  const rows = (data.rows10y as any[]).filter(r => r.isComplete)
+  const rowByBuy = new Map((data.rows10y as any[]).map(r => [r.buyYear, r]))
+  const troughs = [...rows].sort((a, b) => a.cagr - b.cagr)
+    .filter(r => rowByBuy.has(r.sellYear))
+    .slice(0, 3)
+  const latest = rows.length ? rows[rows.length - 1] : null
+  const latestRank = latest ? [...rows].sort((a, b) => a.cagr - b.cagr).findIndex(r => r.buyYear === latest.buyYear) + 1 : 0
+  const epsGrowthAfter = (buy: number) => f.decomp.find(d => d.buyYear === buy && !d.inProgress)?.epsGrowthCagr ?? null
+
+  // 시나리오
+  const growths = [0, 3, 6, 9, 12, 15]
+  const exits = curPe ? Array.from(new Set([
+    peMin != null ? Math.round(peMin) : null,
+    Math.round(curPe),
+    m.peMed10 != null ? Math.round(m.peMed10) : null,
+    peMax != null ? Math.round(Math.min(peMax, 80)) : null,
+  ].filter((v): v is number => v != null && v > 0))).sort((a, b) => a - b) : []
+  const ret = (g: number, exit: number) =>
+    curPe ? ((Math.pow(1 + g / 100, 10) * exit / curPe) ** 0.1 * (1 + div / 100) - 1) * 100 : 0
+  const needFor = (target: number, exit: number) =>
+    curPe ? (((1 + target / 100) / (1 + div / 100)) / Math.pow(exit / curPe, 0.1) - 1) * 100 : null
+  const exitMed = m.peMed10 ?? curPe
+  const need15 = exitMed ? needFor(15, exitMed) : null
+  const need10 = exitMed ? needFor(10, exitMed) : null
+  const histG = [m.epsCagr10, m.epsCagr5].filter((v): v is number => v != null)
+  const histLow = histG.length ? Math.min(...histG) : null
+
+  const cell = (v: number) =>
+    v < 0 ? 'text-red-500' : v < 5 ? 'text-orange-500' : v < 10 ? 'text-yellow-600 dark:text-yellow-400'
+      : v < 15 ? 'text-emerald-600 dark:text-emerald-400' : 'text-blue-600 dark:text-blue-400 font-semibold'
+
+  // 자동 결론
+  const concl: string[] = []
+  if (curPe && m.peMed10) {
+    const r = curPe / m.peMed10
+    concl.push(r <= 0.85 ? `지금 PER(${curPe.toFixed(1)}배)은 자기 10년 평소(${m.peMed10.toFixed(1)}배)보다 확실히 낮다. 값은 매력적인 구간.`
+      : r >= 1.3 ? `지금 PER(${curPe.toFixed(1)}배)은 자기 10년 평소(${m.peMed10.toFixed(1)}배)보다 30% 이상 높다. 기대가 이미 가격에 많이 들어가 있다.`
+      : `지금 PER(${curPe.toFixed(1)}배)은 자기 10년 평소(${m.peMed10.toFixed(1)}배)와 비슷하다. 수익은 대부분 이익 성장에서 나와야 한다.`)
+  }
+  if (need15 != null && histLow != null) {
+    concl.push(`PER이 평소 수준으로 돌아간다고 보면, 연 15%를 내려면 이익이 연 ${need15.toFixed(0)}%씩 늘어야 한다. 과거 이익 성장률(5년·10년 중 낮은 값)은 연 ${histLow.toFixed(0)}%로 ${histLow >= need15 ? '과거 속도만 유지해도 가능한 수준' : '과거보다 빨라야 하는 수준'}이다.`)
+  }
+  if (similar.length) {
+    concl.push(`지금과 비슷한 PER(±20%)에서 산 ${similar.length}번의 10년 결과는 평균 연 ${avg(similar.map(d => d.totalCagr)).toFixed(1)}% (${Math.min(...similar.map(d => d.totalCagr)).toFixed(1)}~${Math.max(...similar.map(d => d.totalCagr)).toFixed(1)}%).`)
+  }
+  if (m.epsVsPeak != null && m.epsVsPeak < 0.85) {
+    concl.push(`최근 1년 이익이 10년 고점의 ${(m.epsVsPeak * 100).toFixed(0)}%라 PER이 실제보다 높아 보인다. 이익 회복이 먼저다. (고점 해에 일회성 이익이 있었다면 왜곡일 수 있다.)`)
+  }
+  if (latest && rows.length >= 5) {
+    concl.push(`가장 최근 완결 구간(${latest.buyYear}→${latest.sellYear}) 연 ${latest.cagr.toFixed(1)}%는 과거 ${rows.length}개 중 ${latestRank}번째로 낮다${latestRank <= Math.max(2, rows.length * 0.2) ? ' — 10년 수익률이 바닥권이다.' : '.'}`)
+  }
+
+  return (
+    <>
+      {curPe != null && complete.length > 0 && (
+        <div className={box}>
+          <h4 className={h4}>매수 시점 PER별 과거 10년 수익률 ({complete.length}개 경우)</h4>
+          <div className="overflow-x-auto">
+            <table className="text-xs">
+              <thead>
+                <tr>
+                  <th className={`${th} text-left`}>보유 구간</th>
+                  <th className={`${th} text-right`}>매수 PER</th>
+                  <th className={`${th} text-right`}>10년 연평균</th>
+                  <th className={`${th} text-right`}>EPS 성장(연)</th>
+                  <th className={`${th} text-right`}>PER 변화</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                {(() => {
+                  const out: React.ReactNode[] = []
+                  let marked = false
+                  byPe.forEach(d => {
+                    if (!marked && d.peBuy > curPe) {
+                      out.push(
+                        <tr key="now" className="bg-blue-50 dark:bg-blue-900/20">
+                          <td className={`${td} font-semibold`} colSpan={2}>▶ 지금 PER {curPe.toFixed(1)}배</td>
+                          <td className={`${td} text-right`} colSpan={3}>?</td>
+                        </tr>)
+                      marked = true
+                    }
+                    out.push(
+                      <tr key={d.buyYear}>
+                        <td className={td}>{d.buyYear} → {d.sellYear}</td>
+                        <td className={`${td} text-right`}>{d.peBuy.toFixed(1)}배</td>
+                        <td className={`${td} text-right font-semibold ${cell(d.totalCagr)}`}>{d.totalCagr.toFixed(1)}%</td>
+                        <td className={`${td} text-right`}>{sgn(d.epsGrowthCagr)}%</td>
+                        <td className={`${td} text-right`}>{d.peBuy.toFixed(0)} → {d.peSell.toFixed(0)}배</td>
+                      </tr>)
+                  })
+                  if (!marked) out.push(
+                    <tr key="now" className="bg-blue-50 dark:bg-blue-900/20">
+                      <td className={`${td} font-semibold`} colSpan={2}>▶ 지금 PER {curPe.toFixed(1)}배</td>
+                      <td className={`${td} text-right`} colSpan={3}>?</td>
+                    </tr>)
+                  return out
+                })()}
+              </tbody>
+            </table>
+          </div>
+          <ul className={`${p} list-disc pl-4 space-y-0.5`}>
+            {cheaper.length > 0 && <li>지금보다 20% 이상 싸게 산 경우({cheaper.length}번): 평균 연 {avg(cheaper.map(d => d.totalCagr)).toFixed(1)}%</li>}
+            {similar.length > 0 && <li>지금과 비슷한 PER(±20%)에서 산 경우({similar.length}번): 평균 연 {avg(similar.map(d => d.totalCagr)).toFixed(1)}%</li>}
+            {pricier.length > 0 && <li>지금보다 20% 이상 비싸게 산 경우({pricier.length}번): 평균 연 {avg(pricier.map(d => d.totalCagr)).toFixed(1)}%</li>}
+          </ul>
+          <p className="text-[11px] text-gray-400 dark:text-gray-500">
+            SEC 공시 EPS가 2008년 무렵부터 있어 10년을 다 채운 경우가 적다. 경우 수가 적으면 참고 정도로만 보자.
+          </p>
+        </div>
+      )}
+
+      {troughs.length > 0 && (
+        <div className={box}>
+          <h4 className={h4}>과거 10년 수익률 바닥 직후에 샀다면</h4>
+          <p className={p}>10년 보유 수익률이 가장 낮았던 구간과, 그 구간이 끝난 해 말에 새로 산 경우의 결과(주가 기록 기준).</p>
+          <div className="overflow-x-auto">
+            <table className="text-xs">
+              <thead>
+                <tr>
+                  <th className={`${th} text-left`}>바닥 구간</th>
+                  <th className={`${th} text-right`}>그 구간 수익률</th>
+                  <th className={`${th} text-right`}>직후 매수</th>
+                  <th className={`${th} text-right`}>이후 수익률</th>
+                  <th className={`${th} text-right`}>이후 EPS 성장</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                {troughs.map(t => {
+                  const after = rowByBuy.get(t.sellYear)
+                  const eg = epsGrowthAfter(t.sellYear)
+                  return (
+                    <tr key={t.buyYear}>
+                      <td className={td}>{t.buyYear} → {t.sellYear}</td>
+                      <td className={`${td} text-right ${cell(t.cagr)}`}>{t.cagr.toFixed(1)}%</td>
+                      <td className={`${td} text-right`}>
+                        {t.sellYear}년 말{f.pe[String(t.sellYear)] ? ` (PER ${f.pe[String(t.sellYear)]!.toFixed(0)}배)` : ''}
+                      </td>
+                      <td className={`${td} text-right font-semibold ${cell(after.cagr)}`}>
+                        {after.cagr.toFixed(1)}%{after.isComplete ? '' : ` (${after.yearsActual}년, 진행 중)`}
+                      </td>
+                      <td className={`${td} text-right`}>{eg != null ? `연 ${sgn(eg)}%` : '—'}</td>
+                    </tr>
+                  )
+                })}
+                {latest && (
+                  <tr className="bg-blue-50 dark:bg-blue-900/20">
+                    <td className={`${td} font-semibold`}>{latest.buyYear} → {latest.sellYear} (최근)</td>
+                    <td className={`${td} text-right ${cell(latest.cagr)}`}>{latest.cagr.toFixed(1)}%</td>
+                    <td className={`${td} text-right`}>지금{curPe ? ` (PER ${curPe.toFixed(0)}배)` : ''}</td>
+                    <td className={`${td} text-right font-semibold`}>?</td>
+                    <td className={`${td} text-right`}>?</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+          <p className="text-[11px] text-gray-400 dark:text-gray-500">
+            바닥 직후 매수가 좋았던 건 대개 그 뒤 이익이 잘 늘었기 때문이다. 바닥의 원인이 PER 하락이었는지, 이익 정체였는지 함께 봐야 한다.
+          </p>
+        </div>
+      )}
+
+      {curPe != null && exits.length > 0 && (
+        <div className={box}>
+          <h4 className={h4}>지금(PER {curPe.toFixed(1)}배) 사서 10년 보유 시 예상 연평균 수익률</h4>
+          <p className={p}>배당수익률 {div.toFixed(2)}% 유지 가정. 행 = 연 EPS 성장률, 열 = 10년 뒤 PER(10년 최저·지금·중간값·최고).</p>
+          <div className="overflow-x-auto">
+            <table className="text-xs">
+              <thead>
+                <tr>
+                  <th className={`${th} text-left`}>EPS 성장 ↓ / 10년 뒤 PER →</th>
+                  {exits.map(e => (
+                    <th key={e} className={`${th} text-right`}>
+                      {e}배{e === Math.round(curPe) ? ' (지금)' : e === Math.round(m.peMed10 ?? -1) ? ' (평소)' : ''}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                {growths.map(g => (
+                  <tr key={g} className={histLow != null && Math.abs(g - histLow) < 1.5 ? 'bg-gray-50 dark:bg-gray-800/40' : ''}>
+                    <td className={td}>연 {g}%</td>
+                    {exits.map(e => {
+                      const v = ret(g, e)
+                      return <td key={e} className={`${td} text-right ${cell(v)}`}>{v.toFixed(1)}%</td>
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="text-[11px] text-gray-400 dark:text-gray-500">
+            {need10 != null && need15 != null && `PER이 평소(${exitMed!.toFixed(0)}배)로 돌아갈 때 연 10%에는 이익 연 ${need10.toFixed(0)}%, 연 15%에는 연 ${need15.toFixed(0)}% 성장이 필요하다. `}
+            계산식: [(1+EPS 성장)^10 × (10년 뒤 PER ÷ 지금 PER)]^(1/10) × (1+배당) − 1.
+          </p>
+        </div>
+      )}
+
+      {concl.length > 0 && (
+        <div className={box}>
+          <h4 className={h4}>숫자로 본 결론</h4>
+          <ul className={`${p} list-disc pl-4 space-y-1`}>
+            {concl.map((c, i) => <li key={i}>{c}</li>)}
+          </ul>
+          <p className="text-[11px] text-gray-400 dark:text-gray-500">데이터로 자동 작성한 문장이다. 사업 측면 판단은 위 사업성 평가와 함께 보자.</p>
+        </div>
+      )}
+    </>
+  )
+}
+
+function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) {
   const [f, setF] = useState<Fundamentals | null | undefined>(undefined)
   const [q, setQ] = useState<Quality | undefined>(undefined)
   useEffect(() => {
@@ -2861,6 +3101,8 @@ function AutoInsight({ stockKey }: { stockKey: string }) {
           exampleYear={exampleYear}
         />
       )}
+
+      {!m.stale && <AutoDeep f={f} data={data} />}
     </div>
   )
 }
@@ -2943,7 +3185,7 @@ export default function PrivatePage() {
         {current.key === 'NKE' && <QualityCard stockKey="NKE" />}
         {current.key === 'NKE' && <NkeInsight data={current.data} />}
         {current.key !== 'RMS' && current.key !== 'NKE' && (current.data as any).type !== 'etf' && (
-          <AutoInsight key={current.key} stockKey={current.key} />
+          <AutoInsight key={current.key} stockKey={current.key} data={current.data} />
         )}
 
         {/* 구분선 */}
