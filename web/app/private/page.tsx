@@ -2172,6 +2172,129 @@ function DecompSection({
   )
 }
 
+// ── 에르메스 장기 데이터: 자산가 인구 · 매출 성장 · 가격 인상 · 판매량(역산) ─────────
+// 자산가: Capgemini 세계 부 보고서(금융자산 100만 달러 이상, 각 연도판 발표값; 2003·2004년은 미확인 근사)
+// 에르메스 매출 성장(환율 제외): ok=true는 회사 발표 확인, false는 근사값
+// 가격: 회사·전문 매체가 전한 연간 평균 인상률 근사(대표 제품 기준 포함)
+const HERMES_HISTORY: Array<{
+  y: number; hnwi: number | null; hnwiG: number | null
+  rev: number | null; revOk?: boolean; price: number | null; priceNote?: string
+}> = [
+  { y: 2002, hnwi: 7.3, hnwiG: 2.1, rev: null, price: null },
+  { y: 2003, hnwi: 7.7, hnwiG: 7.5, rev: null, price: null },
+  { y: 2004, hnwi: 8.3, hnwiG: 7.3, rev: null, price: null },
+  { y: 2005, hnwi: 8.7, hnwiG: 6.5, rev: null, price: null },
+  { y: 2006, hnwi: 9.5, hnwiG: 8.3, rev: null, price: null },
+  { y: 2007, hnwi: 10.1, hnwiG: 6.0, rev: null, price: null },
+  { y: 2008, hnwi: 8.6, hnwiG: -14.9, rev: null, price: null },
+  { y: 2009, hnwi: 10.0, hnwiG: 17.1, rev: null, price: null },
+  { y: 2010, hnwi: 10.9, hnwiG: 8.3, rev: 19, revOk: false, price: null },
+  { y: 2011, hnwi: 11.0, hnwiG: 0.8, rev: 18, revOk: false, price: null },
+  { y: 2012, hnwi: 12.0, hnwiG: 9.2, rev: 13, revOk: false, price: null },
+  { y: 2013, hnwi: 13.7, hnwiG: 14.7, rev: 13, revOk: true, price: null },
+  { y: 2014, hnwi: 14.6, hnwiG: 6.7, rev: 10, revOk: false, price: null },
+  { y: 2015, hnwi: 15.4, hnwiG: 4.9, rev: 8, revOk: false, price: null },
+  { y: 2016, hnwi: 16.5, hnwiG: 7.5, rev: 7.5, revOk: false, price: null },
+  { y: 2017, hnwi: 18.1, hnwiG: 9.5, rev: 8.6, revOk: false, price: null },
+  { y: 2018, hnwi: 18.0, hnwiG: -0.3, rev: 10, revOk: false, price: null },
+  { y: 2019, hnwi: 19.6, hnwiG: 8.8, rev: 12, revOk: true, price: 2.0, priceNote: '버킨30 유럽 €7,400→7,550' },
+  { y: 2020, hnwi: 20.8, hnwiG: 6.3, rev: -6, revOk: false, price: 2.7, priceNote: '버킨30 유럽 €7,550→7,750' },
+  { y: 2021, hnwi: 22.5, hnwiG: 7.8, rev: 42, revOk: false, price: 3.0, priceNote: '근사' },
+  { y: 2022, hnwi: 21.7, hnwiG: -3.3, rev: 23, revOk: false, price: 4.0, priceNote: '2~5%' },
+  { y: 2023, hnwi: 22.8, hnwiG: 5.1, rev: 21, revOk: true, price: 7.0, priceNote: '5~10% (유럽 가방 8~10%)' },
+  { y: 2024, hnwi: 23.4, hnwiG: 2.6, rev: 15, revOk: true, price: 7.0, priceNote: '평균 약 7%' },
+  { y: 2025, hnwi: 25.3, hnwiG: 7.9, rev: 9, revOk: true, price: 6.5, priceNote: '6~7% (+미국 관세분 5%)' },
+  { y: 2026, hnwi: null, hnwiG: null, rev: 6, revOk: true, price: 5.5, priceNote: 'CFO 5~6% (상반기 매출 기준)' },
+]
+
+function HermesHistory() {
+  const rows = HERMES_HISTORY
+  const vol = (r: typeof rows[number]) =>
+    r.rev != null && r.price != null ? ((1 + r.rev / 100) / (1 + r.price / 100) - 1) * 100 : null
+  const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500 whitespace-nowrap'
+  const td = 'py-1 px-2 tabular-nums text-gray-700 dark:text-gray-200 whitespace-nowrap'
+  const sg = (v: number | null, d = 1) => (v == null ? '—' : `${v > 0 ? '+' : ''}${v.toFixed(d)}%`)
+
+  const chartRows = rows.filter(r => r.y >= 2010)
+  const chartData = {
+    labels: chartRows.map(r => (r.y === 2026 ? '2026상' : String(r.y))),
+    datasets: [
+      { type: 'bar' as const, label: '에르메스 매출 성장(환율 제외)', data: chartRows.map(r => r.rev), backgroundColor: 'rgba(249,115,22,0.55)', order: 2 },
+      { type: 'line' as const, label: '자산가 인구 증가율', data: chartRows.map(r => r.hnwiG), borderColor: 'rgba(16,185,129,0.9)', backgroundColor: 'rgba(16,185,129,0.9)', pointRadius: 3, borderWidth: 2, order: 1, spanGaps: false },
+      { type: 'line' as const, label: '가격 인상률', data: chartRows.map(r => r.price), borderColor: 'rgba(168,85,247,0.9)', backgroundColor: 'rgba(168,85,247,0.9)', pointRadius: 3, borderWidth: 2, borderDash: [4, 3], order: 0, spanGaps: false },
+    ],
+  }
+  const options: any = {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { size: 10 }, maxRotation: 45 } },
+      y: { ticks: { font: { size: 11 }, callback: (v: number) => `${v}%` }, grid: { color: 'rgba(128,128,128,0.1)' } },
+    },
+    plugins: {
+      legend: { position: 'top' as const, labels: { font: { size: 11 }, boxWidth: 12 } },
+      tooltip: { callbacks: { label: (c: any) => c.parsed.y == null ? '' : `${c.dataset.label}: ${c.parsed.y > 0 ? '+' : ''}${c.parsed.y}%` } },
+    },
+  }
+
+  return (
+    <div className="space-y-3">
+      <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">장기 데이터: 자산가 인구 · 에르메스 매출 · 가격 · 판매량 (2002~2026)</p>
+      <div style={{ height: 260 }}>
+        <Chart type="bar" data={chartData} options={options} />
+      </div>
+
+      <div className="grid sm:grid-cols-3 gap-2">
+        <StatCard label="자산가 인구 (2002→2025)" value="730만 → 2,530만, 연 5.6%" />
+        <StatCard label="버킨 가격 (미국, 2000→2025)" value="약 4,000 → 14,900달러, 연 약 5.4%" />
+        <StatCard label="에르메스 매출 (2010→2025, 환율 제외)" value="연 약 13%" />
+      </div>
+
+      <div className="overflow-x-auto max-h-80 overflow-y-auto">
+        <table className="text-xs">
+          <thead className="sticky top-0 bg-white dark:bg-gray-950">
+            <tr>
+              <th className={`${th} text-left`}>연도</th>
+              <th className={`${th} text-right`}>자산가(백만 명)</th>
+              <th className={`${th} text-right`}>자산가 증가</th>
+              <th className={`${th} text-right`}>매출 성장(환율 제외)</th>
+              <th className={`${th} text-right`}>가격 인상</th>
+              <th className={`${th} text-right`}>판매량·구성(역산)</th>
+              <th className={`${th} text-left`}>가격 근거</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+            {[...rows].reverse().map(r => (
+              <tr key={r.y}>
+                <td className={td}>{r.y === 2026 ? '2026 상반기' : r.y}</td>
+                <td className={`${td} text-right`}>{r.hnwi != null ? r.hnwi.toFixed(1) : '—'}</td>
+                <td className={`${td} text-right ${r.hnwiG != null && r.hnwiG < 0 ? 'text-red-500' : 'text-emerald-600 dark:text-emerald-400'}`}>{sg(r.hnwiG)}</td>
+                <td className={`${td} text-right ${r.rev != null && r.rev < 0 ? 'text-red-500' : ''}`}>
+                  {sg(r.rev, r.rev != null && r.rev % 1 ? 1 : 0)}{r.rev != null && !r.revOk ? '*' : ''}
+                </td>
+                <td className={`${td} text-right text-purple-600 dark:text-purple-400`}>{sg(r.price)}</td>
+                <td className={`${td} text-right font-semibold`}>{sg(vol(r))}</td>
+                <td className={`${td} text-gray-400`}>{r.priceNote ?? ''}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <ul className="text-xs leading-relaxed text-gray-600 dark:text-gray-300 list-disc pl-4 space-y-1">
+        <li><b>장기 공식이 맞아떨어진다.</b> 자산가 인구 연 5.6% + 가격 연 5~6% ≈ 연 11~12%. 에르메스 매출은 2010년 이후 연 약 13% — 나머지 1~2%p는 신흥국 신규 고객과 점유율 확대 몫으로 볼 수 있다.</li>
+        <li><b>2021~2023년은 예외적인 호황.</b> 코로나 이후 보복 소비로 판매량이 연 13~38% 늘었다. 이 시기의 높은 성장과 PER(50~66배)을 기준으로 삼으면 기대가 과해진다.</li>
+        <li><b>2024년부터 판매량이 빠르게 식었다.</b> +7.5% → +2.3%(2025) → 거의 0%(2026 상반기). 자산가는 계속 늘었는데(2025년 +7.9%) 판매량이 멈춘 건, 자산가보다 아래의 &lsquo;열망 고객층&rsquo;과 중국 수요가 줄었기 때문으로 보인다.</li>
+        <li><b>가격 인상 폭도 줄이는 중.</b> 2023~2025년 6~7% → 2026년 5~6%(CFO). 판매량이 다시 자산가 증가율(연 5%대)로 돌아오느냐가 앞으로 10년 수익률을 가른다.</li>
+      </ul>
+      <p className="text-[11px] text-gray-400 dark:text-gray-500">
+        * 표시는 근사값(회사 발표로 다시 확인하지 못함). 2010~2018년 가격 인상률은 연도별 자료를 찾지 못해 비워 뒀다 — 장기로는 버킨 가격이 연 5~7%(달러 기준, 환율 포함) 올랐다.
+        자산가 수는 Capgemini 각 연도판 발표값이라 이후 개정과 조금 다를 수 있다. 판매량·구성 = (1+매출 성장)÷(1+가격 인상)−1.
+      </p>
+    </div>
+  )
+}
+
 // ── 에르메스: 고객 수(Q) × 가격(P)으로 본 성장 추정 ─────────
 function HermesQP() {
   const [q, setQ] = useState(5)          // 판매량(고객 수) 증가율 %
@@ -2234,27 +2357,29 @@ function HermesQP() {
               <tr><td className={td}>2023년</td><td className={`${td} text-right`}>5~10% (유럽 가방 8~10%)</td></tr>
               <tr><td className={td}>2024년</td><td className={`${td} text-right`}>평균 약 7%</td></tr>
               <tr><td className={td}>2025년</td><td className={`${td} text-right`}>6~7% (+미국 관세분 5%)</td></tr>
-              <tr><td className={td}>2026년</td><td className={`${td} text-right`}>1.5~10% (버킨 7~9%)</td></tr>
+              <tr><td className={td}>2026년</td><td className={`${td} text-right`}>평균 5~6% (CFO), 버킨 7~9%</td></tr>
             </tbody>
           </table>
           <p className="text-[11px] text-gray-400 dark:text-gray-500">
-            최근 몇 년 평균 연 6~7%. 경영진은 &ldquo;가격은 인기가 아니라 생산 원가에 맞춰 올린다&rdquo;고 말한다 — 올릴 여력을 일부러 남겨 두는 셈이다.
+            2023~2025년 평균 연 6~7%, 2026년은 5~6%로 낮췄다. 경영진은 &ldquo;가격은 인기가 아니라 생산 원가에 맞춰 올린다&rdquo;고 말한다 — 올릴 여력을 일부러 남겨 두는 셈이다.
           </p>
         </div>
       </div>
+
+      <HermesHistory />
 
       <div className="rounded bg-amber-50 dark:bg-amber-900/10 p-3 space-y-1">
         <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">실제 매출로 맞춰 보기 (환율 영향 제외 성장률 − 가격 인상 ≈ 판매량)</p>
         <ul className={`${p} list-disc pl-4 space-y-0.5`}>
           <li>2025년: 전체 매출 +9% − 가격 약 6.5% → 판매량·구성 약 +2.5%. 가죽제품만 보면 +13% − 6.5% → 약 +6% (공방 증설로 생산 능력이 늘어난 몫).</li>
-          <li>2026년 상반기: 전체 매출 +6% − 가격 6~7% → 판매량은 거의 제자리. 자산가는 늘었는데 판매량이 멈췄다 — 중국 수요 약화와 &lsquo;열망 고객층&rsquo;(자산가 아래 계층)의 소비 위축이 원인으로 보인다.</li>
+          <li>2026년 상반기: 전체 매출 +6% − 가격 5~6% → 판매량은 거의 제자리(+0~1%). 자산가는 늘었는데 판매량이 멈췄다 — 중국 수요 약화와 &lsquo;열망 고객층&rsquo;(자산가 아래 계층)의 소비 위축이 원인으로 보인다.</li>
           <li>가죽제품은 공급이 수요보다 적어(대기 고객) 판매량이 공방 증설 속도에 묶여 있다. 신규 공방: 2025년 24번째, 2026년 루프, 2027년 샤를빌메지에르, 2028년 콜롱벨, 2030년까지 레장들리.</li>
         </ul>
       </div>
 
       <div className="grid sm:grid-cols-2 gap-x-6 gap-y-3">
         {slider('Q: 판매량(고객 수) 증가율', q, setQ, -3, 10, 0.5, '%', '자산가 인구 장기 증가율 약 5%, 2026년 상반기 실제 약 0%')}
-        {slider('P: 연간 가격 인상률', pr, setPr, 0, 10, 0.5, '%', '최근 평균 6~7%')}
+        {slider('P: 연간 가격 인상률', pr, setPr, 0, 10, 0.5, '%', '2023~2025년 6~7%, 2026년 5~6%')}
         {slider('이익률 변화 효과', margin, setMargin, -3, 3, 0.5, '%p', '영업이익률 약 41% 유지면 0. 프랑스 법인세 부담 등이 있으면 마이너스')}
         {slider('10년 뒤 PER', exitPe, setExitPe, 15, 50, 1, '배', '지금 약 29배, 10년 중간값 약 44배, 2009년 저점 28.5배')}
       </div>
