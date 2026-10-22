@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, type ReactNode } from 'react'
 import {
   Chart as ChartJS,
   CategoryScale, LinearScale, LogarithmicScale,
@@ -2570,33 +2570,7 @@ function HermesForecast() {
   )
 }
 
-// 에르메스 연말 EPS (유로, 회사 발표 기준 2009~2025 / 2001~2008은 대조 못한 값)
-const RMS_EPS_HIST: Record<number, number> = {
-  2001: 1.81, 2002: 2.30, 2003: 1.88, 2004: 1.95, 2005: 2.16, 2006: 2.77, 2007: 2.70, 2008: 2.64,
-  2009: 2.74, 2010: 4.00, 2011: 5.63, 2012: 7.02, 2013: 7.53, 2014: 8.19, 2015: 9.27, 2016: 10.51,
-  2017: 11.67, 2018: 13.43, 2019: 14.66, 2020: 13.21, 2021: 23.37, 2022: 32.2, 2023: 41.19, 2024: 43.93, 2025: 43.15,
-}
-const RMS_TTM = { t: 2026.5, eps: 43.08 } // 2026년 6월 말 최근 1년 EPS
-const RMS_SHARES = 104.5e6               // 자사주 제외 유통 주식 수(근사)
-const HNWI_2025 = 25.3e6                 // 금융자산 100만 달러 이상 (Capgemini 2025)
-
-// 소수 연도(예: 2026.5) 기준 EPS: 실적 구간은 로그 보간, 이후는 성장률 g로 연장
-function epsAt(t: number, g: number) {
-  if (t >= RMS_TTM.t) return RMS_TTM.eps * Math.pow(1 + g / 100, t - RMS_TTM.t)
-  const pts: Array<[number, number]> = Object.entries(RMS_EPS_HIST).map(([y, e]) => [Number(y) + 1, e])
-  pts.push([RMS_TTM.t, RMS_TTM.eps])
-  pts.sort((a, b) => a[0] - b[0])
-  if (t <= pts[0][0]) return pts[0][1]
-  for (let i = 1; i < pts.length; i++) {
-    const [t1, e1] = pts[i]
-    if (t <= t1) {
-      const [t0, e0] = pts[i - 1]
-      const w = (t - t0) / (t1 - t0)
-      return Math.exp(Math.log(e0) * (1 - w) + Math.log(e1) * w)
-    }
-  }
-  return RMS_TTM.eps
-}
+// ── 이익 시계(공용): 적정가 선 = 최근 1년 EPS × 적정 PER, 실제 주가와 비교 ─────────
 const decYear = (ms: number) => {
   const d = new Date(ms)
   const y = d.getFullYear()
@@ -2609,68 +2583,116 @@ const quantile = (arr: number[], q: number) => {
   const lo = Math.floor(i)
   return a[lo] + (a[Math.ceil(i)] - a[lo]) * (i - lo)
 }
+const SEC_Y = 365.25 * 86400
 
-type MonthlyPrice = { last: { date: string; close: number }; rows: Array<{ d: string; c: number }> }
+type ClockAnchor = [number, number] // [소수 연도, 최근 1년 EPS]
 
-function HermesValueClock({ g, f }: { g: number; f: Factors }) {
-  const [px, setPx] = useState<MonthlyPrice | null>(null)
+// 실적 구간: 둘 다 양수면 로그 보간(성장률 기준), 아니면 직선 보간. 마지막 실적 이후: 성장률 g로 연장
+function makeEpsAt(anchors: ClockAnchor[], g: number) {
+  const last = anchors[anchors.length - 1]
+  return (t: number): number | null => {
+    if (!anchors.length || t < anchors[0][0]) return null
+    if (t >= last[0]) return last[1] > 0 ? last[1] * Math.pow(1 + g / 100, t - last[0]) : null
+    for (let i = 1; i < anchors.length; i++) {
+      const [t1, e1] = anchors[i]
+      if (t <= t1) {
+        const [t0, e0] = anchors[i - 1]
+        const w = (t - t0) / (t1 - t0)
+        return e0 > 0 && e1 > 0 ? Math.exp(Math.log(e0) * (1 - w) + Math.log(e1) * w) : e0 + (e1 - e0) * w
+      }
+    }
+    return last[1]
+  }
+}
+
+type ClockProps = {
+  cur: string                                  // '€' | '$'
+  anchors: ClockAnchor[]
+  monthly: Array<{ t: number; price: number }>
+  last: { date: string; close: number }
+  g: number
+  sharesOut: number | null                     // 회사 유통 주식 수 (없으면 회사 전체 숫자 생략)
+  divYield: number
+  storageKey: string
+  extraLive?: (now: number, fairNow: number) => ReactNode
+  notes: string
+}
+
+// 초마다 바뀌는 숫자만 따로 다시 그림 (그래프는 그대로)
+function ClockLive({ cur, epsAt, fairPe, shares, sharesOut, extraLive }: {
+  cur: string; epsAt: (t: number) => number | null; fairPe: number; shares: number; sharesOut: number | null
+  extraLive?: (now: number, fairNow: number) => ReactNode
+}) {
   const [now, setNow] = useState(() => Date.now())
+  useEffect(() => { const id = setInterval(() => setNow(Date.now()), 100); return () => clearInterval(id) }, [])
+  const epsNow = epsAt(decYear(now)) ?? 0
+  const fairNow = epsNow * fairPe
+  const startOfYear = new Date(new Date(now).getFullYear(), 0, 1).getTime()
+  const startOfDay = new Date(new Date(now).setHours(0, 0, 0, 0)).getTime()
+  const money = (v: number, d = 0) => `${v < 0 ? '−' : ''}${cur}${Math.abs(v).toLocaleString('ko-KR', { minimumFractionDigits: d, maximumFractionDigits: d })}`
+  const tile = 'rounded bg-white/70 dark:bg-gray-900/60 px-3 py-2.5'
+  const lab = 'text-[11px] text-gray-500 dark:text-gray-400'
+  const big = 'text-sm font-semibold tabular-nums text-gray-900 dark:text-white'
+  const co = sharesOut ? epsNow * sharesOut : null
+  return (
+    <>
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        <div className={tile}><p className={lab}>적정가 (지금, 계속 오름)</p><p className={big}>{money(fairNow, 4)}</p></div>
+        {co != null && <div className={tile}><p className={lab}>회사가 1초에 버는 순이익</p><p className={big}>{money(co / SEC_Y, 0)}</p></div>}
+        {co != null && <div className={tile}><p className={lab}>올해 1월 1일부터 번 순이익</p><p className={big}>{money(co * (now - startOfYear) / 1000 / SEC_Y, 0)}</p></div>}
+        <div className={tile}><p className={lab}>내 몫 이익: 1초</p><p className={big}>{money(epsNow * shares / SEC_Y, 7)}</p></div>
+        <div className={tile}><p className={lab}>내 몫 이익: 오늘 0시부터</p><p className={big}>{money(epsNow * shares * (now - startOfDay) / 1000 / SEC_Y, 5)}</p></div>
+        <div className={tile}><p className={lab}>내 몫 이익: 1년</p><p className={big}>{money(epsNow * shares, 2)}</p></div>
+      </div>
+      {extraLive?.(now, fairNow)}
+    </>
+  )
+}
+
+function ValueClockCore({ cur, anchors, monthly, last, g, sharesOut, divYield, storageKey, extraLive, notes }: ClockProps) {
   const [shares, setShares] = useState(1)
   const [pePick, setPePick] = useState<number | null>(null)
   const chartRef = useRef<ChartJS | null>(null)
   const [pluginLoaded, setPluginLoaded] = useState(false)
+  const [tNow] = useState(() => decYear(Date.now()))
   useEffect(() => {
     import('chartjs-plugin-zoom').then(({ default: z }) => { ChartJS.register(z); setPluginLoaded(true) })
-    fetch('/data/rolling/RMS_monthly_price.json').then(r => (r.ok ? r.json() : null)).then(setPx).catch(() => {})
-    try { const v = Number(localStorage.getItem('rms-shares')); if (v > 0) setShares(v) } catch {}
-    const id = setInterval(() => setNow(Date.now()), 100)
-    return () => clearInterval(id)
-  }, [])
-  const saveShares = (v: number) => { setShares(v); try { localStorage.setItem('rms-shares', String(v)) } catch {} }
+    try { const v = Number(localStorage.getItem(storageKey)); if (v > 0) setShares(v) } catch {}
+  }, [storageKey])
+  const saveShares = (v: number) => { setShares(v); try { localStorage.setItem(storageKey, String(v)) } catch {} }
 
-  // 월별 PER (실제 종가 ÷ 그 시점 최근 1년 EPS)
-  const hist = (px?.rows ?? [])
-    .map(r => { const [y, m] = r.d.split('-').map(Number); const t = y + m / 12; return { t, price: r.c, pe: r.c / epsAt(t, g) } })
-    .filter(r => r.t >= 2002)
-  const pe20 = hist.filter(r => r.t >= 2006.5 && r.t <= RMS_TTM.t).map(r => r.pe)
-  const peLo = pe20.length ? quantile(pe20, 0.25) : 28
-  const peMid = pe20.length ? quantile(pe20, 0.5) : 35
-  const peHi = pe20.length ? quantile(pe20, 0.75) : 45
-  const fairPe = pePick ?? Math.round(peMid)
+  const epsAt = makeEpsAt(anchors, g)
+  const tStart = Math.max(anchors[0]?.[0] ?? 0, monthly[0]?.t ?? 0, tNow - 25)
+  const hist = monthly.filter(r => r.t >= tStart).map(r => {
+    const e = epsAt(r.t)
+    return { t: r.t, price: r.price, pe: e && e > 0 ? r.price / e : null }
+  })
+  // 지난 20년(데이터가 짧으면 있는 만큼) 월별 PER 분포
+  const tLastEps = anchors[anchors.length - 1][0]
+  const peHist = hist.filter(r => r.t >= tLastEps - 20 && r.t <= tLastEps && r.pe != null && r.pe < 200).map(r => r.pe as number)
+  const enough = peHist.length >= 24
+  const peLo = enough ? quantile(peHist, 0.25) : null
+  const peMid = enough ? quantile(peHist, 0.5) : null
+  const peHi = enough ? quantile(peHist, 0.75) : null
+  const yrsUsed = Math.round(peHist.length / 12)
+  const fairPe = pePick ?? Math.round(peMid ?? 20)
 
-  const tNow = decYear(now)
-  const epsNow = epsAt(tNow, g)
-  const fairNow = epsNow * fairPe
-  const price = px?.last.close ?? 1356.5
-  const peNow = price / epsNow
-  const gap = (price / fairNow - 1) * 100
-  const zone = peNow < peLo ? { t: '싼 구간', c: 'text-emerald-600 dark:text-emerald-400' }
+  const epsNow = epsAt(tNow)
+  const price = last.close
+  const peNow = epsNow && epsNow > 0 ? price / epsNow : null
+  const fairNow = epsNow && epsNow > 0 ? epsNow * fairPe : null
+  const gap = fairNow ? (price / fairNow - 1) * 100 : null
+  const zone = peNow == null || peLo == null || peHi == null ? null
+    : peNow < peLo ? { t: '싼 구간', c: 'text-emerald-600 dark:text-emerald-400' }
     : peNow > peHi ? { t: '비싼 구간', c: 'text-red-500' } : { t: '보통 구간', c: 'text-gray-700 dark:text-gray-200' }
-  const fair10 = epsAt(tNow + 10, g) * fairPe
-  const ret10 = (Math.pow(fair10 / price, 0.1) * 1.0135 - 1) * 100
+  const e10 = epsAt(tNow + 10)
+  const ret10 = e10 && e10 > 0 ? (Math.pow((e10 * fairPe) / price, 0.1) * (1 + divYield / 100) - 1) * 100 : null
+  const fairPerDay = fairNow ? fairNow * Math.log(1 + g / 100) / 365.25 : null
+  const money = (v: number, d = 0) => `${cur}${v.toLocaleString('ko-KR', { minimumFractionDigits: d, maximumFractionDigits: d })}`
 
-  // 초·하루 단위 쪼개기
-  const SEC_Y = 365.25 * 86400
-  const lnG = Math.log(1 + g / 100)
-  const coNetYear = epsNow * RMS_SHARES
-  const startOfYear = new Date(new Date(now).getFullYear(), 0, 1).getTime()
-  const startOfDay = new Date(new Date(now).setHours(0, 0, 0, 0)).getTime()
-  const earnedYtd = coNetYear * (now - startOfYear) / 1000 / SEC_Y
-  const myPerSec = epsNow * shares / SEC_Y
-  const myToday = epsNow * shares * (now - startOfDay) / 1000 / SEC_Y
-  const fairPerDay = fairNow * lnG / 365.25
-  const parts = [
-    { k: '① 판매량', r: f.q }, { k: '② 가격 인상', r: f.pr }, { k: '③ 이익률', r: f.mg }, { k: '④ 기타', r: f.ot },
-  ].map(x => ({ ...x, perDay: fairNow * Math.log(1 + x.r / 100) / 365.25 }))
-  const hnwiNow = HNWI_2025 * Math.pow(1.05, tNow - 2025)
-  const hnwiPerDay = HNWI_2025 * Math.pow(1.05, tNow - 2025) * Math.log(1.05) / 365.25
-  const hnwiToday = hnwiPerDay * (now - startOfDay) / 86400000
-  const eur = (v: number, d = 0) => `€${v.toLocaleString('ko-KR', { minimumFractionDigits: d, maximumFractionDigits: d })}`
-
-  // 그래프: 주가(월말) + 적정가 선(EPS × PER) + 싼~비싼 띠, 10년 뒤까지 연장
-  const line: Array<{ x: number }> = []
-  for (let t = 2002; t <= tNow + 10; t += 1 / 12) line.push({ x: t })
-  const pt = (pe: number) => line.map(o => ({ x: o.x, y: epsAt(o.x, g) * pe }))
+  const grid: number[] = []
+  for (let t = Math.ceil(tStart * 12) / 12; t <= tNow + 10; t += 1 / 12) grid.push(t)
+  const line = (pe: number) => grid.map(t => { const e = epsAt(t); return { x: t, y: e && e > 0 ? e * pe : null } })
   const nowLine = {
     id: 'nowLine',
     afterDraw: (c: any) => {
@@ -2685,59 +2707,65 @@ function HermesValueClock({ g, f }: { g: number; f: Factors }) {
   }
   const chartData: any = {
     datasets: [
-      { label: `싼 구간 경계 (PER ${peLo.toFixed(0)}배)`, data: pt(peLo), borderColor: 'rgba(16,185,129,0.5)', borderWidth: 1, pointRadius: 0, fill: false },
-      { label: `비싼 구간 경계 (PER ${peHi.toFixed(0)}배)`, data: pt(peHi), borderColor: 'rgba(239,68,68,0.5)', borderWidth: 1, pointRadius: 0, fill: '-1', backgroundColor: 'rgba(156,163,175,0.12)' },
-      { label: `적정가 선 (EPS × ${fairPe}배)`, data: pt(fairPe), borderColor: 'rgba(37,99,235,0.95)', borderWidth: 2, pointRadius: 0, fill: false,
-        segment: { borderDash: (ctx: any) => (ctx.p0.parsed.x >= RMS_TTM.t ? [6, 4] : undefined) } },
+      ...(peLo != null && peHi != null ? [
+        { label: `싼 구간 경계 (PER ${peLo.toFixed(0)}배)`, data: line(peLo), borderColor: 'rgba(16,185,129,0.5)', borderWidth: 1, pointRadius: 0, fill: false, spanGaps: false },
+        { label: `비싼 구간 경계 (PER ${peHi.toFixed(0)}배)`, data: line(peHi), borderColor: 'rgba(239,68,68,0.5)', borderWidth: 1, pointRadius: 0, fill: '-1', backgroundColor: 'rgba(156,163,175,0.12)', spanGaps: false },
+      ] : []),
+      { label: `적정가 선 (EPS × ${fairPe}배)`, data: line(fairPe), borderColor: 'rgba(37,99,235,0.95)', borderWidth: 2, pointRadius: 0, fill: false, spanGaps: false,
+        segment: { borderDash: (ctx: any) => (ctx.p0.parsed.x >= tLastEps ? [6, 4] : undefined) } },
       { label: '실제 주가 (월말)', data: hist.map(r => ({ x: r.t, y: r.price })), borderColor: 'rgba(17,24,39,0.85)', borderWidth: 1.5, pointRadius: 0, fill: false },
     ],
   }
+  const ticks = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000]
   const options: any = {
     responsive: true, maintainAspectRatio: false, animation: false, parsing: false,
     interaction: { mode: 'nearest', axis: 'x', intersect: false },
     scales: {
-      x: { type: 'linear', min: 2002, max: Math.ceil(tNow + 10), ticks: { stepSize: 4, callback: (v: number) => String(Math.floor(v)), font: { size: 11 } }, grid: { color: 'rgba(128,128,128,0.08)' } },
-      y: { type: 'logarithmic', ticks: { font: { size: 11 }, callback: (v: number) => ([10, 20, 50, 100, 200, 500, 1000, 2000, 5000].includes(v) ? `€${v.toLocaleString()}` : '') }, grid: { color: 'rgba(128,128,128,0.08)' } },
+      x: { type: 'linear', min: Math.floor(tStart), max: Math.ceil(tNow + 10), ticks: { stepSize: 4, callback: (v: number) => String(Math.floor(v)), font: { size: 11 } }, grid: { color: 'rgba(128,128,128,0.08)' } },
+      y: { type: 'logarithmic', ticks: { font: { size: 11 }, callback: (v: number) => (ticks.includes(v) ? `${cur}${v.toLocaleString()}` : '') }, grid: { color: 'rgba(128,128,128,0.08)' } },
     },
     plugins: {
       legend: { position: 'top', labels: { font: { size: 11 }, boxWidth: 12 } },
       tooltip: {
+        filter: (i: any) => i.parsed.y != null,
         callbacks: {
           title: (items: any[]) => { const x = items[0].parsed.x; return `${Math.floor(x)}년 ${Math.max(1, Math.round((x % 1) * 12))}월` },
-          label: (c: any) => `${c.dataset.label}: €${Math.round(c.parsed.y).toLocaleString()}`,
+          label: (c: any) => `${c.dataset.label}: ${cur}${Math.round(c.parsed.y).toLocaleString()}`,
         },
       },
       zoom: pluginLoaded ? { pan: { enabled: true, mode: 'x' }, zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' } } : {},
     },
   }
 
-  const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-3'
   const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
   const tile = 'rounded bg-gray-50 dark:bg-gray-800/60 px-3 py-2.5'
   const lab = 'text-[11px] text-gray-500 dark:text-gray-400'
   const big = 'text-sm font-semibold tabular-nums text-gray-900 dark:text-white'
 
+  if (!epsNow || epsNow <= 0) {
+    return <p className={p}>최근 1년 이익이 적자라 적정가 선을 그릴 수 없다.</p>
+  }
+
   return (
-    <div className={box}>
-      <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">8. 이익 시계 — 적정가 선 vs 주가</h4>
+    <div className="space-y-3">
       <p className={p}>
-        <b>파란 선 = 적정가 = 최근 1년 EPS × 적정 PER.</b> 이익이 늘면 파란 선이 오른쪽 위로 올라가고, 7번에서 정한 EPS 성장률(연 {g.toFixed(1)}%)로 앞으로 10년까지 이어진다(점선).
-        검은 선(주가)이 띠 아래면 싼 구간, 위면 비싼 구간이다. 적정 PER은 지난 20년 PER의 중간값({peMid.toFixed(0)}배), 띠는 하위·상위 25%({peLo.toFixed(0)}~{peHi.toFixed(0)}배)다.
+        <b>파란 선 = 적정가 = 최근 1년 EPS × 적정 PER.</b> 이익이 늘면 파란 선이 오른쪽 위로 올라가고, 정한 EPS 성장률(연 {g.toFixed(1)}%)로 10년 뒤까지 이어진다(점선).
+        검은 선(주가)이 띠 아래면 싼 구간, 위면 비싼 구간이다.
+        {peMid != null && <> 적정 PER 기본값은 지난 {yrsUsed}년 PER의 중간값({peMid.toFixed(0)}배), 띠는 하위·상위 25%({peLo!.toFixed(0)}~{peHi!.toFixed(0)}배)다.</>}
       </p>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-        <div className={tile}><p className={lab}>적정가 (지금, 초마다 오름)</p><p className={big}>{eur(fairNow, 4)}</p></div>
-        <div className={tile}><p className={lab}>주가 ({px?.last.date ?? '2026-10-21'})</p><p className={big}>{eur(price, 1)}</p></div>
-        <div className={tile}><p className={lab}>지금 PER · 구간</p><p className={`${big} ${zone.c}`}>{peNow.toFixed(1)}배 · {zone.t}</p></div>
-        <div className={tile}><p className={lab}>적정가 대비</p><p className={`${big} ${gap < 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'}`}>{gap > 0 ? '+' : ''}{gap.toFixed(1)}% {gap < 0 ? '(쌈)' : '(비쌈)'}</p></div>
+        <div className={tile}><p className={lab}>적정가 (지금)</p><p className={big}>{fairNow ? money(fairNow, 1) : '—'}</p></div>
+        <div className={tile}><p className={lab}>주가 ({last.date})</p><p className={big}>{money(price, 1)}</p></div>
+        <div className={tile}><p className={lab}>지금 PER{zone ? ' · 구간' : ''}</p><p className={`${big} ${zone?.c ?? ''}`}>{peNow ? `${peNow.toFixed(1)}배` : '—'}{zone ? ` · ${zone.t}` : ''}</p></div>
+        <div className={tile}><p className={lab}>적정가 대비</p><p className={`${big} ${gap != null && gap < 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'}`}>{gap != null ? `${gap > 0 ? '+' : ''}${gap.toFixed(1)}% ${gap < 0 ? '(쌈)' : '(비쌈)'}` : '—'}</p></div>
       </div>
 
       <div className="relative">
         <button onClick={() => (chartRef.current as any)?.resetZoom?.()}
           className="absolute top-0 right-0 z-10 px-2 py-0.5 text-xs text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 border border-gray-200 dark:border-gray-700 rounded">줌 초기화</button>
         <div style={{ height: 320 }}>
-          {px ? <Chart ref={chartRef as any} type="line" data={chartData} options={options} plugins={[nowLine]} />
-            : <p className="text-xs text-gray-400 pt-10 text-center">월별 주가 데이터를 불러오는 중…</p>}
+          <Chart ref={chartRef as any} type="line" data={chartData} options={options} plugins={[nowLine]} />
         </div>
         <p className="text-xs text-gray-400 dark:text-gray-600 text-right mt-1">휠: 확대/축소 &nbsp;|&nbsp; 드래그: 이동</p>
       </div>
@@ -2747,20 +2775,15 @@ function HermesValueClock({ g, f }: { g: number; f: Factors }) {
           <span className="font-medium text-gray-700 dark:text-gray-200">적정 PER</span>
           <span className="tabular-nums font-semibold text-gray-900 dark:text-white">{fairPe}배</span>
         </div>
-        <input type="range" min={20} max={55} step={1} value={fairPe} onChange={e => setPePick(Number(e.target.value))} className="w-full accent-blue-600" />
-        <p className="text-[11px] text-gray-400 dark:text-gray-500">기본값은 지난 20년 PER 중간값. 지금 PER(약 {peNow.toFixed(0)}배)로 두면 &lsquo;주가가 이익만큼만 오를 때&rsquo;가 된다.</p>
+        <input type="range" min={5} max={80} step={1} value={fairPe} onChange={e => setPePick(Number(e.target.value))} className="w-full accent-blue-600" />
+        <p className="text-[11px] text-gray-400 dark:text-gray-500">
+          {peMid != null ? '기본값은 과거 PER 중간값.' : '과거 PER 자료가 짧아 기본값 20배.'} 지금 PER({peNow?.toFixed(0)}배)로 두면 &lsquo;주가가 이익만큼만 오를 때&rsquo;가 된다.
+        </p>
       </label>
 
       <div className="rounded bg-blue-50/60 dark:bg-blue-950/20 p-3 space-y-2">
         <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">째깍째깍 — 버핏처럼 초 단위로 보기</p>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-          <div className={tile}><p className={lab}>에르메스가 1초에 버는 순이익</p><p className={big}>{eur(coNetYear / SEC_Y, 0)}</p></div>
-          <div className={tile}><p className={lab}>올해 1월 1일부터 번 순이익</p><p className={big}>{eur(earnedYtd, 0)}</p></div>
-          <div className={tile}><p className={lab}>적정가가 하루에 오르는 폭 (1주)</p><p className={big}>+{eur(fairPerDay, 2)}</p></div>
-          <div className={tile}><p className={lab}>내 몫 이익: 1초</p><p className={big}>{eur(myPerSec, 7)}</p></div>
-          <div className={tile}><p className={lab}>내 몫 이익: 오늘 0시부터</p><p className={big}>{eur(myToday, 5)}</p></div>
-          <div className={tile}><p className={lab}>내 몫 이익: 1년</p><p className={big}>{eur(epsNow * shares, 2)}</p></div>
-        </div>
+        <ClockLive cur={cur} epsAt={epsAt} fairPe={fairPe} shares={shares} sharesOut={sharesOut} extraLive={extraLive} />
         <label className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300">
           보유 주식 수
           <input type="number" min={1} value={shares} onChange={e => saveShares(Math.max(1, Number(e.target.value) || 1))}
@@ -2769,36 +2792,165 @@ function HermesValueClock({ g, f }: { g: number; f: Factors }) {
         </label>
       </div>
 
-      <div className="rounded bg-gray-50 dark:bg-gray-800/50 p-3 space-y-1.5">
-        <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">적정가가 하루에 오르는 {eur(fairPerDay, 2)}를 요인별로 쪼개면 (1주 기준)</p>
+      <ul className={`${p} list-disc pl-4 space-y-1`}>
+        {fairPerDay != null && <li><b>적정가는 하루에 약 {money(fairPerDay, 3)}씩</b> 오른다(1주 기준, EPS 연 {g.toFixed(1)}% 성장 가정).</li>}
+        {ret10 != null && <li><b>지금 사서 10년 뒤 주가가 적정가 선({fairPe}배)에 있으면:</b> 연 {ret10.toFixed(1)}% (배당 {divYield.toFixed(2)}% 포함). 10년 뒤 적정가 약 {money((e10 ?? 0) * fairPe)}.</li>}
+        <li>주가는 매일 흔들리지만 파란 선은 이익을 따라 조용히 올라간다. 주가가 띠 아래로 내려오면 더 사고, 위로 크게 벗어나면 서두르지 않는 기준으로 쓴다.</li>
+        <li>파란 선이 맞는지는 실적이 나올 때마다 확인한다. 실제 EPS가 점선보다 계속 아래면 성장률을 낮춘다.</li>
+      </ul>
+      <p className="text-[11px] text-gray-400 dark:text-gray-500">{notes}</p>
+    </div>
+  )
+}
+
+// ── 에르메스 8번 ─────────────────────────────────────────────
+// 에르메스 연말 EPS (유로, 회사 발표 기준 2009~2025 / 2001~2008은 대조 못한 값)
+const RMS_EPS_HIST: Record<number, number> = {
+  2001: 1.81, 2002: 2.30, 2003: 1.88, 2004: 1.95, 2005: 2.16, 2006: 2.77, 2007: 2.70, 2008: 2.64,
+  2009: 2.74, 2010: 4.00, 2011: 5.63, 2012: 7.02, 2013: 7.53, 2014: 8.19, 2015: 9.27, 2016: 10.51,
+  2017: 11.67, 2018: 13.43, 2019: 14.66, 2020: 13.21, 2021: 23.37, 2022: 32.2, 2023: 41.19, 2024: 43.93, 2025: 43.15,
+}
+const RMS_ANCHORS: ClockAnchor[] = [
+  ...Object.entries(RMS_EPS_HIST).map(([y, e]) => [Number(y) + 1, e] as ClockAnchor),
+  [2026.5, 43.08], // 2026년 6월 말 최근 1년 EPS
+]
+const RMS_SHARES = 104.5e6 // 자사주 제외 유통 주식 수(근사)
+const HNWI_2025 = 25.3e6   // 금융자산 100만 달러 이상 (Capgemini 2025)
+
+type MonthlyPrice = { last: { date: string; close: number }; rows: Array<{ d: string; c: number }> }
+
+function HermesValueClock({ g, f }: { g: number; f: Factors }) {
+  const [px, setPx] = useState<MonthlyPrice | null>(null)
+  useEffect(() => {
+    fetch('/data/rolling/RMS_monthly_price.json').then(r => (r.ok ? r.json() : null)).then(setPx).catch(() => {})
+  }, [])
+  const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-3'
+  const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
+  const monthly = (px?.rows ?? []).map(r => { const [y, m] = r.d.split('-').map(Number); return { t: y + m / 12, price: r.c } })
+  const eur = (v: number, d = 0) => `€${v.toLocaleString('ko-KR', { minimumFractionDigits: d, maximumFractionDigits: d })}`
+
+  const extraLive = (now: number, fairNow: number) => {
+    const parts = [
+      { k: '① 판매량', r: f.q }, { k: '② 가격 인상', r: f.pr }, { k: '③ 이익률', r: f.mg }, { k: '④ 기타', r: f.ot },
+    ]
+    const tNow = decYear(now)
+    const hnwiNow = HNWI_2025 * Math.pow(1.05, tNow - 2025)
+    const hnwiPerDay = hnwiNow * Math.log(1.05) / 365.25
+    const startOfDay = new Date(new Date(now).setHours(0, 0, 0, 0)).getTime()
+    const hnwiToday = hnwiPerDay * (now - startOfDay) / 86400000
+    return (
+      <div className="rounded bg-white/70 dark:bg-gray-900/60 p-3 space-y-1.5">
+        <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">적정가가 하루에 오르는 폭을 요인별로 쪼개면 (1주 기준)</p>
         <table className="text-xs">
           <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-            {parts.map(x => (
-              <tr key={x.k}>
-                <td className="py-1 pr-4 text-gray-700 dark:text-gray-200">{x.k} (연 {x.r > 0 ? '+' : ''}{x.r}%)</td>
-                <td className={`py-1 tabular-nums text-right ${x.perDay < 0 ? 'text-red-500' : 'text-gray-900 dark:text-white'}`}>{x.perDay >= 0 ? '+' : ''}{eur(x.perDay, 3)} / 일</td>
-              </tr>
-            ))}
+            {parts.map(x => {
+              const perDay = fairNow * Math.log(1 + x.r / 100) / 365.25
+              return (
+                <tr key={x.k}>
+                  <td className="py-1 pr-4 text-gray-700 dark:text-gray-200">{x.k} (연 {x.r > 0 ? '+' : ''}{x.r}%)</td>
+                  <td className={`py-1 tabular-nums text-right ${perDay < 0 ? 'text-red-500' : 'text-gray-900 dark:text-white'}`}>{perDay >= 0 ? '+' : '−'}{eur(Math.abs(perDay), 3)} / 일</td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
         <p className={p}>
-          <b>자산가 시계:</b> 금융자산 100만 달러 이상 자산가는 지금 약 {(hnwiNow / 1e6).toFixed(1)}백만 명, 연 5%(물가 포함)씩 늘면 <b>하루 약 {Math.round(hnwiPerDay).toLocaleString()}명</b>,
+          <b>자산가 시계:</b> 금융자산 100만 달러 이상 자산가는 지금 약 {(hnwiNow / 1e6).toFixed(1)}백만 명. 연 5%(물가 포함)씩 늘면 <b>하루 약 {Math.round(hnwiPerDay).toLocaleString()}명</b>,
           {' '}약 {(86400 / hnwiPerDay).toFixed(0)}초에 1명이다. 오늘 0시 이후 <b>{Math.floor(hnwiToday).toLocaleString()}명</b> 늘었다.
-          이 중 물가를 뺀 실제 증가(약 2%)만 ① 판매량을 밀어 올린다.
+          다만 7번에서 본 것처럼 이 숫자가 그대로 판매량이 되지는 않는다.
         </p>
       </div>
+    )
+  }
 
-      <ul className={`${p} list-disc pl-4 space-y-1`}>
-        <li><b>지금 사서 10년 뒤 주가가 적정가 선({fairPe}배)에 있으면:</b> 연 {ret10.toFixed(1)}% (배당 1.35% 포함). 10년 뒤 적정가 약 {eur(fair10)}.</li>
-        <li>주가는 매일 흔들리지만 파란 선은 이익을 따라 조용히 올라간다. 주가가 띠 아래로 내려오면 더 사고, 위로 크게 벗어나면 서두르지 않는 기준으로 쓴다.</li>
-        <li>파란 선이 맞는지는 1년에 두 번(반기 실적) 확인한다. 실제 EPS가 점선보다 계속 아래면 7번의 요인 값을 낮춘다.</li>
-      </ul>
-      <p className="text-[11px] text-gray-400 dark:text-gray-500">
-        주가는 배당을 반영하지 않은 실제 월말 종가(분할 반영). 1년 EPS는 연말 실적 사이를 매끄럽게 이은 근사치이고, 2026년 6월 이후는 7번의 성장률로 연장했다.
-        초 단위 숫자는 연간 이익을 시간으로 나눈 것이며 실제 회계 처리와 다르다. 유통 주식 수 약 1억 450만 주(근사).
-      </p>
+  return (
+    <div className={box}>
+      <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">8. 이익 시계 — 적정가 선 vs 주가</h4>
+      {px ? (
+        <ValueClockCore
+          cur="€" anchors={RMS_ANCHORS} monthly={monthly} last={px.last} g={g}
+          sharesOut={RMS_SHARES} divYield={1.35} storageKey="rms-shares" extraLive={extraLive}
+          notes="주가는 배당을 반영하지 않은 실제 월말 종가(분할 반영). 1년 EPS는 연말 실적 사이를 매끄럽게 이은 근사치이고, 2026년 6월 이후는 7번의 성장률로 연장했다. 초 단위 숫자는 연간 이익을 시간으로 나눈 것이며 실제 회계 처리와 다르다. 유통 주식 수 약 1억 450만 주(근사)."
+        />
+      ) : <p className="text-xs text-gray-400">월별 주가 데이터를 불러오는 중…</p>}
     </div>
   )
+}
+
+// ── 전 종목 이익 시계 (SEC 공시 EPS + 월말 주가) ─────────────
+type ClockFund = Fundamentals & {
+  epsEnd?: Record<string, string>
+  ttmAsOf?: string
+  monthly?: { start: string; c: Array<number | null> }
+  lastPrice?: { date: string; close: number }
+  shares?: { count: number; asOf: string } | null
+}
+
+function StockValueClock({ f, stockKey }: { f: ClockFund; stockKey: string }) {
+  const m = f.metrics
+  const clamp = (v: number) => Math.max(0, Math.min(15, v))
+  const g10 = m.epsCagr10, g5 = m.epsCagr5
+  const base = g10 != null && g5 != null ? clamp(Math.min(g10, g5)) : g10 != null ? clamp(g10) : g5 != null ? clamp(g5) : 5
+  const [g, setG] = useState(Math.round(base * 2) / 2)
+
+  if (!f.monthly || !f.epsEnd || !f.lastPrice || m.stale || m.ttmEps == null) return null
+
+  const anchors: ClockAnchor[] = Object.entries(f.eps)
+    .filter(([y, e]) => e != null && f.epsEnd![y])
+    .map(([y, e]) => [decYear(Date.parse(f.epsEnd![y])), e as number] as ClockAnchor)
+    .sort((a, b) => a[0] - b[0])
+  if (anchors.length < 3) return null
+  if (f.ttmAsOf) {
+    const tT = decYear(Date.parse(f.ttmAsOf))
+    if (tT > anchors[anchors.length - 1][0] + 0.1) anchors.push([tT, m.ttmEps])
+  }
+  const [y0, m0] = f.monthly.start.split('-').map(Number)
+  const monthly = f.monthly.c
+    .map((c, i) => ({ t: y0 + (m0 + i) / 12, price: c }))
+    .filter((r): r is { t: number; price: number } => r.price != null && r.price > 0)
+
+  const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-3'
+  const btn = (label: string, v: number | null) => v == null ? null : (
+    <button key={label} onClick={() => setG(Math.round(Math.max(-5, Math.min(30, v)) * 2) / 2)}
+      className={`text-[11px] px-2 py-1 rounded border ${Math.abs(g - v) < 0.26 ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300' : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300'}`}>
+      {label} {v.toFixed(1)}%
+    </button>
+  )
+
+  return (
+    <div className={box}>
+      <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">이익 시계 — 적정가 선 vs 주가</h4>
+      <div className="space-y-1">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="text-xs text-gray-600 dark:text-gray-300">앞으로 EPS 성장(연):</span>
+          {btn('보수적', base)}
+          {btn('과거 5년', g5)}
+          {btn('과거 10년', g10)}
+        </div>
+        <label className="block">
+          <div className="flex justify-between text-xs">
+            <span className="text-gray-500 dark:text-gray-400">직접 조절</span>
+            <span className="tabular-nums font-semibold text-gray-900 dark:text-white">{g}%</span>
+          </div>
+          <input type="range" min={-5} max={30} step={0.5} value={g} onChange={e => setG(Number(e.target.value))} className="w-full accent-blue-600" />
+        </label>
+        <p className="text-[11px] text-gray-400 dark:text-gray-500">보수적 = 과거 5년·10년 성장률 중 낮은 값(0~15%로 제한). 과거 성장률이 앞으로도 이어진다는 보장은 없다.</p>
+      </div>
+      <ValueClockCore
+        cur="$" anchors={anchors} monthly={monthly} last={f.lastPrice} g={g}
+        sharesOut={f.shares?.count ?? null} divYield={m.divYield ?? 0} storageKey={`clock-shares-${stockKey}`}
+        notes={`EPS는 SEC 공시(10-K) 회계연도 값을 마감일 기준으로 이은 근사치이고, ${f.ttmAsOf ?? '최근'} 이후는 정한 성장률로 연장했다. 주가는 배당을 반영하지 않은 월말 종가(분할 반영). 일회성 손익이 큰 해는 선이 출렁인다. 회사 전체 숫자는 공시 유통 주식 수${f.shares ? `(${f.shares.asOf})` : ''} × 최근 1년 EPS로 계산한 근사치.`}
+      />
+    </div>
+  )
+}
+
+function StockValueClockByKey({ stockKey }: { stockKey: string }) {
+  const [f, setF] = useState<ClockFund | null>(null)
+  useEffect(() => {
+    fetch(`/data/fundamentals/${stockKey}.json`).then(r => (r.ok ? r.json() : null)).then(setF).catch(() => {})
+  }, [stockKey])
+  return f ? <StockValueClock f={f} stockKey={stockKey} /> : null
 }
 
 function RmsInsight({ data }: { data: StockData }) {
@@ -3718,6 +3870,8 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
         </p>
       </div>
 
+      {!m.stale && <StockValueClock f={f as ClockFund} stockKey={stockKey} />}
+
       {years.length > 0 && (
         <div className={box}>
           <h4 className={h4}>최근 연말 주가·EPS·PER</h4>
@@ -3883,6 +4037,7 @@ export default function PrivatePage() {
         {current.key === 'RMS' && <RmsInsight data={current.data} />}
         {current.key === 'NKE' && <QualityCard stockKey="NKE" />}
         {current.key === 'NKE' && <NkeInsight data={current.data} />}
+        {current.key === 'NKE' && <StockValueClockByKey stockKey="NKE" />}
         {current.key !== 'RMS' && current.key !== 'NKE' && (current.data as any).type !== 'etf' && (
           <AutoInsight key={current.key} stockKey={current.key} data={current.data} />
         )}
