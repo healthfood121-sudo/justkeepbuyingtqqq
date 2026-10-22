@@ -3,8 +3,8 @@
 import { useState, useRef, useEffect } from 'react'
 import {
   Chart as ChartJS,
-  CategoryScale, LinearScale,
-  BarElement, LineElement, PointElement,
+  CategoryScale, LinearScale, LogarithmicScale,
+  BarElement, LineElement, PointElement, Filler,
   Tooltip, Legend,
 } from 'chart.js'
 import { Chart } from 'react-chartjs-2'
@@ -469,7 +469,7 @@ import exeData        from '@/public/data/rolling/EXE_rolling.json'
 import ftvData        from '@/public/data/rolling/FTV_rolling.json'
 import twloData       from '@/public/data/rolling/TWLO_rolling.json'
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Tooltip, Legend)
+ChartJS.register(CategoryScale, LinearScale, LogarithmicScale, BarElement, LineElement, PointElement, Filler, Tooltip, Legend)
 
 type StockData = typeof nkeData
 
@@ -2397,7 +2397,7 @@ function HermesEpsQP() {
         <li><b>가격 몫(보라)은 매년 꾸준히 +2~8%p.</b> 에르메스가 스스로 정하는 부분이라 가장 믿을 만한 성장 엔진이다.</li>
         <li><b>판매량 몫(초록)은 들쭉날쭉.</b> 2021~2023년은 자산가 증가율(주황)을 크게 웃돌았고, 2025년부터는 그 아래로 내려갔다.</li>
         <li><b>회색 칸(이익률·환율·기타)</b>은 2024년(-8%p)·2025년(-10%p)·2026년 상반기(-6%p)에 크게 마이너스다. 2024년은 환율(보고 매출 +13% vs 환율 제외 +15%)과 영업이익률 하락, 2025년·2026년 상반기는 프랑스 대기업 특별 법인세(2025년 EPS -1.8%)가 이익을 깎았다. 2021~2022년은 반대로 이익률 상승이 크게 더해졌다(+13~30%p).</li>
-        <li>정리: 앞으로 EPS 증가율 ≈ 가격 5~6% + 판매량(기본 2~3%, 낙관 6~7%) − 일회성 부담. 기본이면 EPS 연 8% 안팎, 낙관이면 연 12~13%.</li>
+        <li>정리: 앞으로 EPS 증가율 ≈ 판매량 × 가격 × 이익률 × 기타. 기본이면 EPS 연 10% 안팎, 낙관이면 연 14% 안팎(7번 계산기).</li>
       </ul>
       <p className="text-[11px] text-gray-400 dark:text-gray-500">
         EPS는 연간(유로, 보고 기준), 매출 성장은 환율 제외 기준이라 환율 효과는 회색 칸에 들어간다. 2026년은 상반기 전년 대비. 세 칸은 곱셈 관계를 로그 비율로 나눠 합이 정확히 EPS 증가율이 되게 했다.
@@ -2408,43 +2408,116 @@ function HermesEpsQP() {
 }
 
 // ── 에르메스: 고객 수(Q) × 가격(P)으로 본 성장 추정 ─────────
-function HermesQP() {
-  const [q, setQ] = useState(2.5)        // 판매량(고객 수) 증가율 % — 기본: 실질 자산가 증가 + 신흥국 신규 고객
-  const [pr, setPr] = useState(5.5)        // 가격 인상률 %
-  const [margin, setMargin] = useState(0) // 연간 이익률 변화 %p 효과(연 EPS 성장에 더해짐)
-  const [exitPe, setExitPe] = useState(31)
-  const curPe = 31.5
+// ── 7·8번: 이익 성장 예측(4가지 요인) + 이익 시계(적정가 선 vs 주가) ─────────
+// EPS 성장 = (1+판매량)(1+가격)(1+이익률 변화)(1+기타) − 1
+type Factors = { q: number; pr: number; mg: number; ot: number }
+const epsGrowthOf = (f: Factors) =>
+  ((1 + f.q / 100) * (1 + f.pr / 100) * (1 + f.mg / 100) * (1 + f.ot / 100) - 1) * 100
+
+const HERMES_SCENARIOS: Array<{ label: string; f: Factors; desc: string }> = [
+  { label: '기본', f: { q: 4.5, pr: 5.5, mg: 0, ot: 0 }, desc: '판매량은 공급 반·수요 반, 이익률은 지금(41%) 유지' },
+  { label: '낙관', f: { q: 6.5, pr: 6, mg: 1, ot: 0 }, desc: '대기 고객이 다시 넘쳐 판매량 = 공방 증설 속도, 이익률도 조금 상승' },
+  { label: '지금 상태 지속', f: { q: 1, pr: 5.5, mg: 0, ot: 0 }, desc: '2026년 상반기처럼 판매량이 거의 멈추고 가격만 오름' },
+]
+
+function HermesForecast() {
+  const [f, setF] = useState<Factors>(HERMES_SCENARIOS[0].f)
+  const g = epsGrowthOf(f)
   const div = 1.35
-  const rev = ((1 + q / 100) * (1 + pr / 100) - 1) * 100
-  const eps = rev + margin
-  const ret = ((Math.pow(1 + eps / 100, 10) * exitPe / curPe) ** 0.1 * (1 + div / 100) - 1) * 100
+  const ret = ((1 + g / 100) * (1 + div / 100) - 1) * 100 // PER 그대로일 때
 
   const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-3'
   const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
   const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500 whitespace-nowrap'
   const td = 'py-1.5 px-2 tabular-nums text-gray-700 dark:text-gray-200 whitespace-nowrap'
-  const cell = (v: number) =>
-    v < 5 ? 'text-orange-500' : v < 10 ? 'text-yellow-600 dark:text-yellow-400'
-      : v < 15 ? 'text-emerald-600 dark:text-emerald-400' : 'text-blue-600 dark:text-blue-400 font-semibold'
-  const slider = (label: string, v: number, set: (n: number) => void, min: number, max: number, step: number, unit: string, hint: string) => (
+  const set = (k: keyof Factors) => (v: number) => setF(prev => ({ ...prev, [k]: v }))
+  const slider = (label: string, v: number, onSet: (n: number) => void, min: number, max: number, hint: string) => (
     <label className="block space-y-1">
       <div className="flex justify-between text-xs">
         <span className="font-medium text-gray-700 dark:text-gray-200">{label}</span>
-        <span className="tabular-nums font-semibold text-gray-900 dark:text-white">{v > 0 && unit === '%p' ? '+' : ''}{v}{unit}</span>
+        <span className="tabular-nums font-semibold text-gray-900 dark:text-white">{v > 0 ? '+' : ''}{v}%</span>
       </div>
-      <input type="range" min={min} max={max} step={step} value={v} onChange={e => set(Number(e.target.value))} className="w-full accent-blue-600" />
+      <input type="range" min={min} max={max} step={0.5} value={v} onChange={e => onSet(Number(e.target.value))} className="w-full accent-blue-600" />
       <p className="text-[11px] text-gray-400 dark:text-gray-500">{hint}</p>
     </label>
   )
+  const past = [
+    { k: '① 판매량', v: '+8.5%', note: '환율 뺀 매출 13.5% ÷ 가격' },
+    { k: '② 가격 인상', v: '+4.6%', note: '2019~2025년 평균 (그 이전은 기록 없음)' },
+    { k: '③ 이익률 변화', v: '+3.0%', note: '영업이익률 25% → 41%' },
+    { k: '④ 기타 (환율·세금·이자)', v: '+1.6%', note: '환율 +0.6, 나머지 +1.0' },
+  ]
 
   return (
-    <div className={box}>
-      <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">7. 고객 수(Q) × 가격(P)으로 본 성장 추정</h4>
-      <p className={p}>
-        매출 = 판매량(Q) × 가격(P). 에르메스의 고객은 자산가 계층이라, <b>자산가 인구가 얼마나 늘어나는지</b>가 수요(Q)의 바탕이고,
-        <b> 매년 얼마나 값을 올리는지</b>가 가격(P)이다. 이 둘로 앞으로의 이익 성장과 10년 수익률을 추정해 본다.
-      </p>
+    <>
+      <div className={box}>
+        <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">7. 이익 성장 예측 — 4가지 요인</h4>
+        <p className={p}>
+          <b>EPS 성장 = ① 판매량 × ② 가격 × ③ 이익률 × ④ 기타.</b> 회계상 이 넷 말고는 없다.
+          어떤 사건(중국 경기, 관세, 코로나)이든 결국 이 넷 중 하나를 거쳐 이익에 들어온다.
+        </p>
 
+        <div className="overflow-x-auto">
+          <p className="text-xs font-semibold text-gray-700 dark:text-gray-200 mb-1">과거 16년(2009~2025) EPS 연 18.8%를 나누면</p>
+          <table className="text-xs">
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+              {past.map(r => (
+                <tr key={r.k}><td className={td}>{r.k}</td><td className={`${td} text-right font-semibold`}>{r.v}</td><td className={`${td} text-gray-400 dark:text-gray-500`}>{r.note}</td></tr>
+              ))}
+              <tr className="bg-gray-50 dark:bg-gray-800/50"><td className={`${td} font-semibold`}>EPS 성장</td><td className={`${td} text-right font-semibold`}>+18.8%</td><td className={td}></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div className="rounded bg-gray-50 dark:bg-gray-800/50 p-3 space-y-1">
+          <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">과거로 점검해 보니 (PER은 빼고 이익만)</p>
+          <ul className={`${p} list-disc pl-4 space-y-0.5`}>
+            <li>판매량·가격으로 10년 매출을 예측하면 실제와 <b>평균 약 2%p 차이</b>. 대부분 실제가 더 좋았다(중국 진출, 경쟁사 고객 흡수).</li>
+            <li>이익률(③)을 빼면 EPS를 매년 <b>3~5%p 낮게</b> 봤다. 가장 크게 틀리는 칸이다.</li>
+            <li>한 해 단위로는 자산가 증가와 매출이 거의 무관하다. <b>10년 평균으로만</b> 쓸 수 있다.</li>
+            <li>그래서 답은 숫자 하나가 아니라 <b>중심값 ±3%p</b>로 본다.</li>
+          </ul>
+        </div>
+
+        <div className="space-y-2">
+          <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">앞으로 — 버튼을 누르거나 직접 조절</p>
+          <div className="grid sm:grid-cols-3 gap-2">
+            {HERMES_SCENARIOS.map(sc => {
+              const on = (Object.keys(sc.f) as (keyof Factors)[]).every(k => sc.f[k] === f[k])
+              return (
+                <button key={sc.label} onClick={() => setF(sc.f)}
+                  className={`text-left rounded border p-2 transition-colors ${on ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-200 dark:border-gray-700 hover:border-gray-400'}`}>
+                  <p className="text-xs font-semibold text-gray-800 dark:text-gray-100">{sc.label} · EPS 연 {epsGrowthOf(sc.f).toFixed(1)}%</p>
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">{sc.desc}</p>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+
+        <div className="grid sm:grid-cols-2 gap-x-6 gap-y-3">
+          {slider('① 판매량', f.q, set('q'), -3, 10, '공방 증설 6~7% · 물가 뺀 자산가 증가 약 2% · 2026년 상반기 약 0~1%')}
+          {slider('② 가격 인상', f.pr, set('pr'), 0, 10, '2023~2025년 6~7%, 2026년 5~6% (회사 발표)')}
+          {slider('③ 이익률 변화 (연)', f.mg, set('mg'), -3, 3, '영업이익률 41% 유지면 0. 연 +1%면 10년 뒤 45%')}
+          {slider('④ 기타', f.ot, set('ot'), -2, 2, '환율·세금·이자. 길게 보면 0에 가깝다')}
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          <StatCard label="예상 EPS 성장 (연)" value={`${g.toFixed(1)}% (±3%p)`} />
+          <StatCard label="PER 그대로일 때 10년 수익률" value={`연 ${ret.toFixed(1)}%`} />
+        </div>
+        <p className="text-[11px] text-gray-400 dark:text-gray-500">
+          10년 수익률 = EPS 성장 + 배당 1.35% (지금 PER 31.5배가 10년 뒤에도 같다고 가정). PER이 오르내리는 효과는 8번 그래프에서 본다.
+        </p>
+
+        <details className="rounded bg-gray-50 dark:bg-gray-800/50 p-3">
+          <summary className="text-xs font-semibold text-gray-700 dark:text-gray-200 cursor-pointer">근거 자료 보기 (자산가 인구·가격 인상·연도별 매출·EPS 분해)</summary>
+          <div className="space-y-3 mt-3">
+            <ul className={`${p} list-disc pl-4 space-y-0.5`}>
+              <li><b>물가는 한 번만 센다.</b> 자산가 수(명목 연 5%)에는 물가가 섞여 있고, 가격 인상(②)에도 물가가 들어 있다. 물가를 뺀 실제 자산가 증가는 연 2% 안팎이다.</li>
+              <li><b>판매량을 정하는 것:</b> 수요가 공급보다 많으면 공방 증설 속도(연 6~7%), 적으면 실제 자산가 증가 + 새 시장 + 다른 브랜드 고객 흡수. 지금은 매출 절반쯤(가죽제품)이 공급에 묶여 있어 &lsquo;공급 반·수요 반&rsquo;으로 본다.</li>
+              <li><b>이익률은 판매량과 같이 움직인다.</b> 공방·매장은 고정비라 매출이 빨리 크면 이익률이 오르고, 판매량이 멈추면 이익률도 멈춘다.</li>
+            </ul>
       <div className="grid sm:grid-cols-2 gap-3">
         <div className="rounded bg-gray-50 dark:bg-gray-800/50 p-3 space-y-1.5">
           <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">Q의 바탕: 자산가 인구 증가율</p>
@@ -2458,7 +2531,7 @@ function HermesQP() {
           </table>
           <p className="text-[11px] text-gray-400 dark:text-gray-500">
             장기로는 자산가가 연 5% 안팎 늘어난다(명목 기준). 한 해 단위로는 증시에 따라 크게 흔들린다(기관마다 기준도 다르다).
-            메인 페이지의 세계 인구는 연 1% 미만으로 늘지만, 자산가 수는 사람 수가 아니라 재산이 불어나는 속도를 따라가서 훨씬 빠르다 — 다만 이 5%에는 물가 효과가 섞여 있다(아래).
+            메인 페이지의 세계 인구는 연 1% 미만으로 늘지만, 자산가 수는 사람 수가 아니라 재산이 불어나는 속도를 따라가서 훨씬 빠르다 — 다만 이 5%에는 물가 효과가 섞여 있다(위 첫 줄).
           </p>
         </div>
         <div className="rounded bg-gray-50 dark:bg-gray-800/50 p-3 space-y-1.5">
@@ -2478,96 +2551,243 @@ function HermesQP() {
         </div>
       </div>
 
-      <HermesHistory />
-      <HermesEpsQP />
-
-      <div className="rounded border border-rose-200 dark:border-rose-900/50 bg-rose-50/60 dark:bg-rose-950/20 p-3 space-y-1.5">
-        <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">주의: 물가는 한 번만 세야 한다 — 명목 자산가 연 5.6%를 그대로 Q로 쓰면 과대평가</p>
-        <ul className={`${p} list-disc pl-4 space-y-0.5`}>
-          <li><b>왜 자산가는 인구보다 빨리 늘까?</b> ① 기준선(금융자산 100만 달러)이 고정돼 있어 물가·자산 가격만 올라도 새로 넘는 사람이 생기고, ② 부자의 재산은 주식·부동산이라 월급보다 빨리 불어나며, ③ 기준선 바로 아래에 사람이 몰려 있어 재산이 1% 늘면 자산가 수는 약 1.4% 늘어난다(증폭 효과). 여기에 신흥국의 새 부자가 더해진다.</li>
-          <li><b>그런데 P(가격)에도 물가가 들어 있다.</b> 에르메스 가격 인상 5~7%에는 물가 상승(연 2~3%)이 포함된다. 버킨을 살 수 있는 &lsquo;실제 기준선&rsquo;도 버킨 가격과 함께 매년 올라간다.</li>
-          <li><b>그래서 명목 자산가 수 × 명목 가격 = 물가를 두 번 센 것.</b> 물가를 반영해 기준선을 올리면, 물가로 생긴 몫은 대략 1.4 × 2.5%(미국 물가 연평균) ≈ 3.5%p. 실질 자산가 증가율은 <b>5.6% − 3.5% ≈ 연 2% 안팎</b>(근사 추정)이다.</li>
-          <li><b>그런데도 에르메스 판매량은 장기로 연 약 7%</b>(매출 연 13% ÷ 가격 연 5.4%) 늘었다. 실질 자산가(2%)보다 훨씬 빠른 이유: 수요가 공급보다 많아 판매량이 고객 수가 아니라 <b>장인·공방 증설 속도(연 6~7%)</b>에 묶여 있었고, 중국·중동·인도 등 새 시장의 첫 구매 고객이 늘었기 때문이다.</li>
-        </ul>
+            <HermesHistory />
+            <HermesEpsQP />
+          </div>
+        </details>
       </div>
 
-      <div className="rounded bg-gray-50 dark:bg-gray-800/50 p-3 space-y-2">
-        <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">Q는 두 경우로 나눠 봐야 한다 — 버튼을 누르면 아래 계산기에 바로 들어간다</p>
-        <div className="grid sm:grid-cols-3 gap-2">
-          {([
-            { label: '수요 > 공급 (낙관)', qv: 6.5, pv: 6, desc: '대기 고객이 넘치는 상태. 판매량 = 공방 증설 속도 연 6~7%. 2010년대 대부분.' },
-            { label: '수요 < 공급 (기본)', qv: 2.5, pv: 5.5, desc: '판매량 = 실질 자산가 증가 약 2% + 신흥국 신규 고객 약 0.5~1%.' },
-            { label: '지금 (2026 상반기)', qv: 0, pv: 5.5, desc: '판매량 거의 0%. 가격만 오르는 상태. 수요가 처음으로 공급 아래로 내려왔을 수 있다.' },
-          ] as const).map(sc => (
-            <button key={sc.label} onClick={() => { setQ(sc.qv); setPr(sc.pv) }}
-              className={`text-left rounded border p-2 transition-colors ${q === sc.qv && pr === sc.pv ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-200 dark:border-gray-700 hover:border-gray-400'}`}>
-              <p className="text-xs font-semibold text-gray-800 dark:text-gray-100">{sc.label}</p>
-              <p className="text-[11px] text-gray-500 dark:text-gray-400">Q {sc.qv}% · P {sc.pv}%</p>
-              <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">{sc.desc}</p>
-            </button>
-          ))}
-        </div>
-      </div>
+      <HermesValueClock g={g} f={f} />
+    </>
+  )
+}
 
-      <div className="rounded bg-amber-50 dark:bg-amber-900/10 p-3 space-y-1">
-        <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">실제 매출로 맞춰 보기 (환율 영향 제외 성장률 − 가격 인상 ≈ 판매량)</p>
-        <ul className={`${p} list-disc pl-4 space-y-0.5`}>
-          <li>2025년: 전체 매출 +9% − 가격 약 6.5% → 판매량·구성 약 +2.5%. 가죽제품만 보면 +13% − 6.5% → 약 +6% (공방 증설로 생산 능력이 늘어난 몫).</li>
-          <li>2026년 상반기: 전체 매출 +6% − 가격 5~6% → 판매량은 거의 제자리(+0~1%). 자산가는 늘었는데 판매량이 멈췄다 — 중국 수요 약화와 &lsquo;열망 고객층&rsquo;(자산가 아래 계층)의 소비 위축이 원인으로 보인다.</li>
-          <li>가죽제품은 공급이 수요보다 적어(대기 고객) 판매량이 공방 증설 속도에 묶여 있다. 신규 공방: 2025년 24번째, 2026년 루프, 2027년 샤를빌메지에르, 2028년 콜롱벨, 2030년까지 레장들리.</li>
-        </ul>
-      </div>
+// 에르메스 연말 EPS (유로, 회사 발표 기준 2009~2025 / 2001~2008은 대조 못한 값)
+const RMS_EPS_HIST: Record<number, number> = {
+  2001: 1.81, 2002: 2.30, 2003: 1.88, 2004: 1.95, 2005: 2.16, 2006: 2.77, 2007: 2.70, 2008: 2.64,
+  2009: 2.74, 2010: 4.00, 2011: 5.63, 2012: 7.02, 2013: 7.53, 2014: 8.19, 2015: 9.27, 2016: 10.51,
+  2017: 11.67, 2018: 13.43, 2019: 14.66, 2020: 13.21, 2021: 23.37, 2022: 32.2, 2023: 41.19, 2024: 43.93, 2025: 43.15,
+}
+const RMS_TTM = { t: 2026.5, eps: 43.08 } // 2026년 6월 말 최근 1년 EPS
+const RMS_SHARES = 104.5e6               // 자사주 제외 유통 주식 수(근사)
+const HNWI_2025 = 25.3e6                 // 금융자산 100만 달러 이상 (Capgemini 2025)
 
-      <div className="grid sm:grid-cols-2 gap-x-6 gap-y-3">
-        {slider('Q: 판매량(고객 수) 증가율', q, setQ, -3, 10, 0.5, '%', '실질 자산가 증가 약 2%(물가 보정), 공방 증설 속도 6~7%, 2026년 상반기 실제 약 0%')}
-        {slider('P: 연간 가격 인상률', pr, setPr, 0, 10, 0.5, '%', '2023~2025년 6~7%, 2026년 5~6%')}
-        {slider('이익률 변화 효과', margin, setMargin, -3, 3, 0.5, '%p', '영업이익률 약 41% 유지면 0. 프랑스 법인세 부담 등이 있으면 마이너스')}
-        {slider('10년 뒤 PER', exitPe, setExitPe, 15, 50, 1, '배', '지금 약 31.5배, 10년 중간값 약 44배, 2009년 말 28배')}
-      </div>
+// 소수 연도(예: 2026.5) 기준 EPS: 실적 구간은 로그 보간, 이후는 성장률 g로 연장
+function epsAt(t: number, g: number) {
+  if (t >= RMS_TTM.t) return RMS_TTM.eps * Math.pow(1 + g / 100, t - RMS_TTM.t)
+  const pts: Array<[number, number]> = Object.entries(RMS_EPS_HIST).map(([y, e]) => [Number(y) + 1, e])
+  pts.push([RMS_TTM.t, RMS_TTM.eps])
+  pts.sort((a, b) => a[0] - b[0])
+  if (t <= pts[0][0]) return pts[0][1]
+  for (let i = 1; i < pts.length; i++) {
+    const [t1, e1] = pts[i]
+    if (t <= t1) {
+      const [t0, e0] = pts[i - 1]
+      const w = (t - t0) / (t1 - t0)
+      return Math.exp(Math.log(e0) * (1 - w) + Math.log(e1) * w)
+    }
+  }
+  return RMS_TTM.eps
+}
+const decYear = (ms: number) => {
+  const d = new Date(ms)
+  const y = d.getFullYear()
+  const s = new Date(y, 0, 1).getTime()
+  return y + (ms - s) / (new Date(y + 1, 0, 1).getTime() - s)
+}
+const quantile = (arr: number[], q: number) => {
+  const a = [...arr].sort((x, y) => x - y)
+  const i = (a.length - 1) * q
+  const lo = Math.floor(i)
+  return a[lo] + (a[Math.ceil(i)] - a[lo]) * (i - lo)
+}
 
-      <div className="grid grid-cols-3 gap-2">
-        <StatCard label="예상 매출 성장(연)" value={`${rev.toFixed(1)}%`} />
-        <StatCard label="예상 EPS 성장(연)" value={`${eps.toFixed(1)}%`} />
-        <StatCard label="10년 연평균 수익률" value={`${ret.toFixed(1)}%`} />
-      </div>
-      <p className="text-[11px] text-gray-400 dark:text-gray-500">
-        매출 성장 = (1+Q)×(1+P)−1, EPS 성장 = 매출 성장 + 이익률 효과, 수익률 = [(1+EPS 성장)^10 × (10년 뒤 PER ÷ 지금 31.5배)]^(1/10) × (1+배당 1.35%) − 1.
+type MonthlyPrice = { last: { date: string; close: number }; rows: Array<{ d: string; c: number }> }
+
+function HermesValueClock({ g, f }: { g: number; f: Factors }) {
+  const [px, setPx] = useState<MonthlyPrice | null>(null)
+  const [now, setNow] = useState(() => Date.now())
+  const [shares, setShares] = useState(1)
+  const [pePick, setPePick] = useState<number | null>(null)
+  const chartRef = useRef<ChartJS | null>(null)
+  const [pluginLoaded, setPluginLoaded] = useState(false)
+  useEffect(() => {
+    import('chartjs-plugin-zoom').then(({ default: z }) => { ChartJS.register(z); setPluginLoaded(true) })
+    fetch('/data/rolling/RMS_monthly_price.json').then(r => (r.ok ? r.json() : null)).then(setPx).catch(() => {})
+    try { const v = Number(localStorage.getItem('rms-shares')); if (v > 0) setShares(v) } catch {}
+    const id = setInterval(() => setNow(Date.now()), 100)
+    return () => clearInterval(id)
+  }, [])
+  const saveShares = (v: number) => { setShares(v); try { localStorage.setItem('rms-shares', String(v)) } catch {} }
+
+  // 월별 PER (실제 종가 ÷ 그 시점 최근 1년 EPS)
+  const hist = (px?.rows ?? [])
+    .map(r => { const [y, m] = r.d.split('-').map(Number); const t = y + m / 12; return { t, price: r.c, pe: r.c / epsAt(t, g) } })
+    .filter(r => r.t >= 2002)
+  const pe20 = hist.filter(r => r.t >= 2006.5 && r.t <= RMS_TTM.t).map(r => r.pe)
+  const peLo = pe20.length ? quantile(pe20, 0.25) : 28
+  const peMid = pe20.length ? quantile(pe20, 0.5) : 35
+  const peHi = pe20.length ? quantile(pe20, 0.75) : 45
+  const fairPe = pePick ?? Math.round(peMid)
+
+  const tNow = decYear(now)
+  const epsNow = epsAt(tNow, g)
+  const fairNow = epsNow * fairPe
+  const price = px?.last.close ?? 1356.5
+  const peNow = price / epsNow
+  const gap = (price / fairNow - 1) * 100
+  const zone = peNow < peLo ? { t: '싼 구간', c: 'text-emerald-600 dark:text-emerald-400' }
+    : peNow > peHi ? { t: '비싼 구간', c: 'text-red-500' } : { t: '보통 구간', c: 'text-gray-700 dark:text-gray-200' }
+  const fair10 = epsAt(tNow + 10, g) * fairPe
+  const ret10 = (Math.pow(fair10 / price, 0.1) * 1.0135 - 1) * 100
+
+  // 초·하루 단위 쪼개기
+  const SEC_Y = 365.25 * 86400
+  const lnG = Math.log(1 + g / 100)
+  const coNetYear = epsNow * RMS_SHARES
+  const startOfYear = new Date(new Date(now).getFullYear(), 0, 1).getTime()
+  const startOfDay = new Date(new Date(now).setHours(0, 0, 0, 0)).getTime()
+  const earnedYtd = coNetYear * (now - startOfYear) / 1000 / SEC_Y
+  const myPerSec = epsNow * shares / SEC_Y
+  const myToday = epsNow * shares * (now - startOfDay) / 1000 / SEC_Y
+  const fairPerDay = fairNow * lnG / 365.25
+  const parts = [
+    { k: '① 판매량', r: f.q }, { k: '② 가격 인상', r: f.pr }, { k: '③ 이익률', r: f.mg }, { k: '④ 기타', r: f.ot },
+  ].map(x => ({ ...x, perDay: fairNow * Math.log(1 + x.r / 100) / 365.25 }))
+  const hnwiNow = HNWI_2025 * Math.pow(1.05, tNow - 2025)
+  const hnwiPerDay = HNWI_2025 * Math.pow(1.05, tNow - 2025) * Math.log(1.05) / 365.25
+  const hnwiToday = hnwiPerDay * (now - startOfDay) / 86400000
+  const eur = (v: number, d = 0) => `€${v.toLocaleString('ko-KR', { minimumFractionDigits: d, maximumFractionDigits: d })}`
+
+  // 그래프: 주가(월말) + 적정가 선(EPS × PER) + 싼~비싼 띠, 10년 뒤까지 연장
+  const line: Array<{ x: number }> = []
+  for (let t = 2002; t <= tNow + 10; t += 1 / 12) line.push({ x: t })
+  const pt = (pe: number) => line.map(o => ({ x: o.x, y: epsAt(o.x, g) * pe }))
+  const nowLine = {
+    id: 'nowLine',
+    afterDraw: (c: any) => {
+      const x = c.scales.x.getPixelForValue(tNow)
+      const { top, bottom } = c.chartArea
+      const ctx = c.ctx
+      ctx.save(); ctx.strokeStyle = 'rgba(107,114,128,0.6)'; ctx.setLineDash([4, 4])
+      ctx.beginPath(); ctx.moveTo(x, top); ctx.lineTo(x, bottom); ctx.stroke()
+      ctx.setLineDash([]); ctx.fillStyle = 'rgba(107,114,128,0.9)'; ctx.font = '11px sans-serif'
+      ctx.fillText('지금', x + 4, top + 12); ctx.restore()
+    },
+  }
+  const chartData: any = {
+    datasets: [
+      { label: `싼 구간 경계 (PER ${peLo.toFixed(0)}배)`, data: pt(peLo), borderColor: 'rgba(16,185,129,0.5)', borderWidth: 1, pointRadius: 0, fill: false },
+      { label: `비싼 구간 경계 (PER ${peHi.toFixed(0)}배)`, data: pt(peHi), borderColor: 'rgba(239,68,68,0.5)', borderWidth: 1, pointRadius: 0, fill: '-1', backgroundColor: 'rgba(156,163,175,0.12)' },
+      { label: `적정가 선 (EPS × ${fairPe}배)`, data: pt(fairPe), borderColor: 'rgba(37,99,235,0.95)', borderWidth: 2, pointRadius: 0, fill: false,
+        segment: { borderDash: (ctx: any) => (ctx.p0.parsed.x >= RMS_TTM.t ? [6, 4] : undefined) } },
+      { label: '실제 주가 (월말)', data: hist.map(r => ({ x: r.t, y: r.price })), borderColor: 'rgba(17,24,39,0.85)', borderWidth: 1.5, pointRadius: 0, fill: false },
+    ],
+  }
+  const options: any = {
+    responsive: true, maintainAspectRatio: false, animation: false, parsing: false,
+    interaction: { mode: 'nearest', axis: 'x', intersect: false },
+    scales: {
+      x: { type: 'linear', min: 2002, max: Math.ceil(tNow + 10), ticks: { stepSize: 4, callback: (v: number) => String(Math.floor(v)), font: { size: 11 } }, grid: { color: 'rgba(128,128,128,0.08)' } },
+      y: { type: 'logarithmic', ticks: { font: { size: 11 }, callback: (v: number) => ([10, 20, 50, 100, 200, 500, 1000, 2000, 5000].includes(v) ? `€${v.toLocaleString()}` : '') }, grid: { color: 'rgba(128,128,128,0.08)' } },
+    },
+    plugins: {
+      legend: { position: 'top', labels: { font: { size: 11 }, boxWidth: 12 } },
+      tooltip: {
+        callbacks: {
+          title: (items: any[]) => { const x = items[0].parsed.x; return `${Math.floor(x)}년 ${Math.max(1, Math.round((x % 1) * 12))}월` },
+          label: (c: any) => `${c.dataset.label}: €${Math.round(c.parsed.y).toLocaleString()}`,
+        },
+      },
+      zoom: pluginLoaded ? { pan: { enabled: true, mode: 'x' }, zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' } } : {},
+    },
+  }
+
+  const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-3'
+  const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
+  const tile = 'rounded bg-gray-50 dark:bg-gray-800/60 px-3 py-2.5'
+  const lab = 'text-[11px] text-gray-500 dark:text-gray-400'
+  const big = 'text-sm font-semibold tabular-nums text-gray-900 dark:text-white'
+
+  return (
+    <div className={box}>
+      <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">8. 이익 시계 — 적정가 선 vs 주가</h4>
+      <p className={p}>
+        <b>파란 선 = 적정가 = 최근 1년 EPS × 적정 PER.</b> 이익이 늘면 파란 선이 오른쪽 위로 올라가고, 7번에서 정한 EPS 성장률(연 {g.toFixed(1)}%)로 앞으로 10년까지 이어진다(점선).
+        검은 선(주가)이 띠 아래면 싼 구간, 위면 비싼 구간이다. 적정 PER은 지난 20년 PER의 중간값({peMid.toFixed(0)}배), 띠는 하위·상위 25%({peLo.toFixed(0)}~{peHi.toFixed(0)}배)다.
       </p>
 
-      <div className="overflow-x-auto">
-        <p className="text-xs font-semibold text-gray-700 dark:text-gray-200 mb-1">한눈에 보기: Q × P별 10년 연평균 수익률 (이익률 유지, 10년 뒤 PER 지금 수준 유지)</p>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <div className={tile}><p className={lab}>적정가 (지금, 초마다 오름)</p><p className={big}>{eur(fairNow, 4)}</p></div>
+        <div className={tile}><p className={lab}>주가 ({px?.last.date ?? '2026-10-21'})</p><p className={big}>{eur(price, 1)}</p></div>
+        <div className={tile}><p className={lab}>지금 PER · 구간</p><p className={`${big} ${zone.c}`}>{peNow.toFixed(1)}배 · {zone.t}</p></div>
+        <div className={tile}><p className={lab}>적정가 대비</p><p className={`${big} ${gap < 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'}`}>{gap > 0 ? '+' : ''}{gap.toFixed(1)}% {gap < 0 ? '(쌈)' : '(비쌈)'}</p></div>
+      </div>
+
+      <div className="relative">
+        <button onClick={() => (chartRef.current as any)?.resetZoom?.()}
+          className="absolute top-0 right-0 z-10 px-2 py-0.5 text-xs text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 border border-gray-200 dark:border-gray-700 rounded">줌 초기화</button>
+        <div style={{ height: 320 }}>
+          {px ? <Chart ref={chartRef as any} type="line" data={chartData} options={options} plugins={[nowLine]} />
+            : <p className="text-xs text-gray-400 pt-10 text-center">월별 주가 데이터를 불러오는 중…</p>}
+        </div>
+        <p className="text-xs text-gray-400 dark:text-gray-600 text-right mt-1">휠: 확대/축소 &nbsp;|&nbsp; 드래그: 이동</p>
+      </div>
+
+      <label className="block space-y-1">
+        <div className="flex justify-between text-xs">
+          <span className="font-medium text-gray-700 dark:text-gray-200">적정 PER</span>
+          <span className="tabular-nums font-semibold text-gray-900 dark:text-white">{fairPe}배</span>
+        </div>
+        <input type="range" min={20} max={55} step={1} value={fairPe} onChange={e => setPePick(Number(e.target.value))} className="w-full accent-blue-600" />
+        <p className="text-[11px] text-gray-400 dark:text-gray-500">기본값은 지난 20년 PER 중간값. 지금 PER(약 {peNow.toFixed(0)}배)로 두면 &lsquo;주가가 이익만큼만 오를 때&rsquo;가 된다.</p>
+      </label>
+
+      <div className="rounded bg-blue-50/60 dark:bg-blue-950/20 p-3 space-y-2">
+        <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">째깍째깍 — 버핏처럼 초 단위로 보기</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <div className={tile}><p className={lab}>에르메스가 1초에 버는 순이익</p><p className={big}>{eur(coNetYear / SEC_Y, 0)}</p></div>
+          <div className={tile}><p className={lab}>올해 1월 1일부터 번 순이익</p><p className={big}>{eur(earnedYtd, 0)}</p></div>
+          <div className={tile}><p className={lab}>적정가가 하루에 오르는 폭 (1주)</p><p className={big}>+{eur(fairPerDay, 2)}</p></div>
+          <div className={tile}><p className={lab}>내 몫 이익: 1초</p><p className={big}>{eur(myPerSec, 7)}</p></div>
+          <div className={tile}><p className={lab}>내 몫 이익: 오늘 0시부터</p><p className={big}>{eur(myToday, 5)}</p></div>
+          <div className={tile}><p className={lab}>내 몫 이익: 1년</p><p className={big}>{eur(epsNow * shares, 2)}</p></div>
+        </div>
+        <label className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300">
+          보유 주식 수
+          <input type="number" min={1} value={shares} onChange={e => saveShares(Math.max(1, Number(e.target.value) || 1))}
+            className="w-20 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-2 py-0.5 tabular-nums" />
+          <span className="text-gray-400">주 (이 기기에만 저장)</span>
+        </label>
+      </div>
+
+      <div className="rounded bg-gray-50 dark:bg-gray-800/50 p-3 space-y-1.5">
+        <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">적정가가 하루에 오르는 {eur(fairPerDay, 2)}를 요인별로 쪼개면 (1주 기준)</p>
         <table className="text-xs">
-          <thead>
-            <tr>
-              <th className={`${th} text-left`}>Q ↓ / P →</th>
-              {[3, 5, 7, 9].map(pp => <th key={pp} className={`${th} text-right`}>가격 +{pp}%</th>)}
-            </tr>
-          </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-            {[0, 2.5, 4, 6.5].map(qq => (
-              <tr key={qq} className={qq === 2.5 ? 'bg-blue-50 dark:bg-blue-900/20' : ''}>
-                <td className={td}>
-                  판매량 +{qq}%{qq === 0 ? ' (2026 상반기)' : qq === 2.5 ? ' (기본: 실질 자산가+신흥국)' : qq === 6.5 ? ' (낙관: 공방 증설 속도)' : ''}
-                </td>
-                {[3, 5, 7, 9].map(pp => {
-                  const r = ((1 + qq / 100) * (1 + pp / 100) * (1 + div / 100) - 1) * 100
-                  return <td key={pp} className={`${td} text-right ${cell(r)}`}>{r.toFixed(1)}%</td>
-                })}
+            {parts.map(x => (
+              <tr key={x.k}>
+                <td className="py-1 pr-4 text-gray-700 dark:text-gray-200">{x.k} (연 {x.r > 0 ? '+' : ''}{x.r}%)</td>
+                <td className={`py-1 tabular-nums text-right ${x.perDay < 0 ? 'text-red-500' : 'text-gray-900 dark:text-white'}`}>{x.perDay >= 0 ? '+' : ''}{eur(x.perDay, 3)} / 일</td>
               </tr>
             ))}
           </tbody>
         </table>
+        <p className={p}>
+          <b>자산가 시계:</b> 금융자산 100만 달러 이상 자산가는 지금 약 {(hnwiNow / 1e6).toFixed(1)}백만 명, 연 5%(물가 포함)씩 늘면 <b>하루 약 {Math.round(hnwiPerDay).toLocaleString()}명</b>,
+          {' '}약 {(86400 / hnwiPerDay).toFixed(0)}초에 1명이다. 오늘 0시 이후 <b>{Math.floor(hnwiToday).toLocaleString()}명</b> 늘었다.
+          이 중 물가를 뺀 실제 증가(약 2%)만 ① 판매량을 밀어 올린다.
+        </p>
       </div>
 
       <ul className={`${p} list-disc pl-4 space-y-1`}>
-        <li><b>기본 (수요 &lt; 공급):</b> 판매량 2.5% × 가격 5.5% → 매출 연 약 8%, PER 유지 시 10년 연 <b>약 9.6%</b>. 물가를 한 번만 센 현실적인 기본값이다.</li>
-        <li><b>낙관 (수요 &gt; 공급):</b> 판매량 6.5%(공방 속도) × 가격 6% → 매출 연 약 13%, 10년 연 <b>약 14%</b>. 대기 고객이 다시 넘치는 상태로 돌아가야 한다.</li>
-        <li><b>지금 (2026년 상반기):</b> 판매량 0% × 가격 5.5% → 10년 연 <b>약 7%</b>.</li>
-        <li><b>연 17~20%</b>는 낙관 시나리오에 PER 재평가(31배 → 40배 이상)까지 더해져야 나온다. 앞서 단순히 &lsquo;자산가 5% × 가격 7%&rsquo;로 본 연 13~14%는 물가를 두 번 센 낙관값이었다.</li>
+        <li><b>지금 사서 10년 뒤 주가가 적정가 선({fairPe}배)에 있으면:</b> 연 {ret10.toFixed(1)}% (배당 1.35% 포함). 10년 뒤 적정가 약 {eur(fair10)}.</li>
+        <li>주가는 매일 흔들리지만 파란 선은 이익을 따라 조용히 올라간다. 주가가 띠 아래로 내려오면 더 사고, 위로 크게 벗어나면 서두르지 않는 기준으로 쓴다.</li>
+        <li>파란 선이 맞는지는 1년에 두 번(반기 실적) 확인한다. 실제 EPS가 점선보다 계속 아래면 7번의 요인 값을 낮춘다.</li>
       </ul>
       <p className="text-[11px] text-gray-400 dark:text-gray-500">
-        자산가 통계: Capgemini 세계 부 보고서(2016·2026), Knight Frank 부 보고서 2026, UBS 세계 부 보고서 2026. 가격 인상률은 리셀·전문 매체가 집계한 대표 제품 기준이며 회사 공식 수치가 아니다.
-        판매량은 매출 성장에서 가격 인상을 뺀 근사치(제품 구성 변화 포함)다.
+        주가는 배당을 반영하지 않은 실제 월말 종가(분할 반영). 1년 EPS는 연말 실적 사이를 매끄럽게 이은 근사치이고, 2026년 6월 이후는 7번의 성장률로 연장했다.
+        초 단위 숫자는 연간 이익을 시간으로 나눈 것이며 실제 회계 처리와 다르다. 유통 주식 수 약 1억 450만 주(근사).
       </p>
     </div>
   )
@@ -2705,7 +2925,7 @@ function RmsInsight({ data }: { data: StockData }) {
         <p className={p}>
           지금과 비슷한 PER에서 산 경우: 2012년(27.6배) 21.8% · 2009년(28.2배) 23.4% · 2013년(30.6배) 23.2% · 2015년(30.7배) 22.1% ·
           2008년(31.2배) 18.7% · 2014년(31.8배) 24.2% · 1996년(30.6배) 15.4% · 2000년(30.5배) 13.7%.
-          과거 기준으로는 연 17~20% 기대가 무리는 아니다.
+          다만 그 시기는 이익률이 25% → 41%로 오르고 PER도 올랐던 때라, 같은 결과를 기대하긴 어렵다(7번 참고).
         </p>
       </div>
 
@@ -2807,15 +3027,15 @@ function RmsInsight({ data }: { data: StockData }) {
         </ul>
       </div>
 
-      <HermesQP />
+      <HermesForecast />
 
       <div className={box}>
         <h4 className={h4}>결론</h4>
         <ul className={`${p} list-disc pl-4 space-y-1`}>
-          <li>연 17~20%가 나오려면 <b>EPS 성장이 연 15% 이상으로 회복</b>하고 PER도 지금 수준 이상을 유지해야 한다.</li>
-          <li>이익 성장이 과거처럼 크다면 지금 PER은 과거 좋은 매수 시점과 비슷한 수준이다.</li>
-          <li>이익 성장이 한 자릿수(연 5~8%)에 머물면 PER 유지 시 연 6~10% 정도다.</li>
-          <li>앞으로 볼 것은 PER보다 <b>EPS 성장률이 다시 오르는지</b>다.</li>
+          <li><b>앞으로 EPS는 연 10% 안팎(±3%p)</b>이 중심이다. 과거 18.8%는 이익률이 25% → 41%로 오른 덕이 커서 그대로 반복되긴 어렵다.</li>
+          <li>PER 31.5배가 그대로면 10년 연 약 11~12%. 연 17~20%는 판매량 회복(낙관)과 PER 재평가가 함께 와야 나온다.</li>
+          <li>매일 볼 것은 8번 그래프: 주가가 적정가 띠 아래면 싼 구간, 위면 비싼 구간.</li>
+          <li>반기마다 볼 것: <b>판매량(매출 성장 − 가격 인상)이 다시 늘어나는지</b>, 영업이익률 41%가 유지되는지.</li>
         </ul>
       </div>
 

@@ -968,3 +968,11 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 #### RMS_rolling.json EPS 정정 (2026-10)
 - 2009~2025년 EPS를 회사 발표 기준으로 정정(주당이익: 2019·2021~2025년, 그 외 순이익(그룹 몫)÷주식 수). 2025년 46.50→43.15, 2024년 43.00→43.93, 2023년 42.12→41.19, 2020년 14.29→13.21, 2014년 6.76→8.19 등.
 - 가격 데이터(CSV)는 그대로 두고 `epsDecomp`와 `rows10y.peBuy`만 다시 계산. `export_rolling_json.py`의 `_RMS_EUR_EPS`도 같이 수정.
+
+#### 월별 주가 (2026-10)
+| 파일 | 스크립트 | 내용 | 사용처 |
+|---|---|---|---|
+| `web/public/data/rolling/RMS_monthly_price.json`, `NKE_monthly_price.json` | `export_monthly_price.py RMS:RMS.PA NKE:NKE` | 월말 종가(배당 미반영, 분할 반영) 2000-01~, 최근 종가 | `/private` 에르메스 8번 '이익 시계 — 적정가 선 vs 주가' |
+
+- 실행: GitHub Actions `월별 주가 데이터 생성` (workflow_dispatch, 입력 `tickers`). 이 세션 환경은 Yahoo 접속이 막혀 있어 Actions로 생성.
+- PER 비교는 실제 종가로 해야 해서 배당 조정 전 Close를 쓴다. 최신 주가로 갱신하려면 같은 워크플로를 다시 실행.
