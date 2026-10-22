@@ -2428,7 +2428,6 @@ function HermesForecast() {
 
   const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-3'
   const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
-  const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500 whitespace-nowrap'
   const td = 'py-1.5 px-2 tabular-nums text-gray-700 dark:text-gray-200 whitespace-nowrap'
   const set = (k: keyof Factors) => (v: number) => setF(prev => ({ ...prev, [k]: v }))
   const slider = (label: string, v: number, onSet: (n: number) => void, min: number, max: number, hint: string) => (
