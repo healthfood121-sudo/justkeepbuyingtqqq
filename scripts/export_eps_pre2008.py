@@ -346,15 +346,35 @@ def process(key, cik):
             obs.setdefault(y, []).append((date, v, nov))
             fresh.append(y)
         print(f"  {key}: {date} 채택 (겹침 {nov}) → {sorted((y, round(f2[y], 3)) for y in fresh)}", flush=True)
-    # 판정: 가장 최근 보고서 값 기준으로 7% 안에서 맞는 보고서가 2개 이상, 또는 1개라도 겹친 해가 2개 이상인 보고서
+    # 판정: 보고서끼리 7% 안에서 맞는 묶음 중 가장 큰 것(같으면 최근 보고서 쪽). 2개 이상 일치,
+    # 또는 보고서가 1개뿐이면 그 보고서가 겹친 해 2개 이상으로 검증됐을 때만 채택
+    def close(a, b):
+        return (abs(a) < 0.02 and abs(b) < 0.02) or (a != 0 and abs(b / a - 1) < 0.07)
     for y, lst in obs.items():
         lst.sort(reverse=True)
-        v0 = lst[0][1]
-        agree = [v for _, v, _ in lst if (abs(v0) < 0.02 and abs(v) < 0.02) or (v0 != 0 and abs(v / v0 - 1) < 0.07)]
-        if len(agree) >= 2 or (len(lst) == 1 and lst[0][2] >= 2):
-            added[y] = v0
+        best = max(([v for _, v, _ in lst if close(c, v)] for _, c, _ in lst), key=len)
+        if len(best) >= 2:
+            added[y] = best[0]
+        elif len(lst) == 1 and lst[0][2] >= 2:
+            added[y] = lst[0][1]
         else:
             print(f"  {key}: {y}년 보고서끼리 불일치·근거 부족 {[(d, round(v, 3)) for d, v, _ in lst]}", flush=True)
+    # 이상치: 앞뒤 해(2년 안) 모두보다 4배 넘게 혼자 튀거나 꺼진 값은 버림 (끝 해는 이웃 하나와 6배)
+    full = {**known, **added}
+    for y in sorted([y for y in added if y not in known]):
+        v = full.get(y)
+        if v is None or v <= 0:
+            continue
+        nb = [full[z] for z in (y - 1, y + 1, y - 2, y + 2) if z in full and full[z] and full[z] > 0]
+        prev = next((full[z] for z in (y - 1, y - 2) if z in full and full[z] and full[z] > 0), None)
+        nxt = next((full[z] for z in (y + 1, y + 2) if z in full and full[z] and full[z] > 0), None)
+        r = lambda o: max(v / o, o / v)
+        bad = (prev and nxt and r(prev) > 4 and r(nxt) > 4 and (v > prev) == (v > nxt)) or \
+              (bool(prev) != bool(nxt) and r(prev or nxt) > 6)
+        if bad:
+            print(f"  {key}: {y}년 이상치 제외 {v:.3f} (앞 {prev}, 뒤 {nxt})", flush=True)
+            added.pop(y)
+            full.pop(y)
     if added:
         d["epsOld"] = {str(y): round(v, 4) for y, v in sorted(added.items())}
         d["epsOldSrc"] = "SEC 10-K 원문의 5년 요약 표(희석 EPS). 매년 보고서를 대조해 2개 이상 일치한 값, 겹치는 해로 분할·연도 보정"
