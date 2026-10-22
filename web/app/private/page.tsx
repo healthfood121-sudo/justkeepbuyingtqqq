@@ -3142,6 +3142,50 @@ export default function PrivatePage() {
 
         <PrivateTabs active="stocks" />
 
+        {/* ── 사용 방법 ── */}
+        <section className="rounded-xl border-2 border-blue-200 dark:border-blue-900/60 bg-blue-50/60 dark:bg-blue-950/30 p-4 space-y-3">
+          <h2 className="text-base font-bold text-gray-900 dark:text-white">사용 방법 — 종목 하나를 깊게 보는 곳</h2>
+          <ol className="space-y-2.5 text-sm text-gray-700 dark:text-gray-200">
+            <li className="flex gap-2">
+              <span className="shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center">1</span>
+              <div>
+                <b>종목을 고른다.</b>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                  아래 &lsquo;종목 비교 개요&rsquo; 표에서 행을 누르거나 &lsquo;종목 선택&rsquo; 목록에서 고른다. 어떤 종목을 볼지 모르겠다면 위 &lsquo;종목 아이디어&rsquo; 탭에서 추천 목록부터 보자.
+                </p>
+              </div>
+            </li>
+            <li className="flex gap-2">
+              <span className="shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center">2</span>
+              <div>
+                <b>차트와 표로 &lsquo;과거에 샀다면&rsquo;을 본다.</b>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                  막대 하나 = 그해 연말에 사서 10년 보유했을 때의 연평균 수익률(배당 포함). 주황 점은 같은 기간 S&amp;P 500. 막대가 낮게 떨어진 해가 &lsquo;최악의 진입 시점&rsquo;이다.
+                </p>
+              </div>
+            </li>
+            <li className="flex gap-2">
+              <span className="shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center">3</span>
+              <div>
+                <b>아래 &lsquo;인사이트&rsquo;에서 지금 사도 되는지 본다.</b>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                  위에서부터 순서대로:
+                  <span className="text-amber-600 dark:text-amber-400"> 노란 박스</span>(Claude가 뉴스로 직접 쓴 분석, 추천 종목만) →
+                  사업성 평가(회사가 얼마나 좋은가, 주가와 무관) →
+                  지금 상태 요약(지금 PER이 평소보다 싼가, 이익이 늘고 있나) →
+                  연도별 수익률 분해(수익이 이익 성장에서 왔나, PER 상승에서 왔나) →
+                  PER별 과거 수익률·과거 바닥 비교 →
+                  시나리오 표(지금 사면 10년 뒤 예상) → 숫자로 본 결론.
+                </p>
+              </div>
+            </li>
+          </ol>
+          <div className="text-xs text-gray-500 dark:text-gray-400 border-t border-blue-200 dark:border-blue-900/60 pt-2 space-y-1">
+            <p><b>핵심만 보려면:</b> 노란 박스의 &lsquo;결론&rsquo;과 &lsquo;숫자로 본 결론&rsquo; 두 곳만 읽어도 된다.</p>
+            <p><b>숫자 읽는 법:</b> 지금 PER이 10년 중간 PER보다 낮으면 평소보다 싸다. 이익/10년 고점이 85% 미만이면 이익이 꺾인 상태라 PER이 실제보다 비싸 보일 수 있다. 시나리오 표에서 과거 이익 성장률 줄(회색 배경)을 보면 &lsquo;과거 속도라면 몇 %&rsquo;가 바로 보인다.</p>
+          </div>
+        </section>
+
         {/* 헤더 */}
         <div>
           <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-1">위대한 기업</h1>
