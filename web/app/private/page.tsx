@@ -2602,6 +2602,7 @@ type ClockProps = {
   storageKey: string
   extraLive?: (now: number, fairNow: number) => ReactNode
   notes: string
+  peExclude?: { from: number; to: number; label: string } // 이 기간을 뺀 PER 중간값도 눈금으로 (예: 거품기)
 }
 
 // 초마다 바뀌는 숫자만 따로 다시 그림 (그래프는 그대로)
@@ -2635,7 +2636,7 @@ function ClockLive({ cur, epsAt, fairPe, shares, sharesOut, extraLive }: {
   )
 }
 
-function ValueClockCore({ cur, anchors, monthly, last, g, sharesOut, divYield, storageKey, extraLive, notes }: ClockProps) {
+function ValueClockCore({ cur, anchors, monthly, last, g, sharesOut, divYield, storageKey, extraLive, notes, peExclude }: ClockProps) {
   const [shares, setShares] = useState(1)
   const [pePick, setPePick] = useState<number | null>(null)
   const chartRef = useRef<ChartJS | null>(null)
@@ -2678,6 +2679,13 @@ function ValueClockCore({ cur, anchors, monthly, last, g, sharesOut, divYield, s
     peMarks.push({ k: `${yrsUsed}년 중간값`, short: '중간', v: peMid!, c: 'bg-blue-600 text-blue-600 dark:text-blue-400' })
     peMarks.push({ k: `${yrsUsed}년 평균`, short: `${yrsUsed}년평균`, v: avg(peHist), c: 'bg-purple-500 text-purple-600 dark:text-purple-400' })
     peMarks.push({ k: `${yrsUsed}년 최대`, short: '최대', v: Math.max(...peHist), c: 'bg-red-500 text-red-500' })
+    peMarks.push({ k: `${yrsUsed}년 하위 25%`, short: '하위25%', v: peLo!, c: 'bg-emerald-300 text-emerald-600 dark:text-emerald-400' })
+    peMarks.push({ k: `${yrsUsed}년 상위 25%`, short: '상위25%', v: peHi!, c: 'bg-red-300 text-red-500' })
+    if (peExclude) {
+      const rest = hist.filter(r => r.t >= tLastEps - 20 && r.t <= tLastEps && !(r.t >= peExclude.from && r.t < peExclude.to)
+        && r.pe != null && r.pe > 0 && r.pe < 200).map(r => r.pe as number)
+      if (rest.length >= 24) peMarks.push({ k: peExclude.label, short: '거품 제외', v: quantile(rest, 0.5), c: 'bg-amber-500 text-amber-600 dark:text-amber-400' })
+    }
   }
   if (pe10.length >= 24 && yrsUsed > 10) peMarks.push({ k: '10년 평균', short: '10년평균', v: avg(pe10), c: 'bg-gray-500 text-gray-500 dark:text-gray-400' })
   if (pe5.length >= 24) peMarks.push({ k: '5년 평균', short: '5년평균', v: avg(pe5), c: 'bg-gray-400 text-gray-500 dark:text-gray-400' })
@@ -2935,9 +2943,9 @@ function GrowthBar({ g, setG, marks, note }: { g: number; setG: (v: number) => v
 }
 
 // ── 에르메스 2번 ─────────────────────────────────────────────
-// 에르메스 연말 EPS (유로, 회사 발표 기준 2009~2025 / 2001~2008은 대조 못한 값)
+// 에르메스 연말 EPS (유로, 회사 발표 기준 2002~2025 / 2001은 미확인)
 const RMS_EPS_HIST: Record<number, number> = {
-  2001: 1.81, 2002: 2.30, 2003: 1.88, 2004: 1.95, 2005: 2.16, 2006: 2.77, 2007: 2.70, 2008: 2.64,
+  2001: 1.81, 2002: 1.96, 2003: 1.97, 2004: 1.94, 2005: 2.27, 2006: 2.51, 2007: 2.70, 2008: 2.75,
   2009: 2.74, 2010: 4.00, 2011: 5.63, 2012: 7.02, 2013: 7.53, 2014: 8.19, 2015: 9.27, 2016: 10.51,
   2017: 11.67, 2018: 13.43, 2019: 14.66, 2020: 13.21, 2021: 23.37, 2022: 32.2, 2023: 41.19, 2024: 43.93, 2025: 43.15,
 }
@@ -3008,6 +3016,7 @@ function HermesValueClock({ g: gFactors, f }: { g: number; f: Factors }) {
         <ValueClockCore
           cur="€" anchors={RMS_ANCHORS} monthly={monthly} last={px.last} g={g}
           sharesOut={RMS_SHARES} divYield={1.35} storageKey="rms-shares" extraLive={extraLive}
+          peExclude={{ from: 2019, to: 2026, label: '거품기(2019~2025) 뺀 중간값' }}
           notes="주가는 배당을 반영하지 않은 실제 월말 종가(분할 반영). 1년 EPS는 연말 실적 사이를 매끄럽게 이은 근사치이고, 2026년 6월 이후는 4번의 성장률로 연장했다. 초 단위 숫자는 연간 이익을 시간으로 나눈 것이며 실제 회계 처리와 다르다. 유통 주식 수 약 1억 450만 주(근사)."
         />
       ) : <p className="text-xs text-gray-400">월별 주가 데이터를 불러오는 중…</p>}
@@ -3246,7 +3255,7 @@ function RmsInsight({ data }: { data: StockData }) {
           </span>
         </div>
         <p className={p}>
-          1993~2007년에는 대체로 19~34배였다(1996·1999·2000년 40배 이상은 예외, 2002년 19배가 가장 낮음). 2008~2018년에는 32~41배,
+          1993~2007년에는 대체로 20~38배였다(1996·1999·2000년 40배 이상은 예외, 1993년 20배가 가장 낮음). 2008~2018년에는 32~41배,
           2019~2025년에는 45~67배까지 올랐다(정점 2020년 67배).
           {lowSince ? <> 지금은 {peNow.toFixed(1)}배로 {lowSince[0]}년({lowSince[1].toFixed(0)}배) 이후 가장 낮다.</> : <> 지금은 {peNow.toFixed(1)}배로 기록 중 가장 낮다.</>}
           {' '}2010~2015년에 산 경우들이 높은 수익을 낸 데는 팔 때 PER이 45~67배까지 올라 있었던 영향이 크다.
@@ -3349,7 +3358,7 @@ function RmsInsight({ data }: { data: StockData }) {
 
       <p className="text-xs text-gray-400 dark:text-gray-500">
         참고: PER은 모두 실제 종가(배당 미반영) ÷ EPS 기준이다. 1993~1999년 종가는 실제 자료가 없어 2000~2009년 추세로 추정했다. 수익률은 배당을 재투자한 기준.
-        EPS는 2009년 이후 회사 발표 기준(주당이익 또는 순이익÷주식 수)이고, 2001~2008년은 대조하지 못한 값, 1993~2000년은 AI가 역산한 추정치다.
+        EPS는 2002년 이후 회사 발표 기준(주당이익 또는 순이익÷주식 수)이고, 2001년은 확인하지 못한 값, 1993~2000년은 AI가 역산한 추정치다.
         참고용 분석이며 미래를 보장하지 않는다.
       </p>
     </div>
