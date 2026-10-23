@@ -51,10 +51,20 @@ PRETAX = ["IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItems
           "IncomeLossFromContinuingOperationsBeforeIncomeTaxesDomestic"]
 TAX = ["IncomeTaxExpenseBenefit"]
 INTEREST = ["InterestExpense", "InterestExpenseNonoperating", "InterestExpenseDebt", "InterestAndDebtExpense"]
-# 은행·증권: 예금·대출이 영업현금흐름에 섞여 잉여현금흐름이 의미 없음
-BANK_MARKERS = ["Deposits", "InterestExpenseDeposits", "LoansAndLeasesReceivableNetReportedAmount", "PayablesToCustomers"]
-# 보험: 투자 손익이 이익에 섞여 ROIC 근사가 의미 없음 (영업이익 항목이 없을 때 대체 계산을 하지 않음)
-INSURER_MARKERS = ["PremiumsEarnedNet", "LiabilityForFuturePolicyBenefits", "LiabilityForClaimsAndClaimsAdjustmentExpense"]
+# 금융사 판정: SEC 업종 코드(SIC) 6000~6399 = 은행·신용·증권·보험.
+# 예금·대출·보험료 같은 고객 돈이 영업현금흐름에 섞여 잉여현금흐름·ROIC가 의미 없음.
+# 예외: 6324 건강보험(유나이티드헬스 등)은 일반 기업처럼 봄
+def is_financial(sic: int | None) -> bool:
+    return sic is not None and 6000 <= sic <= 6399 and sic != 6324
+
+
+def fetch_sic(cik: int) -> int | None:
+    try:
+        r = requests.get(f"https://data.sec.gov/submissions/CIK{cik:010d}.json", headers=UA, timeout=60)
+        time.sleep(0.12)
+        return int(r.json().get("sic") or 0) or None if r.status_code == 200 else None
+    except Exception:
+        return None
 EQUITY = ["StockholdersEquity", "StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest"]
 CASH = ["CashAndCashEquivalentsAtCarryingValue",
         "CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents", "Cash"]
@@ -200,10 +210,10 @@ def year_end_close(fund: dict) -> dict:
     return out
 
 
-FCF_OK_INSURERS = {"BRKB"}  # 보험이 일부인 복합 기업: 잉여현금흐름 유지
+FCF_OK_INSURERS = {"BRKB"}  # 보험이 일부인 복합 기업(버크셔): 잉여현금흐름 유지
 
 
-def build(gaap: dict, fund: dict) -> dict | None:
+def build(gaap: dict, fund: dict, sic: int | None = None) -> dict | None:
     ocf = annual_flow(gaap, OCF)
     ni = annual_flow(gaap, NI)
     if not ocf or not ni:
@@ -215,10 +225,9 @@ def build(gaap: dict, fund: dict) -> dict | None:
     pretax = annual_flow(gaap, PRETAX)
     tax = annual_flow(gaap, TAX)
     interest = annual_flow(gaap, INTEREST)
-    bank = any(usd_items(gaap, n) for n in BANK_MARKERS)
-    insurer0 = any(usd_items(gaap, n) for n in INSURER_MARKERS)
-    no_fcf = bank or (insurer0 and fund.get("key") not in FCF_OK_INSURERS)  # 고객 돈이 현금흐름에 섞이는 금융사
-    if not opinc and not bank and not insurer0:  # 영업이익 항목이 없으면 세전이익 + 이자비용으로 근사 (예: 나이키)
+    bank = is_financial(sic)
+    no_fcf = bank and fund.get("key") not in FCF_OK_INSURERS  # 고객 돈이 현금흐름에 섞이는 금융사
+    if not opinc and not bank:  # 영업이익 항목이 없으면 세전이익 + 이자비용으로 근사 (예: 나이키)
         opinc = {e: v + interest.get(e, 0.0) for e, v in pretax.items()}
     eq = instant(gaap, EQUITY)
     cash = instant(gaap, CASH)
@@ -267,7 +276,7 @@ def build(gaap: dict, fund: dict) -> dict | None:
         if no_fcf:
             o = c = f = conv = fps = fy_yield = None
         if bank:
-            roic = None
+            roic = None  # 금융사(버크셔 포함)는 투하자본 개념이 맞지 않음
         years[str(y)] = {k: v for k, v in {
             "end": end, "ocf": m(o), "capex": m(c), "fcf": m(f), "ni": m(n),
             "div": m(div.get(end)), "buyback": m(buy.get(end)),
@@ -278,11 +287,11 @@ def build(gaap: dict, fund: dict) -> dict | None:
         prev_eq, prev_ic, prev_end = e, ic, end
 
     if no_fcf:
-        return {"years": years, "bank": True}
+        return {"years": years, "bank": True, "sic": sic}
     t_ocf = ttm(gaap, OCF, ocf)
     t_cap = ttm(gaap, CAPEX, capex) if capex else (0.0, t_ocf[1] if t_ocf else None)
     t_ni = ttm(gaap, NI, ni)
-    out = {"years": years}
+    out = {"years": years, "sic": sic}
     if t_ocf and t_ni and t_cap and t_ocf[1] == t_ni[1] == t_cap[1]:
         out["ttm"] = {"asOf": t_ocf[1], "ocf": m(t_ocf[0]), "capex": m(t_cap[0]),
                       "fcf": m(t_ocf[0] - t_cap[0]), "ni": m(t_ni[0])}
@@ -367,7 +376,8 @@ def main():
                 print(f"[{i}/{len(keys)}] {k}: HTTP {r.status_code}")
                 continue
             gaap = r.json().get("facts", {}).get("us-gaap", {})
-            cash = build(gaap, fund)
+            sic = fetch_sic(cik)
+            cash = build(gaap, fund, sic)
         except Exception as e:  # 한 종목 실패가 전체를 멈추지 않게
             print(f"[{i}/{len(keys)}] {k}: 오류 {e}")
             continue
