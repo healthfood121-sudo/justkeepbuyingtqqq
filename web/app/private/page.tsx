@@ -2417,10 +2417,18 @@ const HERMES_SCENARIOS: Array<{ label: string; f: Factors; desc: string }> = [
   { label: '지금 상태 지속', f: { q: 1, pr: 5.5, mg: 0, ot: 0 }, desc: '2026년 상반기처럼 판매량이 거의 멈추고 가격만 오름' },
 ]
 
-function HermesForecast({ f, setF, peNow }: { f: Factors; setF: (f: Factors) => void; peNow: number }) {
+function HermesForecast({ f, setF, peNow, peFair, past10 }: {
+  f: Factors; setF: (f: Factors) => void; peNow: number
+  peFair: number | null                                   // 2번 이익 시계 적정 PER 기본값(거품기 뺀 중간값)
+  past10: { min: number; med: number; max: number } | null // 과거 10년 구간 EPS 성장률 분포 (3-3과 같은 값)
+}) {
   const g = epsGrowthOf(f)
   const div = 1.35
   const ret = ((1 + g / 100) * (1 + div / 100) - 1) * 100 // PER 그대로일 때
+  // PER이 적정 PER로 돌아갈 때 — 2번 이익 시계와 같은 계산(마지막 실적 시점부터 10년 뒤까지 성장)
+  const [tNow] = useState(() => decYear(Date.now()))
+  const yrs = tNow + 10 - RMS_ANCHORS[RMS_ANCHORS.length - 1][0]
+  const retFair = peFair ? (Math.pow(Math.pow(1 + g / 100, yrs) * peFair / peNow, 0.1) * (1 + div / 100) - 1) * 100 : null
 
   const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-3'
   const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
@@ -2454,6 +2462,10 @@ function HermesForecast({ f, setF, peNow }: { f: Factors; setF: (f: Factors) => 
 
         <div className="overflow-x-auto">
           <p className="text-xs font-semibold text-gray-700 dark:text-gray-200 mb-1">과거 16년(2009~2025) EPS 연 18.8%를 나누면</p>
+          {past10 && <p className="text-[11px] text-gray-400 dark:text-gray-500 mb-1">
+            이익률 자료가 2009년부터라 이 구간으로 나눴다. 2009년은 2007~2009년 이익 정체 직후라 출발점이 낮아 18.8%가 높게 나온다.
+            10년씩 끊어 보면 연 {past10.min.toFixed(0)}~{past10.max.toFixed(0)}%, 중간값 {past10.med.toFixed(1)}%다(3-3과 같은 값).
+          </p>}
           <table className="text-xs">
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
               {past.map(r => (
@@ -2511,12 +2523,13 @@ function HermesForecast({ f, setF, peNow }: { f: Factors; setF: (f: Factors) => 
           {slider('④ 기타', f.ot, set('ot'), -2, 2, '과거 16년 연 +1.3%(환율·세금·이자). 앞으로는 0으로 본다')}
         </div>
 
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           <StatCard label="예상 EPS 성장 (연)" value={`${g.toFixed(1)}% (±3%p)`} />
-          <StatCard label="PER 그대로일 때 10년 수익률" value={`연 ${ret.toFixed(1)}%`} />
+          <StatCard label={`PER 그대로(${peNow.toFixed(1)}배)일 때 10년 수익률`} value={`연 ${ret.toFixed(1)}%`} />
+          {retFair != null && <StatCard label={`PER ${peFair}배(거품기 뺀 중간값)로 돌아갈 때`} value={`연 ${retFair.toFixed(1)}%`} />}
         </div>
         <p className="text-[11px] text-gray-400 dark:text-gray-500">
-          10년 수익률 = EPS 성장 + 배당 1.35% (지금 PER {peNow.toFixed(1)}배가 10년 뒤에도 같다고 가정). PER이 오르내리는 효과는 2번 이익 시계에서 본다.
+          PER 그대로 = EPS 성장 + 배당 1.35%. 오른쪽 칸은 10년 뒤 PER이 2번 이익 시계의 기본 적정 PER({peFair ?? '—'}배)로 돌아간다고 본 값으로, 2번의 &lsquo;10년 뒤 적정가 선에 있으면&rsquo;과 같은 숫자다. 다른 PER은 2번 바나 4-2 표에서 본다.
         </p>
 
         <details className="rounded bg-gray-50 dark:bg-gray-800/50 p-3">
@@ -2675,7 +2688,11 @@ function ValueClockCore({ cur, anchors, monthly, last, g, sharesOut, divYield, s
   const peMid = enough ? quantile(peHist, 0.5) : null
   const peHi = enough ? quantile(peHist, 0.75) : null
   const yrsUsed = Math.round(peHist.length / 12)
-  const fairPe = pePick ?? Math.round(peMid ?? 20)
+  // 제외 구간(예: 거품기)이 있으면 그 구간을 뺀 중간값을 기본값으로
+  const peExRest = enough && peExclude ? hist.filter(r => r.t >= tLastEps - 20 && r.t <= tLastEps && !(r.t >= peExclude.from && r.t < peExclude.to)
+    && r.pe != null && r.pe > 0 && r.pe < 200).map(r => r.pe as number) : []
+  const peExMid = peExRest.length >= 24 ? quantile(peExRest, 0.5) : null
+  const fairPe = pePick ?? Math.round(peExMid ?? peMid ?? 20)
   const epsNow = epsAt(tNow) // 적정가용: 마지막 실적 이후는 성장률로 늘린 값
   const price = last.close
   // 지금 PER은 예측이 아니라 실제 최근 1년 EPS(마지막 발표 실적)로 계산
@@ -2694,11 +2711,7 @@ function ValueClockCore({ cur, anchors, monthly, last, g, sharesOut, divYield, s
     peMarks.push({ k: `${yrsUsed}년 최대`, short: '최대', v: Math.max(...peHist), c: 'bg-red-500 text-red-500' })
     peMarks.push({ k: `${yrsUsed}년 하위 25%`, short: '하위25%', v: peLo!, c: 'bg-emerald-300 text-emerald-600 dark:text-emerald-400' })
     peMarks.push({ k: `${yrsUsed}년 상위 25%`, short: '상위25%', v: peHi!, c: 'bg-red-300 text-red-500' })
-    if (peExclude) {
-      const rest = hist.filter(r => r.t >= tLastEps - 20 && r.t <= tLastEps && !(r.t >= peExclude.from && r.t < peExclude.to)
-        && r.pe != null && r.pe > 0 && r.pe < 200).map(r => r.pe as number)
-      if (rest.length >= 24) peMarks.push({ k: peExclude.label, short: '거품 제외', v: quantile(rest, 0.5), c: 'bg-amber-500 text-amber-600 dark:text-amber-400' })
-    }
+    if (peExclude && peExMid != null) peMarks.push({ k: peExclude.label, short: '거품 제외', v: peExMid, c: 'bg-amber-500 text-amber-600 dark:text-amber-400' })
   }
   if (pe10.length >= 24 && yrsUsed > 10) peMarks.push({ k: '10년 평균', short: '10년평균', v: avg(pe10), c: 'bg-gray-500 text-gray-500 dark:text-gray-400' })
   if (pe5.length >= 24) peMarks.push({ k: '5년 평균', short: '5년평균', v: avg(pe5), c: 'bg-gray-400 text-gray-500 dark:text-gray-400' })
@@ -2796,7 +2809,7 @@ function ValueClockCore({ cur, anchors, monthly, last, g, sharesOut, divYield, s
       <p className={p}>
         <b>파란 선 = 적정가 = 최근 1년 EPS × 적정 PER.</b> 이익이 늘면 파란 선이 오른쪽 위로 올라가고, 정한 EPS 성장률(연 {g.toFixed(1)}%)로 10년 뒤까지 이어진다(점선).
         검은 선(주가)이 띠 아래면 싼 구간, 위면 비싼 구간이다.
-        {peMid != null && <> 적정 PER 기본값은 지난 {yrsUsed}년 PER의 중간값({peMid.toFixed(0)}배), 띠는 하위·상위 25%({peLo!.toFixed(0)}~{peHi!.toFixed(0)}배)다.</>}
+        {peMid != null && <> 적정 PER 기본값은 {peExMid != null && peExclude ? <>{peExclude.label}({peExMid.toFixed(0)}배, 전체 {yrsUsed}년 중간값은 {peMid.toFixed(0)}배)</> : <>지난 {yrsUsed}년 PER의 중간값({peMid.toFixed(0)}배)</>}, 띠는 하위·상위 25%({peLo!.toFixed(0)}~{peHi!.toFixed(0)}배)다.</>}
       </p>
 
       <div className="rounded border border-gray-200 dark:border-gray-800 p-3 space-y-4">
@@ -2836,7 +2849,7 @@ function ValueClockCore({ cur, anchors, monthly, last, g, sharesOut, divYield, s
           </div>
         )}
         <p className="text-[11px] text-gray-400 dark:text-gray-500">
-          {peMid != null ? '기본값은 과거 PER 중간값.' : '과거 PER 자료가 짧아 기본값 20배.'} 아래 버튼을 누르면 그 값으로 바뀐다.
+          {peExMid != null ? `기본값은 ${peExclude!.label}.` : peMid != null ? '기본값은 과거 PER 중간값.' : '과거 PER 자료가 짧아 기본값 20배.'} 아래 버튼을 누르면 그 값으로 바뀐다.
           지금 PER({peNow?.toFixed(0)}배)로 두면 &lsquo;주가가 이익만큼만 오를 때&rsquo;가 된다. PER은 월말 주가 ÷ 그때의 최근 1년 EPS(적자·200배 이상 제외).
         </p>
       </div>
@@ -2943,7 +2956,7 @@ function GrowthBar({ g, setG, marks, note }: { g: number; setG: (v: number) => v
     <div className="space-y-1">
       <div className="flex justify-between text-xs">
         <span className="font-medium text-gray-700 dark:text-gray-200">EPS 성장률 직접 조절 (연)</span>
-        <span className="tabular-nums font-semibold text-gray-900 dark:text-white">{g}%</span>
+        <span className="tabular-nums font-semibold text-gray-900 dark:text-white">{Math.round(g * 10) / 10}%</span>
       </div>
       <input type="range" min={lo} max={hi} step={0.5} value={g} onChange={e => setG(Number(e.target.value))} className="w-full accent-blue-600" />
       <TickRuler min={lo} max={hi} marks={marks} unit="%" />
@@ -3034,7 +3047,7 @@ type MonthlyPrice = { last: { date: string; close: number }; rows: Array<{ d: st
 function HermesValueClock({ g: gFactors, f }: { g: number; f: Factors }) {
   const [px, setPx] = useState<MonthlyPrice | null>(null)
   const [gUser, setGUser] = useState<number | null>(null)
-  const g = gUser ?? Math.round(gFactors * 2) / 2
+  const g = gUser ?? gFactors // 4번 값 그대로 (반올림하지 않음)
   useEffect(() => {
     fetch('/data/rolling/RMS_monthly_price.json').then(r => (r.ok ? r.json() : null)).then(setPx).catch(() => {})
   }, [])
@@ -3083,7 +3096,10 @@ function HermesValueClock({ g: gFactors, f }: { g: number; f: Factors }) {
       {px ? (<>
         <ValueClockCore
           growthBar={<GrowthBar g={g} setG={setGUser}
-        marks={growthMarks(RMS_ANCHORS, [{ k: '4번 요인 계산', short: '4번', v: gFactors, c: TICK_C.pick }])}
+        marks={growthMarks(RMS_ANCHORS, [
+          { k: '4번 요인 계산(지금 선택)', short: '4번', v: gFactors, c: TICK_C.pick },
+          ...HERMES_SCENARIOS.map(sc => ({ k: `4번 ${sc.label}`, short: sc.label === '지금 상태 지속' ? '지속' : sc.label, v: epsGrowthOf(sc.f), c: 'bg-teal-500 text-teal-600 dark:text-teal-400' })),
+        ])}
         note={<>기본값은 4번에서 판매량·가격·이익률·기타로 계산한 값({gFactors.toFixed(1)}%). 바를 움직이면 4번과 별개로 전체 성장률을 바로 정한다.
           {gUser != null && <> <button type="button" onClick={() => setGUser(null)} className="underline text-blue-600 dark:text-blue-400">4번 값으로 되돌리기</button></>}
           {' '}과거 N년 = N년 전부터 지금까지 연평균, 5년 구간 = 지난 20년을 5년씩 끊어 본 성장률의 범위.</>} />}
@@ -3413,6 +3429,18 @@ function RmsInsight({ data }: { data: StockData }) {
   const gNow = epsGrowthOf(f)
   const ret10 = ((1 + gNow / 100) * 1.0135 - 1) * 100
   const decomp = ((data as any).epsDecomp ?? []) as Decomp[]
+  // 2번 이익 시계와 같은 방식의 적정 PER: 마지막 실적 전 20년 월별 PER에서 거품기(2019~2025)를 뺀 중간값
+  const peFair = (() => {
+    if (!px) return null
+    const epsAt = makeEpsAt(RMS_ANCHORS, 0)
+    const tLast = RMS_ANCHORS[RMS_ANCHORS.length - 1][0]
+    const pes = px.rows.map(r => { const [y, m] = r.d.split('-').map(Number); const t = y + m / 12; const e = epsAt(t); return { t, pe: e && e > 0 ? r.c / e : null } })
+      .filter(r => r.t >= tLast - 20 && r.t <= tLast && !(r.t >= 2019 && r.t < 2026) && r.pe != null && r.pe > 0 && r.pe < 200).map(r => r.pe as number)
+    return pes.length >= 24 ? Math.round(quantile(pes, 0.5)) : null
+  })()
+  const epsG10 = decomp.map(d => d.epsGrowthCagr)
+  const past10 = epsG10.length ? { min: Math.min(...epsG10), med: quantile(epsG10, 0.5), max: Math.max(...epsG10) } : null
+  const retFair10 = peFair ? (Math.pow(Math.pow(1 + gNow / 100, decYear(Date.now()) + 10 - RMS_ANCHORS[RMS_ANCHORS.length - 1][0]) * peFair / peNow, 0.1) * 1.0135 - 1) * 100 : null
   // 연말 PER 흐름: 매수 연도 PER + 매도 연도 PER을 합쳐 연도별로 정리
   const yearPE = new Map<number, number>()
   decomp.forEach(d => { yearPE.set(d.buyYear, d.peBuy); yearPE.set(d.sellYear, d.peSell) })
@@ -3564,7 +3592,7 @@ function RmsInsight({ data }: { data: StockData }) {
         <p className="text-xs text-gray-400 dark:text-gray-500">4-1 이익이 얼마나 늘지 → 4-2 그 성장률과 10년 뒤 PER에 따른 예상 수익률</p>
       </div>
 
-      <HermesForecast f={f} setF={setF} peNow={peNow} />
+      <HermesForecast f={f} setF={setF} peNow={peNow} peFair={peFair} past10={past10} />
 
       <div className={box}>
         <ScenarioTable data={data} pe0={peNow} title="4-2. 지금 사서 10년 보유 시 예상 수익률 — EPS 성장률 × 10년 뒤 PER" />
@@ -3574,8 +3602,8 @@ function RmsInsight({ data }: { data: StockData }) {
         <h4 className={h4}>5. 결론</h4>
         <ul className={`${p} list-disc pl-4 space-y-1`}>
           <li><b>앞으로 EPS는 연 {gNow.toFixed(1)}% 안팎(±3%p)</b>이 중심이다(4번). 과거 18.8%는 이익률이 24% → 41%로 오른 덕이 커서 그대로 반복되긴 어렵다(3번).</li>
-          <li>PER {peNow.toFixed(1)}배가 그대로면 10년 연 약 {ret10.toFixed(1)}%. 연 17~20%는 판매량 회복(낙관)과 PER 재평가가 함께 와야 나온다. EPS 성장률·10년 뒤 PER별 결과는 4-2 표.</li>
-          <li><b>필요한 성장:</b> PER 지금 수준 유지·배당 1.35% 가정에서 연 17%가 나오려면 이익이 연 약 15%, 연 20%가 나오려면 연 약 18% 늘어야 한다. 과거 10년 이익 성장률(연 11~19%, 보통 15% 안팎)로는 가능한 범위지만, 4번 중심값({gNow.toFixed(1)}%)보다 높다.</li>
+          <li>PER {peNow.toFixed(1)}배가 그대로면 10년 연 약 {ret10.toFixed(1)}%{retFair10 != null && <>, 거품기 뺀 중간값({peFair}배)으로 돌아가면 연 약 {retFair10.toFixed(1)}%</>}. 연 17~20%는 판매량 회복(낙관)과 PER 재평가가 함께 와야 나온다. EPS 성장률·10년 뒤 PER별 결과는 4-2 표.</li>
+          <li><b>필요한 성장:</b> PER 지금 수준 유지·배당 1.35% 가정에서 연 17%가 나오려면 이익이 연 약 15%, 연 20%가 나오려면 연 약 18% 늘어야 한다. 과거 10년 이익 성장률({past10 ? <>연 {past10.min.toFixed(0)}~{past10.max.toFixed(0)}%, 중간값 {past10.med.toFixed(1)}%</> : '—'})로는 가능한 범위지만, 4번 중심값({gNow.toFixed(1)}%)보다 높다.</li>
           <li><b>매일 볼 것:</b> 2번 이익 시계 — 주가가 적정가 띠 아래면 싼 구간, 위면 비싼 구간.</li>
           <li><b>반기마다 볼 것:</b> 판매량(매출 성장 − 가격 인상)이 다시 늘어나는지, 영업이익률 41%가 유지되는지, 환율 영향을 뺀 매출 성장이 다시 두 자릿수로 오는지.</li>
         </ul>
