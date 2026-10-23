@@ -2966,6 +2966,61 @@ const RMS_ANCHORS: ClockAnchor[] = [
   [2026.5, 43.08], // 2026년 6월 말 최근 1년 EPS
 ]
 const RMS_SHARES = 104.5e6 // 자사주 제외 유통 주식 수(근사)
+
+// 에르메스 연도별 (백만 유로, 회사 발표: 연차보고서 2018·2021, 연간 실적 발표 2023·2025)
+// ni 순이익(그룹 몫), op 영업이익(2018년은 2021 보고서의 재작성 값), fcf 조정 잉여현금흐름(영업현금 − 영업 투자 − 리스 상환),
+// ocf 영업활동 현금흐름(운전자본 변화 반영), capex 영업 투자, eq 자기자본(그룹 몫), cash 재작성 순현금(차입금 차감 후)
+const RMS_FIN: Record<number, { ni: number; op: number; eq: number; cash: number; fcf?: number; ocf?: number; capex?: number; div?: number }> = {
+  2014: { ni: 859, op: 1299, eq: 3449, cash: 1494 },
+  2015: { ni: 973, op: 1541, eq: 3742, cash: 1614 },
+  2016: { ni: 1100, op: 1697, eq: 4383, cash: 2345 },
+  2017: { ni: 1221, op: 1922, eq: 5039, cash: 3050, fcf: 1340, ocf: 1605, capex: 265 },
+  2018: { ni: 1405, op: 2075, eq: 5470, cash: 3615, fcf: 1447, ocf: 1760, capex: 312 },
+  2019: { ni: 1528, op: 2339, eq: 6568, cash: 4562, fcf: 1406, ocf: 2087, capex: 478 },
+  2020: { ni: 1385, op: 1981, eq: 7380, cash: 4904, fcf: 995, ocf: 1643, capex: 448 },
+  2021: { ni: 2445, op: 3530, eq: 9400, cash: 7070, fcf: 2661, ocf: 3406, capex: 532 },
+  2022: { ni: 3367, op: 4697, eq: 12440, cash: 9742, fcf: 3405, ocf: 4184, capex: 518, div: 852 },
+  2023: { ni: 4311, op: 5650, eq: 15201, cash: 11164, fcf: 3192, ocf: 4328, capex: 859, div: 1386 },
+  2024: { ni: 4603, op: 6150, eq: 17327, cash: 12039, fcf: 3767, ocf: 5139, capex: 1067, div: 2705 },
+  2025: { ni: 4524, op: 6569, eq: 18840, cash: 12773, fcf: 3880, ocf: 5374, capex: 1161, div: 2796 },
+}
+
+// RMS_FIN → CashData + 지표. ROIC = 영업이익 × (순이익 ÷ 영업이익, 세후 근사) ÷ 평균(자기자본 − 순현금)
+function rmsCash(price: number, monthly: Array<{ d: string; c: number }>) {
+  const dec: Record<number, number> = {}
+  for (const r of monthly) if (r.d.endsWith('-12')) dec[Number(r.d.slice(0, 4))] = r.c
+  const years: Record<string, CashYear> = {}
+  const ys = Object.keys(RMS_FIN).map(Number).sort((a, b) => a - b)
+  ys.forEach((y, i) => {
+    const r = RMS_FIN[y], pr = RMS_FIN[ys[i - 1]]
+    const avgEq = pr ? (r.eq + pr.eq) / 2 : r.eq
+    const ic = r.eq - r.cash, icPrev = pr ? pr.eq - pr.cash : null
+    const avgIc = icPrev != null ? (ic + icPrev) / 2 : ic
+    const tax = Math.min(0.4, Math.max(0.2, 1 - r.ni / r.op))
+    const fcfPs = r.fcf != null ? r.fcf * 1e6 / RMS_SHARES : undefined
+    years[String(y)] = {
+      end: `${y}-12-31`, ni: r.ni, fcf: r.fcf, ocf: r.ocf, capex: r.capex, div: r.div, equity: r.eq, cashInv: r.cash,
+      roe: Math.round(r.ni / avgEq * 1000) / 10,
+      roic: avgIc > 0 ? Math.round(r.op * (1 - tax) / avgIc * 1000) / 10 : undefined,
+      conv: r.fcf != null ? Math.round(r.fcf / r.ni * 100) / 100 : undefined,
+      fcfPs, fcfYield: fcfPs != null && dec[y] ? Math.round(fcfPs / dec[y] * 1000) / 10 : undefined,
+    }
+  })
+  const last = RMS_FIN[2025]
+  const cash: CashData = { years, ttm: { asOf: '2025-12-31', ocf: last.ocf!, capex: last.capex!, fcf: last.fcf!, ni: last.ni, annualOnly: true } }
+  const recent = ys.slice(-5).map(y => years[String(y)])
+  const med = (a: number[]) => quantile(a, 0.5)
+  const fcfPs = last.fcf! * 1e6 / RMS_SHARES
+  const m = {
+    earnYield: RMS_TTM_EPS / price * 100,
+    fcfYield: fcfPs / price * 100,
+    roe: years['2025'].roe ?? null, roic: years['2025'].roic ?? null,
+    roe5: med(recent.map(r => r.roe!).filter(v => v != null)),
+    roic5: med(recent.map(r => r.roic!).filter(v => v != null)),
+    conv5: recent.reduce((a, r) => a + (r.fcf ?? 0), 0) / recent.reduce((a, r) => a + (r.ni ?? 0), 0),
+  }
+  return { cash, m, fcfPs }
+}
 const HNWI_2025 = 25.3e6   // 금융자산 100만 달러 이상 (Capgemini 2025)
 
 type MonthlyPrice = { last: { date: string; close: number }; rows: Array<{ d: string; c: number }> }
@@ -3024,14 +3079,25 @@ function HermesValueClock({ g: gFactors, f }: { g: number; f: Factors }) {
         note={<>기본값은 4번에서 판매량·가격·이익률·기타로 계산한 값({gFactors.toFixed(1)}%). 바를 움직이면 4번과 별개로 전체 성장률을 바로 정한다.
           {gUser != null && <> <button type="button" onClick={() => setGUser(null)} className="underline text-blue-600 dark:text-blue-400">4번 값으로 되돌리기</button></>}
           {' '}과거 N년 = N년 전부터 지금까지 연평균, 5년 구간 = 지난 20년을 5년씩 끊어 본 성장률의 범위.</>} />
-      {px ? (
+      {px ? (<>
         <ValueClockCore
           cur="€" anchors={RMS_ANCHORS} monthly={monthly} last={px.last} g={g}
           sharesOut={RMS_SHARES} divYield={1.35} storageKey="rms-shares" extraLive={extraLive}
+          fcfPs={rmsCash(px.last.close, px.rows).fcfPs}
           peExclude={{ from: 2019, to: 2026, label: '거품기(2019~2025) 뺀 중간값' }}
-          notes="주가는 배당을 반영하지 않은 실제 월말 종가(분할 반영). 1년 EPS는 연말 실적 사이를 매끄럽게 이은 근사치이고, 2026년 6월 이후는 4번의 성장률로 연장했다. 초 단위 숫자는 연간 이익을 시간으로 나눈 것이며 실제 회계 처리와 다르다. 유통 주식 수 약 1억 450만 주(근사)."
+          notes="주가는 배당을 반영하지 않은 실제 월말 종가(분할 반영). 1년 EPS는 연말 실적 사이를 매끄럽게 이은 근사치이고, 2026년 6월 이후는 4번의 성장률로 연장했다. 초 단위 숫자는 연간 이익을 시간으로 나눈 것이며 실제 회계 처리와 다르다. 유통 주식 수 약 1억 450만 주(근사). 내 몫 잉여현금은 2025년 조정 잉여현금흐름(38.8억 유로) ÷ 유통 주식 수."
         />
-      ) : <p className="text-xs text-gray-400">월별 주가 데이터를 불러오는 중…</p>}
+        {(() => {
+          const r = rmsCash(px.last.close, px.rows)
+          return <CashReturnPanel cash={r.cash} m={r.m} cur="€" source={
+            <p className="text-[11px] text-gray-400 dark:text-gray-500">
+              회사 발표 숫자(2018·2021 연차보고서, 2023·2025 연간 실적 발표). 잉여현금흐름은 회사의 &lsquo;조정 잉여현금흐름&rsquo; = 영업활동 현금흐름 − 영업 투자 − 리스 상환으로,
+              미국 종목(리스 상환을 빼지 않음)보다 약간 보수적이다. 2016년 이전은 이 값이 없어 비워 뒀다. 최근 1년 = 2025년 연간.
+              에르메스는 빚이 없고 순현금이 많아(2025년 말 128억 유로) 투하자본 = 자기자본 − 순현금으로 계산했다. 그래서 ROIC가 매우 높게 나온다.
+              ROE = 순이익 ÷ 평균 자기자본, ROIC = 영업이익 × (순이익 ÷ 영업이익) ÷ 평균 투하자본(세금·금융 손익을 순이익 비율로 근사).
+            </p>} />
+        })()}
+      </>) : <p className="text-xs text-gray-400">월별 주가 데이터를 불러오는 중…</p>}
     </div>
   )
 }
