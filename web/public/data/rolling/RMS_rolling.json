@@ -149,8 +149,8 @@
       "isComplete": true,
       "benchCagr": 2.92,
       "diff": 13.57,
-      "peBuy": 23.3,
-      "peBuyActual": 31.9
+      "peBuy": 22.9,
+      "peBuyActual": 31.4
     },
     {
       "buyYear": 2002,
@@ -227,8 +227,8 @@
       "isComplete": true,
       "benchCagr": 8.5,
       "diff": 11.15,
-      "peBuy": 25.4,
-      "peBuyActual": 32.0
+      "peBuy": 25.3,
+      "peBuyActual": 31.9
     },
     {
       "buyYear": 2008,
@@ -240,8 +240,8 @@
       "isComplete": true,
       "benchCagr": 13.12,
       "diff": 5.53,
-      "peBuy": 30.0,
-      "peBuyActual": 36.5
+      "peBuy": 29.9,
+      "peBuyActual": 36.4
     },
     {
       "buyYear": 2009,
@@ -518,13 +518,13 @@
       "buyYear": 1997,
       "sellYear": 2007,
       "epsBuy": 0.7,
-      "epsSell": 2.7,
-      "epsMultiple": 3.86,
+      "epsSell": 2.71,
+      "epsMultiple": 3.87,
       "peBuy": 32.2,
-      "peSell": 32.0,
+      "peSell": 31.9,
       "peMultiple": 0.99,
-      "epsGrowthCagr": 14.45,
-      "peCagr": -0.06,
+      "epsGrowthCagr": 14.5,
+      "peCagr": -0.1,
       "totalCagr": 16.01,
       "note": null,
       "peBasis": "actual-estimated"
@@ -533,13 +533,13 @@
       "buyYear": 1998,
       "sellYear": 2008,
       "epsBuy": 0.81,
-      "epsSell": 2.75,
-      "epsMultiple": 3.4,
+      "epsSell": 2.76,
+      "epsMultiple": 3.41,
       "peBuy": 29.6,
-      "peSell": 36.5,
+      "peSell": 36.4,
       "peMultiple": 1.23,
-      "epsGrowthCagr": 13.0,
-      "peCagr": 2.11,
+      "epsGrowthCagr": 13.04,
+      "peCagr": 2.08,
       "totalCagr": 17.25,
       "note": null,
       "peBasis": "actual-estimated"
@@ -577,14 +577,14 @@
     {
       "buyYear": 2001,
       "sellYear": 2011,
-      "epsBuy": 1.81,
+      "epsBuy": 1.84,
       "epsSell": 5.63,
-      "epsMultiple": 3.11,
-      "peBuy": 31.9,
+      "epsMultiple": 3.06,
+      "peBuy": 31.4,
       "peSell": 40.9,
-      "peMultiple": 1.28,
-      "epsGrowthCagr": 12.02,
-      "peCagr": 2.53,
+      "peMultiple": 1.3,
+      "epsGrowthCagr": 11.83,
+      "peCagr": 2.69,
       "totalCagr": 16.5,
       "note": null,
       "peBasis": "actual"
@@ -667,14 +667,14 @@
     {
       "buyYear": 2007,
       "sellYear": 2017,
-      "epsBuy": 2.7,
+      "epsBuy": 2.71,
       "epsSell": 11.67,
-      "epsMultiple": 4.32,
-      "peBuy": 32.0,
+      "epsMultiple": 4.31,
+      "peBuy": 31.9,
       "peSell": 38.2,
-      "peMultiple": 1.19,
-      "epsGrowthCagr": 15.76,
-      "peCagr": 1.79,
+      "peMultiple": 1.2,
+      "epsGrowthCagr": 15.72,
+      "peCagr": 1.82,
       "totalCagr": 19.64,
       "note": null,
       "peBasis": "actual"
@@ -682,14 +682,14 @@
     {
       "buyYear": 2008,
       "sellYear": 2018,
-      "epsBuy": 2.75,
+      "epsBuy": 2.76,
       "epsSell": 13.43,
-      "epsMultiple": 4.88,
-      "peBuy": 36.5,
+      "epsMultiple": 4.87,
+      "peBuy": 36.4,
       "peSell": 36.1,
       "peMultiple": 0.99,
-      "epsGrowthCagr": 17.19,
-      "peCagr": -0.1,
+      "epsGrowthCagr": 17.14,
+      "peCagr": -0.07,
       "totalCagr": 18.65,
       "note": null,
       "peBasis": "actual"
@@ -800,6 +800,6 @@
       "peBasis": "actual"
     }
   ],
-  "epsNote": "EUR EPS: 1993~2000년은 AI 역산 추정치 (1:9 분할 완전 반영 기준), 2001년은 미확인 값, 2002~2025년은 회사 발표 기준(주당이익 또는 순이익÷주식 수). 분할 이력: 1997-06-06 1:3, 2006-06-12 1:3 (누적 1:9). PER은 실제 종가(배당 미반영) 기준(peNote 참고).",
+  "epsNote": "EUR EPS: 1993~2000년은 AI 역산 추정치 (1:9 분할 완전 반영 기준), 2001~2025년은 회사 발표 기준(주당이익 또는 순이익÷주식 수). 분할 이력: 1997-06-06 1:3, 2006-06-12 1:3 (누적 1:9). PER은 실제 종가(배당 미반영) 기준(peNote 참고).",
   "peNote": "PER은 실제 종가(배당 미반영) ÷ EPS. 2000년 이후는 Yahoo 월말 종가, 1993~1999년은 2000~2009년 '실제÷배당조정' 비율 추세로 추정(연 -1.48%). PER 효과는 배당을 뺀 순수 PER 변화."
 }
