@@ -1233,9 +1233,9 @@ function RollingTable({ data }: { data: StockData }) {
 
 
 // ── 미래 수익률 시나리오 테이블 ──────────────────────────────
-function ScenarioTable({ data }: { data: StockData }) {
+function ScenarioTable({ data, pe0, title = '지금 사서 10년 보유 시 예상 수익률' }: { data: StockData; pe0?: number; title?: string }) {
   const c = data.current as { price: number; pe: number; divYield: number; eps: number }
-  const [pe,  setPE]  = useState(c.pe ?? 20)
+  const [pe,  setPE]  = useState(pe0 != null ? Math.round(pe0 * 2) / 2 : (c.pe ?? 20))
   const [div, setDiv] = useState(c.divYield ?? 1)
 
   const growthRates = [0, 3, 5, 8, 10, 12, 15, 20]
@@ -1263,7 +1263,7 @@ function ScenarioTable({ data }: { data: StockData }) {
     <div className="space-y-4">
       <div>
         <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-1">
-          지금 사서 10년 보유 시 예상 수익률
+          {title}
         </h3>
         <p className="text-xs text-gray-500 dark:text-gray-400">
           현재 P/E와 배당수익률을 기준으로, EPS 성장률과 10년 후 P/E에 따른 연환산 수익률
@@ -2445,7 +2445,7 @@ function HermesForecast({ f, setF, peNow }: { f: Factors; setF: (f: Factors) => 
   return (
     <>
       <div className={box}>
-        <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">4. 앞으로 이익 성장 — 4가지 요인</h4>
+        <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">4-1. 앞으로 이익 성장 — 4가지 요인</h4>
         <p className={p}>
           <b>EPS 성장 = ① 판매량 × ② 가격 × ③ 이익률 × ④ 기타.</b> 회계상 이 넷 말고는 없다.
           어떤 사건(중국 경기, 관세, 코로나)이든 결국 이 넷 중 하나를 거쳐 이익에 들어온다.
@@ -3400,7 +3400,7 @@ function RmsInsight({ data }: { data: StockData }) {
         </div>
         <ul className={`${p} list-disc pl-4 space-y-1`}>
           <li><b>이익은 멈췄지만 무너지지 않았다.</b> 2024년 €43.93 → 2025년 €43.15(−1.8%, 프랑스 대기업 특별 법인세. 제외하면 순이익 +5.5%) → 2026년 상반기도 1년 전과 거의 같다(€21.36 vs €21.43).</li>
-          <li><b>앞으로 이익:</b> 4번 계산 기준 연 {gNow.toFixed(1)}%(±3%p). PER이 지금 수준이면 10년 연 약 {ret10.toFixed(1)}%(배당 포함).</li>
+          <li><b>앞으로 이익:</b> 4번 계산 기준 연 {gNow.toFixed(1)}%(±3%p). 예상 수익률은 4번, 판단은 5번에서 본다.</li>
           <li><b>지금 가격이 싼지 비싼지</b>는 바로 아래 2번 이익 시계에서 본다.</li>
         </ul>
         <p className="text-[11px] text-gray-400 dark:text-gray-500">주가는 자동 갱신(실제 종가), EPS는 회사 발표 최근 1년 값(2025년 연간 43.15 − 2025년 상반기 21.43 + 2026년 상반기 21.36). 해설 문장은 2026년 10월 21일 기준.</p>
@@ -3473,7 +3473,6 @@ function RmsInsight({ data }: { data: StockData }) {
           1993~2007년에는 대체로 22~38배였다(1996년 41배·1999년 47배는 예외, 2002년 22배가 가장 낮음). 2008~2018년에는 32~41배,
           2019~2025년에는 45~66배까지 올랐다(정점 2020년 66배).
           {lowSince ? <> 지금은 {peNow.toFixed(1)}배로 {lowSince[0]}년({lowSince[1].toFixed(0)}배) 이후 가장 낮다.</> : <> 지금은 {peNow.toFixed(1)}배로 기록 중 가장 낮다.</>}
-          {' '}2010~2015년에 산 경우들이 높은 수익을 낸 데는 팔 때 PER이 45~66배까지 올라 있었던 영향이 크다.
         </p>
         {similar.length > 0 && (
           <p className={p}>
@@ -3499,15 +3498,25 @@ function RmsInsight({ data }: { data: StockData }) {
         </ul>
       </div>
 
+      <div>
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white pt-2">4. 앞으로</h3>
+        <p className="text-xs text-gray-400 dark:text-gray-500">4-1 이익이 얼마나 늘지 → 4-2 그 성장률과 10년 뒤 PER에 따른 예상 수익률</p>
+      </div>
+
       <HermesForecast f={f} setF={setF} peNow={peNow} />
+
+      <div className={box}>
+        <ScenarioTable data={data} pe0={peNow} title="4-2. 지금 사서 10년 보유 시 예상 수익률 — EPS 성장률 × 10년 뒤 PER" />
+      </div>
 
       <div className={box}>
         <h4 className={h4}>5. 결론</h4>
         <ul className={`${p} list-disc pl-4 space-y-1`}>
           <li><b>앞으로 EPS는 연 {gNow.toFixed(1)}% 안팎(±3%p)</b>이 중심이다(4번). 과거 18.8%는 이익률이 24% → 41%로 오른 덕이 커서 그대로 반복되긴 어렵다(3번).</li>
-          <li>PER {peNow.toFixed(1)}배가 그대로면 10년 연 약 {ret10.toFixed(1)}%. 연 17~20%는 판매량 회복(낙관)과 PER 재평가가 함께 와야 나온다. EPS 성장률·10년 뒤 PER별 결과는 맨 아래 &lsquo;지금 사서 10년 보유 시 예상 수익률&rsquo; 표.</li>
+          <li>PER {peNow.toFixed(1)}배가 그대로면 10년 연 약 {ret10.toFixed(1)}%. 연 17~20%는 판매량 회복(낙관)과 PER 재평가가 함께 와야 나온다. EPS 성장률·10년 뒤 PER별 결과는 4-2 표.</li>
+          <li><b>필요한 성장:</b> PER 지금 수준 유지·배당 1.35% 가정에서 연 17%가 나오려면 이익이 연 약 15%, 연 20%가 나오려면 연 약 18% 늘어야 한다. 과거 10년 이익 성장률(연 11~19%, 보통 15% 안팎)로는 가능한 범위지만, 4번 중심값({gNow.toFixed(1)}%)보다 높다.</li>
           <li><b>매일 볼 것:</b> 2번 이익 시계 — 주가가 적정가 띠 아래면 싼 구간, 위면 비싼 구간.</li>
-          <li><b>반기마다 볼 것:</b> 판매량(매출 성장 − 가격 인상)이 다시 늘어나는지, 영업이익률 41%가 유지되는지.</li>
+          <li><b>반기마다 볼 것:</b> 판매량(매출 성장 − 가격 인상)이 다시 늘어나는지, 영업이익률 41%가 유지되는지, 환율 영향을 뺀 매출 성장이 다시 두 자릿수로 오는지.</li>
         </ul>
       </div>
 
@@ -3565,8 +3574,6 @@ function RmsInsight({ data }: { data: StockData }) {
           <li><b>저점의 원인이 과거와 같다.</b> 1999년처럼 이익은 늘었는데 PER이 떨어져서 수익률이 낮아진 경우다. 나이키(이익 정체가 원인)와 다른 점이다.</li>
           <li><b>지금 PER {peNow.toFixed(1)}배는 2009년 말(34.0배)보다 낮은 수준이다.</b> 그때 산 사람은 이후 10년간 연 23.4%를 냈다. 다만 그 10년은 이익이 연 18% 늘고, PER도 34배에서 45배로 올랐던 시기다.</li>
           <li><b>다른 점:</b> 2009년은 금융위기로 이익이 잠시 눌려 있던 때라 이후 반등 폭이 컸다. 지금은 이익이 높은 수준에서 성장만 멈춘 상태(2023년 이후 연 1~2%)다.</li>
-          <li><b>숫자로 보면:</b> PER 지금 수준 유지·배당 1.35% 가정에서 연 17%가 나오려면 이익이 연 약 15%, 연 20%가 나오려면 연 약 18% 늘어야 한다. 과거 10년 이익 성장률(연 11~19%, 보통 15% 안팎)로는 가능한 범위다.</li>
-          <li><b>확인할 신호:</b> 환율 영향을 뺀 매출 성장이 다시 두 자릿수로 올라오는지, 순이익이 다시 연 10% 이상 늘어나는지.</li>
         </ul>
       </div>
       </details>
@@ -3746,9 +3753,10 @@ function NkeInsight({ data }: { data: StockData }) {
       <div className={box}>
         <h4 className={h4}>5. 결론</h4>
         <ul className={`${p} list-disc pl-4 space-y-1`}>
-          <li>나이키는 <b>PER이 아니라 이익이 문제</b>다. 지금 PER 18배는 과거 기준으로 낮아 보이지만, 내년 예상 이익 기준으로는 28~33배다.</li>
+          <li><b>싸 보이는 건 착시다</b>(1번). 판단의 기준은 PER이 아니라 이익이 언제 다시 늘어나느냐다.</li>
           <li>이익이 2024년 수준으로만 회복돼도(연 6%) PER 유지 시 연 10~11% 정도. 배당 4.3%가 하단을 받쳐준다.</li>
-          <li>이익 회복이 늦어지면 연 4~8% 수준에 머물 수 있다. 앞으로 볼 것은 <b>매출 감소가 멈추고 EPS가 다시 늘어나는지</b>, 그리고 <b>배당이 유지되는지</b>다.</li>
+          <li><b>필요한 성장:</b> 연 17%가 나오려면 PER 18배 유지·배당 4.3% 가정에서 이익이 10년간 연 약 12%씩 늘어야 한다(2.08 → 약 6.5달러). EPS 최고치는 3.73달러(2024년)였고, 2016년(2.16달러)부터 10년간 제자리였다.</li>
+          <li>이익 회복이 늦어지면 연 4~8% 수준에 머물 수 있다. 앞으로 볼 것은 <b>매출 감소가 멈추고 EPS가 다시 늘어나는지</b>, 그리고 <b>배당이 유지되는지</b>다(분기 매출이 플러스로 돌아서는지, 2027 회계연도 이후 EPS가 다시 늘어나는지).</li>
         </ul>
       </div>
 
@@ -3803,10 +3811,7 @@ function NkeInsight({ data }: { data: StockData }) {
           <li><b>하지만 저점의 원인이 반대다.</b> 과거 두 번은 이익이 잘 늘었는데 PER만 떨어진 것이라, PER이 회복되며 반등했다.
             이번에는 PER은 그대로고 이익이 10년간 제자리였다. 이익 정체는 PER처럼 저절로 돌아오지 않고, 사업이 회복돼야 풀린다.</li>
           <li><b>출발점도 다르다.</b> 과거에는 PER 13~17배에 샀고 이후 이익이 연 13~14% 늘었다. 지금은 PER 18배인데 내년 이익이 더 줄 전망이다.</li>
-          <li><b>연 17%가 나오려면</b> PER 18배 유지·배당 4.3% 가정에서 이익이 10년간 연 약 12%씩 늘어야 한다(2.08 → 약 6.5달러).
-            나이키 EPS 최고치는 3.73달러(2024년)였고, 2016년(2.16달러)부터 10년간 제자리였다.</li>
-          <li><b>현실적인 범위:</b> 이익이 회복되면 연 10~13%, 회복이 더디면 연 4~8%. 과거 사례가 두 번뿐이라 패턴으로 확신하기엔 표본이 적다.</li>
-          <li><b>확인할 신호:</b> 분기 매출이 다시 플러스로 돌아서는지, 2027 회계연도 이후 EPS가 다시 늘어나는지, 배당이 유지되는지.</li>
+          <li>과거 사례가 두 번뿐이라 패턴으로 확신하기엔 표본이 적다.</li>
         </ul>
       </div>
       </details>
@@ -4408,13 +4413,6 @@ export default function PrivatePage() {
           <AutoInsight key={current.key} stockKey={current.key} data={current.data} />
         )}
 
-        {/* 구분선 */}
-        <div className="border-t border-gray-200 dark:border-gray-800 pt-2" />
-
-        {/* 시나리오 테이블 — ETF는 미래 P/E 시나리오 의미 없으므로 숨김 */}
-        {(current.data as any).type !== 'etf' && (
-          <ScenarioTable key={`scenario-${current.key}`} data={current.data} />
-        )}
 
       </div>
     </div>
