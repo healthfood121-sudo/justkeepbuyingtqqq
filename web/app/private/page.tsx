@@ -2838,6 +2838,101 @@ function ValueClockCore({ cur, anchors, monthly, last, g, sharesOut, divYield, s
   )
 }
 
+// ── 눈금자 바 (적정 PER·EPS 성장률 공용) ─────────────────────────
+type Tick = { k: string; short: string; v: number; c: string } // c: '선 색 글자색'
+
+function TickRuler({ min, max, marks, unit = '' }: { min: number; max: number; marks: Tick[]; unit?: string }) {
+  if (!marks.length) return null
+  const pctOf = (v: number) => (Math.min(max, Math.max(min, v)) - min) / (max - min)
+  const sorted = [...marks].sort((a, b) => a.v - b.v).map((m, i) => ({ ...m, row: i % 3 }))
+  return (
+    <div className="relative h-14 -mt-1" aria-hidden>
+      {sorted.map(m => {
+        const pct = pctOf(m.v)
+        const left = `calc(${(pct * 100).toFixed(2)}% + ${((0.5 - pct) * 16).toFixed(1)}px)` // 손잡이 중심에 맞춤
+        return (
+          <div key={m.k} className="absolute top-0 flex flex-col items-center -translate-x-1/2" style={{ left }}>
+            <div className={`w-px ${m.c.split(' ')[0]}`} style={{ height: 6 + m.row * 14 }} />
+            <span className={`text-[10px] leading-none whitespace-nowrap tabular-nums ${m.c.split(' ').slice(1).join(' ')}`}>
+              {m.short} {m.v.toFixed(0)}{unit}
+            </span>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+const TICK_C = {
+  min: 'bg-emerald-500 text-emerald-600 dark:text-emerald-400',
+  mid: 'bg-blue-600 text-blue-600 dark:text-blue-400',
+  mean: 'bg-indigo-500 text-indigo-600 dark:text-indigo-400',
+  max: 'bg-red-500 text-red-500',
+  y20: 'bg-purple-500 text-purple-600 dark:text-purple-400',
+  y10: 'bg-gray-500 text-gray-500 dark:text-gray-400',
+  y5: 'bg-gray-400 text-gray-500 dark:text-gray-400',
+  pick: 'bg-amber-500 text-amber-600 dark:text-amber-400',
+}
+
+// EPS 성장률 눈금: 과거 20·10·5년 연평균(지금까지), 지난 20년 안 5년 구간 성장률의 최소·중간·평균·최대
+function growthMarks(anchors: ClockAnchor[], extra: Tick[] = []): Tick[] {
+  const out: Tick[] = [...extra]
+  const last = anchors[anchors.length - 1]
+  if (!last || last[1] <= 0) return out
+  const near = (t: number) => {
+    let best: ClockAnchor | null = null
+    for (const a of anchors) if (Math.abs(a[0] - t) <= 0.6 && (!best || Math.abs(a[0] - t) < Math.abs(best[0] - t))) best = a
+    return best
+  }
+  const cagr = (a: ClockAnchor, b: ClockAnchor) =>
+    a[1] > 0 && b[1] > 0 && b[0] - a[0] > 1 ? (Math.pow(b[1] / a[1], 1 / (b[0] - a[0])) - 1) * 100 : null
+  for (const [n, c] of [[20, TICK_C.y20], [10, TICK_C.y10], [5, TICK_C.y5]] as const) {
+    const a = near(last[0] - n)
+    const v = a ? cagr(a, last) : null
+    if (v != null) out.push({ k: `과거 ${n}년 연평균`, short: `${n}년`, v, c })
+  }
+  const roll: number[] = []
+  for (const a of anchors) {
+    if (a[0] < last[0] - 20 - 0.01 || a[0] > last[0] - 5 + 0.01) continue
+    const b = near(a[0] + 5)
+    const v = b && b !== a ? cagr(a, b) : null
+    if (v != null) roll.push(v)
+  }
+  if (roll.length >= 4) {
+    const avg = roll.reduce((x, y) => x + y, 0) / roll.length
+    out.push({ k: '5년 구간 최소', short: '최소', v: Math.min(...roll), c: TICK_C.min })
+    out.push({ k: '5년 구간 중간값', short: '중간', v: quantile(roll, 0.5), c: TICK_C.mid })
+    out.push({ k: '5년 구간 평균', short: '평균', v: avg, c: TICK_C.mean })
+    out.push({ k: '5년 구간 최대', short: '최대', v: Math.max(...roll), c: TICK_C.max })
+  }
+  return out
+}
+
+function GrowthBar({ g, setG, marks, note }: { g: number; setG: (v: number) => void; marks: Tick[]; note: ReactNode }) {
+  const lo = Math.max(-30, Math.floor(Math.min(-5, ...marks.map(m => m.v - 1))))
+  const hi = Math.min(60, Math.ceil(Math.max(30, ...marks.map(m => m.v + 1))))
+  const snap = (v: number) => Math.round(Math.max(lo, Math.min(hi, v)) * 2) / 2
+  return (
+    <div className="space-y-1">
+      <div className="flex justify-between text-xs">
+        <span className="font-medium text-gray-700 dark:text-gray-200">EPS 성장률 직접 조절 (연)</span>
+        <span className="tabular-nums font-semibold text-gray-900 dark:text-white">{g}%</span>
+      </div>
+      <input type="range" min={lo} max={hi} step={0.5} value={g} onChange={e => setG(Number(e.target.value))} className="w-full accent-blue-600" />
+      <TickRuler min={lo} max={hi} marks={marks} unit="%" />
+      <div className="flex flex-wrap gap-1">
+        {marks.map(m => (
+          <button key={m.k} type="button" onClick={() => setG(snap(m.v))}
+            className={`text-[11px] px-1.5 py-0.5 rounded border tabular-nums ${Math.abs(snap(m.v) - g) < 0.01 ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-200 dark:border-gray-700'} ${m.c.split(' ').slice(1).join(' ')}`}>
+            {m.k} {m.v.toFixed(1)}%
+          </button>
+        ))}
+      </div>
+      <p className="text-[11px] text-gray-400 dark:text-gray-500">{note}</p>
+    </div>
+  )
+}
+
 // ── 에르메스 8번 ─────────────────────────────────────────────
 // 에르메스 연말 EPS (유로, 회사 발표 기준 2009~2025 / 2001~2008은 대조 못한 값)
 const RMS_EPS_HIST: Record<number, number> = {
@@ -2854,8 +2949,10 @@ const HNWI_2025 = 25.3e6   // 금융자산 100만 달러 이상 (Capgemini 2025)
 
 type MonthlyPrice = { last: { date: string; close: number }; rows: Array<{ d: string; c: number }> }
 
-function HermesValueClock({ g, f }: { g: number; f: Factors }) {
+function HermesValueClock({ g: gFactors, f }: { g: number; f: Factors }) {
   const [px, setPx] = useState<MonthlyPrice | null>(null)
+  const [gUser, setGUser] = useState<number | null>(null)
+  const g = gUser ?? Math.round(gFactors * 2) / 2
   useEffect(() => {
     fetch('/data/rolling/RMS_monthly_price.json').then(r => (r.ok ? r.json() : null)).then(setPx).catch(() => {})
   }, [])
@@ -2901,6 +2998,11 @@ function HermesValueClock({ g, f }: { g: number; f: Factors }) {
   return (
     <div className={box}>
       <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">8. 이익 시계 — 적정가 선 vs 주가</h4>
+      <GrowthBar g={g} setG={setGUser}
+        marks={growthMarks(RMS_ANCHORS, [{ k: '7번 요인 계산', short: '7번', v: gFactors, c: TICK_C.pick }])}
+        note={<>기본값은 7번에서 판매량·가격·이익률·기타로 계산한 값({gFactors.toFixed(1)}%). 바를 움직이면 7번과 별개로 전체 성장률을 바로 정한다.
+          {gUser != null && <> <button type="button" onClick={() => setGUser(null)} className="underline text-blue-600 dark:text-blue-400">7번 값으로 되돌리기</button></>}
+          {' '}과거 N년 = N년 전부터 지금까지 연평균, 5년 구간 = 지난 20년을 5년씩 끊어 본 성장률의 범위.</>} />
       {px ? (
         <ValueClockCore
           cur="€" anchors={RMS_ANCHORS} monthly={monthly} last={px.last} g={g}
@@ -2968,33 +3070,14 @@ function StockValueClock({ f, stockKey, rolling }: { f: ClockFund; stockKey: str
     : null
 
   const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-3'
-  const btn = (label: string, v: number | null) => v == null ? null : (
-    <button key={label} onClick={() => setG(Math.round(Math.max(-5, Math.min(30, v)) * 2) / 2)}
-      className={`text-[11px] px-2 py-1 rounded border ${Math.abs(g - v) < 0.26 ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300' : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300'}`}>
-      {label} {v.toFixed(1)}%
-    </button>
-  )
+  const marks = growthMarks(anchors, [{ k: '보수적', short: '보수', v: base, c: TICK_C.pick }])
+  if (gLong && gLong.yrs > 21) marks.push({ k: `장기 ${gLong.yrs}년 연평균`, short: `${gLong.yrs}년`, v: gLong.g, c: TICK_C.y20 })
 
   return (
     <div className={box}>
       <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">이익 시계 — 적정가 선 vs 주가</h4>
-      <div className="space-y-1">
-        <div className="flex flex-wrap items-center gap-1.5">
-          <span className="text-xs text-gray-600 dark:text-gray-300">앞으로 EPS 성장(연):</span>
-          {btn('보수적', base)}
-          {btn('과거 5년', g5)}
-          {btn('과거 10년', g10)}
-          {gLong && btn(`장기 ${gLong.yrs}년`, gLong.g)}
-        </div>
-        <label className="block">
-          <div className="flex justify-between text-xs">
-            <span className="text-gray-500 dark:text-gray-400">EPS 성장률 직접 조절</span>
-            <span className="tabular-nums font-semibold text-gray-900 dark:text-white">{g}%</span>
-          </div>
-          <input type="range" min={-5} max={30} step={0.5} value={g} onChange={e => setG(Number(e.target.value))} className="w-full accent-blue-600" />
-        </label>
-        <p className="text-[11px] text-gray-400 dark:text-gray-500">보수적 = 과거 5년·10년 성장률 중 낮은 값(0~15%로 제한). 장기 = 그래프 처음 흑자 해부터 지금까지. 최근 몇 년이 부진했던 기업은 장기 값과 차이가 크다 — 어느 쪽이 앞으로에 가까운지는 직접 판단한다.</p>
-      </div>
+      <GrowthBar g={g} setG={setG} marks={marks}
+        note={<>보수적 = 과거 5년·10년 성장률 중 낮은 값(0~15%로 제한). 과거 N년 = N년 전부터 지금까지 연평균. 5년 구간 = 지난 20년을 5년씩 끊어 본 성장률의 범위. 최근 몇 년이 부진했던 기업은 값 차이가 크다 — 어느 쪽이 앞으로에 가까운지는 직접 판단한다.</>} />
       <ValueClockCore
         cur="$" anchors={anchors} monthly={monthly} last={f.lastPrice} g={g}
         sharesOut={f.shares?.count ?? null} divYield={m.divYield ?? 0} storageKey={`clock-shares-${stockKey}`}
