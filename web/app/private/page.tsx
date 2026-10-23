@@ -3059,20 +3059,26 @@ type CashData = {
 }
 
 // ── 1달러당 이익·현금, 자본 수익률 ─────────────────────────────
-function CashReturnPanel({ cash, m }: { cash: CashData; m: Metrics }) {
+function CashReturnPanel({ cash, m, cur = '$', source }: {
+  cash: CashData
+  m: Pick<Metrics, 'earnYield' | 'fcfYield' | 'roe' | 'roe5' | 'roic' | 'roic5' | 'conv5'>
+  cur?: string; source?: ReactNode
+}) {
   const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
   const tile = 'rounded bg-gray-50 dark:bg-gray-800/60 px-3 py-2.5'
   const lab = 'text-[11px] text-gray-500 dark:text-gray-400'
   const big = 'text-sm font-semibold tabular-nums text-gray-900 dark:text-white'
   const sub = 'text-[11px] text-gray-500 dark:text-gray-400 tabular-nums'
   const pc = (v: number | null | undefined, d = 1) => (v == null ? '—' : `${v.toFixed(d)}%`)
-  // 백만 달러 → 억 달러 표기
+  // 백만 단위 → 억 단위 표기 (달러·유로)
   const usd = (v: number | null | undefined) => {
     if (v == null) return '—'
     const e = v / 100
     const a = Math.abs(e)
-    return `${v < 0 ? '−' : ''}$${a >= 100 ? Math.round(a).toLocaleString() : a.toFixed(a >= 10 ? 1 : 2)}억`
+    return `${v < 0 ? '−' : ''}${cur}${a >= 100 ? Math.round(a).toLocaleString() : a.toFixed(a >= 10 ? 1 : 2)}억`
   }
+  const unit = cur === '€' ? '유로' : '달러'
+  const cent = cur === '€' ? '유로센트' : '센트'
   const ys = Object.keys(cash.years).map(Number).sort((a, b) => b - a)
   const rows = ys.slice(0, 12).map(y => ({ y, ...cash.years[String(y)] }))
   const lastY = rows[0]
@@ -3085,7 +3091,7 @@ function CashReturnPanel({ cash, m }: { cash: CashData; m: Metrics }) {
 
   return (
     <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-3">
-      <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">1달러당 얼마를 버나 — 이익·잉여현금·자본 수익률</h4>
+      <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">1{unit}당 얼마를 버나 — 이익·잉여현금·자본 수익률</h4>
       <p className={p}>
         주당 순이익(EPS)은 주가가 회사마다 달라 서로 비교할 수 없다. 그래서 1달러 기준으로 바꿔 본다.
         <b> 내가 낸 1달러</b>가 버는 돈은 이익 수익률·잉여현금흐름 수익률(가격이 싼지),
@@ -3096,12 +3102,12 @@ function CashReturnPanel({ cash, m }: { cash: CashData; m: Metrics }) {
         <div className={tile}>
           <p className={lab}>이익 수익률 (EPS ÷ 주가)</p>
           <p className={big}>{pc(ey, 2)}</p>
-          <p className={sub}>{ey ? `1달러로 산 주식이 연 ${(ey).toFixed(1)}센트 이익 · PER ${(100 / ey).toFixed(1)}배의 역수` : ''}</p>
+          <p className={sub}>{ey ? `1${unit}로 산 주식이 연 ${ey.toFixed(1)}${cent} 이익 · PER ${(100 / ey).toFixed(1)}배의 역수` : ''}</p>
         </div>
         <div className={tile}>
           <p className={lab}>잉여현금흐름 수익률</p>
           <p className={`${big} ${fy != null && fy < 0 ? 'text-red-500' : ''}`}>{pc(fy, 2)}</p>
-          <p className={sub}>{fy != null ? `1달러당 연 ${fy.toFixed(1)}센트가 현금으로 남음` : ''}</p>
+          <p className={sub}>{fy != null ? `1${unit}당 연 ${fy.toFixed(1)}${cent}가 현금으로 남음` : ''}</p>
         </div>
         <div className={tile}>
           <p className={lab}>현금 전환율 (잉여현금 ÷ 순이익)</p>
@@ -3162,11 +3168,11 @@ function CashReturnPanel({ cash, m }: { cash: CashData; m: Metrics }) {
           </tbody>
         </table>
       </div>
-      <p className="text-[11px] text-gray-400 dark:text-gray-500">
+      {source ?? <p className="text-[11px] text-gray-400 dark:text-gray-500">
         SEC 공시(10-K·10-Q) 기준. 잉여현금흐름 = 영업활동 현금흐름 − 유형자산 취득. 최근 1년 = 최근 연간 + 올해 누적 − 작년 같은 기간{t ? (t.annualOnly ? '(분기 자료가 맞지 않아 최근 연간 값)' : ` (${t.asOf}까지)`) : ''}.
         ROE = 순이익 ÷ 평균 자기자본. ROIC = 영업이익(없으면 세전이익 + 이자비용) × (1 − 실효 법인세율) ÷ 평균(자기자본 + 차입금 − 현금·단기 투자자산). 자기자본이 마이너스이거나 너무 작은 회사(ROE 300% 초과), 현금이 많아 투하자본이 아주 작은 회사, 은행·보험사의 ROIC는 비워 둔다.
         연도별 잉여현금 수익률은 주당 잉여현금 ÷ 그해 12월 말 주가.
-      </p>
+      </p>}
     </div>
   )
 }
