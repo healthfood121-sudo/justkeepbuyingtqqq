@@ -50,6 +50,11 @@ PRETAX = ["IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItems
           "IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments",
           "IncomeLossFromContinuingOperationsBeforeIncomeTaxesDomestic"]
 TAX = ["IncomeTaxExpenseBenefit"]
+INTEREST = ["InterestExpense", "InterestExpenseNonoperating", "InterestExpenseDebt", "InterestAndDebtExpense"]
+# 은행·증권: 예금·대출이 영업현금흐름에 섞여 잉여현금흐름이 의미 없음
+BANK_MARKERS = ["Deposits", "InterestExpenseDeposits", "LoansAndLeasesReceivableNetReportedAmount"]
+# 보험: 투자 손익이 이익에 섞여 ROIC 근사가 의미 없음 (영업이익 항목이 없을 때 대체 계산을 하지 않음)
+INSURER_MARKERS = ["PremiumsEarnedNet", "LiabilityForFuturePolicyBenefits", "LiabilityForClaimsAndClaimsAdjustmentExpense"]
 EQUITY = ["StockholdersEquity", "StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest"]
 CASH = ["CashAndCashEquivalentsAtCarryingValue",
         "CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents", "Cash"]
@@ -206,6 +211,11 @@ def build(gaap: dict, fund: dict) -> dict | None:
     opinc = annual_flow(gaap, OPINC)
     pretax = annual_flow(gaap, PRETAX)
     tax = annual_flow(gaap, TAX)
+    interest = annual_flow(gaap, INTEREST)
+    bank = any(usd_items(gaap, n) for n in BANK_MARKERS)
+    insurer = any(usd_items(gaap, n) for n in INSURER_MARKERS)
+    if not opinc and not bank and not insurer:  # 영업이익 항목이 없으면 세전이익 + 이자비용으로 근사 (예: 나이키)
+        opinc = {e: v + interest.get(e, 0.0) for e, v in pretax.items()}
     eq = instant(gaap, EQUITY)
     cash = instant(gaap, CASH)
     stinv = instant(gaap, STINV)
@@ -244,6 +254,9 @@ def build(gaap: dict, fund: dict) -> dict | None:
         if y in eps and eps[y] and n and (eps[y] > 0) == (n > 0):
             fps = eps[y] * f / n
         fy_yield = fps / px[y] if fps is not None and px.get(y) else None
+        if bank:
+            o = c = f = conv = fps = fy_yield = None
+            roic = None
         years[str(y)] = {k: v for k, v in {
             "end": end, "ocf": m(o), "capex": m(c), "fcf": m(f), "ni": m(n),
             "div": m(div.get(end)), "buyback": m(buy.get(end)),
@@ -253,6 +266,8 @@ def build(gaap: dict, fund: dict) -> dict | None:
         }.items() if v is not None}
         prev_eq, prev_ic, prev_end = e, ic, end
 
+    if bank:
+        return {"years": years, "bank": True}
     t_ocf = ttm(gaap, OCF, ocf)
     t_cap = ttm(gaap, CAPEX, capex) if capex else (0.0, t_ocf[1] if t_ocf else None)
     t_ni = ttm(gaap, NI, ni)
@@ -271,12 +286,16 @@ def metrics(fund: dict, cash: dict) -> dict:
     mt = fund.get("metrics") or {}
     price = (fund.get("lastPrice") or {}).get("close") or mt.get("price")
     ttm_eps = mt.get("ttmEps")
-    t = cash["ttm"]
+    t = cash.get("ttm")
     out = {}
     if price and ttm_eps is not None:
         out["earnYield"] = round(ttm_eps / price * 100, 2)
     fps = None
-    if t.get("ni") and ttm_eps and (t["ni"] > 0) == (ttm_eps > 0):
+    if t is None:  # 은행: 잉여현금흐름 지표 없음
+        t = {}
+    if "fcf" not in t:
+        pass
+    elif t.get("ni") and ttm_eps and (t["ni"] > 0) == (ttm_eps > 0):
         fps = ttm_eps * t["fcf"] / t["ni"]  # EPS와 같은 주식 수 기준
     else:
         sh = (fund.get("shares") or {}).get("count")
@@ -291,9 +310,9 @@ def metrics(fund: dict, cash: dict) -> dict:
         if k in last:
             out[k] = last[k]
     recent = [cash["years"][y] for y in ys[-5:]]
-    f5 = sum(r.get("fcf", 0) for r in recent)
+    f5 = sum(r.get("fcf", 0) for r in recent) if "fcf" in t else 0
     n5 = sum(r.get("ni", 0) for r in recent)
-    if n5 > 0 and len(recent) >= 3:
+    if "fcf" in t and n5 > 0 and len(recent) >= 3:
         out["conv5"] = round(f5 / n5, 2)
     roic5 = [r["roic"] for r in recent if "roic" in r]
     if len(roic5) >= 3:
@@ -349,7 +368,7 @@ def main():
             by_key[k].update(mt)
         ok += 1
         last = cash["years"][max(cash["years"], key=int)]
-        print(f"[{i}/{len(keys)}] {k}: {len(cash['years'])}년, 최근 1년 FCF {cash['ttm']['fcf']}M, "
+        print(f"[{i}/{len(keys)}] {k}: {len(cash['years'])}년{' (은행)' if cash.get('bank') else ''}, 최근 1년 FCF {(cash.get('ttm') or {}).get('fcf')}M, "
               f"FCF수익률 {mt.get('fcfYield')}%, 이익수익률 {mt.get('earnYield')}%, ROE {last.get('roe')}%, ROIC {last.get('roic')}%",
               flush=True)
     summary["stocks"] = sorted(by_key.values(), key=lambda s: s["key"])

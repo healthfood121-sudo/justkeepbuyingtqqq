@@ -11,6 +11,13 @@ export type Metrics = {
   roll10Over10: number | null; beatBench: number | null; beatTotal: number | null
   expRet10: number | null
   stale?: boolean   // 공시 EPS가 오래돼 숫자 비교 제외
+  // export_cashflow.py: 1달러당 이익·현금, 자본 수익률 (%)
+  earnYield?: number | null   // 최근 1년 EPS ÷ 주가
+  fcfYield?: number | null    // 최근 1년 주당 잉여현금흐름 ÷ 주가
+  fcfPs?: number | null       // 최근 1년 주당 잉여현금흐름
+  roe?: number | null; roic?: number | null       // 최근 회계연도
+  roe5?: number | null; roic5?: number | null     // 최근 5년 중간값
+  conv5?: number | null       // 최근 5년 잉여현금흐름 합 ÷ 순이익 합
 }
 
 export type Quality = {

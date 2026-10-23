@@ -2603,12 +2603,14 @@ type ClockProps = {
   extraLive?: (now: number, fairNow: number) => ReactNode
   notes: string
   peExclude?: { from: number; to: number; label: string } // 이 기간을 뺀 PER 중간값도 눈금으로 (예: 거품기)
+  fcfPs?: number | null                        // 최근 1년 주당 잉여현금흐름 (있으면 '내 몫 잉여현금' 표시)
 }
 
 // 초마다 바뀌는 숫자만 따로 다시 그림 (그래프는 그대로)
-function ClockLive({ cur, epsAt, fairPe, shares, sharesOut, extraLive }: {
+function ClockLive({ cur, epsAt, fairPe, shares, sharesOut, extraLive, fcfPs, dps }: {
   cur: string; epsAt: (t: number) => number | null; fairPe: number; shares: number; sharesOut: number | null
   extraLive?: (now: number, fairNow: number) => ReactNode
+  fcfPs?: number | null; dps?: number | null
 }) {
   const [now, setNow] = useState(() => Date.now())
   useEffect(() => { const id = setInterval(() => setNow(Date.now()), 100); return () => clearInterval(id) }, [])
@@ -2630,13 +2632,22 @@ function ClockLive({ cur, epsAt, fairPe, shares, sharesOut, extraLive }: {
         <div className={tile}><p className={lab}>내 몫 이익: 1초</p><p className={big}>{money(epsNow * shares / SEC_Y, 7)}</p></div>
         <div className={tile}><p className={lab}>내 몫 이익: 오늘 0시부터</p><p className={big}>{money(epsNow * shares * (now - startOfDay) / 1000 / SEC_Y, 5)}</p></div>
         <div className={tile}><p className={lab}>내 몫 이익: 1년</p><p className={big}>{money(epsNow * shares, 2)}</p></div>
+        {fcfPs != null && <div className={tile}><p className={lab}>내 몫 잉여현금: 1초</p><p className={big}>{money(fcfPs * shares / SEC_Y, 7)}</p></div>}
+        {fcfPs != null && <div className={tile}><p className={lab}>내 몫 잉여현금: 1년</p><p className={big}>{money(fcfPs * shares, 2)}</p></div>}
+        {dps != null && dps > 0 && <div className={tile}><p className={lab}>실제로 받는 배당: 1년</p><p className={big}>{money(dps * shares, 2)}</p></div>}
       </div>
+      {fcfPs != null && (
+        <p className="text-[11px] text-gray-500 dark:text-gray-400">
+          이익 = 회계상 순이익. 잉여현금 = 사업에서 들어온 현금 − 설비투자로, 주인이 실제로 꺼내 쓸 수 있는 돈에 가깝다(최근 1년 값 고정).
+          배당은 그중 회사가 실제로 나눠 준 돈이고, 나머지는 자사주 매입·현금 보유·인수에 쓰인다.
+        </p>
+      )}
       {extraLive?.(now, fairNow)}
     </>
   )
 }
 
-function ValueClockCore({ cur, anchors, monthly, last, g, sharesOut, divYield, storageKey, extraLive, notes, peExclude }: ClockProps) {
+function ValueClockCore({ cur, anchors, monthly, last, g, sharesOut, divYield, storageKey, extraLive, notes, peExclude, fcfPs }: ClockProps) {
   const [shares, setShares] = useState(1)
   const [pePick, setPePick] = useState<number | null>(null)
   const chartRef = useRef<ChartJS | null>(null)
@@ -2827,7 +2838,8 @@ function ValueClockCore({ cur, anchors, monthly, last, g, sharesOut, divYield, s
 
       <div className="rounded bg-blue-50/60 dark:bg-blue-950/20 p-3 space-y-2">
         <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">째깍째깍 — 버핏처럼 초 단위로 보기</p>
-        <ClockLive cur={cur} epsAt={epsAt} fairPe={fairPe} shares={shares} sharesOut={sharesOut} extraLive={extraLive} />
+        <ClockLive cur={cur} epsAt={epsAt} fairPe={fairPe} shares={shares} sharesOut={sharesOut} extraLive={extraLive}
+          fcfPs={fcfPs} dps={divYield > 0 ? price * divYield / 100 : null} />
         <label className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300">
           보유 주식 수
           <input type="number" min={1} value={shares} onChange={e => saveShares(Math.max(1, Number(e.target.value) || 1))}
@@ -3032,6 +3044,131 @@ type ClockFund = Fundamentals & {
   lastPrice?: { date: string; close: number }
   shares?: { count: number; asOf: string } | null
   epsOld?: Record<string, number>   // SEC 10-K 원문에서 읽은 2008년 이전 EPS
+  cash?: CashData                   // export_cashflow.py: 잉여현금흐름·자본 수익률
+}
+
+// 금액은 백만 달러
+type CashYear = {
+  end: string; ocf?: number; capex?: number; fcf?: number; ni?: number; div?: number; buyback?: number
+  equity?: number; debt?: number; cashInv?: number; roe?: number; roic?: number; conv?: number; fcfPs?: number; fcfYield?: number
+}
+type CashData = {
+  years: Record<string, CashYear>
+  ttm?: { asOf: string; ocf: number; capex: number; fcf: number; ni: number; annualOnly?: boolean }
+  bank?: boolean   // 은행·증권: 예금·대출이 현금흐름에 섞여 잉여현금흐름을 계산하지 않음
+}
+
+// ── 1달러당 이익·현금, 자본 수익률 ─────────────────────────────
+function CashReturnPanel({ cash, m }: { cash: CashData; m: Metrics }) {
+  const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
+  const tile = 'rounded bg-gray-50 dark:bg-gray-800/60 px-3 py-2.5'
+  const lab = 'text-[11px] text-gray-500 dark:text-gray-400'
+  const big = 'text-sm font-semibold tabular-nums text-gray-900 dark:text-white'
+  const sub = 'text-[11px] text-gray-500 dark:text-gray-400 tabular-nums'
+  const pc = (v: number | null | undefined, d = 1) => (v == null ? '—' : `${v.toFixed(d)}%`)
+  // 백만 달러 → 억 달러 표기
+  const usd = (v: number | null | undefined) => {
+    if (v == null) return '—'
+    const e = v / 100
+    const a = Math.abs(e)
+    return `${v < 0 ? '−' : ''}$${a >= 100 ? Math.round(a).toLocaleString() : a.toFixed(a >= 10 ? 1 : 2)}억`
+  }
+  const ys = Object.keys(cash.years).map(Number).sort((a, b) => b - a)
+  const rows = ys.slice(0, 12).map(y => ({ y, ...cash.years[String(y)] }))
+  const lastY = rows[0]
+  const t = cash.ttm
+  const conv1 = t && t.ni > 0 ? t.fcf / t.ni : null
+  const payout = lastY?.fcf && lastY.fcf > 0
+    ? { div: (lastY.div ?? 0) / lastY.fcf, buy: (lastY.buyback ?? 0) / lastY.fcf } : null
+  const ey = m.earnYield, fy = m.fcfYield
+  const roicTone = (v?: number | null) => (v == null ? '' : v >= 20 ? 'text-emerald-600 dark:text-emerald-400' : v < 8 ? 'text-red-500' : '')
+
+  return (
+    <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-3">
+      <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">1달러당 얼마를 버나 — 이익·잉여현금·자본 수익률</h4>
+      <p className={p}>
+        주당 순이익(EPS)은 주가가 회사마다 달라 서로 비교할 수 없다. 그래서 1달러 기준으로 바꿔 본다.
+        <b> 내가 낸 1달러</b>가 버는 돈은 이익 수익률·잉여현금흐름 수익률(가격이 싼지),
+        <b> 회사가 사업에 묶어둔 1달러</b>가 버는 돈은 ROE·ROIC(사업이 얼마나 좋은지)다.
+      </p>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        <div className={tile}>
+          <p className={lab}>이익 수익률 (EPS ÷ 주가)</p>
+          <p className={big}>{pc(ey, 2)}</p>
+          <p className={sub}>{ey ? `1달러로 산 주식이 연 ${(ey).toFixed(1)}센트 이익 · PER ${(100 / ey).toFixed(1)}배의 역수` : ''}</p>
+        </div>
+        <div className={tile}>
+          <p className={lab}>잉여현금흐름 수익률</p>
+          <p className={`${big} ${fy != null && fy < 0 ? 'text-red-500' : ''}`}>{pc(fy, 2)}</p>
+          <p className={sub}>{fy != null ? `1달러당 연 ${fy.toFixed(1)}센트가 현금으로 남음` : ''}</p>
+        </div>
+        <div className={tile}>
+          <p className={lab}>현금 전환율 (잉여현금 ÷ 순이익)</p>
+          <p className={big}>{m.conv5 != null ? `${Math.round(m.conv5 * 100)}%` : '—'}</p>
+          <p className={sub}>5년 합계 기준{conv1 != null ? ` · 최근 1년 ${Math.round(conv1 * 100)}%` : ''}</p>
+        </div>
+        <div className={tile}>
+          <p className={lab}>ROE (순이익 ÷ 자기자본)</p>
+          <p className={big}>{pc(m.roe)}</p>
+          <p className={sub}>5년 중간값 {pc(m.roe5)}</p>
+        </div>
+        <div className={tile}>
+          <p className={lab}>ROIC (세후 영업이익 ÷ 투하자본)</p>
+          <p className={`${big} ${roicTone(m.roic)}`}>{pc(m.roic)}</p>
+          <p className={sub}>5년 중간값 {pc(m.roic5)}</p>
+        </div>
+        {t && <div className={tile}>
+          <p className={lab}>최근 1년 잉여현금흐름</p>
+          <p className={`${big} ${t.fcf < 0 ? 'text-red-500' : ''}`}>{usd(t.fcf)}</p>
+          <p className={sub}>영업현금 {usd(t.ocf)} − 설비투자 {usd(t.capex)}</p>
+        </div>}
+      </div>
+
+      {cash.bank && <p className={p}><b>은행·증권사는 잉여현금흐름을 계산하지 않는다.</b> 고객 예금과 대출이 영업 현금흐름에 섞여 있어 숫자가 크게 흔들리고 뜻이 없다. 이익 수익률과 ROE로 본다.</p>}
+      <ul className={`${p} list-disc pl-4 space-y-1`}>
+        <li><b>가격 비교:</b> 이익 수익률·잉여현금흐름 수익률이 높을수록 같은 1달러로 더 많이 산다. 미국 10년 국채 수익률과 견줘 보면 감이 온다.</li>
+        <li><b>현금 전환율</b>이 100% 근처면 이익이 거의 그대로 현금으로 남는다. 계속 낮으면 이익의 상당 부분이 설비·재고에 다시 묶이는 사업이다.</li>
+        <li><b>ROIC가 높을수록</b> 다시 투자한 돈이 빨리 불어난다. 장기 이익 성장률 ≈ ROIC × 재투자 비율. 보통 15~20% 이상이면 좋은 사업으로 본다.</li>
+        <li><b>ROE는 빚·자사주에 부풀 수 있다.</b> 자사주를 많이 사 자기자본이 작아지면(심하면 마이너스) ROE가 과장되거나 계산되지 않는다. 그래서 ROIC를 함께 본다.</li>
+        {payout && <li><b>{lastY.y}년 잉여현금의 쓰임:</b> 배당 {Math.round(payout.div * 100)}%, 자사주 매입 {Math.round(payout.buy * 100)}%{payout.div + payout.buy > 1.05 ? ' (100%가 넘는 부분은 쌓아둔 현금·빚으로 충당)' : ''}.</li>}
+      </ul>
+
+      <div className="overflow-x-auto">
+        <table className="text-xs w-full">
+          <thead>
+            <tr className="text-gray-500 dark:text-gray-400">
+              <th className="text-left py-1 pr-3 font-medium">연도</th>
+              <th className="text-right py-1 px-2 font-medium whitespace-nowrap">순이익</th>
+              <th className="text-right py-1 px-2 font-medium whitespace-nowrap">잉여현금</th>
+              <th className="text-right py-1 px-2 font-medium whitespace-nowrap">전환율</th>
+              <th className="text-right py-1 px-2 font-medium">ROE</th>
+              <th className="text-right py-1 px-2 font-medium">ROIC</th>
+              <th className="text-right py-1 pl-2 font-medium whitespace-nowrap">잉여현금 수익률</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-800 tabular-nums">
+            {rows.map(r => (
+              <tr key={r.y}>
+                <td className="py-1 pr-3 text-gray-700 dark:text-gray-200">{r.y}</td>
+                <td className={`py-1 px-2 text-right ${(r.ni ?? 0) < 0 ? 'text-red-500' : ''}`}>{usd(r.ni)}</td>
+                <td className={`py-1 px-2 text-right ${(r.fcf ?? 0) < 0 ? 'text-red-500' : ''}`}>{usd(r.fcf)}</td>
+                <td className="py-1 px-2 text-right">{r.conv != null ? `${Math.round(r.conv * 100)}%` : '—'}</td>
+                <td className="py-1 px-2 text-right">{pc(r.roe)}</td>
+                <td className={`py-1 px-2 text-right ${roicTone(r.roic)}`}>{pc(r.roic)}</td>
+                <td className="py-1 pl-2 text-right">{pc(r.fcfYield)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p className="text-[11px] text-gray-400 dark:text-gray-500">
+        SEC 공시(10-K·10-Q) 기준. 잉여현금흐름 = 영업활동 현금흐름 − 유형자산 취득. 최근 1년 = 최근 연간 + 올해 누적 − 작년 같은 기간{t ? (t.annualOnly ? '(분기 자료가 맞지 않아 최근 연간 값)' : ` (${t.asOf}까지)`) : ''}.
+        ROE = 순이익 ÷ 평균 자기자본. ROIC = 영업이익(없으면 세전이익 + 이자비용) × (1 − 실효 법인세율) ÷ 평균(자기자본 + 차입금 − 현금·단기 투자자산). 자기자본이 마이너스인 회사, 은행·보험사의 ROIC는 비워 둔다.
+        연도별 잉여현금 수익률은 주당 잉여현금 ÷ 그해 12월 말 주가.
+      </p>
+    </div>
+  )
 }
 
 function StockValueClock({ f, stockKey, rolling }: { f: ClockFund; stockKey: string; rolling?: StockData }) {
@@ -3084,6 +3221,7 @@ function StockValueClock({ f, stockKey, rolling }: { f: ClockFund; stockKey: str
   if (gLong && gLong.yrs > 21) marks.push({ k: `장기 ${gLong.yrs}년 연평균`, short: `${gLong.yrs}년`, v: gLong.g, c: TICK_C.y20 })
 
   return (
+    <>
     <div className={box}>
       <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">이익 시계 — 적정가 선 vs 주가</h4>
       <GrowthBar g={g} setG={setG} marks={marks}
@@ -3091,9 +3229,12 @@ function StockValueClock({ f, stockKey, rolling }: { f: ClockFund; stockKey: str
       <ValueClockCore
         cur="$" anchors={anchors} monthly={monthly} last={f.lastPrice} g={g}
         sharesOut={f.shares?.count ?? null} divYield={m.divYield ?? 0} storageKey={`clock-shares-${stockKey}`}
+        fcfPs={m.fcfPs ?? null}
         notes={`EPS는 SEC 공시(10-K) 회계연도 값을 마감일 기준으로 이은 근사치이고(2008년 무렵 이전은 10-K 원문의 5년 요약 표에서 읽고 겹치는 해로 맞춘 값), ${f.ttmAsOf ?? '최근'} 이후는 정한 성장률로 연장했다. 주가는 배당을 반영하지 않은 월말 종가(분할 반영). 일회성 손익이 큰 해는 선이 출렁인다. 회사 전체 숫자는 공시 유통 주식 수${f.shares ? `(${f.shares.asOf})` : ''} × 최근 1년 EPS로 계산한 근사치.`}
       />
     </div>
+    {f.cash && <CashReturnPanel cash={f.cash} m={m} />}
+    </>
   )
 }
 
