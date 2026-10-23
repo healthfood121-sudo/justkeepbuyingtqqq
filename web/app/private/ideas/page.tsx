@@ -10,6 +10,7 @@ import {
 
 type Row = Metrics & { q?: Quality; group: GroupKey | null; score: number; great: boolean }
 type SortKey = 'score' | 'pe' | 'peVsMed' | 'epsCagr10' | 'epsVsPeak' | 'fromHigh3y' | 'roll10Median' | 'expRet10' | 'name'
+  | 'earnYield' | 'fcfYield' | 'roe' | 'roic'
 
 export default function IdeasPage() {
   const [base, setBase] = useState<Array<Metrics & { q?: Quality }> | null>(null)
@@ -258,6 +259,10 @@ export default function IdeasPage() {
                     <SortTh k="fromHigh3y">3년 고점 대비</SortTh>
                     <SortTh k="roll10Median">과거 10년 보유(중간)</SortTh>
                     <SortTh k="expRet10">단순 기대(연)</SortTh>
+                    <SortTh k="earnYield">이익 수익률</SortTh>
+                    <SortTh k="fcfYield">잉여현금 수익률</SortTh>
+                    <SortTh k="roe">ROE</SortTh>
+                    <SortTh k="roic">ROIC</SortTh>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -281,6 +286,10 @@ export default function IdeasPage() {
                       <td className={`${td} text-right`}>{fmtSgn(r.fromHigh3y, 0)}</td>
                       <td className={`${td} text-right`}>{fmt(r.roll10Median, 1, '%')}</td>
                       <td className={`${td} text-right font-semibold`}>{fmtSgn(r.expRet10)}</td>
+                      <td className={`${td} text-right`}>{fmt(r.earnYield ?? null, 1, '%')}</td>
+                      <td className={`${td} text-right ${r.fcfYield != null && r.fcfYield < 0 ? 'text-red-500' : ''}`}>{fmt(r.fcfYield ?? null, 1, '%')}</td>
+                      <td className={`${td} text-right`}>{fmt(r.roe ?? null, 0, '%')}</td>
+                      <td className={`${td} text-right ${r.roic == null ? '' : r.roic >= 20 ? 'text-emerald-600 dark:text-emerald-400' : r.roic < 8 ? 'text-red-500' : ''}`}>{fmt(r.roic ?? null, 0, '%')}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -291,6 +300,9 @@ export default function IdeasPage() {
             <p>사업성 = 경쟁우위·가격결정력·수익성·성장성·지속가능성 점수 합(25점 만점, Claude 정성 평가). 행에 마우스를 올리면 사업·강점·위험이 보인다.</p>
             <p>PER/10년 중간 = 현재 PER ÷ 최근 10년 연말 PER의 중간값. 이익/고점 = 최근 1년 EPS ÷ 최근 10년 연간 EPS 최고치.</p>
             <p>단순 기대(연) = EPS가 최근 5년·10년 성장률 중 낮은 값(최대 15%)으로 늘고, PER이 10년 중간값(최대 35배)으로 돌아가며, 배당이 유지된다는 가정의 10년 연평균. 일회성 손익·적자 이력이 있는 종목은 왜곡될 수 있다.</p>
+            <p>이익 수익률 = 최근 1년 EPS ÷ 주가(PER의 역수, 내가 낸 1달러가 버는 이익). 잉여현금 수익률 = 최근 1년 주당 잉여현금흐름(영업현금 − 설비투자) ÷ 주가.
+              ROE = 순이익 ÷ 자기자본, ROIC = 세후 영업이익 ÷ (자기자본 + 차입금 − 현금) — 회사가 사업에 묶어둔 1달러가 버는 이익. 은행·증권·보험은 잉여현금 수익률·ROIC를 비워 둔다.
+              자기자본이 마이너스이거나 아주 작은 회사는 ROE가 비어 있다.</p>
             <p>EPS: SEC 공시(10-K, 희석 EPS, 분할 반영) · 주가: Yahoo Finance. 에르메스는 SEC 공시가 없어 위대한 기업 탭의 분석값을 직접 넣었다(3년 고점 대비는 연말 주가 기준 근사치). ETF는 표에서 빠진다.</p>
           </div>
         </section>

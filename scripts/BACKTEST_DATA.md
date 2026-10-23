@@ -1017,3 +1017,14 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 - `scripts/rms_patch_eps.py`로 RMS_rolling.json 갱신, `RMS_EPS_HIST`·`_RMS_EUR_EPS` 동시 수정.
 - 추가(같은 날): 2019·2021 연차보고서로 2019 14.66 / 2020 13.27 / 2021 23.37 확인. 2020은 13.21→13.27 정정(2020 EPS 감소 −9.9%→−9.5%). page.tsx `HERMES_EPS`(EPS 증가율 분해)의 2018도 13.43→13.48.
 - 1990년대 회사 발표 EPS: AMF(BDIF) 공시 검색은 2006년 이후 문서만 있고, bnains 아카이브도 2006년 이후라 찾지 못함. 1993~2000은 순이익 환산 유지.
+
+#### 전 종목 잉여현금흐름·이익 수익률·ROE·ROIC (2026-10-23)
+| 파일 | 스크립트 | 내용 | 사용처 |
+|---|---|---|---|
+| `web/public/data/fundamentals/{KEY}.json`의 `cash` + `metrics`(earnYield·fcfPs·fcfYield·roe·roic·roe5·roic5·conv5), `_summary.json` 같은 지표 | `scripts/export_cashflow.py` (Actions '전 종목 현금흐름·자본 수익률') | SEC companyfacts: 연도별 영업현금흐름·설비투자·잉여현금흐름·순이익·배당·자사주·자기자본·차입금·현금, ROE·ROIC·현금 전환율·주당 잉여현금·연말 잉여현금 수익률, 최근 1년(10-K + 10-Q 누적) | `/private` 이익 시계 '내 몫 잉여현금', '1달러당 얼마를 버나' 섹션 |
+- 금액 단위 백만 달러. 금융사(SEC 업종 코드 6000~6399, 건강보험 6324 제외)는 잉여현금흐름·ROIC 없음(`bank: true`), 버크셔는 잉여현금흐름 유지.
+- 주당 잉여현금(최근 1년) = 잉여현금흐름 ÷ 공시 유통 주식 수. 연도별은 EPS × 잉여현금 ÷ 순이익(|EPS| ≥ 0.1).
+- ROE 300% 초과(자기자본이 너무 작음), 투하자본이 (자기자본+차입금)의 10% 미만이거나 ROIC 300% 초과면 비움. 현금 전환율 ±5배 초과는 비움.
+- 영업이익 항목이 없으면 세전이익 + 이자비용으로 근사(나이키 등). 세율은 실효세율(0~40%), 없으면 21%(2018~)·35%.
+- `export_fundamentals.py`는 다시 돌려도 `cash`·`epsOld`와 위 지표를 지우지 않음.
+- 에르메스는 SEC 대상이 아니라 page.tsx `RMS_FIN`(회사 발표 2014~2025: 순이익·영업이익·자기자본·재작성 순현금·조정 잉여현금흐름 2017~)으로 계산.
