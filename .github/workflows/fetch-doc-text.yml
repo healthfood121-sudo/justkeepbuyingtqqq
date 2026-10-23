@@ -28,7 +28,11 @@ jobs:
             echo "=================== [$i] $u"
             case "$u" in *.pdf|*.PDF) ;; *)
               # PDF가 아니면 페이지의 링크 목록만 출력 (아카이브 목록 확인용)
-              curl -sSL -A "Mozilla/5.0" --max-time 120 "$u" | grep -o -i -E 'href="[^"]+"' | grep -i -E "${{ inputs.pattern }}" | head -300
+              curl -sSL -A "Mozilla/5.0" --max-time 120 -o page$i.txt "$u" || { echo "받기 실패"; continue; }
+              wc -c page$i.txt
+              grep -o -i -E 'href="[^"]+"' page$i.txt | grep -i -E "${{ inputs.pattern }}" | head -300
+              grep -o -i -E ".{0,200}(${{ inputs.pattern }}).{0,200}" page$i.txt | head -100
+              head -c 1500 page$i.txt; echo
               continue;;
             esac
             curl -sSL -A "Mozilla/5.0" --max-time 120 -o doc$i.pdf "$u" || { echo "받기 실패"; continue; }
