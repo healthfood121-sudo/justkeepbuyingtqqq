@@ -26,6 +26,11 @@ jobs:
           for u in ${{ inputs.urls }}; do
             i=$((i+1))
             echo "=================== [$i] $u"
+            case "$u" in *.pdf|*.PDF) ;; *)
+              # PDF가 아니면 페이지의 링크 목록만 출력 (아카이브 목록 확인용)
+              curl -sSL -A "Mozilla/5.0" --max-time 120 "$u" | grep -o -i -E 'href="[^"]+"' | grep -i -E "${{ inputs.pattern }}" | head -300
+              continue;;
+            esac
             curl -sSL -A "Mozilla/5.0" --max-time 120 -o doc$i.pdf "$u" || { echo "받기 실패"; continue; }
             pdftotext -layout doc$i.pdf doc$i.txt || { echo "변환 실패"; continue; }
             wc -l doc$i.txt
