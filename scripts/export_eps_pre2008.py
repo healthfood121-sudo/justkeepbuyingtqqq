@@ -164,8 +164,13 @@ def find_eps(rows, max_gap=80):
     for cells in rows:
         since += 1
         recent = (recent + [cells])[-6:]
-        # 연도는 짧은 칸에서만 ("Five fiscal years ended September 29, 2007" 같은 설명 칸 제외)
-        ys = [int(m) for c in cells if len(c.strip()) <= 14 for m in YEAR_RE.findall(c)]
+        # 연도: 짧은 칸 기준 ("Five fiscal years ended September 29, 2007" 같은 설명 칸 제외),
+        # 안 되면 전체 칸에서 연속 중복만 지운 것 ("September 29, 2007" 처럼 날짜로 된 머리줄)
+        ys_all = [int(m) for c in cells for m in YEAR_RE.findall(c)]
+        ys_short = [int(m) for c in cells if len(c.strip()) <= 14 for m in YEAR_RE.findall(c)]
+        ys_dedup = [y for i, y in enumerate(ys_all) if i == 0 or y != ys_all[i - 1]]
+        ok = lambda v: len(v) >= 3 and len(set(v)) == len(v) and all(abs(a - b) == 1 for a, b in zip(v, v[1:]))
+        ys = ys_short if ok(ys_short) else ys_dedup if ok(ys_dedup) else ys_all
         seq = len(set(ys)) == len(ys) and all(abs(a - b) == 1 for a, b in zip(ys, ys[1:])) \
             and not any(parse_num(c) is not None for c in cells)
         # 10년 표처럼 연도 줄이 두 줄로 나뉜 경우 이어 붙임
