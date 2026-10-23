@@ -2664,6 +2664,9 @@ function ValueClockCore({ cur, anchors, monthly, last, g, sharesOut, divYield, s
   const peHi = enough ? quantile(peHist, 0.75) : null
   const yrsUsed = Math.round(peHist.length / 12)
   const fairPe = pePick ?? Math.round(peMid ?? 20)
+  const epsNow = epsAt(tNow)
+  const price = last.close
+  const peNow = epsNow && epsNow > 0 ? price / epsNow : null
   // 적정 PER 바의 눈금: 20년 최소·중간값·평균·최대, 10년·5년 평균, 지금
   const peWin = (n: number) => hist.filter(r => r.t >= tLastEps - n && r.t <= tLastEps && r.pe != null && r.pe > 0 && r.pe < 200).map(r => r.pe as number)
   const avg = (a: number[]) => a.reduce((x, y) => x + y, 0) / a.length
@@ -2684,9 +2687,6 @@ function ValueClockCore({ cur, anchors, monthly, last, g, sharesOut, divYield, s
   // 겹치지 않게 값 순서대로 3줄에 번갈아 배치
   const marksSorted = [...peMarks].sort((a, b) => a.v - b.v).map((m, i) => ({ ...m, row: i % 3 }))
 
-  const epsNow = epsAt(tNow)
-  const price = last.close
-  const peNow = epsNow && epsNow > 0 ? price / epsNow : null
   const fairNow = epsNow && epsNow > 0 ? epsNow * fairPe : null
   const gap = fairNow ? (price / fairNow - 1) * 100 : null
   const zone = peNow == null || peLo == null || peHi == null ? null
