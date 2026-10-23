@@ -2673,16 +2673,22 @@ function ClockLive({ cur, epsAt, fairPe, shares, sharesOut, extraLive, fcfPs, dp
 }
 
 function ValueClockCore({ cur, anchors, monthly, last, g, sharesOut, divYield, storageKey, extraLive, notes, peExclude, fcfPs, growthBar }: ClockProps) {
-  const [shares, setShares] = useState(1)
+  // 입력칸은 빈 값으로 시작(지우고 새로 입력 가능). 비어 있으면 1주로 계산
+  const [sharesTxt, setSharesTxt] = useState('')
+  const shares = Number(sharesTxt) > 0 ? Number(sharesTxt) : 1
   const [pePick, setPePick] = useState<number | null>(null)
   const chartRef = useRef<ChartJS | null>(null)
   const [pluginLoaded, setPluginLoaded] = useState(false)
   const [tNow] = useState(() => decYear(Date.now()))
   useEffect(() => {
     import('chartjs-plugin-zoom').then(({ default: z }) => { ChartJS.register(z); setPluginLoaded(true) })
-    try { const v = Number(localStorage.getItem(storageKey)); if (v > 0) setShares(v) } catch {}
+    try { const v = Number(localStorage.getItem(storageKey)); if (v > 0) setSharesTxt(String(v)) } catch {}
   }, [storageKey])
-  const saveShares = (v: number) => { setShares(v); try { localStorage.setItem(storageKey, String(v)) } catch {} }
+  const saveShares = (txt: string) => {
+    const t = txt.replace(/[^0-9.]/g, '')
+    setSharesTxt(t)
+    try { if (Number(t) > 0) localStorage.setItem(storageKey, t); else localStorage.removeItem(storageKey) } catch {}
+  }
 
   const epsAt = makeEpsAt(anchors, g)
   const tStart = Math.max(anchors[0]?.[0] ?? 0, monthly[0]?.t ?? 0, tNow - 35)
@@ -2871,9 +2877,9 @@ function ValueClockCore({ cur, anchors, monthly, last, g, sharesOut, divYield, s
           fcfPs={fcfPs} dps={divYield > 0 ? price * divYield / 100 : null} />
         <label className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300">
           보유 주식 수
-          <input type="number" min={1} value={shares} onChange={e => saveShares(Math.max(1, Number(e.target.value) || 1))}
+          <input type="text" inputMode="decimal" placeholder="1" value={sharesTxt} onChange={e => saveShares(e.target.value)}
             className="w-20 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-2 py-0.5 tabular-nums" />
-          <span className="text-gray-400">주 (이 기기에만 저장)</span>
+          <span className="text-gray-400">주 (비우면 1주 기준 · 이 기기에만 저장)</span>
         </label>
       </div>
 
