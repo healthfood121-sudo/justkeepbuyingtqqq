@@ -1,0 +1,29 @@
+name: 문서 텍스트 추출 (조사용)
+
+on:
+  workflow_dispatch:  # 수동 실행. 결과는 로그로만 확인 (커밋 없음)
+    inputs:
+      urls:
+        description: 'PDF 주소 목록 (공백 구분)'
+        required: true
+      pattern:
+        description: '찾을 단어 (grep -E, 대소문자 무시)'
+        required: true
+        default: 'résultat net|bénéfice net par action|par action'
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - run: sudo apt-get install -y poppler-utils > /dev/null
+      - name: 받아서 찾기
+        run: |
+          i=0
+          for u in ${{ inputs.urls }}; do
+            i=$((i+1))
+            echo "=================== [$i] $u"
+            curl -sSL -A "Mozilla/5.0" --max-time 120 -o doc$i.pdf "$u" || { echo "받기 실패"; continue; }
+            pdftotext -layout doc$i.pdf doc$i.txt || { echo "변환 실패"; continue; }
+            wc -l doc$i.txt
+            grep -n -i -E "${{ inputs.pattern }}" doc$i.txt | head -120
+          done
