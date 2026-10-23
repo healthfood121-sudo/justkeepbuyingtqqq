@@ -2516,6 +2516,16 @@ function HermesForecast({ f, setF, peNow, peFair, past10 }: {
           </div>
         </div>
 
+        <div className="rounded bg-gray-50 dark:bg-gray-800/50 p-3 space-y-1.5">
+          <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">왜 과거(EPS 연 15~18%)보다 낮게 잡았나</p>
+          <ul className={`${p} list-disc pl-4 space-y-1`}>
+            <li><b>과거 EPS 성장 = 매출 성장 + 이익률 상승.</b> 2009~2025년 환율 뺀 매출은 연 13.5% 늘었고, 영업이익률이 24% → 41%로 오르며 해마다 약 3%p를 더 얹었다.</li>
+            <li><b>이익률은 더 오르기 어렵다.</b> 41%는 명품 업계 최고 수준이라 앞으로는 이익률이 거의 그대로라고 본다. 그러면 EPS는 매출만큼 는다.</li>
+            <li><b>최근 5년 연 24%는 코로나 반등이다.</b> 2020년 이익이 줄어든 바닥에서 출발한 숫자라 반복되기 어렵다.</li>
+            <li><b>그래서 낙관 13.5% = 과거 16년 매출 성장(연 13.5%)이 그대로 다시 오는 경우.</b> 지금 판매량이 거의 멈춘(연 0~1%) 상황에서는 이것도 낙관이다. 15% 이상은 매출이 과거보다 빨라지거나 이익률이 41%보다 더 올라야 나온다.</li>
+          </ul>
+        </div>
+
         <div className="grid sm:grid-cols-2 gap-x-6 gap-y-3">
           {slider('① 판매량', f.q, set('q'), -3, 10, '기본 = 직전 5년 자산가 증가율 4.0% · 장기(2009~2025) 6.0% · 2026년 상반기 실제 0~1%')}
           {slider('② 가격 인상', f.pr, set('pr'), 0, 10, '회사 발표값. 2023~2025년 6~7%, 2026년 5~6%')}
@@ -3097,13 +3107,12 @@ function HermesValueClock({ g: gFactors, f }: { g: number; f: Factors }) {
         <ValueClockCore
           growthBar={<GrowthBar g={g} setG={setGUser}
         marks={growthMarks(RMS_ANCHORS, [
-          // 시나리오 버튼 값 그대로면 겹치므로 직접 조절했을 때만 따로 표시
-          ...(HERMES_SCENARIOS.some(sc => Math.abs(epsGrowthOf(sc.f) - gFactors) < 0.01) ? [] : [{ k: '4번 직접 조절 값', short: '4번', v: gFactors, c: TICK_C.pick }]),
-          ...HERMES_SCENARIOS.map(sc => ({ k: `4번 ${sc.label}`, short: sc.label === '지금 상태 지속' ? '지속' : sc.label, v: epsGrowthOf(sc.f), c: 'bg-teal-500 text-teal-600 dark:text-teal-400' })),
+          ...HERMES_SCENARIOS.map(sc => ({ k: `앞으로 ${sc.label}`, short: sc.label === '지금 상태 지속' ? '지속' : sc.label, v: epsGrowthOf(sc.f), c: 'bg-teal-500 text-teal-600 dark:text-teal-400' })),
         ])}
-        note={<>기본값은 4번에서 판매량·가격·이익률·기타로 계산한 값({gFactors.toFixed(1)}%). 바를 움직이면 4번과 별개로 전체 성장률을 바로 정한다.
-          {gUser != null && <> <button type="button" onClick={() => setGUser(null)} className="underline text-blue-600 dark:text-blue-400">4번 값으로 되돌리기</button></>}
-          {' '}과거 N년 = N년 전부터 지금까지 연평균, 5년 구간 = 지난 20년을 5년씩 끊어 본 성장률의 범위.</>} />}
+        note={<>청록색 눈금 = 앞으로 예상(아래 4번의 세 경우), 나머지 눈금 = 과거 실제 성장률. 시작 값은 4번에서 고른 경우({HERMES_SCENARIOS.find(sc => (Object.keys(sc.f) as (keyof Factors)[]).every(k => sc.f[k] === f[k]))?.label ?? '직접 조절'} {gFactors.toFixed(1)}%).
+          {gUser != null && <> <button type="button" onClick={() => setGUser(null)} className="underline text-blue-600 dark:text-blue-400">처음 값으로 되돌리기</button></>}
+          {' '}과거 N년 = N년 전부터 지금까지 연평균, 5년 구간 = 지난 20년을 5년씩 끊어 본 성장률의 범위.
+          {' '}<b>앞으로 예상이 과거보다 낮은 이유</b>는 4번 &lsquo;왜 과거보다 낮게 잡았나&rsquo;에 있다.</>} />}
           cur="€" anchors={RMS_ANCHORS} monthly={monthly} last={px.last} g={g}
           sharesOut={RMS_SHARES} divYield={1.35} storageKey="rms-shares" extraLive={extraLive}
           fcfPs={rmsCash(px.last.close, px.rows).fcfPs}
