@@ -5,6 +5,9 @@ generate_all_sp500.py  —  SP500 상위 종목 롤링 CSV + JSON 일괄 생성
 - 오류 발생 종목은 스킵 후 계속 진행
 """
 import sys, os, json, traceback, argparse, time
+import warnings
+# yfinance 내부에서 나는 pandas 경고(inplace 사용 중단 예정) 숨김 — 로그가 수천 줄로 불어나 실제 오류가 묻힘
+warnings.filterwarnings("ignore", message=".*inplace keyword.*")
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
