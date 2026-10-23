@@ -2403,7 +2403,7 @@ function HermesEpsQP() {
 }
 
 // ── 에르메스: 고객 수(Q) × 가격(P)으로 본 성장 추정 ─────────
-// ── 7·8번: 이익 성장 예측(4가지 요인) + 이익 시계(적정가 선 vs 주가) ─────────
+// ── 7·2번: 이익 성장 예측(4가지 요인) + 이익 시계(적정가 선 vs 주가) ─────────
 // EPS 성장 = (1+판매량)(1+가격)(1+이익률 변화)(1+기타) − 1
 type Factors = { q: number; pr: number; mg: number; ot: number }
 const epsGrowthOf = (f: Factors) =>
@@ -2415,8 +2415,7 @@ const HERMES_SCENARIOS: Array<{ label: string; f: Factors; desc: string }> = [
   { label: '지금 상태 지속', f: { q: 1, pr: 5.5, mg: 0, ot: 0 }, desc: '2026년 상반기처럼 판매량이 거의 멈추고 가격만 오름' },
 ]
 
-function HermesForecast() {
-  const [f, setF] = useState<Factors>(HERMES_SCENARIOS[0].f)
+function HermesForecast({ f, setF, peNow }: { f: Factors; setF: (f: Factors) => void; peNow: number }) {
   const g = epsGrowthOf(f)
   const div = 1.35
   const ret = ((1 + g / 100) * (1 + div / 100) - 1) * 100 // PER 그대로일 때
@@ -2424,7 +2423,7 @@ function HermesForecast() {
   const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-3'
   const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
   const td = 'py-1.5 px-2 tabular-nums text-gray-700 dark:text-gray-200 whitespace-nowrap'
-  const set = (k: keyof Factors) => (v: number) => setF(prev => ({ ...prev, [k]: v }))
+  const set = (k: keyof Factors) => (v: number) => setF({ ...f, [k]: v })
   const slider = (label: string, v: number, onSet: (n: number) => void, min: number, max: number, hint: string) => (
     <label className="block space-y-1">
       <div className="flex justify-between text-xs">
@@ -2445,7 +2444,7 @@ function HermesForecast() {
   return (
     <>
       <div className={box}>
-        <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">7. 이익 성장 예측 — 4가지 요인</h4>
+        <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">4. 앞으로 이익 성장 — 4가지 요인</h4>
         <p className={p}>
           <b>EPS 성장 = ① 판매량 × ② 가격 × ③ 이익률 × ④ 기타.</b> 회계상 이 넷 말고는 없다.
           어떤 사건(중국 경기, 관세, 코로나)이든 결국 이 넷 중 하나를 거쳐 이익에 들어온다.
@@ -2515,7 +2514,7 @@ function HermesForecast() {
           <StatCard label="PER 그대로일 때 10년 수익률" value={`연 ${ret.toFixed(1)}%`} />
         </div>
         <p className="text-[11px] text-gray-400 dark:text-gray-500">
-          10년 수익률 = EPS 성장 + 배당 1.35% (지금 PER 31.5배가 10년 뒤에도 같다고 가정). PER이 오르내리는 효과는 8번 그래프에서 본다.
+          10년 수익률 = EPS 성장 + 배당 1.35% (지금 PER {peNow.toFixed(1)}배가 10년 뒤에도 같다고 가정). PER이 오르내리는 효과는 2번 이익 시계에서 본다.
         </p>
 
         <details className="rounded bg-gray-50 dark:bg-gray-800/50 p-3">
@@ -2552,8 +2551,6 @@ function HermesForecast() {
           </div>
         </details>
       </div>
-
-      <HermesValueClock g={g} f={f} />
     </>
   )
 }
@@ -2664,9 +2661,12 @@ function ValueClockCore({ cur, anchors, monthly, last, g, sharesOut, divYield, s
   const peHi = enough ? quantile(peHist, 0.75) : null
   const yrsUsed = Math.round(peHist.length / 12)
   const fairPe = pePick ?? Math.round(peMid ?? 20)
-  const epsNow = epsAt(tNow)
+  const epsNow = epsAt(tNow) // 적정가용: 마지막 실적 이후는 성장률로 늘린 값
   const price = last.close
-  const peNow = epsNow && epsNow > 0 ? price / epsNow : null
+  // 지금 PER은 예측이 아니라 실제 최근 1년 EPS(마지막 발표 실적)로 계산
+  const lastA = anchors[anchors.length - 1]
+  const epsTtm = lastA && lastA[0] <= tNow ? lastA[1] : epsNow
+  const peNow = epsTtm && epsTtm > 0 ? price / epsTtm : null
   // 적정 PER 바의 눈금: 20년 최소·중간값·평균·최대, 10년·5년 평균, 지금
   const peWin = (n: number) => hist.filter(r => r.t >= tLastEps - n && r.t <= tLastEps && r.pe != null && r.pe > 0 && r.pe < 200).map(r => r.pe as number)
   const avg = (a: number[]) => a.reduce((x, y) => x + y, 0) / a.length
@@ -2933,7 +2933,7 @@ function GrowthBar({ g, setG, marks, note }: { g: number; setG: (v: number) => v
   )
 }
 
-// ── 에르메스 8번 ─────────────────────────────────────────────
+// ── 에르메스 2번 ─────────────────────────────────────────────
 // 에르메스 연말 EPS (유로, 회사 발표 기준 2009~2025 / 2001~2008은 대조 못한 값)
 const RMS_EPS_HIST: Record<number, number> = {
   2001: 1.81, 2002: 2.30, 2003: 1.88, 2004: 1.95, 2005: 2.16, 2006: 2.77, 2007: 2.70, 2008: 2.64,
@@ -2989,7 +2989,7 @@ function HermesValueClock({ g: gFactors, f }: { g: number; f: Factors }) {
         <p className={p}>
           <b>자산가 시계:</b> 금융자산 100만 달러 이상 자산가는 지금 약 {(hnwiNow / 1e6).toFixed(1)}백만 명. 직전 5년 속도(연 4%, 물가 포함)로 늘면 <b>하루 약 {Math.round(hnwiPerDay).toLocaleString()}명</b>,
           {' '}약 {(86400 / hnwiPerDay).toFixed(0)}초에 1명이다. 오늘 0시 이후 <b>{Math.floor(hnwiToday).toLocaleString()}명</b> 늘었다.
-          7번 기본값은 이 증가율을 ① 판매량으로 쓴다.
+          4번 기본값은 이 증가율을 ① 판매량으로 쓴다.
         </p>
       </div>
     )
@@ -2997,17 +2997,17 @@ function HermesValueClock({ g: gFactors, f }: { g: number; f: Factors }) {
 
   return (
     <div className={box}>
-      <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">8. 이익 시계 — 적정가 선 vs 주가</h4>
+      <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">2. 이익 시계 — 적정가 선 vs 주가</h4>
       <GrowthBar g={g} setG={setGUser}
-        marks={growthMarks(RMS_ANCHORS, [{ k: '7번 요인 계산', short: '7번', v: gFactors, c: TICK_C.pick }])}
-        note={<>기본값은 7번에서 판매량·가격·이익률·기타로 계산한 값({gFactors.toFixed(1)}%). 바를 움직이면 7번과 별개로 전체 성장률을 바로 정한다.
-          {gUser != null && <> <button type="button" onClick={() => setGUser(null)} className="underline text-blue-600 dark:text-blue-400">7번 값으로 되돌리기</button></>}
+        marks={growthMarks(RMS_ANCHORS, [{ k: '4번 요인 계산', short: '4번', v: gFactors, c: TICK_C.pick }])}
+        note={<>기본값은 4번에서 판매량·가격·이익률·기타로 계산한 값({gFactors.toFixed(1)}%). 바를 움직이면 4번과 별개로 전체 성장률을 바로 정한다.
+          {gUser != null && <> <button type="button" onClick={() => setGUser(null)} className="underline text-blue-600 dark:text-blue-400">4번 값으로 되돌리기</button></>}
           {' '}과거 N년 = N년 전부터 지금까지 연평균, 5년 구간 = 지난 20년을 5년씩 끊어 본 성장률의 범위.</>} />
       {px ? (
         <ValueClockCore
           cur="€" anchors={RMS_ANCHORS} monthly={monthly} last={px.last} g={g}
           sharesOut={RMS_SHARES} divYield={1.35} storageKey="rms-shares" extraLive={extraLive}
-          notes="주가는 배당을 반영하지 않은 실제 월말 종가(분할 반영). 1년 EPS는 연말 실적 사이를 매끄럽게 이은 근사치이고, 2026년 6월 이후는 7번의 성장률로 연장했다. 초 단위 숫자는 연간 이익을 시간으로 나눈 것이며 실제 회계 처리와 다르다. 유통 주식 수 약 1억 450만 주(근사)."
+          notes="주가는 배당을 반영하지 않은 실제 월말 종가(분할 반영). 1년 EPS는 연말 실적 사이를 매끄럽게 이은 근사치이고, 2026년 6월 이후는 4번의 성장률로 연장했다. 초 단위 숫자는 연간 이익을 시간으로 나눈 것이며 실제 회계 처리와 다르다. 유통 주식 수 약 1억 450만 주(근사)."
         />
       ) : <p className="text-xs text-gray-400">월별 주가 데이터를 불러오는 중…</p>}
     </div>
@@ -3095,7 +3095,21 @@ function StockValueClockByKey({ stockKey, rolling }: { stockKey: string; rolling
   return f ? <StockValueClock f={f} stockKey={stockKey} rolling={rolling} /> : null
 }
 
+// 에르메스 최근 1년 EPS (회사 발표: 2025년 연간 43.15 − 2025년 상반기 21.43 + 2026년 상반기 21.36)
+const RMS_TTM_EPS = 43.08
+
 function RmsInsight({ data }: { data: StockData }) {
+  // 숫자는 한 곳에서: 주가는 월말 주가 파일의 최신 종가(자동 갱신), EPS는 회사 발표 최근 1년 값
+  const [px, setPx] = useState<MonthlyPrice | null>(null)
+  useEffect(() => {
+    fetch('/data/rolling/RMS_monthly_price.json').then(r => (r.ok ? r.json() : null)).then(setPx).catch(() => {})
+  }, [])
+  const [f, setF] = useState<Factors>(HERMES_SCENARIOS[0].f)
+  const price = px?.last.close ?? (data as any).current?.price ?? 1356.5
+  const priceDate = px?.last.date ?? '2026-10-21'
+  const peNow = price / RMS_TTM_EPS
+  const gNow = epsGrowthOf(f)
+  const ret10 = ((1 + gNow / 100) * 1.0135 - 1) * 100
   const decomp = ((data as any).epsDecomp ?? []) as Decomp[]
   // 연말 PER 흐름: 매수 연도 PER + 매도 연도 PER을 합쳐 연도별로 정리
   const yearPE = new Map<number, number>()
@@ -3111,11 +3125,12 @@ function RmsInsight({ data }: { data: StockData }) {
   const bucketDefs = [
     { label: '20배 미만', lo: 0, hi: 20 },
     { label: '20~27배', lo: 20, hi: 27 },
-    { label: '27~32배 (지금 구간)', lo: 27, hi: 32, hl: true },
+    { label: '27~32배', lo: 27, hi: 32 },
     { label: '32배 이상', lo: 32, hi: 999 },
   ]
   const avg = (a: number[]) => a.reduce((x, y) => x + y, 0) / a.length
-  const peBuckets = bucketDefs.map(b => {
+  const peBuckets = bucketDefs.map(b0 => {
+    const b = { ...b0, hl: peNow >= b0.lo && peNow < b0.hi, label: peNow >= b0.lo && peNow < b0.hi ? `${b0.label} (지금 구간)` : b0.label }
     const rows = decomp.filter(d => d.peBuy >= b.lo && d.peBuy < b.hi)
     const tot = rows.map(d => d.totalCagr)
     const pe = rows.map(d => d.peCagr)
@@ -3129,44 +3144,43 @@ function RmsInsight({ data }: { data: StockData }) {
       peRange: `${sgn(Math.min(...pe))}~${sgn(Math.max(...pe))}`,
     }
   }).filter(b => b.n > 0)
-  const scenarioPEs = ['22배', '31배 (유지)', '35배', '45배']
-  const scenarios = [
-    { g: '연 8%', v: ['6%', '10%', '11%', '13%'] },
-    { g: '연 12%', v: ['10%', '14%', '15%', '18%'] },
-    { g: '연 15% (과거 평균)', v: ['12%', '17%', '18%', '21%'], hl: true },
-    { g: '연 18%', v: ['15%', '20%', '21%', '24%'] },
-  ]
 
   return (
     <div className="space-y-4">
       <div>
         <h3 className="text-base font-semibold text-gray-900 dark:text-white">인사이트</h3>
-        <p className="text-xs text-gray-400 dark:text-gray-500">2026년 10월 21일 기준 분석</p>
+        <p className="text-xs text-gray-400 dark:text-gray-500">1 지금 → 2 싼지 비싼지 → 3 과거 → 4 앞으로 이익 → 5 결론 · 숫자는 자동 갱신</p>
       </div>
 
       <div className={box}>
-        <h4 className={h4}>1. 현재 PER 약 31.5배 — 주가 하락은 이익이 아니라 PER 하락 때문</h4>
-        <p className={p}>
-          주가 1,356.5유로 ÷ 최근 1년 주당순이익(EPS) 약 43.1유로 = PER 약 31.5배.
-          (회사 발표 2025년 연간 EPS 43.15 − 2025년 상반기 21.43 + 2026년 상반기 21.36)
-        </p>
+        <h4 className={h4}>1. 지금 한눈에 — 주가 하락은 이익이 아니라 PER 하락 때문</h4>
         <div className="overflow-x-auto">
           <table className="text-xs">
-            <thead><tr><th className={`${th} text-left`}></th><th className={`${th} text-right`}>2024년 말</th><th className={`${th} text-right`}>지금</th><th className={`${th} text-right`}>변화</th></tr></thead>
+            <thead><tr><th className={`${th} text-left`}></th><th className={`${th} text-right`}>2024년 말</th><th className={`${th} text-right`}>지금 ({priceDate})</th><th className={`${th} text-right`}>변화</th></tr></thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-              <tr><td className={td}>주가</td><td className={`${td} text-right`}>약 2,275</td><td className={`${td} text-right`}>1,356.5</td><td className={`${td} text-right text-red-500`}>-40%</td></tr>
-              <tr><td className={td}>EPS</td><td className={`${td} text-right`}>43.93</td><td className={`${td} text-right`}>약 43.1</td><td className={`${td} text-right font-semibold`}>-2%</td></tr>
-              <tr><td className={td}>PER</td><td className={`${td} text-right`}>51.8배</td><td className={`${td} text-right`}>31.5배</td><td className={`${td} text-right text-red-500 font-semibold`}>-39%</td></tr>
+              <tr><td className={td}>주가</td><td className={`${td} text-right`}>약 €2,275</td><td className={`${td} text-right`}>€{price.toLocaleString('ko-KR', { maximumFractionDigits: 1 })}</td><td className={`${td} text-right text-red-500`}>{sgn((price / 2275 - 1) * 100)}%</td></tr>
+              <tr><td className={td}>최근 1년 EPS</td><td className={`${td} text-right`}>€43.93</td><td className={`${td} text-right`}>€{RMS_TTM_EPS}</td><td className={`${td} text-right font-semibold`}>{sgn((RMS_TTM_EPS / 43.93 - 1) * 100)}%</td></tr>
+              <tr><td className={td}>PER</td><td className={`${td} text-right`}>51.8배</td><td className={`${td} text-right font-semibold`}>{peNow.toFixed(1)}배</td><td className={`${td} text-right text-red-500 font-semibold`}>{sgn((peNow / 51.8 - 1) * 100)}%</td></tr>
             </tbody>
           </table>
         </div>
-        <p className={p}>
-          이익은 2024년 43.93유로 → 2025년 43.15유로(-1.8%, 프랑스 대기업 특별 법인세 영향. 제외하면 순이익 +5.5%) → 2026년 상반기도 1년 전과 거의 같다(21.36 vs 21.43유로). 이익이 무너지진 않았지만 성장이 멈춘 상태다.
-        </p>
+        <ul className={`${p} list-disc pl-4 space-y-1`}>
+          <li><b>이익은 멈췄지만 무너지지 않았다.</b> 2024년 €43.93 → 2025년 €43.15(−1.8%, 프랑스 대기업 특별 법인세. 제외하면 순이익 +5.5%) → 2026년 상반기도 1년 전과 거의 같다(€21.36 vs €21.43).</li>
+          <li><b>앞으로 이익:</b> 4번 계산 기준 연 {gNow.toFixed(1)}%(±3%p). PER이 지금 수준이면 10년 연 약 {ret10.toFixed(1)}%(배당 포함).</li>
+          <li><b>지금 가격이 싼지 비싼지</b>는 바로 아래 2번 이익 시계에서 본다.</li>
+        </ul>
+        <p className="text-[11px] text-gray-400 dark:text-gray-500">주가는 자동 갱신(실제 종가), EPS는 회사 발표 최근 1년 값(2025년 연간 43.15 − 2025년 상반기 21.43 + 2026년 상반기 21.36). 해설 문장은 2026년 10월 21일 기준.</p>
+      </div>
+
+      <HermesValueClock g={gNow} f={f} />
+
+      <div>
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white pt-2">3. 과거에는 왜 수익이 컸나</h3>
+        <p className="text-xs text-gray-400 dark:text-gray-500">3-1 매수 시점 PER별 결과 → 3-2 해마다 쪼개 보기 → 3-3 정리</p>
       </div>
 
       <div className={box}>
-        <h4 className={h4}>2. 과거: 매수 시점 PER별 10년 연평균 수익률 (23개 경우)</h4>
+        <h4 className={h4}>3-1. 과거 매수 시점 PER별 10년 연평균 수익률 (23개 경우)</h4>
         <div className="overflow-x-auto">
           <table className="text-xs">
             <thead>
@@ -3216,23 +3230,23 @@ function RmsInsight({ data }: { data: StockData }) {
             </span>
           ))}
           <span className="text-[11px] tabular-nums px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold">
-            2026.10 31.5배
+            지금 {peNow.toFixed(1)}배
           </span>
         </div>
         <p className={p}>
           1993~2007년에는 대체로 14~27배였다(1996·1999·2000년 30배 이상은 예외). 2008~2018년에는 28~35배로 올라섰고,
-          2019~2025년에는 43~63배까지 치솟았다(정점 2020년 63배). 지금은 31.5배로 2013~2016년 수준까지 내려왔다.
+          2019~2025년에는 43~63배까지 치솟았다(정점 2020년 63배). 지금은 {peNow.toFixed(1)}배로 2013~2016년 수준까지 내려왔다.
           2010~2015년에 산 경우들이 높은 수익을 낸 데는 팔 때 PER이 43~63배까지 올라 있었던 영향이 크다.
         </p>
         <p className={p}>
           지금과 비슷한 PER에서 산 경우: 2012년(27.6배) 21.8% · 2009년(28.2배) 23.4% · 2013년(30.6배) 23.2% · 2015년(30.7배) 22.1% ·
           2008년(31.2배) 18.7% · 2014년(31.8배) 24.2% · 1996년(30.6배) 15.4% · 2000년(30.5배) 13.7%.
-          다만 그 시기는 이익률이 24% → 41%로 오르고 PER도 올랐던 때라, 같은 결과를 기대하긴 어렵다(7번 참고).
+          다만 그 시기는 이익률이 24% → 41%로 오르고 PER도 올랐던 때라, 같은 결과를 기대하긴 어렵다(4번 참고).
         </p>
       </div>
 
       <DecompSection
-        title="3. 연도별 수익률 분해 — 막대 하나 = EPS 몫 + 배당 몫 + PER 몫"
+        title="3-2. 연도별 수익률 분해 — 막대 하나 = EPS 몫 + 배당 몫 + PER 몫"
         decomp={buildDecomp(data)}
         divRows={(rmsDiv as any).rows}
         exampleYear={2012}
@@ -3240,40 +3254,29 @@ function RmsInsight({ data }: { data: StockData }) {
       />
 
       <div className={box}>
-        <h4 className={h4}>4. 과거 성과를 만든 두 가지 순풍</h4>
+        <h4 className={h4}>3-3. 정리: 과거 성과를 만든 두 가지 순풍</h4>
         <ul className={`${p} list-disc pl-4 space-y-1`}>
           <li><b>EPS가 10년 동안 매년 11~19% 성장</b>했다(23개 경우 중 최저 11%). 하지만 2023년 이후는 연 1~2% 수준이다(2025년은 프랑스 특별 법인세로 감소).</li>
-          <li><b>팔 때 PER이 거의 항상 올라 있었다.</b> 23개 중 21개가 매수 때보다 높았고(예외: 1996년, 1999년 매수), 2010~2015년 매수는 팔 때 43~63배였다. 이 효과가 대부분 연 +1~7%p를 더해줬다(중간값 약 +4%p). 위 3번 연도별 분해 참고.</li>
+          <li><b>팔 때 PER이 거의 항상 올라 있었다.</b> 23개 중 21개가 매수 때보다 높았고(예외: 1996년, 1999년 매수), 2010~2015년 매수는 팔 때 43~63배였다. 이 효과가 대부분 연 +1~7%p를 더해줬다(중간값 약 +4%p). 위 3-2 참고.</li>
         </ul>
       </div>
 
-      <div className={box}>
-        <h4 className={h4}>5. 지금(PER 31.5배) 사서 10년 보유 시 예상 연평균 수익률</h4>
-        <p className={p}>배당 약 1.35% 포함. 행 = 연 EPS 성장률, 열 = 10년 뒤 PER.</p>
-        <div className="overflow-x-auto">
-          <table className="text-xs">
-            <thead>
-              <tr>
-                <th className={`${th} text-left whitespace-nowrap`}>EPS 성장 ↓ / 10년 뒤 PER →</th>
-                {scenarioPEs.map(pe => <th key={pe} className={`${th} text-right whitespace-nowrap`}>{pe}</th>)}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-              {scenarios.map(s => (
-                <tr key={s.g}>
-                  <td className={`${td} whitespace-nowrap ${s.hl ? 'font-semibold' : ''}`}>{s.g}</td>
-                  {s.v.map((v, i) => (
-                    <td key={i} className={`${td} text-right ${s.hl && i === 1 ? 'bg-blue-50 dark:bg-blue-900/20 font-semibold' : ''}`}>{v}</td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <HermesForecast f={f} setF={setF} peNow={peNow} />
 
       <div className={box}>
-        <h4 className={h4}>6. 과거 저점 직후 매수 vs 지금</h4>
+        <h4 className={h4}>5. 결론</h4>
+        <ul className={`${p} list-disc pl-4 space-y-1`}>
+          <li><b>앞으로 EPS는 연 {gNow.toFixed(1)}% 안팎(±3%p)</b>이 중심이다(4번). 과거 18.8%는 이익률이 24% → 41%로 오른 덕이 커서 그대로 반복되긴 어렵다(3번).</li>
+          <li>PER {peNow.toFixed(1)}배가 그대로면 10년 연 약 {ret10.toFixed(1)}%. 연 17~20%는 판매량 회복(낙관)과 PER 재평가가 함께 와야 나온다. EPS 성장률·10년 뒤 PER별 결과는 맨 아래 &lsquo;지금 사서 10년 보유 시 예상 수익률&rsquo; 표.</li>
+          <li><b>매일 볼 것:</b> 2번 이익 시계 — 주가가 적정가 띠 아래면 싼 구간, 위면 비싼 구간.</li>
+          <li><b>반기마다 볼 것:</b> 판매량(매출 성장 − 가격 인상)이 다시 늘어나는지, 영업이익률 41%가 유지되는지.</li>
+        </ul>
+      </div>
+
+      <details className="rounded-lg border border-gray-200 dark:border-gray-800 p-4">
+        <summary className={`${h4} cursor-pointer`}>부록. 과거 저점 직후 매수 vs 지금</summary>
+        <div className="space-y-2 mt-2">
+
         <p className={p}>
           에르메스의 10년 수익률 바닥은 1999년 매수(연 7.8%)와 2000년 매수(연 13.7%)였다. 둘 다 PER이 비쌀 때(38배·31배) 산 경우다.
           그 바닥이 확인된 직후에 산 사람은 어땠을까?
@@ -3311,7 +3314,7 @@ function RmsInsight({ data }: { data: StockData }) {
                 <td className={`${td} whitespace-nowrap font-semibold`}>2019~2024년 매수 (진행 중)</td>
                 <td className={`${td} text-right whitespace-nowrap`}>연 -25% ~ +12%</td>
                 <td className={`${td} text-right whitespace-nowrap font-semibold text-purple-600 dark:text-purple-400`}>PER 하락 43~63 → 31배</td>
-                <td className={`${td} text-right whitespace-nowrap`}>지금 (31.5배)</td>
+                <td className={`${td} text-right whitespace-nowrap`}>지금 ({peNow.toFixed(1)}배)</td>
                 <td className={`${td} text-right font-semibold`}>?</td>
                 <td className={`${td} text-right`}>?</td>
               </tr>
@@ -3322,28 +3325,17 @@ function RmsInsight({ data }: { data: StockData }) {
           <li><b>10년 완결 기준으로는 아직 바닥이 보이지 않는다.</b> 가장 최근 완결(2015년 매수)도 연 22%다.
             바닥은 아직 10년이 안 된 2019~2024년 매수에서 만들어지고 있다. PER 43~63배에 산 구간이라, 1999년(38배)처럼 낮은 10년 수익률로 끝날 가능성이 크다.</li>
           <li><b>저점의 원인이 과거와 같다.</b> 1999년처럼 이익은 늘었는데 PER이 떨어져서 수익률이 낮아진 경우다. 나이키(이익 정체가 원인)와 다른 점이다.</li>
-          <li><b>지금 PER 31.5배는 2009년 말(28.2배)보다 조금 높은 수준이다.</b> 그때 산 사람은 이후 10년간 연 23.4%를 냈다. 다만 그 10년은 이익이 연 18% 늘고, PER도 28배에서 43배로 올랐던 시기다.</li>
+          <li><b>지금 PER {peNow.toFixed(1)}배는 2009년 말(28.2배)보다 조금 높은 수준이다.</b> 그때 산 사람은 이후 10년간 연 23.4%를 냈다. 다만 그 10년은 이익이 연 18% 늘고, PER도 28배에서 43배로 올랐던 시기다.</li>
           <li><b>다른 점:</b> 2009년은 금융위기로 이익이 잠시 눌려 있던 때라 이후 반등 폭이 컸다. 지금은 이익이 높은 수준에서 성장만 멈춘 상태(2023년 이후 연 1~2%)다.</li>
-          <li><b>숫자로 보면:</b> PER 31.5배 유지·배당 1.35% 가정에서 연 17%가 나오려면 이익이 연 약 15%, 연 20%가 나오려면 연 약 18% 늘어야 한다. 과거 10년 이익 성장률(연 11~19%, 보통 15% 안팎)로는 가능한 범위다.</li>
+          <li><b>숫자로 보면:</b> PER 지금 수준 유지·배당 1.35% 가정에서 연 17%가 나오려면 이익이 연 약 15%, 연 20%가 나오려면 연 약 18% 늘어야 한다. 과거 10년 이익 성장률(연 11~19%, 보통 15% 안팎)로는 가능한 범위다.</li>
           <li><b>확인할 신호:</b> 환율 영향을 뺀 매출 성장이 다시 두 자릿수로 올라오는지, 순이익이 다시 연 10% 이상 늘어나는지.</li>
         </ul>
       </div>
-
-      <HermesForecast />
-
-      <div className={box}>
-        <h4 className={h4}>결론</h4>
-        <ul className={`${p} list-disc pl-4 space-y-1`}>
-          <li><b>앞으로 EPS는 연 10% 안팎(±3%p)</b>이 중심이다. 과거 18.8%는 이익률이 24% → 41%로 오른 덕이 커서 그대로 반복되긴 어렵다.</li>
-          <li>PER 31.5배가 그대로면 10년 연 약 11~12%. 연 17~20%는 판매량 회복(낙관)과 PER 재평가가 함께 와야 나온다.</li>
-          <li>매일 볼 것은 8번 그래프: 주가가 적정가 띠 아래면 싼 구간, 위면 비싼 구간.</li>
-          <li>반기마다 볼 것: <b>판매량(매출 성장 − 가격 인상)이 다시 늘어나는지</b>, 영업이익률 41%가 유지되는지.</li>
-        </ul>
-      </div>
+      </details>
 
       <p className="text-xs text-gray-400 dark:text-gray-500">
-        참고: 주가는 배당을 반영해 조정한 종가라 실제 PER과 1~2% 차이가 날 수 있다.
-        EPS는 2009년 이후 회사 발표 기준(주당이익 또는 순이익÷주식 수)으로 정정했다. 2001~2008년은 대조하지 못한 값, 1993~2000년은 AI가 역산한 추정치다.
+        참고: 3번(과거 PER·수익률)은 배당을 재투자한 것으로 조정한 주가 기준이라, 오래된 해일수록 PER이 실제보다 낮게 나온다(20~30년 전은 약 20~30%). 2번 이익 시계는 실제 종가 기준이다.
+        EPS는 2009년 이후 회사 발표 기준(주당이익 또는 순이익÷주식 수)이고, 2001~2008년은 대조하지 못한 값, 1993~2000년은 AI가 역산한 추정치다.
         참고용 분석이며 미래를 보장하지 않는다.
       </p>
     </div>
