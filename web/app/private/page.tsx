@@ -2664,6 +2664,25 @@ function ValueClockCore({ cur, anchors, monthly, last, g, sharesOut, divYield, s
   const peHi = enough ? quantile(peHist, 0.75) : null
   const yrsUsed = Math.round(peHist.length / 12)
   const fairPe = pePick ?? Math.round(peMid ?? 20)
+  // 적정 PER 바의 눈금: 20년 최소·중간값·평균·최대, 10년·5년 평균, 지금
+  const peWin = (n: number) => hist.filter(r => r.t >= tLastEps - n && r.t <= tLastEps && r.pe != null && r.pe > 0 && r.pe < 200).map(r => r.pe as number)
+  const avg = (a: number[]) => a.reduce((x, y) => x + y, 0) / a.length
+  const pe10 = peWin(10), pe5 = peWin(5)
+  const peMarks: Array<{ k: string; short: string; v: number; c: string }> = []
+  if (enough) {
+    peMarks.push({ k: `${yrsUsed}년 최소`, short: '최소', v: Math.min(...peHist), c: 'bg-emerald-500 text-emerald-600 dark:text-emerald-400' })
+    peMarks.push({ k: `${yrsUsed}년 중간값`, short: '중간', v: peMid!, c: 'bg-blue-600 text-blue-600 dark:text-blue-400' })
+    peMarks.push({ k: `${yrsUsed}년 평균`, short: `${yrsUsed}년평균`, v: avg(peHist), c: 'bg-purple-500 text-purple-600 dark:text-purple-400' })
+    peMarks.push({ k: `${yrsUsed}년 최대`, short: '최대', v: Math.max(...peHist), c: 'bg-red-500 text-red-500' })
+  }
+  if (pe10.length >= 24 && yrsUsed > 10) peMarks.push({ k: '10년 평균', short: '10년평균', v: avg(pe10), c: 'bg-gray-500 text-gray-500 dark:text-gray-400' })
+  if (pe5.length >= 24) peMarks.push({ k: '5년 평균', short: '5년평균', v: avg(pe5), c: 'bg-gray-400 text-gray-500 dark:text-gray-400' })
+  if (peNow != null && peNow > 0 && peNow < 200) peMarks.push({ k: '지금', short: '지금', v: peNow, c: 'bg-gray-900 dark:bg-white text-gray-900 dark:text-white' })
+  const sMin = Math.max(1, Math.floor(Math.min(5, ...peMarks.map(m => m.v))))
+  const sMax = Math.min(200, Math.ceil(Math.max(80, ...peMarks.map(m => m.v + 2))))
+  const pctOf = (v: number) => (Math.min(sMax, Math.max(sMin, v)) - sMin) / (sMax - sMin)
+  // 겹치지 않게 값 순서대로 3줄에 번갈아 배치
+  const marksSorted = [...peMarks].sort((a, b) => a.v - b.v).map((m, i) => ({ ...m, row: i % 3 }))
 
   const epsNow = epsAt(tNow)
   const price = last.close
@@ -2758,16 +2777,44 @@ function ValueClockCore({ cur, anchors, monthly, last, g, sharesOut, divYield, s
         <p className="text-xs text-gray-400 dark:text-gray-600 text-right mt-1">휠: 확대/축소 &nbsp;|&nbsp; 드래그: 이동</p>
       </div>
 
-      <label className="block space-y-1">
+      <div className="space-y-1">
         <div className="flex justify-between text-xs">
           <span className="font-medium text-gray-700 dark:text-gray-200">적정 PER</span>
           <span className="tabular-nums font-semibold text-gray-900 dark:text-white">{fairPe}배</span>
         </div>
-        <input type="range" min={5} max={80} step={1} value={fairPe} onChange={e => setPePick(Number(e.target.value))} className="w-full accent-blue-600" />
+        <input type="range" min={sMin} max={sMax} step={1} value={fairPe} onChange={e => setPePick(Number(e.target.value))} className="w-full accent-blue-600" />
+        {/* 눈금자: 바 아래 세로선 + 이름·배수 (손잡이 중심에 맞춤) */}
+        {marksSorted.length > 0 && (
+          <div className="relative h-14 -mt-1" aria-hidden>
+            {marksSorted.map(m => {
+              const pct = pctOf(m.v)
+              const left = `calc(${(pct * 100).toFixed(2)}% + ${((0.5 - pct) * 16).toFixed(1)}px)`
+              return (
+                <div key={m.k} className="absolute top-0 flex flex-col items-center -translate-x-1/2" style={{ left }}>
+                  <div className={`w-px ${m.c.split(' ')[0]}`} style={{ height: 6 + m.row * 14 }} />
+                  <span className={`text-[10px] leading-none whitespace-nowrap tabular-nums ${m.c.split(' ').slice(1).join(' ')}`}>
+                    {m.short} {m.v.toFixed(0)}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+        )}
+        {peMarks.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {peMarks.map(m => (
+              <button key={m.k} type="button" onClick={() => setPePick(Math.round(m.v))}
+                className={`text-[11px] px-1.5 py-0.5 rounded border tabular-nums ${Math.round(m.v) === fairPe ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-200 dark:border-gray-700'} ${m.c.split(' ').slice(1).join(' ')}`}>
+                {m.k} {m.v.toFixed(1)}배
+              </button>
+            ))}
+          </div>
+        )}
         <p className="text-[11px] text-gray-400 dark:text-gray-500">
-          {peMid != null ? '기본값은 과거 PER 중간값.' : '과거 PER 자료가 짧아 기본값 20배.'} 지금 PER({peNow?.toFixed(0)}배)로 두면 &lsquo;주가가 이익만큼만 오를 때&rsquo;가 된다.
+          {peMid != null ? '기본값은 과거 PER 중간값.' : '과거 PER 자료가 짧아 기본값 20배.'} 아래 버튼을 누르면 그 값으로 바뀐다.
+          지금 PER({peNow?.toFixed(0)}배)로 두면 &lsquo;주가가 이익만큼만 오를 때&rsquo;가 된다. PER은 월말 주가 ÷ 그때의 최근 1년 EPS(적자·200배 이상 제외).
         </p>
-      </label>
+      </div>
 
       <div className="rounded bg-blue-50/60 dark:bg-blue-950/20 p-3 space-y-2">
         <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">째깍째깍 — 버핏처럼 초 단위로 보기</p>
@@ -2941,7 +2988,7 @@ function StockValueClock({ f, stockKey, rolling }: { f: ClockFund; stockKey: str
         </div>
         <label className="block">
           <div className="flex justify-between text-xs">
-            <span className="text-gray-500 dark:text-gray-400">직접 조절</span>
+            <span className="text-gray-500 dark:text-gray-400">EPS 성장률 직접 조절</span>
             <span className="tabular-nums font-semibold text-gray-900 dark:text-white">{g}%</span>
           </div>
           <input type="range" min={-5} max={30} step={0.5} value={g} onChange={e => setG(Number(e.target.value))} className="w-full accent-blue-600" />
