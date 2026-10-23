@@ -15,7 +15,7 @@ jobs:
   extract:
     runs-on: ubuntu-latest
     steps:
-      - run: sudo apt-get install -y poppler-utils > /dev/null
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils > /dev/null
       - name: 받아서 찾기
         run: |
           i=0
