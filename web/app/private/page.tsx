@@ -2943,7 +2943,7 @@ function GrowthBar({ g, setG, marks, note }: { g: number; setG: (v: number) => v
 }
 
 // ── 에르메스 2번 ─────────────────────────────────────────────
-// 에르메스 연말 EPS (유로, 회사 발표 기준 2001~2025, 1993~2000은 추정)
+// 에르메스 연말 EPS (유로, 회사 발표 기준 2001~2025, 1993~2000은 순이익÷주식 수 환산)
 const RMS_EPS_HIST: Record<number, number> = {
   2001: 1.84, 2002: 1.96, 2003: 1.97, 2004: 1.94, 2005: 2.27, 2006: 2.51, 2007: 2.71, 2008: 2.76,
   2009: 2.74, 2010: 4.00, 2011: 5.63, 2012: 7.02, 2013: 7.53, 2014: 8.19, 2015: 9.27, 2016: 10.51,
@@ -3255,7 +3255,7 @@ function RmsInsight({ data }: { data: StockData }) {
           </span>
         </div>
         <p className={p}>
-          1993~2007년에는 대체로 20~38배였다(1996·1999·2000년 40배 이상은 예외, 1993년 20배가 가장 낮음). 2008~2018년에는 32~41배,
+          1993~2007년에는 대체로 22~38배였다(1996년 41배·1999년 47배는 예외, 2002년 22배가 가장 낮음). 2008~2018년에는 32~41배,
           2019~2025년에는 45~67배까지 올랐다(정점 2020년 67배).
           {lowSince ? <> 지금은 {peNow.toFixed(1)}배로 {lowSince[0]}년({lowSince[1].toFixed(0)}배) 이후 가장 낮다.</> : <> 지금은 {peNow.toFixed(1)}배로 기록 중 가장 낮다.</>}
           {' '}2010~2015년에 산 경우들이 높은 수익을 낸 데는 팔 때 PER이 45~67배까지 올라 있었던 영향이 크다.
@@ -3301,7 +3301,7 @@ function RmsInsight({ data }: { data: StockData }) {
         <div className="space-y-2 mt-2">
 
         <p className={p}>
-          에르메스의 10년 수익률 바닥은 1999년 매수(연 7.8%)와 2000년 매수(연 13.7%)였다. 둘 다 PER이 비쌀 때(54배·42배, 1999년은 추정) 산 경우다.
+          에르메스의 10년 수익률 바닥은 1999년 매수(연 7.8%)와 2000년 매수(연 13.7%)였다. 1999년은 PER이 비쌀 때(47배, 그해 종가는 추정) 산 경우이고, 2000년(32배)은 PER보다 이후 몇 년간(2001~2004년) 이익이 거의 늘지 않은 탓이 컸다.
           그 바닥이 확인된 직후에 산 사람은 어땠을까?
         </p>
         <div className="overflow-x-auto">
@@ -3320,7 +3320,7 @@ function RmsInsight({ data }: { data: StockData }) {
               <tr>
                 <td className={`${td} whitespace-nowrap`}>1999 → 2009</td>
                 <td className={`${td} text-right`}>7.8%</td>
-                <td className={`${td} text-right whitespace-nowrap`}>PER 하락 54 → 34배 (이익은 연 +11%)</td>
+                <td className={`${td} text-right whitespace-nowrap`}>PER 하락 47 → 34배 (이익은 연 +9.8%)</td>
                 <td className={`${td} text-right whitespace-nowrap`}>2009년 말 (34.1배)</td>
                 <td className={`${td} text-right font-semibold text-emerald-600 dark:text-emerald-400`}>23.4%</td>
                 <td className={`${td} text-right`}>연 +18.3%</td>
@@ -3328,7 +3328,7 @@ function RmsInsight({ data }: { data: StockData }) {
               <tr>
                 <td className={`${td} whitespace-nowrap`}>2000 → 2010</td>
                 <td className={`${td} text-right`}>13.7%</td>
-                <td className={`${td} text-right whitespace-nowrap`}>PER 하락 42 → 39배 (이익은 연 +12.8%)</td>
+                <td className={`${td} text-right whitespace-nowrap`}>이익 정체 2001~2004년 (10년 이익 연 +9.7%, PER 32 → 39배)</td>
                 <td className={`${td} text-right whitespace-nowrap`}>2010년 말 (39.4배)</td>
                 <td className={`${td} text-right font-semibold text-emerald-600 dark:text-emerald-400`}>20.3%</td>
                 <td className={`${td} text-right`}>연 +12.7%</td>
@@ -3346,7 +3346,7 @@ function RmsInsight({ data }: { data: StockData }) {
         </div>
         <ul className={`${p} list-disc pl-4 space-y-1`}>
           <li><b>10년 완결 기준으로는 아직 바닥이 보이지 않는다.</b> 가장 최근 완결(2015년 매수)도 연 22%다.
-            바닥은 아직 10년이 안 된 2019~2024년 매수에서 만들어지고 있다. PER 45~67배에 산 구간이라, 1999년(54배)처럼 낮은 10년 수익률로 끝날 가능성이 크다.</li>
+            바닥은 아직 10년이 안 된 2019~2024년 매수에서 만들어지고 있다. PER 45~67배에 산 구간이라, 1999년(47배)처럼 낮은 10년 수익률로 끝날 가능성이 크다.</li>
           <li><b>저점의 원인이 과거와 같다.</b> 1999년처럼 이익은 늘었는데 PER이 떨어져서 수익률이 낮아진 경우다. 나이키(이익 정체가 원인)와 다른 점이다.</li>
           <li><b>지금 PER {peNow.toFixed(1)}배는 2009년 말(34.1배)보다 낮은 수준이다.</b> 그때 산 사람은 이후 10년간 연 23.4%를 냈다. 다만 그 10년은 이익이 연 18% 늘고, PER도 34배에서 45배로 올랐던 시기다.</li>
           <li><b>다른 점:</b> 2009년은 금융위기로 이익이 잠시 눌려 있던 때라 이후 반등 폭이 컸다. 지금은 이익이 높은 수준에서 성장만 멈춘 상태(2023년 이후 연 1~2%)다.</li>
@@ -3358,7 +3358,7 @@ function RmsInsight({ data }: { data: StockData }) {
 
       <p className="text-xs text-gray-400 dark:text-gray-500">
         참고: PER은 모두 실제 종가(배당 미반영) ÷ EPS 기준이다. 1993~1999년 종가는 실제 자료가 없어 2000~2009년 추세로 추정했다. 수익률은 배당을 재투자한 기준.
-        EPS는 2001년 이후 회사 발표 기준(주당이익 또는 순이익÷주식 수)이고, 1993~2000년은 AI가 역산한 추정치다.
+        EPS는 2001년 이후 회사 발표 기준(주당이익 또는 순이익÷주식 수)이고, 1996~2000년은 회사 순이익(2005 연차보고서), 1993~1994년은 당시 보도된 순이익을 2001년 주식 수로 나눠 환산했고, 1995년은 1994·1996년 사이 값으로 추정했다.
         참고용 분석이며 미래를 보장하지 않는다.
       </p>
     </div>
