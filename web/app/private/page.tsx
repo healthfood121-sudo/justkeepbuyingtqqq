@@ -2283,7 +2283,7 @@ function HermesHistory() {
       </div>
 
       <ul className="text-xs leading-relaxed text-gray-600 dark:text-gray-300 list-disc pl-4 space-y-1">
-        <li><b>2021~2023년은 예외적인 호황.</b> 코로나 이후 보복 소비로 판매량이 연 13~38% 늘었다. 이 시기의 높은 성장과 PER(45~67배)을 기준으로 삼으면 기대가 과해진다.</li>
+        <li><b>2021~2023년은 예외적인 호황.</b> 코로나 이후 보복 소비로 판매량이 연 13~38% 늘었다. 이 시기의 높은 성장과 PER(45~66배)을 기준으로 삼으면 기대가 과해진다.</li>
       </ul>
       <p className="text-[11px] text-gray-400 dark:text-gray-500">
         * 표시는 근사값(회사 발표로 다시 확인하지 못함). 2010~2018년 가격 인상률은 연도별 자료를 찾지 못해 비워 뒀다 — 장기로는 버킨 가격이 연 5~7%(달러 기준, 환율 포함) 올랐다.
@@ -3280,7 +3280,7 @@ function RmsInsight({ data }: { data: StockData }) {
         <h4 className={h4}>3-3. 정리: 과거 성과를 만든 두 가지 순풍</h4>
         <ul className={`${p} list-disc pl-4 space-y-1`}>
           <li><b>EPS가 10년 동안 매년 {epsMin.toFixed(0)}~{epsMax.toFixed(0)}% 성장</b>했다({decomp.length}개 경우 중 최저 {epsMin.toFixed(0)}%). 하지만 2023년 이후는 연 1~2% 수준이다(2025년은 프랑스 특별 법인세로 감소).</li>
-          <li><b>팔 때 PER이 대체로 올라 있었다.</b> {decomp.length}개 중 {peUp.length}개가 매수 때보다 높았고(예외: {peDownYears.join('·')}년 매수), 2010~2015년 매수는 팔 때 45~67배였다. PER 효과는 연 중간값 {sgn(peEffMed)}%p(배당 제외). 위 3-2 참고.</li>
+          <li><b>팔 때 PER이 대체로 올라 있었다.</b> {decomp.length}개 중 {peUp.length}개가 매수 때보다 높았고(예외: {peDownYears.join('·')}년 매수), 2010~2015년 매수는 팔 때 45~66배였다. PER 효과는 연 중간값 {sgn(peEffMed)}%p(배당 제외). 위 3-2 참고.</li>
         </ul>
       </div>
 
