@@ -2881,7 +2881,7 @@ function ValueClockCore({ cur, anchors, monthly, last, g, sharesOut, divYield, s
 // ── 눈금자 바 (적정 PER·EPS 성장률 공용) ─────────────────────────
 type Tick = { k: string; short: string; v: number; c: string } // c: '선 색 글자색'
 
-function TickRuler({ min, max, marks, unit = '' }: { min: number; max: number; marks: Tick[]; unit?: string }) {
+function TickRuler({ min, max, marks, unit = '', digits = 0 }: { min: number; max: number; marks: Tick[]; unit?: string; digits?: number }) {
   if (!marks.length) return null
   const pctOf = (v: number) => (Math.min(max, Math.max(min, v)) - min) / (max - min)
   const sorted = [...marks].sort((a, b) => a.v - b.v).map((m, i) => ({ ...m, row: i % 3 }))
@@ -2894,7 +2894,7 @@ function TickRuler({ min, max, marks, unit = '' }: { min: number; max: number; m
           <div key={m.k} className="absolute top-0 flex flex-col items-center -translate-x-1/2" style={{ left }}>
             <div className={`w-px ${m.c.split(' ')[0]}`} style={{ height: 6 + m.row * 14 }} />
             <span className={`text-[10px] leading-none whitespace-nowrap tabular-nums ${m.c.split(' ').slice(1).join(' ')}`}>
-              {m.short} {m.v.toFixed(0)}{unit}
+              {m.short} {m.v.toFixed(digits)}{unit}
             </span>
           </div>
         )
@@ -2959,7 +2959,7 @@ function GrowthBar({ g, setG, marks, note }: { g: number; setG: (v: number) => v
         <span className="tabular-nums font-semibold text-gray-900 dark:text-white">{Math.round(g * 10) / 10}%</span>
       </div>
       <input type="range" min={lo} max={hi} step={0.5} value={g} onChange={e => setG(Number(e.target.value))} className="w-full accent-blue-600" />
-      <TickRuler min={lo} max={hi} marks={marks} unit="%" />
+      <TickRuler min={lo} max={hi} marks={marks} unit="%" digits={1} />
       <div className="flex flex-wrap gap-1">
         {marks.map(m => (
           <button key={m.k} type="button" onClick={() => setG(snap(m.v))}
@@ -3097,7 +3097,8 @@ function HermesValueClock({ g: gFactors, f }: { g: number; f: Factors }) {
         <ValueClockCore
           growthBar={<GrowthBar g={g} setG={setGUser}
         marks={growthMarks(RMS_ANCHORS, [
-          { k: '4번 요인 계산(지금 선택)', short: '4번', v: gFactors, c: TICK_C.pick },
+          // 시나리오 버튼 값 그대로면 겹치므로 직접 조절했을 때만 따로 표시
+          ...(HERMES_SCENARIOS.some(sc => Math.abs(epsGrowthOf(sc.f) - gFactors) < 0.01) ? [] : [{ k: '4번 직접 조절 값', short: '4번', v: gFactors, c: TICK_C.pick }]),
           ...HERMES_SCENARIOS.map(sc => ({ k: `4번 ${sc.label}`, short: sc.label === '지금 상태 지속' ? '지속' : sc.label, v: epsGrowthOf(sc.f), c: 'bg-teal-500 text-teal-600 dark:text-teal-400' })),
         ])}
         note={<>기본값은 4번에서 판매량·가격·이익률·기타로 계산한 값({gFactors.toFixed(1)}%). 바를 움직이면 4번과 별개로 전체 성장률을 바로 정한다.
