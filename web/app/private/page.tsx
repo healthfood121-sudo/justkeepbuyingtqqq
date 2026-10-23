@@ -2986,6 +2986,8 @@ function GrowthBar({ g, setG, marks, note }: { g: number; setG: (v: number) => v
 // ── 에르메스 2번 ─────────────────────────────────────────────
 // 에르메스 연말 EPS (유로, 회사 발표 기준 2001~2025, 1993~2000은 순이익÷주식 수 환산)
 const RMS_EPS_HIST: Record<number, number> = {
+  // 1993~2000년: 순이익 ÷ 2001년 주식 수 환산(분할 반영, 1995년은 사이 값 추정) — RMS_rolling.json epsDecomp와 같은 값
+  1993: 0.29, 1994: 0.40, 1995: 0.51, 1996: 0.64, 1997: 0.74, 1998: 0.81, 1999: 1.08, 2000: 1.59,
   2001: 1.84, 2002: 1.96, 2003: 1.97, 2004: 1.94, 2005: 2.27, 2006: 2.51, 2007: 2.71, 2008: 2.76,
   2009: 2.75, 2010: 4.01, 2011: 5.68, 2012: 7.11, 2013: 7.59, 2014: 8.24, 2015: 9.32, 2016: 10.53,
   2017: 11.70, 2018: 13.48, 2019: 14.66, 2020: 13.27, 2021: 23.37, 2022: 32.2, 2023: 41.19, 2024: 43.93, 2025: 43.15,
@@ -2994,6 +2996,8 @@ const RMS_ANCHORS: ClockAnchor[] = [
   ...Object.entries(RMS_EPS_HIST).map(([y, e]) => [Number(y) + 1, e] as ClockAnchor),
   [2026.5, 43.08], // 2026년 6월 말 최근 1년 EPS
 ]
+// 월말 주가 파일(2000-01~) 이전: 연말 종가 추정치(= 연말 PER × EPS, 실제 종가 자료가 없어 2000~2009년 추세로 추정한 PER 사용)
+const RMS_PRE2000_YE: Array<[number, number]> = [[1993, 8.9], [1994, 10.8], [1995, 16.9], [1996, 26.1], [1997, 22.6], [1998, 24.0], [1999, 51.1]]
 const RMS_SHARES = 104.5e6 // 자사주 제외 유통 주식 수(근사)
 
 // 에르메스 연도별 (백만 유로, 회사 발표: 연차보고서 2018·2021, 연간 실적 발표 2023·2025)
@@ -3063,7 +3067,10 @@ function HermesValueClock({ g: gFactors, f }: { g: number; f: Factors }) {
   }, [])
   const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-3'
   const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
-  const monthly = (px?.rows ?? []).map(r => { const [y, m] = r.d.split('-').map(Number); return { t: y + m / 12, price: r.c } })
+  const monthly = [
+    ...(px ? RMS_PRE2000_YE.map(([y, c]) => ({ t: y + 1, price: c })) : []), // 1993~1999년 연말(추정)
+    ...(px?.rows ?? []).map(r => { const [y, m] = r.d.split('-').map(Number); return { t: y + m / 12, price: r.c } }),
+  ]
   const eur = (v: number, d = 0) => `€${v.toLocaleString('ko-KR', { minimumFractionDigits: d, maximumFractionDigits: d })}`
 
   const extraLive = (now: number, fairNow: number) => {
@@ -3117,7 +3124,7 @@ function HermesValueClock({ g: gFactors, f }: { g: number; f: Factors }) {
           sharesOut={RMS_SHARES} divYield={1.35} storageKey="rms-shares" extraLive={extraLive}
           fcfPs={rmsCash(px.last.close, px.rows).fcfPs}
           peExclude={{ from: 2019, to: 2026, label: '거품기(2019~2025) 뺀 중간값' }}
-          notes="주가는 배당을 반영하지 않은 실제 월말 종가(분할 반영). 1년 EPS는 연말 실적 사이를 매끄럽게 이은 근사치이고, 2026년 6월 이후는 4번의 성장률로 연장했다. 초 단위 숫자는 연간 이익을 시간으로 나눈 것이며 실제 회계 처리와 다르다. 유통 주식 수 약 1억 450만 주(근사). 내 몫 잉여현금은 2025년 조정 잉여현금흐름(38.8억 유로) ÷ 유통 주식 수."
+          notes="주가는 배당을 반영하지 않은 실제 월말 종가(분할 반영). 1993~1999년은 월별 자료가 없어 연말 종가 추정치(1년에 점 하나)를 이었다. 1년 EPS는 연말 실적 사이를 매끄럽게 이은 근사치이고, 2026년 6월 이후는 4번의 성장률로 연장했다. 초 단위 숫자는 연간 이익을 시간으로 나눈 것이며 실제 회계 처리와 다르다. 유통 주식 수 약 1억 450만 주(근사). 내 몫 잉여현금은 2025년 조정 잉여현금흐름(38.8억 유로) ÷ 유통 주식 수."
         />
         {(() => {
           const r = rmsCash(px.last.close, px.rows)
