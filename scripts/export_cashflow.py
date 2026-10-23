@@ -1,0 +1,361 @@
+"""
+export_cashflow.py — 전 종목 잉여현금흐름·자본 수익률 추가 (SEC XBRL companyfacts)
+
+각 web/public/data/fundamentals/{KEY}.json 에 `cash` 항목을 더하고, metrics·_summary 에 지표를 추가한다.
+
+연도별(회계연도, EPS와 같은 연도 매김 — 1~3월 종료는 전년도):
+  ocf     영업활동 현금흐름
+  capex   설비투자(유형자산 취득)
+  fcf     잉여현금흐름 = ocf − capex
+  ni      순이익(지배주주)
+  div     배당 지급액, buyback 자사주 매입액
+  equity  자기자본(연말), debt 차입금(장단기), cashInv 현금+단기 투자자산(연말)
+  roe     순이익 ÷ 평균 자기자본 (%)
+  roic    세후 영업이익 ÷ 평균 투하자본(자기자본 + 차입금 − 현금) (%)
+  conv    잉여현금흐름 ÷ 순이익 (이익이 현금으로 남는 비율)
+  fcfPs   주당 잉여현금흐름 = EPS × fcf ÷ ni (EPS가 이미 분할 보정돼 있어 같은 기준)
+  fcfYield 주당 잉여현금흐름 ÷ 연말 주가 (%)
+최근 1년(ttm): 최근 10-K + 올해 누적 10-Q − 작년 같은 기간 누적
+지표(metrics): fcfYield·earnYield(최근 1년 EPS ÷ 주가)·roe·roic·conv5(5년 합계 기준)
+
+금액 단위: 백만 달러(소수 1자리)
+
+실행: GitHub Actions '전 종목 현금흐름·자본 수익률' (workflow_dispatch)
+  python scripts/export_cashflow.py            # 전 종목
+  python scripts/export_cashflow.py AAPL NKE   # 일부
+"""
+import json
+import sys
+import time
+from pathlib import Path
+
+import pandas as pd
+import requests
+
+ROOT = Path(__file__).parent.parent
+OUT = ROOT / "web" / "public" / "data" / "fundamentals"
+UA = {"User-Agent": "justkeepbuyingtqqq research research@example.com"}
+
+ANNUAL_FORMS = ("10-K", "10-K/A", "10-KT", "20-F", "40-F")
+
+# 항목별 후보 이름 (앞쪽 우선)
+OCF = ["NetCashProvidedByUsedInOperatingActivities", "NetCashProvidedByUsedInOperatingActivitiesContinuingOperations"]
+CAPEX = ["PaymentsToAcquirePropertyPlantAndEquipment", "PaymentsToAcquireProductiveAssets",
+         "PaymentsForCapitalImprovements", "PaymentsToAcquireOtherPropertyPlantAndEquipment"]
+NI = ["NetIncomeLoss", "NetIncomeLossAvailableToCommonStockholdersBasic", "ProfitLoss"]
+DIV = ["PaymentsOfDividendsCommonStock", "PaymentsOfDividends"]
+BUY = ["PaymentsForRepurchaseOfCommonStock"]
+OPINC = ["OperatingIncomeLoss"]
+PRETAX = ["IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest",
+          "IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments",
+          "IncomeLossFromContinuingOperationsBeforeIncomeTaxesDomestic"]
+TAX = ["IncomeTaxExpenseBenefit"]
+EQUITY = ["StockholdersEquity", "StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest"]
+CASH = ["CashAndCashEquivalentsAtCarryingValue",
+        "CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents", "Cash"]
+STINV = ["ShortTermInvestments", "MarketableSecuritiesCurrent", "AvailableForSaleSecuritiesDebtSecuritiesCurrent"]
+# 차입금: 묶음별로 첫 번째로 있는 것을 더함
+DEBT_GROUPS = [
+    ["LongTermDebt", "LongTermDebtAndCapitalLeaseObligationsIncludingCurrentMaturities", "DebtAndCapitalLeaseObligations"],
+]
+DEBT_SPLIT = [  # LongTermDebt 총액이 없을 때: 비유동 + 유동
+    ["LongTermDebtNoncurrent", "LongTermDebtAndCapitalLeaseObligations"],
+    ["LongTermDebtCurrent", "LongTermDebtAndCapitalLeaseObligationsCurrent", "DebtCurrent"],
+]
+DEBT_EXTRA = [["ShortTermBorrowings"], ["CommercialPaper"]]
+
+
+def fy_of(end: pd.Timestamp) -> int:
+    return end.year - 1 if end.month <= 3 else end.year
+
+
+def usd_items(gaap: dict, name: str):
+    return gaap.get(name, {}).get("units", {}).get("USD", [])
+
+
+def annual_flow(gaap: dict, names: list) -> dict:
+    """회계연도 종료일 → 값 (연간 기간, 가장 최근 공시). 앞쪽 이름에 값이 있는 연도가 우선."""
+    out = {}
+    for n in names:
+        cur = {}
+        for it in usd_items(gaap, n):
+            if it.get("form") not in ANNUAL_FORMS or not it.get("start"):
+                continue
+            days = (pd.Timestamp(it["end"]) - pd.Timestamp(it["start"])).days
+            if not 340 <= days <= 390:
+                continue
+            if it["end"] not in cur or it["filed"] > cur[it["end"]][1]:
+                cur[it["end"]] = (float(it["val"]), it["filed"])
+        for e, v in cur.items():
+            out.setdefault(e, v[0])
+    return out
+
+
+def ytd_flow(gaap: dict, names: list) -> dict:
+    """(시작일, 종료일) → 값: 분기 보고서의 연초 누적 값."""
+    for n in names:
+        cur = {}
+        for it in usd_items(gaap, n):
+            if it.get("form") not in ("10-Q", "10-Q/A") or not it.get("start"):
+                continue
+            key = (it["start"], it["end"])
+            if key not in cur or it["filed"] > cur[key][1]:
+                cur[key] = (float(it["val"]), it["filed"])
+        if cur:
+            return {k: v[0] for k, v in cur.items()}
+    return {}
+
+
+def instant(gaap: dict, names: list) -> dict:
+    """날짜 → 값 (재무상태표 시점 값, 가장 최근 공시). 앞쪽 이름 우선."""
+    out = {}
+    for n in names:
+        cur = {}
+        for it in usd_items(gaap, n):
+            if it.get("start"):
+                continue
+            if it["end"] not in cur or it["filed"] > cur[it["end"]][1]:
+                cur[it["end"]] = (float(it["val"]), it["filed"])
+        for e, v in cur.items():
+            out.setdefault(e, v[0])
+    return out
+
+
+def debt_at(gaap: dict) -> dict:
+    tot = instant(gaap, DEBT_GROUPS[0])
+    nonc = instant(gaap, DEBT_SPLIT[0])
+    curr = instant(gaap, DEBT_SPLIT[1])
+    extras = [instant(gaap, g) for g in DEBT_EXTRA]
+    dates = set(tot) | set(nonc) | set(curr)
+    out = {}
+    for d in dates:
+        v = tot[d] if d in tot else (nonc.get(d, 0.0) + curr.get(d, 0.0))
+        out[d] = v + sum(x.get(d, 0.0) for x in extras)
+    for x in extras:  # 장기 차입금이 없고 단기만 있는 경우
+        for d, v in x.items():
+            if d not in out:
+                out[d] = sum(y.get(d, 0.0) for y in extras)
+    return out
+
+
+def ttm(gaap: dict, names: list, annual: dict):
+    """최근 1년 = 최근 연간 + 올해 누적 − 작년 같은 기간 누적. (값, 종료일) 또는 None."""
+    if not annual:
+        return None
+    last_end = max(annual)
+    ytd = ytd_flow(gaap, names)
+    cands = [(s, e) for (s, e) in ytd if e > last_end and s >= last_end]
+    if not cands:
+        return annual[last_end], last_end
+    s, e = max(cands, key=lambda k: k[1])
+    span = (pd.Timestamp(e) - pd.Timestamp(s)).days
+    pe = pd.Timestamp(e) - pd.DateOffset(years=1)
+    prev = None
+    for (s2, e2), v in ytd.items():
+        if abs((pd.Timestamp(e2) - pe).days) <= 10 and abs((pd.Timestamp(e2) - pd.Timestamp(s2)).days - span) <= 10:
+            prev = v
+            break
+    if prev is None:
+        return annual[last_end], last_end
+    return annual[last_end] + ytd[(s, e)] - prev, e
+
+
+def near(d: dict, end: str, tol=10):
+    """종료일과 가까운(±tol일) 시점 값."""
+    if end in d:
+        return d[end]
+    t = pd.Timestamp(end)
+    best = None
+    for k, v in d.items():
+        gap = abs((pd.Timestamp(k) - t).days)
+        if gap <= tol and (best is None or gap < best[0]):
+            best = (gap, v)
+    return best[1] if best else None
+
+
+def m(x):  # 백만 달러
+    return None if x is None else round(x / 1e6, 1)
+
+
+def pct(x):
+    return None if x is None else round(x * 100, 1)
+
+
+def year_end_close(fund: dict) -> dict:
+    mo = fund.get("monthly") or {}
+    if not mo.get("c"):
+        return {}
+    y0, m0 = map(int, mo["start"].split("-"))
+    out = {}
+    for i, c in enumerate(mo["c"]):
+        mm = m0 - 1 + i
+        y, mon = y0 + mm // 12, mm % 12 + 1
+        if mon == 12 and c:
+            out[y] = c
+    return out
+
+
+def build(gaap: dict, fund: dict) -> dict | None:
+    ocf = annual_flow(gaap, OCF)
+    ni = annual_flow(gaap, NI)
+    if not ocf or not ni:
+        return None
+    capex = annual_flow(gaap, CAPEX)
+    div = annual_flow(gaap, DIV)
+    buy = annual_flow(gaap, BUY)
+    opinc = annual_flow(gaap, OPINC)
+    pretax = annual_flow(gaap, PRETAX)
+    tax = annual_flow(gaap, TAX)
+    eq = instant(gaap, EQUITY)
+    cash = instant(gaap, CASH)
+    stinv = instant(gaap, STINV)
+    debt = debt_at(gaap)
+    eps = {int(k): v for k, v in (fund.get("eps") or {}).items()}
+    px = year_end_close(fund)
+
+    ends = sorted(set(ocf) & set(ni))
+    years = {}
+    prev_eq = prev_ic = None
+    prev_end = None
+    for end in ends:
+        y = fy_of(pd.Timestamp(end))
+        o, n = ocf[end], ni[end]
+        c = capex.get(end, 0.0)
+        f = o - c
+        e = near(eq, end)
+        ca = near(cash, end)
+        st = near(stinv, end) or 0.0
+        dbt = near(debt, end)
+        ci = None if ca is None else ca + st
+        ic = None if e is None else e + (dbt or 0.0) - (ci or 0.0)
+        # 직전 연도 말 값이 1년 전이면 평균, 아니면 연말 값
+        consecutive = prev_end is not None and 330 <= (pd.Timestamp(end) - pd.Timestamp(prev_end)).days <= 400
+        avg_eq = (e + prev_eq) / 2 if (e is not None and prev_eq is not None and consecutive) else e
+        avg_ic = (ic + prev_ic) / 2 if (ic is not None and prev_ic is not None and consecutive) else ic
+        roe = n / avg_eq if avg_eq and avg_eq > 0 else None
+        roic = None
+        if end in opinc and avg_ic and avg_ic > 0:
+            rate = 0.21 if y >= 2018 else 0.35
+            if end in tax and end in pretax and pretax[end] > 0:
+                rate = min(max(tax[end] / pretax[end], 0.0), 0.40)
+            roic = opinc[end] * (1 - rate) / avg_ic
+        conv = f / n if n > 0 else None
+        fps = None
+        if y in eps and eps[y] and n and (eps[y] > 0) == (n > 0):
+            fps = eps[y] * f / n
+        fy_yield = fps / px[y] if fps is not None and px.get(y) else None
+        years[str(y)] = {k: v for k, v in {
+            "end": end, "ocf": m(o), "capex": m(c), "fcf": m(f), "ni": m(n),
+            "div": m(div.get(end)), "buyback": m(buy.get(end)),
+            "equity": m(e), "debt": m(dbt), "cashInv": m(ci),
+            "roe": pct(roe), "roic": pct(roic), "conv": None if conv is None else round(conv, 2),
+            "fcfPs": None if fps is None else round(fps, 3), "fcfYield": pct(fy_yield),
+        }.items() if v is not None}
+        prev_eq, prev_ic, prev_end = e, ic, end
+
+    t_ocf = ttm(gaap, OCF, ocf)
+    t_cap = ttm(gaap, CAPEX, capex) if capex else (0.0, t_ocf[1] if t_ocf else None)
+    t_ni = ttm(gaap, NI, ni)
+    out = {"years": years}
+    if t_ocf and t_ni and t_cap and t_ocf[1] == t_ni[1] == t_cap[1]:
+        out["ttm"] = {"asOf": t_ocf[1], "ocf": m(t_ocf[0]), "capex": m(t_cap[0]),
+                      "fcf": m(t_ocf[0] - t_cap[0]), "ni": m(t_ni[0])}
+    else:  # 기간이 안 맞으면 최근 연간 값
+        last = years[max(years, key=int)]
+        out["ttm"] = {"asOf": last["end"], "ocf": last["ocf"], "capex": last.get("capex", 0),
+                      "fcf": last["fcf"], "ni": last["ni"], "annualOnly": True}
+    return out
+
+
+def metrics(fund: dict, cash: dict) -> dict:
+    mt = fund.get("metrics") or {}
+    price = (fund.get("lastPrice") or {}).get("close") or mt.get("price")
+    ttm_eps = mt.get("ttmEps")
+    t = cash["ttm"]
+    out = {}
+    if price and ttm_eps is not None:
+        out["earnYield"] = round(ttm_eps / price * 100, 2)
+    fps = None
+    if t.get("ni") and ttm_eps and (t["ni"] > 0) == (ttm_eps > 0):
+        fps = ttm_eps * t["fcf"] / t["ni"]  # EPS와 같은 주식 수 기준
+    else:
+        sh = (fund.get("shares") or {}).get("count")
+        if sh:
+            fps = t["fcf"] * 1e6 / sh
+    if fps is not None and price:
+        out["fcfPs"] = round(fps, 3)
+        out["fcfYield"] = round(fps / price * 100, 2)
+    ys = sorted(cash["years"], key=int)
+    last = cash["years"][ys[-1]] if ys else {}
+    for k in ("roe", "roic"):
+        if k in last:
+            out[k] = last[k]
+    recent = [cash["years"][y] for y in ys[-5:]]
+    f5 = sum(r.get("fcf", 0) for r in recent)
+    n5 = sum(r.get("ni", 0) for r in recent)
+    if n5 > 0 and len(recent) >= 3:
+        out["conv5"] = round(f5 / n5, 2)
+    roic5 = [r["roic"] for r in recent if "roic" in r]
+    if len(roic5) >= 3:
+        out["roic5"] = round(sorted(roic5)[len(roic5) // 2], 1)  # 5년 중간값
+    roe5 = [r["roe"] for r in recent if "roe" in r]
+    if len(roe5) >= 3:
+        out["roe5"] = round(sorted(roe5)[len(roe5) // 2], 1)
+    return out
+
+
+def load_cik_map():
+    r = requests.get("https://www.sec.gov/files/company_tickers.json", headers=UA, timeout=30)
+    r.raise_for_status()
+    return {v["ticker"].upper(): int(v["cik_str"]) for v in r.json().values()}
+
+
+def main():
+    only = set(sys.argv[1:])
+    keys = sorted(f.stem for f in OUT.glob("*.json") if not f.stem.startswith("_"))
+    keys = [k for k in keys if not only or k in only]
+    cik_map = load_cik_map()
+    summary_path = OUT / "_summary.json"
+    summary = json.loads(summary_path.read_text()) if summary_path.exists() else {"stocks": []}
+    by_key = {s["key"]: s for s in summary.get("stocks", [])}
+    ok = 0
+    for i, k in enumerate(keys, 1):
+        path = OUT / f"{k}.json"
+        fund = json.loads(path.read_text())
+        t = (fund.get("ticker") or k).replace(".", "-").upper()
+        cik = cik_map.get(t) or cik_map.get(t.replace("-", "."))
+        if not cik:
+            print(f"[{i}/{len(keys)}] {k}: CIK 없음")
+            continue
+        try:
+            r = requests.get(f"https://data.sec.gov/api/xbrl/companyfacts/CIK{cik:010d}.json", headers=UA, timeout=90)
+            time.sleep(0.12)
+            if r.status_code != 200:
+                print(f"[{i}/{len(keys)}] {k}: HTTP {r.status_code}")
+                continue
+            gaap = r.json().get("facts", {}).get("us-gaap", {})
+            cash = build(gaap, fund)
+        except Exception as e:  # 한 종목 실패가 전체를 멈추지 않게
+            print(f"[{i}/{len(keys)}] {k}: 오류 {e}")
+            continue
+        if not cash:
+            print(f"[{i}/{len(keys)}] {k}: 현금흐름 없음")
+            continue
+        mt = metrics(fund, cash)
+        fund["cash"] = cash
+        fund.setdefault("metrics", {}).update(mt)
+        path.write_text(json.dumps(fund, ensure_ascii=False, separators=(",", ":")))
+        if k in by_key:
+            by_key[k].update(mt)
+        ok += 1
+        last = cash["years"][max(cash["years"], key=int)]
+        print(f"[{i}/{len(keys)}] {k}: {len(cash['years'])}년, 최근 1년 FCF {cash['ttm']['fcf']}M, "
+              f"FCF수익률 {mt.get('fcfYield')}%, 이익수익률 {mt.get('earnYield')}%, ROE {last.get('roe')}%, ROIC {last.get('roic')}%",
+              flush=True)
+    summary["stocks"] = sorted(by_key.values(), key=lambda s: s["key"])
+    summary_path.write_text(json.dumps(summary, ensure_ascii=False, separators=(",", ":")))
+    print(f"완료: {ok}/{len(keys)}")
+
+
+if __name__ == "__main__":
+    main()

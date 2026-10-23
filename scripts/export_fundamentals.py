@@ -406,7 +406,17 @@ def process(key: str, roll: dict, prices: pd.DataFrame, cik_map: dict) -> dict |
         "lastPrice": {"date": close.index[-1].strftime("%Y-%m-%d"), "close": r2(price_now)},
         "shares": shares_info(cik, key, roll["ticker"]),
     }
-    (OUT / f"{key}.json").write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")))
+    # 다른 스크립트가 덧붙인 항목은 유지 (export_eps_pre2008.py: epsOld, export_cashflow.py: cash·현금 지표)
+    path = OUT / f"{key}.json"
+    if path.exists():
+        prev = json.loads(path.read_text())
+        for k in ("epsOld", "epsOldSrc", "cash"):
+            if k in prev:
+                out[k] = prev[k]
+        for k in ("earnYield", "fcfPs", "fcfYield", "roe", "roic", "conv5", "roic5", "roe5"):
+            if k in prev.get("metrics", {}):
+                metrics[k] = prev["metrics"][k]
+    path.write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")))
     return metrics
 
 
