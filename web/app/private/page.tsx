@@ -2996,8 +2996,17 @@ const RMS_ANCHORS: ClockAnchor[] = [
   ...Object.entries(RMS_EPS_HIST).map(([y, e]) => [Number(y) + 1, e] as ClockAnchor),
   [2026.5, 43.08], // 2026년 6월 말 최근 1년 EPS
 ]
-// 월말 주가 파일(2000-01~) 이전: 연말 종가 추정치(= 연말 PER × EPS, 실제 종가 자료가 없어 2000~2009년 추세로 추정한 PER 사용)
-const RMS_PRE2000_YE: Array<[number, number]> = [[1993, 8.9], [1994, 10.8], [1995, 16.9], [1996, 26.1], [1997, 22.6], [1998, 24.0], [1999, 51.1]]
+// 월말 주가 파일(2000-01~) 이전 월말 종가 (EUR, 트레이딩뷰 RMS 월봉, 분할 반영·배당 미반영, 2026-10 사용자 입력).
+// 1993년 12월 = 1994년 1월 시가. scripts/rms_actual_pe.py 의 MANUAL_YE(연말 값)와 같은 출처.
+const RMS_PRE2000_DEC1993 = 7.96
+const RMS_PRE2000_MONTHLY: Record<number, number[]> = {
+  1994: [8.826, 8.994, 9.656, 8.47, 9.234, 9.114, 9.944, 9.894, 10.74, 10.335, 10.215, 9.824],
+  1995: [9.47, 9.52, 10.4, 10.685, 11.485, 11.385, 11.52, 11.945, 14.855, 14.565, 14.825, 15.585],
+  1996: [17.53, 20.06, 22.68, 23.19, 24.39, 23.04, 20.94, 20.65, 20.51, 21.99, 22.44, 24.39],
+  1997: [26.73, 26.20, 26.81, 26.59, 26.58, 27.95, 28.76, 25.76, 23.88, 19.765, 21.20, 21.34],
+  1998: [23.38, 24.24, 23.53, 23.18, 23.83, 24.14, 21.65, 17.895, 18.805, 21.34, 21.90, 23.02],
+  1999: [25, 22.35, 24.67, 26, 29.03, 32.32, 31.17, 34.50, 34.17, 34.67, 42.67, 49.93],
+}
 const RMS_SHARES = 104.5e6 // 자사주 제외 유통 주식 수(근사)
 
 // 에르메스 연도별 (백만 유로, 회사 발표: 연차보고서 2018·2021, 연간 실적 발표 2023·2025)
@@ -3068,7 +3077,7 @@ function HermesValueClock({ g: gFactors, f }: { g: number; f: Factors }) {
   const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-3'
   const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
   const monthly = [
-    ...(px ? RMS_PRE2000_YE.map(([y, c]) => ({ t: y + 1, price: c })) : []), // 1993~1999년 연말(추정)
+    ...(px ? [{ t: 1994, price: RMS_PRE2000_DEC1993 }, ...Object.entries(RMS_PRE2000_MONTHLY).flatMap(([y, cs]) => cs.map((c, i) => ({ t: Number(y) + (i + 1) / 12, price: c })))] : []), // 1993년 12월~1999년 12월
     ...(px?.rows ?? []).map(r => { const [y, m] = r.d.split('-').map(Number); return { t: y + m / 12, price: r.c } }),
   ]
   const eur = (v: number, d = 0) => `€${v.toLocaleString('ko-KR', { minimumFractionDigits: d, maximumFractionDigits: d })}`
@@ -3124,7 +3133,7 @@ function HermesValueClock({ g: gFactors, f }: { g: number; f: Factors }) {
           sharesOut={RMS_SHARES} divYield={1.35} storageKey="rms-shares" extraLive={extraLive}
           fcfPs={rmsCash(px.last.close, px.rows).fcfPs}
           peExclude={{ from: 2019, to: 2026, label: '거품기(2019~2025) 뺀 중간값' }}
-          notes="주가는 배당을 반영하지 않은 실제 월말 종가(분할 반영). 1993~1999년은 월별 자료가 없어 연말 종가 추정치(1년에 점 하나)를 이었다. 1년 EPS는 연말 실적 사이를 매끄럽게 이은 근사치이고, 2026년 6월 이후는 4번의 성장률로 연장했다. 초 단위 숫자는 연간 이익을 시간으로 나눈 것이며 실제 회계 처리와 다르다. 유통 주식 수 약 1억 450만 주(근사). 내 몫 잉여현금은 2025년 조정 잉여현금흐름(38.8억 유로) ÷ 유통 주식 수."
+          notes="주가는 배당을 반영하지 않은 실제 월말 종가(분할 반영). 1993년 12월~1999년은 트레이딩뷰 월말 종가. 1년 EPS는 연말 실적 사이를 매끄럽게 이은 근사치이고, 2026년 6월 이후는 4번의 성장률로 연장했다. 초 단위 숫자는 연간 이익을 시간으로 나눈 것이며 실제 회계 처리와 다르다. 유통 주식 수 약 1억 450만 주(근사). 내 몫 잉여현금은 2025년 조정 잉여현금흐름(38.8억 유로) ÷ 유통 주식 수."
         />
         {(() => {
           const r = rmsCash(px.last.close, px.rows)
@@ -3571,12 +3580,12 @@ function RmsInsight({ data }: { data: StockData }) {
           {nowB && <> 지금 구간({nowB.label})은 PER 효과 평균 {sgn(nowB.pe)}%p였고 수익률 대부분이 이익 성장(EPS 연 {sgn(nowB.eps)}%)에서 나왔다.</>}
           {' '}어느 구간이든 수익률의 대부분은 이익 성장이다.
         </p>
-        <p className="text-[11px] text-gray-400 dark:text-gray-500">PER = 실제 종가 ÷ EPS(1993~1999년 종가는 추정). 평균 수익률 ≈ EPS 효과 + PER 효과 + 배당(연 약 1.4%p).</p>
+        <p className="text-[11px] text-gray-400 dark:text-gray-500">PER = 실제 종가 ÷ EPS(1993~1999년 종가는 트레이딩뷰, 2000년 이후는 Yahoo 월말 종가). 평균 수익률 ≈ EPS 효과 + PER 효과 + 배당(연 약 1.4%p).</p>
 
         <p className={`${p} pt-2 font-semibold`}>연말 PER 흐름 (1993~2025)</p>
         <PeTimelineChart timeline={peTimeline} peNow={peNow} />
         <p className={p}>
-          1993~2007년에는 대체로 22~38배였다(1996년 41배·1999년 47배는 예외, 2002년 22배가 가장 낮음). 2008~2018년에는 32~41배,
+          1993~2007년에는 대체로 22~38배였다(1999년 46배는 예외, 2002년 22배가 가장 낮음). 2008~2018년에는 32~41배,
           2019~2025년에는 45~66배까지 올랐다(정점 2020년 66배).
           {lowSince ? <> 지금은 {peNow.toFixed(1)}배로 {lowSince[0]}년({lowSince[1].toFixed(0)}배) 이후 가장 낮다.</> : <> 지금은 {peNow.toFixed(1)}배로 기록 중 가장 낮다.</>}
         </p>
@@ -3631,7 +3640,7 @@ function RmsInsight({ data }: { data: StockData }) {
         <div className="space-y-2 mt-2">
 
         <p className={p}>
-          에르메스의 10년 수익률 바닥은 1999년 매수(연 7.8%)와 2000년 매수(연 13.7%)였다. 1999년은 PER이 비쌀 때(47배, 그해 종가는 추정) 산 경우이고, 2000년(32배)은 PER보다 이후 몇 년간(2001~2004년) 이익이 거의 늘지 않은 탓이 컸다.
+          에르메스의 10년 수익률 바닥은 1999년 매수(연 7.8%)와 2000년 매수(연 13.7%)였다. 1999년은 PER이 비쌀 때(46배) 산 경우이고, 2000년(32배)은 PER보다 이후 몇 년간(2001~2004년) 이익이 거의 늘지 않은 탓이 컸다.
           그 바닥이 확인된 직후에 산 사람은 어땠을까?
         </p>
         <div className="overflow-x-auto">
@@ -3650,7 +3659,7 @@ function RmsInsight({ data }: { data: StockData }) {
               <tr>
                 <td className={`${td} whitespace-nowrap`}>1999 → 2009</td>
                 <td className={`${td} text-right`}>7.8%</td>
-                <td className={`${td} text-right whitespace-nowrap`}>PER 하락 47 → 34배 (이익은 연 +9.8%)</td>
+                <td className={`${td} text-right whitespace-nowrap`}>PER 하락 46 → 34배 (이익은 연 +9.8%)</td>
                 <td className={`${td} text-right whitespace-nowrap`}>2009년 말 (34.0배)</td>
                 <td className={`${td} text-right font-semibold text-emerald-600 dark:text-emerald-400`}>23.4%</td>
                 <td className={`${td} text-right`}>연 +18.2%</td>
@@ -3676,7 +3685,7 @@ function RmsInsight({ data }: { data: StockData }) {
         </div>
         <ul className={`${p} list-disc pl-4 space-y-1`}>
           <li><b>10년 완결 기준으로는 아직 바닥이 보이지 않는다.</b> 가장 최근 완결(2015년 매수)도 연 22%다.
-            바닥은 아직 10년이 안 된 2019~2024년 매수에서 만들어지고 있다. PER 45~66배에 산 구간이라, 1999년(47배)처럼 낮은 10년 수익률로 끝날 가능성이 크다.</li>
+            바닥은 아직 10년이 안 된 2019~2024년 매수에서 만들어지고 있다. PER 45~66배에 산 구간이라, 1999년(46배)처럼 낮은 10년 수익률로 끝날 가능성이 크다.</li>
           <li><b>저점의 원인이 과거와 같다.</b> 1999년처럼 이익은 늘었는데 PER이 떨어져서 수익률이 낮아진 경우다. 나이키(이익 정체가 원인)와 다른 점이다.</li>
           <li><b>지금 PER {peNow.toFixed(1)}배는 2009년 말(34.0배)보다 낮은 수준이다.</b> 그때 산 사람은 이후 10년간 연 23.4%를 냈다. 다만 그 10년은 이익이 연 18% 늘고, PER도 34배에서 45배로 올랐던 시기다.</li>
           <li><b>다른 점:</b> 2009년은 금융위기로 이익이 잠시 눌려 있던 때라 이후 반등 폭이 컸다. 지금은 이익이 높은 수준에서 성장만 멈춘 상태(2023년 이후 연 1~2%)다.</li>
@@ -3685,7 +3694,7 @@ function RmsInsight({ data }: { data: StockData }) {
       </details>
 
       <p className="text-xs text-gray-400 dark:text-gray-500">
-        참고: PER은 모두 실제 종가(배당 미반영) ÷ EPS 기준이다. 1993~1999년 종가는 실제 자료가 없어 2000~2009년 추세로 추정했다. 수익률은 배당을 재투자한 기준.
+        참고: PER은 모두 실제 종가(배당 미반영) ÷ EPS 기준이다. 1993~1999년 종가는 트레이딩뷰 월말 종가, 2000년 이후는 Yahoo 월말 종가다. 수익률은 배당을 재투자한 기준.
         EPS는 2001년 이후 회사 발표 기준(주당이익 또는 순이익÷주식 수)이고, 1996~2000년은 회사 순이익(2005 연차보고서), 1993~1994년은 당시 보도된 순이익을 2001년 주식 수로 나눠 환산했고, 1995년은 1994·1996년 사이 값으로 추정했다.
         참고용 분석이며 미래를 보장하지 않는다.
       </p>

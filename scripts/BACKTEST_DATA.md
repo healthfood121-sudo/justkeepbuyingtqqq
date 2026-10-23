@@ -995,6 +995,7 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 - `scripts/rms_actual_pe.py`: `epsDecomp`의 peBuy·peSell·peMultiple·peCagr를 실제 종가(배당 미반영) ÷ EPS로 다시 계산, `rows10y`에 `peBuyActual` 추가, `peNote`·`peBasis` 기록. `export_rolling_json.py`의 RMS 단계에서도 자동 적용.
 - 2000년 이후는 `RMS_monthly_price.json` 연말 종가, 1993~1999년은 2000~2009년 '실제÷배당조정' 비율 추세(연 약 −1.5%)로 추정(`peBasis: actual-estimated`).
 - 이유: 배당 조정 종가로 계산한 PER은 오래된 해일수록 낮게 나와(2000년 약 27%) 이익 시계(실제 종가)와 어긋났다. 수익률(totalCagr)·EPS는 그대로이고, PER 효과는 이제 배당을 뺀 순수 PER 변화.
+- 1993~1999년 실제 종가 반영(2026-10-23): 트레이딩뷰 RMS 월봉 종가(EUR, 분할 반영, 사용자가 화면에서 읽어 준 값, 1993년 12월은 1994년 1월 시가 7.96)를 받아 추정치를 대체. 연말 값은 `rms_actual_pe.py`의 `MANUAL_YE`, 월별 전체는 page.tsx `RMS_PRE2000_MONTHLY`(이익 시계 1993년 말부터 표시). 1993~1999년 매수 PER이 4~11% 낮아짐(1993 30.8→27.4, 1999 47.3→46.2배). 이제 전 구간 `peBasis: actual`.
 
 #### 에르메스 2002~2008년 EPS 정정 (2026-10-23)
 - 2006 연차보고서 5년 표(순이익 그룹 몫: 2002 215.5 / 2003 216.8 / 2004 213.9 / 2005 247.0 / 2006 268.4 백만 유로, 주당이익 2004 1.94 / 2005 2.27 / 2006 2.51)와 2008 결과 발표(2008 순이익 290.2, 주당이익 +1.8%)로 대조.
