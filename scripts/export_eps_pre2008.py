@@ -296,8 +296,9 @@ PREDECESSOR = {
 CURRENT_FROM = {"MRK": "2009-11-04"}
 
 
-def xbrl_eps(cik):
-    """회계연도 종료일 → (EPS, 공시일): 연간(10-K) 희석 EPS."""
+def xbrl_eps(cik, first=False):
+    """회계연도 종료일 → (EPS, 공시일): 연간(10-K) 희석 EPS.
+    first=True면 처음 발표된 값(나중에 실적을 재작성하기 전 값)."""
     best = {}
     for concept in ("EarningsPerShareDiluted", "EarningsPerShareBasicAndDiluted", "EarningsPerShareBasic"):
         r = get(f"https://data.sec.gov/api/xbrl/companyconcept/CIK{cik:010d}/us-gaap/{concept}.json")
@@ -313,7 +314,8 @@ def xbrl_eps(cik):
                 if not 340 <= days <= 390:
                     continue
                 prev = best.get(it["end"])
-                if prev is None or (prev[2] == concept and it["filed"] > prev[1]):
+                newer = it["filed"] < prev[1] if (first and prev) else (prev and it["filed"] > prev[1])
+                if prev is None or (prev[2] == concept and newer):
                     best[it["end"]] = (float(it["val"]), it["filed"], concept)
         if best:
             break
@@ -358,6 +360,11 @@ def process(key, cik):
     if not filings:
         print(f"  {key}: 10-K 목록 없음", flush=True)
         return
+    # 회사가 실적을 재작성한 경우(예: 애플 2007~2009) 옛 보고서는 처음 발표값과 맞으므로 그것도 대조에 씀
+    alt = {}
+    for end, (v, filed, _) in xbrl_eps(cik, first=True).items():
+        t = pd.Timestamp(end)
+        alt[t.year - 1 if t.month <= 3 else t.year] = v / split_factor(splits, filed)
     obs = {}  # 연도 → [(접수일, 값, 겹친 해 수)]
     fails = 0
     for date, accn, doc, form, fcik in filings:
@@ -375,6 +382,9 @@ def process(key, cik):
         got = None
         for found in founds:
             f2, nov = reconcile(found, ref, fac)
+            if f2 is None and alt:
+                ref_alt = {**ref, **{y: v for y, v in alt.items() if y in known}}
+                f2, nov = reconcile(found, ref_alt, fac)
             if f2 is not None:
                 got = (f2, nov)
                 break
