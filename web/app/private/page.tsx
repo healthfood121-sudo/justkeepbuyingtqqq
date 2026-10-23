@@ -3055,7 +3055,7 @@ type CashYear = {
 type CashData = {
   years: Record<string, CashYear>
   ttm?: { asOf: string; ocf: number; capex: number; fcf: number; ni: number; annualOnly?: boolean }
-  bank?: boolean   // 은행·증권: 예금·대출이 현금흐름에 섞여 잉여현금흐름을 계산하지 않음
+  bank?: boolean   // 은행·증권·보험: 고객 돈이 현금흐름에 섞여 잉여현금흐름을 계산하지 않음
 }
 
 // ── 1달러당 이익·현금, 자본 수익률 ─────────────────────────────
@@ -3125,7 +3125,7 @@ function CashReturnPanel({ cash, m }: { cash: CashData; m: Metrics }) {
         </div>}
       </div>
 
-      {cash.bank && <p className={p}><b>은행·증권사는 잉여현금흐름을 계산하지 않는다.</b> 고객 예금과 대출이 영업 현금흐름에 섞여 있어 숫자가 크게 흔들리고 뜻이 없다. 이익 수익률과 ROE로 본다.</p>}
+      {cash.bank && <p className={p}><b>은행·증권·보험사는 잉여현금흐름을 계산하지 않는다.</b> 고객 예금·대출·보험료 같은 고객 돈이 영업 현금흐름에 섞여 있어 숫자가 크게 흔들리고 뜻이 없다. 이익 수익률과 ROE로 본다.</p>}
       <ul className={`${p} list-disc pl-4 space-y-1`}>
         <li><b>가격 비교:</b> 이익 수익률·잉여현금흐름 수익률이 높을수록 같은 1달러로 더 많이 산다. 미국 10년 국채 수익률과 견줘 보면 감이 온다.</li>
         <li><b>현금 전환율</b>이 100% 근처면 이익이 거의 그대로 현금으로 남는다. 계속 낮으면 이익의 상당 부분이 설비·재고에 다시 묶이는 사업이다.</li>
@@ -3164,7 +3164,7 @@ function CashReturnPanel({ cash, m }: { cash: CashData; m: Metrics }) {
       </div>
       <p className="text-[11px] text-gray-400 dark:text-gray-500">
         SEC 공시(10-K·10-Q) 기준. 잉여현금흐름 = 영업활동 현금흐름 − 유형자산 취득. 최근 1년 = 최근 연간 + 올해 누적 − 작년 같은 기간{t ? (t.annualOnly ? '(분기 자료가 맞지 않아 최근 연간 값)' : ` (${t.asOf}까지)`) : ''}.
-        ROE = 순이익 ÷ 평균 자기자본. ROIC = 영업이익(없으면 세전이익 + 이자비용) × (1 − 실효 법인세율) ÷ 평균(자기자본 + 차입금 − 현금·단기 투자자산). 자기자본이 마이너스인 회사, 은행·보험사의 ROIC는 비워 둔다.
+        ROE = 순이익 ÷ 평균 자기자본. ROIC = 영업이익(없으면 세전이익 + 이자비용) × (1 − 실효 법인세율) ÷ 평균(자기자본 + 차입금 − 현금·단기 투자자산). 자기자본이 마이너스이거나 너무 작은 회사(ROE 300% 초과), 현금이 많아 투하자본이 아주 작은 회사, 은행·보험사의 ROIC는 비워 둔다.
         연도별 잉여현금 수익률은 주당 잉여현금 ÷ 그해 12월 말 주가.
       </p>
     </div>

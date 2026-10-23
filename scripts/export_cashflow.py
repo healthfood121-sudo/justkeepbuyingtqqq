@@ -52,7 +52,7 @@ PRETAX = ["IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItems
 TAX = ["IncomeTaxExpenseBenefit"]
 INTEREST = ["InterestExpense", "InterestExpenseNonoperating", "InterestExpenseDebt", "InterestAndDebtExpense"]
 # 은행·증권: 예금·대출이 영업현금흐름에 섞여 잉여현금흐름이 의미 없음
-BANK_MARKERS = ["Deposits", "InterestExpenseDeposits", "LoansAndLeasesReceivableNetReportedAmount"]
+BANK_MARKERS = ["Deposits", "InterestExpenseDeposits", "LoansAndLeasesReceivableNetReportedAmount", "PayablesToCustomers"]
 # 보험: 투자 손익이 이익에 섞여 ROIC 근사가 의미 없음 (영업이익 항목이 없을 때 대체 계산을 하지 않음)
 INSURER_MARKERS = ["PremiumsEarnedNet", "LiabilityForFuturePolicyBenefits", "LiabilityForClaimsAndClaimsAdjustmentExpense"]
 EQUITY = ["StockholdersEquity", "StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest"]
@@ -200,6 +200,9 @@ def year_end_close(fund: dict) -> dict:
     return out
 
 
+FCF_OK_INSURERS = {"BRKB"}  # 보험이 일부인 복합 기업: 잉여현금흐름 유지
+
+
 def build(gaap: dict, fund: dict) -> dict | None:
     ocf = annual_flow(gaap, OCF)
     ni = annual_flow(gaap, NI)
@@ -213,8 +216,9 @@ def build(gaap: dict, fund: dict) -> dict | None:
     tax = annual_flow(gaap, TAX)
     interest = annual_flow(gaap, INTEREST)
     bank = any(usd_items(gaap, n) for n in BANK_MARKERS)
-    insurer = any(usd_items(gaap, n) for n in INSURER_MARKERS)
-    if not opinc and not bank and not insurer:  # 영업이익 항목이 없으면 세전이익 + 이자비용으로 근사 (예: 나이키)
+    insurer0 = any(usd_items(gaap, n) for n in INSURER_MARKERS)
+    no_fcf = bank or (insurer0 and fund.get("key") not in FCF_OK_INSURERS)  # 고객 돈이 현금흐름에 섞이는 금융사
+    if not opinc and not bank and not insurer0:  # 영업이익 항목이 없으면 세전이익 + 이자비용으로 근사 (예: 나이키)
         opinc = {e: v + interest.get(e, 0.0) for e, v in pretax.items()}
     eq = instant(gaap, EQUITY)
     cash = instant(gaap, CASH)
@@ -243,19 +247,26 @@ def build(gaap: dict, fund: dict) -> dict | None:
         avg_eq = (e + prev_eq) / 2 if (e is not None and prev_eq is not None and consecutive) else e
         avg_ic = (ic + prev_ic) / 2 if (ic is not None and prev_ic is not None and consecutive) else ic
         roe = n / avg_eq if avg_eq and avg_eq > 0 else None
+        if roe is not None and abs(roe) > 3:  # 자기자본이 너무 작아 의미 없음
+            roe = None
         roic = None
         if end in opinc and avg_ic and avg_ic > 0:
             rate = 0.21 if y >= 2018 else 0.35
             if end in tax and end in pretax and pretax[end] > 0:
                 rate = min(max(tax[end] / pretax[end], 0.0), 0.40)
             roic = opinc[end] * (1 - rate) / avg_ic
+            # 현금이 많아 투하자본이 (자기자본 + 차입금)의 10% 미만이면 비율이 의미 없이 커짐
+            base = (e or 0.0) + (dbt or 0.0)
+            if (ic is not None and base > 0 and ic < 0.1 * base) or abs(roic) > 3:
+                roic = None
         conv = f / n if n > 0 else None
         fps = None
-        if y in eps and eps[y] and n and (eps[y] > 0) == (n > 0):
-            fps = eps[y] * f / n
+        if y in eps and eps[y] and abs(eps[y]) >= 0.1 and n and (eps[y] > 0) == (n > 0):
+            fps = eps[y] * f / n  # = 잉여현금 ÷ (순이익 ÷ EPS) — 분할 보정된 주식 수 기준
         fy_yield = fps / px[y] if fps is not None and px.get(y) else None
-        if bank:
+        if no_fcf:
             o = c = f = conv = fps = fy_yield = None
+        if bank:
             roic = None
         years[str(y)] = {k: v for k, v in {
             "end": end, "ocf": m(o), "capex": m(c), "fcf": m(f), "ni": m(n),
@@ -266,7 +277,7 @@ def build(gaap: dict, fund: dict) -> dict | None:
         }.items() if v is not None}
         prev_eq, prev_ic, prev_end = e, ic, end
 
-    if bank:
+    if no_fcf:
         return {"years": years, "bank": True}
     t_ocf = ttm(gaap, OCF, ocf)
     t_cap = ttm(gaap, CAPEX, capex) if capex else (0.0, t_ocf[1] if t_ocf else None)
@@ -293,14 +304,14 @@ def metrics(fund: dict, cash: dict) -> dict:
     fps = None
     if t is None:  # 은행: 잉여현금흐름 지표 없음
         t = {}
+    sh = (fund.get("shares") or {}).get("count")
     if "fcf" not in t:
         pass
-    elif t.get("ni") and ttm_eps and (t["ni"] > 0) == (ttm_eps > 0):
-        fps = ttm_eps * t["fcf"] / t["ni"]  # EPS와 같은 주식 수 기준
-    else:
-        sh = (fund.get("shares") or {}).get("count")
-        if sh:
-            fps = t["fcf"] * 1e6 / sh
+    elif sh:  # 공시 유통 주식 수 기준 (EPS 출처와 순이익 출처가 달라 생기는 오차를 피함)
+        fps = t["fcf"] * 1e6 / sh
+    if fps is None and "fcf" in t and t.get("ni") and ttm_eps and (t["ni"] > 0) == (ttm_eps > 0) \
+            and abs(t["fcf"] / t["ni"]) <= 5:
+        fps = ttm_eps * t["fcf"] / t["ni"]
     if fps is not None and price:
         out["fcfPs"] = round(fps, 3)
         out["fcfYield"] = round(fps / price * 100, 2)
@@ -312,7 +323,7 @@ def metrics(fund: dict, cash: dict) -> dict:
     recent = [cash["years"][y] for y in ys[-5:]]
     f5 = sum(r.get("fcf", 0) for r in recent) if "fcf" in t else 0
     n5 = sum(r.get("ni", 0) for r in recent)
-    if "fcf" in t and n5 > 0 and len(recent) >= 3:
+    if "fcf" in t and n5 > 0 and len(recent) >= 3 and abs(f5 / n5) <= 5:
         out["conv5"] = round(f5 / n5, 2)
     roic5 = [r["roic"] for r in recent if "roic" in r]
     if len(roic5) >= 3:
@@ -321,6 +332,9 @@ def metrics(fund: dict, cash: dict) -> dict:
     if len(roe5) >= 3:
         out["roe5"] = round(sorted(roe5)[len(roe5) // 2], 1)
     return out
+
+
+CASH_METRIC_KEYS = ("earnYield", "fcfPs", "fcfYield", "roe", "roic", "conv5", "roic5", "roe5")
 
 
 def load_cik_map():
@@ -362,7 +376,11 @@ def main():
             continue
         mt = metrics(fund, cash)
         fund["cash"] = cash
-        fund.setdefault("metrics", {}).update(mt)
+        for kk in CASH_METRIC_KEYS:  # 이전 실행 값이 남지 않게
+            fund.setdefault("metrics", {}).pop(kk, None)
+            if k in by_key:
+                by_key[k].pop(kk, None)
+        fund["metrics"].update(mt)
         path.write_text(json.dumps(fund, ensure_ascii=False, separators=(",", ":")))
         if k in by_key:
             by_key[k].update(mt)
