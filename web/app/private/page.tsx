@@ -3963,22 +3963,13 @@ function AutoDeep({ f, data, part, num = '' }: { f: Fundamentals; data: StockDat
     v < 0 ? 'text-red-500' : v < 5 ? 'text-orange-500' : v < 10 ? 'text-yellow-600 dark:text-yellow-400'
       : v < 15 ? 'text-emerald-600 dark:text-emerald-400' : 'text-blue-600 dark:text-blue-400 font-semibold'
 
-  // 자동 결론
+  // 자동 결론: 1번(지금 한눈에)에 없는 판단만 — 목표 수익률에 필요한 성장, 비슷한 PER의 과거 결과, 최근 수익률 순위
   const concl: string[] = []
-  if (curPe && m.peMed10) {
-    const r = curPe / m.peMed10
-    concl.push(r <= 0.85 ? `지금 PER(${curPe.toFixed(1)}배)은 자기 10년 평소(${m.peMed10.toFixed(1)}배)보다 확실히 낮다. 값은 매력적인 구간.`
-      : r >= 1.3 ? `지금 PER(${curPe.toFixed(1)}배)은 자기 10년 평소(${m.peMed10.toFixed(1)}배)보다 30% 이상 높다. 기대가 이미 가격에 많이 들어가 있다.`
-      : `지금 PER(${curPe.toFixed(1)}배)은 자기 10년 평소(${m.peMed10.toFixed(1)}배)와 비슷하다. 수익은 대부분 이익 성장에서 나와야 한다.`)
-  }
   if (need15 != null && histLow != null) {
     concl.push(`PER이 평소 수준으로 돌아간다고 보면, 연 15%를 내려면 이익이 연 ${need15.toFixed(0)}%씩 늘어야 한다. 과거 이익 성장률(5년·10년 중 낮은 값)은 연 ${histLow.toFixed(0)}%로 ${histLow >= need15 ? '과거 속도만 유지해도 가능한 수준' : '과거보다 빨라야 하는 수준'}이다.`)
   }
   if (similar.length) {
     concl.push(`지금과 비슷한 PER(±20%)에서 산 ${similar.length}번의 10년 결과는 평균 연 ${avg(similar.map(d => d.totalCagr)).toFixed(1)}% (${Math.min(...similar.map(d => d.totalCagr)).toFixed(1)}~${Math.max(...similar.map(d => d.totalCagr)).toFixed(1)}%).`)
-  }
-  if (m.epsVsPeak != null && m.epsVsPeak < 0.85) {
-    concl.push(`최근 1년 이익이 10년 고점의 ${(m.epsVsPeak * 100).toFixed(0)}%라 PER이 실제보다 높아 보인다. 이익 회복이 먼저다. (고점 해에 일회성 이익이 있었다면 왜곡일 수 있다.)`)
   }
   if (latest && rows.length >= 5) {
     concl.push(`가장 최근 완결 구간(${latest.buyYear}→${latest.sellYear}) 연 ${latest.cagr.toFixed(1)}%는 과거 ${rows.length}개 중 ${latestRank}번째로 낮다${latestRank <= Math.max(2, rows.length * 0.2) ? ' — 10년 수익률이 바닥권이다.' : '.'}`)
@@ -3994,6 +3985,7 @@ function AutoDeep({ f, data, part, num = '' }: { f: Fundamentals; data: StockDat
               <thead>
                 <tr>
                   <th className={`${th} text-left`}>보유 구간</th>
+                  <th className={`${th} text-right`}>매수 해 EPS</th>
                   <th className={`${th} text-right`}>매수 PER</th>
                   <th className={`${th} text-right`}>10년 연평균</th>
                   <th className={`${th} text-right`}>EPS 성장(연)</th>
@@ -4008,7 +4000,7 @@ function AutoDeep({ f, data, part, num = '' }: { f: Fundamentals; data: StockDat
                     if (!marked && d.peBuy > curPe) {
                       out.push(
                         <tr key="now" className="bg-blue-50 dark:bg-blue-900/20">
-                          <td className={`${td} font-semibold`} colSpan={2}>▶ 지금 PER {curPe.toFixed(1)}배</td>
+                          <td className={`${td} font-semibold`} colSpan={3}>▶ 지금 PER {curPe.toFixed(1)}배{m.ttmEps != null ? ` · 최근 1년 EPS ${m.ttmEps.toFixed(2)}` : ''}</td>
                           <td className={`${td} text-right`} colSpan={3}>?</td>
                         </tr>)
                       marked = true
@@ -4016,6 +4008,7 @@ function AutoDeep({ f, data, part, num = '' }: { f: Fundamentals; data: StockDat
                     out.push(
                       <tr key={d.buyYear}>
                         <td className={td}>{d.buyYear} → {d.sellYear}</td>
+                        <td className={`${td} text-right`}>{fmt(f.eps[String(d.buyYear)], 2)}</td>
                         <td className={`${td} text-right`}>{d.peBuy.toFixed(1)}배</td>
                         <td className={`${td} text-right font-semibold ${cell(d.totalCagr)}`}>{d.totalCagr.toFixed(1)}%</td>
                         <td className={`${td} text-right`}>{sgn(d.epsGrowthCagr)}%</td>
@@ -4024,7 +4017,7 @@ function AutoDeep({ f, data, part, num = '' }: { f: Fundamentals; data: StockDat
                   })
                   if (!marked) out.push(
                     <tr key="now" className="bg-blue-50 dark:bg-blue-900/20">
-                      <td className={`${td} font-semibold`} colSpan={2}>▶ 지금 PER {curPe.toFixed(1)}배</td>
+                      <td className={`${td} font-semibold`} colSpan={3}>▶ 지금 PER {curPe.toFixed(1)}배{m.ttmEps != null ? ` · 최근 1년 EPS ${m.ttmEps.toFixed(2)}` : ''}</td>
                       <td className={`${td} text-right`} colSpan={3}>?</td>
                     </tr>)
                   return out
@@ -4216,6 +4209,7 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
   }
   if (m.epsVsPeak != null) {
     lines.push(m.epsVsPeak >= 0.95 ? '최근 1년 이익은 10년 내 최고 수준이다.'
+      : m.epsVsPeak < 0.85 ? `최근 1년 이익은 10년 내 고점의 ${(m.epsVsPeak * 100).toFixed(0)}%라 PER이 실제보다 높아 보인다. 이익 회복이 먼저다(고점 해에 일회성 이익이 있었다면 왜곡일 수 있다).`
       : `최근 1년 이익은 10년 내 고점의 ${(m.epsVsPeak * 100).toFixed(0)}% 수준이다.`)
   }
 
@@ -4229,7 +4223,6 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
   const nFuture = live ? sec++ : 0
   const nConcl = live ? sec++ : 0
   let sub = 1
-  const nTable = years.length > 0 ? `${nPast}-${sub++}.` : ''
   const nDecomp = decomp.length > 0 ? `${nPast}-${sub++}.` : ''
   const nPastPe = `${nPast}-${sub++}.`
   const h3 = 'text-sm font-semibold text-gray-900 dark:text-white pt-2'
@@ -4253,7 +4246,6 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
           <StatCard label="이익 / 10년 고점" value={m.epsVsPeak != null ? `${(m.epsVsPeak * 100).toFixed(0)}%` : '—'} />
           <StatCard label="배당수익률" value={fmt(m.divYield, 2, '%')} />
           <StatCard label="1년 주가 변화" value={fmtSgn(m.chg1y, 0)} />
-          <StatCard label="단순 기대수익률(연)" value={fmtSgn(m.expRet10)} />
         </div>
         {m.stale && (
           <p className="text-xs text-amber-600 dark:text-amber-400">
@@ -4264,47 +4256,15 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
           {lines.map((l, i) => <li key={i}>{l}</li>)}
           {group && <li><b>{GROUPS[group].label}:</b> {GROUPS[group].desc}</li>}
         </ul>
-        <p className="text-[11px] text-gray-400 dark:text-gray-500">
-          단순 기대수익률 = EPS가 최근 5년·10년 성장률 중 낮은 값(최대 연 15%)으로 10년 더 늘고, PER이 10년 중간값(최대 35배)으로 돌아가며, 배당이 유지된다고 가정한 연평균. 방향을 보는 참고값이다.
-        </p>
       </div>
 
       {live && <StockValueClock f={f as ClockFund} stockKey={stockKey} rolling={data} title={`${nClock}. 이익 시계 — 적정가 선 vs 주가`} />}
 
       <div className="space-y-1">
         <h3 className={h3}>{nPast}. 과거에는 어땠나</h3>
-        <p className={p}>연말 PER이 어떻게 움직였는지, 10년 보유 수익이 이익·배당·PER 중 어디서 나왔는지, 매수 시점 PER에 따라 결과가 어떻게 달랐는지 본다.</p>
+        <p className={p}>10년 보유 수익이 이익·배당·PER 중 어디서 나왔는지, 매수 시점 PER에 따라 결과가 어떻게 달랐는지 본다.</p>
       </div>
 
-      {years.length > 0 && (
-        <div className={box}>
-          <h4 className={h4}>{nTable} 최근 연말 주가·EPS·PER</h4>
-          <div className="overflow-x-auto">
-            <table className="text-xs">
-              <thead>
-                <tr>
-                  <th className={`${th} text-left`}>연도</th>
-                  {years.map(y => <th key={y} className={`${th} text-right`}>{y}</th>)}
-                  <th className={`${th} text-right`}>지금</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                <tr>
-                  <td className={td}>EPS</td>
-                  {years.map(y => <td key={y} className={`${td} text-right`}>{fmt(f.eps[String(y)], 2)}</td>)}
-                  <td className={`${td} text-right font-semibold`}>{fmt(m.ttmEps, 2)}</td>
-                </tr>
-                <tr>
-                  <td className={td}>PER</td>
-                  {years.map(y => <td key={y} className={`${td} text-right`}>{f.pe[String(y)] != null ? `${f.pe[String(y)]!.toFixed(1)}배` : '—'}</td>)}
-                  <td className={`${td} text-right font-semibold`}>{m.pe != null ? `${m.pe.toFixed(1)}배` : '—'}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <p className="text-[11px] text-gray-400 dark:text-gray-500">EPS는 각 회계연도 기준(분할 반영), PER은 연말 주가 ÷ 그해 회계연도 EPS. &lsquo;지금&rsquo;은 최근 1년 EPS.</p>
-        </div>
-      )}
 
       {decomp.length > 0 && (
         <DecompSection
@@ -4366,7 +4326,7 @@ export default function PrivatePage() {
                   사업성 평가(회사가 얼마나 좋은가, 주가와 무관) →
                   1. 지금 한눈에(지금 PER이 평소보다 싼가, 이익이 늘고 있나) →
                   2. 이익 시계(적정가 선, 내 몫 이익·잉여현금, 1달러당 이익·현금·ROE·ROIC) →
-                  3. 과거(연말 PER, 수익이 이익·배당·PER 중 어디서 왔나, 매수 PER별 결과) →
+                  3. 과거(수익이 이익·배당·PER 중 어디서 왔나, 매수 PER별 결과) →
                   4. 앞으로(지금 사면 10년 뒤 예상) → 5. 결론 → 부록(과거 바닥 직후 매수, 접혀 있음).
                 </p>
               </div>
