@@ -165,10 +165,19 @@ def find_eps(rows, max_gap=80):
         since += 1
         recent = (recent + [cells])[-6:]
         ys = [int(m) for c in cells for m in YEAR_RE.findall(c)]
-        if len(ys) >= 4 and len(set(ys)) == len(ys) and all(abs(a - b) == 1 for a, b in zip(ys, ys[1:])):
+        seq = len(set(ys)) == len(ys) and all(abs(a - b) == 1 for a, b in zip(ys, ys[1:])) \
+            and not any(parse_num(c) is not None for c in cells)
+        # 10년 표처럼 연도 줄이 두 줄로 나뉜 경우 이어 붙임
+        if seq and ys and years and since == 1 and len(years) >= 2 \
+                and ys[0] == years[-1] + (1 if years[-1] > years[0] else -1):
+            years, since, pend = years + ys, 0, None
+            continue
+        if seq and len(ys) >= 3:
             years, since, pend = ys, 0, None
             continue
         if not years or since > max_gap or not cells:
+            if DEBUG and cells and "dilut" in cells[0].lower() and len(cells) > 2:
+                print(f"    [디버그] 연도 줄 없음/멂 since={since} 줄{cells[:6]}", flush=True)
             continue
         label = cells[0]
         body = cells[1:]
@@ -281,7 +290,10 @@ PREDECESSOR = {
     "BKR": 808362,     # Baker Hughes Inc → Baker Hughes Co (2017)
     "ICE": 1174746,    # IntercontinentalExchange Inc → ICE Inc (2013)
     "CHTR": 1091667,   # Charter Communications (구) → 새 Charter (2016)
+    "MRK": 64978,      # 원래 Merck & Co (지금 번호는 2009년 합병한 셰링플라우 것)
 }
+# 지금 번호의 이 날짜 이전 보고서는 다른 회사 것 → 제외
+CURRENT_FROM = {"MRK": "2009-11-04"}
 
 
 def xbrl_eps(cik):
@@ -337,7 +349,8 @@ def process(key, cik):
             print(f"  {key}: 예전 회사 XBRL 채택 (겹침 {nov}) → {sorted(added.items())}", flush=True)
         else:
             print(f"  {key}: 예전 회사 XBRL 불일치 {sorted(by.items())[-6:]} / 지금 {sorted(known.items())[:4]}", flush=True)
-    filings = list_10k(cik) + (list_10k(pred) if pred else [])
+    cur = [f for f in list_10k(cik) if f[0] >= CURRENT_FROM.get(key, "")]
+    filings = cur + (list_10k(pred) if pred else [])
     filings = sorted({f[1]: f for f in filings if f[3] != "10-K/A"}.values(), reverse=True)
     base = {**known, **added}
     first_all = min(base)
