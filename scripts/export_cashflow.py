@@ -352,7 +352,31 @@ def load_cik_map():
     return {v["ticker"].upper(): int(v["cik_str"]) for v in r.json().values()}
 
 
+def debug_payments(keys):
+    """설비투자 항목을 못 찾는 종목 점검용: 'Payments…' 계열 항목과 최근 연간 값 출력."""
+    cik_map = load_cik_map()
+    for k in keys:
+        fund = json.loads((OUT / f"{k}.json").read_text())
+        t = (fund.get("ticker") or k).replace(".", "-").upper()
+        cik = cik_map.get(t) or cik_map.get(t.replace("-", "."))
+        r = requests.get(f"https://data.sec.gov/api/xbrl/companyfacts/CIK{cik:010d}.json", headers=UA, timeout=90)
+        time.sleep(0.12)
+        facts = r.json().get("facts", {})
+        print(f"== {k}")
+        for ns, items in facts.items():
+            for n, v in items.items():
+                if not (n.startswith("Payments") or "Capital" in n and "Expend" in n):
+                    continue
+                a = annual_flow({n: v}, [n])
+                if a:
+                    e = max(a)
+                    print(f"   {ns}:{n} {e} {a[e] / 1e6:,.0f}M")
+
+
 def main():
+    if sys.argv[1:2] == ["--debug-capex"]:
+        debug_payments(sys.argv[2:])
+        return
     only = set(sys.argv[1:])
     keys = sorted(f.stem for f in OUT.glob("*.json") if not f.stem.startswith("_"))
     keys = [k for k in keys if not only or k in only]
