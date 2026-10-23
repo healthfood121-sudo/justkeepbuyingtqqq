@@ -990,3 +990,8 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 - 교차 검증(2026-10-23): 서로 다른 두 번의 전 종목 실행 결과를 비교해, 값이 다른 해(겹친 3,437개 연도 중 141개)는 제외. 절반 가까이 어긋난 19개 종목(PCG, AXP, GE, MDT 등)은 두 실행이 일치한 해만 남김.
 - 실적을 재작성한 회사(예: 애플 2007~2009년)는 SEC의 '처음 발표값'과도 대조하고, 대조 기준은 최근 보고서 값·시점이 가까운 보고서 값 중 하나라도 맞으면 인정.
 - 못 채운 65개: 대부분 2008년 이후 상장·분사(META, ABBV, PYPL, TSLA 등). 오래된 회사 중 포드, 클로록스 등은 비어 있음.
+
+#### RMS_rolling.json PER 실제 종가 기준 전환 (2026-10-23)
+- `scripts/rms_actual_pe.py`: `epsDecomp`의 peBuy·peSell·peMultiple·peCagr를 실제 종가(배당 미반영) ÷ EPS로 다시 계산, `rows10y`에 `peBuyActual` 추가, `peNote`·`peBasis` 기록. `export_rolling_json.py`의 RMS 단계에서도 자동 적용.
+- 2000년 이후는 `RMS_monthly_price.json` 연말 종가, 1993~1999년은 2000~2009년 '실제÷배당조정' 비율 추세(연 약 −1.5%)로 추정(`peBasis: actual-estimated`).
+- 이유: 배당 조정 종가로 계산한 PER은 오래된 해일수록 낮게 나와(2000년 약 27%) 이익 시계(실제 종가)와 어긋났다. 수익률(totalCagr)·EPS는 그대로이고, PER 효과는 이제 배당을 뺀 순수 PER 변화.

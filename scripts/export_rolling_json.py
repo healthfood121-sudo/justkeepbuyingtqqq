@@ -316,6 +316,10 @@ rms_out = {
     "epsNote": "EUR EPS: 1993~2000년은 AI 역산 추정치 (1:9 분할 완전 반영 기준), 2001~2008년은 사용자 제공 데이터, 2009~2025년은 회사 발표 기준(주당이익 또는 순이익÷주식 수). 분할 이력: 1997-06-06 1:3, 2006-06-12 1:3 (누적 1:9). PER은 Yahoo Finance EUR 종가(배당조정) 기준.",
 }
 
+# PER을 실제 종가(배당 미반영) 기준으로 (scripts/rms_actual_pe.py)
+from rms_actual_pe import apply_actual_pe
+rms_out = apply_actual_pe(rms_out, DST / "RMS_monthly_price.json")
+
 out_path2 = DST / "RMS_rolling.json"
 out_path2.write_text(json.dumps(rms_out, ensure_ascii=False, indent=2), encoding="utf-8")
 print(f"  저장 → {out_path2}")
