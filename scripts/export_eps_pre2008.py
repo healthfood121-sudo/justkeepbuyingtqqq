@@ -164,7 +164,8 @@ def find_eps(rows, max_gap=80):
     for cells in rows:
         since += 1
         recent = (recent + [cells])[-6:]
-        ys = [int(m) for c in cells for m in YEAR_RE.findall(c)]
+        # 연도는 짧은 칸에서만 ("Five fiscal years ended September 29, 2007" 같은 설명 칸 제외)
+        ys = [int(m) for c in cells if len(c.strip()) <= 14 for m in YEAR_RE.findall(c)]
         seq = len(set(ys)) == len(ys) and all(abs(a - b) == 1 for a, b in zip(ys, ys[1:])) \
             and not any(parse_num(c) is not None for c in cells)
         # 10년 표처럼 연도 줄이 두 줄로 나뉜 경우 이어 붙임
@@ -380,14 +381,13 @@ def process(key, cik):
             ref.setdefault(y, lst[0][1])
         fac = split_factor(splits, date)
         got = None
-        for found in founds:
+        for found in founds:  # 통과한 후보 중 연도가 가장 많은 표(5년·10년 표 우선)
             f2, nov = reconcile(found, ref, fac)
             if f2 is None and alt:
                 ref_alt = {**ref, **{y: v for y, v in alt.items() if y in known}}
                 f2, nov = reconcile(found, ref_alt, fac)
-            if f2 is not None:
+            if f2 is not None and (got is None or (len(f2), nov) > (len(got[0]), got[1])):
                 got = (f2, nov)
-                break
         if not got:
             print(f"  {key}: {date} 겹치는 해 불일치 (분할 {fac:g}배) 첫 후보 {founds[0]}", flush=True)
             fails += 1
