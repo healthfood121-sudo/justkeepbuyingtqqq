@@ -151,29 +151,54 @@ def rows_from_text(text):
             yield [c for c in re.split(r"\s{2,}", ln.strip()) if c and c not in ("$",)]
 
 
+DEBUG = bool(__import__("os").environ.get("EPS_DEBUG")) or "--debug" in sys.argv
+
+
 def find_eps(rows, max_gap=80):
-    """연도 머리줄 아래(max_gap 줄 이내) EPS 후보 행들을 점수순으로."""
+    """연도 머리줄 아래(max_gap 줄 이내) EPS 후보 행들을 점수순으로.
+    숫자가 다음 줄로 넘어간 행은 이어 붙이고, 칸 수가 많으면 왼쪽·오른쪽 정렬을 모두 후보로 낸다."""
     cands = []
     years, since = None, 0
+    pend = None  # 숫자 없이 끝난 EPS 이름 줄 (점수, 이름)
+    recent = []
     for cells in rows:
         since += 1
+        recent = (recent + [cells])[-6:]
         ys = [int(m) for c in cells for m in YEAR_RE.findall(c)]
         if len(ys) >= 4 and len(set(ys)) == len(ys) and all(abs(a - b) == 1 for a, b in zip(ys, ys[1:])):
-            years, since = ys, 0
+            years, since, pend = ys, 0, None
             continue
         if not years or since > max_gap or not cells:
             continue
-        sc = label_score(cells[0])
+        label = cells[0]
+        body = cells[1:]
+        if parse_num(label) is not None and pend:  # 이름 없이 숫자만 있는 줄 → 바로 위 이름 줄의 숫자
+            sc, label = pend
+            body = cells
+        else:
+            sc = label_score(label)
+        pend = None
         if sc <= 0:
             continue
-        nums = [parse_num(c) for c in cells[1:] if not re.fullmatch(r"\((?:[a-zA-Z]|\d{1,2})\)|\*+", c.strip())]
+        nums = [parse_num(c) for c in body if not re.fullmatch(r"\((?:[a-zA-Z]|\d{1,2})\)|\*+", c.strip())]
         nums = [n for n in nums if n is not None]
-        if not (len(years) <= len(nums) <= len(years) + 1):  # 증감률 등 다른 칸이 섞인 행은 제외
+        if not nums:
+            pend = (sc, label)
             continue
-        vals = nums[: len(years)]
-        if any(abs(v) > 200 for v in vals):
+        n = len(years)
+        if not (n <= len(nums) <= n + 3):
+            if DEBUG and "dilut" in label.lower():
+                print(f"    [디버그] 칸 수 불일치 연도{years} 숫자{nums} 이름«{label}»", flush=True)
             continue
-        cands.append((sc, {y: v for y, v in zip(years, vals)}))
+        aligns = [nums[:n]] if len(nums) <= n + 1 else []
+        if len(nums) > n:
+            aligns.append(nums[-n:])  # 앞쪽에 증가율 칸이 붙은 표
+        for vals in aligns:
+            if any(abs(v) > 200 for v in vals):
+                continue
+            cands.append((sc, {y: v for y, v in zip(years, vals)}))
+        if DEBUG and "dilut" in label.lower():
+            print(f"    [디버그] 후보 연도{years} 숫자{nums} 이름«{label}» 앞줄{[r[:4] for r in recent[-4:-1]]}", flush=True)
     cands.sort(key=lambda c: -c[0])
     return [c[1] for c in cands]
 
