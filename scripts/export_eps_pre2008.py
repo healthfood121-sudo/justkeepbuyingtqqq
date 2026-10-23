@@ -263,7 +263,7 @@ def reconcile(found, known, factor):
     adj = {y: v / factor for y, v in found.items()}
     for shift in (0, -1):
         f2 = {y + shift: v for y, v in adj.items()}
-        ov = [y for y in f2 if y in known and known[y] and abs(known[y]) > 0.01]
+        ov = [y for y in f2 if y in known and known[y] and abs(known[y]) > 0.001]
         if not ov:
             continue
         diffs = [abs(f2[y] / known[y] - 1) for y in ov]
@@ -383,7 +383,7 @@ def process(key, cik):
             continue
         ref = dict(base)
         for y, lst in obs.items():
-            ref.setdefault(y, lst[0][1])
+            ref.setdefault(y, lst[-1][1])  # 시점이 가장 가까운 보고서 값 (같은 회계 기준일 가능성이 큼)
         fac = split_factor(splits, date)
         got = None
         for found in founds:  # 통과한 후보 중 연도가 가장 많은 표(5년·10년 표 우선)
