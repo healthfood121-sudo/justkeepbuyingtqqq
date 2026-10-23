@@ -2601,6 +2601,7 @@ type ClockProps = {
   sharesOut: number | null                     // 회사 유통 주식 수 (없으면 회사 전체 숫자 생략)
   divYield: number
   storageKey: string
+  growthBar?: ReactNode                        // EPS 성장률 바 (차트 아래, 적정 PER 바 위에 함께 표시)
   extraLive?: (now: number, fairNow: number) => ReactNode
   notes: string
   peExclude?: { from: number; to: number; label: string } // 이 기간을 뺀 PER 중간값도 눈금으로 (예: 거품기)
@@ -2648,7 +2649,7 @@ function ClockLive({ cur, epsAt, fairPe, shares, sharesOut, extraLive, fcfPs, dp
   )
 }
 
-function ValueClockCore({ cur, anchors, monthly, last, g, sharesOut, divYield, storageKey, extraLive, notes, peExclude, fcfPs }: ClockProps) {
+function ValueClockCore({ cur, anchors, monthly, last, g, sharesOut, divYield, storageKey, extraLive, notes, peExclude, fcfPs, growthBar }: ClockProps) {
   const [shares, setShares] = useState(1)
   const [pePick, setPePick] = useState<number | null>(null)
   const chartRef = useRef<ChartJS | null>(null)
@@ -2776,19 +2777,6 @@ function ValueClockCore({ cur, anchors, monthly, last, g, sharesOut, divYield, s
 
   return (
     <div className="space-y-3">
-      <p className={p}>
-        <b>파란 선 = 적정가 = 최근 1년 EPS × 적정 PER.</b> 이익이 늘면 파란 선이 오른쪽 위로 올라가고, 정한 EPS 성장률(연 {g.toFixed(1)}%)로 10년 뒤까지 이어진다(점선).
-        검은 선(주가)이 띠 아래면 싼 구간, 위면 비싼 구간이다.
-        {peMid != null && <> 적정 PER 기본값은 지난 {yrsUsed}년 PER의 중간값({peMid.toFixed(0)}배), 띠는 하위·상위 25%({peLo!.toFixed(0)}~{peHi!.toFixed(0)}배)다.</>}
-      </p>
-
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-        <div className={tile}><p className={lab}>적정가 (지금)</p><p className={big}>{fairNow ? money(fairNow, 1) : '—'}</p></div>
-        <div className={tile}><p className={lab}>주가 ({last.date})</p><p className={big}>{money(price, 1)}</p></div>
-        <div className={tile}><p className={lab}>지금 PER{zone ? ' · 구간' : ''}</p><p className={`${big} ${zone?.c ?? ''}`}>{peNow ? `${peNow.toFixed(1)}배` : '—'}{zone ? ` · ${zone.t}` : ''}</p></div>
-        <div className={tile}><p className={lab}>적정가 대비</p><p className={`${big} ${gap != null && gap < 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'}`}>{gap != null ? `${gap > 0 ? '+' : ''}${gap.toFixed(1)}% ${gap < 0 ? '(쌈)' : '(비쌈)'}` : '—'}</p></div>
-      </div>
-
       <div className="relative">
         <button onClick={() => (chartRef.current as any)?.resetZoom?.()}
           className="absolute top-0 right-0 z-10 px-2 py-0.5 text-xs text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 border border-gray-200 dark:border-gray-700 rounded">줌 초기화</button>
@@ -2798,6 +2786,22 @@ function ValueClockCore({ cur, anchors, monthly, last, g, sharesOut, divYield, s
         <p className="text-xs text-gray-400 dark:text-gray-600 text-right mt-1">휠: 확대/축소 &nbsp;|&nbsp; 드래그: 이동</p>
       </div>
 
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <div className={tile}><p className={lab}>적정가 (지금)</p><p className={big}>{fairNow ? money(fairNow, 1) : '—'}</p></div>
+        <div className={tile}><p className={lab}>주가 ({last.date})</p><p className={big}>{money(price, 1)}</p></div>
+        <div className={tile}><p className={lab}>지금 PER{zone ? ' · 구간' : ''}</p><p className={`${big} ${zone?.c ?? ''}`}>{peNow ? `${peNow.toFixed(1)}배` : '—'}{zone ? ` · ${zone.t}` : ''}</p></div>
+        <div className={tile}><p className={lab}>적정가 대비</p><p className={`${big} ${gap != null && gap < 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'}`}>{gap != null ? `${gap > 0 ? '+' : ''}${gap.toFixed(1)}% ${gap < 0 ? '(쌈)' : '(비쌈)'}` : '—'}</p></div>
+      </div>
+
+      <p className={p}>
+        <b>파란 선 = 적정가 = 최근 1년 EPS × 적정 PER.</b> 이익이 늘면 파란 선이 오른쪽 위로 올라가고, 정한 EPS 성장률(연 {g.toFixed(1)}%)로 10년 뒤까지 이어진다(점선).
+        검은 선(주가)이 띠 아래면 싼 구간, 위면 비싼 구간이다.
+        {peMid != null && <> 적정 PER 기본값은 지난 {yrsUsed}년 PER의 중간값({peMid.toFixed(0)}배), 띠는 하위·상위 25%({peLo!.toFixed(0)}~{peHi!.toFixed(0)}배)다.</>}
+      </p>
+
+      <div className="rounded border border-gray-200 dark:border-gray-800 p-3 space-y-4">
+      <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">조절 — 파란 선을 움직이는 두 가지</p>
+      {growthBar}
       <div className="space-y-1">
         <div className="flex justify-between text-xs">
           <span className="font-medium text-gray-700 dark:text-gray-200">적정 PER</span>
@@ -2835,6 +2839,7 @@ function ValueClockCore({ cur, anchors, monthly, last, g, sharesOut, divYield, s
           {peMid != null ? '기본값은 과거 PER 중간값.' : '과거 PER 자료가 짧아 기본값 20배.'} 아래 버튼을 누르면 그 값으로 바뀐다.
           지금 PER({peNow?.toFixed(0)}배)로 두면 &lsquo;주가가 이익만큼만 오를 때&rsquo;가 된다. PER은 월말 주가 ÷ 그때의 최근 1년 EPS(적자·200배 이상 제외).
         </p>
+      </div>
       </div>
 
       <div className="rounded bg-blue-50/60 dark:bg-blue-950/20 p-3 space-y-2">
@@ -3075,13 +3080,13 @@ function HermesValueClock({ g: gFactors, f }: { g: number; f: Factors }) {
   return (
     <div className={box}>
       <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">2. 이익 시계 — 적정가 선 vs 주가</h4>
-      <GrowthBar g={g} setG={setGUser}
+      {px ? (<>
+        <ValueClockCore
+          growthBar={<GrowthBar g={g} setG={setGUser}
         marks={growthMarks(RMS_ANCHORS, [{ k: '4번 요인 계산', short: '4번', v: gFactors, c: TICK_C.pick }])}
         note={<>기본값은 4번에서 판매량·가격·이익률·기타로 계산한 값({gFactors.toFixed(1)}%). 바를 움직이면 4번과 별개로 전체 성장률을 바로 정한다.
           {gUser != null && <> <button type="button" onClick={() => setGUser(null)} className="underline text-blue-600 dark:text-blue-400">4번 값으로 되돌리기</button></>}
-          {' '}과거 N년 = N년 전부터 지금까지 연평균, 5년 구간 = 지난 20년을 5년씩 끊어 본 성장률의 범위.</>} />
-      {px ? (<>
-        <ValueClockCore
+          {' '}과거 N년 = N년 전부터 지금까지 연평균, 5년 구간 = 지난 20년을 5년씩 끊어 본 성장률의 범위.</>} />}
           cur="€" anchors={RMS_ANCHORS} monthly={monthly} last={px.last} g={g}
           sharesOut={RMS_SHARES} divYield={1.35} storageKey="rms-shares" extraLive={extraLive}
           fcfPs={rmsCash(px.last.close, px.rows).fcfPs}
@@ -3304,9 +3309,9 @@ function StockValueClock({ f, stockKey, rolling, title = '이익 시계 — 적�
     <>
     <div className={box}>
       <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">{title}</h4>
-      <GrowthBar g={g} setG={setG} marks={marks}
-        note={<>{judged && <>기본값은 4번 개별 분석의 판단(연 {judged.base}%, 범위 {judged.lo}~{judged.hi}%). </>}보수적 = 과거 5년·10년 성장률 중 낮은 값(0~15%로 제한). 과거 N년 = N년 전부터 지금까지 연평균. 5년 구간 = 지난 20년을 5년씩 끊어 본 성장률의 범위. 최근 몇 년이 부진했던 기업은 값 차이가 크다 — 어느 쪽이 앞으로에 가까운지는 직접 판단한다.</>} />
       <ValueClockCore
+        growthBar={<GrowthBar g={g} setG={setG} marks={marks}
+          note={<>{judged && <>기본값은 4번 개별 분석의 판단(연 {judged.base}%, 범위 {judged.lo}~{judged.hi}%). </>}보수적 = 과거 5년·10년 성장률 중 낮은 값(0~15%로 제한). 과거 N년 = N년 전부터 지금까지 연평균. 5년 구간 = 지난 20년을 5년씩 끊어 본 성장률의 범위. 최근 몇 년이 부진했던 기업은 값 차이가 크다 — 어느 쪽이 앞으로에 가까운지는 직접 판단한다.</>} />}
         cur="$" anchors={anchors} monthly={monthly} last={f.lastPrice} g={g}
         sharesOut={f.shares?.count ?? null} divYield={m.divYield ?? 0} storageKey={`clock-shares-${stockKey}`}
         fcfPs={m.fcfPs ?? null}
