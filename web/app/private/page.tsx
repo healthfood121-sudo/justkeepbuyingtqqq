@@ -11,6 +11,7 @@ import { Chart } from 'react-chartjs-2'
 import spDesc from '@/app/sp500-holdings/descriptions.json'
 import PrivateTabs from '@/components/PrivateTabs'
 import { WRITTEN_INSIGHTS, WRITTEN_AS_OF } from './insights'
+import { DEEP_INSIGHTS, type DeepInsight } from './deep'
 import { classify, GROUPS, GRADE_LABEL, gradeColor, groupColor, qualityScore, fmt, fmtSgn, type Metrics, type Quality } from '@/lib/ideas'
 import qldData        from '@/public/data/rolling/QLD_rolling.json'
 import qqqData        from '@/public/data/rolling/QQQ_rolling.json'
@@ -3245,12 +3246,15 @@ function CashReturnPanel({ cash, m, cur = '$', source }: {
   )
 }
 
-function StockValueClock({ f, stockKey, rolling, title = '이익 시계 — 적정가 선 vs 주가' }: { f: ClockFund; stockKey: string; rolling?: StockData; title?: string }) {
+function StockValueClock({ f, stockKey, rolling, title = '이익 시계 — 적정가 선 vs 주가', judged }: {
+  f: ClockFund; stockKey: string; rolling?: StockData; title?: string
+  judged?: DeepInsight['growth']   // 개별 분석에서 판단한 성장률 (있으면 기본값)
+}) {
   const m = f.metrics
   const clamp = (v: number) => Math.max(0, Math.min(15, v))
   const g10 = m.epsCagr10, g5 = m.epsCagr5
   const base = g10 != null && g5 != null ? clamp(Math.min(g10, g5)) : g10 != null ? clamp(g10) : g5 != null ? clamp(g5) : 5
-  const [g, setG] = useState(Math.round(base * 2) / 2)
+  const [g, setG] = useState(Math.round((judged?.base ?? base) * 2) / 2)
 
   if (!f.monthly || !f.epsEnd || !f.lastPrice || m.stale || m.ttmEps == null) return null
 
@@ -3291,7 +3295,9 @@ function StockValueClock({ f, stockKey, rolling, title = '이익 시계 — 적�
     : null
 
   const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-3'
-  const marks = growthMarks(anchors, [{ k: '보수적', short: '보수', v: base, c: TICK_C.pick }])
+  const marks = growthMarks(anchors, judged
+    ? [{ k: '개별 분석 판단', short: '판단', v: judged.base, c: TICK_C.pick }, { k: '보수적', short: '보수', v: base, c: TICK_C.y10 }]
+    : [{ k: '보수적', short: '보수', v: base, c: TICK_C.pick }])
   if (gLong && gLong.yrs > 21) marks.push({ k: `장기 ${gLong.yrs}년 연평균`, short: `${gLong.yrs}년`, v: gLong.g, c: TICK_C.y20 })
 
   return (
@@ -3299,7 +3305,7 @@ function StockValueClock({ f, stockKey, rolling, title = '이익 시계 — 적�
     <div className={box}>
       <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">{title}</h4>
       <GrowthBar g={g} setG={setG} marks={marks}
-        note={<>보수적 = 과거 5년·10년 성장률 중 낮은 값(0~15%로 제한). 과거 N년 = N년 전부터 지금까지 연평균. 5년 구간 = 지난 20년을 5년씩 끊어 본 성장률의 범위. 최근 몇 년이 부진했던 기업은 값 차이가 크다 — 어느 쪽이 앞으로에 가까운지는 직접 판단한다.</>} />
+        note={<>{judged && <>기본값은 4번 개별 분석의 판단(연 {judged.base}%, 범위 {judged.lo}~{judged.hi}%). </>}보수적 = 과거 5년·10년 성장률 중 낮은 값(0~15%로 제한). 과거 N년 = N년 전부터 지금까지 연평균. 5년 구간 = 지난 20년을 5년씩 끊어 본 성장률의 범위. 최근 몇 년이 부진했던 기업은 값 차이가 크다 — 어느 쪽이 앞으로에 가까운지는 직접 판단한다.</>} />
       <ValueClockCore
         cur="$" anchors={anchors} monthly={monthly} last={f.lastPrice} g={g}
         sharesOut={f.shares?.count ?? null} divYield={m.divYield ?? 0} storageKey={`clock-shares-${stockKey}`}
@@ -3843,6 +3849,52 @@ type Fundamentals = {
   generated: string
 }
 
+// ── 위대한 기업 개별 분석 (deep.ts) — 1·4·5번 섹션 안에 들어감 ─────────
+const DEEP_LAB = 'text-xs font-semibold text-amber-700 dark:text-amber-400'
+const DEEP_P = 'text-xs leading-relaxed text-gray-700 dark:text-gray-200'
+
+function DeepNow({ d }: { d: DeepInsight }) {
+  return (
+    <div className="rounded bg-amber-50/70 dark:bg-amber-950/20 p-3 space-y-1">
+      <p className={DEEP_LAB}>지금 무슨 일이 있나 — 개별 분석 ({d.asOf})</p>
+      <ul className={`${DEEP_P} list-disc pl-4 space-y-1`}>{d.now.map((t, i) => <li key={i}>{t}</li>)}</ul>
+    </div>
+  )
+}
+
+function DeepFuture({ d, num }: { d: DeepInsight; num: string }) {
+  return (
+    <div className="rounded-lg border border-amber-200 dark:border-amber-900/60 p-4 space-y-2">
+      <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">{num} 앞으로 이익을 움직일 것 — 개별 분석</h4>
+      <ul className={`${DEEP_P} list-disc pl-4 space-y-1`}>
+        {d.drivers.map(x => <li key={x.k}><b>{x.k}:</b> {x.v}</li>)}
+      </ul>
+      <div className="rounded bg-amber-50/70 dark:bg-amber-950/20 p-3">
+        <p className={DEEP_P}>
+          <b>판단: 앞으로 10년 EPS 연 {d.growth.base}%</b> (범위 {d.growth.lo}~{d.growth.hi}%). {d.growth.why}
+        </p>
+        <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">이 값이 2번 이익 시계 성장률 바의 기본값(&lsquo;개별 분석 판단&rsquo; 눈금)이다.</p>
+      </div>
+    </div>
+  )
+}
+
+function DeepConclusion({ d, num, auto }: { d: DeepInsight; num: string; auto: string[] }) {
+  return (
+    <div className="rounded-lg border border-amber-200 dark:border-amber-900/60 p-4 space-y-2">
+      <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">{num} 결론</h4>
+      <ul className={`${DEEP_P} list-disc pl-4 space-y-1`}>{d.verdict.map((t, i) => <li key={i}>{t}</li>)}</ul>
+      <p className={DEEP_LAB}>확인할 것</p>
+      <ul className={`${DEEP_P} list-disc pl-4 space-y-0.5`}>{d.watch.map((t, i) => <li key={i}>{t}</li>)}</ul>
+      {auto.length > 0 && (<>
+        <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 pt-1">숫자로 본 근거 (자동 계산)</p>
+        <ul className="text-xs leading-relaxed text-gray-600 dark:text-gray-300 list-disc pl-4 space-y-1">{auto.map((t, i) => <li key={i}>{t}</li>)}</ul>
+      </>)}
+      <p className="text-[11px] text-gray-400 dark:text-gray-500">개별 분석은 {d.asOf} 기준 실적 발표·보도를 바탕으로 쓴 판단이다. 숫자는 위 자동 계산과 함께 본다.</p>
+    </div>
+  )
+}
+
 function WrittenInsightBox({ stockKey }: { stockKey: string }) {
   const w = WRITTEN_INSIGHTS[stockKey]
   if (!w) return null
@@ -3909,7 +3961,7 @@ function QualityCard({ stockKey }: { stockKey: string }) {
 
 // ── 자동 심화 분석: PER별 과거 수익률 · 과거 저점 비교 · 시나리오 · 자동 결론 ─────────
 // part: 섹션별로 나눠 그림 (pastPe 3-3 · future 4 · conclusion 5 · appendix 부록), num: 섹션 번호
-function AutoDeep({ f, data, part, num = '' }: { f: Fundamentals; data: StockData; part: 'pastPe' | 'future' | 'conclusion' | 'appendix'; num?: string }) {
+function AutoDeep({ f, data, part, num = '', deep }: { f: Fundamentals; data: StockData; part: 'pastPe' | 'future' | 'conclusion' | 'appendix'; num?: string; deep?: DeepInsight }) {
   const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-2'
   const h4 = 'text-sm font-semibold text-gray-800 dark:text-gray-100'
   const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
@@ -3979,6 +4031,8 @@ function AutoDeep({ f, data, part, num = '' }: { f: Fundamentals; data: StockDat
   if (latest && rows.length >= 5) {
     concl.push(`가장 최근 완결 구간(${latest.buyYear}→${latest.sellYear}) 연 ${latest.cagr.toFixed(1)}%는 과거 ${rows.length}개 중 ${latestRank}번째로 낮다${latestRank <= Math.max(2, rows.length * 0.2) ? ' — 10년 수익률이 바닥권이다.' : '.'}`)
   }
+
+  if (part === 'conclusion' && deep) return <DeepConclusion d={deep} num={num} auto={concl} />
 
   return (
     <>
@@ -4164,13 +4218,15 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
   const td = 'py-1.5 px-2 tabular-nums text-gray-700 dark:text-gray-200'
 
   if (f === undefined) return <p className="text-xs text-gray-400">인사이트 불러오는 중…</p>
+  const deep = DEEP_INSIGHTS[stockKey]
 
   const header = (
     <div>
       <h3 className="text-base font-semibold text-gray-900 dark:text-white">인사이트</h3>
       <p className="text-xs text-gray-400 dark:text-gray-500">
-        자동 분석{f ? ` · 데이터 ${f.generated}` : ''} · EPS는 SEC 공시(10-K) 기준
+        자동 분석{f ? ` · 데이터 ${f.generated}` : ''} · EPS는 SEC 공시(10-K) 기준{deep ? ` · 개별 분석 ${deep.asOf}` : ''}
       </p>
+      {deep && <p className="text-sm font-semibold text-amber-700 dark:text-amber-400 mt-1">{deep.headline}</p>}
     </div>
   )
 
@@ -4180,6 +4236,11 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
         {header}
         <QualityCard stockKey={stockKey} />
         <p className="text-xs text-gray-400">이 종목은 연도별 EPS 공시 데이터를 찾지 못해 숫자 분석을 생략했다.</p>
+        {deep && (<>
+          <div className={box}><h4 className={h4}>1. 지금 한눈에</h4><DeepNow d={deep} /></div>
+          <DeepFuture d={deep} num="2." />
+          <DeepConclusion d={deep} num="3." auto={[]} />
+        </>)}
       </div>
     )
   }
@@ -4225,8 +4286,8 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
   const nNow = sec++
   const nClock = live ? sec++ : 0
   const nPast = sec++
-  const nFuture = live ? sec++ : 0
-  const nConcl = live ? sec++ : 0
+  const nFuture = live || deep ? sec++ : 0
+  const nConcl = live || deep ? sec++ : 0
   let sub = 1
   const nDecomp = decomp.length > 0 ? `${nPast}-${sub++}.` : ''
   const nPastPe = `${nPast}-${sub++}.`
@@ -4235,7 +4296,7 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
   return (
     <div className="space-y-4">
       {header}
-      <WrittenInsightBox stockKey={stockKey} />
+      {!deep && <WrittenInsightBox stockKey={stockKey} />}
       <QualityCard stockKey={stockKey} />
 
       <div className={box}>
@@ -4257,13 +4318,15 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
             SEC 공시에서 찾은 EPS가 {m.lastFy}년까지만 있어 PER 비교·성장률·기대수익률은 생략했다.
           </p>
         )}
+        {deep && <DeepNow d={deep} />}
+        {deep && <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 pt-1">숫자로 보면 (자동 계산)</p>}
         <ul className={`${p} list-disc pl-4 space-y-1`}>
           {lines.map((l, i) => <li key={i}>{l}</li>)}
           {group && <li><b>{GROUPS[group].label}:</b> {GROUPS[group].desc}</li>}
         </ul>
       </div>
 
-      {live && <StockValueClock f={f as ClockFund} stockKey={stockKey} rolling={data} title={`${nClock}. 이익 시계 — 적정가 선 vs 주가`} />}
+      {live && <StockValueClock f={f as ClockFund} stockKey={stockKey} rolling={data} title={`${nClock}. 이익 시계 — 적정가 선 vs 주가`} judged={deep?.growth} />}
 
       <div className="space-y-1">
         <h3 className={h3}>{nPast}. 과거에는 어땠나</h3>
@@ -4281,8 +4344,15 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
       )}
 
       {live && <AutoDeep f={f} data={data} part="pastPe" num={nPastPe} />}
-      {live && <AutoDeep f={f} data={data} part="future" num={`${nFuture}.`} />}
-      {live && <AutoDeep f={f} data={data} part="conclusion" num={`${nConcl}.`} />}
+      {deep && (
+        <div className="space-y-1">
+          <h3 className={h3}>{nFuture}. 앞으로</h3>
+        </div>
+      )}
+      {deep && <DeepFuture d={deep} num={`${nFuture}-1.`} />}
+      {live && <AutoDeep f={f} data={data} part="future" num={deep ? `${nFuture}-2.` : `${nFuture}.`} />}
+      {live && <AutoDeep f={f} data={data} part="conclusion" num={`${nConcl}.`} deep={deep} />}
+      {!live && deep && <DeepConclusion d={deep} num={`${nConcl}.`} auto={[]} />}
       {live && <AutoDeep f={f} data={data} part="appendix" />}
     </div>
   )
