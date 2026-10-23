@@ -3331,6 +3331,72 @@ function StockValueClockByKey({ stockKey, rolling, title }: { stockKey: string; 
   return f ? <StockValueClock f={f} stockKey={stockKey} rolling={rolling} title={title} /> : null
 }
 
+// ── 연말 PER 흐름 차트 (에르메스 3-1) ─────────────────────────
+function PeTimelineChart({ timeline, peNow }: { timeline: Array<[number, number]>; peNow: number }) {
+  const chartRef = useRef<ChartJS | null>(null)
+  const [pluginLoaded, setPluginLoaded] = useState(false)
+  useEffect(() => {
+    import('chartjs-plugin-zoom').then(({ default: z }) => { ChartJS.register(z); setPluginLoaded(true) })
+  }, [])
+  if (!timeline.length) return null
+  const x0 = timeline[0][0], x1 = timeline[timeline.length - 1][0] + 1
+  const ptColor = (pe: number) => pe >= 40 ? 'rgba(239,68,68,0.95)' : pe >= 30 ? 'rgba(249,115,22,0.95)' : pe >= 20 ? 'rgba(107,114,128,0.95)' : 'rgba(16,185,129,0.95)'
+  // 배경 띠: 20배 미만 / 20~30 / 30~40 / 40배 이상
+  const bands = {
+    id: 'peBands',
+    beforeDatasetsDraw: (c: any) => {
+      const { ctx, chartArea: { left, right, top, bottom }, scales: { y } } = c
+      const fill = (lo: number, hi: number, color: string) => {
+        const yTop = Math.max(top, y.getPixelForValue(hi)), yBot = Math.min(bottom, y.getPixelForValue(lo))
+        if (yBot > yTop) { ctx.fillStyle = color; ctx.fillRect(left, yTop, right - left, yBot - yTop) }
+      }
+      ctx.save()
+      fill(0, 20, 'rgba(16,185,129,0.07)'); fill(30, 40, 'rgba(249,115,22,0.06)'); fill(40, 200, 'rgba(239,68,68,0.06)')
+      // 지금 PER 가로선
+      const yNow = y.getPixelForValue(peNow)
+      if (yNow >= top && yNow <= bottom) {
+        ctx.strokeStyle = 'rgba(37,99,235,0.9)'; ctx.setLineDash([5, 4]); ctx.lineWidth = 1.5
+        ctx.beginPath(); ctx.moveTo(left, yNow); ctx.lineTo(right, yNow); ctx.stroke()
+        ctx.setLineDash([]); ctx.fillStyle = 'rgba(37,99,235,0.95)'; ctx.font = '11px sans-serif'
+        ctx.fillText(`지금 ${peNow.toFixed(1)}배`, left + 4, yNow - 4)
+      }
+      ctx.restore()
+    },
+  }
+  const data: any = {
+    datasets: [
+      { label: '연말 PER', data: timeline.map(([t, pe]) => ({ x: t, y: pe })), borderColor: 'rgba(75,85,99,0.8)', borderWidth: 1.5,
+        pointRadius: 3, pointHoverRadius: 5, pointBackgroundColor: timeline.map(([, pe]) => ptColor(pe)), pointBorderWidth: 0, tension: 0 },
+    ],
+  }
+  const options: any = {
+    responsive: true, maintainAspectRatio: false, animation: false, parsing: false,
+    interaction: { mode: 'nearest', axis: 'x', intersect: false },
+    scales: {
+      x: { type: 'linear', min: x0, max: x1, ticks: { stepSize: 4, callback: (v: number) => String(v), font: { size: 11 } }, grid: { color: 'rgba(128,128,128,0.08)' } },
+      y: { min: 0, suggestedMax: 70, ticks: { stepSize: 10, callback: (v: number) => `${v}배`, font: { size: 11 } }, grid: { color: 'rgba(128,128,128,0.08)' } },
+    },
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { title: (it: any[]) => `${it[0].parsed.x}년 말`, label: (c: any) => `PER ${c.parsed.y.toFixed(1)}배` } },
+      zoom: pluginLoaded ? { pan: { enabled: true, mode: 'x' }, zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' } } : {},
+    },
+  }
+  return (
+    <div className="relative">
+      <button onClick={() => (chartRef.current as any)?.resetZoom?.()}
+        className="absolute top-0 right-0 z-10 px-2 py-0.5 text-xs text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 border border-gray-200 dark:border-gray-700 rounded">줌 초기화</button>
+      <div style={{ height: 240 }}>
+        <Chart ref={chartRef as any} type="line" data={data} options={options} plugins={[bands]} />
+      </div>
+      <p className="text-xs text-gray-400 dark:text-gray-600 text-right mt-1">휠: 확대/축소 &nbsp;|&nbsp; 드래그: 이동</p>
+      <p className="text-[11px] text-gray-400 dark:text-gray-500">
+        점 색: 초록 20배 미만 · 회색 20~30배 · 주황 30~40배 · 빨강 40배 이상. 파란 점선 = 지금 PER(최근 1년 EPS 기준).
+      </p>
+    </div>
+  )
+}
+
 // 에르메스 최근 1년 EPS (회사 발표: 2025년 연간 43.15 − 2025년 상반기 21.43 + 2026년 상반기 21.36)
 const RMS_TTM_EPS = 43.08
 
@@ -3463,23 +3529,7 @@ function RmsInsight({ data }: { data: StockData }) {
         <p className="text-[11px] text-gray-400 dark:text-gray-500">PER = 실제 종가 ÷ EPS(1993~1999년 종가는 추정). 평균 수익률 ≈ EPS 효과 + PER 효과 + 배당(연 약 1.4%p).</p>
 
         <p className={`${p} pt-2 font-semibold`}>연말 PER 흐름 (1993~2025)</p>
-        <div className="flex flex-wrap gap-1">
-          {peTimeline.map(([y, pe]) => (
-            <span
-              key={y}
-              className={`text-[11px] tabular-nums px-1.5 py-0.5 rounded ${
-                pe >= 40 ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
-                : pe >= 30 ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300'
-                : pe >= 20 ? 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300'
-                : 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300'}`}
-            >
-              {y} {pe.toFixed(0)}배
-            </span>
-          ))}
-          <span className="text-[11px] tabular-nums px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold">
-            지금 {peNow.toFixed(1)}배
-          </span>
-        </div>
+        <PeTimelineChart timeline={peTimeline} peNow={peNow} />
         <p className={p}>
           1993~2007년에는 대체로 22~38배였다(1996년 41배·1999년 47배는 예외, 2002년 22배가 가장 낮음). 2008~2018년에는 32~41배,
           2019~2025년에는 45~66배까지 올랐다(정점 2020년 66배).
