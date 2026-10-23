@@ -381,16 +381,22 @@ def process(key, cik):
             if fails >= 6 and not obs:
                 break
             continue
-        ref = dict(base)
+        # 대조 기준: 최근 보고서 값 / 시점이 가장 가까운 보고서 값 / (재작성 회사) 처음 발표값 — 하나라도 맞으면 인정
+        ref_new = dict(base)
+        ref_near = dict(base)
         for y, lst in obs.items():
-            ref.setdefault(y, lst[-1][1])  # 시점이 가장 가까운 보고서 값 (같은 회계 기준일 가능성이 큼)
+            ref_new.setdefault(y, lst[0][1])
+            ref_near.setdefault(y, lst[-1][1])
+        refs = [ref_new, ref_near]
+        if alt:
+            refs += [{**r, **{y: v for y, v in alt.items() if y in known}} for r in (ref_new, ref_near)]
         fac = split_factor(splits, date)
         got = None
         for found in founds:  # 통과한 후보 중 연도가 가장 많은 표(5년·10년 표 우선)
-            f2, nov = reconcile(found, ref, fac)
-            if f2 is None and alt:
-                ref_alt = {**ref, **{y: v for y, v in alt.items() if y in known}}
-                f2, nov = reconcile(found, ref_alt, fac)
+            for ref in refs:
+                f2, nov = reconcile(found, ref, fac)
+                if f2 is not None:
+                    break
             if f2 is not None and (got is None or (len(f2), nov) > (len(got[0]), got[1])):
                 got = (f2, nov)
         if not got:
