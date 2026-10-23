@@ -52,7 +52,7 @@ def load_cik_map():
     return {v["ticker"].upper(): int(v["cik_str"]) for v in r.json().values()}
 
 
-def fetch_eps(cik: int) -> dict:
+def fetch_eps(cik: int, allow_fill: bool = True) -> dict:
     """회계연도 종료일 → (EPS, 공시일). 같은 종료일은 가장 최근 공시값(분할 재작성 반영)."""
     best = {}
     log = []
@@ -91,6 +91,15 @@ def fetch_eps(cik: int) -> dict:
     if not best:
         best = fetch_eps_companyfacts(cik)
         print(f"    개별 항목 비어 있음({', '.join(log)}) → 전체 공시 보완: {len(best)}개", flush=True)
+    elif allow_fill and max(pd.Timestamp(e) for e in best).year < LAST_FULL - 1:
+        # 최근 해가 비면(공시 항목 이름이 바뀐 경우 등) 다른 EPS 항목·순이익 ÷ 희석 주식 수로 채움
+        extra = fetch_eps_companyfacts(cik, fill=True)
+        added = 0
+        for e, v in extra.items():
+            if e not in best:
+                best[e] = v
+                added += 1
+        print(f"    최근 EPS 비어 있음(마지막 {max(best)[:4] if not added else '보완 전'}) → 보완 {added}개", flush=True)
     return best
 
 
@@ -157,8 +166,9 @@ def _annual_items(units: dict):
                 yield unit, it
 
 
-def fetch_eps_companyfacts(cik: int) -> dict:
-    """companyconcept가 비어 있을 때: companyfacts 전체에서 EPS 계열 항목, 없으면 순이익 ÷ 희석 주식수."""
+def fetch_eps_companyfacts(cik: int, fill: bool = False) -> dict:
+    """companyconcept가 비어 있을 때: companyfacts 전체에서 EPS 계열 항목, 없으면 순이익 ÷ 희석 주식수.
+    fill=True: 빈 해를 채우는 용도 — EPS 계열 항목에 순이익 ÷ 주식 수 값을 더해(EPS 항목 우선) 돌려줌."""
     try:
         resp = requests.get(f"https://data.sec.gov/api/xbrl/companyfacts/CIK{cik:010d}.json", headers=UA, timeout=60)
         time.sleep(0.15)
@@ -168,7 +178,7 @@ def fetch_eps_companyfacts(cik: int) -> dict:
     except Exception:
         return {}
     best = {}
-    names = sorted((n for n in gaap if n.startswith("EarningsPerShare")),
+    names = sorted((n for n in gaap if n.startswith("EarningsPerShare") or n == "IncomeLossFromContinuingOperationsPerDilutedShare"),
                    key=lambda n: (0 if "Diluted" in n else 1, n))
     for n in names:
         for unit, it in _annual_items(gaap[n].get("units", {})):
@@ -177,7 +187,7 @@ def fetch_eps_companyfacts(cik: int) -> dict:
             prev = best.get(it["end"])
             if prev is None or (prev[2] == n and it["filed"] > prev[1]):
                 best[it["end"]] = (float(it["val"]), it["filed"], n)
-    if best:
+    if best and not fill:
         return best
     # 순이익 ÷ 희석 가중평균 주식수
     ni = {}
@@ -192,7 +202,7 @@ def fetch_eps_companyfacts(cik: int) -> dict:
         if sh:
             break
     for end, (v, filed) in ni.items():
-        if end in sh and sh[end][0] > 0:
+        if end in sh and sh[end][0] > 0 and end not in best:
             best[end] = (v / sh[end][0], max(filed, sh[end][1]), "NetIncome/Shares")
     return best
 
@@ -286,7 +296,7 @@ def process(key: str, roll: dict, prices: pd.DataFrame, cik_map: dict) -> dict |
     if close.empty:
         return None
 
-    eps_raw = fetch_eps(cik)
+    eps_raw = fetch_eps(cik, allow_fill=key != "BRKB")  # 버크셔: 공시 순이익이 보유 주식 평가로 크게 흔들려 채우지 않음
     if not eps_raw:
         print(f"  {key}: EPS 없음")
         return None
