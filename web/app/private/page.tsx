@@ -1427,7 +1427,9 @@ function diffColor(v: number) {
   return 'text-red-500 dark:text-red-400'
 }
 
-type SortKey = 'fullCagr' | 'cagrMn' | 'cagrMed' | 'cagrMx' | 'diffMn' | 'diffMed' | 'diffMx'
+type SortKey = 'fullCagr' | 'cagrMn' | 'cagrMed' | 'cagrMx' | 'diffMn' | 'diffMed' | 'diffMx' | 'roe' | 'roic'
+// 에르메스는 _summary.json에 없어 rmsCash()와 같은 계산의 5년(2021~2025) 중간값을 넣는다
+const QUALITY_EXTRA: Record<string, { roe: number; roic: number }> = { RMS: { roe: 29.1, roic: 101.7 } }
 
 function OverviewTable({
   activeStock,
@@ -1448,6 +1450,19 @@ function OverviewTable({
   const [minDiffMedian, setMinDiffMedian] = useState(0)
   const [maxRange, setMaxRange] = useState<number | ''>('')
   const [excludeEtf, setExcludeEtf] = useState(false)
+  const [minRoe, setMinRoe] = useState<number | ''>('')
+  const [minRoic, setMinRoic] = useState<number | ''>('')
+  // 사업의 질: 5년 중간값 ROE·ROIC (_summary.json)
+  const [qual, setQual] = useState<Record<string, { roe: number | null; roic: number | null }>>({})
+  useEffect(() => {
+    fetch('/data/fundamentals/_summary.json').then(r => (r.ok ? r.json() : null)).then(d => {
+      if (!d) return
+      const m: Record<string, { roe: number | null; roic: number | null }> = {}
+      for (const x of d.stocks ?? []) m[x.key] = { roe: x.roe5 ?? x.roe ?? null, roic: x.roic5 ?? x.roic ?? null }
+      for (const [k, v] of Object.entries(QUALITY_EXTRA)) m[k] = v
+      setQual(m)
+    }).catch(() => {})
+  }, [])
   const [presets, setPresets] = useState<Array<{name: string; f: Record<string, unknown>}>>([])
   const [presetInput, setPresetInput] = useState('')
   const [savingPreset, setSavingPreset] = useState(false)
@@ -1466,6 +1481,8 @@ function OverviewTable({
       if (f.minDiffMedian != null) setMinDiffMedian(f.minDiffMedian)
       if (f.maxRange != null)    setMaxRange(f.maxRange)
       if (f.excludeEtf != null)  setExcludeEtf(f.excludeEtf)
+      if (f.minRoe != null)      setMinRoe(f.minRoe)
+      if (f.minRoic != null)     setMinRoic(f.minRoic)
       if (f.sortKey)             setSortKey(f.sortKey)
       if (f.sortDir)             setSortDir(f.sortDir)
       if (f.viewMode)            setViewMode(f.viewMode)
@@ -1479,13 +1496,13 @@ function OverviewTable({
   useEffect(() => {
     try {
       localStorage.setItem('private_filters', JSON.stringify({
-        minPeriods, minCagrMin, minMedian, minDiffMin, minDiffMedian, maxRange, excludeEtf, sortKey, sortDir, viewMode,
+        minPeriods, minCagrMin, minMedian, minDiffMin, minDiffMedian, maxRange, excludeEtf, minRoe, minRoic, sortKey, sortDir, viewMode,
       }))
     } catch {}
-  }, [minPeriods, minCagrMin, minMedian, minDiffMin, minDiffMedian, maxRange, excludeEtf, sortKey, sortDir, viewMode])
+  }, [minPeriods, minCagrMin, minMedian, minDiffMin, minDiffMedian, maxRange, excludeEtf, minRoe, minRoic, sortKey, sortDir, viewMode])
 
   function currentFilterSnapshot() {
-    return { minPeriods, minCagrMin, minMedian, minDiffMin, minDiffMedian, maxRange, excludeEtf }
+    return { minPeriods, minCagrMin, minMedian, minDiffMin, minDiffMedian, maxRange, excludeEtf, minRoe, minRoic }
   }
 
   function applyPreset(f: Record<string, unknown>) {
@@ -1496,6 +1513,8 @@ function OverviewTable({
     if (f.minDiffMedian != null) setMinDiffMedian(f.minDiffMedian as number)
     if (f.maxRange != null)      setMaxRange(f.maxRange as number | '')
     if (f.excludeEtf != null)    setExcludeEtf(f.excludeEtf as boolean)
+    setMinRoe((f.minRoe as number | '') ?? '')
+    setMinRoic((f.minRoic as number | '') ?? '')
   }
 
   function savePreset() {
@@ -1568,7 +1587,9 @@ function OverviewTable({
     const diffMx     = diffs.length ? Math.max(...diffs) : null
     const diffMed    = diffs.length ? median(diffs) : null
     const fullCagr   = s.data.fullPeriod.cagr
-    return { i, s, fullCagr, cagrMn, cagrMed, cagrMx, diffMn, diffMed, diffMx, completedCount }
+    const roe  = qual[s.key]?.roe ?? null
+    const roic = qual[s.key]?.roic ?? null
+    return { i, s, fullCagr, cagrMn, cagrMed, cagrMx, diffMn, diffMed, diffMx, completedCount, roe, roic }
   }).sort((a, b) => {
     const va = a[sortKey] ?? -Infinity
     const vb = b[sortKey] ?? -Infinity
@@ -1594,6 +1615,8 @@ function OverviewTable({
     if (minDiffMedian !== 0 && (row.diffMed == null || row.diffMed < minDiffMedian)) return false
     if (maxRange !== '' && (row.cagrMx == null || row.cagrMn == null || (row.cagrMx - row.cagrMn) > maxRange)) return false
     if (excludeEtf && (row.s.data as any).type === 'etf') return false
+    if (minRoe !== '' && (row.roe == null || row.roe < minRoe)) return false
+    if (minRoic !== '' && (row.roic == null || row.roic < minRoic)) return false
     return true
   })
 
@@ -1685,7 +1708,7 @@ function OverviewTable({
       {(() => {
         const inputCls = "w-9 text-center bg-transparent text-gray-900 dark:text-white focus:outline-none"
         const labelCls = "flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700 rounded-lg px-2.5 py-1.5"
-        const hasFilter = minPeriods > 0 || minCagrMin !== '' || minMedian > 0 || minDiffMin !== '' || minDiffMedian !== 0 || maxRange !== '' || excludeEtf
+        const hasFilter = minPeriods > 0 || minCagrMin !== '' || minMedian > 0 || minDiffMin !== '' || minDiffMedian !== 0 || maxRange !== '' || excludeEtf || minRoe !== '' || minRoic !== ''
         return (
           <div className="flex flex-wrap items-center gap-2 mb-3 pb-3 border-b border-gray-100 dark:border-gray-800">
             <label className={labelCls}>
@@ -1734,6 +1757,18 @@ function OverviewTable({
                 onChange={e => setMaxRange(e.target.value === '' ? '' : Number(e.target.value))} className={inputCls} />
               %
             </label>
+            <label className={labelCls} title="ROE = 순이익 ÷ 자기자본. 5년 중간값. 자사주를 많이 사 자기자본이 작아진 회사는 부풀려진다">
+              ROE ≥
+              <input type="number" min={-50} max={300} value={minRoe} placeholder="—"
+                onChange={e => setMinRoe(e.target.value === '' ? '' : Number(e.target.value))} className={inputCls} />
+              %
+            </label>
+            <label className={labelCls} title="ROIC = 세후 영업이익 ÷ 사업에 묶인 돈(자기자본+차입금−현금). 5년 중간값. 사업 자체의 질을 보기에 더 좋다">
+              ROIC ≥
+              <input type="number" min={-50} max={300} value={minRoic} placeholder="—"
+                onChange={e => setMinRoic(e.target.value === '' ? '' : Number(e.target.value))} className={inputCls} />
+              %
+            </label>
             <button onClick={() => setExcludeEtf(v => !v)}
               className={`px-2.5 py-1.5 text-xs rounded-lg border transition-colors ${
                 excludeEtf
@@ -1747,7 +1782,7 @@ function OverviewTable({
                 {rows.length < allRows.length ? `${rows.length} / ${allRows.length}개` : `${allRows.length}개`}
               </span>
               {hasFilter && (
-                <button onClick={() => { setMinPeriods(0); setMinCagrMin(''); setMinMedian(0); setMinDiffMin(''); setMinDiffMedian(0); setMaxRange(''); setExcludeEtf(false) }}
+                <button onClick={() => { setMinPeriods(0); setMinCagrMin(''); setMinMedian(0); setMinDiffMin(''); setMinDiffMedian(0); setMaxRange(''); setExcludeEtf(false); setMinRoe(''); setMinRoic('') }}
                   className="text-xs text-gray-400 dark:text-gray-600 hover:text-red-400 dark:hover:text-red-500 transition-colors">
                   초기화
                 </button>
@@ -1757,6 +1792,7 @@ function OverviewTable({
         )
       })()}
 
+      <div className="overflow-x-auto">
       <table className="text-sm">
         <thead>
           <tr className="text-xs text-gray-400 dark:text-gray-500">
@@ -1768,6 +1804,9 @@ function OverviewTable({
             <th colSpan={4} className="text-center pb-1 px-3 border-b border-l-2 border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold">
               S&P 500 대비 초과수익
             </th>
+            <th colSpan={2} className="text-center pb-1 px-3 border-b border-l-2 border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold">
+              사업의 질 <span className="font-normal opacity-60">(5년 중간값)</span>
+            </th>
           </tr>
           <tr className="text-xs text-gray-400 dark:text-gray-500 border-b border-gray-200 dark:border-gray-700">
             <th className="text-left py-1 px-3 font-medium">분포</th>
@@ -1777,18 +1816,20 @@ function OverviewTable({
             <th className="text-left py-1 px-3 font-medium border-l-2 border-gray-200 dark:border-gray-700">분포</th>
             <SortTh col="diffMn"  className="text-right py-1 pr-3 font-medium">최솟값</SortTh>
             <SortTh col="diffMed" className="text-right py-1 pr-3 font-medium">중앙값</SortTh>
-            <SortTh col="diffMx"  className="text-right py-1 font-medium">최댓값</SortTh>
+            <SortTh col="diffMx"  className="text-right py-1 pr-3 font-medium">최댓값</SortTh>
+            <SortTh col="roe"  className="text-right py-1 px-3 font-medium border-l-2 border-gray-200 dark:border-gray-700">ROE</SortTh>
+            <SortTh col="roic" className="text-right py-1 font-medium">ROIC</SortTh>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
           {rows.length === 0 && (
             <tr>
-              <td colSpan={10} className="py-8 text-center text-sm text-gray-400 dark:text-gray-600">
+              <td colSpan={12} className="py-8 text-center text-sm text-gray-400 dark:text-gray-600">
                 조건에 맞는 종목이 없습니다
               </td>
             </tr>
           )}
-          {rows.map(({ i, s, cagrMn, cagrMed, cagrMx, diffMn, diffMed, diffMx }) => {
+          {rows.map(({ i, s, cagrMn, cagrMed, cagrMx, diffMn, diffMed, diffMx, roe, roic }) => {
             const isActive = activeStock === i
             const isStarred = starred.has(s.key)
             return (
@@ -1863,14 +1904,22 @@ function OverviewTable({
                 <td className={`py-1.5 pr-3 text-right tabular-nums font-semibold ${diffMed != null ? diffColor(diffMed) : 'text-gray-300'} ${colBg('diffMed')}`}>
                   {diffMed != null ? `${diffMed > 0 ? '+' : ''}${diffMed.toFixed(1)}pp` : '—'}
                 </td>
-                <td className={`py-1.5 text-right tabular-nums ${diffMx != null ? diffColor(diffMx) : 'text-gray-300'} ${colBg('diffMx')}`}>
+                <td className={`py-1.5 pr-3 text-right tabular-nums ${diffMx != null ? diffColor(diffMx) : 'text-gray-300'} ${colBg('diffMx')}`}>
                   {diffMx != null ? `${diffMx > 0 ? '+' : ''}${diffMx.toFixed(1)}pp` : '—'}
+                </td>
+                {/* 사업의 질 */}
+                <td className={`py-1.5 px-3 text-right tabular-nums border-l-2 border-gray-200 dark:border-gray-700 ${roe == null ? 'text-gray-300 dark:text-gray-600' : roe >= 20 ? 'text-emerald-600 dark:text-emerald-400' : roe < 8 ? 'text-red-500' : 'text-gray-700 dark:text-gray-200'} ${colBg('roe')}`}>
+                  {roe != null ? `${roe.toFixed(0)}%` : '—'}
+                </td>
+                <td className={`py-1.5 text-right tabular-nums ${roic == null ? 'text-gray-300 dark:text-gray-600' : roic >= 20 ? 'text-emerald-600 dark:text-emerald-400' : roic < 8 ? 'text-red-500' : 'text-gray-700 dark:text-gray-200'} ${colBg('roic')}`}>
+                  {roic != null ? `${roic.toFixed(0)}%` : '—'}
                 </td>
               </tr>
             )
           })}
         </tbody>
       </table>
+      </div>
       <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
         행 클릭 시 상세 보기 · ★ 클릭으로 즐겨찾기 · 최근 15개 완결 구간 기준
       </p>
