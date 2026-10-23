@@ -41,7 +41,15 @@ ANNUAL_FORMS = ("10-K", "10-K/A", "10-KT", "20-F", "40-F")
 # 항목별 후보 이름 (앞쪽 우선)
 OCF = ["NetCashProvidedByUsedInOperatingActivities", "NetCashProvidedByUsedInOperatingActivitiesContinuingOperations"]
 CAPEX = ["PaymentsToAcquirePropertyPlantAndEquipment", "PaymentsToAcquireProductiveAssets",
-         "PaymentsForCapitalImprovements", "PaymentsToAcquireOtherPropertyPlantAndEquipment"]
+         "PaymentsForProceedsFromProductiveAssets",
+         "PaymentsToExploreAndDevelopOilAndGasProperties", "PaymentsToAcquireOilAndGasPropertyAndEquipment",
+         "PaymentsToAcquireOilAndGasProperty",                       # 석유·가스
+         "PaymentsForConstructionInProcess",                         # 전력
+         "PaymentsToDevelopRealEstateAssets", "PaymentsToAcquireAndDevelopRealEstate",  # 리츠(개발)
+         "PaymentsForCapitalImprovements", "PaymentsToAcquireOtherPropertyPlantAndEquipment",
+         "PaymentsToAcquireMachineryAndEquipment", "PaymentsToAcquireOtherProductiveAssets",
+         "PaymentsToDevelopSoftware", "PaymentsForSoftware"]
+# 회사 고유 이름(us-gaap 밖)의 설비투자 항목은 '_custom_' 접두어로 붙여 맨 뒤 후보로 씀
 NI = ["NetIncomeLoss", "NetIncomeLossAvailableToCommonStockholdersBasic", "ProfitLoss"]
 DIV = ["PaymentsOfDividendsCommonStock", "PaymentsOfDividends"]
 BUY = ["PaymentsForRepurchaseOfCommonStock"]
@@ -107,7 +115,8 @@ def annual_flow(gaap: dict, names: list) -> dict:
 
 
 def ytd_flow(gaap: dict, names: list) -> dict:
-    """(시작일, 종료일) → 값: 분기 보고서의 연초 누적 값."""
+    """(시작일, 종료일) → 값: 분기 보고서의 연초 누적 값. 앞쪽 이름 우선으로 기간별 병합."""
+    out = {}
     for n in names:
         cur = {}
         for it in usd_items(gaap, n):
@@ -116,9 +125,9 @@ def ytd_flow(gaap: dict, names: list) -> dict:
             key = (it["start"], it["end"])
             if key not in cur or it["filed"] > cur[key][1]:
                 cur[key] = (float(it["val"]), it["filed"])
-        if cur:
-            return {k: v[0] for k, v in cur.items()}
-    return {}
+        for k, v in cur.items():
+            out.setdefault(k, v[0])
+    return out
 
 
 def instant(gaap: dict, names: list) -> dict:
@@ -218,7 +227,8 @@ def build(gaap: dict, fund: dict, sic: int | None = None) -> dict | None:
     ni = annual_flow(gaap, NI)
     if not ocf or not ni:
         return None
-    capex = annual_flow(gaap, CAPEX)
+    capex_names = CAPEX + sorted(n for n in gaap if n.startswith("_custom_"))
+    capex = annual_flow(gaap, capex_names)
     div = annual_flow(gaap, DIV)
     buy = annual_flow(gaap, BUY)
     opinc = annual_flow(gaap, OPINC)
@@ -243,8 +253,8 @@ def build(gaap: dict, fund: dict, sic: int | None = None) -> dict | None:
     for end in ends:
         y = fy_of(pd.Timestamp(end))
         o, n = ocf[end], ni[end]
-        c = capex.get(end, 0.0)
-        f = o - c
+        c = capex.get(end)
+        f = o - c if c is not None else None  # 설비투자를 못 찾은 해는 비움 (영업현금을 그대로 쓰면 부풀려짐)
         e = near(eq, end)
         ca = near(cash, end)
         st = near(stinv, end) or 0.0
@@ -268,9 +278,9 @@ def build(gaap: dict, fund: dict, sic: int | None = None) -> dict | None:
             base = (e or 0.0) + (dbt or 0.0)
             if (ic is not None and base > 0 and ic < 0.1 * base) or abs(roic) > 3:
                 roic = None
-        conv = f / n if n > 0 else None
+        conv = f / n if f is not None and n > 0 else None
         fps = None
-        if y in eps and eps[y] and abs(eps[y]) >= 0.1 and n and (eps[y] > 0) == (n > 0):
+        if f is not None and y in eps and eps[y] and abs(eps[y]) >= 0.1 and n and (eps[y] > 0) == (n > 0):
             fps = eps[y] * f / n  # = 잉여현금 ÷ (순이익 ÷ EPS) — 분할 보정된 주식 수 기준
         fy_yield = fps / px[y] if fps is not None and px.get(y) else None
         if no_fcf:
@@ -289,16 +299,21 @@ def build(gaap: dict, fund: dict, sic: int | None = None) -> dict | None:
     if no_fcf:
         return {"years": years, "bank": True, "sic": sic}
     t_ocf = ttm(gaap, OCF, ocf)
-    t_cap = ttm(gaap, CAPEX, capex) if capex else (0.0, t_ocf[1] if t_ocf else None)
+    t_cap = ttm(gaap, capex_names, capex) if capex else None
     t_ni = ttm(gaap, NI, ni)
     out = {"years": years, "sic": sic}
-    if t_ocf and t_ni and t_cap and t_ocf[1] == t_ni[1] == t_cap[1]:
+    last_end = max(ocf)
+    if t_ocf and t_ni and t_cap and t_ocf[1] == t_ni[1] == t_cap[1] and last_end in capex:
         out["ttm"] = {"asOf": t_ocf[1], "ocf": m(t_ocf[0]), "capex": m(t_cap[0]),
                       "fcf": m(t_ocf[0] - t_cap[0]), "ni": m(t_ni[0])}
-    else:  # 기간이 안 맞으면 최근 연간 값
-        last = years[max(years, key=int)]
-        out["ttm"] = {"asOf": last["end"], "ocf": last["ocf"], "capex": last.get("capex", 0),
-                      "fcf": last["fcf"], "ni": last["ni"], "annualOnly": True}
+    else:  # 기간이 안 맞으면 잉여현금흐름이 있는 최근 연간 값
+        withf = [y for y in years if "fcf" in years[y]]
+        if withf:
+            last = years[max(withf, key=int)]
+            out["ttm"] = {"asOf": last["end"], "ocf": last["ocf"], "capex": last.get("capex", 0),
+                          "fcf": last["fcf"], "ni": last["ni"], "annualOnly": True}
+            if int(max(withf, key=int)) < int(max(years, key=int)) - 1:  # 2년 넘게 비면 쓰지 않음
+                out.pop("ttm")
     return out
 
 
@@ -330,9 +345,10 @@ def metrics(fund: dict, cash: dict) -> dict:
         if k in last:
             out[k] = last[k]
     recent = [cash["years"][y] for y in ys[-5:]]
-    f5 = sum(r.get("fcf", 0) for r in recent) if "fcf" in t else 0
-    n5 = sum(r.get("ni", 0) for r in recent)
-    if "fcf" in t and n5 > 0 and len(recent) >= 3 and abs(f5 / n5) <= 5:
+    withf = [r for r in recent if "fcf" in r]  # 잉여현금흐름이 있는 해만
+    f5 = sum(r["fcf"] for r in withf)
+    n5 = sum(r.get("ni", 0) for r in withf)
+    if "fcf" in t and n5 > 0 and len(withf) >= 3 and abs(f5 / n5) <= 5:
         out["conv5"] = round(f5 / n5, 2)
     roic5 = [r["roic"] for r in recent if "roic" in r]
     if len(roic5) >= 3:
@@ -399,7 +415,14 @@ def main():
             if r.status_code != 200:
                 print(f"[{i}/{len(keys)}] {k}: HTTP {r.status_code}")
                 continue
-            gaap = r.json().get("facts", {}).get("us-gaap", {})
+            facts = r.json().get("facts", {})
+            gaap = dict(facts.get("us-gaap", {}))
+            for ns, items in facts.items():  # 회사 고유 설비투자 항목
+                if ns in ("us-gaap", "dei", "srt", "ifrs-full", "invest"):
+                    continue
+                for n, v in items.items():
+                    if "CapitalExpenditure" in n and "Incurred" not in n and "Accrued" not in n:
+                        gaap["_custom_" + n] = v
             sic = fetch_sic(cik)
             cash = build(gaap, fund, sic)
         except Exception as e:  # 한 종목 실패가 전체를 멈추지 않게

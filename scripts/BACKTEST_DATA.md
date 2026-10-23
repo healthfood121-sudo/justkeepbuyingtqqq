@@ -1023,6 +1023,7 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 |---|---|---|---|
 | `web/public/data/fundamentals/{KEY}.json`의 `cash` + `metrics`(earnYield·fcfPs·fcfYield·roe·roic·roe5·roic5·conv5), `_summary.json` 같은 지표 | `scripts/export_cashflow.py` (Actions '전 종목 현금흐름·자본 수익률') | SEC companyfacts: 연도별 영업현금흐름·설비투자·잉여현금흐름·순이익·배당·자사주·자기자본·차입금·현금, ROE·ROIC·현금 전환율·주당 잉여현금·연말 잉여현금 수익률, 최근 1년(10-K + 10-Q 누적) | `/private` 이익 시계 '내 몫 잉여현금', '1달러당 얼마를 버나' 섹션 |
 - 금액 단위 백만 달러. 금융사(SEC 업종 코드 6000~6399, 건강보험 6324 제외)는 잉여현금흐름·ROIC 없음(`bank: true`), 버크셔는 잉여현금흐름 유지.
+- 설비투자: 일반(유형자산 취득)·석유(탐사·개발)·전력(건설 중 자산)·리츠(개발)·소프트웨어 항목과 회사 고유 이름(CapitalExpenditure…)을 차례로 찾음. 못 찾은 해는 잉여현금흐름을 비움.
 - 주당 잉여현금(최근 1년) = 잉여현금흐름 ÷ 공시 유통 주식 수. 연도별은 EPS × 잉여현금 ÷ 순이익(|EPS| ≥ 0.1).
 - ROE 300% 초과(자기자본이 너무 작음), 투하자본이 (자기자본+차입금)의 10% 미만이거나 ROIC 300% 초과면 비움. 현금 전환율 ±5배 초과는 비움.
 - 영업이익 항목이 없으면 세전이익 + 이자비용으로 근사(나이키 등). 세율은 실효세율(0~40%), 없으면 21%(2018~)·35%.
