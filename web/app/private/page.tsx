@@ -3245,7 +3245,7 @@ function CashReturnPanel({ cash, m, cur = '$', source }: {
   )
 }
 
-function StockValueClock({ f, stockKey, rolling }: { f: ClockFund; stockKey: string; rolling?: StockData }) {
+function StockValueClock({ f, stockKey, rolling, title = '이익 시계 — 적정가 선 vs 주가' }: { f: ClockFund; stockKey: string; rolling?: StockData; title?: string }) {
   const m = f.metrics
   const clamp = (v: number) => Math.max(0, Math.min(15, v))
   const g10 = m.epsCagr10, g5 = m.epsCagr5
@@ -3297,7 +3297,7 @@ function StockValueClock({ f, stockKey, rolling }: { f: ClockFund; stockKey: str
   return (
     <>
     <div className={box}>
-      <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">이익 시계 — 적정가 선 vs 주가</h4>
+      <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">{title}</h4>
       <GrowthBar g={g} setG={setG} marks={marks}
         note={<>보수적 = 과거 5년·10년 성장률 중 낮은 값(0~15%로 제한). 과거 N년 = N년 전부터 지금까지 연평균. 5년 구간 = 지난 20년을 5년씩 끊어 본 성장률의 범위. 최근 몇 년이 부진했던 기업은 값 차이가 크다 — 어느 쪽이 앞으로에 가까운지는 직접 판단한다.</>} />
       <ValueClockCore
@@ -3312,12 +3312,12 @@ function StockValueClock({ f, stockKey, rolling }: { f: ClockFund; stockKey: str
   )
 }
 
-function StockValueClockByKey({ stockKey, rolling }: { stockKey: string; rolling?: StockData }) {
+function StockValueClockByKey({ stockKey, rolling, title }: { stockKey: string; rolling?: StockData; title?: string }) {
   const [f, setF] = useState<ClockFund | null>(null)
   useEffect(() => {
     fetch(`/data/fundamentals/${stockKey}.json`).then(r => (r.ok ? r.json() : null)).then(setF).catch(() => {})
   }, [stockKey])
-  return f ? <StockValueClock f={f} stockKey={stockKey} rolling={rolling} /> : null
+  return f ? <StockValueClock f={f} stockKey={stockKey} rolling={rolling} title={title} /> : null
 }
 
 // 에르메스 최근 1년 EPS (회사 발표: 2025년 연간 43.15 − 2025년 상반기 21.43 + 2026년 상반기 21.36)
@@ -3626,7 +3626,7 @@ function NkeInsight({ data }: { data: StockData }) {
       </div>
 
       <div className={box}>
-        <h4 className={h4}>1. 현재 PER 18배 — 싸 보이지만, 주가 하락의 원인은 PER이 아니라 이익 감소</h4>
+        <h4 className={h4}>1. 지금 한눈에 — PER 18배는 싸 보이지만, 주가 하락의 원인은 PER이 아니라 이익 감소</h4>
         <p className={p}>
           주가 37.5달러 ÷ 최근 1년 주당순이익(EPS) 2.08달러 = PER 약 18배. 에르메스는 이익은 그대로인데 PER이 떨어져서 주가가 빠졌지만,
           나이키는 최근 2년 동안 PER은 거의 그대로고 <b>이익 자체가 줄었다.</b>
@@ -3657,8 +3657,15 @@ function NkeInsight({ data }: { data: StockData }) {
         </ul>
       </div>
 
+      <StockValueClockByKey stockKey="NKE" rolling={data} title="2. 이익 시계 — 적정가 선 vs 주가" />
+
+      <div className="space-y-1">
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white pt-2">3. 과거에는 어땠나</h3>
+        <p className={p}>매수 시점 PER에 따라 10년 수익률이 어떻게 달랐는지, 수익이 이익·배당·PER 중 어디서 나왔는지 본다.</p>
+      </div>
+
       <div className={box}>
-        <h4 className={h4}>2. 과거: 매수 시점 PER별 10년 연평균 수익률 ({decomp.length}개 경우)</h4>
+        <h4 className={h4}>3-1. 매수 시점 PER별 10년 연평균 수익률 ({decomp.length}개 경우)</h4>
         <div className="overflow-x-auto">
           <table className="text-xs">
             <thead>
@@ -3692,14 +3699,14 @@ function NkeInsight({ data }: { data: StockData }) {
       </div>
 
       <DecompSection
-        title="3. 연도별 수익률 분해 — 막대 하나 = EPS 몫 + 배당 몫 + PER 몫"
+        title="3-2. 연도별 수익률 분해 — 막대 하나 = EPS 몫 + 배당 몫 + PER 몫"
         decomp={buildDecomp(data)}
         divRows={(nkeDiv as any).rows}
         exampleYear={2011}
       />
 
       <div className={box}>
-        <h4 className={h4}>4. 이익 성장이 계속 느려지고 있다</h4>
+        <h4 className={h4}>3-3. 이익 성장이 계속 느려지고 있다</h4>
         <ul className={`${p} list-disc pl-4 space-y-1`}>
           <li><b>10년 EPS 성장률이 줄고 있다.</b> 2000~2012년 매수 구간은 일회성 요인이 낀 해(2008·2010년)를 빼면 대부분 연 12~15%였지만, 2013·2014년 매수는 연 9~10%, 2015년 매수는 연 1.6%로 떨어졌다.</li>
           <li>그 결과 2015년에 사서 10년 보유하면 연 1.5%에 그쳤다(배당 포함). 2016~2024년 매수는 아직 10년이 안 됐지만 지금 기준으로 모두 손실이다.</li>
@@ -3709,7 +3716,7 @@ function NkeInsight({ data }: { data: StockData }) {
       </div>
 
       <div className={box}>
-        <h4 className={h4}>5. 지금(PER 18배) 사서 10년 보유 시 예상 연평균 수익률</h4>
+        <h4 className={h4}>4. 앞으로 — 지금(PER 18배) 사서 10년 보유 시 예상 연평균 수익률</h4>
         <p className={p}>최근 1년 EPS 2.08달러, 배당수익률 4.3%가 유지된다고 가정. 행 = 연 EPS 성장률, 열 = 10년 뒤 PER.</p>
         <div className="overflow-x-auto">
           <table className="text-xs">
@@ -3737,7 +3744,17 @@ function NkeInsight({ data }: { data: StockData }) {
       </div>
 
       <div className={box}>
-        <h4 className={h4}>6. 과거 저점 직후 매수 vs 지금</h4>
+        <h4 className={h4}>5. 결론</h4>
+        <ul className={`${p} list-disc pl-4 space-y-1`}>
+          <li>나이키는 <b>PER이 아니라 이익이 문제</b>다. 지금 PER 18배는 과거 기준으로 낮아 보이지만, 내년 예상 이익 기준으로는 28~33배다.</li>
+          <li>이익이 2024년 수준으로만 회복돼도(연 6%) PER 유지 시 연 10~11% 정도. 배당 4.3%가 하단을 받쳐준다.</li>
+          <li>이익 회복이 늦어지면 연 4~8% 수준에 머물 수 있다. 앞으로 볼 것은 <b>매출 감소가 멈추고 EPS가 다시 늘어나는지</b>, 그리고 <b>배당이 유지되는지</b>다.</li>
+        </ul>
+      </div>
+
+      <details className="rounded-lg border border-gray-200 dark:border-gray-800 p-4">
+        <summary className={`${h4} cursor-pointer`}>부록. 과거 저점 직후 매수 vs 지금</summary>
+        <div className="space-y-2 mt-2">
         <p className={p}>
           10년 수익률이 바닥을 찍은 직후에 산 사람은 과거 두 번 모두 연 16~18%를 냈다. 지금(2015년 매수 연 1.5%, 역대 최저)도 그럴까?
         </p>
@@ -3792,15 +3809,7 @@ function NkeInsight({ data }: { data: StockData }) {
           <li><b>확인할 신호:</b> 분기 매출이 다시 플러스로 돌아서는지, 2027 회계연도 이후 EPS가 다시 늘어나는지, 배당이 유지되는지.</li>
         </ul>
       </div>
-
-      <div className={box}>
-        <h4 className={h4}>결론</h4>
-        <ul className={`${p} list-disc pl-4 space-y-1`}>
-          <li>나이키는 <b>PER이 아니라 이익이 문제</b>다. 지금 PER 18배는 과거 기준으로 낮아 보이지만, 내년 예상 이익 기준으로는 28~33배다.</li>
-          <li>이익이 2024년 수준으로만 회복돼도(연 6%) PER 유지 시 연 10~11% 정도. 배당 4.3%가 하단을 받쳐준다.</li>
-          <li>이익 회복이 늦어지면 연 4~8% 수준에 머물 수 있다. 앞으로 볼 것은 <b>매출 감소가 멈추고 EPS가 다시 늘어나는지</b>, 그리고 <b>배당이 유지되는지</b>다.</li>
-        </ul>
-      </div>
+      </details>
 
       <p className="text-xs text-gray-400 dark:text-gray-500">
         참고: 나이키 회계연도는 5월 말 결산이며, 표의 연도별 EPS는 회계연도 기준이다. 1980년대 일부 EPS는 추정값이다.
@@ -3894,7 +3903,8 @@ function QualityCard({ stockKey }: { stockKey: string }) {
 }
 
 // ── 자동 심화 분석: PER별 과거 수익률 · 과거 저점 비교 · 시나리오 · 자동 결론 ─────────
-function AutoDeep({ f, data }: { f: Fundamentals; data: StockData }) {
+// part: 섹션별로 나눠 그림 (pastPe 3-3 · future 4 · conclusion 5 · appendix 부록), num: 섹션 번호
+function AutoDeep({ f, data, part, num = '' }: { f: Fundamentals; data: StockData; part: 'pastPe' | 'future' | 'conclusion' | 'appendix'; num?: string }) {
   const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-2'
   const h4 = 'text-sm font-semibold text-gray-800 dark:text-gray-100'
   const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
@@ -3976,9 +3986,9 @@ function AutoDeep({ f, data }: { f: Fundamentals; data: StockData }) {
 
   return (
     <>
-      {curPe != null && complete.length > 0 && (
+      {part === 'pastPe' && curPe != null && complete.length > 0 && (
         <div className={box}>
-          <h4 className={h4}>매수 시점 PER별 과거 10년 수익률 ({complete.length}개 경우)</h4>
+          <h4 className={h4}>{num} 매수 시점 PER별 과거 10년 수익률 ({complete.length}개 경우)</h4>
           <div className="overflow-x-auto">
             <table className="text-xs">
               <thead>
@@ -4033,9 +4043,10 @@ function AutoDeep({ f, data }: { f: Fundamentals; data: StockData }) {
         </div>
       )}
 
-      {troughs.length > 0 && (
-        <div className={box}>
-          <h4 className={h4}>과거 10년 수익률 바닥 직후에 샀다면</h4>
+      {part === 'appendix' && troughs.length > 0 && (
+        <details className="rounded-lg border border-gray-200 dark:border-gray-800 p-4">
+          <summary className={`${h4} cursor-pointer`}>부록. 과거 10년 수익률 바닥 직후에 샀다면</summary>
+          <div className="space-y-2 mt-2">
           <p className={p}>10년 보유 수익률이 가장 낮았던 구간과, 그 구간이 끝난 해 말에 새로 산 경우의 결과(주가 기록 기준).</p>
           <div className="overflow-x-auto">
             <table className="text-xs">
@@ -4081,12 +4092,13 @@ function AutoDeep({ f, data }: { f: Fundamentals; data: StockData }) {
           <p className="text-[11px] text-gray-400 dark:text-gray-500">
             바닥 직후 매수가 좋았던 건 대개 그 뒤 이익이 잘 늘었기 때문이다. 바닥의 원인이 PER 하락이었는지, 이익 정체였는지 함께 봐야 한다.
           </p>
-        </div>
+          </div>
+        </details>
       )}
 
-      {curPe != null && exits.length > 0 && (
+      {part === 'future' && curPe != null && exits.length > 0 && (
         <div className={box}>
-          <h4 className={h4}>지금(PER {curPe.toFixed(1)}배) 사서 10년 보유 시 예상 연평균 수익률</h4>
+          <h4 className={h4}>{num} 앞으로 — 지금(PER {curPe.toFixed(1)}배) 사서 10년 보유 시 예상 연평균 수익률</h4>
           <p className={p}>배당수익률 {div.toFixed(2)}% 유지 가정. 행 = 연 EPS 성장률, 열 = 10년 뒤 PER(10년 최저·지금·중간값·최고).</p>
           <div className="overflow-x-auto">
             <table className="text-xs">
@@ -4120,9 +4132,9 @@ function AutoDeep({ f, data }: { f: Fundamentals; data: StockData }) {
         </div>
       )}
 
-      {concl.length > 0 && (
+      {part === 'conclusion' && concl.length > 0 && (
         <div className={box}>
-          <h4 className={h4}>숫자로 본 결론</h4>
+          <h4 className={h4}>{num} 결론 — 숫자로 본 판단</h4>
           <ul className={`${p} list-disc pl-4 space-y-1`}>
             {concl.map((c, i) => <li key={i}>{c}</li>)}
           </ul>
@@ -4207,6 +4219,21 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
       : `최근 1년 이익은 10년 내 고점의 ${(m.epsVsPeak * 100).toFixed(0)}% 수준이다.`)
   }
 
+  // 섹션 번호: 에르메스·나이키와 같은 틀 (1 지금 → 2 이익 시계 → 3 과거 → 4 앞으로 → 5 결론 → 부록)
+  // 공시 EPS가 오래된 종목은 이익 시계·앞으로·결론이 빠져 번호를 당겨 매김
+  const live = !m.stale
+  let sec = 1
+  const nNow = sec++
+  const nClock = live ? sec++ : 0
+  const nPast = sec++
+  const nFuture = live ? sec++ : 0
+  const nConcl = live ? sec++ : 0
+  let sub = 1
+  const nTable = years.length > 0 ? `${nPast}-${sub++}.` : ''
+  const nDecomp = decomp.length > 0 ? `${nPast}-${sub++}.` : ''
+  const nPastPe = `${nPast}-${sub++}.`
+  const h3 = 'text-sm font-semibold text-gray-900 dark:text-white pt-2'
+
   return (
     <div className="space-y-4">
       {header}
@@ -4215,7 +4242,7 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
 
       <div className={box}>
         <div className="flex flex-wrap items-center gap-2">
-          <h4 className={h4}>지금 상태 요약</h4>
+          <h4 className={h4}>{nNow}. 지금 한눈에</h4>
           {group && <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${groupColor(group)}`}>{GROUPS[group].label}</span>}
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -4242,11 +4269,16 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
         </p>
       </div>
 
-      {!m.stale && <StockValueClock f={f as ClockFund} stockKey={stockKey} rolling={data} />}
+      {live && <StockValueClock f={f as ClockFund} stockKey={stockKey} rolling={data} title={`${nClock}. 이익 시계 — 적정가 선 vs 주가`} />}
+
+      <div className="space-y-1">
+        <h3 className={h3}>{nPast}. 과거에는 어땠나</h3>
+        <p className={p}>연말 PER이 어떻게 움직였는지, 10년 보유 수익이 이익·배당·PER 중 어디서 나왔는지, 매수 시점 PER에 따라 결과가 어떻게 달랐는지 본다.</p>
+      </div>
 
       {years.length > 0 && (
         <div className={box}>
-          <h4 className={h4}>최근 연말 주가·EPS·PER</h4>
+          <h4 className={h4}>{nTable} 최근 연말 주가·EPS·PER</h4>
           <div className="overflow-x-auto">
             <table className="text-xs">
               <thead>
@@ -4276,14 +4308,17 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
 
       {decomp.length > 0 && (
         <DecompSection
-          title="연도별 수익률 분해 — 막대 하나 = EPS 몫 + 배당 몫 + PER 몫"
+          title={`${nDecomp} 연도별 수익률 분해 — 막대 하나 = EPS 몫 + 배당 몫 + PER 몫`}
           decomp={decomp}
           divRows={divRows}
           exampleYear={exampleYear}
         />
       )}
 
-      {!m.stale && <AutoDeep f={f} data={data} />}
+      {live && <AutoDeep f={f} data={data} part="pastPe" num={nPastPe} />}
+      {live && <AutoDeep f={f} data={data} part="future" num={`${nFuture}.`} />}
+      {live && <AutoDeep f={f} data={data} part="conclusion" num={`${nConcl}.`} />}
+      {live && <AutoDeep f={f} data={data} part="appendix" />}
     </div>
   )
 }
@@ -4329,10 +4364,10 @@ export default function PrivatePage() {
                   위에서부터 순서대로:
                   <span className="text-amber-600 dark:text-amber-400"> 노란 박스</span>(Claude가 뉴스로 직접 쓴 분석, 추천 종목만) →
                   사업성 평가(회사가 얼마나 좋은가, 주가와 무관) →
-                  지금 상태 요약(지금 PER이 평소보다 싼가, 이익이 늘고 있나) →
-                  연도별 수익률 분해(수익이 이익 성장에서 왔나, PER 상승에서 왔나) →
-                  PER별 과거 수익률·과거 바닥 비교 →
-                  시나리오 표(지금 사면 10년 뒤 예상) → 숫자로 본 결론.
+                  1. 지금 한눈에(지금 PER이 평소보다 싼가, 이익이 늘고 있나) →
+                  2. 이익 시계(적정가 선, 내 몫 이익·잉여현금, 1달러당 이익·현금·ROE·ROIC) →
+                  3. 과거(연말 PER, 수익이 이익·배당·PER 중 어디서 왔나, 매수 PER별 결과) →
+                  4. 앞으로(지금 사면 10년 뒤 예상) → 5. 결론 → 부록(과거 바닥 직후 매수, 접혀 있음).
                 </p>
               </div>
             </li>
@@ -4409,7 +4444,6 @@ export default function PrivatePage() {
         {current.key === 'RMS' && <RmsInsight data={current.data} />}
         {current.key === 'NKE' && <QualityCard stockKey="NKE" />}
         {current.key === 'NKE' && <NkeInsight data={current.data} />}
-        {current.key === 'NKE' && <StockValueClockByKey stockKey="NKE" rolling={current.data} />}
         {current.key !== 'RMS' && current.key !== 'NKE' && (current.data as any).type !== 'etf' && (
           <AutoInsight key={current.key} stockKey={current.key} data={current.data} />
         )}
