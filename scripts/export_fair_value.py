@@ -63,6 +63,43 @@ def one_off(anchors):
     return None
 
 
+def fair_mult(f: dict, anchors) -> int:
+    """마지막 기준점 전 20년 월말 (주가 ÷ 그때 기준값) 중간값. 기준값이 적자이거나 그때까지 최고의 20% 미만인 달·200배 이상 제외"""
+    y0, m0 = map(int, f["monthly"]["start"].split("-"))
+    t_last = anchors[-1][0]
+
+    def peak_at(t):  # 그때까지 연간 EPS 최고치 (page.tsx makePeakAt과 같음)
+        m = -math.inf
+        for ta, e in anchors:
+            if ta > t + 1e-9:
+                break
+            m = max(m, e)
+        return m
+    pes = []
+    for i, c in enumerate(f["monthly"]["c"]):
+        if c is None or c <= 0:
+            continue
+        t = y0 + (m0 + i) / 12
+        if t < anchors[0][0] or t < t_last - 20 or t > t_last:
+            continue
+        e = eps_at(anchors, t)
+        # 이익이 적자이거나 그때까지 최고의 20% 미만인 달은 PER이 의미 없어 뺀다 (MEANINGFUL_EPS_RATIO)
+        if e and e > 0 and e >= 0.2 * peak_at(t) and c / e < 200:
+            pes.append(c / e)
+    return round(quantile(pes, 0.5)) if len(pes) >= 24 else 20
+
+
+def fcf_anchors(f: dict):
+    """주당 잉여현금흐름 기준점 (page.tsx fcfAnchorsOf와 같음): 연간 cash.years.fcfPs(결산일) + 최근 1년 metrics.fcfPs(cash.ttm.asOf)"""
+    ys = ((f.get("cash") or {}).get("years")) or {}
+    a = sorted((dec_year(y["end"]), y["fcfPs"]) for y in ys.values() if y.get("fcfPs") is not None and y.get("end"))
+    t = (f.get("cash") or {}).get("ttm") or {}
+    ps = (f.get("metrics") or {}).get("fcfPs")
+    if t.get("asOf") and ps is not None and a and dec_year(t["asOf"]) > a[-1][0] + 0.1:
+        a.append((dec_year(t["asOf"]), ps))
+    return a if len(a) >= 3 else None
+
+
 def build(f: dict, rolling: dict | None):
     m = f.get("metrics") or {}
     if not f.get("monthly") or not f.get("epsEnd") or not f.get("lastPrice") or m.get("stale") or m.get("ttmEps") is None:
@@ -90,30 +127,15 @@ def build(f: dict, rolling: dict | None):
         tT = dec_year(f["ttmAsOf"])
         if tT > anchors[-1][0] + 0.1:
             anchors.append((tT, m["ttmEps"]))
-    y0, m0 = map(int, f["monthly"]["start"].split("-"))
-    t_last = anchors[-1][0]
-
-    def peak_at(t):  # 그때까지 연간 EPS 최고치 (page.tsx makePeakAt과 같음)
-        m = -math.inf
-        for ta, e in anchors:
-            if ta > t + 1e-9:
-                break
-            m = max(m, e)
-        return m
-    pes = []
-    for i, c in enumerate(f["monthly"]["c"]):
-        if c is None or c <= 0:
-            continue
-        t = y0 + (m0 + i) / 12
-        if t < anchors[0][0] or t < t_last - 20 or t > t_last:
-            continue
-        e = eps_at(anchors, t)
-        # 이익이 적자이거나 그때까지 최고의 20% 미만인 달은 PER이 의미 없어 뺀다 (MEANINGFUL_EPS_RATIO)
-        if e and e > 0 and e >= 0.2 * peak_at(t) and c / e < 200:
-            pes.append(c / e)
-    fair_pe = round(quantile(pes, 0.5)) if len(pes) >= 24 else 20
+    fair_pe = fair_mult(f, anchors)
     flag = one_off(anchors)
-    return {**({"oneOff": flag} if flag else {}), "fairPe": fair_pe, "eps": anchors[-1][1], "t": round(t_last, 4),
+    t_last = anchors[-1][0]
+    fa = fcf_anchors(f)
+    fcf = {}
+    if fa:
+        fflag = one_off(fa)
+        fcf = {"fcfMult": fair_mult(f, fa), "fcf": fa[-1][1], "fcfT": round(fa[-1][0], 4), **({"fcfOneOff": fflag} if fflag else {})}
+    return {**({"oneOff": flag} if flag else {}), **fcf, "fairPe": fair_pe, "eps": anchors[-1][1], "t": round(t_last, 4),
             "price": f["lastPrice"]["close"], "priceDate": f["lastPrice"]["date"]}
 
 
