@@ -135,7 +135,7 @@ function CustomSimulatorInner() {
 
   const [withCosts, setWithCosts] = useState(true)
   const [results, setResults] = useState<{ A: CohortResult[]; B: CohortResult[]; C: CohortResult[] } | null>(null)
-  const [show, setShow] = useState<Record<'A' | 'B' | 'C', boolean>>({ A: true, B: true, C: true })
+  const [show, setShow] = useState<Record<'A' | 'B' | 'C', boolean>>({ A: true, B: false, C: false })
   const [tableSort, setTableSort] = useState<{ col: 'start' | 'yA' | 'yB' | 'yC'; dir: 1 | -1 }>({ col: 'start', dir: 1 })
   const toggleShow = (s: 'A' | 'B' | 'C') =>
     setShow(prev => ({ ...prev, [s]: !prev[s] }))
