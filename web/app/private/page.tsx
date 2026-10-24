@@ -1426,7 +1426,7 @@ function Tip({ children, text, below = false, right = false }: { children: React
     <span className="relative group/tip inline-flex items-center">
       {children}
       <span tabIndex={0} className="ml-0.5 text-gray-400 cursor-help outline-none">?</span>
-      <span className={`absolute ${below ? 'top-full mt-1.5' : 'bottom-full mb-2'} ${right ? 'right-0' : 'left-0'} w-64 z-50
+      <span className={`absolute ${below ? 'top-full mt-1.5' : 'bottom-full mb-2'} ${right ? 'right-0' : 'left-0'} w-64 max-w-[calc(100vw-2rem)] z-50
                         invisible opacity-0 group-hover/tip:visible group-hover/tip:opacity-100 group-focus-within/tip:visible group-focus-within/tip:opacity-100
                         transition-opacity duration-150 pointer-events-none whitespace-normal text-left font-normal
                         bg-gray-900 text-white text-xs rounded-md px-2.5 py-2 shadow-lg leading-relaxed`}>
@@ -1793,7 +1793,7 @@ function OverviewTable({
                     : 'border-blue-200 dark:border-blue-900 text-blue-700 dark:text-blue-300 bg-blue-50/50 dark:bg-blue-900/10 hover:border-blue-400'}`}>
                   {bp.name} <span className={on ? 'opacity-80' : 'opacity-60'}>({bp.n})</span>
                 </button>
-                <span className="absolute top-full left-0 mt-1.5 w-64 z-50 invisible opacity-0 group-hover/bp:visible group-hover/bp:opacity-100
+                <span className="hidden md:block absolute top-full left-0 mt-1.5 w-64 z-50 invisible opacity-0 group-hover/bp:visible group-hover/bp:opacity-100
                                  transition-opacity duration-150 pointer-events-none bg-gray-900 text-white text-xs rounded-md px-2.5 py-2 shadow-lg leading-relaxed">
                   {bp.why}
                 </span>
@@ -1988,7 +1988,8 @@ function OverviewTable({
         )
       })()}
 
-      <div className="overflow-x-auto">
+      {/* 넓은 화면에서는 스크롤 상자를 끈다(종목·제목 말풍선이 잘리지 않게). 좁은 화면에서만 옆으로 밀기 */}
+      <div className="overflow-x-auto md:overflow-visible">
       <table className="text-[13px]">
         <thead>
           <tr className="text-xs text-gray-400 dark:text-gray-500">
@@ -4943,7 +4944,7 @@ export default function PrivatePage() {
         <OverviewTable activeStock={activeStock} setActiveStock={setActiveStock} />
 
         {/* 종목 선택 */}
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
           <label className="text-sm font-medium text-gray-600 dark:text-gray-400 whitespace-nowrap">종목 선택</label>
           <select
             value={activeStock}
