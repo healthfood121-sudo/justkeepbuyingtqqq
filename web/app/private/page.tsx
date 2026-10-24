@@ -4985,7 +4985,7 @@ export default function PrivatePage() {
         </div>
 
         {/* 차트 */}
-        <RollingChart key={current.key} data={current.data} />
+        <RollingChart key={`chart-${current.key}`} data={current.data} />
 
         {/* 롤링 테이블 */}
         <RollingTable data={current.data} />
@@ -4996,7 +4996,7 @@ export default function PrivatePage() {
         {current.key === 'NKE' && <QualityCard stockKey="NKE" />}
         {current.key === 'NKE' && <NkeInsight data={current.data} />}
         {current.key !== 'RMS' && current.key !== 'NKE' && (current.data as any).type !== 'etf' && (
-          <AutoInsight key={current.key} stockKey={current.key} data={current.data} />
+          <AutoInsight key={`insight-${current.key}`} stockKey={current.key} data={current.data} />
         )}
 
 
