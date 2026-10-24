@@ -5,19 +5,19 @@
   "benchmark": "S&P 500",
   "note": "1996년 5월 상장(BRK-B). 분할 이력: 2010-01-21 50:1(BRK-A 1주 = BRK-B 1500주). 배당 없음.",
   "current": {
-    "price": 542.67,
+    "price": 542.19,
     "pe": 13.6,
     "divYield": 0,
     "eps": 39.76
   },
   "fullPeriod": {
     "start_date": "1996-05-09",
-    "end_date": "2026-10-21",
+    "end_date": "2026-10-24",
     "start_price": 23.2,
-    "end_price": 542.67,
+    "end_price": 542.19,
     "years": 30.5,
-    "cagr": 10.91,
-    "multiple": 23.3909
+    "cagr": 10.9,
+    "multiple": 23.3703
   },
   "stats": {
     "n": 20,
@@ -258,101 +258,101 @@
     {
       "buyYear": 2016,
       "sellYear": 2026,
-      "sellDate": "2026-10-21",
+      "sellDate": "2026-10-24",
       "yearsActual": 9.8,
-      "cagr": 13.05,
-      "multiple": 3.3297,
+      "cagr": 13.03,
+      "multiple": 3.3267,
       "isComplete": false,
-      "benchCagr": 15.4,
-      "diff": -2.35
+      "benchCagr": 15.17,
+      "diff": -2.14
     },
     {
       "buyYear": 2017,
       "sellYear": 2026,
-      "sellDate": "2026-10-21",
+      "sellDate": "2026-10-24",
       "yearsActual": 8.8,
-      "cagr": 12.12,
-      "multiple": 2.7377,
+      "cagr": 12.09,
+      "multiple": 2.7353,
       "isComplete": false,
-      "benchCagr": 14.69,
-      "diff": -2.57
+      "benchCagr": 14.44,
+      "diff": -2.35
     },
     {
       "buyYear": 2018,
       "sellYear": 2026,
-      "sellDate": "2026-10-21",
+      "sellDate": "2026-10-24",
       "yearsActual": 7.8,
-      "cagr": 13.34,
-      "multiple": 2.6578,
+      "cagr": 13.31,
+      "multiple": 2.6555,
       "isComplete": false,
-      "benchCagr": 17.39,
-      "diff": -4.05
+      "benchCagr": 17.1,
+      "diff": -3.79
     },
     {
       "buyYear": 2019,
       "sellYear": 2026,
-      "sellDate": "2026-10-21",
+      "sellDate": "2026-10-24",
       "yearsActual": 6.8,
-      "cagr": 13.7,
-      "multiple": 2.3959,
+      "cagr": 13.67,
+      "multiple": 2.3938,
       "isComplete": false,
-      "benchCagr": 15.45,
-      "diff": -1.75
+      "benchCagr": 15.12,
+      "diff": -1.45
     },
     {
       "buyYear": 2020,
       "sellYear": 2026,
-      "sellDate": "2026-10-21",
+      "sellDate": "2026-10-24",
       "yearsActual": 5.8,
-      "cagr": 15.78,
-      "multiple": 2.3404,
+      "cagr": 15.74,
+      "multiple": 2.3383,
       "isComplete": false,
-      "benchCagr": 14.95,
-      "diff": 0.83
+      "benchCagr": 14.57,
+      "diff": 1.17
     },
     {
       "buyYear": 2021,
       "sellYear": 2026,
-      "sellDate": "2026-10-21",
+      "sellDate": "2026-10-24",
       "yearsActual": 4.8,
-      "cagr": 13.21,
-      "multiple": 1.8149,
+      "cagr": 13.16,
+      "multiple": 1.8133,
       "isComplete": false,
-      "benchCagr": 12.28,
-      "diff": 0.93
+      "benchCagr": 11.83,
+      "diff": 1.33
     },
     {
       "buyYear": 2022,
       "sellYear": 2026,
-      "sellDate": "2026-10-21",
+      "sellDate": "2026-10-24",
       "yearsActual": 3.8,
-      "cagr": 15.96,
-      "multiple": 1.7568,
+      "cagr": 15.9,
+      "multiple": 1.7552,
       "isComplete": false,
-      "benchCagr": 21.99,
-      "diff": -6.03
+      "benchCagr": 21.35,
+      "diff": -5.45
     },
     {
       "buyYear": 2023,
       "sellYear": 2026,
-      "sellDate": "2026-10-21",
+      "sellDate": "2026-10-24",
       "yearsActual": 2.8,
-      "cagr": 16.13,
-      "multiple": 1.5215,
+      "cagr": 16.05,
+      "multiple": 1.5202,
       "isComplete": false,
-      "benchCagr": 20.49,
-      "diff": -4.36
+      "benchCagr": 19.64,
+      "diff": -3.59
     },
     {
       "buyYear": 2024,
       "sellYear": 2026,
-      "sellDate": "2026-10-21",
+      "sellDate": "2026-10-24",
       "yearsActual": 1.8,
-      "cagr": 10.49,
-      "multiple": 1.1972,
+      "cagr": 10.39,
+      "multiple": 1.1961,
       "isComplete": false,
-      "benchCagr": 18.07,
-      "diff": -7.58
+      "benchCagr": 16.79,
+      "diff": -6.4
     }
   ],
   "loss5y": [

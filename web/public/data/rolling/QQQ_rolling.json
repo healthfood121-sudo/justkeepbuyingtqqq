@@ -6,19 +6,19 @@
   "type": "etf",
   "note": "합성가격: NDX 일별수익률 기반, 스왑금리(SOFR+0.50%/년)·운용보수 차감. 1985-10-01 이전은 스플라이스 전 구간 (NDX 공식 출범 전). 실제 ETF 상장일과 무관하게 NDX 역사 전체 시뮬레이션. | QQQ 운용보수: 0.20%/년",
   "current": {
-    "price": 727.77,
-    "pe": 27.9,
+    "price": 704.4,
+    "pe": 27.0,
     "divYield": 0.42,
     "eps": null
   },
   "fullPeriod": {
     "start_date": "1971-02-05",
-    "end_date": "2026-10-21",
+    "end_date": "2026-10-24",
     "start_price": 100.0,
-    "end_price": 727.775,
+    "end_price": 704.4,
     "years": 55.7,
-    "cagr": 3.63,
-    "multiple": 7.2778
+    "cagr": 3.57,
+    "multiple": 7.044
   },
   "stats": {
     "n": 45,
@@ -534,101 +534,101 @@
     {
       "buyYear": 2016,
       "sellYear": 2026,
-      "sellDate": "2026-10-21",
+      "sellDate": "2026-10-24",
       "yearsActual": 9.8,
-      "cagr": 21.14,
-      "multiple": 6.5538,
+      "cagr": 20.72,
+      "multiple": 6.3433,
       "isComplete": false,
-      "benchCagr": 15.4,
-      "diff": 5.74
+      "benchCagr": 15.17,
+      "diff": 5.55
     },
     {
       "buyYear": 2017,
       "sellYear": 2026,
-      "sellDate": "2026-10-21",
+      "sellDate": "2026-10-24",
       "yearsActual": 8.8,
-      "cagr": 19.89,
-      "multiple": 4.9401,
+      "cagr": 19.43,
+      "multiple": 4.7815,
       "isComplete": false,
-      "benchCagr": 14.69,
-      "diff": 5.2
+      "benchCagr": 14.44,
+      "diff": 4.99
     },
     {
       "buyYear": 2018,
       "sellYear": 2026,
-      "sellDate": "2026-10-21",
+      "sellDate": "2026-10-24",
       "yearsActual": 7.8,
-      "cagr": 22.73,
-      "multiple": 4.9464,
+      "cagr": 22.19,
+      "multiple": 4.7875,
       "isComplete": false,
-      "benchCagr": 17.39,
-      "diff": 5.34
+      "benchCagr": 17.1,
+      "diff": 5.09
     },
     {
       "buyYear": 2019,
       "sellYear": 2026,
-      "sellDate": "2026-10-21",
+      "sellDate": "2026-10-24",
       "yearsActual": 6.8,
-      "cagr": 20.51,
-      "multiple": 3.5595,
+      "cagr": 19.9,
+      "multiple": 3.4452,
       "isComplete": false,
-      "benchCagr": 15.45,
-      "diff": 5.06
+      "benchCagr": 15.12,
+      "diff": 4.78
     },
     {
       "buyYear": 2020,
       "sellYear": 2026,
-      "sellDate": "2026-10-21",
+      "sellDate": "2026-10-24",
       "yearsActual": 5.8,
-      "cagr": 16.27,
-      "multiple": 2.3985,
+      "cagr": 15.59,
+      "multiple": 2.3215,
       "isComplete": false,
-      "benchCagr": 14.95,
-      "diff": 1.32
+      "benchCagr": 14.57,
+      "diff": 1.02
     },
     {
       "buyYear": 2021,
       "sellYear": 2026,
-      "sellDate": "2026-10-21",
+      "sellDate": "2026-10-24",
       "yearsActual": 4.8,
-      "cagr": 14.07,
-      "multiple": 1.8824,
+      "cagr": 13.27,
+      "multiple": 1.8219,
       "isComplete": false,
-      "benchCagr": 12.28,
-      "diff": 1.79
+      "benchCagr": 11.83,
+      "diff": 1.44
     },
     {
       "buyYear": 2022,
       "sellYear": 2026,
-      "sellDate": "2026-10-21",
+      "sellDate": "2026-10-24",
       "yearsActual": 3.8,
-      "cagr": 30.97,
-      "multiple": 2.7919,
+      "cagr": 29.78,
+      "multiple": 2.7022,
       "isComplete": false,
-      "benchCagr": 21.99,
-      "diff": 8.98
+      "benchCagr": 21.35,
+      "diff": 8.43
     },
     {
       "buyYear": 2023,
       "sellYear": 2026,
-      "sellDate": "2026-10-21",
+      "sellDate": "2026-10-24",
       "yearsActual": 2.8,
-      "cagr": 23.37,
-      "multiple": 1.8029,
+      "cagr": 21.87,
+      "multiple": 1.745,
       "isComplete": false,
-      "benchCagr": 20.49,
-      "diff": 2.88
+      "benchCagr": 19.64,
+      "diff": 2.23
     },
     {
       "buyYear": 2024,
       "sellYear": 2026,
-      "sellDate": "2026-10-21",
+      "sellDate": "2026-10-24",
       "yearsActual": 1.8,
-      "cagr": 22.19,
-      "multiple": 1.4357,
+      "cagr": 19.9,
+      "multiple": 1.3896,
       "isComplete": false,
-      "benchCagr": 18.07,
-      "diff": 4.12
+      "benchCagr": 16.79,
+      "diff": 3.11
     }
   ],
   "loss5y": [
