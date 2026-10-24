@@ -1344,75 +1344,6 @@ function ScenarioTable({ data, pe0, title = '지금 사서 10년 보유 시 예�
   )
 }
 
-// ── 범용 Range Bar ───────────────────────────────────────────
-function RangeBar({
-  mn, med, mx,
-  vMin, vMax,
-  refVal, refLabel,
-  barColor = 'bg-blue-200 dark:bg-blue-900',
-  markerColor = 'bg-blue-500 dark:bg-blue-400',
-  refColor = 'bg-blue-400 dark:bg-blue-500',
-  unit = '%',
-  sign = false,
-}: {
-  mn: number; med: number; mx: number
-  vMin: number; vMax: number
-  refVal: number; refLabel: string
-  barColor?: string; markerColor?: string; refColor?: string
-  unit?: string; sign?: boolean
-}) {
-  const toX = (v: number) =>
-    `${Math.max(0, Math.min(100, (v - vMin) / (vMax - vMin) * 100)).toFixed(2)}%`
-  const refPct = ((refVal - vMin) / (vMax - vMin) * 100).toFixed(2)
-  const fmt = (v: number) => `${sign && v > 0 ? '+' : ''}${v.toFixed(1)}${unit}`
-
-  return (
-    <div className="relative group flex items-center" style={{ width: 165, height: 44 }}>
-      {/* 배경 트랙 */}
-      <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-3 bg-gray-100 dark:bg-gray-800 rounded-full" />
-      {/* min~max 구간 바 */}
-      <div
-        className={`absolute top-1/2 -translate-y-1/2 h-3 rounded-full ${barColor}`}
-        style={{ left: toX(mn), right: `${(100 - parseFloat(toX(mx))).toFixed(2)}%` }}
-      />
-      {/* 기준선 */}
-      <div
-        className={`absolute top-0 h-full w-0.5 opacity-70 ${refColor}`}
-        style={{ left: `${refPct}%` }}
-      />
-      {/* 중앙값 마커 */}
-      <div
-        className={`absolute top-1/2 w-5 h-5 rounded-full border-2 border-white dark:border-gray-950 ${markerColor}`}
-        style={{ left: toX(med), transform: 'translateX(-50%) translateY(-50%)' }}
-      />
-      {/* 툴팁 — 위쪽으로 표시, overflow 문제 없도록 fixed */}
-      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50
-                      invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-opacity duration-150
-                      bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg px-3 py-2
-                      whitespace-nowrap shadow-lg pointer-events-none">
-        <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900 dark:border-t-gray-700" />
-        <div className="space-y-1">
-          <div className="flex justify-between gap-4">
-            <span className="text-gray-400">최솟값</span>
-            <span className="font-semibold">{fmt(mn)}</span>
-          </div>
-          <div className="flex justify-between gap-4">
-            <span className="text-gray-400">중앙값 ●</span>
-            <span className="font-semibold">{fmt(med)}</span>
-          </div>
-          <div className="flex justify-between gap-4">
-            <span className="text-gray-400">최댓값</span>
-            <span className="font-semibold">{fmt(mx)}</span>
-          </div>
-          <div className="border-t border-gray-600 pt-1 text-gray-400">
-            세로선 | = {refLabel}
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 // ── 종목 비교 개요 ───────────────────────────────────────────
 function median(arr: number[]) {
   const s = [...arr].sort((a, b) => a - b)
@@ -1680,7 +1611,7 @@ function OverviewTable({
   function SortTh({ col, children, className }: { col: SortKey; children: React.ReactNode; className?: string }) {
     return (
       <th
-        className={`cursor-pointer select-none hover:text-gray-700 dark:hover:text-gray-200 transition-colors ${colBg(col)} ${className ?? ''}`}
+        className={`cursor-pointer select-none whitespace-nowrap hover:text-gray-700 dark:hover:text-gray-200 transition-colors ${colBg(col)} ${className ?? ''}`}
         onClick={() => handleSort(col)}
       >
         {children}<SortIcon col={col} />
@@ -1714,14 +1645,6 @@ function OverviewTable({
     const vb = b[sortKey] ?? -Infinity
     return sortDir === 'desc' ? vb - va : va - vb
   })
-
-  function percentile(arr: number[], p: number) {
-    const s = [...arr].sort((a, b) => a - b)
-    return s[Math.min(Math.floor(s.length * p), s.length - 1)]
-  }
-  const cagrVMax = Math.ceil(percentile(allRows.map(r => r.cagrMx).filter((v): v is number => v != null), 0.95) / 10) * 10
-  const diffVMax = Math.ceil(percentile(allRows.filter(r => r.diffMx != null).map(r => r.diffMx!), 0.95) / 10) * 10
-  const diffVMin = Math.floor(percentile(allRows.filter(r => r.diffMn != null).map(r => r.diffMn!), 0.05) / 10) * 10
 
   // 검색어가 있으면 필터·즐겨찾기 보기를 잠시 무시하고 전체에서 찾는다(검색해도 안 나오는 문제 방지)
   const q = search.trim().toLowerCase()
@@ -1983,41 +1906,39 @@ function OverviewTable({
         <thead>
           <tr className="text-xs text-gray-400 dark:text-gray-500">
             <th rowSpan={2} className="pb-1 pr-1 w-6" />
-            <th className="text-left pb-1 pr-4" rowSpan={2}>종목</th>
-            <th colSpan={4} className="text-center pb-1 px-3 border-b border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold">
+            <th className="text-left pb-1 pr-2" rowSpan={2}>종목</th>
+            <th rowSpan={2} className={`text-right pb-1 pr-2 font-semibold text-gray-500 dark:text-gray-400 leading-tight cursor-pointer select-none ${colBg('fairGap')}`}
+              onClick={() => handleSort('fairGap')}>
+              적정가<br /><Tip text={TIP_FAIR} below>대비</Tip><SortIcon col="fairGap" />
+            </th>
+            <th colSpan={3} className="text-center pb-1 px-2 border-b border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold">
               절대 수익률 <span className="font-normal opacity-60">(배당 포함)</span>
             </th>
-            <th colSpan={4} className="text-center pb-1 px-3 border-b border-l-2 border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold">
+            <th colSpan={3} className="text-center pb-1 px-2 border-b border-l-2 border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold">
               S&P 500 대비 초과수익
             </th>
-            <th className="text-center pb-1 px-3 border-b border-l-2 border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold whitespace-nowrap">
-              지금 가격
-            </th>
-            <th colSpan={5} className="text-center pb-1 px-3 border-b border-l-2 border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold">
+            <th colSpan={5} className="text-center pb-1 px-2 border-b border-l-2 border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold">
               사업의 질
             </th>
           </tr>
           <tr className="text-xs text-gray-400 dark:text-gray-500 border-b border-gray-200 dark:border-gray-700">
-            <th className="text-left py-1 px-3 font-medium">분포</th>
-            <SortTh col="cagrMn"  className="text-right py-1 pr-3 font-medium">최솟값</SortTh>
-            <SortTh col="cagrMed" className="text-right py-1 pr-3 font-medium">중앙값</SortTh>
-            <SortTh col="cagrMx"  className="text-right py-1 pr-4 font-medium">최댓값</SortTh>
-            <th className="text-left py-1 px-3 font-medium border-l-2 border-gray-200 dark:border-gray-700">분포</th>
-            <SortTh col="diffMn"  className="text-right py-1 pr-3 font-medium">최솟값</SortTh>
-            <SortTh col="diffMed" className="text-right py-1 pr-3 font-medium">중앙값</SortTh>
-            <SortTh col="diffMx"  className="text-right py-1 pr-3 font-medium">최댓값</SortTh>
-            <SortTh col="fairGap" className="text-right py-1 px-3 font-medium border-l-2 border-gray-200 dark:border-gray-700 whitespace-nowrap"><Tip text={TIP_FAIR} below>적정가 대비</Tip></SortTh>
-            <th className="text-center py-1 px-3 font-medium border-l-2 border-gray-200 dark:border-gray-700"><Tip text={TIP_GRADE} below>등급</Tip></th>
-            <SortTh col="score" className="text-right py-1 pr-3 font-medium"><Tip text={TIP_SCORE} below>사업성</Tip></SortTh>
-            <SortTh col="roe"  className="text-right py-1 pr-3 font-medium"><Tip text={TIP_ROE} below right>ROE</Tip></SortTh>
-            <SortTh col="roic" className="text-right py-1 pr-3 font-medium"><Tip text={TIP_ROIC} below right>ROIC</Tip></SortTh>
-            <th className="text-left py-1 font-medium"><Tip text={TIP_GROUP} below right>지금 상황</Tip></th>
+            <SortTh col="cagrMn"  className="text-right py-1 pr-2 font-medium">최솟값</SortTh>
+            <SortTh col="cagrMed" className="text-right py-1 pr-2 font-medium">중앙값</SortTh>
+            <SortTh col="cagrMx"  className="text-right py-1 pr-2 font-medium">최댓값</SortTh>
+            <SortTh col="diffMn"  className="text-right py-1 px-2 font-medium border-l-2 border-gray-200 dark:border-gray-700">최솟값</SortTh>
+            <SortTh col="diffMed" className="text-right py-1 pr-2 font-medium">중앙값</SortTh>
+            <SortTh col="diffMx"  className="text-right py-1 pr-2 font-medium">최댓값</SortTh>
+            <th className="text-center py-1 px-2 font-medium whitespace-nowrap border-l-2 border-gray-200 dark:border-gray-700"><Tip text={TIP_GRADE} below>등급</Tip></th>
+            <SortTh col="score" className="text-right py-1 pr-2 font-medium"><Tip text={TIP_SCORE} below>사업성</Tip></SortTh>
+            <SortTh col="roe"  className="text-right py-1 pr-2 font-medium"><Tip text={TIP_ROE} below right>ROE</Tip></SortTh>
+            <SortTh col="roic" className="text-right py-1 pr-2 font-medium"><Tip text={TIP_ROIC} below right>ROIC</Tip></SortTh>
+            <th className="text-left py-1 font-medium whitespace-nowrap"><Tip text={TIP_GROUP} below right>지금 상황</Tip></th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
           {rows.length === 0 && (
             <tr>
-              <td colSpan={16} className="py-8 text-center text-sm text-gray-400 dark:text-gray-600">
+              <td colSpan={14} className="py-8 text-center text-sm text-gray-400 dark:text-gray-600">
                 조건에 맞는 종목이 없습니다
               </td>
             </tr>
@@ -2043,8 +1964,8 @@ function OverviewTable({
                     ★
                   </button>
                 </td>
-                <td className="py-1.5 pr-4">
-                  <div className="group/name relative inline-flex items-baseline gap-1.5 max-w-[140px]">
+                <td className="py-1.5 pr-2">
+                  <div className="group/name relative inline-flex items-baseline gap-1 max-w-[108px]">
                     <span className="font-semibold text-gray-900 dark:text-white whitespace-nowrap">{s.data.ticker}</span>
                     <span className="text-xs text-gray-400 dark:text-gray-500 truncate">{s.data.name}</span>
                     {(() => {
@@ -2053,7 +1974,7 @@ function OverviewTable({
                         <div className="absolute bottom-full left-0 mb-1.5 z-50 w-64
                                         invisible group-hover/name:visible opacity-0 group-hover/name:opacity-100
                                         transition-opacity duration-150 pointer-events-none
-                                        bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-md px-3 py-2
+                                        bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-md px-2 py-2
                                         shadow-lg">
                           <p className="font-semibold mb-1">{s.data.ticker} · {desc?.name ?? s.data.name}</p>
                           {desc?.sector && <p className="text-gray-300 mb-0.5">섹터: {desc.sector}</p>}
@@ -2064,57 +1985,41 @@ function OverviewTable({
                     })()}
                   </div>
                 </td>
-                {/* 절대 수익률 */}
-                <td className="py-1.5 px-3">
-                  {cagrMn != null && cagrMed != null && cagrMx != null
-                    ? <RangeBar mn={cagrMn} med={cagrMed} mx={cagrMx}
-                        vMin={0} vMax={cagrVMax} refVal={20} refLabel="연 20% 기준" />
-                    : <span className="text-gray-300 dark:text-gray-600 text-xs pl-3">진행 중</span>}
+                {/* 지금 가격: 적정가 대비 */}
+                <td className={`py-1.5 pr-2 text-right tabular-nums whitespace-nowrap font-semibold ${fairGap == null ? 'text-gray-300 dark:text-gray-600' : fairGap < 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'} ${colBg('fairGap')}`}>
+                  {fairGap != null ? `${fairGap > 0 ? '+' : ''}${fairGap.toFixed(0)}%` : '—'}
                 </td>
-                <td className={`py-1.5 pr-3 text-right tabular-nums ${cagrMn != null ? cagrTextColor(cagrMn, true) : 'text-gray-300 dark:text-gray-600'} ${colBg('cagrMn')}`}>
+                {/* 절대 수익률 */}
+                <td className={`py-1.5 pr-2 text-right tabular-nums ${cagrMn != null ? cagrTextColor(cagrMn, true) : 'text-gray-300 dark:text-gray-600'} ${colBg('cagrMn')}`}>
                   {cagrMn != null ? `${cagrMn.toFixed(1)}%` : '진행 중'}
                 </td>
-                <td className={`py-1.5 pr-3 text-right tabular-nums font-semibold ${cagrMed != null ? cagrTextColor(cagrMed, true) : 'text-gray-300 dark:text-gray-600'} ${colBg('cagrMed')}`}>
+                <td className={`py-1.5 pr-2 text-right tabular-nums font-semibold ${cagrMed != null ? cagrTextColor(cagrMed, true) : 'text-gray-300 dark:text-gray-600'} ${colBg('cagrMed')}`}>
                   {cagrMed != null ? `${cagrMed.toFixed(1)}%` : '진행 중'}
                 </td>
-                <td className={`py-1.5 pr-4 text-right tabular-nums ${cagrMx != null ? cagrTextColor(cagrMx, true) : 'text-gray-300 dark:text-gray-600'} ${colBg('cagrMx')}`}>
+                <td className={`py-1.5 pr-2 text-right tabular-nums ${cagrMx != null ? cagrTextColor(cagrMx, true) : 'text-gray-300 dark:text-gray-600'} ${colBg('cagrMx')}`}>
                   {cagrMx != null ? `${cagrMx.toFixed(1)}%` : '진행 중'}
                 </td>
                 {/* S&P500 초과수익 */}
-                <td className="py-1.5 px-3 border-l-2 border-gray-200 dark:border-gray-700">
-                  {diffMn != null && diffMed != null && diffMx != null ? (
-                    <RangeBar mn={diffMn} med={diffMed} mx={diffMx}
-                      vMin={diffVMin} vMax={diffVMax} refVal={0} refLabel="0pp = S&P500과 동일"
-                      barColor="bg-emerald-200 dark:bg-emerald-900"
-                      markerColor="bg-emerald-600 dark:bg-emerald-400"
-                      refColor="bg-gray-400 dark:bg-gray-500"
-                      sign unit="pp" />
-                  ) : <span className="text-gray-300 dark:text-gray-600 text-xs pl-3">—</span>}
-                </td>
-                <td className={`py-1.5 pr-3 text-right tabular-nums ${diffMn != null ? diffColor(diffMn) : 'text-gray-300'} ${colBg('diffMn')}`}>
+                <td className={`py-1.5 px-2 text-right tabular-nums border-l-2 border-gray-200 dark:border-gray-700 ${diffMn != null ? diffColor(diffMn) : 'text-gray-300'} ${colBg('diffMn')}`}>
                   {diffMn != null ? `${diffMn > 0 ? '+' : ''}${diffMn.toFixed(1)}pp` : '—'}
                 </td>
-                <td className={`py-1.5 pr-3 text-right tabular-nums font-semibold ${diffMed != null ? diffColor(diffMed) : 'text-gray-300'} ${colBg('diffMed')}`}>
+                <td className={`py-1.5 pr-2 text-right tabular-nums font-semibold ${diffMed != null ? diffColor(diffMed) : 'text-gray-300'} ${colBg('diffMed')}`}>
                   {diffMed != null ? `${diffMed > 0 ? '+' : ''}${diffMed.toFixed(1)}pp` : '—'}
                 </td>
-                <td className={`py-1.5 pr-3 text-right tabular-nums ${diffMx != null ? diffColor(diffMx) : 'text-gray-300'} ${colBg('diffMx')}`}>
+                <td className={`py-1.5 pr-2 text-right tabular-nums ${diffMx != null ? diffColor(diffMx) : 'text-gray-300'} ${colBg('diffMx')}`}>
                   {diffMx != null ? `${diffMx > 0 ? '+' : ''}${diffMx.toFixed(1)}pp` : '—'}
                 </td>
-                {/* 지금 가격: 적정가 대비 */}
-                <td className={`py-1.5 px-3 text-right tabular-nums whitespace-nowrap border-l-2 border-gray-200 dark:border-gray-700 ${fairGap == null ? 'text-gray-300 dark:text-gray-600' : fairGap < 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'} ${colBg('fairGap')}`}>
-                  {fairGap != null ? `${fairGap > 0 ? '+' : ''}${fairGap.toFixed(0)}%` : '—'}
-                </td>
                 {/* 사업의 질 */}
-                <td className="py-1.5 px-3 text-center border-l-2 border-gray-200 dark:border-gray-700">
+                <td className="py-1.5 px-2 text-center border-l-2 border-gray-200 dark:border-gray-700">
                   {q ? <span className={`text-[11px] px-1.5 py-0.5 rounded ${gradeColor(q.grade)}`}>{q.grade}</span> : <span className="text-gray-300 dark:text-gray-600 text-xs">—</span>}
                 </td>
-                <td className={`py-1.5 pr-3 text-right tabular-nums ${score == null ? 'text-gray-300 dark:text-gray-600' : score >= 20 ? 'text-emerald-600 dark:text-emerald-400 font-semibold' : 'text-gray-700 dark:text-gray-200'} ${colBg('score')}`}>
+                <td className={`py-1.5 pr-2 text-right tabular-nums ${score == null ? 'text-gray-300 dark:text-gray-600' : score >= 20 ? 'text-emerald-600 dark:text-emerald-400 font-semibold' : 'text-gray-700 dark:text-gray-200'} ${colBg('score')}`}>
                   {score != null ? score : '—'}
                 </td>
-                <td className={`py-1.5 pr-3 text-right tabular-nums ${roe == null ? 'text-gray-300 dark:text-gray-600' : roe >= 20 ? 'text-emerald-600 dark:text-emerald-400' : roe < 8 ? 'text-red-500' : 'text-gray-700 dark:text-gray-200'} ${colBg('roe')}`}>
+                <td className={`py-1.5 pr-2 text-right tabular-nums ${roe == null ? 'text-gray-300 dark:text-gray-600' : roe >= 20 ? 'text-emerald-600 dark:text-emerald-400' : roe < 8 ? 'text-red-500' : 'text-gray-700 dark:text-gray-200'} ${colBg('roe')}`}>
                   {roe != null ? `${roe.toFixed(0)}%` : '—'}
                 </td>
-                <td className={`py-1.5 pr-3 text-right tabular-nums ${roic == null ? 'text-gray-300 dark:text-gray-600' : roic >= 20 ? 'text-emerald-600 dark:text-emerald-400' : roic < 8 ? 'text-red-500' : 'text-gray-700 dark:text-gray-200'} ${colBg('roic')}`}>
+                <td className={`py-1.5 pr-2 text-right tabular-nums ${roic == null ? 'text-gray-300 dark:text-gray-600' : roic >= 20 ? 'text-emerald-600 dark:text-emerald-400' : roic < 8 ? 'text-red-500' : 'text-gray-700 dark:text-gray-200'} ${colBg('roic')}`}>
                   {roic != null ? `${roic.toFixed(0)}%` : '—'}
                 </td>
                 <td className="py-1.5 whitespace-nowrap">
