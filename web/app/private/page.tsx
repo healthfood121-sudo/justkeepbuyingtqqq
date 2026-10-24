@@ -1463,6 +1463,73 @@ const TIP_GROUP = <>지금 상태에 따른 분류(종목 아이디어 탭 기�
   <br />꾸준·적당: A등급, 이익 성장, PER이 평소 수준
   <br />지금은 비쌈: PER이 평소보다 30% 넘게 높음</>
 
+// ── 종목 비교 표 필터 ─────────────────────────────────────────
+type FilterSnap = {
+  minPeriods: number; minCagrMin: number | ''; minMedian: number; minDiffMin: number | ''; minDiffMedian: number
+  maxRange: number | ''; excludeEtf: boolean; minRoe: number | ''; minRoic: number | ''
+  gradeF: 'all' | 'A' | 'AB'; minScore: number | ''; subMins: Partial<Record<SubKey, number>>; groupF: 'all' | GroupKey
+}
+const DEFAULT_F: FilterSnap = {
+  minPeriods: 0, minCagrMin: '', minMedian: 0, minDiffMin: '', minDiffMedian: 0, maxRange: '', excludeEtf: false,
+  minRoe: '', minRoic: '', gradeF: 'all', minScore: '', subMins: {}, groupF: 'all',
+}
+// 저장된 프리셋(예전 형식 포함)을 빠짐없는 필터 값으로 맞춘다. 빠진 값은 '필터 없음'
+function normFilter(f: Record<string, any>): FilterSnap {
+  const subMins: Partial<Record<SubKey, number>> = { ...(f.subMins ?? {}) }
+  if (f.subKey && f.minSub !== '' && f.minSub != null) subMins[f.subKey as SubKey] = Number(f.minSub) // 예전 형식
+  const out: any = { ...DEFAULT_F }
+  for (const k of Object.keys(DEFAULT_F)) if (k !== 'subMins' && f[k] != null) out[k] = f[k]
+  out.subMins = subMins
+  return out
+}
+const sameFilter = (a: FilterSnap, b: FilterSnap) => {
+  const sa = Object.entries(a.subMins).filter(([, v]) => v != null).sort(), sb = Object.entries(b.subMins).filter(([, v]) => v != null).sort()
+  return (Object.keys(DEFAULT_F) as (keyof FilterSnap)[]).every(k => k === 'subMins' || a[k] === b[k]) && JSON.stringify(sa) === JSON.stringify(sb)
+}
+type FilterRow = {
+  s: any; completedCount: number; cagrMn: number | null; cagrMed: number | null; cagrMx: number | null
+  diffMn: number | null; diffMed: number | null; roe: number | null; roic: number | null; score: number | null; q?: Quality; group: GroupKey | null
+}
+function passesFilter(row: FilterRow, F: FilterSnap): boolean {
+  if (F.minPeriods > 0 && row.completedCount < F.minPeriods) return false
+  if (F.minCagrMin !== '' && (row.cagrMn == null || row.cagrMn < F.minCagrMin)) return false
+  if (F.minMedian > 0 && (row.cagrMed == null || row.cagrMed < F.minMedian)) return false
+  if (F.minDiffMin !== '' && (row.diffMn == null || row.diffMn < F.minDiffMin)) return false
+  if (F.minDiffMedian !== 0 && (row.diffMed == null || row.diffMed < F.minDiffMedian)) return false
+  if (F.maxRange !== '' && (row.cagrMx == null || row.cagrMn == null || (row.cagrMx - row.cagrMn) > F.maxRange)) return false
+  if (F.excludeEtf && (row.s.data as any).type === 'etf') return false
+  if (F.minRoe !== '' && (row.roe == null || row.roe < F.minRoe)) return false
+  if (F.minRoic !== '' && (row.roic == null || row.roic < F.minRoic)) return false
+  if (F.gradeF === 'A' && row.q?.grade !== 'A') return false
+  if (F.gradeF === 'AB' && row.q?.grade !== 'A' && row.q?.grade !== 'B') return false
+  if (F.minScore !== '' && (row.score == null || row.score < F.minScore)) return false
+  for (const [k, v] of Object.entries(F.subMins) as [SubKey, number][]) if (v != null && (row.q == null || row.q[k] < v)) return false
+  if (F.groupF !== 'all' && row.group !== F.groupF) return false
+  return true
+}
+
+// Claude 추천 프리셋 (코드에 고정, 어느 기기에서나 보임). 근거는 툴팁에
+const BUILTIN_PRESETS: Array<{ name: string; why: string; f: Partial<FilterSnap> }> = [
+  { name: '① 위대한 기업 정석', why: '등급 A + 사업성 20점 이상 + ROIC 20% 이상. Claude 정성 평가와 실제 숫자(ROIC)가 둘 다 높은 기업만.',
+    f: { excludeEtf: true, gradeF: 'A', minScore: 20, minRoic: 20 } },
+  { name: '② 오래 증명된 기업', why: 'A·B등급 + 10년 보유 결과 10번 이상 + 가장 나쁜 해에 샀어도 연 5% 이상 + 중앙값 연 12% 이상. 운이 아니라 꾸준함.',
+    f: { excludeEtf: true, gradeF: 'AB', minPeriods: 10, minCagrMin: 5, minMedian: 12 } },
+  { name: '③ 시장을 한 번도 안 진 기업', why: '10년 보유 결과 10번 이상 + 어느 해에 샀든 S&P 500 이상(초과수익 최솟값 0 이상) + 초과수익 중앙값 3%p 이상.',
+    f: { excludeEtf: true, minPeriods: 10, minDiffMin: 0, minDiffMedian: 3 } },
+  { name: '④ 최정예', why: '①(정석)에 ②의 과거 성과 조건(10번 이상, 최솟값 연 5% 이상)을 더함. 지금 사업도 좋고 과거로도 증명된 핵심 명단.',
+    f: { excludeEtf: true, gradeF: 'A', minScore: 20, minRoic: 20, minPeriods: 10, minCagrMin: 5 } },
+  { name: '성장형', why: '성장성 4점 이상 + ROIC 15% 이상 + 10년 수익 중앙값 연 15% 이상.',
+    f: { excludeEtf: true, subMins: { growth: 4 }, minRoic: 15, minMedian: 15 } },
+  { name: '버핏형', why: '지속가능성 5점 + 경쟁우위 4점 이상 + ROIC 15% 이상. 오래가는 기업.',
+    f: { excludeEtf: true, subMins: { durability: 5, moat: 4 }, minRoic: 15 } },
+  { name: '에르메스형', why: '가격결정력 5점 + 경쟁우위 5점 + ROIC 25% 이상. 값을 올려도 고객이 떠나지 않는 기업.',
+    f: { excludeEtf: true, subMins: { pricing: 5, moat: 5 }, minRoic: 25 } },
+  { name: '⑥ 최정예 · 주가만 쉬는 중', why: '④ 최정예 중 이익은 괜찮은데 PER이 평소보다 싸거나 주가가 3년 고점보다 20% 넘게 빠진 종목. 실제 매수 후보 보기용. 주가에 따라 매일 바뀐다.',
+    f: { excludeEtf: true, gradeF: 'A', minScore: 20, minRoic: 20, minPeriods: 10, minCagrMin: 5, groupF: 'pause' } },
+  { name: '⑦ 이익 주춤 (주의)', why: '좋은 기업인데 이익이 고점보다 15% 넘게 줄어든 종목. 싸 보여도 일시적인지 구조적인지 확인이 필요한 관찰 명단(사라는 뜻 아님).',
+    f: { excludeEtf: true, groupF: 'stumble' } },
+]
+
 function OverviewTable({
   activeStock,
   setActiveStock,
@@ -1475,20 +1542,10 @@ function OverviewTable({
   const [search, setSearch] = useState('')
   const [viewMode, setViewMode] = useState<'all' | 'starred'>('all')
   const [starred, setStarred] = useState<Set<string>>(new Set())
-  const [minPeriods, setMinPeriods] = useState(0)
-  const [minCagrMin, setMinCagrMin] = useState<number | ''>('')
-  const [minMedian, setMinMedian] = useState(0)
-  const [minDiffMin, setMinDiffMin] = useState<number | ''>('')
-  const [minDiffMedian, setMinDiffMedian] = useState(0)
-  const [maxRange, setMaxRange] = useState<number | ''>('')
-  const [excludeEtf, setExcludeEtf] = useState(false)
-  const [minRoe, setMinRoe] = useState<number | ''>('')
-  const [minRoic, setMinRoic] = useState<number | ''>('')
-  const [gradeF, setGradeF] = useState<'all' | 'A' | 'AB'>('all')
-  const [minScore, setMinScore] = useState<number | ''>('')
+  // 필터는 한 묶음으로 관리. 새로고침하면 항상 전체 목록(필터 없음)으로 시작한다
+  const [F, setF] = useState<FilterSnap>(DEFAULT_F)
+  const set = <K extends keyof FilterSnap>(k: K, v: FilterSnap[K]) => setF(p => ({ ...p, [k]: v }))
   const [subKey, setSubKey] = useState<SubKey>('growth')
-  const [minSub, setMinSub] = useState<number | ''>('')
-  const [groupF, setGroupF] = useState<'all' | GroupKey>('all')
   // 사업의 질: ROE·ROIC 5년 중간값(_summary.json) + Claude 정성 평가(_quality.json) — 종목 아이디어 탭과 같은 자료
   const [qual, setQual] = useState<Record<string, QualInfo>>({})
   useEffect(() => {
@@ -1519,24 +1576,10 @@ function OverviewTable({
       if (saved) setStarred(new Set(JSON.parse(saved)))
     } catch {}
     try {
+      // 예전에 저장된 필터 값은 쓰지 않는다(정렬만 기억)
       const f = JSON.parse(localStorage.getItem('private_filters') ?? '{}')
-      if (f.minPeriods != null)  setMinPeriods(f.minPeriods)
-      if (f.minCagrMin != null)  setMinCagrMin(f.minCagrMin)
-      if (f.minMedian != null)   setMinMedian(f.minMedian)
-      if (f.minDiffMin != null)  setMinDiffMin(f.minDiffMin)
-      if (f.minDiffMedian != null) setMinDiffMedian(f.minDiffMedian)
-      if (f.maxRange != null)    setMaxRange(f.maxRange)
-      if (f.excludeEtf != null)  setExcludeEtf(f.excludeEtf)
-      if (f.minRoe != null)      setMinRoe(f.minRoe)
-      if (f.minRoic != null)     setMinRoic(f.minRoic)
-      if (f.gradeF)              setGradeF(f.gradeF)
-      if (f.minScore != null)    setMinScore(f.minScore)
-      if (f.subKey)              setSubKey(f.subKey)
-      if (f.minSub != null)      setMinSub(f.minSub)
-      if (f.groupF)              setGroupF(f.groupF)
-      if (f.sortKey)             setSortKey(f.sortKey)
-      if (f.sortDir)             setSortDir(f.sortDir)
-      if (f.viewMode)            setViewMode(f.viewMode)
+      if (f.sortKey) setSortKey(f.sortKey)
+      if (f.sortDir) setSortDir(f.sortDir)
     } catch {}
     try {
       const p = JSON.parse(localStorage.getItem('private_presets') ?? '[]')
@@ -1545,32 +1588,17 @@ function OverviewTable({
   }, [])
 
   useEffect(() => {
-    try {
-      localStorage.setItem('private_filters', JSON.stringify({
-        minPeriods, minCagrMin, minMedian, minDiffMin, minDiffMedian, maxRange, excludeEtf, minRoe, minRoic, gradeF, minScore, subKey, minSub, groupF, sortKey, sortDir, viewMode,
-      }))
-    } catch {}
-  }, [minPeriods, minCagrMin, minMedian, minDiffMin, minDiffMedian, maxRange, excludeEtf, minRoe, minRoic, gradeF, minScore, subKey, minSub, groupF, sortKey, sortDir, viewMode])
+    try { localStorage.setItem('private_filters', JSON.stringify({ sortKey, sortDir })) } catch {}
+  }, [sortKey, sortDir])
 
-  function currentFilterSnapshot() {
-    return { minPeriods, minCagrMin, minMedian, minDiffMin, minDiffMedian, maxRange, excludeEtf, minRoe, minRoic, gradeF, minScore, subKey, minSub, groupF }
-  }
+  function currentFilterSnapshot() { return F }
 
+  // 프리셋 적용 = 모든 필터를 먼저 끄고 그 프리셋 값만 켠다(앞 프리셋과 섞이지 않게). 같은 프리셋을 다시 누르면 해제
   function applyPreset(f: Record<string, unknown>) {
-    if (f.minPeriods != null)    setMinPeriods(f.minPeriods as number)
-    if (f.minCagrMin != null)    setMinCagrMin(f.minCagrMin as number | '')
-    if (f.minMedian != null)     setMinMedian(f.minMedian as number)
-    if (f.minDiffMin != null)    setMinDiffMin(f.minDiffMin as number | '')
-    if (f.minDiffMedian != null) setMinDiffMedian(f.minDiffMedian as number)
-    if (f.maxRange != null)      setMaxRange(f.maxRange as number | '')
-    if (f.excludeEtf != null)    setExcludeEtf(f.excludeEtf as boolean)
-    setMinRoe((f.minRoe as number | '') ?? '')
-    setMinRoic((f.minRoic as number | '') ?? '')
-    setGradeF((f.gradeF as 'all' | 'A' | 'AB') ?? 'all')
-    setMinScore((f.minScore as number | '') ?? '')
-    if (f.subKey) setSubKey(f.subKey as SubKey)
-    setMinSub((f.minSub as number | '') ?? '')
-    setGroupF((f.groupF as 'all' | GroupKey) ?? 'all')
+    const next = normFilter(f)
+    if (sameFilter(next, F)) { setF(DEFAULT_F); return }
+    setF(next)
+    setViewMode('all')
   }
 
   function savePreset() {
@@ -1662,26 +1690,15 @@ function OverviewTable({
   const diffVMax = Math.ceil(percentile(allRows.filter(r => r.diffMx != null).map(r => r.diffMx!), 0.95) / 10) * 10
   const diffVMin = Math.floor(percentile(allRows.filter(r => r.diffMn != null).map(r => r.diffMn!), 0.05) / 10) * 10
 
+  // 검색어가 있으면 필터·즐겨찾기 보기를 잠시 무시하고 전체에서 찾는다(검색해도 안 나오는 문제 방지)
+  const q = search.trim().toLowerCase()
+  const searching = q.length > 0
   const rows = allRows.filter(row => {
-    const q = search.trim().toLowerCase()
-    if (q && !row.s.key.toLowerCase().includes(q) && !row.s.data.name.toLowerCase().includes(q)) return false
+    if (searching) return row.s.key.toLowerCase().includes(q) || row.s.data.name.toLowerCase().includes(q)
     if (viewMode === 'starred' && !starred.has(row.s.key)) return false
-    if (minPeriods > 0 && row.completedCount < minPeriods) return false
-    if (minCagrMin !== '' && (row.cagrMn == null || row.cagrMn < minCagrMin)) return false
-    if (minMedian > 0 && (row.cagrMed == null || row.cagrMed < minMedian)) return false
-    if (minDiffMin !== '' && (row.diffMn == null || row.diffMn < minDiffMin)) return false
-    if (minDiffMedian !== 0 && (row.diffMed == null || row.diffMed < minDiffMedian)) return false
-    if (maxRange !== '' && (row.cagrMx == null || row.cagrMn == null || (row.cagrMx - row.cagrMn) > maxRange)) return false
-    if (excludeEtf && (row.s.data as any).type === 'etf') return false
-    if (minRoe !== '' && (row.roe == null || row.roe < minRoe)) return false
-    if (minRoic !== '' && (row.roic == null || row.roic < minRoic)) return false
-    if (gradeF === 'A' && row.q?.grade !== 'A') return false
-    if (gradeF === 'AB' && row.q?.grade !== 'A' && row.q?.grade !== 'B') return false
-    if (minScore !== '' && (row.score == null || row.score < minScore)) return false
-    if (minSub !== '' && (row.q == null || row.q[subKey] < minSub)) return false
-    if (groupF !== 'all' && row.group !== groupF) return false
-    return true
+    return passesFilter(row, F)
   })
+  const builtinNorm = BUILTIN_PRESETS.map(bp => ({ ...bp, nf: normFilter(bp.f), n: allRows.filter(r => passesFilter(r, normFilter(bp.f))).length }))
 
   return (
     <div>
@@ -1694,6 +1711,12 @@ function OverviewTable({
           onChange={e => setSearch(e.target.value)}
           className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 w-44 focus:outline-none focus:ring-1 focus:ring-blue-400"
         />
+        {searching && (
+          <span className="text-xs text-amber-600 dark:text-amber-400">
+            검색 중 — 필터·즐겨찾기는 잠시 무시하고 전체에서 찾는다
+            <button type="button" onClick={() => setSearch('')} className="ml-1 underline">지우기</button>
+          </span>
+        )}
 <div className="ml-auto flex rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden text-xs">
           <button
             onClick={() => setViewMode('all')}
@@ -1719,15 +1742,36 @@ function OverviewTable({
       </div>
 
       {/* 프리셋 행 */}
-      {(presets.length > 0 || true) && (
+      {(presets.length > 0 || true) && (<>
         <div className="flex flex-wrap items-center gap-2 mb-2">
-          <span className="text-xs text-gray-400 dark:text-gray-600 shrink-0">필터 프리셋:</span>
+          <span className="text-xs text-gray-400 dark:text-gray-600 shrink-0">
+            <Tip text={<>누르면 그 조건만 켜진다(앞 필터는 꺼짐). 같은 버튼을 다시 누르면 해제. 괄호 안 = 걸리는 종목 수. 새로고침하면 항상 전체 목록으로 시작한다.</>}>추천 프리셋</Tip>
+          </span>
+          {builtinNorm.map(bp => {
+            const on = sameFilter(bp.nf, F)
+            return (
+              <span key={bp.name} className="relative group/bp inline-flex">
+                <button type="button" onClick={() => applyPreset(bp.f as Record<string, unknown>)}
+                  className={`text-xs rounded-full px-2.5 py-1 border transition-colors ${on
+                    ? 'bg-blue-500 border-blue-500 text-white'
+                    : 'border-blue-200 dark:border-blue-900 text-blue-700 dark:text-blue-300 bg-blue-50/50 dark:bg-blue-900/10 hover:border-blue-400'}`}>
+                  {bp.name} <span className={on ? 'opacity-80' : 'opacity-60'}>({bp.n})</span>
+                </button>
+                <span className="absolute top-full left-0 mt-1.5 w-64 z-50 invisible opacity-0 group-hover/bp:visible group-hover/bp:opacity-100
+                                 transition-opacity duration-150 pointer-events-none bg-gray-900 text-white text-xs rounded-md px-2.5 py-2 shadow-lg leading-relaxed">
+                  {bp.why}
+                </span>
+              </span>
+            )
+          })}
+        </div>
+        <div className="flex flex-wrap items-center gap-2 mb-2">
+          <span className="text-xs text-gray-400 dark:text-gray-600 shrink-0">내 프리셋:</span>
           {presets.map(p => (
             <span key={p.name}
-              className="inline-flex items-center gap-1 text-xs border border-gray-200 dark:border-gray-700
-                         rounded-full px-2.5 py-1 cursor-pointer
-                         hover:border-blue-400 hover:text-blue-500 dark:hover:border-blue-500 dark:hover:text-blue-400
-                         transition-colors text-gray-600 dark:text-gray-400">
+              className={`inline-flex items-center gap-1 text-xs border rounded-full px-2.5 py-1 cursor-pointer transition-colors ${sameFilter(normFilter(p.f as Record<string, any>), F)
+                ? 'bg-blue-500 border-blue-500 text-white'
+                : 'border-gray-200 dark:border-gray-700 hover:border-blue-400 hover:text-blue-500 dark:hover:border-blue-500 dark:hover:text-blue-400 text-gray-600 dark:text-gray-400'}`}>
               <span onClick={() => applyPreset(p.f)}>{p.name}</span>
               <button onClick={() => deletePreset(p.name)}
                 className="ml-0.5 text-gray-400 dark:text-gray-500 hover:text-red-400 dark:hover:text-red-500 transition-colors leading-none">
@@ -1765,43 +1809,43 @@ function OverviewTable({
             </button>
           )}
         </div>
-      )}
+      </>)}
 
       {/* 필터 행 */}
       {(() => {
         const inputCls = "w-9 text-center bg-transparent text-gray-900 dark:text-white focus:outline-none"
         const labelCls = "flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700 rounded-lg px-2.5 py-1.5"
-        const hasFilter = minPeriods > 0 || minCagrMin !== '' || minMedian > 0 || minDiffMin !== '' || minDiffMedian !== 0 || maxRange !== '' || excludeEtf || minRoe !== '' || minRoic !== '' || gradeF !== 'all' || minScore !== '' || minSub !== '' || groupF !== 'all'
+        const hasFilter = !sameFilter(F, DEFAULT_F)
         return (
           <div className="flex flex-wrap items-center gap-2 mb-3 pb-3 border-b border-gray-100 dark:border-gray-800">
             <label className={labelCls}>
               완결 구간
-              <input type="number" min={0} max={40} value={minPeriods || ''} placeholder="0"
-                onChange={e => setMinPeriods(Number(e.target.value) || 0)} className={inputCls} />
+              <input type="number" min={0} max={40} value={F.minPeriods || ''} placeholder="0"
+                onChange={e => set('minPeriods', Number(e.target.value) || 0)} className={inputCls} />
               개 이상
             </label>
             <label className={labelCls}>
               절대수익 최솟값 ≥
-              <input type="number" min={-30} max={100} value={minCagrMin} placeholder="—"
-                onChange={e => setMinCagrMin(e.target.value === '' ? '' : Number(e.target.value))} className={inputCls} />
+              <input type="number" min={-30} max={100} value={F.minCagrMin} placeholder="—"
+                onChange={e => set('minCagrMin', e.target.value === '' ? '' : Number(e.target.value))} className={inputCls} />
               %
             </label>
             <label className={labelCls}>
               절대수익 중앙값 ≥
-              <input type="number" min={0} max={100} value={minMedian || ''} placeholder="0"
-                onChange={e => setMinMedian(Number(e.target.value) || 0)} className={inputCls} />
+              <input type="number" min={0} max={100} value={F.minMedian || ''} placeholder="0"
+                onChange={e => set('minMedian', Number(e.target.value) || 0)} className={inputCls} />
               %
             </label>
             <label className={labelCls}>
               초과수익 최솟값 ≥
-              <input type="number" min={-50} max={100} value={minDiffMin} placeholder="—"
-                onChange={e => setMinDiffMin(e.target.value === '' ? '' : Number(e.target.value))} className={inputCls} />
+              <input type="number" min={-50} max={100} value={F.minDiffMin} placeholder="—"
+                onChange={e => set('minDiffMin', e.target.value === '' ? '' : Number(e.target.value))} className={inputCls} />
               pp
             </label>
             <label className={labelCls}>
               초과수익 중앙값 ≥
-              <input type="number" min={-20} max={100} value={minDiffMedian || ''} placeholder="0"
-                onChange={e => setMinDiffMedian(Number(e.target.value) || 0)} className={inputCls} />
+              <input type="number" min={-20} max={100} value={F.minDiffMedian || ''} placeholder="0"
+                onChange={e => set('minDiffMedian', Number(e.target.value) || 0)} className={inputCls} />
               pp
             </label>
             <label className={labelCls}>
@@ -1816,33 +1860,33 @@ function OverviewTable({
                   <span className="absolute top-full left-4 border-4 border-transparent border-t-gray-900" />
                 </span>
               </span>
-              <input type="number" min={0} max={200} value={maxRange} placeholder="—"
-                onChange={e => setMaxRange(e.target.value === '' ? '' : Number(e.target.value))} className={inputCls} />
+              <input type="number" min={0} max={200} value={F.maxRange} placeholder="—"
+                onChange={e => set('maxRange', e.target.value === '' ? '' : Number(e.target.value))} className={inputCls} />
               %
             </label>
             <label className={labelCls}>
               <Tip text={TIP_ROE}>ROE ≥</Tip>
-              <input type="number" min={-50} max={300} value={minRoe} placeholder="—"
-                onChange={e => setMinRoe(e.target.value === '' ? '' : Number(e.target.value))} className={inputCls} />
+              <input type="number" min={-50} max={300} value={F.minRoe} placeholder="—"
+                onChange={e => set('minRoe', e.target.value === '' ? '' : Number(e.target.value))} className={inputCls} />
               %
             </label>
             <label className={labelCls}>
               <Tip text={TIP_ROIC}>ROIC ≥</Tip>
-              <input type="number" min={-50} max={300} value={minRoic} placeholder="—"
-                onChange={e => setMinRoic(e.target.value === '' ? '' : Number(e.target.value))} className={inputCls} />
+              <input type="number" min={-50} max={300} value={F.minRoic} placeholder="—"
+                onChange={e => set('minRoic', e.target.value === '' ? '' : Number(e.target.value))} className={inputCls} />
               %
             </label>
             <span className={labelCls}>
               <Tip text={TIP_GRADE}>등급</Tip>
               {([['all', '전체'], ['A', 'A'], ['AB', 'A·B']] as const).map(([k, l]) => (
-                <button key={k} type="button" onClick={() => setGradeF(k)}
-                  className={`px-1.5 rounded ${gradeF === k ? 'bg-blue-500 text-white' : 'hover:text-gray-700 dark:hover:text-gray-200'}`}>{l}</button>
+                <button key={k} type="button" onClick={() => set('gradeF', k)}
+                  className={`px-1.5 rounded ${F.gradeF === k ? 'bg-blue-500 text-white' : 'hover:text-gray-700 dark:hover:text-gray-200'}`}>{l}</button>
               ))}
             </span>
             <label className={labelCls}>
               <Tip text={TIP_SCORE}>사업성 ≥</Tip>
-              <input type="number" min={5} max={25} value={minScore} placeholder="—"
-                onChange={e => setMinScore(e.target.value === '' ? '' : Number(e.target.value))} className={inputCls} />
+              <input type="number" min={5} max={25} value={F.minScore} placeholder="—"
+                onChange={e => set('minScore', e.target.value === '' ? '' : Number(e.target.value))} className={inputCls} />
               /25
             </label>
             <label className={labelCls}>
@@ -1852,21 +1896,29 @@ function OverviewTable({
                 {(Object.keys(SUB_LABEL) as SubKey[]).map(k => <option key={k} value={k}>{SUB_LABEL[k]}</option>)}
               </select>
               ≥
-              <input type="number" min={1} max={5} value={minSub} placeholder="—"
-                onChange={e => setMinSub(e.target.value === '' ? '' : Number(e.target.value))} className={inputCls} />
+              <input type="number" min={1} max={5} value={F.subMins[subKey] ?? ''} placeholder="—"
+                onChange={e => { const v = e.target.value; setF(p => { const m = { ...p.subMins }; if (v === '') delete m[subKey]; else m[subKey] = Number(v); return { ...p, subMins: m } }) }}
+                className={inputCls} />
               /5
             </label>
+            {(Object.entries(F.subMins) as [SubKey, number][]).filter(([, v]) => v != null).map(([k, v]) => (
+              <span key={k} className="inline-flex items-center gap-1 text-xs rounded-lg px-2 py-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300">
+                {SUB_LABEL[k]} ≥ {v}
+                <button type="button" onClick={() => setF(p => { const m = { ...p.subMins }; delete m[k]; return { ...p, subMins: m } })}
+                  className="text-blue-400 hover:text-red-500 leading-none">×</button>
+              </span>
+            ))}
             <label className={labelCls}>
               <Tip text={TIP_GROUP}>지금 상황</Tip>
-              <select value={groupF} onChange={e => setGroupF(e.target.value as 'all' | GroupKey)}
+              <select value={F.groupF} onChange={e => set('groupF', e.target.value as 'all' | GroupKey)}
                 className="bg-transparent text-gray-900 dark:text-white focus:outline-none">
                 <option value="all">전체</option>
                 {(Object.keys(GROUPS) as GroupKey[]).map(k => <option key={k} value={k}>{GROUPS[k].short}</option>)}
               </select>
             </label>
-            <button onClick={() => setExcludeEtf(v => !v)}
+            <button onClick={() => set('excludeEtf', !F.excludeEtf)}
               className={`px-2.5 py-1.5 text-xs rounded-lg border transition-colors ${
-                excludeEtf
+                F.excludeEtf
                   ? 'bg-blue-500 border-blue-500 text-white'
                   : 'border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600'
               }`}>
@@ -1877,7 +1929,7 @@ function OverviewTable({
                 {rows.length < allRows.length ? `${rows.length} / ${allRows.length}개` : `${allRows.length}개`}
               </span>
               {hasFilter && (
-                <button onClick={() => { setMinPeriods(0); setMinCagrMin(''); setMinMedian(0); setMinDiffMin(''); setMinDiffMedian(0); setMaxRange(''); setExcludeEtf(false); setMinRoe(''); setMinRoic(''); setGradeF('all'); setMinScore(''); setMinSub(''); setGroupF('all') }}
+                <button onClick={() => setF(DEFAULT_F)}
                   className="text-xs text-gray-400 dark:text-gray-600 hover:text-red-400 dark:hover:text-red-500 transition-colors">
                   초기화
                 </button>
