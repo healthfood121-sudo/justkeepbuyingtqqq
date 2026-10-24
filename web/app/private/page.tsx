@@ -1457,6 +1457,7 @@ type FilterSnap = {
   gradeF: 'all' | 'A' | 'AB'; minScore: number | ''; subMins: Partial<Record<SubKey, number>>; groupF: 'all' | GroupKey
   maxFairGap: number | ''
   relF: 'all' | 'high' | 'mid'   // 적정가 신뢰도: 전체 / 높음만 / 높음·보통
+  keys?: string[]                 // 이 종목들만 (Claude 관심 목록 같은 고정 목록)
 }
 const DEFAULT_F: FilterSnap = {
   minPeriods: 0, minCagrMin: '', minMedian: 0, minDiffMin: '', minDiffMedian: 0, maxRange: '', excludeEtf: false,
@@ -1469,11 +1470,13 @@ function normFilter(f: Record<string, any>): FilterSnap {
   const out: any = { ...DEFAULT_F }
   for (const k of Object.keys(DEFAULT_F)) if (k !== 'subMins' && f[k] != null) out[k] = f[k]
   out.subMins = subMins
+  out.keys = Array.isArray(f.keys) && f.keys.length ? [...f.keys] : undefined
   return out
 }
 const sameFilter = (a: FilterSnap, b: FilterSnap) => {
   const sa = Object.entries(a.subMins).filter(([, v]) => v != null).sort(), sb = Object.entries(b.subMins).filter(([, v]) => v != null).sort()
   return (Object.keys(DEFAULT_F) as (keyof FilterSnap)[]).every(k => k === 'subMins' || a[k] === b[k]) && JSON.stringify(sa) === JSON.stringify(sb)
+    && JSON.stringify([...(a.keys ?? [])].sort()) === JSON.stringify([...(b.keys ?? [])].sort())
 }
 type FilterRow = {
   s: any; completedCount: number; cagrMn: number | null; cagrMed: number | null; cagrMx: number | null
@@ -1482,6 +1485,7 @@ type FilterRow = {
   relScore?: number | null
 }
 function passesFilter(row: FilterRow, F: FilterSnap): boolean {
+  if (F.keys && !F.keys.includes(row.s.key)) return false
   if (F.minPeriods > 0 && row.completedCount < F.minPeriods) return false
   if (F.minCagrMin !== '' && (row.cagrMn == null || row.cagrMn < F.minCagrMin)) return false
   if (F.minMedian > 0 && (row.cagrMed == null || row.cagrMed < F.minMedian)) return false
@@ -1522,6 +1526,8 @@ const BUILTIN_PRESETS: Array<{ name: string; why: string; f: Partial<FilterSnap>
     f: { excludeEtf: true, gradeF: 'A', minScore: 20, minRoic: 20, minPeriods: 10, minCagrMin: 5, groupF: 'pause' } },
   { name: '⑦ 이익 주춤 (주의)', why: '좋은 기업인데 이익이 고점보다 15% 넘게 줄어든 종목. 싸 보여도 일시적인지 구조적인지 확인이 필요한 관찰 명단(사라는 뜻 아님).',
     f: { excludeEtf: true, groupF: 'stumble' } },
+  { name: '⑧ Claude 관심 목록', why: '2026-10-24 Claude가 고른 8개. 위대한 기업(④ 최정예)이면서 지금 값이 적정 수준 이하이고 세 기준(이익·잉여현금·영업현금)이 대체로 같은 말을 하는 종목. 싸고 신호 일치: 롤린스·레녹스·코파트·맥도날드·IDEXX·에르메스 / 적정 수준: 마스터카드·인튜이티브서지컬. 투자 권유 아님.',
+    f: { keys: ['ROL', 'LII', 'CPRT', 'MCD', 'IDXX', 'RMS', 'MA', 'ISRG'] } },
 ]
 
 function OverviewTable({
