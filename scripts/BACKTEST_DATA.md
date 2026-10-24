@@ -959,7 +959,7 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 |------|------|---------|------|--------|
 | `web/public/data/fundamentals/{KEY}.json` | 종목당 ~3 KB × 444개 | `export_fundamentals.py` | 연도별 EPS(SEC 10-K, 분할 보정)·연말 PER, 10년 수익률 분해(EPS·배당·PER, 완결+진행 중), 지표 | `/private` 자동 인사이트 |
 | `web/public/data/fundamentals/_summary.json` | ~200 KB | `export_fundamentals.py` | 전 종목 지표 요약(PER vs 10년 중간값, EPS 성장, 이익/고점, 3년 고점 대비, 단순 기대수익률) | `/private/ideas` |
-| `web/public/data/fundamentals/_fair.json` | ~36 KB | `export_fair_value.py` (fundamentals 생성 Actions 마지막 단계에서도 실행) | 전 종목 이익 시계 적정가 재료: 적정 PER(마지막 실적 전 20년 월말 PER 중간값), 마지막 EPS·시점, 주가. 화면에서 성장률·오늘 날짜로 '적정가 대비 %' 계산(이익 시계와 같은 값, 2026-10-24 AAPL·NKE·KO·NVDA·RMS 대조 일치). 에르메스는 화면에서 따로 계산 | `/private` 종목 비교 표 '지금 가격 · 적정가 대비' 열·필터 |
+| `web/public/data/fundamentals/_fair.json` | ~36 KB | `export_fair_value.py` (fundamentals 생성 Actions 마지막 단계에서도 실행) | 전 종목 이익 시계 적정가 재료: 적정 PER(마지막 실적 전 20년 월말 PER 중간값), 마지막 EPS·시점, 주가. 화면에서 성장률·오늘 날짜로 '적정가 대비 %' 계산(이익 시계와 같은 값, 2026-10-24 AAPL·NKE·KO·NVDA·RMS 대조 일치). 이익이 적자이거나 그때까지 최고 EPS의 20% 미만인 달은 PER 계산에서 제외(2026-10-24, 121개 종목 적정 PER 변경, 예: UDR 60→28, AMD 73→64). 에르메스는 화면에서 따로 계산 | `/private` 종목 비교 표 '지금 가격 · 적정가 대비' 열·필터 |
 | `web/public/data/fundamentals/_quality.json` | ~80 KB | `build_quality_json.py` (원본 `scripts/data/quality/quality.tsv`) | 기업별 정성 평가: 해자·가격결정력·수익성·성장성·지속가능성(1~5), 등급, 강점·위험 | `/private`, `/private/ideas` |
 
 - 실행: GitHub Actions `전 종목 펀더멘털 데이터 생성` (workflow_dispatch, 입력 `tickers` 비우면 전 종목). 이 세션 환경은 SEC·Yahoo 접속이 막혀 있어 Actions로 생성.

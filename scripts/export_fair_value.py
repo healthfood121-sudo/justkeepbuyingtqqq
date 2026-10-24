@@ -3,7 +3,8 @@ export_fair_value.py — 전 종목 '이익 시계' 적정가 재료를 한 파�
 
 이익 시계(page.tsx StockValueClock/ValueClockCore)와 같은 계산:
   - EPS 기준점: SEC 10-K 연간 EPS(결산일) + 그 이전 EPS(epsOld, 롤링 epsDecomp) + 최근 1년 EPS(ttmAsOf)
-  - 적정 PER: 마지막 실적 시점 전 20년 월말 PER(= 월말 종가 ÷ 그때 EPS, 기준점 사이는 기하 보간, 200배 이상 제외)의 중간값, 반올림
+  - 적정 PER: 마지막 실적 시점 전 20년 월말 PER(= 월말 종가 ÷ 그때 EPS, 기준점 사이는 기하 보간, 200배 이상 제외,
+    이익이 적자이거나 그때까지 최고 EPS의 20% 미만인 달 제외)의 중간값, 반올림
     (자료 24개월 미만이면 20배)
   - 적정가(오늘) = 마지막 EPS × (1+성장률)^(마지막 실적 이후 경과 연수) × 적정 PER  ← 성장률·오늘 날짜는 화면에서 계산
 출력: web/public/data/fundamentals/_fair.json  {asOf, stocks: {KEY: {fairPe, eps, t, price, priceDate}}}
@@ -75,6 +76,14 @@ def build(f: dict, rolling: dict | None):
             anchors.append((tT, m["ttmEps"]))
     y0, m0 = map(int, f["monthly"]["start"].split("-"))
     t_last = anchors[-1][0]
+
+    def peak_at(t):  # 그때까지 연간 EPS 최고치 (page.tsx makePeakAt과 같음)
+        m = -math.inf
+        for ta, e in anchors:
+            if ta > t + 1e-9:
+                break
+            m = max(m, e)
+        return m
     pes = []
     for i, c in enumerate(f["monthly"]["c"]):
         if c is None or c <= 0:
@@ -83,7 +92,8 @@ def build(f: dict, rolling: dict | None):
         if t < anchors[0][0] or t < t_last - 20 or t > t_last:
             continue
         e = eps_at(anchors, t)
-        if e and e > 0 and c / e < 200:
+        # 이익이 적자이거나 그때까지 최고의 20% 미만인 달은 PER이 의미 없어 뺀다 (MEANINGFUL_EPS_RATIO)
+        if e and e > 0 and e >= 0.2 * peak_at(t) and c / e < 200:
             pes.append(c / e)
     fair_pe = round(quantile(pes, 0.5)) if len(pes) >= 24 else 20
     return {"fairPe": fair_pe, "eps": anchors[-1][1], "t": round(t_last, 4),
