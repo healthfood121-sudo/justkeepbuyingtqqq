@@ -1428,10 +1428,26 @@ function diffColor(v: number) {
   return 'text-red-500 dark:text-red-400'
 }
 
-type SortKey = 'fullCagr' | 'cagrMn' | 'cagrMed' | 'cagrMx' | 'diffMn' | 'diffMed' | 'diffMx' | 'roe' | 'roic' | 'score'
+type SortKey = 'fullCagr' | 'cagrMn' | 'cagrMed' | 'cagrMx' | 'diffMn' | 'diffMed' | 'diffMx' | 'roe' | 'roic' | 'score' | 'fairGap'
 type SubKey = 'moat' | 'pricing' | 'profit' | 'growth' | 'durability'
 const SUB_LABEL: Record<SubKey, string> = { moat: '경쟁우위', pricing: '가격결정력', profit: '수익성', growth: '성장성', durability: '지속가능성' }
-type QualInfo = { roe: number | null; roic: number | null; q?: Quality; score: number | null; group: GroupKey | null }
+type FairInfo = { fairPe: number; eps: number; t: number; price: number; priceDate: string }
+type QualInfo = { roe: number | null; roic: number | null; q?: Quality; score: number | null; group: GroupKey | null; fair?: FairInfo; g?: number }
+// 이익 시계와 같은 성장률: 개별 분석 판단(0.5 단위) → 없으면 과거 5·10년 중 낮은 값(0~15%)
+function clockGrowth(key: string, g10?: number | null, g5?: number | null) {
+  const clamp = (v: number) => Math.max(0, Math.min(15, v))
+  const base = g10 != null && g5 != null ? clamp(Math.min(g10, g5)) : g10 != null ? clamp(g10) : g5 != null ? clamp(g5) : 5
+  return Math.round((DEEP_INSIGHTS[key]?.growth.base ?? base) * 2) / 2
+}
+// 적정가 대비(%) = 주가 ÷ (마지막 EPS × (1+성장률)^경과 연수 × 적정 PER) − 1  — 이익 시계 '적정가 대비'와 같은 계산
+function fairGapOf(fi: FairInfo, g: number, tNow: number) {
+  const epsNow = fi.eps * Math.pow(1 + g / 100, Math.max(0, tNow - fi.t))
+  return fi.eps > 0 && epsNow > 0 ? (fi.price / (epsNow * fi.fairPe) - 1) * 100 : null
+}
+const TIP_FAIR = <>이익 시계의 &lsquo;적정가 대비&rsquo;와 같은 숫자. 적정가 = 최근 1년 EPS(마지막 실적 이후는 성장률로 늘림) × 적정 PER.
+  <br />적정 PER = 지난 20년 월말 PER의 중간값(에르메스는 거품기 2019~2025년을 뺀 중간값).
+  <br />성장률 = 개별 분석 판단, 없으면 과거 5·10년 EPS 성장률 중 낮은 값(0~15%).
+  <br />마이너스(초록) = 적정가보다 쌈, 플러스(빨강) = 비쌈. 이익이 크게 줄었거나 적자인 종목은 빈칸.</>
 
 // 마우스를 올리거나(휴대폰은 ? 를 누르면) 설명이 뜨는 작은 도움말
 function Tip({ children, text, below = false, right = false }: { children: ReactNode; text: ReactNode; below?: boolean; right?: boolean }) {
@@ -1468,10 +1484,11 @@ type FilterSnap = {
   minPeriods: number; minCagrMin: number | ''; minMedian: number; minDiffMin: number | ''; minDiffMedian: number
   maxRange: number | ''; excludeEtf: boolean; minRoe: number | ''; minRoic: number | ''
   gradeF: 'all' | 'A' | 'AB'; minScore: number | ''; subMins: Partial<Record<SubKey, number>>; groupF: 'all' | GroupKey
+  maxFairGap: number | ''
 }
 const DEFAULT_F: FilterSnap = {
   minPeriods: 0, minCagrMin: '', minMedian: 0, minDiffMin: '', minDiffMedian: 0, maxRange: '', excludeEtf: false,
-  minRoe: '', minRoic: '', gradeF: 'all', minScore: '', subMins: {}, groupF: 'all',
+  minRoe: '', minRoic: '', gradeF: 'all', minScore: '', subMins: {}, groupF: 'all', maxFairGap: '',
 }
 // 저장된 프리셋(예전 형식 포함)을 빠짐없는 필터 값으로 맞춘다. 빠진 값은 '필터 없음'
 function normFilter(f: Record<string, any>): FilterSnap {
@@ -1489,6 +1506,7 @@ const sameFilter = (a: FilterSnap, b: FilterSnap) => {
 type FilterRow = {
   s: any; completedCount: number; cagrMn: number | null; cagrMed: number | null; cagrMx: number | null
   diffMn: number | null; diffMed: number | null; roe: number | null; roic: number | null; score: number | null; q?: Quality; group: GroupKey | null
+  fairGap: number | null
 }
 function passesFilter(row: FilterRow, F: FilterSnap): boolean {
   if (F.minPeriods > 0 && row.completedCount < F.minPeriods) return false
@@ -1505,6 +1523,7 @@ function passesFilter(row: FilterRow, F: FilterSnap): boolean {
   if (F.minScore !== '' && (row.score == null || row.score < F.minScore)) return false
   for (const [k, v] of Object.entries(F.subMins) as [SubKey, number][]) if (v != null && (row.q == null || row.q[k] < v)) return false
   if (F.groupF !== 'all' && row.group !== F.groupF) return false
+  if (F.maxFairGap !== '' && (row.fairGap == null || row.fairGap > F.maxFairGap)) return false
   return true
 }
 
@@ -1552,7 +1571,10 @@ function OverviewTable({
     Promise.all([
       fetch('/data/fundamentals/_summary.json').then(r => (r.ok ? r.json() : null)),
       fetch('/data/fundamentals/_quality.json').then(r => (r.ok ? r.json() : null)),
-    ]).then(([sm, ql]) => {
+      fetch('/data/fundamentals/_fair.json').then(r => (r.ok ? r.json() : null)),
+      fetch('/data/rolling/RMS_monthly_price.json').then(r => (r.ok ? r.json() : null)),
+    ]).then(([sm, ql, fr, rmsPx]) => {
+      const fairs = (fr?.stocks ?? {}) as Record<string, FairInfo>
       const qs = (ql?.stocks ?? {}) as Record<string, Quality>
       const m: Record<string, QualInfo> = {}
       for (const x of [...((sm?.stocks ?? []) as Metrics[]), ...EXTRA_METRICS]) {
@@ -1560,7 +1582,16 @@ function OverviewTable({
         m[x.key] = {
           roe: (x as any).roe5 ?? (x as any).roe ?? null, roic: (x as any).roic5 ?? (x as any).roic ?? null,
           q, score: q ? qualityScore(q) : null, group: classify(x, q, 'moat'),
+          fair: fairs[x.key], g: clockGrowth(x.key, x.epsCagr10, x.epsCagr5),
         }
+      }
+      // 에르메스: 이익 시계와 같게 — 거품기 뺀 20년 PER 중간값, 4번 '기본' 성장률
+      if (rmsPx && m.RMS) {
+        const epsAt = makeEpsAt(RMS_ANCHORS, 0)
+        const tLast = RMS_ANCHORS[RMS_ANCHORS.length - 1][0]
+        const pes = (rmsPx.rows as Array<{ d: string; c: number }>).map(r => { const [y, mo] = r.d.split('-').map(Number); const t = y + mo / 12; const e = epsAt(t); return { t, pe: e && e > 0 ? r.c / e : null } })
+          .filter(r => r.t >= tLast - 20 && r.t <= tLast && !(r.t >= 2019 && r.t < 2026) && r.pe != null && r.pe > 0 && r.pe < 200).map(r => r.pe as number)
+        if (pes.length >= 24) m.RMS = { ...m.RMS, fair: { fairPe: Math.round(quantile(pes, 0.5)), eps: RMS_ANCHORS[RMS_ANCHORS.length - 1][1], t: tLast, price: rmsPx.last.close, priceDate: rmsPx.last.date }, g: epsGrowthOf(HERMES_SCENARIOS[0].f) }
       }
       for (const [k, q] of Object.entries(qs)) if (!m[k]) m[k] = { roe: null, roic: null, q, score: qualityScore(q), group: null }
       setQual(m)
@@ -1657,6 +1688,7 @@ function OverviewTable({
     )
   }
 
+  const [tNowYr] = useState(() => decYear(Date.now()))
   const allRows = STOCKS.map((s, i) => {
     const allCompleted = s.data.rows10y.filter((r: any) => r.isComplete)
     const completedCount = allCompleted.length
@@ -1675,7 +1707,8 @@ function OverviewTable({
     const roe  = qi?.roe ?? null
     const roic = qi?.roic ?? null
     const score = qi?.score ?? null
-    return { i, s, fullCagr, cagrMn, cagrMed, cagrMx, diffMn, diffMed, diffMx, completedCount, roe, roic, score, q: qi?.q, group: qi?.group ?? null }
+    const fairGap = qi?.fair && qi.g != null ? fairGapOf(qi.fair, qi.g, tNowYr) : null
+    return { i, s, fullCagr, cagrMn, cagrMed, cagrMx, diffMn, diffMed, diffMx, completedCount, roe, roic, score, q: qi?.q, group: qi?.group ?? null, fairGap }
   }).sort((a, b) => {
     const va = a[sortKey] ?? -Infinity
     const vb = b[sortKey] ?? -Infinity
@@ -1916,6 +1949,12 @@ function OverviewTable({
                 {(Object.keys(GROUPS) as GroupKey[]).map(k => <option key={k} value={k}>{GROUPS[k].short}</option>)}
               </select>
             </label>
+            <label className={labelCls}>
+              <Tip text={TIP_FAIR}>적정가 대비 ≤</Tip>
+              <input type="number" min={-90} max={300} value={F.maxFairGap} placeholder="—"
+                onChange={e => set('maxFairGap', e.target.value === '' ? '' : Number(e.target.value))} className={inputCls} />
+              %
+            </label>
             <button onClick={() => set('excludeEtf', !F.excludeEtf)}
               className={`px-2.5 py-1.5 text-xs rounded-lg border transition-colors ${
                 F.excludeEtf
@@ -1951,6 +1990,9 @@ function OverviewTable({
             <th colSpan={4} className="text-center pb-1 px-3 border-b border-l-2 border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold">
               S&P 500 대비 초과수익
             </th>
+            <th className="text-center pb-1 px-3 border-b border-l-2 border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold whitespace-nowrap">
+              지금 가격
+            </th>
             <th colSpan={5} className="text-center pb-1 px-3 border-b border-l-2 border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold">
               사업의 질
             </th>
@@ -1964,6 +2006,7 @@ function OverviewTable({
             <SortTh col="diffMn"  className="text-right py-1 pr-3 font-medium">최솟값</SortTh>
             <SortTh col="diffMed" className="text-right py-1 pr-3 font-medium">중앙값</SortTh>
             <SortTh col="diffMx"  className="text-right py-1 pr-3 font-medium">최댓값</SortTh>
+            <SortTh col="fairGap" className="text-right py-1 px-3 font-medium border-l-2 border-gray-200 dark:border-gray-700 whitespace-nowrap"><Tip text={TIP_FAIR} below>적정가 대비</Tip></SortTh>
             <th className="text-center py-1 px-3 font-medium border-l-2 border-gray-200 dark:border-gray-700"><Tip text={TIP_GRADE} below>등급</Tip></th>
             <SortTh col="score" className="text-right py-1 pr-3 font-medium"><Tip text={TIP_SCORE} below>사업성</Tip></SortTh>
             <SortTh col="roe"  className="text-right py-1 pr-3 font-medium"><Tip text={TIP_ROE} below right>ROE</Tip></SortTh>
@@ -1974,12 +2017,12 @@ function OverviewTable({
         <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
           {rows.length === 0 && (
             <tr>
-              <td colSpan={15} className="py-8 text-center text-sm text-gray-400 dark:text-gray-600">
+              <td colSpan={16} className="py-8 text-center text-sm text-gray-400 dark:text-gray-600">
                 조건에 맞는 종목이 없습니다
               </td>
             </tr>
           )}
-          {rows.map(({ i, s, cagrMn, cagrMed, cagrMx, diffMn, diffMed, diffMx, roe, roic, score, q, group }) => {
+          {rows.map(({ i, s, cagrMn, cagrMed, cagrMx, diffMn, diffMed, diffMx, roe, roic, score, q, group, fairGap }) => {
             const isActive = activeStock === i
             const isStarred = starred.has(s.key)
             return (
@@ -2056,6 +2099,10 @@ function OverviewTable({
                 </td>
                 <td className={`py-1.5 pr-3 text-right tabular-nums ${diffMx != null ? diffColor(diffMx) : 'text-gray-300'} ${colBg('diffMx')}`}>
                   {diffMx != null ? `${diffMx > 0 ? '+' : ''}${diffMx.toFixed(1)}pp` : '—'}
+                </td>
+                {/* 지금 가격: 적정가 대비 */}
+                <td className={`py-1.5 px-3 text-right tabular-nums whitespace-nowrap border-l-2 border-gray-200 dark:border-gray-700 ${fairGap == null ? 'text-gray-300 dark:text-gray-600' : fairGap < 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'} ${colBg('fairGap')}`}>
+                  {fairGap != null ? `${fairGap > 0 ? '+' : ''}${fairGap.toFixed(0)}%` : '—'}
                 </td>
                 {/* 사업의 질 */}
                 <td className="py-1.5 px-3 text-center border-l-2 border-gray-200 dark:border-gray-700">
