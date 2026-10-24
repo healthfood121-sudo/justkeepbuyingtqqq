@@ -1456,10 +1456,11 @@ type FilterSnap = {
   maxRange: number | ''; excludeEtf: boolean; minRoe: number | ''; minRoic: number | ''
   gradeF: 'all' | 'A' | 'AB'; minScore: number | ''; subMins: Partial<Record<SubKey, number>>; groupF: 'all' | GroupKey
   maxFairGap: number | ''
+  relF: 'all' | 'high' | 'mid'   // 적정가 신뢰도: 전체 / 높음만 / 높음·보통
 }
 const DEFAULT_F: FilterSnap = {
   minPeriods: 0, minCagrMin: '', minMedian: 0, minDiffMin: '', minDiffMedian: 0, maxRange: '', excludeEtf: false,
-  minRoe: '', minRoic: '', gradeF: 'all', minScore: '', subMins: {}, groupF: 'all', maxFairGap: '',
+  minRoe: '', minRoic: '', gradeF: 'all', minScore: '', subMins: {}, groupF: 'all', maxFairGap: '', relF: 'all',
 }
 // 저장된 프리셋(예전 형식 포함)을 빠짐없는 필터 값으로 맞춘다. 빠진 값은 '필터 없음'
 function normFilter(f: Record<string, any>): FilterSnap {
@@ -1478,6 +1479,7 @@ type FilterRow = {
   s: any; completedCount: number; cagrMn: number | null; cagrMed: number | null; cagrMx: number | null
   diffMn: number | null; diffMed: number | null; roe: number | null; roic: number | null; score: number | null; q?: Quality; group: GroupKey | null
   fairGap: number | null
+  relScore?: number | null
 }
 function passesFilter(row: FilterRow, F: FilterSnap): boolean {
   if (F.minPeriods > 0 && row.completedCount < F.minPeriods) return false
@@ -1495,6 +1497,8 @@ function passesFilter(row: FilterRow, F: FilterSnap): boolean {
   for (const [k, v] of Object.entries(F.subMins) as [SubKey, number][]) if (v != null && (row.q == null || row.q[k] < v)) return false
   if (F.groupF !== 'all' && row.group !== F.groupF) return false
   if (F.maxFairGap !== '' && (row.fairGap == null || row.fairGap > F.maxFairGap)) return false
+  if (F.relF === 'high' && row.relScore !== 3) return false
+  if (F.relF === 'mid' && (row.relScore == null || row.relScore < 2)) return false
   return true
 }
 
@@ -1948,6 +1952,13 @@ function OverviewTable({
                 onChange={e => set('maxFairGap', e.target.value === '' ? '' : Number(e.target.value))} className={inputCls} />
               %
             </label>
+            <span className={labelCls}>
+              <Tip text={TIP_REL}>신뢰</Tip>
+              {([['all', '전체'], ['high', '높음'], ['mid', '높음·보통']] as const).map(([k, l]) => (
+                <button key={k} type="button" onClick={() => set('relF', k)}
+                  className={`px-1.5 rounded ${F.relF === k ? 'bg-blue-500 text-white' : 'hover:text-gray-700 dark:hover:text-gray-200'}`}>{l}</button>
+              ))}
+            </span>
             <button onClick={() => set('excludeEtf', !F.excludeEtf)}
               className={`px-2.5 py-1.5 text-xs rounded-lg border transition-colors ${
                 F.excludeEtf
