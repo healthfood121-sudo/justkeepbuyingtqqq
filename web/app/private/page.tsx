@@ -1359,12 +1359,13 @@ function diffColor(v: number) {
   return 'text-red-500 dark:text-red-400'
 }
 
-type SortKey = 'fullCagr' | 'cagrMn' | 'cagrMed' | 'cagrMx' | 'diffMn' | 'diffMed' | 'diffMx' | 'roe' | 'roic' | 'score' | 'fairGap' | 'fcfGap'
+type SortKey = 'fullCagr' | 'cagrMn' | 'cagrMed' | 'cagrMx' | 'diffMn' | 'diffMed' | 'diffMx' | 'roe' | 'roic' | 'score' | 'fairGap' | 'fcfGap' | 'ocfGap' | 'relScore'
 type SubKey = 'moat' | 'pricing' | 'profit' | 'growth' | 'durability'
 const SUB_LABEL: Record<SubKey, string> = { moat: '경쟁우위', pricing: '가격결정력', profit: '수익성', growth: '성장성', durability: '지속가능성' }
 type FairInfo = {
   fairPe: number; eps: number; t: number; price: number; priceDate: string; oneOff?: 'drop' | 'spike'
   fcfMult?: number; fcf?: number; fcfT?: number; fcfOneOff?: 'drop' | 'spike'   // 잉여현금흐름 기준 (적정 P/FCF, 최근 주당 잉여현금)
+  ocfMult?: number; ocf?: number; ocfT?: number; ocfOneOff?: 'drop' | 'spike'   // 영업현금흐름 기준
 }
 // 월말 주가 ÷ 기준값(EPS 또는 주당 잉여현금)의 20년 중간값 — 이익 시계·export_fair_value.py와 같은 규칙
 function multMedian(rows: Array<{ t: number; c: number }>, anchors: ClockAnchor[], exclude?: [number, number]): number | null {
@@ -1387,7 +1388,32 @@ function fairGapOf(fi: FairInfo, g: number, tNow: number) {
   const epsNow = fi.eps * Math.pow(1 + g / 100, Math.max(0, tNow - fi.t))
   return fi.eps > 0 && epsNow > 0 ? (fi.price / (epsNow * fi.fairPe) - 1) * 100 : null
 }
-const TIP_FAIR = <><b>이익</b> = 이익(EPS) 기준, <b>현금</b> = 잉여현금흐름 기준(이익 시계에서 기준 버튼으로 바꾼 값과 같음). 둘이 비슷하면 믿을 만하고, 크게 다르면 일회성 손익이나 설비투자 급증을 의심한다.
+// 신뢰도: 세 기준(이익·잉여현금·영업현금) 중 경고 없는 값들이 서로 얼마나 비슷한가
+type Rel = { level: '높음' | '보통' | '낮음'; score: number; why: string; mid: number | null }
+function reliabilityOf(vals: Array<{ k: string; gap: number | null; warn: string | null }>): Rel | null {
+  const have = vals.filter(v => v.gap != null)
+  if (!have.length) return null
+  const clean = have.filter(v => !v.warn)
+  const sgn = (x: number) => `${x > 0 ? '+' : ''}${x.toFixed(0)}%`
+  const list = have.map(v => `${v.k} ${sgn(v.gap!)}${v.warn ? '(⚠)' : ''}`).join(', ')
+  const cg = clean.map(v => v.gap!)
+  const spread = cg.length >= 2 ? Math.max(...cg) - Math.min(...cg) : null
+  const mid = cg.length ? quantile(cg, 0.5) : null
+  const epsClean = clean.some(v => v.k === '이익')
+  let level: Rel['level']
+  if (clean.length >= 2 && spread! <= 30 && epsClean) level = '높음'
+  else if ((clean.length >= 2 && spread! <= 60) || (clean.length === 1 && have.length === 1)) level = '보통'
+  else level = '낮음'
+  const why = `${list}. ` + (spread != null ? `경고 없는 기준끼리 차이 ${spread.toFixed(0)}%p` : clean.length === 1 ? `경고 없는 기준이 ${clean[0].k} 하나뿐` : '모든 기준에 경고')
+    + (mid != null ? ` · 경고 없는 값의 중간 ${sgn(mid)}` : '')
+  return { level, score: level === '높음' ? 3 : level === '보통' ? 2 : 1, why, mid }
+}
+const TIP_REL = <>세 기준(이익·잉여현금·영업현금)의 &lsquo;적정가 대비&rsquo;가 서로 비슷한지로 매긴 믿을 만한 정도. ⚠ 붙은 값은 빼고 본다.
+  <br /><b>높음</b>: 이익 포함 경고 없는 기준 2개 이상, 서로 차이 30%p 이하
+  <br /><b>보통</b>: 차이 60%p 이하, 또는 기준이 이익 하나뿐(은행·보험)
+  <br /><b>낮음</b>: 그 밖(기준끼리 크게 다르거나 대부분 ⚠). 배지에 마우스를 올리면 근거가 나온다.</>
+
+const TIP_FAIR = <><b>이익</b> = 이익(EPS) 기준, <b>잉여</b> = 잉여현금흐름 기준, <b>영업</b> = 영업현금흐름 기준(이익 시계에서 기준 버튼으로 바꾼 값과 같음). <b>신뢰</b> = 세 값이 서로 비슷한 정도. 둘이 비슷하면 믿을 만하고, 크게 다르면 일회성 손익이나 설비투자 급증을 의심한다.
   <br />이익 시계의 &lsquo;적정가 대비&rsquo;와 같은 숫자. 적정가 = 최근 1년 EPS(마지막 실적 이후는 성장률로 늘림) × 적정 PER.
   <br />적정 PER = 지난 20년 월말 PER의 중간값(에르메스는 거품기 2019~2025년을 뺀 중간값).
   <br />성장률 = 개별 분석 판단, 없으면 과거 5·10년 EPS 성장률 중 낮은 값(0~15%).
@@ -1536,15 +1562,18 @@ function OverviewTable({
         const pe = multMedian(rows, RMS_ANCHORS, [2019, 2026])
         const fcfM = multMedian(rows, RMS_FCF_ANCHORS, [2019, 2026]) ?? multMedian(rows, RMS_FCF_ANCHORS)
         const lastF = RMS_FCF_ANCHORS[RMS_FCF_ANCHORS.length - 1]
+        const ocfM = multMedian(rows, RMS_OCF_ANCHORS, [2019, 2026]) ?? multMedian(rows, RMS_OCF_ANCHORS)
+        const lastO = RMS_OCF_ANCHORS[RMS_OCF_ANCHORS.length - 1]
         if (pe != null) m.RMS = { ...m.RMS, g: epsGrowthOf(HERMES_SCENARIOS[0].f), fair: {
           fairPe: pe, eps: RMS_ANCHORS[RMS_ANCHORS.length - 1][1], t: RMS_ANCHORS[RMS_ANCHORS.length - 1][0], price: rmsPx.last.close, priceDate: rmsPx.last.date,
           oneOff: oneOffFlag(RMS_ANCHORS)?.kind,
           ...(fcfM != null ? { fcfMult: fcfM, fcf: lastF[1], fcfT: lastF[0], fcfOneOff: oneOffFlag(RMS_FCF_ANCHORS)?.kind } : {}),
+          ...(ocfM != null ? { ocfMult: ocfM, ocf: lastO[1], ocfT: lastO[0], ocfOneOff: oneOffFlag(RMS_OCF_ANCHORS)?.kind } : {}),
         } }
       }
       for (const [k, q] of Object.entries(qs)) if (!m[k]) m[k] = { roe: null, roic: null, q, score: qualityScore(q), group: null }
       setQual(m)
-    }).catch(() => {})
+    }).catch(e => console.error('종목 비교 표 자료를 불러오지 못함', e))
   }, [])
   const [presets, setPresets] = useState<Array<{name: string; f: Record<string, unknown>}>>([])
   const [presetInput, setPresetInput] = useState('')
@@ -1665,12 +1694,22 @@ function OverviewTable({
       : fi!.fcfOneOff === 'drop' ? '최근 1년 잉여현금흐름이 직전 3년 최고치의 절반 미만 — 설비투자 급증이나 일회성 지출 가능성(비쌈이 과장될 수 있음). 참고만'
       : fi!.fcfOneOff === 'spike' ? '최근 1년 잉여현금흐름이 직전 3년 최고치의 1.8배 초과 — 일회성 유입 가능성(쌈이 과장될 수 있음). 참고만'
       : null
+    const ocfGap = fi?.ocfMult != null && fi.ocf != null && fi.ocfT != null && qi?.g != null
+      ? fairGapOf({ ...fi, fairPe: fi.ocfMult, eps: fi.ocf, t: fi.ocfT }, qi.g, tNowYr) : null
+    const ocfWarn: string | null = ocfGap == null ? null
+      : fi!.ocfMult! >= HIGH_PE_WARN ? '과거 주가/영업현금 배수 중간값이 50배 이상 — 참고만'
+      : fi!.ocfOneOff === 'drop' ? '최근 1년 영업현금흐름이 직전 3년 최고치의 절반 미만 — 일회성 지출 가능성. 참고만'
+      : fi!.ocfOneOff === 'spike' ? '최근 1년 영업현금흐름이 직전 3년 최고치의 1.8배 초과 — 일회성 유입 가능성. 참고만'
+      : null
     const fairWarn: string | null = !qi?.fair ? null
       : qi.fair.fairPe >= HIGH_PE_WARN ? '과거 PER 중간값이 50배 이상이라 이익 기준 적정가가 부풀려질 수 있음(재투자 기업·리츠 등). 참고만'
       : qi.fair.oneOff === 'drop' ? '최근 1년 EPS가 직전 3년 최고치의 절반 미만 — 일회성 비용이 섞였을 가능성(비쌈이 과장될 수 있음). 참고만'
       : qi.fair.oneOff === 'spike' ? '최근 1년 EPS가 직전 3년 최고치의 1.8배 초과 — 일회성 이익이나 호황이 섞였을 가능성(쌈이 과장될 수 있음). 참고만'
       : null
-    return { fairWarn, i, s, fullCagr, cagrMn, cagrMed, cagrMx, diffMn, diffMed, diffMx, completedCount, roe, roic, score, q: qi?.q, group: qi?.group ?? null, fairGap, fcfGap, fcfWarn }
+    const rel = reliabilityOf([
+      { k: '이익', gap: fairGap, warn: fairWarn }, { k: '잉여현금', gap: fcfGap, warn: fcfWarn }, { k: '영업현금', gap: ocfGap, warn: ocfWarn },
+    ])
+    return { fairWarn, i, s, fullCagr, cagrMn, cagrMed, cagrMx, diffMn, diffMed, diffMx, completedCount, roe, roic, score, q: qi?.q, group: qi?.group ?? null, fairGap, fcfGap, fcfWarn, ocfGap, ocfWarn, rel, relScore: rel?.score ?? null }
   }).sort((a, b) => {
     const va = a[sortKey] ?? -Infinity
     const vb = b[sortKey] ?? -Infinity
@@ -1938,44 +1977,45 @@ function OverviewTable({
           <tr className="text-xs text-gray-400 dark:text-gray-500">
             <th rowSpan={2} className="pb-1 pr-1 w-6" />
             <th className="text-left pb-1 pr-2" rowSpan={2}>종목</th>
-            <th colSpan={2} className="text-center pb-1 px-1 border-b border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold whitespace-nowrap">
+            <th colSpan={4} className="text-center pb-1 px-1 border-b border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold whitespace-nowrap">
               <Tip text={TIP_FAIR} below>적정가 대비</Tip>
             </th>
             <th colSpan={3} className="text-center pb-1 px-2 border-b border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold">
-              절대 수익률 <span className="font-normal opacity-60">(배당 포함)</span>
+              절대 수익률 <span className="font-normal opacity-60">(%)</span>
             </th>
             <th colSpan={3} className="text-center pb-1 px-2 border-b border-l-2 border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold">
-              S&P 500 대비 초과수익
+              S&P 500 대비 <span className="font-normal opacity-60">(%p)</span>
             </th>
-            <th colSpan={5} className="text-center pb-1 px-2 border-b border-l-2 border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold">
+            <th colSpan={4} className="text-center pb-1 px-2 border-b border-l-2 border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold">
               사업의 질
             </th>
           </tr>
           <tr className="text-xs text-gray-400 dark:text-gray-500 border-b border-gray-200 dark:border-gray-700">
             <SortTh col="fairGap" className="text-right py-1 pr-1 font-medium">이익</SortTh>
-            <SortTh col="fcfGap" className="text-right py-1 pr-2 font-medium">현금</SortTh>
-            <SortTh col="cagrMn"  className="text-right py-1 pr-2 font-medium">최솟값</SortTh>
-            <SortTh col="cagrMed" className="text-right py-1 pr-2 font-medium">중앙값</SortTh>
-            <SortTh col="cagrMx"  className="text-right py-1 pr-2 font-medium">최댓값</SortTh>
-            <SortTh col="diffMn"  className="text-right py-1 px-2 font-medium border-l-2 border-gray-200 dark:border-gray-700">최솟값</SortTh>
-            <SortTh col="diffMed" className="text-right py-1 pr-2 font-medium">중앙값</SortTh>
-            <SortTh col="diffMx"  className="text-right py-1 pr-2 font-medium">최댓값</SortTh>
+            <SortTh col="fcfGap" className="text-right py-1 pr-1 font-medium">잉여</SortTh>
+            <SortTh col="ocfGap" className="text-right py-1 pr-1 font-medium">영업</SortTh>
+            <SortTh col="relScore" className="text-center py-1 pr-2 font-medium"><Tip text={TIP_REL} below>신뢰</Tip></SortTh>
+            <SortTh col="cagrMn"  className="text-right py-1 pr-2 font-medium">최소</SortTh>
+            <SortTh col="cagrMed" className="text-right py-1 pr-2 font-medium">중간</SortTh>
+            <SortTh col="cagrMx"  className="text-right py-1 pr-2 font-medium">최대</SortTh>
+            <SortTh col="diffMn"  className="text-right py-1 px-2 font-medium border-l-2 border-gray-200 dark:border-gray-700">최소</SortTh>
+            <SortTh col="diffMed" className="text-right py-1 pr-2 font-medium">중간</SortTh>
+            <SortTh col="diffMx"  className="text-right py-1 pr-2 font-medium">최대</SortTh>
             <th className="text-center py-1 px-2 font-medium whitespace-nowrap border-l-2 border-gray-200 dark:border-gray-700"><Tip text={TIP_GRADE} below>등급</Tip></th>
             <SortTh col="score" className="text-right py-1 pr-2 font-medium"><Tip text={TIP_SCORE} below>사업성</Tip></SortTh>
-            <SortTh col="roe"  className="text-right py-1 pr-2 font-medium"><Tip text={TIP_ROE} below right>ROE</Tip></SortTh>
             <SortTh col="roic" className="text-right py-1 pr-2 font-medium"><Tip text={TIP_ROIC} below right>ROIC</Tip></SortTh>
-            <th className="text-left py-1 font-medium whitespace-nowrap"><Tip text={TIP_GROUP} below right>지금 상황</Tip></th>
+            <th className="text-left py-1 font-medium whitespace-nowrap"><Tip text={TIP_GROUP} below right>상황</Tip></th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
           {rows.length === 0 && (
             <tr>
-              <td colSpan={15} className="py-8 text-center text-sm text-gray-400 dark:text-gray-600">
+              <td colSpan={16} className="py-8 text-center text-sm text-gray-400 dark:text-gray-600">
                 조건에 맞는 종목이 없습니다
               </td>
             </tr>
           )}
-          {rows.map(({ i, s, cagrMn, cagrMed, cagrMx, diffMn, diffMed, diffMx, roe, roic, score, q, group, fairGap, fairWarn, fcfGap, fcfWarn }) => {
+          {rows.map(({ i, s, cagrMn, cagrMed, cagrMx, diffMn, diffMed, diffMx, roic, score, q, group, fairGap, fairWarn, fcfGap, fcfWarn, ocfGap, ocfWarn, rel }) => {
             const isActive = activeStock === i
             const isStarred = starred.has(s.key)
             return (
@@ -2023,30 +2063,38 @@ function OverviewTable({
                     ? <span className="text-gray-400 dark:text-gray-500 font-normal" title={fairWarn}>⚠{fairGap > 0 ? '+' : ''}{fairGap.toFixed(0)}%</span>
                     : `${fairGap > 0 ? '+' : ''}${fairGap.toFixed(0)}%`) : '—'}
                 </td>
-                <td className={`py-1.5 pr-2 text-right text-xs tabular-nums whitespace-nowrap ${fcfGap == null ? 'text-gray-300 dark:text-gray-600' : fcfGap < 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'} ${colBg('fcfGap')}`}>
+                <td className={`py-1.5 pr-1 text-right text-xs tabular-nums whitespace-nowrap ${fcfGap == null ? 'text-gray-300 dark:text-gray-600' : fcfGap < 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'} ${colBg('fcfGap')}`}>
                   {fcfGap != null ? (fcfWarn
                     ? <span className="text-gray-400 dark:text-gray-500" title={fcfWarn}>⚠{fcfGap > 0 ? '+' : ''}{fcfGap.toFixed(0)}%</span>
                     : `${fcfGap > 0 ? '+' : ''}${fcfGap.toFixed(0)}%`) : '—'}
                 </td>
+                <td className={`py-1.5 pr-1 text-right text-xs tabular-nums whitespace-nowrap ${ocfGap == null ? 'text-gray-300 dark:text-gray-600' : ocfGap < 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'} ${colBg('ocfGap')}`}>
+                  {ocfGap != null ? (ocfWarn
+                    ? <span className="text-gray-400 dark:text-gray-500" title={ocfWarn}>⚠{ocfGap > 0 ? '+' : ''}{ocfGap.toFixed(0)}%</span>
+                    : `${ocfGap > 0 ? '+' : ''}${ocfGap.toFixed(0)}%`) : '—'}
+                </td>
+                <td className={`py-1.5 pr-2 text-center ${colBg('relScore')}`}>
+                  {rel ? <span title={rel.why} className={`text-[11px] px-1.5 py-0.5 rounded whitespace-nowrap ${rel.level === '높음' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' : rel.level === '보통' ? 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300' : 'bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-300'}`}>{rel.level}</span> : <span className="text-gray-300 dark:text-gray-600 text-xs">—</span>}
+                </td>
                 {/* 절대 수익률 */}
                 <td className={`py-1.5 pr-2 text-right tabular-nums ${cagrMn != null ? cagrTextColor(cagrMn, true) : 'text-gray-300 dark:text-gray-600'} ${colBg('cagrMn')}`}>
-                  {cagrMn != null ? `${cagrMn.toFixed(1)}%` : '진행 중'}
+                  {cagrMn != null ? cagrMn.toFixed(1) : '진행 중'}
                 </td>
                 <td className={`py-1.5 pr-2 text-right tabular-nums font-semibold ${cagrMed != null ? cagrTextColor(cagrMed, true) : 'text-gray-300 dark:text-gray-600'} ${colBg('cagrMed')}`}>
-                  {cagrMed != null ? `${cagrMed.toFixed(1)}%` : '진행 중'}
+                  {cagrMed != null ? cagrMed.toFixed(1) : '진행 중'}
                 </td>
                 <td className={`py-1.5 pr-2 text-right tabular-nums ${cagrMx != null ? cagrTextColor(cagrMx, true) : 'text-gray-300 dark:text-gray-600'} ${colBg('cagrMx')}`}>
-                  {cagrMx != null ? `${cagrMx.toFixed(1)}%` : '진행 중'}
+                  {cagrMx != null ? cagrMx.toFixed(1) : '진행 중'}
                 </td>
                 {/* S&P500 초과수익 */}
                 <td className={`py-1.5 px-2 text-right tabular-nums border-l-2 border-gray-200 dark:border-gray-700 ${diffMn != null ? diffColor(diffMn) : 'text-gray-300'} ${colBg('diffMn')}`}>
-                  {diffMn != null ? `${diffMn > 0 ? '+' : ''}${diffMn.toFixed(1)}pp` : '—'}
+                  {diffMn != null ? `${diffMn > 0 ? '+' : ''}${diffMn.toFixed(1)}` : '—'}
                 </td>
                 <td className={`py-1.5 pr-2 text-right tabular-nums font-semibold ${diffMed != null ? diffColor(diffMed) : 'text-gray-300'} ${colBg('diffMed')}`}>
-                  {diffMed != null ? `${diffMed > 0 ? '+' : ''}${diffMed.toFixed(1)}pp` : '—'}
+                  {diffMed != null ? `${diffMed > 0 ? '+' : ''}${diffMed.toFixed(1)}` : '—'}
                 </td>
                 <td className={`py-1.5 pr-2 text-right tabular-nums ${diffMx != null ? diffColor(diffMx) : 'text-gray-300'} ${colBg('diffMx')}`}>
-                  {diffMx != null ? `${diffMx > 0 ? '+' : ''}${diffMx.toFixed(1)}pp` : '—'}
+                  {diffMx != null ? `${diffMx > 0 ? '+' : ''}${diffMx.toFixed(1)}` : '—'}
                 </td>
                 {/* 사업의 질 */}
                 <td className="py-1.5 px-2 text-center border-l-2 border-gray-200 dark:border-gray-700">
@@ -2054,9 +2102,6 @@ function OverviewTable({
                 </td>
                 <td className={`py-1.5 pr-2 text-right tabular-nums ${score == null ? 'text-gray-300 dark:text-gray-600' : score >= 20 ? 'text-emerald-600 dark:text-emerald-400 font-semibold' : 'text-gray-700 dark:text-gray-200'} ${colBg('score')}`}>
                   {score != null ? score : '—'}
-                </td>
-                <td className={`py-1.5 pr-2 text-right tabular-nums ${roe == null ? 'text-gray-300 dark:text-gray-600' : roe >= 20 ? 'text-emerald-600 dark:text-emerald-400' : roe < 8 ? 'text-red-500' : 'text-gray-700 dark:text-gray-200'} ${colBg('roe')}`}>
-                  {roe != null ? `${roe.toFixed(0)}%` : '—'}
                 </td>
                 <td className={`py-1.5 pr-2 text-right tabular-nums ${roic == null ? 'text-gray-300 dark:text-gray-600' : roic >= 20 ? 'text-emerald-600 dark:text-emerald-400' : roic < 8 ? 'text-red-500' : 'text-gray-700 dark:text-gray-200'} ${colBg('roic')}`}>
                   {roic != null ? `${roic.toFixed(0)}%` : '—'}
@@ -2855,6 +2900,7 @@ type ClockProps = {
   storageKey: string
   growthBar?: ReactNode                        // EPS 성장률 바 (차트 아래, 적정 PER 바 위에 함께 표시)
   fcfAnchors?: ClockAnchor[]                   // 주당 잉여현금흐름 기준점(있으면 '잉여현금흐름 기준' 버튼이 생김)
+  ocfAnchors?: ClockAnchor[]                   // 주당 영업현금흐름 기준점
   extraLive?: (now: number, fairNow: number) => ReactNode
   notes: string
   peExclude?: { from: number; to: number; label: string } // 이 기간을 뺀 PER 중간값도 눈금으로 (예: 거품기)
@@ -2903,7 +2949,7 @@ function ClockLive({ cur, epsAt, profitAt, fairPe, shares, sharesOut, extraLive,
   )
 }
 
-function ValueClockCore({ cur, anchors: rawAnchors, monthly, last, g, sharesOut, divYield, storageKey, extraLive, notes, peExclude, fcfPs, growthBar, fcfAnchors }: ClockProps) {
+function ValueClockCore({ cur, anchors: rawAnchors, monthly, last, g, sharesOut, divYield, storageKey, extraLive, notes, peExclude, fcfPs, growthBar, fcfAnchors, ocfAnchors }: ClockProps) {
   // 입력칸은 빈 값으로 시작(지우고 새로 입력 가능). 비어 있으면 1주로 계산
   const [sharesTxt, setSharesTxt] = useState('')
   const shares = Number(sharesTxt) > 0 ? Number(sharesTxt) : 1
@@ -2922,12 +2968,14 @@ function ValueClockCore({ cur, anchors: rawAnchors, monthly, last, g, sharesOut,
   }
 
   const [smooth, setSmooth] = useState(false)
-  const [basis, setBasis] = useState<'eps' | 'fcf'>('eps')
-  const isFcf = basis === 'fcf' && !!fcfAnchors && fcfAnchors.length >= 3
-  const baseAnchors = isFcf ? fcfAnchors! : rawAnchors
+  const [basis, setBasis] = useState<'eps' | 'fcf' | 'ocf'>('eps')
+  const hasF = !!fcfAnchors && fcfAnchors.length >= 3, hasO = !!ocfAnchors && ocfAnchors.length >= 3
+  const isOcf = basis === 'ocf' && hasO
+  const isFcf = (basis === 'fcf' && hasF) || isOcf   // 현금 기준(잉여현금·영업현금) 공통 문구용
+  const baseAnchors = isOcf ? ocfAnchors! : basis === 'fcf' && hasF ? fcfAnchors! : rawAnchors
   const anchors = smooth ? smoothAnchors(baseAnchors) : baseAnchors
-  const mL = isFcf ? 'P/FCF' : 'PER'                 // 배수 이름
-  const eL = isFcf ? '주당 잉여현금' : 'EPS'          // 기준 이익 이름
+  const mL = isOcf ? 'P/OCF' : isFcf ? 'P/FCF' : 'PER'                       // 배수 이름
+  const eL = isOcf ? '주당 영업현금' : isFcf ? '주당 잉여현금' : 'EPS'        // 기준 이름
   const profitAt = makeEpsAt(rawAnchors, g)           // '내 몫 이익'은 항상 회계 EPS
   const oneOff = oneOffFlag(baseAnchors)
   const epsAt = makeEpsAt(anchors, g)
@@ -3045,10 +3093,10 @@ function ValueClockCore({ cur, anchors: rawAnchors, monthly, last, g, sharesOut,
 
   const toggles = (
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-gray-600 dark:text-gray-300">
-      {fcfAnchors && fcfAnchors.length >= 3 && (
+      {(hasF || hasO) && (
         <span className="inline-flex items-center gap-1">
           기준
-          {([['eps', '이익(EPS)'], ['fcf', '잉여현금흐름']] as const).map(([k, l]) => (
+          {([['eps', '이익(EPS)'], ...(hasF ? [['fcf', '잉여현금흐름']] : []), ...(hasO ? [['ocf', '영업현금흐름']] : [])] as Array<['eps' | 'fcf' | 'ocf', string]>).map(([k, l]) => (
             <button key={k} type="button" onClick={() => { setBasis(k); setPePick(null) }}
               className={`px-2 py-0.5 rounded border ${basis === k ? 'bg-blue-500 border-blue-500 text-white' : 'border-gray-200 dark:border-gray-700 hover:border-gray-400'}`}>{l}</button>
           ))}
@@ -3072,7 +3120,13 @@ function ValueClockCore({ cur, anchors: rawAnchors, monthly, last, g, sharesOut,
   return (
     <div className="space-y-3">
       {toggles}
-      {isFcf && (
+      {isOcf && (
+        <p className="text-[11px] leading-relaxed text-gray-500 dark:text-gray-400">
+          <b>영업현금흐름 기준</b> = 사업으로 실제 들어온 현금(설비투자를 빼기 전). 장부상 일회성 비용에도, 설비투자 급증(아마존·마이크로소프트 등)에도 덜 흔들린다.
+          대신 설비투자가 원래 큰 업종(통신·전력·반도체 공장 등)은 실제로 꺼낼 수 있는 돈보다 크게 잡힌다. 적정 배수는 지난 20년 월말 주가 ÷ 그때의 주당 영업현금흐름(P/OCF)의 중간값.
+        </p>
+      )}
+      {isFcf && !isOcf && (
         <p className="text-[11px] leading-relaxed text-gray-500 dark:text-gray-400">
           <b>잉여현금흐름 기준</b> = 영업으로 들어온 현금 − 설비투자. 버핏이 말하는 &lsquo;회사에서 꺼낼 수 있는 현금&rsquo;에 가깝고, 자산 감액·인수 비용 같은 장부상 일회성 비용에 덜 흔들린다.
           대신 설비투자를 크게 늘리는 해(아마존 등)에는 작게 나오고, 은행·보험에는 맞지 않는다. 적정 배수는 지난 20년 월말 주가 ÷ 그때의 주당 잉여현금흐름(P/FCF)의 중간값.
@@ -3084,7 +3138,7 @@ function ValueClockCore({ cur, anchors: rawAnchors, monthly, last, g, sharesOut,
           {oneOff.kind === 'drop'
             ? '구조조정·자산 감액·인수 비용 같은 일회성 비용이 섞였을 가능성이 크다. 그러면 적정가가 실제보다 낮게 잡혀 "비쌈"이 과장된다.'
             : '사업 매각·지분 평가 같은 일회성 이익이나 경기 호황이 섞였을 수 있다. 그러면 적정가가 높게 잡혀 "쌈"이 과장된다.'}
-          {' '}&lsquo;적정가 대비&rsquo;는 참고만 하고, {isFcf ? '이익(EPS) 기준이나 ' : fcfAnchors && fcfAnchors.length >= 3 ? '잉여현금흐름 기준이나 ' : ''}&lsquo;3년 평균으로 보기&rsquo;와 비교해 본다.
+          {' '}&lsquo;적정가 대비&rsquo;는 참고만 하고, {hasF || hasO ? '다른 기준 버튼이나 ' : ''}&lsquo;3년 평균으로 보기&rsquo;와 비교해 본다.
         </div>
       )}
       <div className="relative">
@@ -3329,6 +3383,9 @@ const RMS_FIN: Record<number, { ni: number; op: number; eq: number; cash: number
 const RMS_FCF_ANCHORS: ClockAnchor[] = Object.entries(RMS_FIN).filter(([, r]) => r.fcf != null)
   .map(([y, r]) => [Number(y) + 1, r.fcf! * 1e6 / RMS_SHARES] as ClockAnchor)
 
+const RMS_OCF_ANCHORS: ClockAnchor[] = Object.entries(RMS_FIN).filter(([, r]) => r.ocf != null)
+  .map(([y, r]) => [Number(y) + 1, r.ocf! * 1e6 / RMS_SHARES] as ClockAnchor)
+
 // RMS_FIN → CashData + 지표. ROIC = 영업이익 × (순이익 ÷ 영업이익, 세후 근사) ÷ 평균(자기자본 − 순현금)
 function rmsCash(price: number, monthly: Array<{ d: string; c: number }>) {
   const dec: Record<number, number> = {}
@@ -3433,7 +3490,7 @@ function HermesValueClock({ g: gFactors, f }: { g: number; f: Factors }) {
           {' '}<b>앞으로 예상이 과거보다 낮은 이유</b>는 4번 &lsquo;왜 과거보다 낮게 잡았나&rsquo;에 있다.</>} />}
           cur="€" anchors={RMS_ANCHORS} monthly={monthly} last={px.last} g={g}
           sharesOut={RMS_SHARES} divYield={1.35} storageKey="rms-shares" extraLive={extraLive}
-          fcfAnchors={RMS_FCF_ANCHORS}
+          fcfAnchors={RMS_FCF_ANCHORS} ocfAnchors={RMS_OCF_ANCHORS}
           fcfPs={rmsCash(px.last.close, px.rows).fcfPs}
           peExclude={{ from: 2019, to: 2026, label: '거품기(2019~2025) 뺀 중간값' }}
           notes="주가는 배당을 반영하지 않은 실제 월말 종가(분할 반영). 1993년 12월~1999년은 트레이딩뷰 월말 종가. 1년 EPS는 연말 실적 사이를 매끄럽게 이은 근사치이고, 2026년 6월 이후는 4번의 성장률로 연장했다. 초 단위 숫자는 연간 이익을 시간으로 나눈 것이며 실제 회계 처리와 다르다. 유통 주식 수 약 1억 450만 주(근사). 내 몫 잉여현금은 2025년 조정 잉여현금흐름(38.8억 유로) ÷ 유통 주식 수."
@@ -3596,6 +3653,21 @@ function CashReturnPanel({ cash, m, cur = '$', source }: {
   )
 }
 
+// 주당 영업현금흐름 기준점 (scripts/export_fair_value.py ocf_anchors와 같음): 연간 = EPS × 영업현금 ÷ 순이익, 최근 1년 = 영업현금 ÷ 유통 주식 수
+function ocfAnchorsOf(f: ClockFund): ClockAnchor[] | undefined {
+  const ys = f.cash?.years
+  if (!ys) return undefined
+  const a: ClockAnchor[] = []
+  for (const [y, r] of Object.entries(ys)) {
+    const e = (f.eps as any)?.[y], o = r.ocf, n = r.ni
+    if (e != null && o != null && n && Math.abs(e) >= 0.1 && (e > 0) === (n > 0) && r.end) a.push([decYear(Date.parse(r.end)), e * o / n])
+  }
+  a.sort((x, y) => x[0] - y[0])
+  const t = f.cash?.ttm as any, sh = f.shares?.count
+  if (t?.asOf && t.ocf != null && sh && a.length && decYear(Date.parse(t.asOf)) > a[a.length - 1][0] + 0.1) a.push([decYear(Date.parse(t.asOf)), t.ocf * 1e6 / sh])
+  return a.length >= 3 ? a : undefined
+}
+
 // 주당 잉여현금흐름 기준점: 연간(cash.years.fcfPs, 결산일) + 최근 1년(metrics.fcfPs, cash.ttm.asOf)
 function fcfAnchorsOf(f: ClockFund): ClockAnchor[] | undefined {
   const ys = f.cash?.years
@@ -3672,7 +3744,7 @@ function StockValueClock({ f, stockKey, rolling, title = '이익 시계 — 적�
           note={<>{judged && <>기본값은 4번 개별 분석의 판단(연 {judged.base}%, 범위 {judged.lo}~{judged.hi}%). </>}보수적 = 과거 5년·10년 성장률 중 낮은 값(0~15%로 제한). 과거 N년 = N년 전부터 지금까지 연평균. 5년 구간 = 지난 20년을 5년씩 끊어 본 성장률의 범위. 최근 몇 년이 부진했던 기업은 값 차이가 크다 — 어느 쪽이 앞으로에 가까운지는 직접 판단한다.</>} />}
         cur="$" anchors={anchors} monthly={monthly} last={f.lastPrice} g={g}
         sharesOut={f.shares?.count ?? null} divYield={m.divYield ?? 0} storageKey={`clock-shares-${stockKey}`}
-        fcfAnchors={fcfAnchorsOf(f)}
+        fcfAnchors={fcfAnchorsOf(f)} ocfAnchors={ocfAnchorsOf(f)}
         fcfPs={m.fcfPs ?? null}
         notes={`EPS는 SEC 공시(10-K) 회계연도 값을 마감일 기준으로 이은 근사치이고(2008년 무렵 이전은 10-K 원문의 5년 요약 표에서 읽고 겹치는 해로 맞춘 값), ${f.ttmAsOf ?? '최근'} 이후는 정한 성장률로 연장했다. 주가는 배당을 반영하지 않은 월말 종가(분할 반영). 일회성 손익이 큰 해는 선이 출렁인다. 회사 전체 숫자는 공시 유통 주식 수${f.shares ? `(${f.shares.asOf})` : ''} × 최근 1년 EPS로 계산한 근사치.`}
       />

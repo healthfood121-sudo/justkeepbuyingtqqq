@@ -100,6 +100,25 @@ def fcf_anchors(f: dict):
     return a if len(a) >= 3 else None
 
 
+def ocf_anchors(f: dict):
+    """주당 영업현금흐름 기준점 (page.tsx ocfAnchorsOf와 같음): 연간 = EPS × 영업현금 ÷ 순이익 (export_cashflow.py fcfPs와 같은 방식,
+    |EPS| ≥ 0.1이고 EPS·순이익 부호가 같을 때만), 최근 1년 = cash.ttm.ocf ÷ 공시 유통 주식 수"""
+    c = f.get("cash") or {}
+    ys = c.get("years") or {}
+    eps = f.get("eps") or {}
+    a = []
+    for y, r in ys.items():
+        e, o, n = eps.get(y), r.get("ocf"), r.get("ni")
+        if e is not None and o is not None and n and abs(e) >= 0.1 and (e > 0) == (n > 0) and r.get("end"):
+            a.append((dec_year(r["end"]), e * o / n))
+    a.sort()
+    t = c.get("ttm") or {}
+    sh = (f.get("shares") or {}).get("count")
+    if t.get("asOf") and t.get("ocf") is not None and sh and a and dec_year(t["asOf"]) > a[-1][0] + 0.1:
+        a.append((dec_year(t["asOf"]), t["ocf"] * 1e6 / sh))
+    return a if len(a) >= 3 else None
+
+
 def build(f: dict, rolling: dict | None):
     m = f.get("metrics") or {}
     if not f.get("monthly") or not f.get("epsEnd") or not f.get("lastPrice") or m.get("stale") or m.get("ttmEps") is None:
@@ -135,6 +154,10 @@ def build(f: dict, rolling: dict | None):
     if fa:
         fflag = one_off(fa)
         fcf = {"fcfMult": fair_mult(f, fa), "fcf": fa[-1][1], "fcfT": round(fa[-1][0], 4), **({"fcfOneOff": fflag} if fflag else {})}
+    oa = ocf_anchors(f)
+    if oa:
+        oflag = one_off(oa)
+        fcf.update({"ocfMult": fair_mult(f, oa), "ocf": round(oa[-1][1], 4), "ocfT": round(oa[-1][0], 4), **({"ocfOneOff": oflag} if oflag else {})})
     return {**({"oneOff": flag} if flag else {}), **fcf, "fairPe": fair_pe, "eps": anchors[-1][1], "t": round(t_last, 4),
             "price": f["lastPrice"]["close"], "priceDate": f["lastPrice"]["date"]}
 
