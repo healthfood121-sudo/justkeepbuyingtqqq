@@ -12,7 +12,8 @@ import spDesc from '@/app/sp500-holdings/descriptions.json'
 import PrivateTabs from '@/components/PrivateTabs'
 import { WRITTEN_INSIGHTS, WRITTEN_AS_OF } from './insights'
 import { DEEP_INSIGHTS, type DeepInsight } from './deep'
-import { classify, GROUPS, GRADE_LABEL, gradeColor, groupColor, qualityScore, fmt, fmtSgn, type Metrics, type Quality } from '@/lib/ideas'
+import { classify, GROUPS, GRADE_LABEL, gradeColor, groupColor, qualityScore, fmt, fmtSgn, type Metrics, type Quality, type GroupKey } from '@/lib/ideas'
+import { EXTRA_METRICS } from './ideas/picks'
 import qldData        from '@/public/data/rolling/QLD_rolling.json'
 import qqqData        from '@/public/data/rolling/QQQ_rolling.json'
 import tqqqData       from '@/public/data/rolling/TQQQ_rolling.json'
@@ -1427,9 +1428,40 @@ function diffColor(v: number) {
   return 'text-red-500 dark:text-red-400'
 }
 
-type SortKey = 'fullCagr' | 'cagrMn' | 'cagrMed' | 'cagrMx' | 'diffMn' | 'diffMed' | 'diffMx' | 'roe' | 'roic'
-// 에르메스는 _summary.json에 없어 rmsCash()와 같은 계산의 5년(2021~2025) 중간값을 넣는다
-const QUALITY_EXTRA: Record<string, { roe: number; roic: number }> = { RMS: { roe: 29.1, roic: 101.7 } }
+type SortKey = 'fullCagr' | 'cagrMn' | 'cagrMed' | 'cagrMx' | 'diffMn' | 'diffMed' | 'diffMx' | 'roe' | 'roic' | 'score'
+type SubKey = 'moat' | 'pricing' | 'profit' | 'growth' | 'durability'
+const SUB_LABEL: Record<SubKey, string> = { moat: '경쟁우위', pricing: '가격결정력', profit: '수익성', growth: '성장성', durability: '지속가능성' }
+type QualInfo = { roe: number | null; roic: number | null; q?: Quality; score: number | null; group: GroupKey | null }
+
+// 마우스를 올리거나(휴대폰은 ? 를 누르면) 설명이 뜨는 작은 도움말
+function Tip({ children, text, below = false, right = false }: { children: ReactNode; text: ReactNode; below?: boolean; right?: boolean }) {
+  return (
+    <span className="relative group/tip inline-flex items-center">
+      {children}
+      <span tabIndex={0} className="ml-0.5 text-gray-400 cursor-help outline-none">?</span>
+      <span className={`absolute ${below ? 'top-full mt-1.5' : 'bottom-full mb-2'} ${right ? 'right-0' : 'left-0'} w-64 z-50
+                        invisible opacity-0 group-hover/tip:visible group-hover/tip:opacity-100 group-focus-within/tip:visible group-focus-within/tip:opacity-100
+                        transition-opacity duration-150 pointer-events-none whitespace-normal text-left font-normal
+                        bg-gray-900 text-white text-xs rounded-md px-2.5 py-2 shadow-lg leading-relaxed`}>
+        {text}
+      </span>
+    </span>
+  )
+}
+
+const TIP_ROE = <>순이익 ÷ 자기자본(5년 중간값). 주주 돈 1달러로 1년에 얼마를 버는지. 20% 이상이면 우수.
+  <br />주의: 자사주를 많이 사서 자기자본이 작아진 회사(애플·마스터카드)는 100% 넘게 부풀려지고, 현금을 쌓아 둔 회사(에르메스)는 낮게 나온다. 사업의 질은 ROIC로 보는 게 낫다.</>
+const TIP_ROIC = <>세후 영업이익 ÷ 사업에 실제로 묶인 돈(자기자본 + 차입금 − 현금), 5년 중간값. 사업 자체가 얼마나 좋은지 보는 숫자. 15% 이상 좋음, 30% 이상 최상위.
+  <br />은행·보험은 값이 없어 이 필터를 켜면 빠진다.
+  <br /><b>쓰는 요령:</b> ROIC ≥ 20 + 절대수익 중앙값 ≥ 15 → 사업도 좋고 과거 수익도 좋았던 종목만 남는다.</>
+const TIP_GRADE = <>Claude가 매긴 정성 평가(종목 아이디어 탭과 같은 값). A 위대한 기업 · B 좋은 기업 · C 보통 · D 주의.</>
+const TIP_SCORE = <>사업성 = 경쟁우위·가격결정력·수익성·성장성·지속가능성 각 5점, 합 25점 만점(Claude 정성 평가). 20점 이상이면 최상위권.</>
+const TIP_SUB = <>다섯 항목 중 하나를 골라 그 점수(1~5) 이상만 남긴다. 예: 성장성 ≥ 4 → 성장성이 높은 기업만.</>
+const TIP_GROUP = <>지금 상태에 따른 분류(종목 아이디어 탭 기본 기준과 같음). 기업의 질이 아니라 &lsquo;지금 어떤 상황인가&rsquo;다.
+  <br />주가만 쉬는 중: 이익은 괜찮은데 PER이 평소보다 낮거나 주가가 많이 빠짐
+  <br />이익 주춤: 이익이 고점보다 15% 넘게 낮음
+  <br />꾸준·적당: A등급, 이익 성장, PER이 평소 수준
+  <br />지금은 비쌈: PER이 평소보다 30% 넘게 높음</>
 
 function OverviewTable({
   activeStock,
@@ -1452,14 +1484,28 @@ function OverviewTable({
   const [excludeEtf, setExcludeEtf] = useState(false)
   const [minRoe, setMinRoe] = useState<number | ''>('')
   const [minRoic, setMinRoic] = useState<number | ''>('')
-  // 사업의 질: 5년 중간값 ROE·ROIC (_summary.json)
-  const [qual, setQual] = useState<Record<string, { roe: number | null; roic: number | null }>>({})
+  const [gradeF, setGradeF] = useState<'all' | 'A' | 'AB'>('all')
+  const [minScore, setMinScore] = useState<number | ''>('')
+  const [subKey, setSubKey] = useState<SubKey>('growth')
+  const [minSub, setMinSub] = useState<number | ''>('')
+  const [groupF, setGroupF] = useState<'all' | GroupKey>('all')
+  // 사업의 질: ROE·ROIC 5년 중간값(_summary.json) + Claude 정성 평가(_quality.json) — 종목 아이디어 탭과 같은 자료
+  const [qual, setQual] = useState<Record<string, QualInfo>>({})
   useEffect(() => {
-    fetch('/data/fundamentals/_summary.json').then(r => (r.ok ? r.json() : null)).then(d => {
-      if (!d) return
-      const m: Record<string, { roe: number | null; roic: number | null }> = {}
-      for (const x of d.stocks ?? []) m[x.key] = { roe: x.roe5 ?? x.roe ?? null, roic: x.roic5 ?? x.roic ?? null }
-      for (const [k, v] of Object.entries(QUALITY_EXTRA)) m[k] = v
+    Promise.all([
+      fetch('/data/fundamentals/_summary.json').then(r => (r.ok ? r.json() : null)),
+      fetch('/data/fundamentals/_quality.json').then(r => (r.ok ? r.json() : null)),
+    ]).then(([sm, ql]) => {
+      const qs = (ql?.stocks ?? {}) as Record<string, Quality>
+      const m: Record<string, QualInfo> = {}
+      for (const x of [...((sm?.stocks ?? []) as Metrics[]), ...EXTRA_METRICS]) {
+        const q = qs[x.key]
+        m[x.key] = {
+          roe: (x as any).roe5 ?? (x as any).roe ?? null, roic: (x as any).roic5 ?? (x as any).roic ?? null,
+          q, score: q ? qualityScore(q) : null, group: classify(x, q, 'moat'),
+        }
+      }
+      for (const [k, q] of Object.entries(qs)) if (!m[k]) m[k] = { roe: null, roic: null, q, score: qualityScore(q), group: null }
       setQual(m)
     }).catch(() => {})
   }, [])
@@ -1483,6 +1529,11 @@ function OverviewTable({
       if (f.excludeEtf != null)  setExcludeEtf(f.excludeEtf)
       if (f.minRoe != null)      setMinRoe(f.minRoe)
       if (f.minRoic != null)     setMinRoic(f.minRoic)
+      if (f.gradeF)              setGradeF(f.gradeF)
+      if (f.minScore != null)    setMinScore(f.minScore)
+      if (f.subKey)              setSubKey(f.subKey)
+      if (f.minSub != null)      setMinSub(f.minSub)
+      if (f.groupF)              setGroupF(f.groupF)
       if (f.sortKey)             setSortKey(f.sortKey)
       if (f.sortDir)             setSortDir(f.sortDir)
       if (f.viewMode)            setViewMode(f.viewMode)
@@ -1496,13 +1547,13 @@ function OverviewTable({
   useEffect(() => {
     try {
       localStorage.setItem('private_filters', JSON.stringify({
-        minPeriods, minCagrMin, minMedian, minDiffMin, minDiffMedian, maxRange, excludeEtf, minRoe, minRoic, sortKey, sortDir, viewMode,
+        minPeriods, minCagrMin, minMedian, minDiffMin, minDiffMedian, maxRange, excludeEtf, minRoe, minRoic, gradeF, minScore, subKey, minSub, groupF, sortKey, sortDir, viewMode,
       }))
     } catch {}
-  }, [minPeriods, minCagrMin, minMedian, minDiffMin, minDiffMedian, maxRange, excludeEtf, minRoe, minRoic, sortKey, sortDir, viewMode])
+  }, [minPeriods, minCagrMin, minMedian, minDiffMin, minDiffMedian, maxRange, excludeEtf, minRoe, minRoic, gradeF, minScore, subKey, minSub, groupF, sortKey, sortDir, viewMode])
 
   function currentFilterSnapshot() {
-    return { minPeriods, minCagrMin, minMedian, minDiffMin, minDiffMedian, maxRange, excludeEtf, minRoe, minRoic }
+    return { minPeriods, minCagrMin, minMedian, minDiffMin, minDiffMedian, maxRange, excludeEtf, minRoe, minRoic, gradeF, minScore, subKey, minSub, groupF }
   }
 
   function applyPreset(f: Record<string, unknown>) {
@@ -1515,6 +1566,11 @@ function OverviewTable({
     if (f.excludeEtf != null)    setExcludeEtf(f.excludeEtf as boolean)
     setMinRoe((f.minRoe as number | '') ?? '')
     setMinRoic((f.minRoic as number | '') ?? '')
+    setGradeF((f.gradeF as 'all' | 'A' | 'AB') ?? 'all')
+    setMinScore((f.minScore as number | '') ?? '')
+    if (f.subKey) setSubKey(f.subKey as SubKey)
+    setMinSub((f.minSub as number | '') ?? '')
+    setGroupF((f.groupF as 'all' | GroupKey) ?? 'all')
   }
 
   function savePreset() {
@@ -1587,9 +1643,11 @@ function OverviewTable({
     const diffMx     = diffs.length ? Math.max(...diffs) : null
     const diffMed    = diffs.length ? median(diffs) : null
     const fullCagr   = s.data.fullPeriod.cagr
-    const roe  = qual[s.key]?.roe ?? null
-    const roic = qual[s.key]?.roic ?? null
-    return { i, s, fullCagr, cagrMn, cagrMed, cagrMx, diffMn, diffMed, diffMx, completedCount, roe, roic }
+    const qi   = qual[s.key]
+    const roe  = qi?.roe ?? null
+    const roic = qi?.roic ?? null
+    const score = qi?.score ?? null
+    return { i, s, fullCagr, cagrMn, cagrMed, cagrMx, diffMn, diffMed, diffMx, completedCount, roe, roic, score, q: qi?.q, group: qi?.group ?? null }
   }).sort((a, b) => {
     const va = a[sortKey] ?? -Infinity
     const vb = b[sortKey] ?? -Infinity
@@ -1617,6 +1675,11 @@ function OverviewTable({
     if (excludeEtf && (row.s.data as any).type === 'etf') return false
     if (minRoe !== '' && (row.roe == null || row.roe < minRoe)) return false
     if (minRoic !== '' && (row.roic == null || row.roic < minRoic)) return false
+    if (gradeF === 'A' && row.q?.grade !== 'A') return false
+    if (gradeF === 'AB' && row.q?.grade !== 'A' && row.q?.grade !== 'B') return false
+    if (minScore !== '' && (row.score == null || row.score < minScore)) return false
+    if (minSub !== '' && (row.q == null || row.q[subKey] < minSub)) return false
+    if (groupF !== 'all' && row.group !== groupF) return false
     return true
   })
 
@@ -1708,7 +1771,7 @@ function OverviewTable({
       {(() => {
         const inputCls = "w-9 text-center bg-transparent text-gray-900 dark:text-white focus:outline-none"
         const labelCls = "flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700 rounded-lg px-2.5 py-1.5"
-        const hasFilter = minPeriods > 0 || minCagrMin !== '' || minMedian > 0 || minDiffMin !== '' || minDiffMedian !== 0 || maxRange !== '' || excludeEtf || minRoe !== '' || minRoic !== ''
+        const hasFilter = minPeriods > 0 || minCagrMin !== '' || minMedian > 0 || minDiffMin !== '' || minDiffMedian !== 0 || maxRange !== '' || excludeEtf || minRoe !== '' || minRoic !== '' || gradeF !== 'all' || minScore !== '' || minSub !== '' || groupF !== 'all'
         return (
           <div className="flex flex-wrap items-center gap-2 mb-3 pb-3 border-b border-gray-100 dark:border-gray-800">
             <label className={labelCls}>
@@ -1757,17 +1820,49 @@ function OverviewTable({
                 onChange={e => setMaxRange(e.target.value === '' ? '' : Number(e.target.value))} className={inputCls} />
               %
             </label>
-            <label className={labelCls} title="ROE = 순이익 ÷ 자기자본. 5년 중간값. 자사주를 많이 사 자기자본이 작아진 회사는 부풀려진다">
-              ROE ≥
+            <label className={labelCls}>
+              <Tip text={TIP_ROE}>ROE ≥</Tip>
               <input type="number" min={-50} max={300} value={minRoe} placeholder="—"
                 onChange={e => setMinRoe(e.target.value === '' ? '' : Number(e.target.value))} className={inputCls} />
               %
             </label>
-            <label className={labelCls} title="ROIC = 세후 영업이익 ÷ 사업에 묶인 돈(자기자본+차입금−현금). 5년 중간값. 사업 자체의 질을 보기에 더 좋다">
-              ROIC ≥
+            <label className={labelCls}>
+              <Tip text={TIP_ROIC}>ROIC ≥</Tip>
               <input type="number" min={-50} max={300} value={minRoic} placeholder="—"
                 onChange={e => setMinRoic(e.target.value === '' ? '' : Number(e.target.value))} className={inputCls} />
               %
+            </label>
+            <span className={labelCls}>
+              <Tip text={TIP_GRADE}>등급</Tip>
+              {([['all', '전체'], ['A', 'A'], ['AB', 'A·B']] as const).map(([k, l]) => (
+                <button key={k} type="button" onClick={() => setGradeF(k)}
+                  className={`px-1.5 rounded ${gradeF === k ? 'bg-blue-500 text-white' : 'hover:text-gray-700 dark:hover:text-gray-200'}`}>{l}</button>
+              ))}
+            </span>
+            <label className={labelCls}>
+              <Tip text={TIP_SCORE}>사업성 ≥</Tip>
+              <input type="number" min={5} max={25} value={minScore} placeholder="—"
+                onChange={e => setMinScore(e.target.value === '' ? '' : Number(e.target.value))} className={inputCls} />
+              /25
+            </label>
+            <label className={labelCls}>
+              <Tip text={TIP_SUB}>세부</Tip>
+              <select value={subKey} onChange={e => setSubKey(e.target.value as SubKey)}
+                className="bg-transparent text-gray-900 dark:text-white focus:outline-none">
+                {(Object.keys(SUB_LABEL) as SubKey[]).map(k => <option key={k} value={k}>{SUB_LABEL[k]}</option>)}
+              </select>
+              ≥
+              <input type="number" min={1} max={5} value={minSub} placeholder="—"
+                onChange={e => setMinSub(e.target.value === '' ? '' : Number(e.target.value))} className={inputCls} />
+              /5
+            </label>
+            <label className={labelCls}>
+              <Tip text={TIP_GROUP}>지금 상황</Tip>
+              <select value={groupF} onChange={e => setGroupF(e.target.value as 'all' | GroupKey)}
+                className="bg-transparent text-gray-900 dark:text-white focus:outline-none">
+                <option value="all">전체</option>
+                {(Object.keys(GROUPS) as GroupKey[]).map(k => <option key={k} value={k}>{GROUPS[k].short}</option>)}
+              </select>
             </label>
             <button onClick={() => setExcludeEtf(v => !v)}
               className={`px-2.5 py-1.5 text-xs rounded-lg border transition-colors ${
@@ -1782,7 +1877,7 @@ function OverviewTable({
                 {rows.length < allRows.length ? `${rows.length} / ${allRows.length}개` : `${allRows.length}개`}
               </span>
               {hasFilter && (
-                <button onClick={() => { setMinPeriods(0); setMinCagrMin(''); setMinMedian(0); setMinDiffMin(''); setMinDiffMedian(0); setMaxRange(''); setExcludeEtf(false); setMinRoe(''); setMinRoic('') }}
+                <button onClick={() => { setMinPeriods(0); setMinCagrMin(''); setMinMedian(0); setMinDiffMin(''); setMinDiffMedian(0); setMaxRange(''); setExcludeEtf(false); setMinRoe(''); setMinRoic(''); setGradeF('all'); setMinScore(''); setMinSub(''); setGroupF('all') }}
                   className="text-xs text-gray-400 dark:text-gray-600 hover:text-red-400 dark:hover:text-red-500 transition-colors">
                   초기화
                 </button>
@@ -1804,8 +1899,8 @@ function OverviewTable({
             <th colSpan={4} className="text-center pb-1 px-3 border-b border-l-2 border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold">
               S&P 500 대비 초과수익
             </th>
-            <th colSpan={2} className="text-center pb-1 px-3 border-b border-l-2 border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold">
-              사업의 질 <span className="font-normal opacity-60">(5년 중간값)</span>
+            <th colSpan={5} className="text-center pb-1 px-3 border-b border-l-2 border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold">
+              사업의 질
             </th>
           </tr>
           <tr className="text-xs text-gray-400 dark:text-gray-500 border-b border-gray-200 dark:border-gray-700">
@@ -1817,19 +1912,22 @@ function OverviewTable({
             <SortTh col="diffMn"  className="text-right py-1 pr-3 font-medium">최솟값</SortTh>
             <SortTh col="diffMed" className="text-right py-1 pr-3 font-medium">중앙값</SortTh>
             <SortTh col="diffMx"  className="text-right py-1 pr-3 font-medium">최댓값</SortTh>
-            <SortTh col="roe"  className="text-right py-1 px-3 font-medium border-l-2 border-gray-200 dark:border-gray-700">ROE</SortTh>
-            <SortTh col="roic" className="text-right py-1 font-medium">ROIC</SortTh>
+            <th className="text-center py-1 px-3 font-medium border-l-2 border-gray-200 dark:border-gray-700"><Tip text={TIP_GRADE} below>등급</Tip></th>
+            <SortTh col="score" className="text-right py-1 pr-3 font-medium"><Tip text={TIP_SCORE} below>사업성</Tip></SortTh>
+            <SortTh col="roe"  className="text-right py-1 pr-3 font-medium"><Tip text={TIP_ROE} below right>ROE</Tip></SortTh>
+            <SortTh col="roic" className="text-right py-1 pr-3 font-medium"><Tip text={TIP_ROIC} below right>ROIC</Tip></SortTh>
+            <th className="text-left py-1 font-medium"><Tip text={TIP_GROUP} below right>지금 상황</Tip></th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
           {rows.length === 0 && (
             <tr>
-              <td colSpan={12} className="py-8 text-center text-sm text-gray-400 dark:text-gray-600">
+              <td colSpan={15} className="py-8 text-center text-sm text-gray-400 dark:text-gray-600">
                 조건에 맞는 종목이 없습니다
               </td>
             </tr>
           )}
-          {rows.map(({ i, s, cagrMn, cagrMed, cagrMx, diffMn, diffMed, diffMx, roe, roic }) => {
+          {rows.map(({ i, s, cagrMn, cagrMed, cagrMx, diffMn, diffMed, diffMx, roe, roic, score, q, group }) => {
             const isActive = activeStock === i
             const isStarred = starred.has(s.key)
             return (
@@ -1908,11 +2006,20 @@ function OverviewTable({
                   {diffMx != null ? `${diffMx > 0 ? '+' : ''}${diffMx.toFixed(1)}pp` : '—'}
                 </td>
                 {/* 사업의 질 */}
-                <td className={`py-1.5 px-3 text-right tabular-nums border-l-2 border-gray-200 dark:border-gray-700 ${roe == null ? 'text-gray-300 dark:text-gray-600' : roe >= 20 ? 'text-emerald-600 dark:text-emerald-400' : roe < 8 ? 'text-red-500' : 'text-gray-700 dark:text-gray-200'} ${colBg('roe')}`}>
+                <td className="py-1.5 px-3 text-center border-l-2 border-gray-200 dark:border-gray-700">
+                  {q ? <span className={`text-[11px] px-1.5 py-0.5 rounded ${gradeColor(q.grade)}`}>{q.grade}</span> : <span className="text-gray-300 dark:text-gray-600 text-xs">—</span>}
+                </td>
+                <td className={`py-1.5 pr-3 text-right tabular-nums ${score == null ? 'text-gray-300 dark:text-gray-600' : score >= 20 ? 'text-emerald-600 dark:text-emerald-400 font-semibold' : 'text-gray-700 dark:text-gray-200'} ${colBg('score')}`}>
+                  {score != null ? score : '—'}
+                </td>
+                <td className={`py-1.5 pr-3 text-right tabular-nums ${roe == null ? 'text-gray-300 dark:text-gray-600' : roe >= 20 ? 'text-emerald-600 dark:text-emerald-400' : roe < 8 ? 'text-red-500' : 'text-gray-700 dark:text-gray-200'} ${colBg('roe')}`}>
                   {roe != null ? `${roe.toFixed(0)}%` : '—'}
                 </td>
-                <td className={`py-1.5 text-right tabular-nums ${roic == null ? 'text-gray-300 dark:text-gray-600' : roic >= 20 ? 'text-emerald-600 dark:text-emerald-400' : roic < 8 ? 'text-red-500' : 'text-gray-700 dark:text-gray-200'} ${colBg('roic')}`}>
+                <td className={`py-1.5 pr-3 text-right tabular-nums ${roic == null ? 'text-gray-300 dark:text-gray-600' : roic >= 20 ? 'text-emerald-600 dark:text-emerald-400' : roic < 8 ? 'text-red-500' : 'text-gray-700 dark:text-gray-200'} ${colBg('roic')}`}>
                   {roic != null ? `${roic.toFixed(0)}%` : '—'}
+                </td>
+                <td className="py-1.5 whitespace-nowrap">
+                  {group ? <span className={`text-[11px] px-1.5 py-0.5 rounded ${groupColor(group)}`}>{GROUPS[group].short}</span> : <span className="text-gray-300 dark:text-gray-600 text-xs">—</span>}
                 </td>
               </tr>
             )
