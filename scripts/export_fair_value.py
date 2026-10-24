@@ -47,6 +47,22 @@ def quantile(a, q):
     return a[lo] + (a[math.ceil(i)] - a[lo]) * (i - lo)
 
 
+def one_off(anchors):
+    """일회성 손익 의심 (page.tsx oneOffFlag와 같은 규칙): 최근 EPS가 직전 3.5년 연간 EPS 최고치의 절반 미만 'drop', 1.8배 초과 'spike'"""
+    if len(anchors) < 3:
+        return None
+    tl, el = anchors[-1]
+    prev = [e for t, e in anchors[:-1] if t >= tl - 3.5]
+    if not prev or max(prev) <= 0:
+        return None
+    mx = max(prev)
+    if el < 0.5 * mx:
+        return "drop"
+    if el > 1.8 * mx:
+        return "spike"
+    return None
+
+
 def build(f: dict, rolling: dict | None):
     m = f.get("metrics") or {}
     if not f.get("monthly") or not f.get("epsEnd") or not f.get("lastPrice") or m.get("stale") or m.get("ttmEps") is None:
@@ -96,7 +112,8 @@ def build(f: dict, rolling: dict | None):
         if e and e > 0 and e >= 0.2 * peak_at(t) and c / e < 200:
             pes.append(c / e)
     fair_pe = round(quantile(pes, 0.5)) if len(pes) >= 24 else 20
-    return {"fairPe": fair_pe, "eps": anchors[-1][1], "t": round(t_last, 4),
+    flag = one_off(anchors)
+    return {**({"oneOff": flag} if flag else {}), "fairPe": fair_pe, "eps": anchors[-1][1], "t": round(t_last, 4),
             "price": f["lastPrice"]["close"], "priceDate": f["lastPrice"]["date"]}
 
 

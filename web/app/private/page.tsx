@@ -1362,7 +1362,7 @@ function diffColor(v: number) {
 type SortKey = 'fullCagr' | 'cagrMn' | 'cagrMed' | 'cagrMx' | 'diffMn' | 'diffMed' | 'diffMx' | 'roe' | 'roic' | 'score' | 'fairGap'
 type SubKey = 'moat' | 'pricing' | 'profit' | 'growth' | 'durability'
 const SUB_LABEL: Record<SubKey, string> = { moat: '경쟁우위', pricing: '가격결정력', profit: '수익성', growth: '성장성', durability: '지속가능성' }
-type FairInfo = { fairPe: number; eps: number; t: number; price: number; priceDate: string }
+type FairInfo = { fairPe: number; eps: number; t: number; price: number; priceDate: string; oneOff?: 'drop' | 'spike' }
 type QualInfo = { roe: number | null; roic: number | null; q?: Quality; score: number | null; group: GroupKey | null; fair?: FairInfo; g?: number }
 // 이익 시계와 같은 성장률: 개별 분석 판단(0.5 단위) → 없으면 과거 5·10년 중 낮은 값(0~15%)
 function clockGrowth(key: string, g10?: number | null, g5?: number | null) {
@@ -1379,7 +1379,7 @@ const TIP_FAIR = <>이익 시계의 &lsquo;적정가 대비&rsquo;와 같은 숫
   <br />적정 PER = 지난 20년 월말 PER의 중간값(에르메스는 거품기 2019~2025년을 뺀 중간값).
   <br />성장률 = 개별 분석 판단, 없으면 과거 5·10년 EPS 성장률 중 낮은 값(0~15%).
   <br />마이너스(초록) = 적정가보다 쌈, 플러스(빨강) = 비쌈. 이익이 크게 줄었거나 적자인 종목은 빈칸.
-  <br />⚠ 회색 = 과거 PER 중간값이 50배 이상(아마존·테슬라·리츠 등). 이익 기준 적정가가 부풀려질 수 있어 참고만.</>
+  <br />⚠ 회색 = 숫자를 그대로 믿기 어려운 경우(참고만, 숫자에 마우스를 올리면 이유): 과거 PER 중간값 50배 이상(아마존·테슬라·리츠 등), 또는 최근 1년 EPS가 직전 3년 최고치의 절반 미만·1.8배 초과(일회성 손익 의심).</>
 
 // 마우스를 올리거나(휴대폰은 ? 를 누르면) 설명이 뜨는 작은 도움말
 function Tip({ children, text, below = false, right = false }: { children: ReactNode; text: ReactNode; below?: boolean; right?: boolean }) {
@@ -1523,7 +1523,7 @@ function OverviewTable({
         const tLast = RMS_ANCHORS[RMS_ANCHORS.length - 1][0]
         const pes = (rmsPx.rows as Array<{ d: string; c: number }>).map(r => { const [y, mo] = r.d.split('-').map(Number); const t = y + mo / 12; const e = epsAt(t); return { t, pe: e && e > 0 ? r.c / e : null } })
           .filter(r => r.t >= tLast - 20 && r.t <= tLast && !(r.t >= 2019 && r.t < 2026) && r.pe != null && r.pe > 0 && r.pe < 200).map(r => r.pe as number)
-        if (pes.length >= 24) m.RMS = { ...m.RMS, fair: { fairPe: Math.round(quantile(pes, 0.5)), eps: RMS_ANCHORS[RMS_ANCHORS.length - 1][1], t: tLast, price: rmsPx.last.close, priceDate: rmsPx.last.date }, g: epsGrowthOf(HERMES_SCENARIOS[0].f) }
+        if (pes.length >= 24) m.RMS = { ...m.RMS, fair: { fairPe: Math.round(quantile(pes, 0.5)), eps: RMS_ANCHORS[RMS_ANCHORS.length - 1][1], t: tLast, price: rmsPx.last.close, priceDate: rmsPx.last.date, oneOff: oneOffFlag(RMS_ANCHORS)?.kind }, g: epsGrowthOf(HERMES_SCENARIOS[0].f) }
       }
       for (const [k, q] of Object.entries(qs)) if (!m[k]) m[k] = { roe: null, roic: null, q, score: qualityScore(q), group: null }
       setQual(m)
@@ -1640,7 +1640,11 @@ function OverviewTable({
     const roic = qi?.roic ?? null
     const score = qi?.score ?? null
     const fairGap = qi?.fair && qi.g != null ? fairGapOf(qi.fair, qi.g, tNowYr) : null
-    const fairWarn = (qi?.fair?.fairPe ?? 0) >= HIGH_PE_WARN
+    const fairWarn: string | null = !qi?.fair ? null
+      : qi.fair.fairPe >= HIGH_PE_WARN ? '과거 PER 중간값이 50배 이상이라 이익 기준 적정가가 부풀려질 수 있음(재투자 기업·리츠 등). 참고만'
+      : qi.fair.oneOff === 'drop' ? '최근 1년 EPS가 직전 3년 최고치의 절반 미만 — 일회성 비용이 섞였을 가능성(비쌈이 과장될 수 있음). 참고만'
+      : qi.fair.oneOff === 'spike' ? '최근 1년 EPS가 직전 3년 최고치의 1.8배 초과 — 일회성 이익이나 호황이 섞였을 가능성(쌈이 과장될 수 있음). 참고만'
+      : null
     return { fairWarn, i, s, fullCagr, cagrMn, cagrMed, cagrMx, diffMn, diffMed, diffMx, completedCount, roe, roic, score, q: qi?.q, group: qi?.group ?? null, fairGap }
   }).sort((a, b) => {
     const va = a[sortKey] ?? -Infinity
@@ -1990,7 +1994,7 @@ function OverviewTable({
                 {/* 지금 가격: 적정가 대비 */}
                 <td className={`py-1.5 pr-2 text-right tabular-nums whitespace-nowrap font-semibold ${fairGap == null ? 'text-gray-300 dark:text-gray-600' : fairGap < 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'} ${colBg('fairGap')}`}>
                   {fairGap != null ? (fairWarn
-                    ? <span className="text-gray-400 dark:text-gray-500 font-normal" title="과거 PER 중간값이 50배 이상이라 이익 기준 적정가가 부풀려질 수 있음(재투자 기업·리츠 등). 참고만">⚠ {fairGap > 0 ? '+' : ''}{fairGap.toFixed(0)}%</span>
+                    ? <span className="text-gray-400 dark:text-gray-500 font-normal" title={fairWarn}>⚠ {fairGap > 0 ? '+' : ''}{fairGap.toFixed(0)}%</span>
                     : `${fairGap > 0 ? '+' : ''}${fairGap.toFixed(0)}%`) : '—'}
                 </td>
                 {/* 절대 수익률 */}
@@ -2795,6 +2799,20 @@ function smoothAnchors(anchors: ClockAnchor[]): ClockAnchor[] {
   })
 }
 
+// 일회성 손익 의심: 최근 1년 EPS가 직전 3.5년 안 연간 EPS 최고치의 절반 미만(일회성 비용) 또는 1.8배 초과(일회성 이익·호황)
+// scripts/export_fair_value.py 의 one_off() 와 같은 규칙
+function oneOffFlag(anchors: ClockAnchor[]): { kind: 'drop' | 'spike'; ratio: number } | null {
+  if (anchors.length < 3) return null
+  const [tl, el] = anchors[anchors.length - 1]
+  const prev = anchors.slice(0, -1).filter(([t]) => t >= tl - 3.5).map(([, e]) => e)
+  if (!prev.length) return null
+  const mx = Math.max(...prev)
+  if (mx <= 0) return null
+  if (el < 0.5 * mx) return { kind: 'drop', ratio: el / mx }
+  if (el > 1.8 * mx) return { kind: 'spike', ratio: el / mx }
+  return null
+}
+
 type ClockProps = {
   cur: string                                  // '€' | '$'
   anchors: ClockAnchor[]
@@ -2805,6 +2823,7 @@ type ClockProps = {
   divYield: number
   storageKey: string
   growthBar?: ReactNode                        // EPS 성장률 바 (차트 아래, 적정 PER 바 위에 함께 표시)
+  fcfAnchors?: ClockAnchor[]                   // 주당 잉여현금흐름 기준점(있으면 '잉여현금흐름 기준' 버튼이 생김)
   extraLive?: (now: number, fairNow: number) => ReactNode
   notes: string
   peExclude?: { from: number; to: number; label: string } // 이 기간을 뺀 PER 중간값도 눈금으로 (예: 거품기)
@@ -2812,15 +2831,16 @@ type ClockProps = {
 }
 
 // 초마다 바뀌는 숫자만 따로 다시 그림 (그래프는 그대로)
-function ClockLive({ cur, epsAt, fairPe, shares, sharesOut, extraLive, fcfPs, dps }: {
+function ClockLive({ cur, epsAt, profitAt, fairPe, shares, sharesOut, extraLive, fcfPs, dps }: {
   cur: string; epsAt: (t: number) => number | null; fairPe: number; shares: number; sharesOut: number | null
+  profitAt?: (t: number) => number | null      // 내 몫 이익(회계 EPS). 없으면 epsAt
   extraLive?: (now: number, fairNow: number) => ReactNode
   fcfPs?: number | null; dps?: number | null
 }) {
   const [now, setNow] = useState(() => Date.now())
   useEffect(() => { const id = setInterval(() => setNow(Date.now()), 100); return () => clearInterval(id) }, [])
-  const epsNow = epsAt(decYear(now)) ?? 0
-  const fairNow = epsNow * fairPe
+  const fairNow = (epsAt(decYear(now)) ?? 0) * fairPe
+  const epsNow = (profitAt ?? epsAt)(decYear(now)) ?? 0
   const startOfYear = new Date(new Date(now).getFullYear(), 0, 1).getTime()
   const startOfDay = new Date(new Date(now).setHours(0, 0, 0, 0)).getTime()
   const money = (v: number, d = 0) => `${v < 0 ? '−' : ''}${cur}${Math.abs(v).toLocaleString('ko-KR', { minimumFractionDigits: d, maximumFractionDigits: d })}`
@@ -2852,7 +2872,7 @@ function ClockLive({ cur, epsAt, fairPe, shares, sharesOut, extraLive, fcfPs, dp
   )
 }
 
-function ValueClockCore({ cur, anchors: rawAnchors, monthly, last, g, sharesOut, divYield, storageKey, extraLive, notes, peExclude, fcfPs, growthBar }: ClockProps) {
+function ValueClockCore({ cur, anchors: rawAnchors, monthly, last, g, sharesOut, divYield, storageKey, extraLive, notes, peExclude, fcfPs, growthBar, fcfAnchors }: ClockProps) {
   // 입력칸은 빈 값으로 시작(지우고 새로 입력 가능). 비어 있으면 1주로 계산
   const [sharesTxt, setSharesTxt] = useState('')
   const shares = Number(sharesTxt) > 0 ? Number(sharesTxt) : 1
@@ -2871,7 +2891,14 @@ function ValueClockCore({ cur, anchors: rawAnchors, monthly, last, g, sharesOut,
   }
 
   const [smooth, setSmooth] = useState(false)
-  const anchors = smooth ? smoothAnchors(rawAnchors) : rawAnchors
+  const [basis, setBasis] = useState<'eps' | 'fcf'>('eps')
+  const isFcf = basis === 'fcf' && !!fcfAnchors && fcfAnchors.length >= 3
+  const baseAnchors = isFcf ? fcfAnchors! : rawAnchors
+  const anchors = smooth ? smoothAnchors(baseAnchors) : baseAnchors
+  const mL = isFcf ? 'P/FCF' : 'PER'                 // 배수 이름
+  const eL = isFcf ? '주당 잉여현금' : 'EPS'          // 기준 이익 이름
+  const profitAt = makeEpsAt(rawAnchors, g)           // '내 몫 이익'은 항상 회계 EPS
+  const oneOff = oneOffFlag(baseAnchors)
   const epsAt = makeEpsAt(anchors, g)
   const peakAt = makePeakAt(anchors)
   const meaningful = (t: number, e: number | null): e is number => e != null && e > 0 && e >= MEANINGFUL_EPS_RATIO * peakAt(t)
@@ -2951,10 +2978,10 @@ function ValueClockCore({ cur, anchors: rawAnchors, monthly, last, g, sharesOut,
   const chartData: any = {
     datasets: [
       ...(peLo != null && peHi != null ? [
-        { label: `싼 구간 경계 (PER ${peLo.toFixed(0)}배)`, data: line(peLo), borderColor: 'rgba(16,185,129,0.5)', borderWidth: 1, pointRadius: 0, fill: false, spanGaps: false },
-        { label: `비싼 구간 경계 (PER ${peHi.toFixed(0)}배)`, data: line(peHi), borderColor: 'rgba(239,68,68,0.5)', borderWidth: 1, pointRadius: 0, fill: '-1', backgroundColor: 'rgba(156,163,175,0.12)', spanGaps: false },
+        { label: `싼 구간 경계 (${mL} ${peLo.toFixed(0)}배)`, data: line(peLo), borderColor: 'rgba(16,185,129,0.5)', borderWidth: 1, pointRadius: 0, fill: false, spanGaps: false },
+        { label: `비싼 구간 경계 (${mL} ${peHi.toFixed(0)}배)`, data: line(peHi), borderColor: 'rgba(239,68,68,0.5)', borderWidth: 1, pointRadius: 0, fill: '-1', backgroundColor: 'rgba(156,163,175,0.12)', spanGaps: false },
       ] : []),
-      { label: `적정가 선 (EPS × ${fairPe}배)`, data: line(fairPe), borderColor: 'rgba(37,99,235,0.95)', borderWidth: 2, pointRadius: 0, fill: false, spanGaps: false,
+      { label: `적정가 선 (${eL} × ${fairPe}배)`, data: line(fairPe), borderColor: 'rgba(37,99,235,0.95)', borderWidth: 2, pointRadius: 0, fill: false, spanGaps: false,
         segment: { borderDash: (ctx: any) => (ctx.p0.parsed.x >= tLastEps ? [6, 4] : undefined) } },
       { label: '실제 주가 (월말)', data: hist.map(r => ({ x: r.t, y: r.price })), borderColor: 'rgba(17,24,39,0.85)', borderWidth: 1.5, pointRadius: 0, fill: false },
     ],
@@ -2985,17 +3012,50 @@ function ValueClockCore({ cur, anchors: rawAnchors, monthly, last, g, sharesOut,
   const lab = 'text-[11px] text-gray-500 dark:text-gray-400'
   const big = 'text-sm font-semibold tabular-nums text-gray-900 dark:text-white'
 
+  const toggles = (
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-gray-600 dark:text-gray-300">
+      {fcfAnchors && fcfAnchors.length >= 3 && (
+        <span className="inline-flex items-center gap-1">
+          기준
+          {([['eps', '이익(EPS)'], ['fcf', '잉여현금흐름']] as const).map(([k, l]) => (
+            <button key={k} type="button" onClick={() => { setBasis(k); setPePick(null) }}
+              className={`px-2 py-0.5 rounded border ${basis === k ? 'bg-blue-500 border-blue-500 text-white' : 'border-gray-200 dark:border-gray-700 hover:border-gray-400'}`}>{l}</button>
+          ))}
+        </span>
+      )}
+      <label className="inline-flex items-center gap-1.5 cursor-pointer select-none">
+        <input type="checkbox" checked={smooth} onChange={e => { setSmooth(e.target.checked); setPePick(null) }} className="accent-blue-600" />
+        3년 평균으로 보기
+      </label>
+    </div>
+  )
   if (!epsNow || epsNow <= 0) {
-    return <p className={p}>최근 1년 이익이 적자라 적정가 선을 그릴 수 없다.</p>
+    return (
+      <div className="space-y-2">
+        {toggles}
+        <p className={p}>최근 1년 {eL}{isFcf ? '이' : '가'} {isFcf ? '마이너스(설비투자가 영업현금보다 큼)' : '적자'}라 적정가 선을 그릴 수 없다.{isFcf ? ' 이익(EPS) 기준으로 돌아가 본다.' : ''}</p>
+      </div>
+    )
   }
 
   return (
     <div className="space-y-3">
-      <label className="inline-flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-300 cursor-pointer select-none">
-        <input type="checkbox" checked={smooth} onChange={e => { setSmooth(e.target.checked); setPePick(null) }} className="accent-blue-600" />
-        3년 평균 이익으로 보기
-        <span className="text-gray-400 dark:text-gray-500">— 이익이 해마다 크게 출렁이는 기업(아마존 등)은 이쪽이 큰 흐름을 보기 쉽다. 적정 PER도 3년 평균 이익 기준으로 다시 계산</span>
-      </label>
+      {toggles}
+      {isFcf && (
+        <p className="text-[11px] leading-relaxed text-gray-500 dark:text-gray-400">
+          <b>잉여현금흐름 기준</b> = 영업으로 들어온 현금 − 설비투자. 버핏이 말하는 &lsquo;회사에서 꺼낼 수 있는 현금&rsquo;에 가깝고, 자산 감액·인수 비용 같은 장부상 일회성 비용에 덜 흔들린다.
+          대신 설비투자를 크게 늘리는 해(아마존 등)에는 작게 나오고, 은행·보험에는 맞지 않는다. 적정 배수는 지난 20년 월말 주가 ÷ 그때의 주당 잉여현금흐름(P/FCF)의 중간값.
+        </p>
+      )}
+      {oneOff && (
+        <div className="rounded border border-amber-200 dark:border-amber-900/60 bg-amber-50 dark:bg-amber-900/10 p-2.5 text-xs leading-relaxed text-amber-800 dark:text-amber-300">
+          <b>주의: 최근 1년 {eL}{isFcf ? '이' : '가'} 직전 3년 최고치의 {Math.round(oneOff.ratio * 100)}%{oneOff.kind === 'drop' ? '로 크게 줄었다' : '로 크게 늘었다'}.</b>{' '}
+          {oneOff.kind === 'drop'
+            ? '구조조정·자산 감액·인수 비용 같은 일회성 비용이 섞였을 가능성이 크다. 그러면 적정가가 실제보다 낮게 잡혀 "비쌈"이 과장된다.'
+            : '사업 매각·지분 평가 같은 일회성 이익이나 경기 호황이 섞였을 수 있다. 그러면 적정가가 높게 잡혀 "쌈"이 과장된다.'}
+          {' '}&lsquo;적정가 대비&rsquo;는 참고만 하고, {isFcf ? '이익(EPS) 기준이나 ' : fcfAnchors && fcfAnchors.length >= 3 ? '잉여현금흐름 기준이나 ' : ''}&lsquo;3년 평균으로 보기&rsquo;와 비교해 본다.
+        </div>
+      )}
       <div className="relative">
         <button onClick={() => (chartRef.current as any)?.resetZoom?.()}
           className="absolute top-0 right-0 z-10 px-2 py-0.5 text-xs text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 border border-gray-200 dark:border-gray-700 rounded">줌 초기화</button>
@@ -3008,7 +3068,7 @@ function ValueClockCore({ cur, anchors: rawAnchors, monthly, last, g, sharesOut,
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         <div className={tile}><p className={lab}>적정가 (지금)</p><p className={big}>{fairNow ? money(fairNow, 1) : '—'}</p></div>
         <div className={tile}><p className={lab}>주가 ({last.date})</p><p className={big}>{money(price, 1)}</p></div>
-        <div className={tile}><p className={lab}>지금 PER{zone ? ' · 구간' : ''}</p><p className={`${big} ${zone?.c ?? ''}`}>{peNow ? `${peNow.toFixed(1)}배` : '—'}{zone ? ` · ${zone.t}` : ''}</p></div>
+        <div className={tile}><p className={lab}>지금 {mL}{zone ? ' · 구간' : ''}</p><p className={`${big} ${zone?.c ?? ''}`}>{peNow ? `${peNow.toFixed(1)}배` : '—'}{zone ? ` · ${zone.t}` : ''}</p></div>
         <div className={tile}><p className={lab}>적정가 대비</p><p className={`${big} ${gap != null && gap < 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'}`}>{gap != null ? `${gap > 0 ? '+' : ''}${gap.toFixed(1)}% ${gap < 0 ? '(쌈)' : '(비쌈)'}` : '—'}</p></div>
       </div>
 
@@ -3021,10 +3081,10 @@ function ValueClockCore({ cur, anchors: rawAnchors, monthly, last, g, sharesOut,
       )}
 
       <p className={p}>
-        <b>파란 선 = 적정가 = 최근 1년 EPS × 적정 PER.</b> 이익이 늘면 파란 선이 오른쪽 위로 올라가고, 정한 EPS 성장률(연 {g.toFixed(1)}%)로 10년 뒤까지 이어진다(점선).
+        <b>파란 선 = 적정가 = 최근 1년 {eL} × 적정 {mL}.</b> 이익이 늘면 파란 선이 오른쪽 위로 올라가고, 정한 EPS 성장률(연 {g.toFixed(1)}%)로 10년 뒤까지 이어진다(점선).
         검은 선(주가)이 띠 아래면 싼 구간, 위면 비싼 구간이다.
-        {skippedYears > 0 && <> 이익이 적자이거나 그때까지 최고 이익의 20%도 안 되던 구간(지난 20년 중 약 {skippedYears}년)은 PER이 의미가 없어 선을 끊고 PER 계산에서도 뺐다.</>}
-        {peMid != null && <> 적정 PER 기본값은 {peExMid != null && peExclude ? <>{peExclude.label}({peExMid.toFixed(0)}배, 전체 {yrsUsed}년 중간값은 {peMid.toFixed(0)}배)</> : <>지난 {yrsUsed}년 PER의 중간값({peMid.toFixed(0)}배)</>}, 띠는 하위·상위 25%({peLo!.toFixed(0)}~{peHi!.toFixed(0)}배)다.</>}
+        {skippedYears > 0 && <> {eL}{isFcf ? '이' : '가'} 적자이거나 그때까지 최고치의 20%도 안 되던 구간(지난 20년 중 약 {skippedYears}년)은 {mL}이 의미가 없어 선을 끊고 {mL} 계산에서도 뺐다.</>}
+        {peMid != null && <> 적정 {mL} 기본값은 {peExMid != null && peExclude ? <>{peExclude.label}({peExMid.toFixed(0)}배, 전체 {yrsUsed}년 중간값은 {peMid.toFixed(0)}배)</> : <>지난 {yrsUsed}년 {mL}의 중간값({peMid.toFixed(0)}배)</>}, 띠는 하위·상위 25%({peLo!.toFixed(0)}~{peHi!.toFixed(0)}배)다.</>}
       </p>
 
       <div className="rounded border border-gray-200 dark:border-gray-800 p-3 space-y-4">
@@ -3032,7 +3092,7 @@ function ValueClockCore({ cur, anchors: rawAnchors, monthly, last, g, sharesOut,
       {growthBar}
       <div className="space-y-1">
         <div className="flex justify-between text-xs">
-          <span className="font-medium text-gray-700 dark:text-gray-200">적정 PER</span>
+          <span className="font-medium text-gray-700 dark:text-gray-200">적정 {mL}</span>
           <span className="tabular-nums font-semibold text-gray-900 dark:text-white">{fairPe}배</span>
         </div>
         <input type="range" min={sMin} max={sMax} step={1} value={fairPe} onChange={e => setPePick(Number(e.target.value))} className="w-full accent-blue-600" />
@@ -3064,15 +3124,15 @@ function ValueClockCore({ cur, anchors: rawAnchors, monthly, last, g, sharesOut,
           </div>
         )}
         <p className="text-[11px] text-gray-400 dark:text-gray-500">
-          {peExMid != null ? `기본값은 ${peExclude!.label}.` : peMid != null ? '기본값은 과거 PER 중간값.' : '과거 PER 자료가 짧아 기본값 20배.'} 아래 버튼을 누르면 그 값으로 바뀐다.
-          지금 PER({peNow?.toFixed(0)}배)로 두면 &lsquo;주가가 이익만큼만 오를 때&rsquo;가 된다. PER은 월말 주가 ÷ 그때의 최근 1년 EPS(적자·200배 이상 제외).
+          {peExMid != null ? `기본값은 ${peExclude!.label}.` : peMid != null ? `기본값은 과거 ${mL} 중간값.` : `과거 ${mL} 자료가 짧아 기본값 20배.`} 아래 버튼을 누르면 그 값으로 바뀐다.
+          지금 {mL}({peNow?.toFixed(0)}배)로 두면 &lsquo;주가가 {isFcf ? '현금흐름' : '이익'}만큼만 오를 때&rsquo;가 된다. {mL}은 월말 주가 ÷ 그때의 최근 1년 {eL}(적자·200배 이상 제외).
         </p>
       </div>
       </div>
 
       <div className="rounded bg-blue-50/60 dark:bg-blue-950/20 p-3 space-y-2">
         <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">째깍째깍 — 버핏처럼 초 단위로 보기</p>
-        <ClockLive cur={cur} epsAt={epsAt} fairPe={fairPe} shares={shares} sharesOut={sharesOut} extraLive={extraLive}
+        <ClockLive cur={cur} epsAt={epsAt} profitAt={profitAt} fairPe={fairPe} shares={shares} sharesOut={sharesOut} extraLive={extraLive}
           fcfPs={fcfPs} dps={divYield > 0 ? price * divYield / 100 : null} />
         <label className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300">
           보유 주식 수
@@ -3500,6 +3560,18 @@ function CashReturnPanel({ cash, m, cur = '$', source }: {
   )
 }
 
+// 주당 잉여현금흐름 기준점: 연간(cash.years.fcfPs, 결산일) + 최근 1년(metrics.fcfPs, cash.ttm.asOf)
+function fcfAnchorsOf(f: ClockFund): ClockAnchor[] | undefined {
+  const ys = f.cash?.years
+  if (!ys) return undefined
+  const a: ClockAnchor[] = Object.values(ys).filter(y => (y as any).fcfPs != null && y.end)
+    .map(y => [decYear(Date.parse(y.end)), (y as any).fcfPs as number] as ClockAnchor).sort((x, y) => x[0] - y[0])
+  const t = f.cash?.ttm as any
+  const ttmPs = (f.metrics as any)?.fcfPs
+  if (t?.asOf && ttmPs != null && a.length && decYear(Date.parse(t.asOf)) > a[a.length - 1][0] + 0.1) a.push([decYear(Date.parse(t.asOf)), ttmPs])
+  return a.length >= 3 ? a : undefined
+}
+
 function StockValueClock({ f, stockKey, rolling, title = '이익 시계 — 적정가 선 vs 주가', judged }: {
   f: ClockFund; stockKey: string; rolling?: StockData; title?: string
   judged?: DeepInsight['growth']   // 개별 분석에서 판단한 성장률 (있으면 기본값)
@@ -3564,6 +3636,7 @@ function StockValueClock({ f, stockKey, rolling, title = '이익 시계 — 적�
           note={<>{judged && <>기본값은 4번 개별 분석의 판단(연 {judged.base}%, 범위 {judged.lo}~{judged.hi}%). </>}보수적 = 과거 5년·10년 성장률 중 낮은 값(0~15%로 제한). 과거 N년 = N년 전부터 지금까지 연평균. 5년 구간 = 지난 20년을 5년씩 끊어 본 성장률의 범위. 최근 몇 년이 부진했던 기업은 값 차이가 크다 — 어느 쪽이 앞으로에 가까운지는 직접 판단한다.</>} />}
         cur="$" anchors={anchors} monthly={monthly} last={f.lastPrice} g={g}
         sharesOut={f.shares?.count ?? null} divYield={m.divYield ?? 0} storageKey={`clock-shares-${stockKey}`}
+        fcfAnchors={fcfAnchorsOf(f)}
         fcfPs={m.fcfPs ?? null}
         notes={`EPS는 SEC 공시(10-K) 회계연도 값을 마감일 기준으로 이은 근사치이고(2008년 무렵 이전은 10-K 원문의 5년 요약 표에서 읽고 겹치는 해로 맞춘 값), ${f.ttmAsOf ?? '최근'} 이후는 정한 성장률로 연장했다. 주가는 배당을 반영하지 않은 월말 종가(분할 반영). 일회성 손익이 큰 해는 선이 출렁인다. 회사 전체 숫자는 공시 유통 주식 수${f.shares ? `(${f.shares.asOf})` : ''} × 최근 1년 EPS로 계산한 근사치.`}
       />
