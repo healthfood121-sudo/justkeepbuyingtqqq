@@ -2978,7 +2978,7 @@ function ClockLive({ cur, epsAt, profitAt, fairPe, shares, sharesOut, extraLive,
           {fcfPs != null && <div className={tile}><p className={lab}>내 몫 잉여현금: 1초</p><p className={big}>{money(fcfPs * shares / SEC_Y, 7)}</p></div>}
           {fcfPs != null && <div className={tile}><p className={lab}>내 몫 잉여현금: 1년</p><p className={big}>{money(fcfPs * shares, 2)}</p></div>}
           {dps != null && dps > 0 && <div className={tile}><p className={lab}>실제로 받는 배당: 1년</p><p className={big}>{money(dps * shares, 2)}</p></div>}
-          {sharesOut ? liveTiles?.(now).filter(x => x.rate).map(x => {
+          {sharesOut && !segments ? liveTiles?.(now).filter(x => x.rate).map(x => {
             const r = x.rate!
             const perYear = r.perSec * SEC_Y * shares / sharesOut
             const fmtN = (v: number) => v >= 100 ? Math.round(v).toLocaleString('ko-KR') : v >= 1 ? v.toFixed(1) : v >= 0.01 ? v.toFixed(3) : v.toPrecision(2)
@@ -3023,7 +3023,8 @@ function SalesLive({ liveTiles }: { liveTiles: (now: number) => LiveTile[] }) {
 }
 
 // ── 사업부별 시계: 회사 발표 분기 숫자를 사업부별로 나눠 1초 매출·이익과 내 몫을 보여 줌 (애플·구글) ──
-type SegRow = { name: string; rev: number; profit: number; note: string; color: string }
+type SegRow = { name: string; rev: number; profit: number; note: string; color: string
+  units?: { n: number; unit: string; what: string; value?: boolean } } // n = 그 기간 판매량(value면 매출 ÷ 대표 가격 = '몇 개 값')
 type SegClock = {
   period: string; days: number; src: string
   cur?: string                      // 기본 $
@@ -3075,7 +3076,7 @@ const SEGMENTS: Record<string, SegClock> = {
   MA: {
     period: '2026년 2분기(4~6월)', days: 91, src: '2026년 7월 회사 실적 발표·분기 보고서', profitLabel: '순이익(추정)',
     rows: [
-      { name: '결제망 수수료', rev: 5451000000.0, profit: 4.39e9 * 5451 / 9277, color: 'bg-orange-500', note: '카드가 긁힐 때마다 받는 수수료(+10%). 결제 474억 건, 금액 2.9조 달러.' },
+      { name: '결제망 수수료', rev: 5451000000.0, profit: 4.39e9 * 5451 / 9277, color: 'bg-orange-500', units: { n: 47.4e9, unit: '건', what: '마스터카드 결제' }, note: '카드가 긁힐 때마다 받는 수수료(+10%). 결제 474억 건, 금액 2.9조 달러.' },
       { name: '부가 서비스', rev: 3826000000.0, profit: 4.39e9 * 3826 / 9277, color: 'bg-amber-400', note: '사기 방지·본인 인증·데이터 분석·마케팅 서비스(+20%). 결제망보다 두 배 빠르게 큰다.' },
     ],
     facts: [
@@ -3194,7 +3195,7 @@ const SEGMENTS: Record<string, SegClock> = {
   RMS: {
     period: '2025년', days: 365, src: '2026년 2월 회사 연간 실적 발표', cur: '€', profitLabel: '순이익(추정)',
     rows: [
-      { name: '가죽·마구(버킨·켈리 등)', rev: 7070e6, profit: 7070e6 * 0.2827, color: 'bg-orange-500', note: '매출 +13%(환율 빼고). 공방(가죽 장인)을 늘린 만큼 판다. 실제 이익률은 다른 사업보다 높을 가능성이 크다(회사 미공개).' },
+      { name: '가죽·마구(버킨·켈리 등)', rev: 7070e6, profit: 7070e6 * 0.2827, color: 'bg-orange-500', units: { n: 7070e6 / 10600, unit: '개', what: '버킨 30(€10,600)', value: true }, note: '매출 +13%(환율 빼고). 공방(가죽 장인)을 늘린 만큼 판다. 실제 이익률은 다른 사업보다 높을 가능성이 크다(회사 미공개).' },
       { name: '의류·액세서리', rev: 4525e6, profit: 4525e6 * 0.2827, color: 'bg-sky-500', note: '옷·신발·벨트·모자 등. 매출 +6%(환율 빼고).' },
       { name: '실크·텍스타일', rev: 964e6, profit: 964e6 * 0.2827, color: 'bg-pink-400', note: '스카프·넥타이 등. 매출 +5%(환율 빼고).' },
       { name: '기타(보석·홈·향수·시계 등)', rev: 3443e6, profit: 3443e6 * 0.2827, color: 'bg-gray-400', note: '보석·홈 +11%, 향수 −8%, 시계 −2%(환율 빼고). 회사가 금액을 따로 낸 사업만 위에 나눴다.' },
@@ -3208,7 +3209,7 @@ const SEGMENTS: Record<string, SegClock> = {
   GOOGL: {
     period: '2026년 2분기(4~6월)', days: 91, src: '2026년 7월 회사 실적 발표·분기 보고서', profitLabel: '세후 영업이익(추정)',
     rows: [
-      { name: '검색 광고', rev: 63.3e9, profit: 26.46e9 * 0.83, color: 'bg-blue-500', note: '구글 검색·지도 등에 붙는 광고(1년 전보다 +17%).' },
+      { name: '검색 광고', rev: 63.3e9, profit: 26.46e9 * 0.83, color: 'bg-blue-500', units: { n: 5e12 * 91 / 365, unit: '회', what: '구글 검색' }, note: '구글 검색·지도 등에 붙는 광고(1년 전보다 +17%).' },
       { name: '유튜브 광고', rev: 11.1e9, profit: 4.64e9 * 0.83, color: 'bg-red-500', note: '유튜브 영상·쇼츠 광고(+13%). 유튜브 프리미엄 구독료는 아래 구독에 들어간다.' },
       { name: '다른 사이트 광고(네트워크)', rev: 7.2e9, profit: 3.01e9 * 0.83, color: 'bg-amber-500', note: '구글이 다른 웹사이트·앱에 대신 붙여 주는 광고(−1%). 대부분을 사이트 주인에게 나눠 줘서 이익이 적다(그래도 매출 비중으로 나눠 실제보다 크게 잡혔을 수 있다).' },
       { name: '구독·플레이스토어·기기', rev: 12.9e9, profit: 5.39e9 * 0.83, color: 'bg-green-500', note: '유튜브 프리미엄·구글 원·플레이스토어 수수료·픽셀폰 등(+15%).' },
@@ -3225,10 +3226,10 @@ const SEGMENTS: Record<string, SegClock> = {
   AAPL: {
     period: '2026 회계연도 3분기(2026년 4~6월)', days: 91, src: '2026년 7월 회사 실적 발표·분기 보고서', profitLabel: '순이익(추정)',
     rows: [
-      { name: '아이폰', rev: 54.25e9, profit: 11.83e9, color: 'bg-gray-700', note: '매출 +22%, 6월 분기 사상 최대.' },
-      { name: '맥', rev: 10.35e9, profit: 2.26e9, color: 'bg-blue-500', note: '매출 +29%.' },
-      { name: '아이패드', rev: 6.2e9, profit: 1.35e9, color: 'bg-indigo-400', note: '매출 −6%.' },
-      { name: '웨어러블·홈(워치·에어팟 등)', rev: 7.9e9, profit: 1.72e9, color: 'bg-pink-400', note: '매출 +6.5%.' },
+      { name: '아이폰', rev: 54.25e9, profit: 11.83e9, color: 'bg-gray-700', units: { n: 54.25e9 / 799, unit: '대', what: '아이폰 17($799)', value: true }, note: '매출 +22%, 6월 분기 사상 최대.' },
+      { name: '맥', rev: 10.35e9, profit: 2.26e9, color: 'bg-blue-500', units: { n: 10.35e9 / 999, unit: '대', what: '맥북 에어($999)', value: true }, note: '매출 +29%.' },
+      { name: '아이패드', rev: 6.2e9, profit: 1.35e9, color: 'bg-indigo-400', units: { n: 6.2e9 / 349, unit: '대', what: '아이패드($349)', value: true }, note: '매출 −6%.' },
+      { name: '웨어러블·홈(워치·에어팟 등)', rev: 7.9e9, profit: 1.72e9, color: 'bg-pink-400', units: { n: 7.9e9 / 129, unit: '개', what: '에어팟 4($129)', value: true }, note: '매출 +6.5%.' },
       { name: '서비스(앱스토어·아이클라우드 등)', rev: 30.7e9, profit: 12.64e9, color: 'bg-emerald-500', note: '매출 +12%. 매출총이익률 75.6%로 제품(40.1%)의 약 2배라, 매출은 28%인데 이익은 42%를 차지한다.' },
     ],
     facts: [
@@ -3248,9 +3249,15 @@ function SegmentPanel({ seg, now, shares, sharesOut }: { seg: SegClock; now: num
   const tot = seg.rows.reduce((a, r) => a + r.profit, 0)
   const pos = seg.rows.reduce((a, r) => a + Math.max(r.profit, 0), 0) // 비중은 흑자 사업 합계 대비 (공통 비용이 크면 합계 대비로는 100%를 넘음)
   const totRev = seg.rows.reduce((a, r) => a + r.rev, 0)
-  const th = 'py-1.5 px-2 text-right font-medium'
-  const td = 'py-1.5 px-2 text-right tabular-nums'
+  const th = 'py-1.5 px-2 text-right font-medium whitespace-nowrap'
+  const td = 'py-1.5 px-2 text-right tabular-nums whitespace-nowrap'
   const maxP = Math.max(...seg.rows.map(r => Math.abs(r.profit)))
+  const hasUnits = seg.rows.some(r => r.units)
+  const fmtU = (v: number, unit: string) => {
+    const n = v >= 100 ? Math.round(v).toLocaleString('ko-KR') : v >= 1 ? v.toFixed(1) : v >= 0.01 ? v.toFixed(3) : v.toPrecision(2)
+    return `${n}${unit}`
+  }
+  const subU = (v: number, unit: string) => v < 1 && v > 0.0001 ? <div className="text-[10px] text-gray-400">{Math.round(1 / v).toLocaleString('ko-KR')}년에 1{unit}</div> : null
   return (
     <div className="rounded bg-white/70 dark:bg-gray-900/60 p-3 space-y-2">
       <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">
@@ -3261,11 +3268,12 @@ function SegmentPanel({ seg, now, shares, sharesOut }: { seg: SegClock; now: num
           <thead className="text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
             <tr>
               <th className="py-1.5 px-2 text-left font-medium">사업부</th>
-              <th className={th}>회사 매출 1초</th>
-              <th className={th}><Tip text={<>{seg.profitLabel}. <span dangerouslySetInnerHTML={{ __html: seg.how }} /></>} right>회사 이익 1초</Tip></th>
+              <th className={th}>매출 1초</th>
+              <th className={th}><Tip text={<>{seg.profitLabel}. <span dangerouslySetInnerHTML={{ __html: seg.how }} /></>} right>이익 1초</Tip></th>
               <th className={th}><Tip text="흑자를 내는 사업들의 이익 합계를 100%로 놓은 비중. 적자 사업·공통 비용은 그만큼을 깎아 먹는다는 뜻으로 마이너스로 표시." right>이익 비중</Tip></th>
-              <th className={th}>내 몫 오늘 0시부터</th>
+              <th className={th}>내 몫 오늘</th>
               <th className={th}>내 몫 1년</th>
+              {hasUnits && <th className={th}><Tip text="사업부 판매량 × 내 주식 비율. 내가 그 사업의 주인이라면 1년 동안 내 몫으로 팔리는 양. &lsquo;값&rsquo;이 붙은 것은 매출을 대표 상품 가격으로 나눈 값이라 실제 개수와 다르다." right>내 몫 판매/년</Tip></th>}
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -3282,6 +3290,7 @@ function SegmentPanel({ seg, now, shares, sharesOut }: { seg: SegClock; now: num
                 </td>
                 <td className={`${td} ${r.profit < 0 ? 'text-red-500' : ''}`}>{usd(r.profit / secs * today * mine, 5)}</td>
                 <td className={`${td} ${r.profit < 0 ? 'text-red-500' : ''}`}>{usd(r.profit * (365.25 / seg.days) * mine, 3)}</td>
+                {hasUnits && <td className={td}>{r.units ? <Tip text={`${r.units.what} 기준${r.units.value ? ' (매출 ÷ 가격 = 몇 개 값)' : ''}. 회사 전체 1년 약 ${Math.round(r.units.n * 365.25 / seg.days).toLocaleString('ko-KR')}${r.units.unit}.`} right>{fmtU(r.units.n * (365.25 / seg.days) * mine, r.units.unit)}</Tip> : '—'}{r.units ? subU(r.units.n * (365.25 / seg.days) * mine, r.units.unit) : null}</td>}
               </tr>
             ))}
             <tr className="font-semibold">
@@ -3291,6 +3300,7 @@ function SegmentPanel({ seg, now, shares, sharesOut }: { seg: SegClock; now: num
               <td className={td}>{Math.round(100 * tot / pos)}%</td>
               <td className={td}>{usd(tot / secs * today * mine, 5)}</td>
               <td className={td}>{usd(tot * (365.25 / seg.days) * mine, 3)}</td>
+              {hasUnits && <td className={td} />}
             </tr>
           </tbody>
         </table>
