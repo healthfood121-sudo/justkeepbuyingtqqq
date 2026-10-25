@@ -3787,7 +3787,7 @@ function StockValueClock({ f, stockKey, rolling, title = '이익 시계 — 적�
           note={<>{judged && <>기본값은 4번 개별 분석의 판단(연 {judged.base}%, 범위 {judged.lo}~{judged.hi}%). </>}보수적 = 과거 5년·10년 성장률 중 낮은 값(0~15%로 제한). 과거 N년 = N년 전부터 지금까지 연평균. 5년 구간 = 지난 20년을 5년씩 끊어 본 성장률의 범위. 최근 몇 년이 부진했던 기업은 값 차이가 크다 — 어느 쪽이 앞으로에 가까운지는 직접 판단한다.</>} />}
         cur="$" anchors={anchors} monthly={monthly} last={f.lastPrice} g={g}
         sharesOut={f.shares?.count ?? null} divYield={m.divYield ?? 0} storageKey={`clock-shares-${stockKey}`}
-        liveTiles={stockKey === 'NKE' ? nkeShoeTiles : undefined}
+        liveTiles={stockKey === 'NKE' ? nkeShoeTiles : SALES_CLOCK[stockKey] ? (now: number) => salesClockTiles(SALES_CLOCK[stockKey], now) : undefined}
         fcfAnchors={fcfAnchorsOf(f)} ocfAnchors={ocfAnchorsOf(f)}
         fcfPs={m.fcfPs ?? null}
         notes={`EPS는 SEC 공시(10-K) 회계연도 값을 마감일 기준으로 이은 근사치이고(2008년 무렵 이전은 10-K 원문의 5년 요약 표에서 읽고 겹치는 해로 맞춘 값), ${f.ttmAsOf ?? '최근'} 이후는 정한 성장률로 연장했다. 주가는 배당을 반영하지 않은 월말 종가(분할 반영). 일회성 손익이 큰 해는 선이 출렁인다. 회사 전체 숫자는 공시 유통 주식 수${f.shares ? `(${f.shares.asOf})` : ''} × 최근 1년 EPS로 계산한 근사치.`}
@@ -3815,6 +3815,97 @@ function nkeShoeTiles(now: number): LiveTile[] {
       오늘 판 신발 매출을 에어포스 1 &lsquo;07 미국 정가(${AF1_USD})로 나눈 값. 하루 약 {(Math.round(perDay / AF1_USD / 1000) / 10).toFixed(1)}만 켤레 값, 1초에 약 {(perDay / AF1_USD / 86400).toFixed(1)}켤레 값.
       <br /><b>주의:</b> 에어포스 1이 실제로 이만큼 팔린다는 뜻이 아니다. 매출 크기를 감으로 느끼기 위한 &lsquo;단위&rsquo;일 뿐이다. 나이키는 판매 켤레 수를 공개하지 않는다. 매출의 상당 부분은 매장에 넘기는 도매가(소비자 가격보다 싸다)라서 실제 켤레 수는 이보다 많을 가능성이 크다.</> },
   ]
+}
+
+// ── 판매 시계: 회사가 발표한 최근 분기(또는 연간) 숫자를 초·오늘 단위로 나눠 째깍째깍 칸에 보여 준다 ──
+// count = 회사가 공개한 실제 횟수(결제 건수·수술 건수 등). equiv = 매출을 대표 상품 가격으로 나눈 '몇 개 값'(실제 판매 개수 아님).
+type SalesClock = {
+  cur: '$' | '€'
+  period: string                  // 예: '2026년 4~6월'
+  days: number                    // 그 기간의 날짜 수
+  src: string                     // 발표 시점·출처
+  rev?: { amount: number; label: string; note: string }
+  count?: { n: number; label: string; unit: string; note: string; approx?: boolean }
+  equiv?: { price: number; item: string; unit: string; priceNote: string; caveat: string }
+}
+const SALES_CLOCK: Record<string, SalesClock> = {
+  V: {
+    cur: '$', period: '2026 회계연도 3분기(2026년 4~6월)', days: 91, src: '2026-07-28 회사 실적 발표',
+    count: { n: 71.7e9, label: '비자 결제 처리', unit: '건', note: '비자 망에서 처리된 결제·현금 인출 건수 717억 건(1년 전보다 +10%). 비자 카드라도 다른 망으로 처리된 건은 빠진다.' },
+  },
+  MA: {
+    cur: '$', period: '2026년 2분기(4~6월)', days: 91, src: '2026년 7월 회사 실적 발표',
+    count: { n: 47.4e9, label: '마스터카드 결제 처리', unit: '건', note: '마스터카드 망에서 처리된 결제 건수 474억 건(1년 전보다 +9%).' },
+  },
+  ISRG: {
+    cur: '$', period: '2026년 3분기(7~9월)', days: 92, src: '2026-10-20 회사 실적 발표',
+    count: { n: 906_000, label: '다빈치 로봇 수술', unit: '건', note: '전 세계 다빈치 로봇 수술 약 90.6만 건(1년 전보다 +14%). 폐 조직 검사 로봇(Ion) 약 5만 건은 뺐다.' },
+    rev: { amount: 3.05e9, label: '매출', note: '회사 전체 매출 30.5억 달러(1년 전보다 +22%). 매출의 대부분은 수술마다 쓰는 기구·소모품과 정비 계약에서 나온다.' },
+  },
+  AAPL: {
+    cur: '$', period: '2026 회계연도 3분기(2026년 4~6월)', days: 91, src: '2026-07-30 회사 실적 발표',
+    rev: { amount: 54.25e9, label: '아이폰 매출', note: '아이폰 매출 542.5억 달러(1년 전보다 +22%). 회사 전체 매출은 1,094억 달러.' },
+    equiv: { price: 799, item: '아이폰 17', unit: '대', priceNote: '아이폰 17 기본 모델 미국 출시가($799)',
+      caveat: '프로·프로맥스처럼 비싼 모델이 많이 팔려 평균 판매가는 이보다 높으므로, 실제 판매 대수는 이 숫자보다 적다. 애플은 판매 대수를 공개하지 않는다.' },
+  },
+  MCD: {
+    cur: '$', period: '2026년 2분기(4~6월)', days: 91, src: '2026년 7월 회사 실적 발표',
+    rev: { amount: 37e9, label: '전 세계 매장 매출', note: '가맹점을 포함한 전 세계 맥도날드 매장 매출 약 370억 달러(1년 전보다 +5%). 맥도날드 회사의 매출은 이 중 가맹점이 내는 임대료·로열티 등이라 훨씬 작다.' },
+    equiv: { price: 6.12, item: '빅맥', unit: '개', priceNote: '미국 빅맥 가격($6.12, 2026년 1월 빅맥 지수)',
+      caveat: '빅맥만 파는 게 아니라 감자튀김·음료·아침 메뉴 등이 모두 섞여 있고, 나라마다 가격도 다르다. 빅맥은 매출 크기를 감으로 느끼기 위한 단위일 뿐이다.' },
+  },
+  CPRT: {
+    cur: '$', period: '2026 회계연도(2025년 8월~2026년 7월)', days: 365, src: '회사 발표(연간 실적·회사 소개 문구)',
+    count: { n: 4e6, label: '경매로 판 차량', unit: '대', approx: true, note: '회사 소개 문구 기준 ‘지난 1년 400만 대 이상’ 판매(사고·침수 차량 등 보험사 물량이 79%). 정확한 대수는 공개 숫자가 ‘이상’이라 근사치다.' },
+    rev: { amount: 4.7e9, label: '매출', note: '연간 매출 약 47억 달러.' },
+  },
+  ROL: {
+    cur: '$', period: '2026년 3분기(7~9월)', days: 92, src: '2026-10-21 회사 실적 발표',
+    rev: { amount: 1.09e9, label: '방역 서비스 매출', note: '오킨 등 해충 방제 서비스 매출 약 10.9억 달러(1년 전보다 +6.2%). 회사가 서비스 건수를 공개하지 않아 매출만 보여 준다.' },
+  },
+  LII: {
+    cur: '$', period: '2026년 2분기(4~6월)', days: 91, src: '2026년 7월 회사 실적 발표 (3분기는 10월 28일 발표 예정)',
+    rev: { amount: 1.5e9, label: '냉난방 장비 매출', note: '에어컨·히트펌프·보일러 등 매출 약 15억 달러(1년 전보다 +3%, 인수 효과 포함). 여름이 성수기라 분기마다 차이가 크다. 회사가 판매 대수를 공개하지 않아 매출만 보여 준다.' },
+  },
+  IDXX: {
+    cur: '$', period: '2026년 2분기(4~6월)', days: 91, src: '2026-08-04 회사 실적 발표',
+    rev: { amount: 1.217e9, label: '동물 진단 매출', note: '동물병원 진단 장비·검사 키트·검사 대행 등 매출 12.17억 달러(1년 전보다 +10%). 회사가 검사 건수를 공개하지 않아 매출만 보여 준다.' },
+  },
+}
+
+function salesClockTiles(c: SalesClock, now: number): LiveTile[] {
+  const startOfDay = new Date(new Date(now).setHours(0, 0, 0, 0)).getTime()
+  const sinceToday = (now - startOfDay) / 86400000 // 오늘 지난 비율(일)
+  const money = (v: number) => `${c.cur}${Math.round(v).toLocaleString('ko-KR')}`
+  const n0 = (v: number) => Math.floor(v).toLocaleString('ko-KR')
+  const head = <>{c.period} 숫자({c.src})를 그 기간 날짜 수({c.days}일)로 나눈 값. </>
+  const tiles: LiveTile[] = []
+  if (c.count) {
+    const perDay = c.count.n / c.days
+    const perSec = perDay / 86400
+    const ap = c.count.approx ? '약 ' : ''
+    tiles.push({
+      label: `${c.count.label}: 1초`,
+      value: perSec >= 1 ? `${ap}${Math.round(perSec).toLocaleString('ko-KR')}${c.count.unit}` : `${ap}${(1 / perSec).toFixed(1)}초에 1${c.count.unit}`,
+      tip: <>{head}{c.count.note} 하루 약 {Math.round(perDay).toLocaleString('ko-KR')}{c.count.unit}. <b>회사가 공개한 실제 횟수</b>를 고르게 나눈 것이라, 실제로는 시간대·요일마다 다르다.</>,
+    })
+    tiles.push({ label: `${c.count.label}: 오늘 0시부터`, value: `${ap}${n0(perDay * sinceToday)}${c.count.unit}`, tip: <>{head}{c.count.note}</> })
+  }
+  if (c.rev) {
+    const perDay = c.rev.amount / c.days
+    tiles.push({ label: `${c.rev.label}: 1초`, value: money(perDay / 86400), tip: <>{head}{c.rev.note} 하루 약 {c.cur}{(perDay / 1e6).toFixed(1)}백만.</> })
+    if (!c.count) tiles.push({ label: `${c.rev.label}: 오늘 0시부터`, value: money(perDay * sinceToday), tip: <>{head}{c.rev.note}</> })
+    if (c.equiv) {
+      const e = c.equiv
+      const perDayN = perDay / e.price
+      tiles.push({
+        label: `${e.item} 몇 ${e.unit} 값: 오늘 0시부터`, value: `${n0(perDay * sinceToday / e.price)}${e.unit}`,
+        tip: <>{head}오늘 {c.rev.label}을 {e.priceNote}로 나눈 값. 하루 약 {perDayN >= 1e5 ? `${(perDayN / 1e4).toFixed(1)}만` : Math.round(perDayN).toLocaleString('ko-KR')}{e.unit} 값.
+          <br /><b>주의:</b> 실제로 {e.item}만 이만큼 팔린다는 뜻이 아니다. {e.caveat}</>,
+      })
+    }
+  }
+  return tiles
 }
 
 function StockValueClockByKey({ stockKey, rolling, title }: { stockKey: string; rolling?: StockData; title?: string }) {
