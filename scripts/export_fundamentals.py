@@ -34,11 +34,13 @@ CONCEPTS = ["EarningsPerShareDiluted", "EarningsPerShareBasicAndDiluted", "Earni
 SKIP = {"QQQ", "QLD", "TQQQ", "RMS"}  # ETF·비미국 종목
 # SEC 회사 번호(CIK)가 바뀐 종목: 예전 번호에 과거 공시가 있음 (엑슨모빌 2026년 지주회사 전환, 마시 맥레넌 티커 변경)
 CIK_EXTRA = {"XOM": [34088], "MMC": [62709]}
+TICKER_NOW = {"MMC": "MRSH"}  # 티커가 바뀐 종목: 주가·주식 수는 새 티커로 받음 (마시 맥레넌 2026-01-14 변경)
 # 주식 종류(A·B·C)별로만 EPS를 공시해 SEC 자동 데이터에 EPS가 없는 종목: 회사 10-K의 희석 EPS(현재 주식 수 기준)
 MANUAL_EPS = {
     "V": {"2013-09-30": 1.90, "2014-09-30": 2.16, "2015-09-30": 2.58, "2016-09-30": 2.48, "2017-09-30": 2.80,
           "2018-09-30": 4.42, "2019-09-30": 5.32, "2020-09-30": 4.89, "2021-09-30": 5.63, "2022-09-30": 7.00,
           "2023-09-30": 8.28, "2024-09-30": 9.73, "2025-09-30": 10.20},  # 클래스 A 희석 EPS (2015년 4:1 분할 반영)
+    "ERIE": {"2022-12-31": 5.71, "2023-12-31": 8.53, "2024-12-31": 11.48, "2025-12-31": 10.69},  # 클래스 A 희석 EPS (회사 실적 발표)
 }
 TODAY = pd.Timestamp.today().normalize()
 LAST_FULL = TODAY.year - 1
@@ -288,7 +290,7 @@ def shares_info(cik: int, key: str, ticker: str = ""):
 
 
 def process(key: str, roll: dict, prices: pd.DataFrame, cik_map: dict) -> dict | None:
-    yf_t = roll["ticker"].replace(".", "-")
+    yf_t = TICKER_NOW.get(key, roll["ticker"]).replace(".", "-")
     cik = cik_map.get(yf_t.upper()) or cik_map.get(yf_t.upper().replace("-", ".")) or (CIK_EXTRA.get(key) or [None])[0]
     if cik is None:
         print(f"  {key}: CIK 없음")
@@ -428,7 +430,7 @@ def process(key: str, roll: dict, prices: pd.DataFrame, cik_map: dict) -> dict |
         "ttmAsOf": ttm_asof(),
         "monthly": monthly_close(close),
         "lastPrice": {"date": close.index[-1].strftime("%Y-%m-%d"), "close": r2(price_now)},
-        "shares": shares_info(cik, key, roll["ticker"]),
+        "shares": shares_info(cik, key, TICKER_NOW.get(key, roll["ticker"])),
     }
     # 다른 스크립트가 덧붙인 항목은 유지 (export_eps_pre2008.py: epsOld, export_cashflow.py: cash·현금 지표)
     path = OUT / f"{key}.json"
@@ -485,7 +487,7 @@ def main():
     print(f"대상 {len(keys)}개")
 
     cik_map = load_cik_map()
-    yf_tickers = [rolls[k]["ticker"].replace(".", "-") for k in keys]
+    yf_tickers = [TICKER_NOW.get(k, rolls[k]["ticker"]).replace(".", "-") for k in keys]
     frames = []
     for i in range(0, len(yf_tickers), 80):
         chunk = yf_tickers[i:i + 80]
