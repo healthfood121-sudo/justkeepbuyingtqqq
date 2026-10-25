@@ -2930,13 +2930,14 @@ type ClockProps = {
 // 초마다 바뀌는 숫자만 따로 다시 그림 (그래프는 그대로)
 type LiveTile = { label: string; value: string; tip: ReactNode }
 
-function ClockLive({ cur, epsAt, profitAt, fairPe, shares, sharesOut, extraLive, liveTiles, segments, fcfPs, dps }: {
+function ClockLive({ cur, epsAt, profitAt, fairPe, shares, sharesOut, extraLive, liveTiles, segments, fcfPs, dps, sharesInput }: {
   cur: string; epsAt: (t: number) => number | null; fairPe: number; shares: number; sharesOut: number | null
   profitAt?: (t: number) => number | null      // 내 몫 이익(회계 EPS). 없으면 epsAt
   extraLive?: (now: number, fairNow: number) => ReactNode
   liveTiles?: (now: number) => LiveTile[]
   segments?: SegClock
   fcfPs?: number | null; dps?: number | null
+  sharesInput?: ReactNode                      // 보유 주식 수 입력칸 (내 몫 칸 안에 보여 줌)
 }) {
   const [now, setNow] = useState(() => Date.now())
   useEffect(() => { const id = setInterval(() => setNow(Date.now()), 100); return () => clearInterval(id) }, [])
@@ -2951,26 +2952,40 @@ function ClockLive({ cur, epsAt, profitAt, fairPe, shares, sharesOut, extraLive,
   const co = sharesOut ? epsNow * sharesOut : null
   return (
     <>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-        <div className={tile}><p className={lab}>적정가 (지금, 계속 오름)</p><p className={big}>{money(fairNow, 4)}</p></div>
-        {co != null && <div className={tile}><p className={lab}>회사가 1초에 버는 순이익</p><p className={big}>{money(co / SEC_Y, 0)}</p></div>}
-        {co != null && <div className={tile}><p className={lab}>올해 1월 1일부터 번 순이익</p><p className={big}>{money(co * (now - startOfYear) / 1000 / SEC_Y, 0)}</p></div>}
-        <div className={tile}><p className={lab}>내 몫 이익: 1초</p><p className={big}>{money(epsNow * shares / SEC_Y, 7)}</p></div>
-        <div className={tile}><p className={lab}>내 몫 이익: 오늘 0시부터</p><p className={big}>{money(epsNow * shares * (now - startOfDay) / 1000 / SEC_Y, 5)}</p></div>
-        <div className={tile}><p className={lab}>내 몫 이익: 1년</p><p className={big}>{money(epsNow * shares, 2)}</p></div>
-        {fcfPs != null && <div className={tile}><p className={lab}>내 몫 잉여현금: 1초</p><p className={big}>{money(fcfPs * shares / SEC_Y, 7)}</p></div>}
-        {fcfPs != null && <div className={tile}><p className={lab}>내 몫 잉여현금: 1년</p><p className={big}>{money(fcfPs * shares, 2)}</p></div>}
-        {dps != null && dps > 0 && <div className={tile}><p className={lab}>실제로 받는 배당: 1년</p><p className={big}>{money(dps * shares, 2)}</p></div>}
-        {liveTiles?.(now).map(x => (
-          <div key={x.label} className={tile}><p className={lab}><Tip text={x.tip}>{x.label}</Tip></p><p className={big}>{x.value}</p></div>
-        ))}
-      </div>
-      {fcfPs != null && (
-        <p className="text-[11px] text-gray-500 dark:text-gray-400">
-          이익 = 회계상 순이익. 잉여현금 = 사업에서 들어온 현금 − 설비투자로, 주인이 실제로 꺼내 쓸 수 있는 돈에 가깝다(최근 1년 값 고정).
-          배당은 그중 회사가 실제로 나눠 준 돈이고, 나머지는 자사주 매입·현금 보유·인수에 쓰인다.
-        </p>
+      {(co != null || liveTiles) && (
+        <div className="space-y-1.5">
+          <p className="text-xs font-semibold text-gray-800 dark:text-gray-100">회사 전체 — 1초에 얼마를 벌고, 무엇을 얼마나 파나</p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {co != null && <div className={tile}><p className={lab}>회사가 1초에 버는 순이익</p><p className={big}>{money(co / SEC_Y, 0)}</p></div>}
+            {co != null && <div className={tile}><p className={lab}>올해 1월 1일부터 번 순이익</p><p className={big}>{money(co * (now - startOfYear) / 1000 / SEC_Y, 0)}</p></div>}
+            {liveTiles?.(now).map(x => (
+              <div key={x.label} className={tile}><p className={lab}><Tip text={x.tip}>{x.label}</Tip></p><p className={big}>{x.value}</p></div>
+            ))}
+          </div>
+        </div>
       )}
+      <div className="space-y-1.5 rounded border border-blue-200 dark:border-blue-900/60 p-2.5">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="text-xs font-semibold text-gray-800 dark:text-gray-100">내 몫 — 내 주식 {shares.toLocaleString()}주가 버는 돈</p>
+          {sharesInput}
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <div className={tile}><p className={lab}>적정가 (1주, 계속 오름)</p><p className={big}>{money(fairNow, 4)}</p></div>
+          {shares !== 1 && <div className={tile}><p className={lab}>내 주식의 적정 가치</p><p className={big}>{money(fairNow * shares, 2)}</p></div>}
+          <div className={tile}><p className={lab}>내 몫 이익: 1초</p><p className={big}>{money(epsNow * shares / SEC_Y, 7)}</p></div>
+          <div className={tile}><p className={lab}>내 몫 이익: 오늘 0시부터</p><p className={big}>{money(epsNow * shares * (now - startOfDay) / 1000 / SEC_Y, 5)}</p></div>
+          <div className={tile}><p className={lab}>내 몫 이익: 1년</p><p className={big}>{money(epsNow * shares, 2)}</p></div>
+          {fcfPs != null && <div className={tile}><p className={lab}>내 몫 잉여현금: 1초</p><p className={big}>{money(fcfPs * shares / SEC_Y, 7)}</p></div>}
+          {fcfPs != null && <div className={tile}><p className={lab}>내 몫 잉여현금: 1년</p><p className={big}>{money(fcfPs * shares, 2)}</p></div>}
+          {dps != null && dps > 0 && <div className={tile}><p className={lab}>실제로 받는 배당: 1년</p><p className={big}>{money(dps * shares, 2)}</p></div>}
+        </div>
+        {fcfPs != null && (
+          <p className="text-[11px] text-gray-500 dark:text-gray-400">
+            이익 = 회계상 순이익. 잉여현금 = 사업에서 들어온 현금 − 설비투자로, 주인이 실제로 꺼내 쓸 수 있는 돈에 가깝다(최근 1년 값 고정).
+            배당은 그중 회사가 실제로 나눠 준 돈이고, 나머지는 자사주 매입·현금 보유·인수에 쓰인다.
+          </p>
+        )}
+      </div>
       {segments && sharesOut ? <SegmentPanel seg={segments} now={now} shares={shares} sharesOut={sharesOut} /> : null}
       {extraLive?.(now, fairNow)}
     </>
@@ -3104,7 +3119,7 @@ function SegmentPanel({ seg, now, shares, sharesOut }: { seg: SegClock; now: num
         ))}
       </div>
       <p className="text-[11px] leading-relaxed text-gray-500 dark:text-gray-400">
-        내 몫 = 회사 이익 × (내 주식 수 ÷ 전체 주식 {Math.round(sharesOut / 1e6).toLocaleString()}백만 주). 아래 &lsquo;보유 주식 수&rsquo;를 바꾸면 같이 바뀐다.
+        내 몫 = 회사 이익 × (내 주식 수 ÷ 전체 주식 {Math.round(sharesOut / 1e6).toLocaleString()}백만 주). 위 &lsquo;내 몫&rsquo; 칸의 보유 주식 수를 바꾸면 같이 바뀐다.
         {' '}{seg.src} 기준 한 분기 숫자를 1년으로 늘린 값이라 계절에 따라 달라진다. <span dangerouslySetInnerHTML={{ __html: seg.how }} />
       </p>
     </div>
@@ -3381,13 +3396,15 @@ function ValueClockCore({ cur, anchors: rawAnchors, monthly, last, g, sharesOut,
       <div className="rounded bg-blue-50/60 dark:bg-blue-950/20 p-3 space-y-2">
         <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">째깍째깍 — 버핏처럼 초 단위로 보기</p>
         <ClockLive cur={cur} epsAt={epsAt} profitAt={profitAt} fairPe={fairPe} shares={shares} sharesOut={sharesOut} extraLive={extraLive} liveTiles={liveTiles} segments={segments}
-          fcfPs={fcfPs} dps={divYield > 0 ? price * divYield / 100 : null} />
-        <label className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300">
-          보유 주식 수
-          <input type="text" inputMode="decimal" placeholder="1" value={sharesTxt} onChange={e => saveShares(e.target.value)}
-            className="w-20 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-2 py-0.5 tabular-nums" />
-          <span className="text-gray-400">주 (비우면 1주 기준 · 이 기기에만 저장)</span>
-        </label>
+          fcfPs={fcfPs} dps={divYield > 0 ? price * divYield / 100 : null}
+          sharesInput={
+            <label className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300">
+              보유 주식 수
+              <input type="text" inputMode="decimal" placeholder="1" value={sharesTxt} onChange={e => saveShares(e.target.value)}
+                className="w-20 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-2 py-0.5 tabular-nums" />
+              <span className="text-gray-400">주 (비우면 1주 · 이 기기에만 저장)</span>
+            </label>
+          } />
       </div>
 
       <ul className={`${p} list-disc pl-4 space-y-1`}>
