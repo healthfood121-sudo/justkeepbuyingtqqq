@@ -3442,7 +3442,7 @@ function rmsCash(price: number, monthly: Array<{ d: string; c: number }>) {
 }
 const HNWI_2025 = 25.3e6   // 금융자산 100만 달러 이상 (Capgemini 2025)
 const LEATHER_Q3_2026 = 1912e6 // 가죽·마구 부문 매출 2026년 3분기 (2026-10-22 회사 발표, 전체 40.96억 유로 중)
-const BAG_AVG_EUR = 10000   // 가방 1개 평균값 가정 (개수 환산용, 회사 미공개)
+const BIRKIN30_EUR = 10600  // 버킨 30(토고 가죽) 유럽 정가, 2026년 1월 인상 후 (PurseBop·Sotheby's 정리, 회사 공식 가격표 아님)
 
 type MonthlyPrice = { last: { date: string; close: number }; rows: Array<{ d: string; c: number }> }
 
@@ -3492,18 +3492,18 @@ function HermesValueClock({ g: gFactors, f }: { g: number; f: Factors }) {
           4번 기본값은 이 증가율을 ① 판매량으로 쓴다.
         </p>
         {(() => {
-          // 2026년 3분기(7~9월, 92일) 가죽·마구 매출 19.12억 유로(회사 발표). 개수는 회사가 공개하지 않아 '1개 평균 1만 유로' 가정으로 환산
+          // 2026년 3분기(7~9월, 92일) 가죽·마구 매출 19.12억 유로(회사 발표)를 버킨 정가로 나눠 '버킨 몇 개 값'으로 바꿔 부른다 (실제 버킨 판매 개수 아님)
           const lgPerDay = LEATHER_Q3_2026 / 92
-          const bagsPerDay = lgPerDay / BAG_AVG_EUR
+          const birkinsPerDay = lgPerDay / BIRKIN30_EUR
           const today = lgPerDay * (now - startOfDay) / 86400000
           return (
             <p className={p}>
               <b>가방 시계 (감으로 보기):</b> 버킨·켈리가 속한 가죽 제품 매출은 가장 최근 발표인 2026년 3분기(7~9월) {(LEATHER_Q3_2026 / 1e8).toFixed(2)}억 유로(전체 매출의 47%, 1년 전보다 +10.8%).
-              {' '}<b>하루 약 {eur(lgPerDay / 1e6, 1)}백만</b>, 1초에 약 {eur(lgPerDay / 86400)}어치다. 오늘 0시 이후 <b>{eur(today / 1e6, 2)}백만</b>어치 팔렸다.
-              {' '}가방 1개를 평균 1만 유로로 치면 <b>하루 약 {Math.round(bagsPerDay / 10) * 10}개</b>, 약 {Math.round(86400 / bagsPerDay)}초에 1개 꼴이다
-              {' '}(오늘 지금까지 약 {Math.floor(today / BAG_AVG_EUR).toLocaleString()}개).
-              {' '}<span className="text-gray-400 dark:text-gray-500">에르메스는 판매 개수를 공개하지 않는다. 지갑 같은 작은 가죽 소품·여행 가방·마구도 섞여 있어 실제 개수는 이보다 많고, 버킨만 따로 세면 훨씬 적다
-              (2014년 외부 추정 연 7만 개 ≈ 하루 약 190개, 출처 불확실).</span>
+              {' '}하루로 나누면 <b>약 {eur(lgPerDay / 1e6, 1)}백만</b>, 1초에 약 {eur(lgPerDay / 86400)}어치가 팔린다. 오늘 0시 이후 <b>{eur(today / 1e6, 2)}백만</b>어치.
+              {' '}이 돈을 버킨 30 유럽 정가({eur(BIRKIN30_EUR)})로 바꿔 세면 <b>하루 버킨 약 {Math.round(birkinsPerDay / 10) * 10}개 값</b>, 약 {Math.round(86400 / birkinsPerDay)}초마다 버킨 1개 값이다
+              {' '}(오늘 지금까지 버킨 약 {Math.floor(today / BIRKIN30_EUR).toLocaleString()}개 값).
+              {' '}<span className="text-gray-400 dark:text-gray-500">주의: 버킨이 실제로 이만큼 팔린다는 뜻이 아니다. 버킨은 매출 크기를 감으로 느끼기 위한 &lsquo;단위&rsquo;일 뿐이다.
+              이 매출에는 버킨·켈리 외에 다른 가방, 지갑 같은 작은 가죽 소품, 여행 가방, 승마용품이 모두 섞여 있고, 에르메스는 버킨만의 매출이나 판매 개수를 공개하지 않는다.</span>
             </p>
           )
         })()}
