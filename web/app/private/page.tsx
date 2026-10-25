@@ -3032,6 +3032,7 @@ type SegClock = {
   rows: SegRow[]                    // rev·profit = 그 분기 금액(달러)
   facts: { label: string; value: string; note: string }[]   // 1회당 숫자 등
   how: string                       // 이익을 사업부별로 나눈 방법
+  products?: { title: string; note: string; rows: SegRow[] } // 이익은 없고 매출만 있는 두 번째 나눔 (예: 나이키 제품별)
 }
 const SEGMENTS: Record<string, SegClock> = {
   AMZN: {
@@ -3191,6 +3192,16 @@ const SEGMENTS: Record<string, SegClock> = {
       { label: '중화권 이익', value: '1년 새 −34%', note: '한때 가장 빠르게 크던 중국이 지금은 가장 크게 줄고 있다.' },
     ],
     how: '나이키는 지역별 이익(EBIT, 이자·세금 전 이익)을 공개한다. 지역별 EBIT에 회사 전체 순이익 ÷ 전체 EBIT 비율(7.1억 ÷ 9.07억 = 0.785)을 곱해 순이익으로 바꿨다(추정).',
+    products: {
+      title: '제품별 매출 — 무엇을 팔아서 버나',
+      note: '나이키는 제품별로는 매출만 공개한다(이익은 지역별로만). 의류 매출은 나이키 브랜드 매출(110억)에서 신발·장비를 뺀 값(추정). 판매 개수는 매출 ÷ 대표 상품 미국 정가 = &lsquo;몇 개 값&rsquo;이고, 매출이 도매가 기준이라 실제 개수는 이보다 많다.',
+      rows: [
+        { name: '신발', rev: 6.95e9, profit: 0, color: 'bg-orange-500', units: { n: 6.95e9 / 115, unit: '켤레', what: '에어포스 1($115)', value: true }, note: '매출 −6%로 가장 약한 부분(조던 포함). 에어포스 1·덩크 같은 오래된 인기 모델 판매를 일부러 줄이는 중.' },
+        { name: '의류', rev: 3.43e9, profit: 0, color: 'bg-sky-500', units: { n: 3.43e9 / 35, unit: '장', what: '기본 티셔츠(약 $35)', value: true }, note: '운동복·후드·레깅스 등(+2% 안팎). 나이키 브랜드 매출 − 신발 − 장비로 계산한 추정치.' },
+        { name: '장비', rev: 0.611e9, profit: 0, color: 'bg-green-500', units: { n: 0.611e9 / 35, unit: '개', what: '축구공(약 $35)', value: true }, note: '공·가방·양말·장갑 등(−3%).' },
+        { name: '컨버스', rev: 0.263e9, profit: 0, color: 'bg-gray-500', units: { n: 0.263e9 / 65, unit: '켤레', what: '척테일러 올스타(약 $65)', value: true }, note: '컨버스 브랜드 전체(−28%).' },
+      ],
+    },
   },
   RMS: {
     period: '2026년 상반기(1~6월)', days: 181, src: '2026-07-29 회사 반기 실적 발표', cur: '€', profitLabel: '세후 영업이익(추정)',
@@ -3341,6 +3352,46 @@ function SegmentPanel({ seg, now, shares, sharesOut }: { seg: SegClock; now: num
           </tbody>
         </table>
       </div>
+      {seg.products && (() => {
+        const pr = seg.products
+        const tr = pr.rows.reduce((a, r) => a + r.rev, 0)
+        return (
+          <div className="space-y-1">
+            <p className="text-xs font-semibold text-gray-700 dark:text-gray-200 pt-1">{pr.title}</p>
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead className="text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
+                  <tr>
+                    <th className="py-1.5 px-2 text-left font-medium">제품</th>
+                    <th className={th}>매출 1초</th>
+                    <th className={th}>매출 비중</th>
+                    <th className={th}>내 몫 매출 1년</th>
+                    <th className={th}><FTip text="제품 판매량(매출 ÷ 대표 상품 가격) × 내 주식 비율.">내 몫 판매 1초</FTip></th>
+                    <th className={th}>내 몫 판매 오늘</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                  {pr.rows.map(r => {
+                    const u = r.units
+                    const perSec = u ? u.n / secs * mine : 0
+                    return (
+                      <tr key={r.name}>
+                        <td className="py-1.5 px-2 whitespace-nowrap"><span className={`inline-block w-2 h-2 rounded-full mr-1.5 ${r.color}`} /><FTip text={r.note}>{r.name}</FTip></td>
+                        <td className={td}>{usd(r.rev / secs)}</td>
+                        <td className={td}>{Math.round(100 * r.rev / tr)}%</td>
+                        <td className={td}>{usd(r.rev * (365.25 / seg.days) * mine, 2)}</td>
+                        <td className={td}>{u ? <FTip text={`${u.what} 기준(매출 ÷ 가격 = 몇 개 값). 회사 전체 1년 약 ${Math.round(u.n * 365.25 / seg.days).toLocaleString('ko-KR')}${u.unit}. 내 몫 1년 ${fmtU(perSec * SEC_Y, u.unit)}${perSec * SEC_Y < 1 && perSec > 0 ? ` (약 ${Math.round(1 / (perSec * SEC_Y)).toLocaleString('ko-KR')}년에 1${u.unit})` : ''}.`}>{fmtTiny(perSec)}{u.unit}</FTip> : '—'}</td>
+                        <td className={td}>{u ? `${fmtTiny(perSec * today, 6)}${u.unit}` : '—'}</td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+            <p className="text-[11px] text-gray-500 dark:text-gray-400" dangerouslySetInnerHTML={{ __html: pr.note }} />
+          </div>
+        )
+      })()}
       <div className="grid grid-cols-2 gap-2">
         {seg.facts.map(f => (
           <div key={f.label} className="rounded bg-gray-50 dark:bg-gray-800/60 px-3 py-2">
