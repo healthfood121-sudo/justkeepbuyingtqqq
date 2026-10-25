@@ -3824,8 +3824,10 @@ type SalesClock = {
   period: string                  // 예: '2026년 4~6월'
   days: number                    // 그 기간의 날짜 수
   src: string                     // 발표 시점·출처
+  how?: string                    // 계산 설명을 바꿀 때 (예: 하루 평균으로 발표된 숫자)
+  level?: { value: string; label: string; note: string } // 흐름이 아닌 규모 숫자 (예: 하루 이용자 수)
   rev?: { amount: number; label: string; note: string }
-  count?: { n: number; label: string; unit: string; note: string; approx?: boolean }
+  count?: { n: number; label: string; unit: string; note: string; approx?: boolean; perDay?: number } // perDay: 회사가 하루 평균으로 발표한 경우
   equiv?: { price: number; item: string; unit: string; priceNote: string; caveat: string }
 }
 const SALES_CLOCK: Record<string, SalesClock> = {
@@ -3871,6 +3873,43 @@ const SALES_CLOCK: Record<string, SalesClock> = {
     cur: '$', period: '2026년 2분기(4~6월)', days: 91, src: '2026-08-04 회사 실적 발표',
     rev: { amount: 1.217e9, label: '동물 진단 매출', note: '동물병원 진단 장비·검사 키트·검사 대행 등 매출 12.17억 달러(1년 전보다 +10%). 회사가 검사 건수를 공개하지 않아 매출만 보여 준다.' },
   },
+  CME: {
+    cur: '$', period: '2026년 3분기(7~9월)', days: 92, src: '2026-10-02 회사 발표', how: '를 하루 24시간에 고르게 나눈 값. 실제 거래는 장이 열린 시간에 몰리고, 주말·휴일에는 거의 없다.',
+    count: { n: 0, perDay: 29.4e6, label: '선물·옵션 계약 체결', unit: '계약', note: '거래일 하루 평균 2,940만 계약(1년 전보다 +16%, 3분기 사상 최대). 금리·주가지수·원자재·외환 선물과 옵션.' },
+  },
+  IBKR: {
+    cur: '$', period: '2026년 9월', days: 30, src: '2026-10-01 회사 월간 발표', how: '를 하루 24시간에 고르게 나눈 값. 실제 거래는 장이 열린 시간에 몰리고, 주말·휴일에는 거의 없다.',
+    count: { n: 0, perDay: 4.111e6, label: '고객 주문 체결', unit: '건', note: '거래일 하루 평균 수익 주문 411만 건(1년 전보다 +6%). 고객 계좌 558만 개.' },
+  },
+  SCHW: {
+    cur: '$', period: '2026년 3분기(7~9월)', days: 92, src: '2026-10-15 회사 실적 발표', how: '를 하루 24시간에 고르게 나눈 값. 실제 거래는 장이 열린 시간에 몰리고, 주말·휴일에는 거의 없다.',
+    count: { n: 0, perDay: 10.7e6, label: '고객 매매', unit: '건', note: '거래일 하루 평균 1,070만 건(1년 전보다 +44%).' },
+  },
+  META: {
+    cur: '$', period: '2026년 2분기(4~6월)', days: 91, src: '2026-07-29 회사 실적 발표',
+    level: { value: '36억 명', label: '하루에 쓰는 사람', note: '페이스북·인스타그램·왓츠앱·메신저 중 하나라도 하루에 쓴 사람 36억 명(2026년 6월 평균, 1년 전보다 +3%). 세계 인구(약 82억 명)의 40%대. 회사 추정치라 오차가 있다.' },
+    rev: { amount: 60.8e9, label: '광고 등 매출', note: '회사 전체 매출 608억 달러(1년 전보다 +28%). 대부분 광고.' },
+  },
+  BKNG: {
+    cur: '$', period: '2026년 2분기(4~6월)', days: 91, src: '2026년 7월 회사 실적 발표',
+    count: { n: 325e6, label: '숙박 예약', unit: '박', note: '부킹닷컴·아고다 등에서 예약된 숙박 3억 2,500만 박(1년 전보다 +5%). 1박 = 방 1개를 하룻밤.' },
+  },
+  HD: {
+    cur: '$', period: '2026 회계연도 2분기(2026년 5~7월, 13주)', days: 91, src: '2026년 8월 회사 분기 보고서',
+    count: { n: 443.2e6, label: '계산대 결제', unit: '건', note: '고객 결제 4억 4,320만 건(1년 전보다 −0.8%), 1건 평균 $92.50. 손님 수는 조금 줄고 한 번에 쓰는 돈이 늘었다.' },
+  },
+  NFLX: {
+    cur: '$', period: '2026년 상반기(1~6월)', days: 181, src: '2026년 7월 회사 시청 보고서',
+    count: { n: 97e9, label: '전 세계 시청', unit: '시간', note: '회원들이 본 시간 970억 시간 이상(1년 전보다 +2%, 반기 사상 최대). 1초마다 약 6천 시간, 즉 1초에 약 8개월 분량이 재생되는 셈.' },
+  },
+  VRSN: {
+    cur: '$', period: '2026년 2분기(4~6월)', days: 91, src: '2026-07-23 회사 발표',
+    count: { n: 12.7e6, label: '새 .com·.net 주소 등록', unit: '개', note: '새로 등록된 .com·.net 인터넷 주소 1,270만 개(1년 전 1,040만 개). 전체 등록 수는 1억 7,910만 개이고, 이미 있는 주소도 해마다 갱신료를 낸다.' },
+  },
+  KO: {
+    cur: '$', period: '2025년 기준', days: 1, src: '회사 2026년 주주총회 자료', how: '를 하루 24시간에 고르게 나눈 값.',
+    count: { n: 0, perDay: 2.2e9, label: '코카콜라 음료 마시는 횟수', unit: '잔', note: '200개 넘는 나라에서 하루 약 22억 잔(1잔 = 1회 제공량). 콜라뿐 아니라 스프라이트·환타·생수·커피 등 회사의 모든 음료. 회사 추정치.' },
+  },
 }
 
 function salesClockTiles(c: SalesClock, now: number): LiveTile[] {
@@ -3878,10 +3917,11 @@ function salesClockTiles(c: SalesClock, now: number): LiveTile[] {
   const sinceToday = (now - startOfDay) / 86400000 // 오늘 지난 비율(일)
   const money = (v: number) => `${c.cur}${Math.round(v).toLocaleString('ko-KR')}`
   const n0 = (v: number) => Math.floor(v).toLocaleString('ko-KR')
-  const head = <>{c.period} 숫자({c.src})를 그 기간 날짜 수({c.days}일)로 나눈 값. </>
+  const head = <>{c.period} 숫자({c.src}){c.how ?? `를 그 기간 날짜 수(${c.days}일)로 나눈 값.`} </>
   const tiles: LiveTile[] = []
+  if (c.level) tiles.push({ label: c.level.label, value: c.level.value, tip: <>{c.period} 숫자({c.src}). {c.level.note}</> })
   if (c.count) {
-    const perDay = c.count.n / c.days
+    const perDay = c.count.perDay ?? c.count.n / c.days
     const perSec = perDay / 86400
     const ap = c.count.approx ? '약 ' : ''
     tiles.push({
