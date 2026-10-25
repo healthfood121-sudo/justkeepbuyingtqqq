@@ -3463,6 +3463,7 @@ function rmsBagTiles(now: number): LiveTile[] {
   return [
     { label: '가죽 제품 매출: 1초', value: eur(perDay / 86400), tip: src },
     { label: '가죽 제품 매출: 오늘 0시부터', value: eur(today), tip: <>{src} 하루 약 €{(perDay / 1e6).toFixed(1)}백만.</> },
+    { label: '버킨 몇 개 값: 1초', value: `약 ${Math.round(86400 * BIRKIN30_EUR / perDay)}초에 1개`, tip: <>가죽 제품 매출을 버킨 30 유럽 정가(€{BIRKIN30_EUR.toLocaleString()})로 나눈 값. 하루 약 {Math.round(perDay / BIRKIN30_EUR / 10) * 10}개 값. 실제로 버킨만 이만큼 팔린다는 뜻이 아니다(단위일 뿐).</> },
     { label: '버킨 몇 개 값: 오늘 0시부터', value: `${Math.floor(today / BIRKIN30_EUR).toLocaleString()}개`, tip: <>
       오늘 판 가죽 제품 매출을 버킨 30 유럽 정가(€{BIRKIN30_EUR.toLocaleString()}, 2026년 1월 인상 후)로 나눈 값. 하루 약 {Math.round(perDay / BIRKIN30_EUR / 10) * 10}개 값, 약 {Math.round(86400 * BIRKIN30_EUR / perDay)}초마다 1개 값.
       <br /><b>주의:</b> 버킨이 실제로 이만큼 팔린다는 뜻이 아니다. 버킨은 매출 크기를 감으로 느끼기 위한 &lsquo;단위&rsquo;일 뿐이다. 이 매출에는 다른 가방, 지갑 같은 작은 가죽 소품, 여행 가방, 승마용품이 모두 섞여 있고, 에르메스는 버킨만의 매출이나 판매 개수를 공개하지 않는다.</> },
@@ -3816,6 +3817,7 @@ function nkeShoeTiles(now: number): LiveTile[] {
   return [
     { label: '신발 매출: 1초', value: usd(perDay / 86400), tip: src },
     { label: '신발 매출: 오늘 0시부터', value: usd(today), tip: <>{src} 하루 약 ${(perDay / 1e6).toFixed(1)}백만.</> },
+    { label: '에어포스 1 몇 켤레 값: 1초', value: `${(perDay / AF1_USD / 86400).toFixed(1)}켤레`, tip: <>신발 매출을 에어포스 1 &lsquo;07 미국 정가(${AF1_USD})로 나눈 값. 하루 약 {(Math.round(perDay / AF1_USD / 1000) / 10).toFixed(1)}만 켤레 값. 실제로 에어포스 1만 이만큼 팔린다는 뜻이 아니다(단위일 뿐).</> },
     { label: '에어포스 1 몇 켤레 값: 오늘 0시부터', value: `${Math.floor(today / AF1_USD).toLocaleString()}켤레`, tip: <>
       오늘 판 신발 매출을 에어포스 1 &lsquo;07 미국 정가(${AF1_USD})로 나눈 값. 하루 약 {(Math.round(perDay / AF1_USD / 1000) / 10).toFixed(1)}만 켤레 값, 1초에 약 {(perDay / AF1_USD / 86400).toFixed(1)}켤레 값.
       <br /><b>주의:</b> 에어포스 1이 실제로 이만큼 팔린다는 뜻이 아니다. 매출 크기를 감으로 느끼기 위한 &lsquo;단위&rsquo;일 뿐이다. 나이키는 판매 켤레 수를 공개하지 않는다. 매출의 상당 부분은 매장에 넘기는 도매가(소비자 가격보다 싸다)라서 실제 켤레 수는 이보다 많을 가능성이 크다.</> },
@@ -3944,6 +3946,12 @@ const SALES_CLOCK: Record<string, SalesClock> = {
     cur: '$', period: '2026년 2분기(4~6월)', days: 91, src: '2026년 7월 회사 분기 보고서',
     count: { n: 16.06e9, label: '담배 출하(미국)', unit: '개비', note: '말보로 등 미국 담배 출하 약 160억 개비(1년 전 165억 개비, 재고 조정 후 약 −4%). 미국 흡연 인구가 줄면서 해마다 줄고, 회사는 가격 인상으로 매출을 지킨다.' },
   },
+  SBUX: {
+    cur: '$', period: '2026 회계연도 3분기(2026년 4~6월)', days: 91, src: 'SEC 분기 보고서',
+    rev: { amount: 9.3227e9, label: '매출', note: '스타벅스 매출 93.2억 달러(1년 전보다 −1.4%). 매장 판매가 대부분이고, 마트용 원두·캔커피 등 라이선스 매출이 조금 섞여 있다.' },
+    equiv: { price: 5.45, item: '그란데 라테', unit: '잔', priceNote: '미국 그란데 카페라테 가격(약 $5.45, 2026년 5월 메뉴 조사)',
+      caveat: '음료 말고 샌드위치·베이커리·원두도 팔고, 나라·도시마다 값이 다르다. 스타벅스는 판매 잔 수를 공개하지 않는다. 라테는 매출 크기를 감으로 느끼기 위한 단위일 뿐이다.' },
+  },
   CME: {
     cur: '$', period: '2026년 3분기(7~9월)', days: 92, src: '2026-10-02 회사 발표', how: '를 하루 24시간에 고르게 나눈 값. 실제 거래는 장이 열린 시간에 몰리고, 주말·휴일에는 거의 없다.',
     count: { n: 0, perDay: 29.4e6, label: '선물·옵션 계약 체결', unit: '계약', note: '거래일 하루 평균 2,940만 계약(1년 전보다 +16%, 3분기 사상 최대). 금리·주가지수·원자재·외환 선물과 옵션.' },
@@ -4026,9 +4034,16 @@ function salesClockTiles(c: SalesClock, now: number): LiveTile[] {
     if (c.equiv) {
       const e = c.equiv
       const perDayN = perDay / e.price
+      const perSecN = perDayN / 86400
+      const secText = perSecN >= 1 ? `1초에 약 ${perSecN >= 10 ? Math.round(perSecN).toLocaleString('ko-KR') : perSecN.toFixed(1)}${e.unit}` : `약 ${(1 / perSecN).toFixed(1)}초에 1${e.unit}`
+      tiles.push({
+        label: `${e.item} 몇 ${e.unit} 값: 1초`, value: secText.replace('1초에 ', ''),
+        tip: <>{head}{c.rev.label}을 {e.priceNote}로 나눈 값. {secText}, 하루 약 {perDayN >= 1e5 ? `${(perDayN / 1e4).toFixed(1)}만` : Math.round(perDayN).toLocaleString('ko-KR')}{e.unit} 값.
+          <br /><b>주의:</b> 실제로 {e.item}만 이만큼 팔린다는 뜻이 아니다. {e.caveat}</>,
+      })
       tiles.push({
         label: `${e.item} 몇 ${e.unit} 값: 오늘 0시부터`, value: `${n0(perDay * sinceToday / e.price)}${e.unit}`,
-        tip: <>{head}오늘 {c.rev.label}을 {e.priceNote}로 나눈 값. 하루 약 {perDayN >= 1e5 ? `${(perDayN / 1e4).toFixed(1)}만` : Math.round(perDayN).toLocaleString('ko-KR')}{e.unit} 값.
+        tip: <>{head}오늘 {c.rev.label}을 {e.priceNote}로 나눈 값. {secText}, 하루 약 {perDayN >= 1e5 ? `${(perDayN / 1e4).toFixed(1)}만` : Math.round(perDayN).toLocaleString('ko-KR')}{e.unit} 값.
           <br /><b>주의:</b> 실제로 {e.item}만 이만큼 팔린다는 뜻이 아니다. {e.caveat}</>,
       })
     }
