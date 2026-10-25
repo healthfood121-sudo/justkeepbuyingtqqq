@@ -53,7 +53,8 @@ CAPEX = ["PaymentsToAcquirePropertyPlantAndEquipment", "PaymentsToAcquireProduct
 REV = ["RevenueFromContractWithCustomerExcludingAssessedTax", "Revenues", "SalesRevenueNet",
        "RevenueFromContractWithCustomerIncludingAssessedTax", "SalesRevenueGoodsNet", "RevenuesNetOfInterestExpense",
        "RegulatedAndUnregulatedOperatingRevenue", "ElectricUtilityRevenue", "OilAndGasRevenue",
-       "RevenueFromContractWithCustomerProductAndServiceExcludingAssessedTax", "RevenuesExcludingInterestAndDividends"]  # 뒤쪽 = 전력·석유·금융사
+       "RevenueFromContractWithCustomerProductAndServiceExcludingAssessedTax", "RevenuesExcludingInterestAndDividends",
+       "OperatingLeaseLeaseIncome", "RealEstateRevenueNet"]  # 뒤쪽 = 전력·석유·금융사
 NI = ["NetIncomeLoss", "NetIncomeLossAvailableToCommonStockholdersBasic", "ProfitLoss"]
 DIV = ["PaymentsOfDividendsCommonStock", "PaymentsOfDividends"]
 BUY = ["PaymentsForRepurchaseOfCommonStock"]
@@ -226,6 +227,16 @@ def year_end_close(fund: dict) -> dict:
 FCF_OK_INSURERS = {"BRKB"}  # 보험이 일부인 복합 기업(버크셔): 잉여현금흐름 유지
 
 
+def rev_max(gaap: dict, names: list, kind: str) -> dict:
+    """매출용: 기간마다 여러 매출 이름 중 가장 큰 값. kind='ytd'(10-Q 누적) 또는 'annual'(연간)."""
+    out = {}
+    for n in names:
+        d = ytd_flow(gaap, [n]) if kind == "ytd" else annual_flow(gaap, [n])
+        for k, v in d.items():
+            out[k] = max(out.get(k, v), v)
+    return out
+
+
 def latest_quarter(gaap: dict, names: list, annual: dict):
     """가장 최근 한 분기(약 3개월) 매출: 10-Q의 3개월 값, 또는 4분기 = 연간 − 9개월 누적.
     {'start','end','rev','prev'} (prev = 1년 전 같은 분기) 또는 None. 판매 시계용."""
@@ -242,8 +253,8 @@ def latest_quarter(gaap: dict, names: list, annual: dict):
             if key not in cur or it["filed"] > cur[key][1]:
                 cur[key] = (float(it["val"]), it["filed"])
         for k, v in cur.items():
-            q.setdefault(k, v[0])
-    ytd = ytd_flow(gaap, names)
+            q[k] = max(q.get(k, v[0]), v[0])  # 같은 기간이면 가장 큰 값 = 전체 매출 (리츠·은행은 일부 항목만 앞쪽 이름으로 신고)
+    ytd = rev_max(gaap, names, "ytd")
     for end, v in annual.items():  # 4분기 = 연간 − 같은 회계연도 9개월 누적
         e = pd.Timestamp(end)
         for (s9, e9), v9 in ytd.items():
@@ -339,7 +350,7 @@ def build(gaap: dict, fund: dict, sic: int | None = None) -> dict | None:
         }.items() if v is not None}
         prev_eq, prev_ic, prev_end = e, ic, end
 
-    rev = annual_flow(gaap, REV)
+    rev = rev_max(gaap, REV, "annual")
     rq = latest_quarter(gaap, REV, rev) if rev else None
     if no_fcf:
         return {"years": years, "bank": True, "sic": sic, **({"revQ": rq} if rq else {})}
