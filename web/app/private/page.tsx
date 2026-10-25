@@ -3953,7 +3953,7 @@ function revQClock(q?: { start: string; end: string; rev: number; prev?: number 
   const s = new Date(q.start), e = new Date(q.end)
   const days = Math.round((e.getTime() - s.getTime()) / 86400000) + 1
   if (days < 80 || days > 115) return null
-  if ((Date.now() - e.getTime()) / 86400000 > 200) return null // 너무 오래된 숫자는 쓰지 않음
+  if ((Date.now() - e.getTime()) / 86400000 > 240) return null // 너무 오래된 숫자는 쓰지 않음 (SEC 데이터에 최신 분기가 늦게 들어오는 종목이 있어 두 분기 전까지 허용)
   const sm = s.getUTCMonth() + 1, em = e.getUTCMonth() + 1
   const period = `${s.getUTCFullYear() === e.getUTCFullYear() ? '' : `${s.getUTCFullYear()}년 ${sm}월~`}${e.getUTCFullYear()}년 ${s.getUTCFullYear() === e.getUTCFullYear() ? `${sm}~` : ''}${em}월`
   const g = q.prev ? (q.rev / q.prev - 1) * 100 : null
