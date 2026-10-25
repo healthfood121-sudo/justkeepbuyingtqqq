@@ -51,7 +51,9 @@ CAPEX = ["PaymentsToAcquirePropertyPlantAndEquipment", "PaymentsToAcquireProduct
          "PaymentsToDevelopSoftware", "PaymentsForSoftware"]
 # 회사 고유 이름(us-gaap 밖)의 설비투자 항목은 '_custom_' 접두어로 붙여 맨 뒤 후보로 씀
 REV = ["RevenueFromContractWithCustomerExcludingAssessedTax", "Revenues", "SalesRevenueNet",
-       "RevenueFromContractWithCustomerIncludingAssessedTax", "SalesRevenueGoodsNet", "RevenuesNetOfInterestExpense"]
+       "RevenueFromContractWithCustomerIncludingAssessedTax", "SalesRevenueGoodsNet", "RevenuesNetOfInterestExpense",
+       "RegulatedAndUnregulatedOperatingRevenue", "ElectricUtilityRevenue", "OilAndGasRevenue",
+       "RevenueFromContractWithCustomerProductAndServiceExcludingAssessedTax", "RevenuesExcludingInterestAndDividends"]  # 뒤쪽 = 전력·석유·금융사
 NI = ["NetIncomeLoss", "NetIncomeLossAvailableToCommonStockholdersBasic", "ProfitLoss"]
 DIV = ["PaymentsOfDividendsCommonStock", "PaymentsOfDividends"]
 BUY = ["PaymentsForRepurchaseOfCommonStock"]
