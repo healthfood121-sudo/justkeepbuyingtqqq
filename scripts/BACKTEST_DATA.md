@@ -1030,5 +1030,6 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 - ROE 300% 초과(자기자본이 너무 작음), 투하자본이 (자기자본+차입금)의 10% 미만이거나 ROIC 300% 초과면 비움. 현금 전환율 ±5배 초과는 비움.
 - 영업이익 항목이 없으면 세전이익 + 이자비용으로 근사(나이키 등). 세율은 실효세율(0~40%), 없으면 21%(2018~)·35%.
 - `export_fundamentals.py`는 다시 돌려도 `cash`·`epsOld`와 위 지표를 지우지 않음.
+- SEC 자동 데이터로 안 되는 종목 처리(`export_fundamentals.py`): `CIK_EXTRA`(CIK가 바뀐 종목의 예전 번호 — 엑슨모빌 34088, 마시 맥레넌 62709; `export_cashflow.py`도 같은 표로 예전 공시를 합침), `TICKER_NOW`(티커 변경 — MMC→MRSH), `MANUAL_EPS`(주식 종류별로만 EPS를 공시하는 종목의 10-K 희석 EPS 직접 입력 — 비자 2013~2025, 에리 2022~2025). 컨스텔레이션·KKR·아레스는 같은 이유로 EPS가 없지만 검증된 연도별 숫자를 다 못 찾아 아직 비어 있음.
 - `cash.revQ` = 가장 최근 한 분기 매출 `{start, end, rev, prev}`(백만 달러, prev = 1년 전 같은 분기). 10-Q의 80~115일 기간 값, 또는 4분기 = 연간 − 9개월 누적. 매출 항목은 `REV` 목록 순서로 찾음(은행은 회사마다 정의가 달라 참고용). 사용처: `/private` 이익 시계 째깍째깍 칸 '매출: 1초 / 오늘 0시부터' 타일(page.tsx `revQClock`, 끝난 지 240일 넘은 분기는 안 씀). 직접 조사한 판매 숫자는 page.tsx `SALES_CLOCK`·`nkeShoeTiles`·`rmsBagTiles`에 출처와 함께 있음.
 - 에르메스는 SEC 대상이 아니라 page.tsx `RMS_FIN`(회사 발표 2014~2025: 순이익·영업이익·자기자본·재작성 순현금·조정 잉여현금흐름 2017~)으로 계산.
