@@ -3788,7 +3788,11 @@ function StockValueClock({ f, stockKey, rolling, title = '이익 시계 — 적�
           note={<>{judged && <>기본값은 4번 개별 분석의 판단(연 {judged.base}%, 범위 {judged.lo}~{judged.hi}%). </>}보수적 = 과거 5년·10년 성장률 중 낮은 값(0~15%로 제한). 과거 N년 = N년 전부터 지금까지 연평균. 5년 구간 = 지난 20년을 5년씩 끊어 본 성장률의 범위. 최근 몇 년이 부진했던 기업은 값 차이가 크다 — 어느 쪽이 앞으로에 가까운지는 직접 판단한다.</>} />}
         cur="$" anchors={anchors} monthly={monthly} last={f.lastPrice} g={g}
         sharesOut={f.shares?.count ?? null} divYield={m.divYield ?? 0} storageKey={`clock-shares-${stockKey}`}
-        liveTiles={stockKey === 'NKE' ? nkeShoeTiles : (() => { const sc = SALES_CLOCK[stockKey] ?? revQClock(f.cash?.revQ); return sc ? (now: number) => salesClockTiles(sc, now) : undefined })()}
+        liveTiles={stockKey === 'NKE' ? nkeShoeTiles : (() => {
+          const man = SALES_CLOCK[stockKey], auto = revQClock(f.cash?.revQ)
+          const list = [man, man?.rev ? null : auto].filter((x): x is SalesClock => !!x) // 직접 조사한 숫자 + (매출이 없으면) 자동 매출 시계
+          return list.length ? (now: number) => list.flatMap(sc => salesClockTiles(sc, now)) : undefined
+        })()}
         fcfAnchors={fcfAnchorsOf(f)} ocfAnchors={ocfAnchorsOf(f)}
         fcfPs={m.fcfPs ?? null}
         notes={`EPS는 SEC 공시(10-K) 회계연도 값을 마감일 기준으로 이은 근사치이고(2008년 무렵 이전은 10-K 원문의 5년 요약 표에서 읽고 겹치는 해로 맞춘 값), ${f.ttmAsOf ?? '최근'} 이후는 정한 성장률로 연장했다. 주가는 배당을 반영하지 않은 월말 종가(분할 반영). 일회성 손익이 큰 해는 선이 출렁인다. 회사 전체 숫자는 공시 유통 주식 수${f.shares ? `(${f.shares.asOf})` : ''} × 최근 1년 EPS로 계산한 근사치.`}
@@ -3874,6 +3878,18 @@ const SALES_CLOCK: Record<string, SalesClock> = {
     cur: '$', period: '2026년 2분기(4~6월)', days: 91, src: '2026-08-04 회사 실적 발표',
     rev: { amount: 1.217e9, label: '동물 진단 매출', note: '동물병원 진단 장비·검사 키트·검사 대행 등 매출 12.17억 달러(1년 전보다 +10%). 회사가 검사 건수를 공개하지 않아 매출만 보여 준다.' },
   },
+  PM: {
+    cur: '$', period: '2026년 3분기(7~9월)', days: 92, src: '2026-10-21 회사 실적 발표',
+    count: { n: 206.2e9, label: '담배 출하', unit: '개비', note: '말보로 등 일반 담배 1,580억 개비 + 가열 담배(아이코스) 415억 개 + 기타를 합친 2,062억 개(1년 전보다 +0.6%). 일반 담배는 제자리, 늘어난 건 연기 없는 제품.' },
+  },
+  WMT: {
+    cur: '$', period: '2026 회계연도', days: 7, src: '회사 실적 발표 문구', how: '를 하루 24시간에 고르게 나눈 값. 실제로는 낮 시간·주말에 몰린다.',
+    count: { n: 280e6, label: '매장·온라인 방문 손님', unit: '명', note: '19개 나라 1만 900여 개 매장과 웹사이트에 1주일에 약 2억 8천만 명이 온다(회사 발표). 같은 사람이 여러 번 오면 여러 번 센다.' },
+  },
+  COST: {
+    cur: '$', period: '2026 회계연도 4분기 말(2026년 8월)', days: 1, src: '2026년 10월 회사 실적 발표',
+    level: { value: '8,410만 명', label: '연회비 내는 회원', note: '연회비를 낸 회원 8,410만 명(1년 전보다 +3.8%), 가족 카드 포함 1억 5,040만 명. 미국·캐나다 갱신율 92.3%. 코스트코 이익의 큰 몫이 이 연회비에서 나온다.' },
+  },
   CME: {
     cur: '$', period: '2026년 3분기(7~9월)', days: 92, src: '2026-10-02 회사 발표', how: '를 하루 24시간에 고르게 나눈 값. 실제 거래는 장이 열린 시간에 몰리고, 주말·휴일에는 거의 없다.',
     count: { n: 0, perDay: 29.4e6, label: '선물·옵션 계약 체결', unit: '계약', note: '거래일 하루 평균 2,940만 계약(1년 전보다 +16%, 3분기 사상 최대). 금리·주가지수·원자재·외환 선물과 옵션.' },
@@ -3918,7 +3934,7 @@ function revQClock(q?: { start: string; end: string; rev: number; prev?: number 
   if (!q || !(q.rev > 0)) return null
   const s = new Date(q.start), e = new Date(q.end)
   const days = Math.round((e.getTime() - s.getTime()) / 86400000) + 1
-  if (days < 80 || days > 100) return null
+  if (days < 80 || days > 115) return null
   if ((Date.now() - e.getTime()) / 86400000 > 200) return null // 너무 오래된 숫자는 쓰지 않음
   const sm = s.getUTCMonth() + 1, em = e.getUTCMonth() + 1
   const period = `${s.getUTCFullYear() === e.getUTCFullYear() ? '' : `${s.getUTCFullYear()}년 ${sm}월~`}${e.getUTCFullYear()}년 ${s.getUTCFullYear() === e.getUTCFullYear() ? `${sm}~` : ''}${em}월`

@@ -234,7 +234,7 @@ def latest_quarter(gaap: dict, names: list, annual: dict):
             if it.get("form") not in ("10-Q", "10-Q/A") or not it.get("start"):
                 continue
             days = (pd.Timestamp(it["end"]) - pd.Timestamp(it["start"])).days
-            if not 80 <= days <= 100:
+            if not 80 <= days <= 115:  # 코스트코처럼 12·16주 분기도 포함
                 continue
             key = (it["start"], it["end"])
             if key not in cur or it["filed"] > cur[key][1]:
@@ -246,7 +246,7 @@ def latest_quarter(gaap: dict, names: list, annual: dict):
         e = pd.Timestamp(end)
         for (s9, e9), v9 in ytd.items():
             span = (pd.Timestamp(e9) - pd.Timestamp(s9)).days
-            if 255 <= span <= 285 and 330 <= (e - pd.Timestamp(s9)).days <= 380 and 80 <= (e - pd.Timestamp(e9)).days <= 100:
+            if 245 <= span <= 290 and 330 <= (e - pd.Timestamp(s9)).days <= 380 and 80 <= (e - pd.Timestamp(e9)).days <= 115:
                 q.setdefault(((pd.Timestamp(e9) + pd.Timedelta(days=1)).strftime("%Y-%m-%d"), end), v - v9)
                 break
     if not q:
