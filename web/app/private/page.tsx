@@ -2920,16 +2920,20 @@ type ClockProps = {
   fcfAnchors?: ClockAnchor[]                   // 주당 잉여현금흐름 기준점(있으면 '잉여현금흐름 기준' 버튼이 생김)
   ocfAnchors?: ClockAnchor[]                   // 주당 영업현금흐름 기준점
   extraLive?: (now: number, fairNow: number) => ReactNode
+  liveTiles?: (now: number) => LiveTile[]       // 째깍째깍 칸에 덧붙일 종목별 타일 (예: 가방·신발 시계)
   notes: string
   peExclude?: { from: number; to: number; label: string } // 이 기간을 뺀 PER 중간값도 눈금으로 (예: 거품기)
   fcfPs?: number | null                        // 최근 1년 주당 잉여현금흐름 (있으면 '내 몫 잉여현금' 표시)
 }
 
 // 초마다 바뀌는 숫자만 따로 다시 그림 (그래프는 그대로)
-function ClockLive({ cur, epsAt, profitAt, fairPe, shares, sharesOut, extraLive, fcfPs, dps }: {
+type LiveTile = { label: string; value: string; tip: ReactNode }
+
+function ClockLive({ cur, epsAt, profitAt, fairPe, shares, sharesOut, extraLive, liveTiles, fcfPs, dps }: {
   cur: string; epsAt: (t: number) => number | null; fairPe: number; shares: number; sharesOut: number | null
   profitAt?: (t: number) => number | null      // 내 몫 이익(회계 EPS). 없으면 epsAt
   extraLive?: (now: number, fairNow: number) => ReactNode
+  liveTiles?: (now: number) => LiveTile[]
   fcfPs?: number | null; dps?: number | null
 }) {
   const [now, setNow] = useState(() => Date.now())
@@ -2955,6 +2959,9 @@ function ClockLive({ cur, epsAt, profitAt, fairPe, shares, sharesOut, extraLive,
         {fcfPs != null && <div className={tile}><p className={lab}>내 몫 잉여현금: 1초</p><p className={big}>{money(fcfPs * shares / SEC_Y, 7)}</p></div>}
         {fcfPs != null && <div className={tile}><p className={lab}>내 몫 잉여현금: 1년</p><p className={big}>{money(fcfPs * shares, 2)}</p></div>}
         {dps != null && dps > 0 && <div className={tile}><p className={lab}>실제로 받는 배당: 1년</p><p className={big}>{money(dps * shares, 2)}</p></div>}
+        {liveTiles?.(now).map(x => (
+          <div key={x.label} className={tile}><p className={lab}><Tip text={x.tip}>{x.label}</Tip></p><p className={big}>{x.value}</p></div>
+        ))}
       </div>
       {fcfPs != null && (
         <p className="text-[11px] text-gray-500 dark:text-gray-400">
@@ -2967,7 +2974,7 @@ function ClockLive({ cur, epsAt, profitAt, fairPe, shares, sharesOut, extraLive,
   )
 }
 
-function ValueClockCore({ cur, anchors: rawAnchors, monthly, last, g, sharesOut, divYield, storageKey, extraLive, notes, peExclude, fcfPs, growthBar, fcfAnchors, ocfAnchors }: ClockProps) {
+function ValueClockCore({ cur, anchors: rawAnchors, monthly, last, g, sharesOut, divYield, storageKey, extraLive, liveTiles, notes, peExclude, fcfPs, growthBar, fcfAnchors, ocfAnchors }: ClockProps) {
   // 입력칸은 빈 값으로 시작(지우고 새로 입력 가능). 비어 있으면 1주로 계산
   const [sharesTxt, setSharesTxt] = useState('')
   const shares = Number(sharesTxt) > 0 ? Number(sharesTxt) : 1
@@ -3235,7 +3242,7 @@ function ValueClockCore({ cur, anchors: rawAnchors, monthly, last, g, sharesOut,
 
       <div className="rounded bg-blue-50/60 dark:bg-blue-950/20 p-3 space-y-2">
         <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">째깍째깍 — 버핏처럼 초 단위로 보기</p>
-        <ClockLive cur={cur} epsAt={epsAt} profitAt={profitAt} fairPe={fairPe} shares={shares} sharesOut={sharesOut} extraLive={extraLive}
+        <ClockLive cur={cur} epsAt={epsAt} profitAt={profitAt} fairPe={fairPe} shares={shares} sharesOut={sharesOut} extraLive={extraLive} liveTiles={liveTiles}
           fcfPs={fcfPs} dps={divYield > 0 ? price * divYield / 100 : null} />
         <label className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300">
           보유 주식 수
@@ -3446,6 +3453,22 @@ const BIRKIN30_EUR = 10600  // 버킨 30(토고 가죽) 유럽 정가, 2026년 1
 
 type MonthlyPrice = { last: { date: string; close: number }; rows: Array<{ d: string; c: number }> }
 
+// 에르메스 가방 시계: 최근 분기 가죽·마구 매출을 버킨 정가로 나눠 '버킨 몇 개 값'으로 바꿔 부른다 (실제 버킨 판매 개수 아님)
+function rmsBagTiles(now: number): LiveTile[] {
+  const perDay = LEATHER_Q3_2026 / 92 // 2026년 3분기(7~9월, 92일)
+  const startOfDay = new Date(new Date(now).setHours(0, 0, 0, 0)).getTime()
+  const today = perDay * (now - startOfDay) / 86400000
+  const eur = (v: number) => `€${Math.round(v).toLocaleString('ko-KR')}`
+  const src = <>버킨·켈리가 속한 가죽 제품 매출(가장 최근 발표인 2026년 3분기 7~9월 {(LEATHER_Q3_2026 / 1e8).toFixed(2)}억 유로, 전체 매출의 47%, 1년 전보다 +10.8%)을 하루·초로 나눈 값.</>
+  return [
+    { label: '가죽 제품 매출: 1초', value: eur(perDay / 86400), tip: src },
+    { label: '가죽 제품 매출: 오늘 0시부터', value: eur(today), tip: <>{src} 하루 약 €{(perDay / 1e6).toFixed(1)}백만.</> },
+    { label: '버킨 몇 개 값: 오늘 0시부터', value: `${Math.floor(today / BIRKIN30_EUR).toLocaleString()}개`, tip: <>
+      오늘 판 가죽 제품 매출을 버킨 30 유럽 정가(€{BIRKIN30_EUR.toLocaleString()}, 2026년 1월 인상 후)로 나눈 값. 하루 약 {Math.round(perDay / BIRKIN30_EUR / 10) * 10}개 값, 약 {Math.round(86400 * BIRKIN30_EUR / perDay)}초마다 1개 값.
+      <br /><b>주의:</b> 버킨이 실제로 이만큼 팔린다는 뜻이 아니다. 버킨은 매출 크기를 감으로 느끼기 위한 &lsquo;단위&rsquo;일 뿐이다. 이 매출에는 다른 가방, 지갑 같은 작은 가죽 소품, 여행 가방, 승마용품이 모두 섞여 있고, 에르메스는 버킨만의 매출이나 판매 개수를 공개하지 않는다.</> },
+  ]
+}
+
 function HermesValueClock({ g: gFactors, f }: { g: number; f: Factors }) {
   const [px, setPx] = useState<MonthlyPrice | null>(null)
   const [gUser, setGUser] = useState<number | null>(null)
@@ -3491,22 +3514,6 @@ function HermesValueClock({ g: gFactors, f }: { g: number; f: Factors }) {
           {' '}약 {(86400 / hnwiPerDay).toFixed(0)}초에 1명이다. 오늘 0시 이후 <b>{Math.floor(hnwiToday).toLocaleString()}명</b> 늘었다.
           4번 기본값은 이 증가율을 ① 판매량으로 쓴다.
         </p>
-        {(() => {
-          // 2026년 3분기(7~9월, 92일) 가죽·마구 매출 19.12억 유로(회사 발표)를 버킨 정가로 나눠 '버킨 몇 개 값'으로 바꿔 부른다 (실제 버킨 판매 개수 아님)
-          const lgPerDay = LEATHER_Q3_2026 / 92
-          const birkinsPerDay = lgPerDay / BIRKIN30_EUR
-          const today = lgPerDay * (now - startOfDay) / 86400000
-          return (
-            <p className={p}>
-              <b>가방 시계 (감으로 보기):</b> 버킨·켈리가 속한 가죽 제품 매출은 가장 최근 발표인 2026년 3분기(7~9월) {(LEATHER_Q3_2026 / 1e8).toFixed(2)}억 유로(전체 매출의 47%, 1년 전보다 +10.8%).
-              {' '}하루로 나누면 <b>약 {eur(lgPerDay / 1e6, 1)}백만</b>, 1초에 약 {eur(lgPerDay / 86400)}어치가 팔린다. 오늘 0시 이후 <b>{eur(today / 1e6, 2)}백만</b>어치.
-              {' '}이 돈을 버킨 30 유럽 정가({eur(BIRKIN30_EUR)})로 바꿔 세면 <b>하루 버킨 약 {Math.round(birkinsPerDay / 10) * 10}개 값</b>, 약 {Math.round(86400 / birkinsPerDay)}초마다 버킨 1개 값이다
-              {' '}(오늘 지금까지 버킨 약 {Math.floor(today / BIRKIN30_EUR).toLocaleString()}개 값).
-              {' '}<span className="text-gray-400 dark:text-gray-500">주의: 버킨이 실제로 이만큼 팔린다는 뜻이 아니다. 버킨은 매출 크기를 감으로 느끼기 위한 &lsquo;단위&rsquo;일 뿐이다.
-              이 매출에는 버킨·켈리 외에 다른 가방, 지갑 같은 작은 가죽 소품, 여행 가방, 승마용품이 모두 섞여 있고, 에르메스는 버킨만의 매출이나 판매 개수를 공개하지 않는다.</span>
-            </p>
-          )
-        })()}
       </div>
     )
   }
@@ -3525,7 +3532,7 @@ function HermesValueClock({ g: gFactors, f }: { g: number; f: Factors }) {
           {' '}과거 N년 = N년 전부터 지금까지 연평균, 5년 구간 = 지난 20년을 5년씩 끊어 본 성장률의 범위.
           {' '}<b>앞으로 예상이 과거보다 낮은 이유</b>는 4번 &lsquo;왜 과거보다 낮게 잡았나&rsquo;에 있다.</>} />}
           cur="€" anchors={RMS_ANCHORS} monthly={monthly} last={px.last} g={g}
-          sharesOut={RMS_SHARES} divYield={1.35} storageKey="rms-shares" extraLive={extraLive}
+          sharesOut={RMS_SHARES} divYield={1.35} storageKey="rms-shares" extraLive={extraLive} liveTiles={rmsBagTiles}
           fcfAnchors={RMS_FCF_ANCHORS} ocfAnchors={RMS_OCF_ANCHORS}
           fcfPs={rmsCash(px.last.close, px.rows).fcfPs}
           peExclude={{ from: 2019, to: 2026, label: '거품기(2019~2025) 뺀 중간값' }}
@@ -3780,7 +3787,7 @@ function StockValueClock({ f, stockKey, rolling, title = '이익 시계 — 적�
           note={<>{judged && <>기본값은 4번 개별 분석의 판단(연 {judged.base}%, 범위 {judged.lo}~{judged.hi}%). </>}보수적 = 과거 5년·10년 성장률 중 낮은 값(0~15%로 제한). 과거 N년 = N년 전부터 지금까지 연평균. 5년 구간 = 지난 20년을 5년씩 끊어 본 성장률의 범위. 최근 몇 년이 부진했던 기업은 값 차이가 크다 — 어느 쪽이 앞으로에 가까운지는 직접 판단한다.</>} />}
         cur="$" anchors={anchors} monthly={monthly} last={f.lastPrice} g={g}
         sharesOut={f.shares?.count ?? null} divYield={m.divYield ?? 0} storageKey={`clock-shares-${stockKey}`}
-        extraLive={stockKey === 'NKE' ? nkeShoeClock : undefined}
+        liveTiles={stockKey === 'NKE' ? nkeShoeTiles : undefined}
         fcfAnchors={fcfAnchorsOf(f)} ocfAnchors={ocfAnchorsOf(f)}
         fcfPs={m.fcfPs ?? null}
         notes={`EPS는 SEC 공시(10-K) 회계연도 값을 마감일 기준으로 이은 근사치이고(2008년 무렵 이전은 10-K 원문의 5년 요약 표에서 읽고 겹치는 해로 맞춘 값), ${f.ttmAsOf ?? '최근'} 이후는 정한 성장률로 연장했다. 주가는 배당을 반영하지 않은 월말 종가(분할 반영). 일회성 손익이 큰 해는 선이 출렁인다. 회사 전체 숫자는 공시 유통 주식 수${f.shares ? `(${f.shares.asOf})` : ''} × 최근 1년 EPS로 계산한 근사치.`}
@@ -3795,25 +3802,19 @@ function StockValueClock({ f, stockKey, rolling, title = '이익 시계 — 적�
 const NKE_FW_Q = 6.95e9    // 나이키 브랜드 신발 매출, 2027 회계연도 1분기(2026년 6~8월, 92일) — 2026-10-01 회사 발표
 const NKE_FW_Q_DAYS = 92
 const AF1_USD = 115        // 에어포스 1 '07 기본 모델 미국 정가 (판매처 표기 기준, 색상별로 115~125달러)
-function nkeShoeClock(now: number) {
-  const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
+function nkeShoeTiles(now: number): LiveTile[] {
   const perDay = NKE_FW_Q / NKE_FW_Q_DAYS
-  const pairsPerDay = perDay / AF1_USD
   const startOfDay = new Date(new Date(now).setHours(0, 0, 0, 0)).getTime()
   const today = perDay * (now - startOfDay) / 86400000
-  const usd = (v: number, d = 0) => `$${v.toLocaleString('ko-KR', { minimumFractionDigits: d, maximumFractionDigits: d })}`
-  return (
-    <div className="rounded bg-white/70 dark:bg-gray-900/60 p-3">
-      <p className={p}>
-        <b>신발 시계 (감으로 보기):</b> 나이키 브랜드 신발 매출은 가장 최근 발표인 2027 회계연도 1분기(2026년 6~8월) {(NKE_FW_Q / 1e8).toFixed(1)}억 달러(1년 전보다 −6%).
-        {' '}하루로 나누면 <b>약 {usd(perDay / 1e6, 1)}백만</b>, 1초에 약 {usd(perDay / 86400)}어치가 팔린다. 오늘 0시 이후 <b>{usd(today / 1e6, 2)}백만</b>어치.
-        {' '}이 돈을 에어포스 1 미국 정가({usd(AF1_USD)})로 바꿔 세면 <b>하루 약 {Math.round(pairsPerDay / 1000) * 1000 / 10000}만 켤레 값</b>, 1초에 약 {(pairsPerDay / 86400).toFixed(1)}켤레 값이다
-        {' '}(오늘 지금까지 약 {Math.floor(today / AF1_USD).toLocaleString()}켤레 값).
-        {' '}<span className="text-gray-400 dark:text-gray-500">주의: 에어포스 1이 실제로 이만큼 팔린다는 뜻이 아니다. 에어포스 1은 매출 크기를 감으로 느끼기 위한 &lsquo;단위&rsquo;일 뿐이다.
-        이 매출에는 모든 나이키 신발(조던 포함, 컨버스 제외)이 섞여 있고, 나이키는 판매 켤레 수를 공개하지 않는다. 또 매출의 상당 부분은 매장에 넘기는 도매가(소비자 가격보다 싸다)라서, 실제 켤레 수는 이 숫자보다 많을 가능성이 크다.</span>
-      </p>
-    </div>
-  )
+  const usd = (v: number) => `$${Math.round(v).toLocaleString('ko-KR')}`
+  const src = <>나이키 브랜드 신발 매출(가장 최근 발표인 2027 회계연도 1분기 = 2026년 6~8월 {(NKE_FW_Q / 1e8).toFixed(1)}억 달러, 1년 전보다 −6%)을 하루·초로 나눈 값. 조던 포함, 컨버스 제외.</>
+  return [
+    { label: '신발 매출: 1초', value: usd(perDay / 86400), tip: src },
+    { label: '신발 매출: 오늘 0시부터', value: usd(today), tip: <>{src} 하루 약 ${(perDay / 1e6).toFixed(1)}백만.</> },
+    { label: '에어포스 1 몇 켤레 값: 오늘 0시부터', value: `${Math.floor(today / AF1_USD).toLocaleString()}켤레`, tip: <>
+      오늘 판 신발 매출을 에어포스 1 &lsquo;07 미국 정가(${AF1_USD})로 나눈 값. 하루 약 {(Math.round(perDay / AF1_USD / 1000) / 10).toFixed(1)}만 켤레 값, 1초에 약 {(perDay / AF1_USD / 86400).toFixed(1)}켤레 값.
+      <br /><b>주의:</b> 에어포스 1이 실제로 이만큼 팔린다는 뜻이 아니다. 매출 크기를 감으로 느끼기 위한 &lsquo;단위&rsquo;일 뿐이다. 나이키는 판매 켤레 수를 공개하지 않는다. 매출의 상당 부분은 매장에 넘기는 도매가(소비자 가격보다 싸다)라서 실제 켤레 수는 이보다 많을 가능성이 크다.</> },
+  ]
 }
 
 function StockValueClockByKey({ stockKey, rolling, title }: { stockKey: string; rolling?: StockData; title?: string }) {
