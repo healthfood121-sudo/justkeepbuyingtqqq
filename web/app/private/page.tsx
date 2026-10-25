@@ -3795,7 +3795,8 @@ function StockValueClock({ f, stockKey, rolling, title = '이익 시계 — 적�
           const list = (man?.rev ? [man] : man && auto && man.equiv
             ? [{ ...auto, equiv: man.equiv }, { ...man, equiv: undefined }]
             : [man, auto]).filter((x): x is SalesClock => !!x && !!(x.rev || x.count || x.level))
-          return list.length ? (now: number) => list.flatMap(sc => salesClockTiles(sc, now)) : undefined
+          const all = list.flatMap(sc => [sc, ...(sc.more ?? [])])
+          return all.length ? (now: number) => all.flatMap(sc => salesClockTiles(sc, now)) : undefined
         })()}
         fcfAnchors={fcfAnchorsOf(f)} ocfAnchors={ocfAnchorsOf(f)}
         fcfPs={m.fcfPs ?? null}
@@ -3839,6 +3840,8 @@ type SalesClock = {
   rev?: { amount: number; label: string; note: string }
   count?: { n: number; label: string; unit: string; note: string; approx?: boolean; perDay?: number } // perDay: 회사가 하루 평균으로 발표한 경우
   equiv?: { price: number; item: string; unit: string; priceNote: string; caveat: string }
+  equivOnly?: boolean             // 매출 타일은 빼고 대표 상품 값 타일만 (브랜드별로 나눌 때)
+  more?: SalesClock[]             // 브랜드가 여럿인 회사: 브랜드별 시계 (예: 얌 = KFC·타코벨·피자헛)
 }
 const SALES_CLOCK: Record<string, SalesClock> = {
   V: {
@@ -3991,6 +3994,20 @@ const SALES_CLOCK: Record<string, SalesClock> = {
   YUM: {
     cur: '$', period: '2025년', days: 365, src: '회사 2025년 연차보고서',
     rev: { amount: 68e9, label: '전 세계 매장 매출', note: 'KFC 364억 + 타코벨 184억 + 피자헛 128억 달러 등, 가맹점을 포함한 전 세계 매장 매출 약 680억 달러(매장 6만 3천여 개). 얌 회사의 매출은 이 중 가맹점 로열티 등이라 훨씬 작다(분기 약 22억 달러).' },
+    more: [
+      { cur: '$', period: '2025년', days: 365, src: '회사 2025년 연차보고서', equivOnly: true,
+        rev: { amount: 36.434e9, label: 'KFC 매장 매출', note: 'KFC 전 세계 매장 매출 364억 달러.' },
+        equiv: { price: 22.99, item: 'KFC 치킨', unit: '마리', priceNote: '미국 KFC 8조각 버킷(닭 1마리 분량, 약 $22.99)',
+          caveat: '버거·사이드·음료도 섞여 있고 나라마다 값이 크게 다르다. 단위일 뿐이다.' } },
+      { cur: '$', period: '2025년', days: 365, src: '회사 2025년 연차보고서', equivOnly: true,
+        rev: { amount: 18.361e9, label: '타코벨 매장 매출', note: '타코벨 전 세계 매장 매출 184억 달러(대부분 미국).' },
+        equiv: { price: 2.19, item: '크런치 타코', unit: '개', priceNote: '미국 타코벨 크런치 타코 1개(약 $2.19)',
+          caveat: '부리토·크런치랩·음료 등이 섞여 있다. 단위일 뿐이다.' } },
+      { cur: '$', period: '2025년', days: 365, src: '회사 2025년 연차보고서', equivOnly: true,
+        rev: { amount: 12.794e9, label: '피자헛 매장 매출', note: '피자헛 전 세계 매장 매출 128억 달러.' },
+        equiv: { price: 13, item: '피자헛 라지 피자', unit: '판', priceNote: '미국 피자헛 라지 피자 1판(할인가 $10~정상가 $16, 가운데 약 $13)',
+          caveat: '사이드·음료도 섞여 있고 나라마다 값이 다르다. 단위일 뿐이다.' } },
+    ],
   },
   CME: {
     cur: '$', period: '2026년 3분기(7~9월)', days: 92, src: '2026-10-02 회사 발표', how: '를 하루 24시간에 고르게 나눈 값. 실제 거래는 장이 열린 시간에 몰리고, 주말·휴일에는 거의 없다.',
@@ -4069,8 +4086,8 @@ function salesClockTiles(c: SalesClock, now: number): LiveTile[] {
   }
   if (c.rev) {
     const perDay = c.rev.amount / c.days
-    tiles.push({ label: `${c.rev.label}: 1초`, value: money(perDay / 86400), tip: <>{head}{c.rev.note} 하루 약 {c.cur}{(perDay / 1e6).toFixed(1)}백만.</> })
-    if (!c.count) tiles.push({ label: `${c.rev.label}: 오늘 0시부터`, value: money(perDay * sinceToday), tip: <>{head}{c.rev.note}</> })
+    if (!c.equivOnly) tiles.push({ label: `${c.rev.label}: 1초`, value: money(perDay / 86400), tip: <>{head}{c.rev.note} 하루 약 {c.cur}{(perDay / 1e6).toFixed(1)}백만.</> })
+    if (!c.count && !c.equivOnly) tiles.push({ label: `${c.rev.label}: 오늘 0시부터`, value: money(perDay * sinceToday), tip: <>{head}{c.rev.note}</> })
     if (c.equiv) {
       const e = c.equiv
       const perDayN = perDay / e.price
