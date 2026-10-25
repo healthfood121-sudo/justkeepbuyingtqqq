@@ -3791,7 +3791,10 @@ function StockValueClock({ f, stockKey, rolling, title = '이익 시계 — 적�
         sharesOut={f.shares?.count ?? null} divYield={m.divYield ?? 0} storageKey={`clock-shares-${stockKey}`}
         liveTiles={stockKey === 'NKE' ? nkeShoeTiles : (() => {
           const man = SALES_CLOCK[stockKey], auto = revQClock(f.cash?.revQ)
-          const list = [man, man?.rev ? null : auto].filter((x): x is SalesClock => !!x) // 직접 조사한 숫자 + (매출이 없으면) 자동 매출 시계
+          // 직접 조사한 숫자 + 매출. 매출을 직접 적지 않았으면 SEC 자동 매출을 쓰고, 대표 상품 값(equiv)도 그 매출로 계산
+          const list = (man?.rev ? [man] : man && auto && man.equiv
+            ? [{ ...auto, equiv: man.equiv }, { ...man, equiv: undefined }]
+            : [man, auto]).filter((x): x is SalesClock => !!x && !!(x.rev || x.count || x.level))
           return list.length ? (now: number) => list.flatMap(sc => salesClockTiles(sc, now)) : undefined
         })()}
         fcfAnchors={fcfAnchorsOf(f)} ocfAnchors={ocfAnchorsOf(f)}
@@ -3890,6 +3893,8 @@ const SALES_CLOCK: Record<string, SalesClock> = {
   },
   COST: {
     cur: '$', period: '2026 회계연도 4분기 말(2026년 8월)', days: 1, src: '2026년 10월 회사 실적 발표',
+    equiv: { price: 1.5, item: '핫도그 세트', unit: '개', priceNote: '1985년부터 값을 안 올린 핫도그+음료 세트($1.50)',
+      caveat: '실제로는 식료품·가전·기름 등이 팔린다. 40년 동안 같은 값인 핫도그 세트로 매출 크기를 감으로 느끼기 위한 단위일 뿐이다.' },
     level: { value: '8,410만 명', label: '연회비 내는 회원', note: '연회비를 낸 회원 8,410만 명(1년 전보다 +3.8%), 가족 카드 포함 1억 5,040만 명. 미국·캐나다 갱신율 92.3%. 코스트코 이익의 큰 몫이 이 연회비에서 나온다.' },
   },
   GOOGL: {
@@ -3936,7 +3941,7 @@ const SALES_CLOCK: Record<string, SalesClock> = {
   },
   RCL: {
     cur: '$', period: '2026년 2분기(4~6월)', days: 91, src: '2026년 7월 회사 실적 발표',
-    count: { n: 2.4e6, label: '크루즈 승선 손님', unit: '명', note: '로열캐리비안·셀러브리티 등 크루즈에 탄 손님 약 240만 명(1년 전보다 +6%). 배는 정원보다 10% 더 차서 운항했다(탑승률 110%, 한 방에 3~4명).' },
+    count: { n: 2.4e6, label: '크루즈 승선 손님', unit: '명', note: '로열캐리비안·셀러브리티 등 크루즈에 탄 손님 약 240만 명(1년 전보다 +6%). 객실당 2명으로 센 정원보다 10% 더 탔다(3~4인 가족이 한 방을 쓰는 경우가 많아서, 탑승률 110%).' },
   },
   UAL: {
     cur: '$', period: '2026년 3분기(7~9월)', days: 92, src: '2026-10-20 회사 실적 발표',
@@ -3951,6 +3956,31 @@ const SALES_CLOCK: Record<string, SalesClock> = {
     rev: { amount: 9.3227e9, label: '매출', note: '스타벅스 매출 93.2억 달러(1년 전보다 −1.4%). 매장 판매가 대부분이고, 마트용 원두·캔커피 등 라이선스 매출이 조금 섞여 있다.' },
     equiv: { price: 5.45, item: '그란데 라테', unit: '잔', priceNote: '미국 그란데 카페라테 가격(약 $5.45, 2026년 5월 메뉴 조사)',
       caveat: '음료 말고 샌드위치·베이커리·원두도 팔고, 나라·도시마다 값이 다르다. 스타벅스는 판매 잔 수를 공개하지 않는다. 라테는 매출 크기를 감으로 느끼기 위한 단위일 뿐이다.' },
+  },
+  DLTR: {
+    cur: '$', period: '', days: 1, src: '',
+    equiv: { price: 1.25, item: '1.25달러 물건', unit: '개', priceNote: '달러트리 기본 가격($1.25)',
+      caveat: '요즘은 $3~7짜리 물건도 팔아 매출의 일부를 차지하므로 실제 개수는 이보다 적다. 회사는 판매 개수를 공개하지 않는다.' },
+  },
+  LULU: {
+    cur: '$', period: '', days: 1, src: '',
+    equiv: { price: 108, item: '얼라인 레깅스', unit: '벌', priceNote: '대표 상품 얼라인 레깅스 25인치 가격(약 $108, 판매처 표기)',
+      caveat: '레깅스 말고 상의·가방 등도 섞여 있고 할인 판매도 있다. 단위일 뿐이다.' },
+  },
+  DECK: {
+    cur: '$', period: '', days: 1, src: '',
+    equiv: { price: 155, item: '호카 클리프턴', unit: '켤레', priceNote: '호카 대표 러닝화 클리프턴 10 출시 정가($155)',
+      caveat: '호카 말고 어그(UGG) 부츠 등도 섞여 있고, 매출의 상당 부분이 매장에 넘기는 도매가라 실제 켤레 수는 이보다 많을 수 있다. 단위일 뿐이다.' },
+  },
+  MNST: {
+    cur: '$', period: '', days: 1, src: '',
+    equiv: { price: 2.68, item: '몬스터 캔', unit: '캔', priceNote: '몬스터 에너지 16온스 캔 미국 소매가(약 $2.68, 월마트 표기)',
+      caveat: '몬스터의 매출은 병입·유통 회사에 넘기는 값이라 소비자 가격보다 훨씬 싸다. 그래서 실제 팔린 캔 수는 이 숫자보다 많다. 단위일 뿐이다.' },
+  },
+  TTWO: {
+    cur: '$', period: '', days: 1, src: '',
+    equiv: { price: 70, item: '새 게임', unit: '장', priceNote: '새로 나온 게임 1장 가격($70)',
+      caveat: '매출의 큰 몫은 게임 속 아이템·추가 결제(GTA 온라인 등)와 모바일 게임에서 나온다. 단위일 뿐이다.' },
   },
   CME: {
     cur: '$', period: '2026년 3분기(7~9월)', days: 92, src: '2026-10-02 회사 발표', how: '를 하루 24시간에 고르게 나눈 값. 실제 거래는 장이 열린 시간에 몰리고, 주말·휴일에는 거의 없다.',
