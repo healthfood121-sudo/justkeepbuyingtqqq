@@ -432,6 +432,29 @@ def process(key: str, roll: dict, prices: pd.DataFrame, cik_map: dict) -> dict |
 
 def main():
     args = sys.argv[1:]
+    if args and args[0] == "--debug-eps":  # EPS를 못 가져오는 종목 원인 확인용
+        cik_map = load_cik_map()
+        for k in args[1:]:
+            cik = cik_map.get(k)
+            print("==", k, "CIK", cik, flush=True)
+            for c in CONCEPTS:
+                r = requests.get(f"https://data.sec.gov/api/xbrl/companyconcept/CIK{cik:010d}/us-gaap/{c}.json", headers=UA, timeout=30)
+                time.sleep(0.2)
+                if r.status_code != 200:
+                    print(" ", c, r.status_code); continue
+                its = [it for u, v in r.json().get("units", {}).items() for it in v]
+                forms = sorted({it.get("form") for it in its})
+                ann = [it for it in its if it.get("start") and 340 <= (pd.Timestamp(it["end"]) - pd.Timestamp(it["start"])).days <= 390]
+                print(" ", c, len(its), "forms", forms[:8], "annual", len(ann), ann[-1] if ann else None, flush=True)
+            r = requests.get(f"https://data.sec.gov/api/xbrl/companyfacts/CIK{cik:010d}.json", headers=UA, timeout=90)
+            print("  companyfacts", r.status_code, len(r.content), flush=True)
+            if r.status_code == 200:
+                f = r.json().get("facts", {})
+                print("  namespaces", list(f.keys()))
+                for ns, items in f.items():
+                    hits = [n for n in items if "PerShare" in n or "WeightedAverage" in n or n in ("NetIncomeLoss", "ProfitLoss")]
+                    print("  ", ns, hits[:25], flush=True)
+        return
     if args and args[0] == "--shares-only":  # 주식 수만 다시 채우기
         only = set(args[1:])
         keys = sorted(f.stem for f in OUT.glob("*.json") if not f.stem.startswith("_"))
