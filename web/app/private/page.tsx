@@ -3015,12 +3015,44 @@ function SalesLive({ liveTiles }: { liveTiles: (now: number) => LiveTile[] }) {
 type SegRow = { name: string; rev: number; profit: number; note: string; color: string }
 type SegClock = {
   period: string; days: number; src: string
+  cur?: string                      // 기본 $
   profitLabel: string               // 예: '순이익(추정)'
   rows: SegRow[]                    // rev·profit = 그 분기 금액(달러)
   facts: { label: string; value: string; note: string }[]   // 1회당 숫자 등
   how: string                       // 이익을 사업부별로 나눈 방법
 }
 const SEGMENTS: Record<string, SegClock> = {
+  NKE: {
+    period: '2027 회계연도 1분기(2026년 6~8월)', days: 92, src: '2026-10-01 회사 실적 발표', profitLabel: '순이익(추정)',
+    rows: [
+      { name: '북미', rev: 5.13e9, profit: 1.17e9 * 0.785, color: 'bg-blue-500', note: '매출 +2%, 지역 이익(EBIT) +3%. 러닝·축구·농구 같은 운동용 제품이 살아났다.' },
+      { name: '유럽·중동·아프리카', rev: 3.18e9, profit: 0.728e9 * 0.785, color: 'bg-indigo-400', note: '매출 −5%(신발 −11%), 지역 이익 −1%.' },
+      { name: '중화권', rev: 1.2e9, profit: 0.248e9 * 0.785, color: 'bg-red-500', note: '매출 −22%, 지역 이익 −34%. 재고를 줄이느라 일부러 덜 팔고 있다.' },
+      { name: '아시아·태평양·중남미', rev: 1.5e9, profit: 0.324e9 * 0.785, color: 'bg-amber-500', note: '매출 −2%(환율 빼면 제자리), 지역 이익 −7%.' },
+      { name: '컨버스', rev: 0.263e9, profit: 0.025e9 * 0.785, color: 'bg-gray-500', note: '척테일러 등 컨버스 브랜드. 매출 −28%, 이익 −36%.' },
+      { name: '브랜드 공통 비용', rev: 0, profit: -1.11e9 * 0.785, color: 'bg-gray-300', note: '광고·스폰서(운동선수 계약)·디자인 등 지역에 나누지 않은 나이키 브랜드 비용(1년 전보다 7% 줄임).' },
+      { name: '본사 비용', rev: 0, profit: -0.478e9 * 0.785, color: 'bg-gray-300', note: '본사 관리비·환율 손익 등.' },
+    ],
+    facts: [
+      { label: '에어포스 1 한 켤레 팔면 남는 돈', value: '약 $7', note: '에어포스 1 미국 정가($115) × 이번 분기 순이익률(약 6.4% = 순이익 7.1억 ÷ 매출 112억 달러). 도매로 팔리면 이보다 적다.' },
+      { label: '중화권 이익', value: '1년 새 −34%', note: '한때 가장 빠르게 크던 중국이 지금은 가장 크게 줄고 있다.' },
+    ],
+    how: '나이키는 지역별 이익(EBIT, 이자·세금 전 이익)을 공개한다. 지역별 EBIT에 회사 전체 순이익 ÷ 전체 EBIT 비율(7.1억 ÷ 9.07억 = 0.785)을 곱해 순이익으로 바꿨다(추정).',
+  },
+  RMS: {
+    period: '2025년', days: 365, src: '2026년 2월 회사 연간 실적 발표', cur: '€', profitLabel: '순이익(추정)',
+    rows: [
+      { name: '가죽·마구(버킨·켈리 등)', rev: 7070e6, profit: 7070e6 * 0.2827, color: 'bg-orange-500', note: '매출 +13%(환율 빼고). 공방(가죽 장인)을 늘린 만큼 판다. 실제 이익률은 다른 사업보다 높을 가능성이 크다(회사 미공개).' },
+      { name: '의류·액세서리', rev: 4525e6, profit: 4525e6 * 0.2827, color: 'bg-sky-500', note: '옷·신발·벨트·모자 등. 매출 +6%(환율 빼고).' },
+      { name: '실크·텍스타일', rev: 964e6, profit: 964e6 * 0.2827, color: 'bg-pink-400', note: '스카프·넥타이 등. 매출 +5%(환율 빼고).' },
+      { name: '기타(보석·홈·향수·시계 등)', rev: 3443e6, profit: 3443e6 * 0.2827, color: 'bg-gray-400', note: '보석·홈 +11%, 향수 −8%, 시계 −2%(환율 빼고). 회사가 금액을 따로 낸 사업만 위에 나눴다.' },
+    ],
+    facts: [
+      { label: '버킨 하나 팔면 남는 돈', value: '약 €3,000', note: '버킨 30 유럽 정가(€10,600) × 회사 전체 순이익률(28.3% = 순이익 45.2억 ÷ 매출 160억 유로). 가죽 이익률이 더 높다면 실제로는 이보다 많다.' },
+      { label: '매출 중 가죽 비중', value: '44%', note: '가방이 회사 매출의 절반 가까이를 차지한다(2026년 3분기에는 47%).' },
+    ],
+    how: '에르메스는 사업별 이익을 공개하지 않는다. 2025년 순이익(45.2억 유로, 일회성 프랑스 특별세 3.3억 유로 포함)을 매출 비중대로 나눴다(모든 사업의 이익률이 같다고 가정한 추정).',
+  },
   GOOGL: {
     period: '2026년 2분기(4~6월)', days: 91, src: '2026년 7월 회사 실적 발표·분기 보고서', profitLabel: '세후 영업이익(추정)',
     rows: [
@@ -3060,8 +3092,9 @@ function SegmentPanel({ seg, now, shares, sharesOut }: { seg: SegClock; now: num
   const secs = seg.days * 86400
   const today = (now - startOfDay) / 1000
   const mine = shares / sharesOut
-  const usd = (v: number, d = 0) => `${v < 0 ? '−' : ''}$${Math.abs(v).toLocaleString('ko-KR', { minimumFractionDigits: d, maximumFractionDigits: d })}`
+  const usd = (v: number, d = 0) => `${v < 0 ? '−' : ''}${seg.cur ?? '$'}${Math.abs(v).toLocaleString('ko-KR', { minimumFractionDigits: d, maximumFractionDigits: d })}`
   const tot = seg.rows.reduce((a, r) => a + r.profit, 0)
+  const pos = seg.rows.reduce((a, r) => a + Math.max(r.profit, 0), 0) // 비중은 흑자 사업 합계 대비 (공통 비용이 크면 합계 대비로는 100%를 넘음)
   const totRev = seg.rows.reduce((a, r) => a + r.rev, 0)
   const th = 'py-1.5 px-2 text-right font-medium'
   const td = 'py-1.5 px-2 text-right tabular-nums'
@@ -3078,7 +3111,7 @@ function SegmentPanel({ seg, now, shares, sharesOut }: { seg: SegClock; now: num
               <th className="py-1.5 px-2 text-left font-medium">사업부</th>
               <th className={th}>회사 매출 1초</th>
               <th className={th}><Tip text={<>{seg.profitLabel}. <span dangerouslySetInnerHTML={{ __html: seg.how }} /></>} right>회사 이익 1초</Tip></th>
-              <th className={th}>이익 비중</th>
+              <th className={th}><Tip text="흑자를 내는 사업들의 이익 합계를 100%로 놓은 비중. 적자 사업·공통 비용은 그만큼을 깎아 먹는다는 뜻으로 마이너스로 표시." right>이익 비중</Tip></th>
               <th className={th}>내 몫 오늘 0시부터</th>
               <th className={th}>내 몫 1년</th>
             </tr>
@@ -3092,7 +3125,7 @@ function SegmentPanel({ seg, now, shares, sharesOut }: { seg: SegClock; now: num
                 <td className={td}>
                   <span className="inline-flex items-center gap-1 justify-end">
                     <span className={`inline-block h-1.5 rounded ${r.profit < 0 ? 'bg-red-400' : r.color}`} style={{ width: `${Math.round(40 * Math.abs(r.profit) / maxP)}px` }} />
-                    {r.profit < 0 ? '−' : ''}{Math.round(100 * Math.abs(r.profit) / tot)}%
+                    {r.profit < 0 ? '−' : ''}{Math.round(100 * Math.abs(r.profit) / pos)}%
                   </span>
                 </td>
                 <td className={`${td} ${r.profit < 0 ? 'text-red-500' : ''}`}>{usd(r.profit / secs * today * mine, 5)}</td>
@@ -3103,7 +3136,7 @@ function SegmentPanel({ seg, now, shares, sharesOut }: { seg: SegClock; now: num
               <td className="py-1.5 px-2">합계</td>
               <td className={td}>{usd(totRev / secs)}</td>
               <td className={td}>{usd(tot / secs)}</td>
-              <td className={td}>100%</td>
+              <td className={td}>{Math.round(100 * tot / pos)}%</td>
               <td className={td}>{usd(tot / secs * today * mine, 5)}</td>
               <td className={td}>{usd(tot * (365.25 / seg.days) * mine, 3)}</td>
             </tr>
@@ -3120,7 +3153,7 @@ function SegmentPanel({ seg, now, shares, sharesOut }: { seg: SegClock; now: num
       </div>
       <p className="text-[11px] leading-relaxed text-gray-500 dark:text-gray-400">
         내 몫 = 회사 이익 × (내 주식 수 ÷ 전체 주식 {Math.round(sharesOut / 1e6).toLocaleString()}백만 주). 위 &lsquo;내 몫&rsquo; 칸의 보유 주식 수를 바꾸면 같이 바뀐다.
-        {' '}{seg.src} 기준 한 분기 숫자를 1년으로 늘린 값이라 계절에 따라 달라진다. <span dangerouslySetInnerHTML={{ __html: seg.how }} />
+        {' '}{seg.src} 기준.{seg.days < 300 ? ' 한 분기 숫자를 1년으로 늘린 값이라 계절에 따라 달라진다.' : ''} <span dangerouslySetInnerHTML={{ __html: seg.how }} />
       </p>
     </div>
   )
@@ -3688,7 +3721,7 @@ function HermesValueClock({ g: gFactors, f }: { g: number; f: Factors }) {
           {' '}과거 N년 = N년 전부터 지금까지 연평균, 5년 구간 = 지난 20년을 5년씩 끊어 본 성장률의 범위.
           {' '}<b>앞으로 예상이 과거보다 낮은 이유</b>는 4번 &lsquo;왜 과거보다 낮게 잡았나&rsquo;에 있다.</>} />}
           cur="€" anchors={RMS_ANCHORS} monthly={monthly} last={px.last} g={g}
-          sharesOut={RMS_SHARES} divYield={1.35} storageKey="rms-shares" extraLive={extraLive} liveTiles={rmsBagTiles}
+          sharesOut={RMS_SHARES} divYield={1.35} storageKey="rms-shares" extraLive={extraLive} liveTiles={rmsBagTiles} segments={SEGMENTS.RMS}
           fcfAnchors={RMS_FCF_ANCHORS} ocfAnchors={RMS_OCF_ANCHORS}
           fcfPs={rmsCash(px.last.close, px.rows).fcfPs}
           peExclude={{ from: 2019, to: 2026, label: '거품기(2019~2025) 뺀 중간값' }}
