@@ -433,6 +433,21 @@ def debug_payments(keys):
 
 
 def main():
+    if sys.argv[1:2] == ["--debug-rev"]:  # 최근 분기 매출이 오래된 종목: 매출 이름별 마지막 10-Q 3개월 값
+        cik_map = load_cik_map()
+        for k in sys.argv[2:]:
+            cik = cik_map.get(k)
+            r = requests.get(f"https://data.sec.gov/api/xbrl/companyfacts/CIK{cik:010d}.json", headers=UA, timeout=90)
+            g = r.json().get("facts", {}).get("us-gaap", {})
+            for n, v in g.items():
+                if "Revenue" not in n and "Sales" not in n:
+                    continue
+                its = [it for it in v.get("units", {}).get("USD", []) if it.get("start") and it.get("form", "").startswith("10-Q")
+                       and 80 <= (pd.Timestamp(it["end"]) - pd.Timestamp(it["start"])).days <= 115]
+                if its:
+                    last = max(its, key=lambda it: it["end"])
+                    print(k, n, last["start"], last["end"], last["val"], flush=True)
+        return
     if sys.argv[1:2] == ["--debug-capex"]:
         debug_payments(sys.argv[2:])
         return
