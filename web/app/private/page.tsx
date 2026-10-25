@@ -3790,7 +3790,7 @@ function StockValueClock({ f, stockKey, rolling, title = '이익 시계 — 적�
         cur="$" anchors={anchors} monthly={monthly} last={f.lastPrice} g={g}
         sharesOut={f.shares?.count ?? null} divYield={m.divYield ?? 0} storageKey={`clock-shares-${stockKey}`}
         liveTiles={stockKey === 'NKE' ? nkeShoeTiles : (() => {
-          const man = SALES_CLOCK[stockKey], auto = revQClock(f.cash?.revQ)
+          const man = SALES_CLOCK[stockKey], auto = revQClock(f.cash?.revQ, f.cash?.ttm?.ni ?? (f.cash?.years ? Object.entries(f.cash.years).sort((a, b) => +b[0] - +a[0])[0]?.[1]?.ni : null))
           // 직접 조사한 숫자 + 매출. 매출을 직접 적지 않았으면 SEC 자동 매출을 쓰고, 대표 상품 값(equiv)도 그 매출로 계산
           const list = (man?.rev ? [man] : man && auto && man.equiv
             ? [{ ...auto, equiv: man.equiv }, { ...man, equiv: undefined }]
@@ -4049,8 +4049,9 @@ const SALES_CLOCK: Record<string, SalesClock> = {
 }
 
 // 직접 조사한 숫자가 없는 종목: SEC 분기 보고서의 가장 최근 분기 매출로 매출 시계만 만든다
-function revQClock(q?: { start: string; end: string; rev: number; prev?: number }): SalesClock | null {
+function revQClock(q?: { start: string; end: string; rev: number; prev?: number }, ni?: number | null): SalesClock | null {
   if (!q || !(q.rev > 0)) return null
+  if (ni != null && ni > q.rev * 4) return null // 1년 순이익보다 작으면 매출 일부만 잡힌 것(일부 은행) — 보여 주지 않음
   const s = new Date(q.start), e = new Date(q.end)
   const days = Math.round((e.getTime() - s.getTime()) / 86400000) + 1
   if (days < 80 || days > 115) return null
