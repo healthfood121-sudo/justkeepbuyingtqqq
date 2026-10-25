@@ -3780,6 +3780,7 @@ function StockValueClock({ f, stockKey, rolling, title = '이익 시계 — 적�
           note={<>{judged && <>기본값은 4번 개별 분석의 판단(연 {judged.base}%, 범위 {judged.lo}~{judged.hi}%). </>}보수적 = 과거 5년·10년 성장률 중 낮은 값(0~15%로 제한). 과거 N년 = N년 전부터 지금까지 연평균. 5년 구간 = 지난 20년을 5년씩 끊어 본 성장률의 범위. 최근 몇 년이 부진했던 기업은 값 차이가 크다 — 어느 쪽이 앞으로에 가까운지는 직접 판단한다.</>} />}
         cur="$" anchors={anchors} monthly={monthly} last={f.lastPrice} g={g}
         sharesOut={f.shares?.count ?? null} divYield={m.divYield ?? 0} storageKey={`clock-shares-${stockKey}`}
+        extraLive={stockKey === 'NKE' ? nkeShoeClock : undefined}
         fcfAnchors={fcfAnchorsOf(f)} ocfAnchors={ocfAnchorsOf(f)}
         fcfPs={m.fcfPs ?? null}
         notes={`EPS는 SEC 공시(10-K) 회계연도 값을 마감일 기준으로 이은 근사치이고(2008년 무렵 이전은 10-K 원문의 5년 요약 표에서 읽고 겹치는 해로 맞춘 값), ${f.ttmAsOf ?? '최근'} 이후는 정한 성장률로 연장했다. 주가는 배당을 반영하지 않은 월말 종가(분할 반영). 일회성 손익이 큰 해는 선이 출렁인다. 회사 전체 숫자는 공시 유통 주식 수${f.shares ? `(${f.shares.asOf})` : ''} × 최근 1년 EPS로 계산한 근사치.`}
@@ -3787,6 +3788,31 @@ function StockValueClock({ f, stockKey, rolling, title = '이익 시계 — 적�
     </div>
     {f.cash && <CashReturnPanel cash={f.cash} m={m} />}
     </>
+  )
+}
+
+// 나이키 신발 시계: 최근 분기 나이키 브랜드 신발 매출을 에어포스 1 정가로 나눠 '몇 켤레 값'으로 바꿔 부른다 (실제 판매 켤레 수 아님)
+const NKE_FW_Q = 6.95e9    // 나이키 브랜드 신발 매출, 2027 회계연도 1분기(2026년 6~8월, 92일) — 2026-10-01 회사 발표
+const NKE_FW_Q_DAYS = 92
+const AF1_USD = 115        // 에어포스 1 '07 기본 모델 미국 정가 (판매처 표기 기준, 색상별로 115~125달러)
+function nkeShoeClock(now: number) {
+  const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
+  const perDay = NKE_FW_Q / NKE_FW_Q_DAYS
+  const pairsPerDay = perDay / AF1_USD
+  const startOfDay = new Date(new Date(now).setHours(0, 0, 0, 0)).getTime()
+  const today = perDay * (now - startOfDay) / 86400000
+  const usd = (v: number, d = 0) => `$${v.toLocaleString('ko-KR', { minimumFractionDigits: d, maximumFractionDigits: d })}`
+  return (
+    <div className="rounded bg-white/70 dark:bg-gray-900/60 p-3">
+      <p className={p}>
+        <b>신발 시계 (감으로 보기):</b> 나이키 브랜드 신발 매출은 가장 최근 발표인 2027 회계연도 1분기(2026년 6~8월) {(NKE_FW_Q / 1e8).toFixed(1)}억 달러(1년 전보다 −6%).
+        {' '}하루로 나누면 <b>약 {usd(perDay / 1e6, 1)}백만</b>, 1초에 약 {usd(perDay / 86400)}어치가 팔린다. 오늘 0시 이후 <b>{usd(today / 1e6, 2)}백만</b>어치.
+        {' '}이 돈을 에어포스 1 미국 정가({usd(AF1_USD)})로 바꿔 세면 <b>하루 약 {Math.round(pairsPerDay / 1000) * 1000 / 10000}만 켤레 값</b>, 1초에 약 {(pairsPerDay / 86400).toFixed(1)}켤레 값이다
+        {' '}(오늘 지금까지 약 {Math.floor(today / AF1_USD).toLocaleString()}켤레 값).
+        {' '}<span className="text-gray-400 dark:text-gray-500">주의: 에어포스 1이 실제로 이만큼 팔린다는 뜻이 아니다. 에어포스 1은 매출 크기를 감으로 느끼기 위한 &lsquo;단위&rsquo;일 뿐이다.
+        이 매출에는 모든 나이키 신발(조던 포함, 컨버스 제외)이 섞여 있고, 나이키는 판매 켤레 수를 공개하지 않는다. 또 매출의 상당 부분은 매장에 넘기는 도매가(소비자 가격보다 싸다)라서, 실제 켤레 수는 이 숫자보다 많을 가능성이 크다.</span>
+      </p>
+    </div>
   )
 }
 
