@@ -50,6 +50,8 @@ CAPEX = ["PaymentsToAcquirePropertyPlantAndEquipment", "PaymentsToAcquireProduct
          "PaymentsToAcquireMachineryAndEquipment", "PaymentsToAcquireOtherProductiveAssets",
          "PaymentsToDevelopSoftware", "PaymentsForSoftware"]
 # 회사 고유 이름(us-gaap 밖)의 설비투자 항목은 '_custom_' 접두어로 붙여 맨 뒤 후보로 씀
+REV = ["RevenueFromContractWithCustomerExcludingAssessedTax", "Revenues", "SalesRevenueNet",
+       "RevenueFromContractWithCustomerIncludingAssessedTax", "SalesRevenueGoodsNet", "RevenuesNetOfInterestExpense"]
 NI = ["NetIncomeLoss", "NetIncomeLossAvailableToCommonStockholdersBasic", "ProfitLoss"]
 DIV = ["PaymentsOfDividendsCommonStock", "PaymentsOfDividends"]
 BUY = ["PaymentsForRepurchaseOfCommonStock"]
@@ -222,6 +224,45 @@ def year_end_close(fund: dict) -> dict:
 FCF_OK_INSURERS = {"BRKB"}  # 보험이 일부인 복합 기업(버크셔): 잉여현금흐름 유지
 
 
+def latest_quarter(gaap: dict, names: list, annual: dict):
+    """가장 최근 한 분기(약 3개월) 매출: 10-Q의 3개월 값, 또는 4분기 = 연간 − 9개월 누적.
+    {'start','end','rev','prev'} (prev = 1년 전 같은 분기) 또는 None. 판매 시계용."""
+    q = {}
+    for n in names:
+        cur = {}
+        for it in usd_items(gaap, n):
+            if it.get("form") not in ("10-Q", "10-Q/A") or not it.get("start"):
+                continue
+            days = (pd.Timestamp(it["end"]) - pd.Timestamp(it["start"])).days
+            if not 80 <= days <= 100:
+                continue
+            key = (it["start"], it["end"])
+            if key not in cur or it["filed"] > cur[key][1]:
+                cur[key] = (float(it["val"]), it["filed"])
+        for k, v in cur.items():
+            q.setdefault(k, v[0])
+    ytd = ytd_flow(gaap, names)
+    for end, v in annual.items():  # 4분기 = 연간 − 같은 회계연도 9개월 누적
+        e = pd.Timestamp(end)
+        for (s9, e9), v9 in ytd.items():
+            span = (pd.Timestamp(e9) - pd.Timestamp(s9)).days
+            if 255 <= span <= 285 and 330 <= (e - pd.Timestamp(s9)).days <= 380 and 80 <= (e - pd.Timestamp(e9)).days <= 100:
+                q.setdefault(((pd.Timestamp(e9) + pd.Timedelta(days=1)).strftime("%Y-%m-%d"), end), v - v9)
+                break
+    if not q:
+        return None
+    (s0, e0), v0 = max(q.items(), key=lambda kv: kv[0][1])
+    if v0 <= 0:
+        return None
+    prev = None
+    pe = pd.Timestamp(e0) - pd.DateOffset(years=1)
+    for (s2, e2), v2 in q.items():
+        if abs((pd.Timestamp(e2) - pe).days) <= 10:
+            prev = v2
+            break
+    return {"start": s0, "end": e0, "rev": m(v0), **({"prev": m(prev)} if prev and prev > 0 else {})}
+
+
 def build(gaap: dict, fund: dict, sic: int | None = None) -> dict | None:
     ocf = annual_flow(gaap, OCF)
     ni = annual_flow(gaap, NI)
@@ -296,12 +337,14 @@ def build(gaap: dict, fund: dict, sic: int | None = None) -> dict | None:
         }.items() if v is not None}
         prev_eq, prev_ic, prev_end = e, ic, end
 
+    rev = annual_flow(gaap, REV)
+    rq = latest_quarter(gaap, REV, rev) if rev else None
     if no_fcf:
-        return {"years": years, "bank": True, "sic": sic}
+        return {"years": years, "bank": True, "sic": sic, **({"revQ": rq} if rq else {})}
     t_ocf = ttm(gaap, OCF, ocf)
     t_cap = ttm(gaap, capex_names, capex) if capex else None
     t_ni = ttm(gaap, NI, ni)
-    out = {"years": years, "sic": sic}
+    out = {"years": years, "sic": sic, **({"revQ": rq} if rq else {})}
     last_end = max(ocf)
     if t_ocf and t_ni and t_cap and t_ocf[1] == t_ni[1] == t_cap[1] and last_end in capex:
         out["ttm"] = {"asOf": t_ocf[1], "ocf": m(t_ocf[0]), "capex": m(t_cap[0]),
@@ -444,7 +487,7 @@ def main():
         ok += 1
         last = cash["years"][max(cash["years"], key=int)]
         print(f"[{i}/{len(keys)}] {k}: {len(cash['years'])}년{' (은행)' if cash.get('bank') else ''}, 최근 1년 FCF {(cash.get('ttm') or {}).get('fcf')}M, "
-              f"FCF수익률 {mt.get('fcfYield')}%, 이익수익률 {mt.get('earnYield')}%, ROE {last.get('roe')}%, ROIC {last.get('roic')}%",
+              f"분기 매출 {cash.get('revQ')}, FCF수익률 {mt.get('fcfYield')}%, 이익수익률 {mt.get('earnYield')}%, ROE {last.get('roe')}%, ROIC {last.get('roic')}%",
               flush=True)
     summary["stocks"] = sorted(by_key.values(), key=lambda s: s["key"])
     summary_path.write_text(json.dumps(summary, ensure_ascii=False, separators=(",", ":")))

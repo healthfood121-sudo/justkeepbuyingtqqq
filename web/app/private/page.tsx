@@ -3573,6 +3573,7 @@ type CashData = {
   years: Record<string, CashYear>
   ttm?: { asOf: string; ocf: number; capex: number; fcf: number; ni: number; annualOnly?: boolean }
   bank?: boolean   // 은행·증권·보험: 고객 돈이 현금흐름에 섞여 잉여현금흐름을 계산하지 않음
+  revQ?: { start: string; end: string; rev: number; prev?: number } // 가장 최근 한 분기 매출(백만 달러) — 판매 시계용
 }
 
 // ── 1달러당 이익·현금, 자본 수익률 ─────────────────────────────
@@ -3787,7 +3788,7 @@ function StockValueClock({ f, stockKey, rolling, title = '이익 시계 — 적�
           note={<>{judged && <>기본값은 4번 개별 분석의 판단(연 {judged.base}%, 범위 {judged.lo}~{judged.hi}%). </>}보수적 = 과거 5년·10년 성장률 중 낮은 값(0~15%로 제한). 과거 N년 = N년 전부터 지금까지 연평균. 5년 구간 = 지난 20년을 5년씩 끊어 본 성장률의 범위. 최근 몇 년이 부진했던 기업은 값 차이가 크다 — 어느 쪽이 앞으로에 가까운지는 직접 판단한다.</>} />}
         cur="$" anchors={anchors} monthly={monthly} last={f.lastPrice} g={g}
         sharesOut={f.shares?.count ?? null} divYield={m.divYield ?? 0} storageKey={`clock-shares-${stockKey}`}
-        liveTiles={stockKey === 'NKE' ? nkeShoeTiles : SALES_CLOCK[stockKey] ? (now: number) => salesClockTiles(SALES_CLOCK[stockKey], now) : undefined}
+        liveTiles={stockKey === 'NKE' ? nkeShoeTiles : (() => { const sc = SALES_CLOCK[stockKey] ?? revQClock(f.cash?.revQ); return sc ? (now: number) => salesClockTiles(sc, now) : undefined })()}
         fcfAnchors={fcfAnchorsOf(f)} ocfAnchors={ocfAnchorsOf(f)}
         fcfPs={m.fcfPs ?? null}
         notes={`EPS는 SEC 공시(10-K) 회계연도 값을 마감일 기준으로 이은 근사치이고(2008년 무렵 이전은 10-K 원문의 5년 요약 표에서 읽고 겹치는 해로 맞춘 값), ${f.ttmAsOf ?? '최근'} 이후는 정한 성장률로 연장했다. 주가는 배당을 반영하지 않은 월말 종가(분할 반영). 일회성 손익이 큰 해는 선이 출렁인다. 회사 전체 숫자는 공시 유통 주식 수${f.shares ? `(${f.shares.asOf})` : ''} × 최근 1년 EPS로 계산한 근사치.`}
@@ -3910,6 +3911,23 @@ const SALES_CLOCK: Record<string, SalesClock> = {
     cur: '$', period: '2025년 기준', days: 1, src: '회사 2026년 주주총회 자료', how: '를 하루 24시간에 고르게 나눈 값.',
     count: { n: 0, perDay: 2.2e9, label: '코카콜라 음료 마시는 횟수', unit: '잔', note: '200개 넘는 나라에서 하루 약 22억 잔(1잔 = 1회 제공량). 콜라뿐 아니라 스프라이트·환타·생수·커피 등 회사의 모든 음료. 회사 추정치.' },
   },
+}
+
+// 직접 조사한 숫자가 없는 종목: SEC 분기 보고서의 가장 최근 분기 매출로 매출 시계만 만든다
+function revQClock(q?: { start: string; end: string; rev: number; prev?: number }): SalesClock | null {
+  if (!q || !(q.rev > 0)) return null
+  const s = new Date(q.start), e = new Date(q.end)
+  const days = Math.round((e.getTime() - s.getTime()) / 86400000) + 1
+  if (days < 80 || days > 100) return null
+  if ((Date.now() - e.getTime()) / 86400000 > 200) return null // 너무 오래된 숫자는 쓰지 않음
+  const sm = s.getUTCMonth() + 1, em = e.getUTCMonth() + 1
+  const period = `${s.getUTCFullYear() === e.getUTCFullYear() ? '' : `${s.getUTCFullYear()}년 ${sm}월~`}${e.getUTCFullYear()}년 ${s.getUTCFullYear() === e.getUTCFullYear() ? `${sm}~` : ''}${em}월`
+  const g = q.prev ? (q.rev / q.prev - 1) * 100 : null
+  const amt = q.rev >= 1000 ? `${(q.rev / 100).toFixed(0)}억 달러` : `${(q.rev / 100).toFixed(1)}억 달러`
+  return {
+    cur: '$', period, days, src: 'SEC 분기·연간 보고서',
+    rev: { amount: q.rev * 1e6, label: '매출', note: `가장 최근 분기 매출 ${amt}${g != null ? `(1년 전 같은 분기보다 ${g >= 0 ? '+' : ''}${g.toFixed(1)}%)` : ''}. 회사가 판매 개수·건수를 따로 공개하지 않거나 아직 조사하지 않은 종목이라 매출만 보여 준다.` },
+  }
 }
 
 function salesClockTiles(c: SalesClock, now: number): LiveTile[] {
