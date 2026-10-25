@@ -2974,6 +2974,25 @@ function ClockLive({ cur, epsAt, profitAt, fairPe, shares, sharesOut, extraLive,
   )
 }
 
+// 적자라 이익 시계를 못 그릴 때도 판매 시계 타일은 보여 줌
+function SalesLive({ liveTiles }: { liveTiles: (now: number) => LiveTile[] }) {
+  const [now, setNow] = useState(() => Date.now())
+  useEffect(() => { const id = setInterval(() => setNow(Date.now()), 100); return () => clearInterval(id) }, [])
+  return (
+    <div className="rounded-lg bg-gray-50 dark:bg-gray-900/40 p-3 space-y-2">
+      <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">째깍째깍 — 초 단위로 보는 판매</p>
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        {liveTiles(now).map(x => (
+          <div key={x.label} className="rounded bg-white/70 dark:bg-gray-900/60 px-3 py-2.5">
+            <p className="text-[11px] text-gray-500 dark:text-gray-400"><Tip text={x.tip}>{x.label}</Tip></p>
+            <p className="text-sm font-semibold tabular-nums text-gray-900 dark:text-white">{x.value}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function ValueClockCore({ cur, anchors: rawAnchors, monthly, last, g, sharesOut, divYield, storageKey, extraLive, liveTiles, notes, peExclude, fcfPs, growthBar, fcfAnchors, ocfAnchors }: ClockProps) {
   // 입력칸은 빈 값으로 시작(지우고 새로 입력 가능). 비어 있으면 1주로 계산
   const [sharesTxt, setSharesTxt] = useState('')
@@ -3138,6 +3157,7 @@ function ValueClockCore({ cur, anchors: rawAnchors, monthly, last, g, sharesOut,
       <div className="space-y-2">
         {toggles}
         <p className={p}>최근 1년 {eL}{isFcf ? '이' : '가'} {isFcf ? '마이너스(설비투자가 영업현금보다 큼)' : '적자'}라 적정가 선을 그릴 수 없다.{isFcf ? ' 이익(EPS) 기준으로 돌아가 본다.' : ''}</p>
+        {liveTiles && <SalesLive liveTiles={liveTiles} />}
       </div>
     )
   }
