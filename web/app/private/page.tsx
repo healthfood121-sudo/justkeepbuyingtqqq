@@ -2921,6 +2921,7 @@ type ClockProps = {
   ocfAnchors?: ClockAnchor[]                   // 주당 영업현금흐름 기준점
   extraLive?: (now: number, fairNow: number) => ReactNode
   liveTiles?: (now: number) => LiveTile[]       // 째깍째깍 칸에 덧붙일 종목별 타일 (예: 가방·신발 시계)
+  segments?: SegClock                          // 사업부별 시계 (애플·구글)
   notes: string
   peExclude?: { from: number; to: number; label: string } // 이 기간을 뺀 PER 중간값도 눈금으로 (예: 거품기)
   fcfPs?: number | null                        // 최근 1년 주당 잉여현금흐름 (있으면 '내 몫 잉여현금' 표시)
@@ -2929,11 +2930,12 @@ type ClockProps = {
 // 초마다 바뀌는 숫자만 따로 다시 그림 (그래프는 그대로)
 type LiveTile = { label: string; value: string; tip: ReactNode }
 
-function ClockLive({ cur, epsAt, profitAt, fairPe, shares, sharesOut, extraLive, liveTiles, fcfPs, dps }: {
+function ClockLive({ cur, epsAt, profitAt, fairPe, shares, sharesOut, extraLive, liveTiles, segments, fcfPs, dps }: {
   cur: string; epsAt: (t: number) => number | null; fairPe: number; shares: number; sharesOut: number | null
   profitAt?: (t: number) => number | null      // 내 몫 이익(회계 EPS). 없으면 epsAt
   extraLive?: (now: number, fairNow: number) => ReactNode
   liveTiles?: (now: number) => LiveTile[]
+  segments?: SegClock
   fcfPs?: number | null; dps?: number | null
 }) {
   const [now, setNow] = useState(() => Date.now())
@@ -2969,6 +2971,7 @@ function ClockLive({ cur, epsAt, profitAt, fairPe, shares, sharesOut, extraLive,
           배당은 그중 회사가 실제로 나눠 준 돈이고, 나머지는 자사주 매입·현금 보유·인수에 쓰인다.
         </p>
       )}
+      {segments && sharesOut ? <SegmentPanel seg={segments} now={now} shares={shares} sharesOut={sharesOut} /> : null}
       {extraLive?.(now, fairNow)}
     </>
   )
@@ -2993,7 +2996,122 @@ function SalesLive({ liveTiles }: { liveTiles: (now: number) => LiveTile[] }) {
   )
 }
 
-function ValueClockCore({ cur, anchors: rawAnchors, monthly, last, g, sharesOut, divYield, storageKey, extraLive, liveTiles, notes, peExclude, fcfPs, growthBar, fcfAnchors, ocfAnchors }: ClockProps) {
+// ── 사업부별 시계: 회사 발표 분기 숫자를 사업부별로 나눠 1초 매출·이익과 내 몫을 보여 줌 (애플·구글) ──
+type SegRow = { name: string; rev: number; profit: number; note: string; color: string }
+type SegClock = {
+  period: string; days: number; src: string
+  profitLabel: string               // 예: '순이익(추정)'
+  rows: SegRow[]                    // rev·profit = 그 분기 금액(달러)
+  facts: { label: string; value: string; note: string }[]   // 1회당 숫자 등
+  how: string                       // 이익을 사업부별로 나눈 방법
+}
+const SEGMENTS: Record<string, SegClock> = {
+  GOOGL: {
+    period: '2026년 2분기(4~6월)', days: 91, src: '2026년 7월 회사 실적 발표·분기 보고서', profitLabel: '세후 영업이익(추정)',
+    rows: [
+      { name: '검색 광고', rev: 63.3e9, profit: 26.46e9 * 0.83, color: 'bg-blue-500', note: '구글 검색·지도 등에 붙는 광고(1년 전보다 +17%).' },
+      { name: '유튜브 광고', rev: 11.1e9, profit: 4.64e9 * 0.83, color: 'bg-red-500', note: '유튜브 영상·쇼츠 광고(+13%). 유튜브 프리미엄 구독료는 아래 구독에 들어간다.' },
+      { name: '다른 사이트 광고(네트워크)', rev: 7.2e9, profit: 3.01e9 * 0.83, color: 'bg-amber-500', note: '구글이 다른 웹사이트·앱에 대신 붙여 주는 광고(−1%). 대부분을 사이트 주인에게 나눠 줘서 이익이 적다(그래도 매출 비중으로 나눠 실제보다 크게 잡혔을 수 있다).' },
+      { name: '구독·플레이스토어·기기', rev: 12.9e9, profit: 5.39e9 * 0.83, color: 'bg-green-500', note: '유튜브 프리미엄·구글 원·플레이스토어 수수료·픽셀폰 등(+15%).' },
+      { name: '클라우드', rev: 24.8e9, profit: 8.8e9 * 0.83, color: 'bg-sky-500', note: '기업에 서버·AI를 빌려주는 사업(매출 +82%, 영업이익률 35.6%). 회사가 이익을 따로 공개한다.' },
+      { name: '기타 사업(웨이모 등)', rev: 0.382e9, profit: -1.8e9 * 0.83, color: 'bg-gray-400', note: '자율주행 웨이모·생명과학 등. 아직 적자(분기 약 18억 달러 손실).' },
+      { name: '회사 공통 비용', rev: 0, profit: -5.7e9 * 0.83, color: 'bg-gray-300', note: 'AI 연구(구글 딥마인드)·본사 비용 등 사업부에 나누지 않은 비용.' },
+    ],
+    facts: [
+      { label: '검색 1번당 매출', value: '약 5.1센트', note: '검색 광고 1초 매출(약 $8,050) ÷ 1초 검색 수(약 15.9만 회, 회사 발표 연 5조 회 기준). 검색 수는 2024년 기준이라 실제 1번당 값은 이보다 조금 작다.' },
+      { label: '검색 1번당 이익', value: '약 1.7센트', note: '검색 광고 세후 이익(추정)을 같은 검색 수로 나눈 값.' },
+    ],
+    how: '이익은 회사가 &lsquo;구글 서비스(검색·유튜브·네트워크·구독)&rsquo;, &lsquo;클라우드&rsquo;, &lsquo;기타 사업&rsquo;으로만 공개한다. 구글 서비스 영업이익(395억 달러)을 네 사업에 매출 비중대로 나눴고(추정), 세금 17%를 뺐다. 이번 분기 회계상 순이익(1,120억 달러)에는 보유 주식 평가 이익 980억 달러가 섞여 있어 쓰지 않았다.',
+  },
+  AAPL: {
+    period: '2026 회계연도 3분기(2026년 4~6월)', days: 91, src: '2026년 7월 회사 실적 발표·분기 보고서', profitLabel: '순이익(추정)',
+    rows: [
+      { name: '아이폰', rev: 54.25e9, profit: 11.83e9, color: 'bg-gray-700', note: '매출 +22%, 6월 분기 사상 최대.' },
+      { name: '맥', rev: 10.35e9, profit: 2.26e9, color: 'bg-blue-500', note: '매출 +29%.' },
+      { name: '아이패드', rev: 6.2e9, profit: 1.35e9, color: 'bg-indigo-400', note: '매출 −6%.' },
+      { name: '웨어러블·홈(워치·에어팟 등)', rev: 7.9e9, profit: 1.72e9, color: 'bg-pink-400', note: '매출 +6.5%.' },
+      { name: '서비스(앱스토어·아이클라우드 등)', rev: 30.7e9, profit: 12.64e9, color: 'bg-emerald-500', note: '매출 +12%. 매출총이익률 75.6%로 제품(40.1%)의 약 2배라, 매출은 28%인데 이익은 42%를 차지한다.' },
+    ],
+    facts: [
+      { label: '기기 1대당 서비스 매출', value: '1년 약 $49', note: '서비스 매출(분기 307억 달러 × 4) ÷ 사용 중인 애플 기기 25억 대(2026년 1월 회사 발표).' },
+      { label: '서비스 이익 비중', value: '매출 28% → 이익 42%', note: '서비스는 적게 팔아도 많이 남는다. 애플 주가가 비싸게 거래되는 큰 이유.' },
+    ],
+    how: '애플은 사업별 순이익을 공개하지 않는다. 회사 순이익(298억 달러)을 제품·서비스의 매출총이익(제품 315억·서비스 232억 달러) 비중으로 나누고, 제품 몫은 다시 아이폰·맥·아이패드·웨어러블 매출 비중으로 나눴다(추정).',
+  },
+}
+
+function SegmentPanel({ seg, now, shares, sharesOut }: { seg: SegClock; now: number; shares: number; sharesOut: number }) {
+  const startOfDay = new Date(new Date(now).setHours(0, 0, 0, 0)).getTime()
+  const secs = seg.days * 86400
+  const today = (now - startOfDay) / 1000
+  const mine = shares / sharesOut
+  const usd = (v: number, d = 0) => `${v < 0 ? '−' : ''}$${Math.abs(v).toLocaleString('ko-KR', { minimumFractionDigits: d, maximumFractionDigits: d })}`
+  const tot = seg.rows.reduce((a, r) => a + r.profit, 0)
+  const totRev = seg.rows.reduce((a, r) => a + r.rev, 0)
+  const th = 'py-1.5 px-2 text-right font-medium'
+  const td = 'py-1.5 px-2 text-right tabular-nums'
+  const maxP = Math.max(...seg.rows.map(r => Math.abs(r.profit)))
+  return (
+    <div className="rounded bg-white/70 dark:bg-gray-900/60 p-3 space-y-2">
+      <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">
+        사업부별 시계 — 어디서 얼마를 벌고, 내 몫은 얼마인가 <span className="font-normal text-gray-500">({seg.period}, 보유 {shares.toLocaleString()}주 기준)</span>
+      </p>
+      <div className="overflow-x-auto">
+        <table className="w-full text-xs">
+          <thead className="text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
+            <tr>
+              <th className="py-1.5 px-2 text-left font-medium">사업부</th>
+              <th className={th}>회사 매출 1초</th>
+              <th className={th}><Tip text={<>{seg.profitLabel}. <span dangerouslySetInnerHTML={{ __html: seg.how }} /></>} right>회사 이익 1초</Tip></th>
+              <th className={th}>이익 비중</th>
+              <th className={th}>내 몫 오늘 0시부터</th>
+              <th className={th}>내 몫 1년</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+            {seg.rows.map(r => (
+              <tr key={r.name}>
+                <td className="py-1.5 px-2"><span className={`inline-block w-2 h-2 rounded-full mr-1.5 ${r.color}`} /><Tip text={r.note}>{r.name}</Tip></td>
+                <td className={td}>{r.rev ? usd(r.rev / secs) : '—'}</td>
+                <td className={`${td} ${r.profit < 0 ? 'text-red-500' : ''}`}>{usd(r.profit / secs)}</td>
+                <td className={td}>
+                  <span className="inline-flex items-center gap-1 justify-end">
+                    <span className={`inline-block h-1.5 rounded ${r.profit < 0 ? 'bg-red-400' : r.color}`} style={{ width: `${Math.round(40 * Math.abs(r.profit) / maxP)}px` }} />
+                    {r.profit < 0 ? '−' : ''}{Math.round(100 * Math.abs(r.profit) / tot)}%
+                  </span>
+                </td>
+                <td className={`${td} ${r.profit < 0 ? 'text-red-500' : ''}`}>{usd(r.profit / secs * today * mine, 5)}</td>
+                <td className={`${td} ${r.profit < 0 ? 'text-red-500' : ''}`}>{usd(r.profit * (365.25 / seg.days) * mine, 3)}</td>
+              </tr>
+            ))}
+            <tr className="font-semibold">
+              <td className="py-1.5 px-2">합계</td>
+              <td className={td}>{usd(totRev / secs)}</td>
+              <td className={td}>{usd(tot / secs)}</td>
+              <td className={td}>100%</td>
+              <td className={td}>{usd(tot / secs * today * mine, 5)}</td>
+              <td className={td}>{usd(tot * (365.25 / seg.days) * mine, 3)}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        {seg.facts.map(f => (
+          <div key={f.label} className="rounded bg-gray-50 dark:bg-gray-800/60 px-3 py-2">
+            <p className="text-[11px] text-gray-500 dark:text-gray-400"><Tip text={f.note}>{f.label}</Tip></p>
+            <p className="text-sm font-semibold tabular-nums text-gray-900 dark:text-white">{f.value}</p>
+          </div>
+        ))}
+      </div>
+      <p className="text-[11px] leading-relaxed text-gray-500 dark:text-gray-400">
+        내 몫 = 회사 이익 × (내 주식 수 ÷ 전체 주식 {Math.round(sharesOut / 1e6).toLocaleString()}백만 주). 아래 &lsquo;보유 주식 수&rsquo;를 바꾸면 같이 바뀐다.
+        {' '}{seg.src} 기준 한 분기 숫자를 1년으로 늘린 값이라 계절에 따라 달라진다. <span dangerouslySetInnerHTML={{ __html: seg.how }} />
+      </p>
+    </div>
+  )
+}
+
+function ValueClockCore({ cur, anchors: rawAnchors, monthly, last, g, sharesOut, divYield, storageKey, extraLive, liveTiles, segments, notes, peExclude, fcfPs, growthBar, fcfAnchors, ocfAnchors }: ClockProps) {
   // 입력칸은 빈 값으로 시작(지우고 새로 입력 가능). 비어 있으면 1주로 계산
   const [sharesTxt, setSharesTxt] = useState('')
   const shares = Number(sharesTxt) > 0 ? Number(sharesTxt) : 1
@@ -3262,7 +3380,7 @@ function ValueClockCore({ cur, anchors: rawAnchors, monthly, last, g, sharesOut,
 
       <div className="rounded bg-blue-50/60 dark:bg-blue-950/20 p-3 space-y-2">
         <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">째깍째깍 — 버핏처럼 초 단위로 보기</p>
-        <ClockLive cur={cur} epsAt={epsAt} profitAt={profitAt} fairPe={fairPe} shares={shares} sharesOut={sharesOut} extraLive={extraLive} liveTiles={liveTiles}
+        <ClockLive cur={cur} epsAt={epsAt} profitAt={profitAt} fairPe={fairPe} shares={shares} sharesOut={sharesOut} extraLive={extraLive} liveTiles={liveTiles} segments={segments}
           fcfPs={fcfPs} dps={divYield > 0 ? price * divYield / 100 : null} />
         <label className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300">
           보유 주식 수
@@ -3820,6 +3938,7 @@ function StockValueClock({ f, stockKey, rolling, title = '이익 시계 — 적�
         })()}
         fcfAnchors={fcfAnchorsOf(f)} ocfAnchors={ocfAnchorsOf(f)}
         fcfPs={m.fcfPs ?? null}
+        segments={SEGMENTS[stockKey]}
         notes={`EPS는 SEC 공시(10-K) 회계연도 값을 마감일 기준으로 이은 근사치이고(2008년 무렵 이전은 10-K 원문의 5년 요약 표에서 읽고 겹치는 해로 맞춘 값), ${f.ttmAsOf ?? '최근'} 이후는 정한 성장률로 연장했다. 주가는 배당을 반영하지 않은 월말 종가(분할 반영). 일회성 손익이 큰 해는 선이 출렁인다. 회사 전체 숫자는 공시 유통 주식 수${f.shares ? `(${f.shares.asOf})` : ''} × 최근 1년 EPS로 계산한 근사치.`}
       />
     </div>
