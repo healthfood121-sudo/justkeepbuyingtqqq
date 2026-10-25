@@ -35,6 +35,7 @@ import requests
 ROOT = Path(__file__).parent.parent
 OUT = ROOT / "web" / "public" / "data" / "fundamentals"
 UA = {"User-Agent": "justkeepbuyingtqqq research research@example.com"}
+CIK_EXTRA = {"XOM": [34088], "MMC": [62709]}  # export_fundamentals.py와 같음: CIK가 바뀐 종목의 예전 번호
 
 ANNUAL_FORMS = ("10-K", "10-K/A", "10-KT", "20-F", "40-F")
 
@@ -476,7 +477,7 @@ def main():
         path = OUT / f"{k}.json"
         fund = json.loads(path.read_text())
         t = (fund.get("ticker") or k).replace(".", "-").upper()
-        cik = cik_map.get(t) or cik_map.get(t.replace("-", "."))
+        cik = cik_map.get(t) or cik_map.get(t.replace("-", ".")) or (CIK_EXTRA.get(k) or [None])[0]
         if not cik:
             print(f"[{i}/{len(keys)}] {k}: CIK 없음")
             continue
@@ -488,6 +489,17 @@ def main():
                 continue
             facts = r.json().get("facts", {})
             gaap = dict(facts.get("us-gaap", {}))
+            for c in CIK_EXTRA.get(k, []):  # CIK가 바뀐 종목: 예전 CIK 공시를 합침
+                if c == cik:
+                    continue
+                r2 = requests.get(f"https://data.sec.gov/api/xbrl/companyfacts/CIK{c:010d}.json", headers=UA, timeout=90)
+                time.sleep(0.12)
+                if r2.status_code == 200:
+                    for n, v in r2.json().get("facts", {}).get("us-gaap", {}).items():
+                        cur = gaap.setdefault(n, {"units": {}})
+                        for u, items in v.get("units", {}).items():
+                            cur.setdefault("units", {}).setdefault(u, [])
+                            cur["units"][u] = items + cur["units"][u]
             for ns, items in facts.items():  # 회사 고유 설비투자 항목
                 if ns in ("us-gaap", "dei", "srt", "ifrs-full", "invest"):
                     continue

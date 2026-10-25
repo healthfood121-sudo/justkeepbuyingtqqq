@@ -32,6 +32,14 @@ OUT.mkdir(parents=True, exist_ok=True)
 UA = {"User-Agent": "justkeepbuyingtqqq research research@example.com"}
 CONCEPTS = ["EarningsPerShareDiluted", "EarningsPerShareBasicAndDiluted", "EarningsPerShareBasic"]
 SKIP = {"QQQ", "QLD", "TQQQ", "RMS"}  # ETF·비미국 종목
+# SEC 회사 번호(CIK)가 바뀐 종목: 예전 번호에 과거 공시가 있음 (엑슨모빌 2026년 지주회사 전환, 마시 맥레넌 티커 변경)
+CIK_EXTRA = {"XOM": [34088], "MMC": [62709]}
+# 주식 종류(A·B·C)별로만 EPS를 공시해 SEC 자동 데이터에 EPS가 없는 종목: 회사 10-K의 희석 EPS(현재 주식 수 기준)
+MANUAL_EPS = {
+    "V": {"2013-09-30": 1.90, "2014-09-30": 2.16, "2015-09-30": 2.58, "2016-09-30": 2.48, "2017-09-30": 2.80,
+          "2018-09-30": 4.42, "2019-09-30": 5.32, "2020-09-30": 4.89, "2021-09-30": 5.63, "2022-09-30": 7.00,
+          "2023-09-30": 8.28, "2024-09-30": 9.73, "2025-09-30": 10.20},  # 클래스 A 희석 EPS (2015년 4:1 분할 반영)
+}
 TODAY = pd.Timestamp.today().normalize()
 LAST_FULL = TODAY.year - 1
 
@@ -281,7 +289,7 @@ def shares_info(cik: int, key: str, ticker: str = ""):
 
 def process(key: str, roll: dict, prices: pd.DataFrame, cik_map: dict) -> dict | None:
     yf_t = roll["ticker"].replace(".", "-")
-    cik = cik_map.get(yf_t.upper()) or cik_map.get(yf_t.upper().replace("-", "."))
+    cik = cik_map.get(yf_t.upper()) or cik_map.get(yf_t.upper().replace("-", ".")) or (CIK_EXTRA.get(key) or [None])[0]
     if cik is None:
         print(f"  {key}: CIK 없음")
         return None
@@ -297,6 +305,12 @@ def process(key: str, roll: dict, prices: pd.DataFrame, cik_map: dict) -> dict |
         return None
 
     eps_raw = fetch_eps(cik, allow_fill=key != "BRKB")  # 버크셔: 공시 순이익이 보유 주식 평가로 크게 흔들려 채우지 않음
+    for c in CIK_EXTRA.get(key, []):  # 예전 CIK의 과거 EPS로 빈 해 채우기
+        if c != cik:
+            for e, v in fetch_eps(c, allow_fill=False).items():
+                eps_raw.setdefault(e, v)
+    for e, v in MANUAL_EPS.get(key, {}).items():  # 공시일을 최근으로 둬서 분할 보정을 다시 하지 않음
+        eps_raw.setdefault(e, (v, "2026-01-01", "manual"))
     if not eps_raw:
         print(f"  {key}: EPS 없음")
         return None
