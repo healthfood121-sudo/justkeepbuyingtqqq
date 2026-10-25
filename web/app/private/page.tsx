@@ -3193,19 +3193,21 @@ const SEGMENTS: Record<string, SegClock> = {
     how: '나이키는 지역별 이익(EBIT, 이자·세금 전 이익)을 공개한다. 지역별 EBIT에 회사 전체 순이익 ÷ 전체 EBIT 비율(7.1억 ÷ 9.07억 = 0.785)을 곱해 순이익으로 바꿨다(추정).',
   },
   RMS: {
-    period: '2025년', days: 365, src: '2026년 2월 회사 연간 실적 발표', cur: '€', profitLabel: '순이익(추정)',
+    period: '2026년 상반기(1~6월)', days: 181, src: '2026-07-29 회사 반기 실적 발표', cur: '€', profitLabel: '세후 영업이익(추정)',
     rows: [
-      { name: '가죽·마구(버킨·켈리 등)', rev: 7070e6, profit: 7070e6 * 0.2827, color: 'bg-orange-500', units: { n: 7070e6 / 10600, unit: '개', what: '버킨 30(€10,600)', value: true }, note: '매출 +13%(환율 빼고). 공방(가죽 장인)을 늘린 만큼 판다. 실제 이익률은 다른 사업보다 높을 가능성이 크다(회사 미공개).' },
-      { name: '의류·액세서리', rev: 4525e6, profit: 4525e6 * 0.2827, color: 'bg-sky-500', note: '옷·신발·벨트·모자 등. 매출 +6%(환율 빼고).' },
-      { name: '실크·텍스타일', rev: 964e6, profit: 964e6 * 0.2827, color: 'bg-pink-400', note: '스카프·넥타이 등. 매출 +5%(환율 빼고).' },
-      { name: '기타(보석·홈·향수·시계 등)', rev: 3443e6, profit: 3443e6 * 0.2827, color: 'bg-gray-400', note: '보석·홈 +11%, 향수 −8%, 시계 −2%(환율 빼고). 회사가 금액을 따로 낸 사업만 위에 나눴다.' },
+      { name: '가죽·마구(버킨·켈리 등)', rev: 3761e6, profit: 3761e6 * 0.41 * 0.72, color: 'bg-orange-500', units: { n: 3761e6 / 10600, unit: '개', what: '버킨 30(€10,600)', value: true }, note: '매출 +9.8%(환율 빼고), 회사 매출의 46%. 공방(가죽 장인)을 늘린 만큼 판다. 실제 이익률은 다른 사업보다 높을 가능성이 크다(회사 미공개).' },
+      { name: '의류·액세서리', rev: 2198e6, profit: 2198e6 * 0.41 * 0.72, color: 'bg-sky-500', note: '옷·신발·벨트·모자 등. 매출 +2.0%(환율 빼고, 유로로는 −2.5%).' },
+      { name: '실크·텍스타일', rev: 469e6, profit: 469e6 * 0.41 * 0.72, color: 'bg-pink-400', note: '스카프·넥타이 등. 매출 +9.7%(환율 빼고).' },
+      { name: '향수·뷰티', rev: 233e6, profit: 233e6 * 0.41 * 0.72, color: 'bg-violet-400', note: '향수·립스틱 등(약 2.3억 유로, 외부 정리 자료 기준).' },
+      { name: '보석·홈·시계 등', rev: 1502e6, profit: 1502e6 * 0.41 * 0.72, color: 'bg-gray-400', note: '보석·그릇·가구·시계·기타(전체에서 위 사업을 뺀 나머지).' },
     ],
     facts: [
-      { label: '버킨 하나 팔면 남는 돈', value: '약 €3,000', note: '버킨 30 유럽 정가(€10,600) × 회사 전체 순이익률(28.3% = 순이익 45.2억 ÷ 매출 160억 유로). 가죽 이익률이 더 높다면 실제로는 이보다 많다.' },
-      { label: '매출 중 가죽 비중', value: '44%', note: '가방이 회사 매출의 절반 가까이를 차지한다(2026년 3분기에는 47%).' },
+      { label: '버킨 하나 팔면 남는 돈', value: '약 €3,100', note: '버킨 30 유럽 정가(€10,600) × 세후 영업이익률(약 29.5% = 영업이익률 41% × (1 − 세율 약 28%)). 가죽 이익률이 더 높다면 실제로는 이보다 많다.' },
+      { label: '영업이익률', value: '41.0%', note: '2026년 상반기. 매출 100유로 중 41유로가 영업이익으로 남는다(세계 명품 회사 중 최고 수준).' },
     ],
-    how: '에르메스는 사업별 이익을 공개하지 않는다. 2025년 순이익(45.2억 유로, 일회성 프랑스 특별세 3.3억 유로 포함)을 매출 비중대로 나눴다(모든 사업의 이익률이 같다고 가정한 추정).',
+    how: '에르메스는 사업별 이익을 공개하지 않는다(지역별 영업이익도 확인하지 못했다). 상반기 영업이익(매출의 41.0%)에서 세금 약 28%를 뺀 이익을 사업별 매출 비중대로 나눴다(모든 사업의 이익률이 같다고 가정한 추정). 그래서 &lsquo;이익 비중&rsquo;은 사실상 매출 비중과 같다.',
   },
+
   GOOGL: {
     period: '2026년 2분기(4~6월)', days: 91, src: '2026년 7월 회사 실적 발표·분기 보고서', profitLabel: '세후 영업이익(추정)',
     rows: [
@@ -3240,6 +3242,27 @@ const SEGMENTS: Record<string, SegClock> = {
   },
 }
 
+// 스크롤 상자 안에서도 잘리지 않는 툴팁: 화면 기준(fixed)으로 띄움
+function FTip({ children, text }: { children: ReactNode; text: ReactNode }) {
+  const [pos, setPos] = useState<{ x: number; y: number; up: boolean } | null>(null)
+  const show = (e: React.MouseEvent | React.FocusEvent) => {
+    const r = (e.currentTarget as HTMLElement).getBoundingClientRect()
+    const up = r.top > window.innerHeight / 2
+    setPos({ x: Math.max(8, Math.min(r.left, window.innerWidth - 272)), y: up ? window.innerHeight - r.top + 6 : r.bottom + 6, up })
+  }
+  return (
+    <span className="inline-flex items-center cursor-help" tabIndex={0} onMouseEnter={show} onMouseLeave={() => setPos(null)} onFocus={show} onBlur={() => setPos(null)}>
+      {children}<span className="ml-0.5 text-gray-400">?</span>
+      {pos && (
+        <span style={{ position: 'fixed', left: pos.x, ...(pos.up ? { bottom: pos.y } : { top: pos.y }) }}
+          className="z-[100] w-64 max-w-[calc(100vw-1rem)] pointer-events-none whitespace-normal text-left font-normal bg-gray-900 text-white text-xs rounded-md px-2.5 py-2 shadow-lg leading-relaxed">
+          {text}
+        </span>
+      )}
+    </span>
+  )
+}
+
 function SegmentPanel({ seg, now, shares, sharesOut }: { seg: SegClock; now: number; shares: number; sharesOut: number }) {
   const startOfDay = new Date(new Date(now).setHours(0, 0, 0, 0)).getTime()
   const secs = seg.days * 86400
@@ -3249,8 +3272,8 @@ function SegmentPanel({ seg, now, shares, sharesOut }: { seg: SegClock; now: num
   const tot = seg.rows.reduce((a, r) => a + r.profit, 0)
   const pos = seg.rows.reduce((a, r) => a + Math.max(r.profit, 0), 0) // 비중은 흑자 사업 합계 대비 (공통 비용이 크면 합계 대비로는 100%를 넘음)
   const totRev = seg.rows.reduce((a, r) => a + r.rev, 0)
-  const th = 'py-1.5 px-2 text-right font-medium whitespace-nowrap'
-  const td = 'py-1.5 px-2 text-right tabular-nums whitespace-nowrap'
+  const th = 'py-1.5 px-1.5 text-right font-medium whitespace-nowrap'
+  const td = 'py-1.5 px-1.5 text-right tabular-nums whitespace-nowrap'
   const maxP = Math.max(...seg.rows.map(r => Math.abs(r.profit)))
   const hasUnits = seg.rows.some(r => r.units)
   const fmtU = (v: number, unit: string) => {
@@ -3270,17 +3293,18 @@ function SegmentPanel({ seg, now, shares, sharesOut }: { seg: SegClock; now: num
             <tr>
               <th className="py-1.5 px-2 text-left font-medium">사업부</th>
               <th className={th}>매출 1초</th>
-              <th className={th}><Tip text={<>{seg.profitLabel}. <span dangerouslySetInnerHTML={{ __html: seg.how }} /></>} right>이익 1초</Tip></th>
-              <th className={th}><Tip text="흑자를 내는 사업들의 이익 합계를 100%로 놓은 비중. 적자 사업·공통 비용은 그만큼을 깎아 먹는다는 뜻으로 마이너스로 표시." right>이익 비중</Tip></th>
+              <th className={th}><FTip text={<>{seg.profitLabel}. 사업부별로 나눈 방법은 표 아래 설명 참고.</>}>이익 1초</FTip></th>
+              <th className={th}><FTip text="흑자를 내는 사업들의 이익 합계를 100%로 놓은 비중. 적자 사업·공통 비용은 그만큼을 깎아 먹는다는 뜻으로 마이너스로 표시.">이익 비중</FTip></th>
               <th className={th}>내 몫 오늘</th>
               <th className={th}>내 몫 1년</th>
-              {hasUnits && <th className={th}><Tip text="사업부 판매량 × 내 주식 비율. 내가 그 사업의 주인이라면 1년 동안 내 몫으로 팔리는 양. &lsquo;값&rsquo;이 붙은 것은 매출을 대표 상품 가격으로 나눈 값이라 실제 개수와 다르다." right>내 몫 판매 1초</Tip></th>}{hasUnits && <th className={th}>내 몫 판매 오늘</th>}
+              {hasUnits && <th className={th}><FTip text="사업부 판매량 × 내 주식 비율. 내가 그 사업의 주인이라면 1년 동안 내 몫으로 팔리는 양. ‘값’이 붙은 것은 매출을 대표 상품 가격으로 나눈 값이라 실제 개수와 다르다.">내 몫 판매 1초</FTip></th>}{hasUnits && <th className={th}>내 몫 판매 오늘</th>}
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-            {seg.rows.map(r => (
+            {seg.rows.map((r, ri) => {
+              return (
               <tr key={r.name}>
-                <td className="py-1.5 px-2 whitespace-nowrap"><span className={`inline-block w-2 h-2 rounded-full mr-1.5 ${r.color}`} /><Tip text={r.note}>{r.name}</Tip></td>
+                <td className="py-1.5 px-2 whitespace-nowrap"><span className={`inline-block w-2 h-2 rounded-full mr-1.5 ${r.color}`} /><FTip text={r.note}>{r.name}</FTip></td>
                 <td className={td}>{r.rev ? usd(r.rev / secs) : '—'}</td>
                 <td className={`${td} ${r.profit < 0 ? 'text-red-500' : ''}`}>{usd(r.profit / secs)}</td>
                 <td className={td}>
@@ -3298,12 +3322,13 @@ function SegmentPanel({ seg, now, shares, sharesOut }: { seg: SegClock; now: num
                   const perYear = perSec * SEC_Y
                   const tipU = `${u.what} 기준${u.value ? ' (매출 ÷ 가격 = 몇 개 값)' : ''}. 회사 전체 1년 약 ${Math.round(u.n * 365.25 / seg.days).toLocaleString('ko-KR')}${u.unit}. 내 몫 1년 ${fmtU(perYear, u.unit)}${perYear < 1 && perYear > 0 ? ` (약 ${Math.round(1 / perYear).toLocaleString('ko-KR')}년에 1${u.unit})` : ''}.`
                   return <>
-                    <td className={td}><Tip text={tipU} right>{fmtTiny(perSec)}{u.unit}</Tip></td>
+                    <td className={td}><FTip text={tipU}>{fmtTiny(perSec)}{u.unit}</FTip></td>
                     <td className={td}>{fmtTiny(perSec * today, 6)}{u.unit}</td>
                   </>
                 })()}
               </tr>
-            ))}
+              )
+            })}
             <tr className="font-semibold">
               <td className="py-1.5 px-2">합계</td>
               <td className={td}>{usd(totRev / secs)}</td>
@@ -3319,14 +3344,14 @@ function SegmentPanel({ seg, now, shares, sharesOut }: { seg: SegClock; now: num
       <div className="grid grid-cols-2 gap-2">
         {seg.facts.map(f => (
           <div key={f.label} className="rounded bg-gray-50 dark:bg-gray-800/60 px-3 py-2">
-            <p className="text-[11px] text-gray-500 dark:text-gray-400"><Tip text={f.note}>{f.label}</Tip></p>
+            <p className="text-[11px] text-gray-500 dark:text-gray-400"><FTip text={f.note}>{f.label}</FTip></p>
             <p className="text-sm font-semibold tabular-nums text-gray-900 dark:text-white">{f.value}</p>
           </div>
         ))}
       </div>
       <p className="text-[11px] leading-relaxed text-gray-500 dark:text-gray-400">
         내 몫 = 회사 이익 × (내 주식 수 ÷ 전체 주식 {Math.round(sharesOut / 1e6).toLocaleString()}백만 주). 위 &lsquo;내 몫&rsquo; 칸의 보유 주식 수를 바꾸면 같이 바뀐다.
-        {' '}{seg.src} 기준.{seg.days < 300 ? ' 한 분기 숫자를 1년으로 늘린 값이라 계절에 따라 달라진다.' : ''} <span dangerouslySetInnerHTML={{ __html: seg.how }} />
+        {' '}{seg.src} 기준.{seg.days < 300 ? ' 이 기간 숫자를 1년으로 늘린 값이라 계절에 따라 달라진다.' : ''} <span dangerouslySetInnerHTML={{ __html: seg.how }} />
       </p>
     </div>
   )
