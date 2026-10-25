@@ -2928,7 +2928,7 @@ type ClockProps = {
 }
 
 // 초마다 바뀌는 숫자만 따로 다시 그림 (그래프는 그대로)
-type LiveTile = { label: string; value: string; tip: ReactNode }
+type LiveTile = { label: string; value: string; tip: ReactNode; rate?: { perSec: number; what: string; unit: string } } // rate: 내 몫 칸에 '내 주식 몫으로 팔린 개수'를 보여 주는 데 씀
 
 function ClockLive({ cur, epsAt, profitAt, fairPe, shares, sharesOut, extraLive, liveTiles, segments, fcfPs, dps, sharesInput }: {
   cur: string; epsAt: (t: number) => number | null; fairPe: number; shares: number; sharesOut: number | null
@@ -2978,6 +2978,17 @@ function ClockLive({ cur, epsAt, profitAt, fairPe, shares, sharesOut, extraLive,
           {fcfPs != null && <div className={tile}><p className={lab}>내 몫 잉여현금: 1초</p><p className={big}>{money(fcfPs * shares / SEC_Y, 7)}</p></div>}
           {fcfPs != null && <div className={tile}><p className={lab}>내 몫 잉여현금: 1년</p><p className={big}>{money(fcfPs * shares, 2)}</p></div>}
           {dps != null && dps > 0 && <div className={tile}><p className={lab}>실제로 받는 배당: 1년</p><p className={big}>{money(dps * shares, 2)}</p></div>}
+          {sharesOut ? liveTiles?.(now).filter(x => x.rate).map(x => {
+            const r = x.rate!
+            const perYear = r.perSec * SEC_Y * shares / sharesOut
+            const fmtN = (v: number) => v >= 100 ? Math.round(v).toLocaleString('ko-KR') : v >= 1 ? v.toFixed(1) : v >= 0.01 ? v.toFixed(3) : v.toPrecision(2)
+            return (
+              <div key={'mine-' + x.label} className={tile}>
+                <p className={lab}><Tip text={<>회사 전체 {r.what}({r.unit}) 숫자 × 내 주식 비율({shares.toLocaleString()} ÷ {Math.round(sharesOut / 1e6).toLocaleString()}백만 주). 내가 이 사업의 그만큼을 가진 주인이라고 보면, 1년 동안 내 몫으로 팔리는 양이다. {x.label.includes('값') ? '매출을 대표 상품 가격으로 나눈 값이라 실제 판매 개수와는 다르다.' : ''}</>}>내 몫 {r.what}: 1년</Tip></p>
+                <p className={big}>{fmtN(perYear)}{r.unit}{perYear < 1 && perYear > 0 ? <span className="text-xs font-normal text-gray-500"> (약 {perYear > 0.0001 ? Math.round(1 / perYear).toLocaleString() : '많은'}년에 1{r.unit})</span> : null}</p>
+              </div>
+            )
+          }) : null}
         </div>
         {fcfPs != null && (
           <p className="text-[11px] text-gray-500 dark:text-gray-400">
@@ -3651,7 +3662,7 @@ function rmsBagTiles(now: number): LiveTile[] {
   return [
     { label: '가죽 제품 매출: 1초', value: eur(perDay / 86400), tip: src },
     { label: '가죽 제품 매출: 오늘 0시부터', value: eur(today), tip: <>{src} 하루 약 €{(perDay / 1e6).toFixed(1)}백만.</> },
-    { label: '버킨 몇 개 값: 1초', value: `약 ${Math.round(86400 * BIRKIN30_EUR / perDay)}초에 1개`, tip: <>가죽 제품 매출을 버킨 30 유럽 정가(€{BIRKIN30_EUR.toLocaleString()})로 나눈 값. 하루 약 {Math.round(perDay / BIRKIN30_EUR / 10) * 10}개 값. 실제로 버킨만 이만큼 팔린다는 뜻이 아니다(단위일 뿐).</> },
+    { rate: { perSec: perDay / BIRKIN30_EUR / 86400, what: '버킨', unit: '개' }, label: '버킨 몇 개 값: 1초', value: `약 ${Math.round(86400 * BIRKIN30_EUR / perDay)}초에 1개`, tip: <>가죽 제품 매출을 버킨 30 유럽 정가(€{BIRKIN30_EUR.toLocaleString()})로 나눈 값. 하루 약 {Math.round(perDay / BIRKIN30_EUR / 10) * 10}개 값. 실제로 버킨만 이만큼 팔린다는 뜻이 아니다(단위일 뿐).</> },
     { label: '버킨 몇 개 값: 오늘 0시부터', value: `${Math.floor(today / BIRKIN30_EUR).toLocaleString()}개`, tip: <>
       오늘 판 가죽 제품 매출을 버킨 30 유럽 정가(€{BIRKIN30_EUR.toLocaleString()}, 2026년 1월 인상 후)로 나눈 값. 하루 약 {Math.round(perDay / BIRKIN30_EUR / 10) * 10}개 값, 약 {Math.round(86400 * BIRKIN30_EUR / perDay)}초마다 1개 값.
       <br /><b>주의:</b> 버킨이 실제로 이만큼 팔린다는 뜻이 아니다. 버킨은 매출 크기를 감으로 느끼기 위한 &lsquo;단위&rsquo;일 뿐이다. 이 매출에는 다른 가방, 지갑 같은 작은 가죽 소품, 여행 가방, 승마용품이 모두 섞여 있고, 에르메스는 버킨만의 매출이나 판매 개수를 공개하지 않는다.</> },
@@ -4010,7 +4021,7 @@ function nkeShoeTiles(now: number): LiveTile[] {
   return [
     { label: '신발 매출: 1초', value: usd(perDay / 86400), tip: src },
     { label: '신발 매출: 오늘 0시부터', value: usd(today), tip: <>{src} 하루 약 ${(perDay / 1e6).toFixed(1)}백만.</> },
-    { label: '에어포스 1 몇 켤레 값: 1초', value: `${(perDay / AF1_USD / 86400).toFixed(1)}켤레`, tip: <>신발 매출을 에어포스 1 &lsquo;07 미국 정가(${AF1_USD})로 나눈 값. 하루 약 {(Math.round(perDay / AF1_USD / 1000) / 10).toFixed(1)}만 켤레 값. 실제로 에어포스 1만 이만큼 팔린다는 뜻이 아니다(단위일 뿐).</> },
+    { rate: { perSec: perDay / AF1_USD / 86400, what: '에어포스 1', unit: '켤레' }, label: '에어포스 1 몇 켤레 값: 1초', value: `${(perDay / AF1_USD / 86400).toFixed(1)}켤레`, tip: <>신발 매출을 에어포스 1 &lsquo;07 미국 정가(${AF1_USD})로 나눈 값. 하루 약 {(Math.round(perDay / AF1_USD / 1000) / 10).toFixed(1)}만 켤레 값. 실제로 에어포스 1만 이만큼 팔린다는 뜻이 아니다(단위일 뿐).</> },
     { label: '에어포스 1 몇 켤레 값: 오늘 0시부터', value: `${Math.floor(today / AF1_USD).toLocaleString()}켤레`, tip: <>
       오늘 판 신발 매출을 에어포스 1 &lsquo;07 미국 정가(${AF1_USD})로 나눈 값. 하루 약 {(Math.round(perDay / AF1_USD / 1000) / 10).toFixed(1)}만 켤레 값, 1초에 약 {(perDay / AF1_USD / 86400).toFixed(1)}켤레 값.
       <br /><b>주의:</b> 에어포스 1이 실제로 이만큼 팔린다는 뜻이 아니다. 매출 크기를 감으로 느끼기 위한 &lsquo;단위&rsquo;일 뿐이다. 나이키는 판매 켤레 수를 공개하지 않는다. 매출의 상당 부분은 매장에 넘기는 도매가(소비자 가격보다 싸다)라서 실제 켤레 수는 이보다 많을 가능성이 크다.</> },
@@ -4268,6 +4279,7 @@ function salesClockTiles(c: SalesClock, now: number): LiveTile[] {
     const perSec = perDay / 86400
     const ap = c.count.approx ? '약 ' : ''
     tiles.push({
+      rate: { perSec, what: c.count.label, unit: c.count.unit },
       label: `${c.count.label}: 1초`,
       value: perSec >= 1 ? `${ap}${Math.round(perSec).toLocaleString('ko-KR')}${c.count.unit}` : `${ap}${(1 / perSec).toFixed(1)}초에 1${c.count.unit}`,
       tip: <>{head}{c.count.note} 하루 약 {Math.round(perDay).toLocaleString('ko-KR')}{c.count.unit}. <b>회사가 공개한 실제 횟수</b>를 고르게 나눈 것이라, 실제로는 시간대·요일마다 다르다.</>,
@@ -4284,6 +4296,7 @@ function salesClockTiles(c: SalesClock, now: number): LiveTile[] {
       const perSecN = perDayN / 86400
       const secText = perSecN >= 1 ? `1초에 약 ${perSecN >= 10 ? Math.round(perSecN).toLocaleString('ko-KR') : perSecN.toFixed(1)}${e.unit}` : `약 ${(1 / perSecN).toFixed(1)}초에 1${e.unit}`
       tiles.push({
+        rate: { perSec: perSecN, what: e.item, unit: e.unit },
         label: `${e.item} 몇 ${e.unit} 값: 1초`, value: secText.replace('1초에 ', ''),
         tip: <>{head}{c.rev.label}을 {e.priceNote}로 나눈 값. {secText}, 하루 약 {perDayN >= 1e5 ? `${(perDayN / 1e4).toFixed(1)}만` : Math.round(perDayN).toLocaleString('ko-KR')}{e.unit} 값.
           <br /><b>주의:</b> 실제로 {e.item}만 이만큼 팔린다는 뜻이 아니다. {e.caveat}</>,
