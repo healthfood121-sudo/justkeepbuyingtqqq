@@ -1359,7 +1359,7 @@ function diffColor(v: number) {
   return 'text-red-500 dark:text-red-400'
 }
 
-type SortKey = 'fullCagr' | 'cagrMn' | 'cagrMed' | 'cagrMx' | 'diffMn' | 'diffMed' | 'diffMx' | 'roe' | 'roic' | 'score' | 'fairGap' | 'fcfGap' | 'ocfGap' | 'relScore'
+type SortKey = 'fullCagr' | 'cagrMn' | 'cagrMed' | 'cagrMx' | 'diffMn' | 'diffMed' | 'diffMx' | 'roe' | 'roic' | 'score' | 'fairGap' | 'fcfGap' | 'ocfGap' | 'relScore' | 'gradeN' | 'groupN'
 type SubKey = 'moat' | 'pricing' | 'profit' | 'growth' | 'durability'
 const SUB_LABEL: Record<SubKey, string> = { moat: '경쟁우위', pricing: '가격결정력', profit: '수익성', growth: '성장성', durability: '지속가능성' }
 type FairInfo = {
@@ -1448,7 +1448,8 @@ const TIP_GROUP = <>지금 상태에 따른 분류(종목 아이디어 탭 기�
   <br />주가만 쉬는 중: 이익은 괜찮은데 PER이 평소보다 낮거나 주가가 많이 빠짐
   <br />이익 주춤: 이익이 고점보다 15% 넘게 낮음
   <br />꾸준·적당: A등급, 이익 성장, PER이 평소 수준
-  <br />지금은 비쌈: PER이 평소보다 30% 넘게 높음</>
+  <br />지금은 비쌈: PER이 평소보다 30% 넘게 높음
+  <br />정렬(↓): 주가만 쉬는 중 → 꾸준·적당 → 지금은 비쌈 → 이익 주춤 → 분류 없음</>
 
 // ── 종목 비교 표 필터 ─────────────────────────────────────────
 type FilterSnap = {
@@ -1775,10 +1776,13 @@ function OverviewTable({
     const rel = reliabilityOf([
       { k: '이익', gap: fairGap, warn: fairWarn }, { k: '잉여현금', gap: fcfGap, warn: fcfWarn }, { k: '영업현금', gap: ocfGap, warn: ocfWarn },
     ])
-    return { fairWarn, i, s, fullCagr, cagrMn, cagrMed, cagrMx, diffMn, diffMed, diffMx, completedCount, neg10, last10, lastPct, rest: !!qi?.rest, epsG10: qi?.epsG10 ?? null, roe, roic, score, q: qi?.q, group: qi?.group ?? null, fairGap, fcfGap, fcfWarn, ocfGap, ocfWarn, rel, relScore: rel?.score ?? null }
+    return { fairWarn, i, s, fullCagr, cagrMn, cagrMed, cagrMx, diffMn, diffMed, diffMx, completedCount, neg10, last10, lastPct, rest: !!qi?.rest, epsG10: qi?.epsG10 ?? null, roe, roic, score, q: qi?.q, group: qi?.group ?? null, fairGap, fcfGap, fcfWarn, ocfGap, ocfWarn, rel, relScore: rel?.score ?? null,
+      // 정렬용: 등급 A>B>C>D, 상황 주가만 쉬는 중>꾸준·적당>지금은 비쌈>이익 주춤
+      gradeN: qi?.q ? ({ A: 4, B: 3, C: 2, D: 1 } as const)[qi.q.grade] : null,
+      groupN: qi?.group ? ({ pause: 4, steady: 3, pricey: 2, stumble: 1 } as const)[qi.group] : null }
   }).sort((a, b) => {
-    const va = a[sortKey] ?? -Infinity
-    const vb = b[sortKey] ?? -Infinity
+    const va = a[sortKey], vb = b[sortKey]
+    if (va == null || vb == null) return va == null && vb == null ? 0 : va == null ? 1 : -1 // 빈 값은 방향과 상관없이 맨 아래
     return sortDir === 'desc' ? vb - va : va - vb
   })
 
@@ -2121,10 +2125,10 @@ function OverviewTable({
             <SortTh col="diffMn"  className="text-right py-1 px-2 font-medium border-l-2 border-gray-200 dark:border-gray-700">최소</SortTh>
             <SortTh col="diffMed" className="text-right py-1 pr-2 font-medium">중간</SortTh>
             <SortTh col="diffMx"  className="text-right py-1 pr-2 font-medium">최대</SortTh>
-            <th className="text-center py-1 px-2 font-medium whitespace-nowrap border-l-2 border-gray-200 dark:border-gray-700"><Tip text={TIP_GRADE} below>등급</Tip></th>
+            <SortTh col="gradeN" className="text-center py-1 px-2 font-medium border-l-2 border-gray-200 dark:border-gray-700"><Tip text={TIP_GRADE} below>등급</Tip></SortTh>
             <SortTh col="score" className="text-right py-1 pr-2 font-medium"><Tip text={TIP_SCORE} below>사업성</Tip></SortTh>
             <SortTh col="roic" className="text-right py-1 pr-2 font-medium"><Tip text={TIP_ROIC} below right>ROIC</Tip></SortTh>
-            <th className="text-left py-1 font-medium whitespace-nowrap"><Tip text={TIP_GROUP} below right>상황</Tip></th>
+            <SortTh col="groupN" className="text-left py-1 font-medium"><Tip text={TIP_GROUP} below right>상황</Tip></SortTh>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
