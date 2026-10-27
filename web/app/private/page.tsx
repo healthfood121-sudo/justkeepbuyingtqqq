@@ -7943,6 +7943,33 @@ type Fundamentals = {
 const DEEP_LAB = 'text-xs font-semibold text-amber-700 dark:text-amber-400'
 const DEEP_P = 'text-xs leading-relaxed text-gray-700 dark:text-gray-200'
 
+const MOAT_STATE = {
+  intact: { label: '해자 그대로', cls: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' },
+  weakening: { label: '해자 약해지는 중', cls: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' },
+  broken: { label: '해자 흔들림', cls: 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-300' },
+} as const
+
+// 사업성 평가 카드 안: 해자 점검(근거·위협·판정) — 개별 분석(deep.ts)에서
+function DeepMoatBlock({ d }: { d: DeepInsight }) {
+  if (!d.moat) return null
+  return (
+    <div className="rounded bg-amber-50/70 dark:bg-amber-950/20 p-3 space-y-2">
+      <p className={DEEP_LAB}>해자는 남아 있나 — 개별 분석 ({d.asOf})</p>
+      <div className="grid sm:grid-cols-2 gap-3">
+        <div>
+          <p className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 mb-0.5">경쟁우위(해자)의 근거</p>
+          <ul className={`${DEEP_P} list-disc pl-4 space-y-1`}>{d.moat.sources.map((t, i) => <li key={i}>{t}</li>)}</ul>
+        </div>
+        <div>
+          <p className="text-[11px] font-semibold text-red-500 mb-0.5">해자를 위협하는 것</p>
+          <ul className={`${DEEP_P} list-disc pl-4 space-y-1`}>{d.moat.threats.map((t, i) => <li key={i}>{t}</li>)}</ul>
+        </div>
+      </div>
+      <p className={DEEP_P}><b>판정 — {MOAT_STATE[d.moat.state].label}:</b> {d.moat.why}</p>
+    </div>
+  )
+}
+
 function DeepNow({ d }: { d: DeepInsight }) {
   return (
     <div className="rounded bg-amber-50/70 dark:bg-amber-950/20 p-3 space-y-1">
@@ -8025,14 +8052,20 @@ function QualityCard({ stockKey }: { stockKey: string }) {
   const [q, setQ] = useState<Quality | null | undefined>(undefined)
   useEffect(() => { loadQuality().then(all => setQ(all[stockKey] ?? null)) }, [stockKey])
   if (!q) return null
+  const d = DEEP_INSIGHTS[stockKey]
   return (
     <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-3">
       <div className="flex flex-wrap items-center gap-2">
         <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">사업성 평가</h4>
         <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${gradeColor(q.grade)}`}>{q.grade} · {GRADE_LABEL[q.grade]}</span>
+        {d?.moat && <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${MOAT_STATE[d.moat.state].cls}`}>{MOAT_STATE[d.moat.state].label}</span>}
         <span className="text-xs text-gray-400">점수 합 {qualityScore(q)} / 25</span>
       </div>
       <p className="text-xs text-gray-600 dark:text-gray-300"><b>사업:</b> {q.business}</p>
+      {d?.biz && (<>
+        <p className="text-xs leading-relaxed text-gray-600 dark:text-gray-300"><b>무슨 회사:</b> {d.biz.what}</p>
+        <p className="text-xs leading-relaxed text-gray-600 dark:text-gray-300"><b>돈 버는 방법:</b> {d.biz.money}</p>
+      </>)}
       <div className="grid sm:grid-cols-2 gap-x-6 gap-y-1">
         <ScoreBar label="경쟁우위(해자)" v={q.moat} />
         <ScoreBar label="가격결정력" v={q.pricing} />
@@ -8042,6 +8075,7 @@ function QualityCard({ stockKey }: { stockKey: string }) {
       </div>
       <p className="text-xs text-gray-600 dark:text-gray-300"><b className="text-emerald-600 dark:text-emerald-400">강점:</b> {q.strength}</p>
       <p className="text-xs text-gray-600 dark:text-gray-300"><b className="text-red-500">위험:</b> {q.risk}</p>
+      {d && <DeepMoatBlock d={d} />}
       <p className="text-[11px] text-gray-400 dark:text-gray-500">
         버핏·멍거식 기준(오래가는 경쟁우위, 가격을 올려도 고객이 떠나지 않는 힘, 높은 이익률, 성장 여력, 10년 뒤에도 건재할지)으로 Claude가 매긴 정성 평가다. 2026년 10월 기준이며 투자 판단의 참고용이다.
       </p>
