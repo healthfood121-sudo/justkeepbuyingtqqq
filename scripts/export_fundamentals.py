@@ -330,6 +330,8 @@ def process(key: str, roll: dict, prices: pd.DataFrame, cik_map: dict) -> dict |
     cur = roll.get("current") or {}
     price_now = float(close.iloc[-1])
     ttm = cur.get("eps")
+    if ttm is None and cur.get("pe") and cur.get("price"):  # Yahoo가 EPS를 비워 줄 때(예: 피서브) 주가 ÷ PER로 복원
+        ttm = cur["price"] / cur["pe"]
     pe_now = price_now / ttm if ttm and ttm > 0 else None
 
     # 연말 PER (그해 끝난 회계연도 EPS 기준)
