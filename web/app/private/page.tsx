@@ -1456,14 +1456,14 @@ type FilterSnap = {
   maxRange: number | ''; excludeEtf: boolean; minRoe: number | ''; minRoic: number | ''
   gradeF: 'all' | 'A' | 'AB'; minScore: number | ''; subMins: Partial<Record<SubKey, number>>; groupF: 'all' | GroupKey
   maxFairGap: number | ''
-  minIpNeg: number | ''          // 진행 중(10년 안 채운) 롤링 바 중 마이너스 개수 ≥
-  maxIpMin: number | ''          // 진행 중 롤링 바의 최저 연 수익률 ≤ (%)
+  minNeg10: number | ''          // 10년 막대(다 채운 것 + 9년 이상 지난 마지막 막대) 중 마이너스 개수 ≥
+  maxLast10: number | ''         // 가장 최근 10년 막대(9년 이상)의 연 수익률 ≤ (%)
   relF: 'all' | 'high' | 'mid'   // 적정가 신뢰도: 전체 / 높음만 / 높음·보통
   keys?: string[]                 // 이 종목들만 (Claude 관심 목록 같은 고정 목록)
 }
 const DEFAULT_F: FilterSnap = {
   minPeriods: 0, minCagrMin: '', minMedian: 0, minDiffMin: '', minDiffMedian: 0, maxRange: '', excludeEtf: false,
-  minRoe: '', minRoic: '', gradeF: 'all', minScore: '', subMins: {}, groupF: 'all', maxFairGap: '', relF: 'all', minIpNeg: '', maxIpMin: '',
+  minRoe: '', minRoic: '', gradeF: 'all', minScore: '', subMins: {}, groupF: 'all', maxFairGap: '', relF: 'all', minNeg10: '', maxLast10: '',
 }
 // 저장된 프리셋(예전 형식 포함)을 빠짐없는 필터 값으로 맞춘다. 빠진 값은 '필터 없음'
 function normFilter(f: Record<string, any>): FilterSnap {
@@ -1485,7 +1485,7 @@ type FilterRow = {
   diffMn: number | null; diffMed: number | null; roe: number | null; roic: number | null; score: number | null; q?: Quality; group: GroupKey | null
   fairGap: number | null
   relScore?: number | null
-  ipNeg?: number; ipMin?: number | null  // 진행 중 롤링 바(1년 이상 지난 것): 마이너스 개수, 최저 수익률
+  neg10?: number; last10?: number | null  // 10년 막대(다 채운 것 + 9년 이상 지난 마지막 막대): 마이너스 개수, 가장 최근 막대 수익률
 }
 function passesFilter(row: FilterRow, F: FilterSnap): boolean {
   if (F.keys && !F.keys.includes(row.s.key)) return false
@@ -1504,8 +1504,8 @@ function passesFilter(row: FilterRow, F: FilterSnap): boolean {
   for (const [k, v] of Object.entries(F.subMins) as [SubKey, number][]) if (v != null && (row.q == null || row.q[k] < v)) return false
   if (F.groupF !== 'all' && row.group !== F.groupF) return false
   if (F.maxFairGap !== '' && (row.fairGap == null || row.fairGap > F.maxFairGap)) return false
-  if (F.minIpNeg !== '' && (row.ipNeg ?? 0) < F.minIpNeg) return false
-  if (F.maxIpMin !== '' && (row.ipMin == null || row.ipMin > F.maxIpMin)) return false
+  if (F.minNeg10 !== '' && (row.neg10 ?? 0) < F.minNeg10) return false
+  if (F.maxLast10 !== '' && (row.last10 == null || row.last10 > F.maxLast10)) return false
   if (F.relF === 'high' && row.relScore !== 3) return false
   if (F.relF === 'mid' && (row.relScore == null || row.relScore < 2)) return false
   return true
@@ -1533,8 +1533,8 @@ const BUILTIN_PRESETS: Array<{ name: string; why: string; f: Partial<FilterSnap>
     f: { excludeEtf: true, groupF: 'stumble' } },
   { name: '⑧ Claude 관심 목록', why: '2026-10-24 Claude가 고른 8개. 위대한 기업(④ 최정예)이면서 지금 값이 적정 수준 이하이고 세 기준(이익·잉여현금·영업현금)이 대체로 같은 말을 하는 종목. 싸고 신호 일치: 롤린스·레녹스·코파트·맥도날드·IDEXX·에르메스 / 적정 수준: 마스터카드·인튜이티브서지컬. 투자 권유 아님.',
     f: { keys: ['ROL', 'LII', 'CPRT', 'MCD', 'IDXX', 'RMS', 'MA', 'ISRG'] } },
-  { name: '⑨ 역발상 후보', why: '과거엔 꾸준히 좋았는데(10년 보유 결과 10번 이상, 중앙값 연 12% 이상, A·B등급) 최근에 산 사람은 손해 중인 기업 — 아직 10년 안 채운 매수 시점(산 지 1년 이상) 중 마이너스가 3개 이상 = 2~3년 넘게 쉬거나 빠진 상태. 주가가 오래 쉬거나 크게 빠진 좋은 회사가 걸린다(예: 신타스는 이런 구간 뒤 큰 수익). 이익이 같이 망가진 경우도 섞이니 사업의 질·상황을 꼭 확인.',
-    f: { excludeEtf: true, gradeF: 'AB', minPeriods: 10, minMedian: 12, minIpNeg: 3 } },
+  { name: '⑨ 역발상 후보', why: '지금 진행 중인 마지막 10년 막대(2016년 매수 → 지금, 9년 이상 지남)가 마이너스 = 10년을 들고 있어도 손해인 종목(예: 나이키). 신타스는 1998~2001년 매수 막대가 연속으로 마이너스였고, 그 구간이 끝날 무렵 산 사람은 큰 수익을 냈다. 다만 회사 자체가 망가져서 마이너스인 경우가 더 많으니 등급·사업의 질·상황을 꼭 같이 본다(등급 필터를 A·B로 걸면 좁혀진다).',
+    f: { excludeEtf: true, maxLast10: 0 } },
 ]
 
 function OverviewTable({
@@ -1686,10 +1686,10 @@ function OverviewTable({
   const [tNowYr] = useState(() => decYear(Date.now()))
   const allRows = STOCKS.map((s, i) => {
     const allCompleted = s.data.rows10y.filter((r: any) => r.isComplete)
-    // 진행 중 바: 아직 10년이 안 됐지만 1년 이상 지난 매수 시점 (1년 미만은 너무 들쭉날쭉해서 뺌)
-    const inProg = s.data.rows10y.filter((r: any) => !r.isComplete && (r.yearsActual ?? 0) >= 1 && r.cagr != null)
-    const ipNeg = inProg.filter((r: any) => r.cagr < 0).length
-    const ipMin = inProg.length ? Math.min(...inProg.map((r: any) => r.cagr as number)) : null
+    // 10년 막대: 다 채운 것 + 거의 다 채운(9년 이상) 지금 진행 중인 마지막 막대
+    const bars10 = s.data.rows10y.filter((r: any) => r.cagr != null && (r.isComplete || (r.yearsActual ?? 0) >= 9))
+    const neg10 = bars10.filter((r: any) => r.cagr < 0).length
+    const last10 = bars10.length ? bars10[bars10.length - 1].cagr as number : null
     const completedCount = allCompleted.length
     const completed  = allCompleted.slice(-15)
     const cagrs      = completed.map((r: any) => r.cagr as number)
@@ -1730,7 +1730,7 @@ function OverviewTable({
     const rel = reliabilityOf([
       { k: '이익', gap: fairGap, warn: fairWarn }, { k: '잉여현금', gap: fcfGap, warn: fcfWarn }, { k: '영업현금', gap: ocfGap, warn: ocfWarn },
     ])
-    return { fairWarn, i, s, fullCagr, cagrMn, cagrMed, cagrMx, diffMn, diffMed, diffMx, completedCount, ipNeg, ipMin, roe, roic, score, q: qi?.q, group: qi?.group ?? null, fairGap, fcfGap, fcfWarn, ocfGap, ocfWarn, rel, relScore: rel?.score ?? null }
+    return { fairWarn, i, s, fullCagr, cagrMn, cagrMed, cagrMx, diffMn, diffMed, diffMx, completedCount, neg10, last10, roe, roic, score, q: qi?.q, group: qi?.group ?? null, fairGap, fcfGap, fcfWarn, ocfGap, ocfWarn, rel, relScore: rel?.score ?? null }
   }).sort((a, b) => {
     const va = a[sortKey] ?? -Infinity
     const vb = b[sortKey] ?? -Infinity
@@ -1912,15 +1912,15 @@ function OverviewTable({
               %
             </label>
             <label className={labelCls}>
-              <Tip text={<>아직 10년을 채우지 않은 매수 시점(차트 오른쪽 옅은 막대, 산 지 1년 이상) 중 지금까지 연 수익률이 마이너스인 막대 수. 주가가 오래 쉬거나 크게 떨어진 기업을 찾는다. 역발상 후보: 신타스는 이런 막대가 여러 개 찍힌 뒤 큰 수익이 났다.</>}>진행 중 마이너스 막대 ≥</Tip>
-              <input type="number" min={0} max={10} value={F.minIpNeg} placeholder="—"
-                onChange={e => set('minIpNeg', e.target.value === '' ? '' : Number(e.target.value))} className={inputCls} />
+              <Tip text={<>10년 보유 막대 중 연 수익률이 마이너스인 막대 수. 10년을 다 채운 막대 + 지금 거의 다 채운(9년 이상 지난) 마지막 막대를 센다. 10년을 들고도 손해였던 구간이 있었던 기업. 역발상 후보: 신타스는 1998~2001년 매수 막대 4개가 마이너스였고, 그 뒤 큰 수익이 났다.</>}>10년 마이너스 막대 ≥</Tip>
+              <input type="number" min={0} max={30} value={F.minNeg10} placeholder="—"
+                onChange={e => set('minNeg10', e.target.value === '' ? '' : Number(e.target.value))} className={inputCls} />
               개
             </label>
             <label className={labelCls}>
-              <Tip text={<>진행 중 막대(산 지 1년 이상) 가운데 가장 낮은 연 수익률이 이 값 이하인 종목만. 예: 0 → 지금 손실 중인 매수 시점이 하나라도 있는 종목, −5 → 연 −5% 이하로 빠진 시점이 있는 종목.</>}>진행 중 최저 수익률 ≤</Tip>
-              <input type="number" min={-100} max={100} value={F.maxIpMin} placeholder="—"
-                onChange={e => set('maxIpMin', e.target.value === '' ? '' : Number(e.target.value))} className={inputCls} />
+              <Tip text={<>가장 최근 10년 막대(지금 끝나 가는, 9년 이상 지난 막대 — 보통 2016년 매수)의 연 수익률이 이 값 이하인 종목만. 예: 0 → 지금 10년 들고 있어도 손해인 종목, 5 → 10년 동안 연 5%도 못 번 종목.</>}>최근 10년 막대 ≤</Tip>
+              <input type="number" min={-100} max={100} value={F.maxLast10} placeholder="—"
+                onChange={e => set('maxLast10', e.target.value === '' ? '' : Number(e.target.value))} className={inputCls} />
               %
             </label>
             <label className={labelCls}>
