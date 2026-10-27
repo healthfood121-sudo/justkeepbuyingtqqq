@@ -1376,7 +1376,7 @@ function multMedian(rows: Array<{ t: number; c: number }>, anchors: ClockAnchor[
     .filter((x): x is number => x != null)
   return v.length >= 24 ? Math.round(quantile(v, 0.5)) : null
 }
-type QualInfo = { roe: number | null; roic: number | null; q?: Quality; score: number | null; group: GroupKey | null; fair?: FairInfo; g?: number }
+type QualInfo = { roe: number | null; roic: number | null; epsG10?: number | null; q?: Quality; score: number | null; group: GroupKey | null; fair?: FairInfo; g?: number }
 // 이익 시계와 같은 성장률: 개별 분석 판단(0.5 단위) → 없으면 과거 5·10년 중 낮은 값(0~15%)
 function clockGrowth(key: string, g10?: number | null, g5?: number | null) {
   const clamp = (v: number) => Math.max(0, Math.min(15, v))
@@ -1458,12 +1458,13 @@ type FilterSnap = {
   maxFairGap: number | ''
   minNeg10: number | ''          // 10년 막대(다 채운 것 + 9년 이상 지난 마지막 막대) 중 마이너스 개수 ≥
   maxLast10: number | ''         // 가장 최근 10년 막대(9년 이상)의 연 수익률 ≤ (%)
+  minEpsG10: number | ''         // EPS 10년 연평균 성장률 ≥ (%)
   relF: 'all' | 'high' | 'mid'   // 적정가 신뢰도: 전체 / 높음만 / 높음·보통
   keys?: string[]                 // 이 종목들만 (Claude 관심 목록 같은 고정 목록)
 }
 const DEFAULT_F: FilterSnap = {
   minPeriods: 0, minCagrMin: '', minMedian: 0, minDiffMin: '', minDiffMedian: 0, maxRange: '', excludeEtf: false,
-  minRoe: '', minRoic: '', gradeF: 'all', minScore: '', subMins: {}, groupF: 'all', maxFairGap: '', relF: 'all', minNeg10: '', maxLast10: '',
+  minRoe: '', minRoic: '', gradeF: 'all', minScore: '', subMins: {}, groupF: 'all', maxFairGap: '', relF: 'all', minNeg10: '', maxLast10: '', minEpsG10: '',
 }
 // 저장된 프리셋(예전 형식 포함)을 빠짐없는 필터 값으로 맞춘다. 빠진 값은 '필터 없음'
 function normFilter(f: Record<string, any>): FilterSnap {
@@ -1485,7 +1486,7 @@ type FilterRow = {
   diffMn: number | null; diffMed: number | null; roe: number | null; roic: number | null; score: number | null; q?: Quality; group: GroupKey | null
   fairGap: number | null
   relScore?: number | null
-  neg10?: number; last10?: number | null  // 10년 막대(다 채운 것 + 9년 이상 지난 마지막 막대): 마이너스 개수, 가장 최근 막대 수익률
+  neg10?: number; last10?: number | null; epsG10?: number | null  // 10년 막대(다 채운 것 + 9년 이상 지난 마지막 막대): 마이너스 개수, 가장 최근 막대 수익률
 }
 function passesFilter(row: FilterRow, F: FilterSnap): boolean {
   if (F.keys && !F.keys.includes(row.s.key)) return false
@@ -1506,6 +1507,7 @@ function passesFilter(row: FilterRow, F: FilterSnap): boolean {
   if (F.maxFairGap !== '' && (row.fairGap == null || row.fairGap > F.maxFairGap)) return false
   if (F.minNeg10 !== '' && (row.neg10 ?? 0) < F.minNeg10) return false
   if (F.maxLast10 !== '' && (row.last10 == null || row.last10 > F.maxLast10)) return false
+  if (F.minEpsG10 !== '' && (row.epsG10 == null || row.epsG10 < F.minEpsG10)) return false
   if (F.relF === 'high' && row.relScore !== 3) return false
   if (F.relF === 'mid' && (row.relScore == null || row.relScore < 2)) return false
   return true
@@ -1535,6 +1537,8 @@ const BUILTIN_PRESETS: Array<{ name: string; why: string; f: Partial<FilterSnap>
     f: { keys: ['ROL', 'LII', 'CPRT', 'MCD', 'IDXX', 'RMS', 'MA', 'ISRG'] } },
   { name: '⑨ 역발상 후보', why: '지금 진행 중인 마지막 10년 막대(2016년 매수 → 지금, 9년 이상 지남)가 마이너스 = 10년을 들고 있어도 손해인 종목(예: 나이키). 신타스는 1998~2001년 매수 막대가 연속으로 마이너스였고, 그 구간이 끝날 무렵 산 사람은 큰 수익을 냈다. 다만 회사 자체가 망가져서 마이너스인 경우가 더 많으니 등급·사업의 질·상황을 꼭 같이 본다(등급 필터를 A·B로 걸면 좁혀진다).',
     f: { excludeEtf: true, maxLast10: 0 } },
+  { name: '⑩ 역발상(이익 성장 중)', why: '⑨ 중에서 10년 동안 EPS는 늘어난(연 0% 이상) 종목만 = 이익은 자랐는데 주가만 쉰 신타스형. 신타스는 1998~2001년 PER 40~60배에 샀다가 10년 마이너스가 났지만, 그동안 EPS는 매년 늘었고 PER이 11~21배로 내려온 끝 무렵이 큰 매수 기회였다. 지금 PER이 너무 낮으면(한 자릿수) 빚·일회성 이익을 따로 확인.',
+    f: { excludeEtf: true, maxLast10: 0, minEpsG10: 0 } },
 ]
 
 function OverviewTable({
@@ -1568,7 +1572,7 @@ function OverviewTable({
       for (const x of [...((sm?.stocks ?? []) as Metrics[]), ...EXTRA_METRICS]) {
         const q = qs[x.key]
         m[x.key] = {
-          roe: (x as any).roe5 ?? (x as any).roe ?? null, roic: (x as any).roic5 ?? (x as any).roic ?? null,
+          roe: (x as any).roe5 ?? (x as any).roe ?? null, roic: (x as any).roic5 ?? (x as any).roic ?? null, epsG10: x.epsCagr10 ?? null,
           q, score: q ? qualityScore(q) : null, group: classify(x, q, 'moat'),
           fair: fairs[x.key], g: clockGrowth(x.key, x.epsCagr10, x.epsCagr5),
         }
@@ -1730,7 +1734,7 @@ function OverviewTable({
     const rel = reliabilityOf([
       { k: '이익', gap: fairGap, warn: fairWarn }, { k: '잉여현금', gap: fcfGap, warn: fcfWarn }, { k: '영업현금', gap: ocfGap, warn: ocfWarn },
     ])
-    return { fairWarn, i, s, fullCagr, cagrMn, cagrMed, cagrMx, diffMn, diffMed, diffMx, completedCount, neg10, last10, roe, roic, score, q: qi?.q, group: qi?.group ?? null, fairGap, fcfGap, fcfWarn, ocfGap, ocfWarn, rel, relScore: rel?.score ?? null }
+    return { fairWarn, i, s, fullCagr, cagrMn, cagrMed, cagrMx, diffMn, diffMed, diffMx, completedCount, neg10, last10, epsG10: qi?.epsG10 ?? null, roe, roic, score, q: qi?.q, group: qi?.group ?? null, fairGap, fcfGap, fcfWarn, ocfGap, ocfWarn, rel, relScore: rel?.score ?? null }
   }).sort((a, b) => {
     const va = a[sortKey] ?? -Infinity
     const vb = b[sortKey] ?? -Infinity
@@ -1921,6 +1925,12 @@ function OverviewTable({
               <Tip text={<>가장 최근 10년 막대(지금 끝나 가는, 9년 이상 지난 막대 — 보통 2016년 매수)의 연 수익률이 이 값 이하인 종목만. 예: 0 → 지금 10년 들고 있어도 손해인 종목, 5 → 10년 동안 연 5%도 못 번 종목.</>}>최근 10년 막대 ≤</Tip>
               <input type="number" min={-100} max={100} value={F.maxLast10} placeholder="—"
                 onChange={e => set('maxLast10', e.target.value === '' ? '' : Number(e.target.value))} className={inputCls} />
+              %
+            </label>
+            <label className={labelCls}>
+              <Tip text={<>10년 전부터 최근 1년까지 주당순이익(EPS)이 연평균 몇 % 늘었나. 0 이상이면 이익은 늘었는데 주가만 쉰 회사(신타스형), 마이너스면 이익 자체가 줄어든 회사.</>}>EPS 10년 성장률 ≥</Tip>
+              <input type="number" min={-50} max={100} value={F.minEpsG10} placeholder="—"
+                onChange={e => set('minEpsG10', e.target.value === '' ? '' : Number(e.target.value))} className={inputCls} />
               %
             </label>
             <label className={labelCls}>
