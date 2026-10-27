@@ -1376,7 +1376,7 @@ function multMedian(rows: Array<{ t: number; c: number }>, anchors: ClockAnchor[
     .filter((x): x is number => x != null)
   return v.length >= 24 ? Math.round(quantile(v, 0.5)) : null
 }
-type QualInfo = { roe: number | null; roic: number | null; epsG10?: number | null; q?: Quality; score: number | null; group: GroupKey | null; fair?: FairInfo; g?: number }
+type QualInfo = { roe: number | null; roic: number | null; epsG10?: number | null; q?: Quality; score: number | null; group: GroupKey | null; fair?: FairInfo; g?: number; rest?: boolean }
 // 이익 시계와 같은 성장률: 개별 분석 판단(0.5 단위) → 없으면 과거 5·10년 중 낮은 값(0~15%)
 function clockGrowth(key: string, g10?: number | null, g5?: number | null) {
   const clamp = (v: number) => Math.max(0, Math.min(15, v))
@@ -1459,12 +1459,14 @@ type FilterSnap = {
   minNeg10: number | ''          // 10년 막대(다 채운 것 + 9년 이상 지난 마지막 막대) 중 마이너스 개수 ≥
   maxLast10: number | ''         // 가장 최근 10년 막대(9년 이상)의 연 수익률 ≤ (%)
   minEpsG10: number | ''         // EPS 10년 연평균 성장률 ≥ (%)
+  maxLastPct: number | ''        // 최근 10년 막대가 그 회사 과거 10년 막대 중 하위 N% 이내
+  restF: boolean                 // 주가 쉬는 중: 3년 고점 대비 −20% 이하 또는 PER이 10년 중간값의 85% 이하
   relF: 'all' | 'high' | 'mid'   // 적정가 신뢰도: 전체 / 높음만 / 높음·보통
   keys?: string[]                 // 이 종목들만 (Claude 관심 목록 같은 고정 목록)
 }
 const DEFAULT_F: FilterSnap = {
   minPeriods: 0, minCagrMin: '', minMedian: 0, minDiffMin: '', minDiffMedian: 0, maxRange: '', excludeEtf: false,
-  minRoe: '', minRoic: '', gradeF: 'all', minScore: '', subMins: {}, groupF: 'all', maxFairGap: '', relF: 'all', minNeg10: '', maxLast10: '', minEpsG10: '',
+  minRoe: '', minRoic: '', gradeF: 'all', minScore: '', subMins: {}, groupF: 'all', maxFairGap: '', relF: 'all', minNeg10: '', maxLast10: '', minEpsG10: '', maxLastPct: '', restF: false,
 }
 // 저장된 프리셋(예전 형식 포함)을 빠짐없는 필터 값으로 맞춘다. 빠진 값은 '필터 없음'
 function normFilter(f: Record<string, any>): FilterSnap {
@@ -1486,7 +1488,7 @@ type FilterRow = {
   diffMn: number | null; diffMed: number | null; roe: number | null; roic: number | null; score: number | null; q?: Quality; group: GroupKey | null
   fairGap: number | null
   relScore?: number | null
-  neg10?: number; last10?: number | null; epsG10?: number | null  // 10년 막대(다 채운 것 + 9년 이상 지난 마지막 막대): 마이너스 개수, 가장 최근 막대 수익률
+  neg10?: number; last10?: number | null; epsG10?: number | null; lastPct?: number | null; rest?: boolean  // 10년 막대(다 채운 것 + 9년 이상 지난 마지막 막대): 마이너스 개수, 가장 최근 막대 수익률
 }
 function passesFilter(row: FilterRow, F: FilterSnap): boolean {
   if (F.keys && !F.keys.includes(row.s.key)) return false
@@ -1508,9 +1510,40 @@ function passesFilter(row: FilterRow, F: FilterSnap): boolean {
   if (F.minNeg10 !== '' && (row.neg10 ?? 0) < F.minNeg10) return false
   if (F.maxLast10 !== '' && (row.last10 == null || row.last10 > F.maxLast10)) return false
   if (F.minEpsG10 !== '' && (row.epsG10 == null || row.epsG10 < F.minEpsG10)) return false
+  if (F.maxLastPct !== '' && (row.lastPct == null || row.lastPct > F.maxLastPct)) return false
+  if (F.restF && !row.rest) return false
   if (F.relF === 'high' && row.relScore !== 3) return false
   if (F.relF === 'mid' && (row.relScore == null || row.relScore < 2)) return false
   return true
+}
+
+// 필터 조건을 사람이 읽는 문장으로 (내 프리셋 툴팁·선택한 프리셋 설명)
+function describeFilter(F: FilterSnap): string {
+  const a: string[] = []
+  if (F.keys) a.push(`고정 목록 ${F.keys.length}개(${F.keys.join('·')})`)
+  if (F.excludeEtf) a.push('ETF 제외')
+  if (F.gradeF === 'A') a.push('A등급')
+  if (F.gradeF === 'AB') a.push('A·B등급')
+  for (const [k, v] of Object.entries(F.subMins) as [SubKey, number][]) if (v != null) a.push(`${SUB_LABEL[k]} ${v}점 이상`)
+  if (F.minScore !== '') a.push(`사업성 ${F.minScore}점 이상`)
+  if (F.minRoe !== '') a.push(`ROE ${F.minRoe}% 이상`)
+  if (F.minRoic !== '') a.push(`ROIC ${F.minRoic}% 이상`)
+  if (F.minPeriods > 0) a.push(`10년 보유 결과 ${F.minPeriods}번 이상`)
+  if (F.minCagrMin !== '') a.push(`가장 나쁜 10년도 연 ${F.minCagrMin}% 이상`)
+  if (F.minMedian > 0) a.push(`10년 수익 중간값 연 ${F.minMedian}% 이상`)
+  if (F.minDiffMin !== '') a.push(`S&P 500 대비 최솟값 ${F.minDiffMin}%p 이상`)
+  if (F.minDiffMedian !== 0) a.push(`S&P 500 대비 중간값 ${F.minDiffMedian}%p 이상`)
+  if (F.maxRange !== '') a.push(`10년 수익 최고·최저 차이 ${F.maxRange}%p 이하`)
+  if (F.groupF !== 'all') a.push(`분류: ${GROUPS[F.groupF].short}`)
+  if (F.maxFairGap !== '') a.push(`적정가 대비 ${F.maxFairGap}% 이하`)
+  if (F.relF === 'high') a.push('적정가 신뢰도 높음')
+  if (F.relF === 'mid') a.push('적정가 신뢰도 보통 이상')
+  if (F.minNeg10 !== '') a.push(`마이너스 10년 막대 ${F.minNeg10}개 이상`)
+  if (F.maxLast10 !== '') a.push(`최근 10년 막대 연 ${F.maxLast10}% 이하`)
+  if (F.minEpsG10 !== '') a.push(`EPS 10년 성장률 ${F.minEpsG10}% 이상`)
+  if (F.maxLastPct !== '') a.push(`최근 10년 막대가 과거 막대 중 하위 ${F.maxLastPct}% 이내`)
+  if (F.restF) a.push('주가 쉬는 중(3년 고점 −20% 또는 PER 평소보다 낮음)')
+  return a.length ? a.join(' · ') : '조건 없음(전체)'
 }
 
 // Claude 추천 프리셋 (코드에 고정, 어느 기기에서나 보임). 근거는 툴팁에
@@ -1539,6 +1572,8 @@ const BUILTIN_PRESETS: Array<{ name: string; why: string; f: Partial<FilterSnap>
     f: { excludeEtf: true, maxLast10: 0 } },
   { name: '⑩ 역발상(이익 성장 중)', why: '⑨ 중에서 10년 동안 EPS는 늘어난(연 0% 이상) 종목만 = 이익은 자랐는데 주가만 쉰 신타스형. 신타스는 1998~2001년 PER 40~60배에 샀다가 10년 마이너스가 났지만, 그동안 EPS는 매년 늘었고 PER이 11~21배로 내려온 끝 무렵이 큰 매수 기회였다. 지금 PER이 너무 낮으면(한 자릿수) 빚·일회성 이익을 따로 확인.',
     f: { excludeEtf: true, maxLast10: 0, minEpsG10: 0 } },
+  { name: '⑪ 해자 그대로 · 주가 쉬는 중', why: '경쟁우위 4점 이상인 A·B등급(해자가 안 무너진 회사) + 주가가 3년 고점보다 20% 넘게 빠졌거나 PER이 평소보다 낮음 + 지금 끝나 가는 10년 막대가 그 회사 과거 10년 막대 중 하위 25%(바닥권). 막대가 평소 수준에서 떨어진 바닥에서 사면 다음 10년 결과가 좋았던 경우가 많았다는 생각에서 출발. 이익이 잠깐 줄어든 회사(유나이티드헬스형)도 포함되니, 이익이 고점의 절반 아래로 떨어진 곳은 일시적인지 따로 확인. 과거 패턴이 반복된다는 보장은 없다.',
+    f: { excludeEtf: true, gradeF: 'AB', subMins: { moat: 4 }, restF: true, maxLastPct: 25 } },
 ]
 
 function OverviewTable({
@@ -1575,6 +1610,7 @@ function OverviewTable({
           roe: (x as any).roe5 ?? (x as any).roe ?? null, roic: (x as any).roic5 ?? (x as any).roic ?? null, epsG10: x.epsCagr10 ?? null,
           q, score: q ? qualityScore(q) : null, group: classify(x, q, 'moat'),
           fair: fairs[x.key], g: clockGrowth(x.key, x.epsCagr10, x.epsCagr5),
+          rest: (x.fromHigh3y != null && x.fromHigh3y <= -20) || (x.peVsMed != null && x.peVsMed <= 0.85),
         }
       }
       // 에르메스: 이익 시계와 같게 — 거품기 뺀 20년 PER 중간값, 4번 '기본' 성장률
@@ -1585,6 +1621,8 @@ function OverviewTable({
         const lastF = RMS_FCF_ANCHORS[RMS_FCF_ANCHORS.length - 1]
         const ocfM = multMedian(rows, RMS_OCF_ANCHORS, [2019, 2026]) ?? multMedian(rows, RMS_OCF_ANCHORS)
         const lastO = RMS_OCF_ANCHORS[RMS_OCF_ANCHORS.length - 1]
+        const hi3 = Math.max(...rows.slice(-36).map(r => r.c)), lastC = rmsPx.last.close
+        m.RMS = { ...m.RMS, rest: hi3 > 0 && lastC / hi3 - 1 <= -0.2 }
         if (pe != null) m.RMS = { ...m.RMS, g: epsGrowthOf(HERMES_SCENARIOS[0].f), fair: {
           fairPe: pe, eps: RMS_ANCHORS[RMS_ANCHORS.length - 1][1], t: RMS_ANCHORS[RMS_ANCHORS.length - 1][0], price: rmsPx.last.close, priceDate: rmsPx.last.date,
           oneOff: oneOffFlag(RMS_ANCHORS)?.kind,
@@ -1694,6 +1732,9 @@ function OverviewTable({
     const bars10 = s.data.rows10y.filter((r: any) => r.cagr != null && (r.isComplete || (r.yearsActual ?? 0) >= 9))
     const neg10 = bars10.filter((r: any) => r.cagr < 0).length
     const last10 = bars10.length ? bars10[bars10.length - 1].cagr as number : null
+    // 최근 막대가 그 회사 '다 채운' 10년 막대들 중 아래에서 몇 %인가(낮을수록 바닥권). 8개 이상일 때만
+    const fullC = s.data.rows10y.filter((r: any) => r.isComplete && r.cagr != null).map((r: any) => r.cagr as number)
+    const lastPct = last10 != null && fullC.length >= 8 ? Math.round(100 * fullC.filter((c: number) => c < last10).length / fullC.length) : null
     const completedCount = allCompleted.length
     const completed  = allCompleted.slice(-15)
     const cagrs      = completed.map((r: any) => r.cagr as number)
@@ -1734,7 +1775,7 @@ function OverviewTable({
     const rel = reliabilityOf([
       { k: '이익', gap: fairGap, warn: fairWarn }, { k: '잉여현금', gap: fcfGap, warn: fcfWarn }, { k: '영업현금', gap: ocfGap, warn: ocfWarn },
     ])
-    return { fairWarn, i, s, fullCagr, cagrMn, cagrMed, cagrMx, diffMn, diffMed, diffMx, completedCount, neg10, last10, epsG10: qi?.epsG10 ?? null, roe, roic, score, q: qi?.q, group: qi?.group ?? null, fairGap, fcfGap, fcfWarn, ocfGap, ocfWarn, rel, relScore: rel?.score ?? null }
+    return { fairWarn, i, s, fullCagr, cagrMn, cagrMed, cagrMx, diffMn, diffMed, diffMx, completedCount, neg10, last10, lastPct, rest: !!qi?.rest, epsG10: qi?.epsG10 ?? null, roe, roic, score, q: qi?.q, group: qi?.group ?? null, fairGap, fcfGap, fcfWarn, ocfGap, ocfWarn, rel, relScore: rel?.score ?? null }
   }).sort((a, b) => {
     const va = a[sortKey] ?? -Infinity
     const vb = b[sortKey] ?? -Infinity
@@ -1816,10 +1857,23 @@ function OverviewTable({
             )
           })}
         </div>
+        {(() => {
+          // 지금 켜진 프리셋 설명 — 휴대폰처럼 마우스를 못 올리는 화면에서도 보이게
+          const b = builtinNorm.find(bp => sameFilter(bp.nf, F))
+          const u = !b ? presets.find(p => sameFilter(normFilter(p.f as Record<string, any>), F)) : undefined
+          if (!b && !u) return null
+          return (
+            <p className="text-xs leading-relaxed text-gray-600 dark:text-gray-300 bg-blue-50/60 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/40 rounded-lg px-3 py-2 mb-2">
+              <b className="text-blue-700 dark:text-blue-300">{b ? b.name : u!.name}</b> — {b ? b.why : describeFilter(normFilter(u!.f as Record<string, any>))}
+              {b && <span className="block mt-1 text-gray-400 dark:text-gray-500">조건: {describeFilter(b.nf)}</span>}
+            </p>
+          )
+        })()}
         <div className="flex flex-wrap items-center gap-2 mb-2">
           <span className="text-xs text-gray-400 dark:text-gray-600 shrink-0">내 프리셋:</span>
           {presets.map(p => (
-            <span key={p.name}
+            <span key={p.name} className="relative group/up inline-flex">
+            <span
               className={`inline-flex items-center gap-1 text-xs border rounded-full px-2.5 py-1 cursor-pointer transition-colors ${sameFilter(normFilter(p.f as Record<string, any>), F)
                 ? 'bg-blue-500 border-blue-500 text-white'
                 : 'border-gray-200 dark:border-gray-700 hover:border-blue-400 hover:text-blue-500 dark:hover:border-blue-500 dark:hover:text-blue-400 text-gray-600 dark:text-gray-400'}`}>
@@ -1828,6 +1882,11 @@ function OverviewTable({
                 className="ml-0.5 text-gray-400 dark:text-gray-500 hover:text-red-400 dark:hover:text-red-500 transition-colors leading-none">
                 ×
               </button>
+            </span>
+            <span className="hidden md:block absolute top-full left-0 mt-1.5 w-64 z-50 invisible opacity-0 group-hover/up:visible group-hover/up:opacity-100
+                             transition-opacity duration-150 pointer-events-none bg-gray-900 text-white text-xs rounded-md px-2.5 py-2 shadow-lg leading-relaxed">
+              {describeFilter(normFilter(p.f as Record<string, any>))}
+            </span>
             </span>
           ))}
           {savingPreset ? (
@@ -1932,6 +1991,16 @@ function OverviewTable({
               <input type="number" min={-50} max={100} value={F.minEpsG10} placeholder="—"
                 onChange={e => set('minEpsG10', e.target.value === '' ? '' : Number(e.target.value))} className={inputCls} />
               %
+            </label>
+            <label className={labelCls}>
+              <Tip text={<>지금 끝나 가는 10년 막대(9년 이상 지난 것)가 그 회사의 과거 10년 막대(다 채운 것, 8개 이상) 중 아래에서 몇 % 안에 드는가. 25 → 과거 막대 4개 중 1개보다도 낮은 바닥권. 그 회사 기준이라, 넷플릭스처럼 지금 막대가 연 18%여도 과거(중간값 39%)보다 낮으면 걸린다.</>}>10년 막대 바닥권 ≤ 하위</Tip>
+              <input type="number" min={0} max={100} value={F.maxLastPct} placeholder="—"
+                onChange={e => set('maxLastPct', e.target.value === '' ? '' : Number(e.target.value))} className={inputCls} />
+              %
+            </label>
+            <label className={`${labelCls} cursor-pointer`}>
+              <input type="checkbox" checked={F.restF} onChange={e => set('restF', e.target.checked)} />
+              <Tip text={<>주가가 3년 고점보다 20% 넘게 빠졌거나, PER이 10년 중간값의 85% 이하인 종목만.</>}>주가 쉬는 중</Tip>
             </label>
             <label className={labelCls}>
               <Tip text={TIP_ROE}>ROE ≥</Tip>
