@@ -1359,6 +1359,11 @@ function diffColor(v: number) {
   return 'text-red-500 dark:text-red-400'
 }
 
+const SORT_LABEL: Record<string, string> = {
+  fullCagr: '전체 연평균 수익률', cagrMn: '10년 수익 최소', cagrMed: '10년 수익 중간', cagrMx: '10년 수익 최대',
+  diffMn: 'S&P 500 대비 최소', diffMed: 'S&P 500 대비 중간', diffMx: 'S&P 500 대비 최대', roe: 'ROE', roic: 'ROIC', score: '사업성',
+  fairGap: '적정가 대비(이익)', fcfGap: '적정가 대비(잉여)', ocfGap: '적정가 대비(영업)', relScore: '신뢰', gradeN: '등급', groupN: '상황',
+}
 type SortKey = 'fullCagr' | 'cagrMn' | 'cagrMed' | 'cagrMx' | 'diffMn' | 'diffMed' | 'diffMx' | 'roe' | 'roic' | 'score' | 'fairGap' | 'fcfGap' | 'ocfGap' | 'relScore' | 'gradeN' | 'groupN'
 type SubKey = 'moat' | 'pricing' | 'profit' | 'growth' | 'durability'
 const SUB_LABEL: Record<SubKey, string> = { moat: '경쟁우위', pricing: '가격결정력', profit: '수익성', growth: '성장성', durability: '지속가능성' }
@@ -1586,6 +1591,8 @@ function OverviewTable({
 }) {
   const [sortKey, setSortKey] = useState<SortKey>('diffMn')
   const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc')
+  // 2차 정렬: 바로 전에 1차였던 열. 1차 값이 같을 때 이 열로 순서를 정한다
+  const [sort2, setSort2] = useState<{ k: SortKey; d: 'desc' | 'asc' } | null>(null)
   const [search, setSearch] = useState('')
   const [viewMode, setViewMode] = useState<'all' | 'starred'>('all')
   const [starred, setStarred] = useState<Set<string>>(new Set())
@@ -1649,6 +1656,7 @@ function OverviewTable({
       const f = JSON.parse(localStorage.getItem('private_filters') ?? '{}')
       if (f.sortKey) setSortKey(f.sortKey)
       if (f.sortDir) setSortDir(f.sortDir)
+      if (f.sort2?.k) setSort2(f.sort2)
     } catch {}
     try {
       const p = JSON.parse(localStorage.getItem('private_presets') ?? '[]')
@@ -1657,8 +1665,8 @@ function OverviewTable({
   }, [])
 
   useEffect(() => {
-    try { localStorage.setItem('private_filters', JSON.stringify({ sortKey, sortDir })) } catch {}
-  }, [sortKey, sortDir])
+    try { localStorage.setItem('private_filters', JSON.stringify({ sortKey, sortDir, sort2 })) } catch {}
+  }, [sortKey, sortDir, sort2])
 
   function currentFilterSnapshot() { return F }
 
@@ -1701,6 +1709,7 @@ function OverviewTable({
     if (sortKey === key) {
       setSortDir(d => d === 'desc' ? 'asc' : 'desc')
     } else {
+      setSort2({ k: sortKey, d: sortDir }) // 지금 1차를 2차로 내리고 새 열을 1차로
       setSortKey(key)
       setSortDir('desc')
     }
@@ -1711,6 +1720,7 @@ function OverviewTable({
   }
 
   function SortIcon({ col }: { col: SortKey }) {
+    if (sortKey !== col && sort2?.k === col) return <span className="ml-0.5 text-blue-400 text-[10px]">{sort2.d === 'desc' ? '↓' : '↑'}2</span>
     if (sortKey !== col) return <span className="ml-0.5 opacity-30">↕</span>
     return <span className="ml-0.5 text-blue-500">{sortDir === 'desc' ? '↓' : '↑'}</span>
   }
@@ -1781,9 +1791,12 @@ function OverviewTable({
       gradeN: qi?.q ? ({ A: 4, B: 3, C: 2, D: 1 } as const)[qi.q.grade] : null,
       groupN: qi?.group ? ({ pause: 4, steady: 3, pricey: 2, stumble: 1 } as const)[qi.group] : null }
   }).sort((a, b) => {
-    const va = a[sortKey], vb = b[sortKey]
-    if (va == null || vb == null) return va == null && vb == null ? 0 : va == null ? 1 : -1 // 빈 값은 방향과 상관없이 맨 아래
-    return sortDir === 'desc' ? vb - va : va - vb
+    const cmp = (k: SortKey, d: 'desc' | 'asc') => {
+      const va = a[k], vb = b[k]
+      if (va == null || vb == null) return va == null && vb == null ? 0 : va == null ? 1 : -1 // 빈 값은 방향과 상관없이 맨 아래
+      return d === 'desc' ? vb - va : va - vb
+    }
+    return cmp(sortKey, sortDir) || (sort2 && sort2.k !== sortKey ? cmp(sort2.k, sort2.d) : 0)
   })
 
   // 검색어가 있으면 필터·즐겨찾기 보기를 잠시 무시하고 전체에서 찾는다(검색해도 안 나오는 문제 방지)
@@ -2094,6 +2107,13 @@ function OverviewTable({
         )
       })()}
 
+      {/* 정렬 상태: 마지막에 누른 열 = 1차, 그 전 열 = 2차 */}
+      <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">
+        정렬: <b className="text-gray-600 dark:text-gray-300">{SORT_LABEL[sortKey]} {sortDir === 'desc' ? '높은 순' : '낮은 순'}</b>
+        {sort2 && sort2.k !== sortKey && <>, 같으면 <b className="text-gray-600 dark:text-gray-300">{SORT_LABEL[sort2.k]} {sort2.d === 'desc' ? '높은 순' : '낮은 순'}</b>
+          <button type="button" onClick={() => setSort2(null)} className="ml-1.5 underline hover:text-gray-600 dark:hover:text-gray-300">2차 끄기</button></>}
+        <span className="ml-2 opacity-80">· 열을 차례로 누르면 마지막에 누른 열이 1차, 바로 전 열이 2차 정렬(같은 열을 다시 누르면 방향만 바뀜)</span>
+      </p>
       {/* 넓은 화면에서는 스크롤 상자를 끈다(종목·제목 말풍선이 잘리지 않게). 좁은 화면에서만 옆으로 밀기 */}
       <div className="overflow-x-auto md:overflow-visible">
       <table className="text-[13px]">
