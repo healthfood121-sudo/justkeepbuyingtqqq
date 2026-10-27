@@ -14230,7 +14230,7 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       state: 'broken',
       sources: ['PC CPU 점유율.'],
       threats: ['서버 점유율 상실, 위탁 생산 대규모 적자.'],
-      why: '해자 흔들림 — 회생 시도 중.',
+      why: 'PC 점유율은 남았지만 서버를 AMD에 내주고 위탁 생산에서 해마다 큰 적자를 낸다. 미국 정부 지분 투자로 회생을 시도하는 중.',
     },
     now: [
       '7월 2분기: 매출 161억 달러(+25%), 조정 EPS 0.42달러, 조정 매출총이익률 41.8%(1년 전 29.7%). 3분기 조정 EPS 약 0.38달러 전망.',
