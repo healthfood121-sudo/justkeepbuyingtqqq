@@ -48,8 +48,8 @@ ZTS, MSI, TYL, APH, AXON, VRTX, BSX, DE, BLK, CL, ECL, AZO, MTD, CMG, FICO, PAYX
 
 | 발표일 | 종목 (현재 들어 있는 기간) |
 |---|---|
-| 이미 발표됨 → 바로 업데이트 | KO(2분기), NOW(2분기), ODFL(2분기), SPGI(2분기), LII(2분기), ORLY(2분기) |
-| 10/27~10/28 | V(4~6월), SHW(2분기), CMG(2분기), TYL(2분기), APH(2분기), BKNG(2분기) |
+| 이미 발표됨 | SPGI(2분기 그대로 — 10/27 발표됐지만 부문 숫자 못 찾음, 8-K 부문표 확인 필요) · KO ✔(10/27 3분기 반영, 지역 비중은 2분기 것) |
+| 10/28 | NOW(2분기), ODFL(2분기), LII(2분기), ORLY(2분기), V(4~6월), SHW(2분기), CMG(2분기), TYL(2분기), APH(2분기), BKNG(2분기) |
 | 10/29 | MSFT(4~6월), GOOGL(2분기), META ✔(3분기 완료), MA(2분기), BSX(2분기), SYK(2분기), VRSK(2분기), TT(2분기), GRMN(2분기), CL(2분기 — 10/30 가능), ADP(FY26 4분기 → FY27 1분기) |
 | 10/30 | AAPL(4~6월), AMZN(2분기), LLY(2분기), MSI(2분기), MPWR(2분기) |
 | 11/2~11/6 | VRTX(11/2), IDXX(11/3), MCD(11/4), ANET(11/4), ZTS(11/4), AXON(11/4), MAR(11/4), MNST(11/5), TPL(11/5), MTD(11/6) |
@@ -57,7 +57,7 @@ ZTS, MSI, TYL, APH, AXON, VRTX, BSX, DE, BLK, CL, ECL, AZO, MTD, CMG, FICO, PAYX
 | 12월 | ADBE(12월 중순), AVGO(12/11 경), COST(12/11 경, 1분기), CTAS(12/18 경), PAYX(12/18 경), NKE(12/18 경), AZO(12/9 경) |
 | 반기 | RMS(에르메스) — 2026년 연간 실적 2027년 2월. 3분기 매출(10월)은 이미 반영 |
 
-3분기(7~9월)로 이미 최신인 곳: BLK, ECL, FAST, PM, HLT, MSCI, ITW, CDNS, CB, DHR, TMO, LRCX, UNP, PG, PEP, JNJ, GE, JPM, MCO, ISRG, ROL, META, TSLA, NFLX.
+3분기(7~9월)로 이미 최신인 곳: BLK, ECL, FAST, PM, HLT, MSCI, ITW, CDNS, CB, DHR, TMO, LRCX, UNP, PG, PEP, JNJ, GE, JPM, MCO, ISRG, ROL, META, TSLA, NFLX, KO.
 
 ## 자동(`SEG_MIX`) 종목 확인 포인트
 
