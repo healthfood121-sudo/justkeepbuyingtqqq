@@ -7706,6 +7706,143 @@ function RmsInsight({ data }: { data: StockData }) {
   )
 }
 
+// ── 나이키 중화권 분기 매출 (백만 달러, 회계연도 6월~이듬해 5월) — 2026-10-28 정리 ─────────
+// 출처: FY21 Q3 이후 YCharts 분기 시계열, FY19~FY20은 10-Q 분기·누적 수치 역산, FY21 Q1·Q2는 연간 합계(82.9억)에 맞춘 추정(est)
+// 연간 합계는 모든 연도에서 공시 연간 매출과 일치. FY27 Q1(2026년 8월)은 실적 발표(11.80억, −22%, 환율 제외 −26%)
+const NKE_CHINA: { q: string; end: string; v: number; est?: boolean }[] = [
+  ['FY19', [1379, 1544, 1588, 1697]], ['FY20', [1679, 1847, 1506, 1647]], ['FY21', [1785, 2293, 2279, 1933]],
+  ['FY22', [1982, 1844, 2160, 1561]], ['FY23', [1656, 1788, 1994, 1810]], ['FY24', [1735, 1863, 2084, 1863]],
+  ['FY25', [1666, 1711, 1733, 1476]], ['FY26', [1512, 1423, 1615, 1297]], ['FY27', [1180]],
+].flatMap(([fy, vs]) => (vs as number[]).map((v, i) => {
+  const y = 2000 + Number((fy as string).slice(2)) - (i < 2 ? 1 : 0)
+  return { q: `${fy} Q${i + 1}`, end: `${String(y).slice(2)}.${['8', '11', '2', '5'][i]}`, v, est: fy === 'FY21' && i < 2 }
+}))
+
+function NkeChinaBox() {
+  const chartRef = useRef<ChartJS | null>(null)
+  const [pluginLoaded, setPluginLoaded] = useState(false)
+  useEffect(() => {
+    import('chartjs-plugin-zoom').then(({ default: z }) => { ChartJS.register(z); setPluginLoaded(true) })
+  }, [])
+  const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-2'
+  const h4 = 'text-sm font-semibold text-gray-800 dark:text-gray-100'
+  const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
+  const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500 text-right whitespace-nowrap'
+  const td = 'py-1.5 px-2 tabular-nums text-right text-gray-700 dark:text-gray-200 whitespace-nowrap'
+  const D = NKE_CHINA
+  const yoy = D.map((d, i) => i >= 4 ? (d.v / D[i - 4].v - 1) * 100 : null)
+  const fy24 = D.filter(d => d.q.startsWith('FY24')).map(d => d.v)
+  // 2024 회계연도(FY24) 같은 분기 = 100
+  const idx = D.map(d => {
+    const fy = Number(d.q.slice(2, 4)); const qi = Number(d.q.slice(-1)) - 1
+    return fy >= 25 ? (d.v / fy24[qi]) * 100 : null
+  })
+  const sgn = (v: number, d = 1) => `${v > 0 ? '+' : ''}${v.toFixed(d)}`
+
+  const chartData = {
+    labels: D.map(d => d.end),
+    datasets: [
+      { type: 'bar' as const, label: '중화권 분기 매출(억 달러)', data: D.map(d => d.v / 100), yAxisID: 'y',
+        backgroundColor: D.map(d => d.q.startsWith('FY24') ? 'rgba(16,185,129,0.6)' : d.est ? 'rgba(156,163,175,0.35)' : 'rgba(249,115,22,0.55)') },
+      { type: 'line' as const, label: '2024 회계연도 같은 분기 = 100', data: idx, yAxisID: 'y2',
+        borderColor: 'rgba(37,99,235,0.9)', backgroundColor: 'rgba(37,99,235,0.9)', pointRadius: 3, spanGaps: false, tension: 0 },
+    ],
+  }
+  const options: any = {
+    responsive: true, maintainAspectRatio: false, animation: false,
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { size: 10 }, maxRotation: 60 } },
+      y: { position: 'left', min: 0, ticks: { font: { size: 11 }, callback: (v: number) => `${v}억` }, grid: { color: 'rgba(128,128,128,0.1)' } },
+      y2: { position: 'right', min: 50, max: 110, ticks: { font: { size: 11 } }, grid: { display: false } },
+    },
+    plugins: {
+      legend: { position: 'top' as const, labels: { font: { size: 11 }, boxWidth: 12 } },
+      tooltip: { mode: 'index' as const, intersect: false, callbacks: {
+        title: (it: any[]) => `${D[it[0].dataIndex].q} (${D[it[0].dataIndex].end}월 끝)${D[it[0].dataIndex].est ? ' · 추정치' : ''}`,
+        label: (c: any) => c.dataset.yAxisID === 'y'
+          ? `매출 ${(D[c.dataIndex].v / 100).toFixed(2)}억 달러${yoy[c.dataIndex] != null ? ` (1년 전보다 ${sgn(yoy[c.dataIndex]!)}%)` : ''}`
+          : `2024 회계연도 같은 분기 대비 ${c.parsed.y.toFixed(1)}`,
+      } },
+      zoom: pluginLoaded ? { pan: { enabled: true, mode: 'x' }, zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' } } : {},
+    },
+  }
+  const tail = D.slice(-9)
+  const tidx = idx.slice(-9) as number[]
+  const tyoy = yoy.slice(-9) as number[]
+  return (
+    <div className={box}>
+      <h4 className={h4}>1-1. 중화권 매출 — 감소가 둔화되고 있나 (2026년 10월 28일 정리)</h4>
+      <p className={p}>
+        중화권은 나이키 매출의 약 14%(2025 회계연도 65.9억 ÷ 463억 달러)이고, 코로나 직전까지 22분기 연속 두 자릿수 성장하던 시장이다. 분기 최고점은 2021년 2월 분기 22.8억 달러,
+        최근(2026년 8월 분기) 11.8억 달러는 그 절반(−48%)으로 2018년 이후 가장 낮다. 9분기 연속 감소 중이다.
+      </p>
+      <div className="relative">
+        <button onClick={() => (chartRef.current as any)?.resetZoom?.()}
+          className="absolute top-0 right-0 z-10 px-2 py-0.5 text-xs text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 border border-gray-200 dark:border-gray-700 rounded">줌 초기화</button>
+        <div style={{ height: 300 }}>
+          <Chart ref={chartRef as any} type="bar" data={chartData as any} options={options} />
+        </div>
+        <p className="text-xs text-gray-400 dark:text-gray-600 text-right mt-1">휠: 확대/축소 &nbsp;|&nbsp; 드래그: 이동 · 초록 막대 = 2024 회계연도(기준), 회색 = 추정치</p>
+      </div>
+      <p className={p}><b>2024 회계연도(2023년 6월~2024년 5월) 같은 분기를 100으로 놓고 본 수준</b> — 계절 차이를 없애고 "하락 직전 대비 얼마나 빠졌나"를 본다.</p>
+      <div className="overflow-x-auto">
+        <table className="text-xs">
+          <thead><tr>
+            <th className={`${th} text-left`}>분기</th><th className={th}>매출(억 달러)</th><th className={th}>1년 전 대비</th><th className={th}>2024년 대비 수준</th><th className={th}>직전 분기 수준 대비</th>
+          </tr></thead>
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+            {tail.map((d, i) => (
+              <tr key={d.q}>
+                <td className={`${td} text-left`}>{d.q} <span className="text-gray-400">({d.end}월 끝)</span></td>
+                <td className={td}>{(d.v / 100).toFixed(2)}</td>
+                <td className={`${td} ${tyoy[i] < 0 ? 'text-red-500' : ''}`}>{sgn(tyoy[i])}%</td>
+                <td className={td}>{tidx[i].toFixed(1)}</td>
+                <td className={td}>{i ? sgn(tidx[i] - tidx[i - 1]) : '—'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="rounded bg-amber-50/70 dark:bg-amber-950/20 p-3 space-y-2">
+        <p className={DEEP_LAB}>분석 — 2024년 기준으로 보면 둔화가 보였다, 그런데 최근 분기에 다시 빨라졌다</p>
+        <div className="grid sm:grid-cols-2 gap-3">
+          <div>
+            <p className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 mb-0.5">둔화가 보이는 숫자</p>
+            <ul className={`${DEEP_P} list-disc pl-4 space-y-1`}>
+              <li><b>연간 감소 폭이 줄었다:</b> 2025 회계연도 −12.7%(−9.6억 달러) → 2026 회계연도 −11.2%(−7.4억 달러).</li>
+              <li><b>반기로 보면 더 뚜렷하다:</b> 2024년 대비 수준이 상반기는 93.9 → 81.6(−12.3포인트), 하반기는 81.3 → 73.8(−7.5포인트). 2026 회계연도 하반기(2025년 12월~2026년 5월)에 빠지는 속도가 줄었다.</li>
+              <li><b>최근 분기 하락 폭이 작다:</b> 2024년 대비 수준 69.6 → 68.0, 1.6포인트만 빠졌다.</li>
+              <li><b>선행지표:</b> 2026 회계연도 4분기에 중화권 재고·수량 두 자릿수 감소, 평균 할인율 하락, 시즌 판매율 개선 — 재고 정리·할인 축소는 보통 매출 반등보다 먼저 온다.</li>
+            </ul>
+          </div>
+          <div>
+            <p className="text-[11px] font-semibold text-red-500 mb-0.5">둔화를 확정하기 어려운 숫자</p>
+            <ul className={`${DEEP_P} list-disc pl-4 space-y-1`}>
+              <li><b>최근 분기 1년 전 대비 −22%(환율 제외 −26%)는 9분기 중 최대 낙폭</b>이다. 2024년 대비 수준으로도 1분기끼리 비교하면 87.1 → 68.0으로 19포인트 빠져, 1년 전(−8.9포인트)보다 오히려 빨랐다.</li>
+              <li><b>4분기 평균으로 매끄럽게 보면</b> 87.5 → 85.3 → 81.5 → 80.0 → 77.7 → 72.9로, 최근 분기가 가장 크게(−4.7포인트) 빠졌다.</li>
+              <li>분기 숫자는 출하 시점에 따라 크게 출렁인다(2026 회계연도 1분기에 수준이 79 → 87로 반짝 오른 것처럼). 한 분기만으로 추세를 말하기 어렵다.</li>
+              <li><b>회사 전망:</b> 디지털 판매처를 공식몰 위주로 줄이고 재고를 정리하면서 남은 2027 회계연도 동안 중국이 더 나빠지고, 압박이 2028 회계연도 초(2027년 중반)까지 이어진다고 했다.</li>
+            </ul>
+          </div>
+        </div>
+        <p className={DEEP_P}>
+          <b>판정 — 둔화 신호는 있었지만 아직 확인 전:</b> 2024년을 기준으로 보면 2026 회계연도에 감소 속도가 줄어든 것은 맞다(연간·반기 모두).
+          다만 최신 분기에 1년 전 대비 낙폭이 다시 커졌고, 회사가 다음 분기를 더 나쁘게 예고했다. 이번 감소의 상당 부분은 수요 붕괴보다 나이키가 일부러 출하를 줄이고 판매처를 정리한 결과라,
+          지난 하락(2022~2023년: −20% → −5% → −19% → −16% → −3% → −8% 뒤 +16% 반등)처럼 "정리 후 반등"이 올 가능성은 있다. 이번이 더 길고 깊다는 점이 다르다.
+        </p>
+        <p className={DEEP_P}>
+          <b>다음에 볼 숫자 — 2026년 12월 발표(2027 회계연도 2분기, 1년 전 14.23억 달러):</b> 매출이 <b>12.7억 달러 이상</b>(1년 전 대비 −11% 이내, 2024년 대비 수준 68 유지)이면
+          둔화가 이어진다는 신호, <b>11억 달러 아래</b>(−23% 이상 감소)면 아직 바닥이 아니라는 신호로 본다.
+        </p>
+      </div>
+      <p className="text-[11px] text-gray-400 dark:text-gray-500">
+        출처: 2021 회계연도 3분기 이후는 YCharts 분기 시계열, 2019~2020 회계연도는 나이키 10-Q 분기·누적 수치로 역산, 2021 회계연도 1·2분기는 연간 합계(82.9억 달러)에 맞춘 추정.
+        모든 연도에서 분기 합이 공시된 연간 매출과 일치한다. 최신 분기와 회사 전망은 2026년 10월 1일 실적 발표·컨퍼런스콜 기준.
+      </p>
+    </div>
+  )
+}
+
 // ── 나이키(NKE) 인사이트 (2026-10-21 분석, 정적 텍스트) ───────────
 function NkeInsight({ data }: { data: StockData }) {
   const decomp = ((data as any).epsDecomp ?? []) as Decomp[]
@@ -7782,6 +7919,8 @@ function NkeInsight({ data }: { data: StockData }) {
           <li>배당수익률 4.3%(주당 약 1.6달러)는 높지만, 내년 예상 이익(1.15~1.35달러)보다 배당이 더 많다. 이익이 회복되지 않으면 배당이 유지될지 지켜봐야 한다.</li>
         </ul>
       </div>
+
+      <NkeChinaBox />
 
       <StockValueClockByKey stockKey="NKE" rolling={data} title="2. 이익 시계 — 적정가 선 vs 주가" />
 
