@@ -8057,8 +8057,8 @@ function WrittenInsightBox({ stockKey }: { stockKey: string }) {
   )
 }
 
-function ScoreBar({ label, v }: { label: string; v: number }) {
-  return (
+function ScoreBar({ label, v, why }: { label: string; v: number; why?: string }) {
+  const bar = (
     <div className="flex items-center gap-2 text-xs">
       <span className="w-20 shrink-0 text-gray-500 dark:text-gray-400">{label}</span>
       <div className="flex gap-0.5">
@@ -8067,6 +8067,13 @@ function ScoreBar({ label, v }: { label: string; v: number }) {
         ))}
       </div>
       <span className="tabular-nums text-gray-600 dark:text-gray-300">{v}</span>
+    </div>
+  )
+  if (!why) return bar
+  return (
+    <div className="space-y-0.5">
+      {bar}
+      <p className="text-xs leading-relaxed text-gray-600 dark:text-gray-300 pl-[5.5rem] max-sm:pl-0">{why}</p>
     </div>
   )
 }
@@ -8089,12 +8096,12 @@ function QualityCard({ stockKey }: { stockKey: string }) {
         <p className="text-xs leading-relaxed text-gray-600 dark:text-gray-300"><b>무슨 회사:</b> {d.biz.what}</p>
         <p className="text-xs leading-relaxed text-gray-600 dark:text-gray-300"><b>돈 버는 방법:</b> {d.biz.money}</p>
       </>)}
-      <div className="grid sm:grid-cols-2 gap-x-6 gap-y-1">
-        <ScoreBar label="경쟁우위(해자)" v={q.moat} />
-        <ScoreBar label="가격결정력" v={q.pricing} />
-        <ScoreBar label="수익성" v={q.profit} />
-        <ScoreBar label="성장성" v={q.growth} />
-        <ScoreBar label="지속가능성" v={q.durability} />
+      <div className={d?.scores ? 'space-y-2.5' : 'grid sm:grid-cols-2 gap-x-6 gap-y-1'}>
+        <ScoreBar label="경쟁우위(해자)" v={q.moat} why={d?.scores?.moat} />
+        <ScoreBar label="가격결정력" v={q.pricing} why={d?.scores?.pricing} />
+        <ScoreBar label="수익성" v={q.profit} why={d?.scores?.profit} />
+        <ScoreBar label="성장성" v={q.growth} why={d?.scores?.growth} />
+        <ScoreBar label="지속가능성" v={q.durability} why={d?.scores?.durability} />
       </div>
       <p className="text-xs text-gray-600 dark:text-gray-300"><b className="text-emerald-600 dark:text-emerald-400">강점:</b> {q.strength}</p>
       <p className="text-xs text-gray-600 dark:text-gray-300"><b className="text-red-500">위험:</b> {q.risk}</p>
