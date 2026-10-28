@@ -470,6 +470,10 @@ import beData         from '@/public/data/rolling/BE_rolling.json'
 import exeData        from '@/public/data/rolling/EXE_rolling.json'
 import ftvData        from '@/public/data/rolling/FTV_rolling.json'
 import twloData       from '@/public/data/rolling/TWLO_rolling.json'
+import poolData       from '@/public/data/rolling/POOL_rolling.json'
+import heiData       from '@/public/data/rolling/HEI_rolling.json'
+import lamrData       from '@/public/data/rolling/LAMR_rolling.json'
+import deoData       from '@/public/data/rolling/DEO_rolling.json'
 
 ChartJS.register(CategoryScale, LinearScale, LogarithmicScale, BarElement, LineElement, PointElement, Filler, Tooltip, Legend)
 
@@ -930,6 +934,10 @@ const STOCKS: Array<{ key: string; data: StockData }> = [
   { key: 'EXE',      data: exeData        as unknown as StockData },
   { key: 'FTV',      data: ftvData        as unknown as StockData },
   { key: 'TWLO',     data: twloData       as unknown as StockData },
+  { key: 'POOL',     data: poolData       as unknown as StockData },
+  { key: 'HEI',      data: heiData       as unknown as StockData },
+  { key: 'LAMR',     data: lamrData       as unknown as StockData },
+  { key: 'DEO',      data: deoData       as unknown as StockData },
 ]
 
 // ── 색상 유틸 ───────────────────────────────────────────────
@@ -3203,6 +3211,21 @@ function segFromMix(mix: SegMix, f: ClockFund): SegClock | undefined {
 }
 
 const SEG_MIX: Record<string, SegMix> = {
+  POOL: { basis: '2025년 사업 보고서', rows: [
+    { n: '수영장 약품·유지 보수 용품', r: 60, p: 66, c: 'bg-blue-600', note: '이미 있는 수영장이 매년 쓰는 염소 약품·필터·부품 교체. 경기와 상관없이 반복되는 매출.' },
+    { n: '장비 교체·리모델링', r: 25, p: 23, c: 'bg-emerald-500', note: '펌프·히터·자동화 장비 교체, 수영장 리모델링.' },
+    { n: '신규 수영장 건설 자재', r: 8, p: 6, c: 'bg-amber-500', note: '새 수영장 건설용 자재. 코로나 때 고점 대비 크게 줄었다.' },
+    { n: '조경·관개(호라이즌)', r: 7, p: 5, c: 'bg-lime-600', note: '조경 업체용 관개·조경 자재.' },
+  ], how: '풀은 사업부를 따로 공시하지 않아, 회사가 밝힌 수요 구성(유지·보수 약 60%, 리모델링·교체 약 3분의 1, 신규 건설 일부)으로 나눴다.' },
+  HEI: { basis: '2025 회계연도 사업 보고서', rows: [
+    { n: '항공 부품·수리(플라이트서포트)', r: 66, p: 68, c: 'bg-sky-600', note: '미국 항공청(FAA) 승인 대체 부품 — 정품보다 30~50% 싸다. 엔진·기체 부품 수리.' },
+    { n: '방산·우주 전자(일렉트로닉테크)', r: 34, p: 32, c: 'bg-slate-600', note: '미사일·위성·의료 장비용 특수 전자 부품. 수백 개의 틈새 제품.' },
+  ] },
+  LAMR: { basis: '2025년 사업 보고서', rows: [
+    { n: '일반 광고판', r: 65, p: 60, c: 'bg-amber-600', note: '고속도로·도로변 인쇄 광고판. 새로 세우기 어려워 기존 자리가 독점.' },
+    { n: '디지털 광고판', r: 30, p: 36, c: 'bg-violet-600', note: '한 자리에서 광고 여러 개를 돌리는 전광판 — 자리당 매출이 몇 배.' },
+    { n: '교통·버스 정류장 광고', r: 5, p: 4, c: 'bg-gray-400', note: '버스 정류장·공항 광고.' },
+  ] },
   FTNT: { basis: '2025년 사업 보고서', rows: [
     { n: '보안 장비(방화벽)', r: 30, p: 25, c: 'bg-red-600', note: '회사 네트워크 입구에 다는 방화벽 장비(포티게이트). 자체 칩을 써서 싸고 빠르다.' },
     { n: '보안 구독·유지보수', r: 70, p: 75, c: 'bg-blue-700', note: '방화벽에 새 위협 정보를 계속 받는 구독, 클라우드 보안. 매년 반복되는 매출.' },

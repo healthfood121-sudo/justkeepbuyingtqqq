@@ -929,10 +929,11 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 
 | 파일 패턴 | 스크립트 | 종목 수 | 내용 |
 |-----------|----------|---------|------|
-| `web/public/data/rolling/{TICKER}_rolling.json` | `generate_all_sp500.py` | 448개 | S&P500 전 종목 10년 롤링 연평균 수익률 (연말 매수, ^SP500TR 벤치마크) |
+| `web/public/data/rolling/{TICKER}_rolling.json` | `generate_all_sp500.py` | 452개 | S&P500 전 종목 10년 롤링 연평균 수익률 (연말 매수, ^SP500TR 벤치마크) |
 
 **1차 배치 (2026-10):** 233개 신규 생성, 7개 건너뜀(기존), 3개 오류 (MMC·DVN·EBAY)  
 **2차 배치 (2026-10):** 186개 신규 생성, 240개 건너뜀(기존), 7개 오류 (MMC·VST·HWM·BE·EXE·FTV·TWLO)  
+**추가 (2026-10-28):** 버크셔가 2026년 1분기에 정리한 종목 중 페이지에 없던 4개 — POOL·HEI·LAMR·DEO (`SP500_INFO` 900~903번). Actions '롤링 데이터 연간 전체 갱신'의 `only` 입력으로 이 4개만 생성. DEO(디아지오)는 영국 회사(IFRS, ADR 1주 = 보통주 4주)라 `fundamentals/DEO.json`이 없다(이익 시계·적정가 없음, 롤링·분석만). 10년이 안 된 FWONK·LILAK·BATRK는 완결 구간이 없어 제외.  
 
 **오류 원인:**
 - `MMC`: yfinance 데이터 없음 (sp500-holdings data.ts에 잘못된 티커 `MRSH` 등록 — 실제 티커는 `MMC`인데 yfinance 조회 실패)

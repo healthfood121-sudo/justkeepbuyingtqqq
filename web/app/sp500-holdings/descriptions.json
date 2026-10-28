@@ -3016,5 +3016,29 @@
     "sector": "미디어/출판",
     "products": "WSJ, Barron's, HarperCollins, 부동산 포털(realtor.com), 호주 미디어 (무의결권)",
     "type": "stock"
+  },
+  "POOL": {
+    "name": "Pool Corporation",
+    "sector": "유통/수영장 용품",
+    "products": "수영장 화학약품·장비·부품 도매 유통(미국 최대, 약 450개 지점)",
+    "type": "stock"
+  },
+  "HEI": {
+    "name": "HEICO Corporation",
+    "sector": "항공우주/방산",
+    "products": "항공기 교체 부품(FAA 승인 대체 부품), 방산·우주 전자 부품",
+    "type": "stock"
+  },
+  "LAMR": {
+    "name": "Lamar Advertising Company",
+    "sector": "옥외 광고/리츠",
+    "products": "고속도로·도심 광고판, 디지털 광고판, 교통 광고(미국·캐나다 약 36만 면)",
+    "type": "stock"
+  },
+  "DEO": {
+    "name": "Diageo plc (ADR)",
+    "sector": "주류",
+    "products": "조니워커·기네스·스미노프·돈훌리오·탱커레이 등 200여 주류 브랜드",
+    "type": "stock"
   }
 }
