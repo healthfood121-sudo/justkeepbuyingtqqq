@@ -7541,6 +7541,8 @@ function RmsInsight({ data }: { data: StockData }) {
         <p className="text-[11px] text-gray-400 dark:text-gray-500">주가는 자동 갱신(실제 종가), EPS는 회사 발표 최근 1년 값(2025년 연간 43.15 − 2025년 상반기 21.43 + 2026년 상반기 21.36). 해설 문장은 2026년 10월 21일 기준.</p>
       </div>
 
+      <RmsRegions />
+
       <HermesValueClock g={gNow} f={f} />
 
       <div>
@@ -7702,6 +7704,328 @@ function RmsInsight({ data }: { data: StockData }) {
         EPS는 2001년 이후 회사 발표 기준(주당이익 또는 순이익÷주식 수)이고, 1996~2000년은 회사 순이익(2005 연차보고서), 1993~1994년은 당시 보도된 순이익을 2001년 주식 수로 나눠 환산했고, 1995년은 1994·1996년 사이 값으로 추정했다.
         참고용 분석이며 미래를 보장하지 않는다.
       </p>
+    </div>
+  )
+}
+
+// ── 에르메스 지역별 분기 매출 (백만 유로) — 2026-10-28 정리 ─────────
+// 출처: 에르메스 분기·반기·연간 보도자료(AMF 공개 데이터 + finance.hermes.com) → scripts/process_hermes_regions.py → hermes_regions.json
+// cc = 1년 전 대비 성장률(환율 영향 제외, 회사 발표), pub = 유로 기준 성장률. 2019년 4분기는 보도자료를 못 찾아 비어 있음
+const RMS_RQ = ['19.1', '19.2', '19.3', '19.4', '20.1', '20.2', '20.3', '20.4', '21.1', '21.2', '21.3', '21.4', '22.1', '22.2', '22.3', '22.4',
+  '23.1', '23.2', '23.3', '23.4', '24.1', '24.2', '24.3', '24.4', '25.1', '25.2', '25.3', '25.4', '26.1', '26.2', '26.3']
+type RmsSeg = { rev: (number | null)[]; cc: (number | null)[]; pub: (number | null)[] }
+type RmsRegion = 'APAC' | 'AM' | 'EU' | 'JP' | 'FR' | 'OTH'
+const RMS_SEG: Record<RmsRegion | 'TOT', RmsSeg> = {
+  APAC: { rev: [655.9, 643.4, 647.5, null, 600.9, 582.9, 810.8, 921, 1130, 1023, 1073, 1025, 1447, 1218, 1577, 1314, 1763, 1534, 1575, 1401, 1920, 1601, 1584, 1543, 1971, 1603, 1589, 1539, 1881, 1651, 1650], cc: [null, null, 21.8, null, -9.0, -9.1, 29.2, null, 93.6, 79.2, 29.3, 6.0, 19.8, 9.6, 33.7, 24.7, 22.5, 33.7, 10.2, 12.3, 13.9, 5.5, 1.0, 8.9, 1.2, 5.2, 6.2, 8.0, 2.2, 2.5, 0.0], pub: [null, null, 24.8, null, -8.4, -9.4, 25.2, null, 88.1, 75.5, 32.3, 11.3, 28.0, 19.1, 47.0, 28.3, 21.8, 26.0, -0.1, 6.6, 8.9, 4.4, 0.6, 10.1, 2.7, 0.1, 0.3, -0.3, -4.6, 3.0, 3.8] },
+  AM: { rev: [269.7, 299.6, 297.5, null, 258.5, 78.3, 269.8, 353, 291, 377, 393, 397, 449, 533, 536, 620, 556, 629, 600, 717, 614, 715, 666, 870, 695, 760, 714, 906, 739, 846, 791], cc: [null, null, 10.7, null, -6.3, -73.8, -5.2, null, 22.6, 416.4, 48.4, 10.3, 44.2, 26.3, 18.1, 40.8, 19.2, 20.5, 20.4, 21.6, 11.8, 13.3, 13.4, 22.3, 11.0, 12.3, 14.1, 12.1, 17.2, 13.7, 8.8], pub: [null, null, 15.3, null, -4.2, -73.9, -9.3, null, 12.6, 381.4, 45.6, 12.7, 54.3, 41.4, 36.4, 56.0, 23.9, 18.0, 11.9, 15.7, 10.3, 13.7, 11.0, 21.4, 13.3, 6.3, 7.2, 4.1, 6.4, 11.3, 10.7] },
+  EU: { rev: [261.6, 283, 313.9, null, 234.7, 114.3, 280.4, 324, 228, 294, 382, 398, 327, 369, 427, 413, 391, 444, 492, 491, 444, 526, 584, 593, 501, 588, 633, 641, 538, 627, 687], cc: [null, null, 10.1, null, -11.0, -59.4, -9.9, null, -0.8, 158.6, 36.4, 22.0, 43.9, 26.1, 12.2, 4.8, 21.3, 22.1, 18.1, 21.0, 14.6, 20.5, 20.3, 20.7, 12.7, 12.6, 10.2, 10.6, 9.7, 8.3, 9.5], pub: [null, null, 10.6, null, -10.3, -59.6, -10.7, null, -2.9, 157.3, 36.4, 22.9, 43.4, 25.7, 11.6, 3.8, 19.7, 20.3, 15.2, 18.9, 13.5, 18.4, 18.8, 20.6, 12.7, 11.7, 8.3, 8.1, 7.6, 6.6, 8.6] },
+  JP: { rev: [204.2, 196.5, 226, null, 213.6, 108.6, 244.3, 267, 241, 228, 241, 267, 277, 269, 276, 279, 322, 314, 304, 321, 357, 336, 360, 384, 421, 394, 389, 387, 404, 394, 402], cc: [null, null, 15.2, null, 0.6, -47.5, 11.1, null, 20.0, 135.6, 4.0, 4.8, 17.4, 23.4, 22.7, 15.7, 26.1, 25.9, 24.1, 26.2, 25.2, 19.5, 22.8, 22.4, 17.2, 14.7, 13.8, 11.2, 9.6, 12.3, 9.6], pub: [null, null, 24.6, null, 4.6, -44.7, 8.1, null, 12.9, 109.9, -1.4, -0.2, 15.0, 17.9, 14.6, 4.6, 16.1, 16.7, 10.0, 15.0, 10.8, 7.0, 18.5, 19.7, 17.9, 17.4, 8.0, 0.8, -3.9, -0.2, 3.4] },
+  FR: { rev: [184.8, 221, 217.5, null, 168.9, 83.4, 167.8, 200, 153, 188, 246, 251, 214, 266, 273, 311, 273, 320, 323, 359, 312, 368, 365, 401, 357, 383, 403, 432, 347, 407, 417], cc: [null, null, 10.4, null, -8.6, -62.3, -22.8, null, -9.3, 125.5, 46.7, 25.6, 39.7, 41.5, 10.9, 23.9, 27.7, 20.1, 18.3, 15.5, 14.3, 15.1, 13.1, 11.8, 14.2, 4.1, 10.4, 7.8, -2.8, 6.2, 3.6], pub: [null, null, 10.4, null, -8.6, -62.3, -22.8, null, -9.3, 125.5, 46.7, 25.6, 39.7, 41.5, 10.9, 23.9, 27.7, 20.1, 18.3, 15.5, 14.3, 15.1, 13.1, 11.8, 14.2, 4.1, 10.4, 7.8, -2.8, 6.2, 3.6] },
+  OTH: { rev: [33.5, 31.1, 25.5, null, 29.0, 15.1, 27.2, 37.0, 41.0, 42.0, 32.0, 42.0, 51.0, 55.0, 47.0, 54.0, 75.0, 77.0, 72.0, 76.0, 158, 153, 145, 171, 185, 177, 154, 182, 160, 170, 149], cc: [null, null, 9.2, null, -13.5, -51.4, 6.5, null, 40.1, 177.1, 16.7, 14.6, 24.7, 31.1, 45.8, 27.7, 46.9, 38.2, 53.1, 39.2, 112.6, 99.4, 104.4, 123.2, 14.1, 20.4, 11.7, 13.5, -5.9, -2.4, -4.5], pub: [null, null, 9.3, null, -13.4, -51.4, 6.6, null, 39.7, 176.2, 16.5, 14.7, 25.2, 32.0, 47.5, 28.8, 47.6, 38.8, 53.2, 39.4, 111, 100, 102.2, 125.2, 16.8, 15.7, 6.1, 6.4, -13.4, -4.1, -2.8] },
+  TOT: { rev: [1609.7, 1674.5, 1727.9, null, 1505.5, 982.5, 1800.3, 2101, 2084, 2151, 2367, 2380, 2765, 2710, 3136, 2991, 3380, 3317, 3365, 3364, 3805, 3699, 3704, 3962, 4129, 3905, 3881, 4087, 4070, 4094, 4096], cc: [null, null, 15.0, null, -7.7, -41.5, 6.9, null, 43.7, 127.1, 31.2, 11.0, 27.1, 19.5, 24.3, 22.9, 23.0, 27.5, 15.6, 17.5, 17.0, 13.3, 11.3, 17.6, 7.2, 9.0, 9.6, 9.8, 5.6, 6.7, 4.3], pub: [null, null, 18.2, null, -6.5, -41.3, 4.2, null, 38.4, 119, 31.5, 13.3, 32.7, 26.0, 32.5, 25.7, 22.3, 22.4, 7.3, 12.5, 12.6, 11.5, 10.1, 17.7, 8.5, 5.6, 4.8, 3.1, -1.4, 4.8, 5.5] },
+}
+const RMS_REG_NAME: Record<RmsRegion, string> = { APAC: '아시아(일본 제외)', AM: '미주', EU: '유럽(프랑스 제외)', JP: '일본', FR: '프랑스', OTH: '기타(중동)' }
+const rmsQ = (i: number) => `20${RMS_RQ[i].slice(0, 2)}년 ${RMS_RQ[i].slice(-1)}분기`
+const rmsAvg4 = (a: (number | null)[], i: number) => { const s = a.slice(i - 3, i + 1).filter((v): v is number => v != null); return s.length === 4 ? s.reduce((x, y) => x + y, 0) / 4 : null }
+const RMS_SRC = '출처: 에르메스 분기·반기·연간 매출 보도자료(프랑스 금융시장청 공개 자료, 에르메스 투자자 사이트). 4분기·2분기처럼 따로 표가 없는 분기는 누적 − 직전 누적으로 계산. 성장률은 회사 발표값.'
+
+function RmsRegionBox({ r, title, intro, children }: { r: RmsRegion; title: string; intro: ReactNode; children: ReactNode }) {
+  const chartRef = useRef<ChartJS | null>(null)
+  const [pluginLoaded, setPluginLoaded] = useState(false)
+  useEffect(() => {
+    import('chartjs-plugin-zoom').then(({ default: z }) => { ChartJS.register(z); setPluginLoaded(true) })
+  }, [])
+  const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-2'
+  const h4 = 'text-sm font-semibold text-gray-800 dark:text-gray-100'
+  const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
+  const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500 text-right whitespace-nowrap'
+  const td = 'py-1.5 px-2 tabular-nums text-right text-gray-700 dark:text-gray-200 whitespace-nowrap'
+  const S = RMS_SEG[r]; const name = RMS_REG_NAME[r]
+  const chartData = {
+    labels: RMS_RQ.map(q => `${q.slice(0, 2)}년 ${q.slice(-1)}Q`),
+    datasets: [
+      { type: 'bar' as const, label: `${name} 분기 매출(억 유로)`, data: S.rev.map(v => v == null ? null : v / 100), yAxisID: 'y',
+        backgroundColor: RMS_RQ.map(q => q.startsWith('26') ? 'rgba(249,115,22,0.75)' : 'rgba(249,115,22,0.4)') },
+      { type: 'line' as const, label: '1년 전 대비 성장률(환율 영향 뺀 %, 2022년부터)', data: S.cc.map((v, i) => i >= 12 ? v : null), yAxisID: 'y2',
+        borderColor: 'rgba(37,99,235,0.9)', backgroundColor: 'rgba(37,99,235,0.9)', pointRadius: 3, spanGaps: false, tension: 0 },
+    ],
+  }
+  const options: any = {
+    responsive: true, maintainAspectRatio: false, animation: false,
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { size: 10 }, maxRotation: 60 } },
+      y: { position: 'left', min: 0, ticks: { font: { size: 11 }, callback: (v: number) => `${v}억` }, grid: { color: 'rgba(128,128,128,0.1)' } },
+      y2: { position: 'right', min: r === 'OTH' ? -20 : -5, max: r === 'OTH' ? 130 : 40, ticks: { font: { size: 11 }, callback: (v: number) => `${v}%` }, grid: { display: false } },
+    },
+    plugins: {
+      legend: { position: 'top' as const, labels: { font: { size: 11 }, boxWidth: 12 } },
+      tooltip: { mode: 'index' as const, intersect: false, callbacks: {
+        title: (it: any[]) => rmsQ(it[0].dataIndex),
+        label: (c: any) => c.dataset.yAxisID === 'y'
+          ? `매출 ${c.parsed.y.toFixed(2)}억 유로`
+          : `1년 전 대비 ${c.parsed.y > 0 ? '+' : ''}${c.parsed.y.toFixed(1)}% (환율 영향 뺀)`,
+      } },
+      zoom: pluginLoaded ? { pan: { enabled: true, mode: 'x' }, zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' } } : {},
+    },
+  }
+  const rows = RMS_RQ.map((_, i) => i).slice(-9)
+  const pct = (v: number | null) => v == null ? '—' : `${v > 0 ? '+' : ''}${v.toFixed(1)}%`
+  const red = (v: number | null) => v != null && v < 0 ? 'text-red-500' : ''
+  return (
+    <div className={box}>
+      <h4 className={h4}>{title}</h4>
+      <p className={p}>{intro}</p>
+      <div className="relative">
+        <button onClick={() => (chartRef.current as any)?.resetZoom?.()}
+          className="absolute top-0 right-0 z-10 px-2 py-0.5 text-xs text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 border border-gray-200 dark:border-gray-700 rounded">줌 초기화</button>
+        <div style={{ height: 300 }}>
+          <Chart ref={chartRef as any} type="bar" data={chartData as any} options={options} />
+        </div>
+        <p className="text-xs text-gray-400 dark:text-gray-600 text-right mt-1">휠: 확대/축소 &nbsp;|&nbsp; 드래그: 이동 · 진한 막대 = 2026년 · 2019년 4분기는 자료 없음</p>
+      </div>
+      <p className={p}>
+        에르메스는 유로로 실적을 내서, 엔·달러·위안이 약해지면 같은 장사를 해도 유로 매출이 줄어 보인다. 그래서 <b>회사가 함께 발표하는 "환율 영향을 뺀 성장률"</b>을 중심으로 본다.
+        2020~2021년은 코로나 충격과 그 반동으로 성장률이 −70%~+400%까지 출렁여 선에서 뺐다.
+      </p>
+      <div className="overflow-x-auto">
+        <table className="text-xs">
+          <thead><tr>
+            <th className={`${th} text-left`}>분기</th><th className={th}>매출(억 유로)</th><th className={th}>1년 전 대비(유로 기준)</th>
+            <th className={th}>1년 전 대비(환율 영향 뺀)</th><th className={th}>최근 4분기 평균(환율 영향 뺀)</th>
+          </tr></thead>
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+            {rows.map(i => (
+              <tr key={i}>
+                <td className={`${td} text-left`}>{rmsQ(i)}</td>
+                <td className={td}>{S.rev[i] == null ? '—' : (S.rev[i]! / 100).toFixed(2)}</td>
+                <td className={`${td} ${red(S.pub[i])}`}>{pct(S.pub[i])}</td>
+                <td className={`${td} font-semibold ${red(S.cc[i])}`}>{pct(S.cc[i])}</td>
+                <td className={td}>{pct(rmsAvg4(S.cc, i))}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="rounded bg-amber-50/70 dark:bg-amber-950/20 p-3 space-y-2">{children}</div>
+      <p className="text-[11px] text-gray-400 dark:text-gray-500">{RMS_SRC}</p>
+    </div>
+  )
+}
+
+function RmsTwoCol({ title, good, bad, goodLab = '버티는 근거', badLab = '둔화 신호' }: { title: string; good: ReactNode; bad: ReactNode; goodLab?: string; badLab?: string }) {
+  return (
+    <>
+      <p className={DEEP_LAB}>{title}</p>
+      <div className="grid sm:grid-cols-2 gap-3">
+        <div>
+          <p className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 mb-0.5">{goodLab}</p>
+          <ul className={`${DEEP_P} list-disc pl-4 space-y-1`}>{good}</ul>
+        </div>
+        <div>
+          <p className="text-[11px] font-semibold text-red-500 mb-0.5">{badLab}</p>
+          <ul className={`${DEEP_P} list-disc pl-4 space-y-1`}>{bad}</ul>
+        </div>
+      </div>
+    </>
+  )
+}
+
+function RmsRegions() {
+  return (
+    <>
+      <div>
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white pt-2">1-1 ~ 1-7. 지역별 매출 — 성장이 어디서 느려지고, 어디서 나오나 (2026년 10월 28일 정리)</h3>
+        <p className="text-xs text-gray-400 dark:text-gray-500">매출 비중 큰 순서 → 마지막에 한 표로 정리. 비중은 2025년 연간 매출(160억 유로) 기준.</p>
+      </div>
+
+      <RmsRegionBox r="APAC" title="1-1. 아시아(일본 제외) — 매출의 42%, 성장이 거의 멈췄다"
+        intro={<>중국·홍콩·대만·한국·싱가포르 등으로, 매출의 약 42%(2025년 67.0억 유로)를 차지하는 가장 큰 지역이다. 환율 영향을 뺀 성장률이
+          2023년 평균 +19.7% → 2024년 +7.3% → 2025년 +5.2% → 2026년(1~3분기) +1.6%로 매년 낮아졌고, 최근 분기는 <b>0.0%</b>로 코로나 때(2020년 2분기) 이후 가장 낮다.</>}>
+        <RmsTwoCol title="분석 — 줄지는 않지만, 3년째 유로 기준 매출이 제자리"
+          good={<>
+            <li><b>아직 마이너스는 아니다:</b> 2026년 분기 성장률 +2.2% → +2.5% → 0.0%. 같은 시기 나이키 중화권은 1년 전보다 −22%였다.</li>
+            <li><b>회사 설명:</b> 중화권은 1~3분기 "보합", 한국이 강하고 3분기에 싱가포르·태국이 빨라졌다. 할인 없이 가격을 지키는 전략도 유지.</li>
+            <li><b>매장 확장이 이제 막 끝났다:</b> 베이징 싼리툰 신규(4월), 홍콩·타이베이(4월), 가오슝(8월), 청두 타이쿠리(9월) 확장 재개장. 2025년 4분기에도 매장 재개장 효과로 +8%까지 올라간 적이 있다.</li>
+          </>}
+          bad={<>
+            <li><b>4분기 평균 성장률이 계속 내려간다:</b> 5.4% → 4.7% → 3.2%. 2024년부터 한 번도 반등이 이어지지 못했다.</li>
+            <li><b>유로 기준으로는 3년째 같은 크기:</b> 3분기 매출 15.75억(2023년) → 15.84억(2024년) → 15.89억(2025년) → 16.50억 유로(2026년). 연간도 62.7억 → 66.5억 → 67.0억 유로로 거의 그대로다.</li>
+            <li><b>가격 인상분보다 성장률이 낮다:</b> 회사는 2026년 평균 가격 인상을 5~6% 수준이라고 했다. 성장률이 0~2%면 파는 물건 수는 줄었을 가능성이 크다.</li>
+            <li><b>매출의 42%가 성장의 13%만 만든다:</b> 2026년 1~3분기 환율 영향을 뺀 매출 증가분 약 6.5억 유로 중 아시아(일본 제외) 몫은 약 0.8억 유로.</li>
+          </>} />
+        <p className={DEEP_P}>
+          <b>판정 — 둔화가 아니라 "정체":</b> 무너지지는 않았지만 성장이 거의 멈췄다. 에르메스 전체 성장률이 낮아진 가장 큰 이유가 이 지역이다.
+          가격을 올려도 매출이 그대로라는 건, 중국 쪽 고객 수나 구매 횟수가 줄고 있다는 신호일 가능성이 크다.
+        </p>
+        <p className={DEEP_P}>
+          <b>다음에 볼 숫자 — 2027년 2월 12일 연간 실적(2026년 4분기):</b> 1년 전 4분기가 +8.0%로 높은 기준이다. 환율 영향을 뺀 성장률이 <b>+3% 이상</b>이면 정체 속에서도 버티는 것,
+          <b>0% 아래</b>면 코로나 이후 처음 감소로 넘어가는 신호로 본다.
+        </p>
+      </RmsRegionBox>
+
+      <RmsRegionBox r="AM" title="1-2. 미주 — 지금 에르메스 성장의 엔진, 다만 3분기에 처음 한 자릿수"
+        intro={<>미국·캐나다·중남미로 매출의 약 19%(2025년 30.8억 유로)다. 환율 영향을 뺀 성장률이 2023년 +20.4% → 2024년 +15.2% → 2025년 +12.4% → 2026년(1~3분기) +13.1%로,
+          다른 지역이 다 느려지는 동안 홀로 10%대 중반을 지켰다.</>}>
+        <RmsTwoCol title="분석 — 가장 강하지만, 최근 분기에 속도가 떨어졌다"
+          good={<>
+            <li><b>성장 기여 1위:</b> 2026년 1~3분기 환율 영향을 뺀 매출 증가분의 약 43%(약 2.8억 유로)가 미주에서 나왔다. 매출 비중(19%)의 두 배 이상이다.</li>
+            <li><b>1분기 +17.2%, 2분기 +13.7%:</b> 회사는 미국·캐나다·중남미, 모든 사업에서 고르게 늘었다고 설명했다.</li>
+            <li><b>매장을 계속 늘린다:</b> 샌디에이고 확장(7월), 시카고 플라자 델 라고·뉴욕 윌리엄스버그 신규(8~9월), 리우데자네이루(8월).</li>
+          </>}
+          bad={<>
+            <li><b>3분기 +8.8%:</b> 2020년 3분기 이후 가장 낮은 분기 성장률이다. 1년 전 3분기(+14.1%)가 높았던 영향도 있다.</li>
+            <li><b>달러 약세로 유로 매출은 덜 늘었다:</b> 1~3분기 유로 기준 +9.5%로, 환율 영향을 뺀 +13.1%보다 3.6%포인트 낮다.</li>
+            <li>4분기 평균 성장률은 14.3% → 12.9%로 내려왔다. 다만 2024~2025년에도 12~15% 사이를 오갔던 범위 안이다.</li>
+          </>} />
+        <p className={DEEP_P}>
+          <b>판정 — 여전히 가장 강하다, 3분기 둔화가 일시적인지 확인 필요:</b> 아시아가 멈춘 자리를 미주가 메우고 있다. 미주가 한 자릿수로 굳으면 에르메스 전체 성장률이 5% 아래로 내려갈 수 있어,
+          지금 가장 중요한 지역이다.
+        </p>
+        <p className={DEEP_P}>
+          <b>다음에 볼 숫자 — 2026년 4분기(1년 전 +12.1%):</b> 환율 영향을 뺀 성장률 <b>+10% 이상</b>이면 3분기는 일시적, <b>+7% 아래</b>면 미주도 둔화가 시작됐다는 신호로 본다.
+        </p>
+      </RmsRegionBox>
+
+      <RmsRegionBox r="EU" title="1-3. 유럽(프랑스 제외) — 20%대에서 9~10%대로 내려와 자리 잡았다"
+        intro={<>영국·이탈리아·스페인·독일 등으로 매출의 약 15%(2025년 23.6억 유로)다. 환율 영향을 뺀 성장률이 2024년 +19.0% → 2025년 +11.5% → 2026년(1~3분기) +9.2%.</>}>
+        <RmsTwoCol title="분석 — 둔화는 2025년에 끝났고, 이후 5분기째 9~10%"
+          good={<>
+            <li><b>안정적:</b> 2025년 3분기부터 +10.2% → +10.6% → +9.7% → +8.3% → +9.5%. 큰 출렁임이 없다.</li>
+            <li><b>현지 고객 중심:</b> 회사는 남유럽과 현지 수요를 꼽았고, 영국은 런던 뉴본드 스트리트 새 매장(2026년 6월) 이후 3분기에 강했다.</li>
+            <li>2026년 1~3분기 성장 기여 약 1.5억 유로(전체의 24%)로 미주 다음이다.</li>
+          </>}
+          bad={<>
+            <li><b>2년 전의 절반 속도:</b> 2024년 분기마다 +15~21%였던 성장률이 9%대로 내려왔다.</li>
+            <li>2분기 +8.3%는 2022년 4분기(+4.8%) 이후 가장 낮았다. 관광객 흐름에 따라 다시 내려갈 수 있다.</li>
+          </>} />
+        <p className={DEEP_P}>
+          <b>판정 — 둔화 후 안정:</b> 더 빠지지도, 다시 빨라지지도 않고 9~10%를 유지하고 있다. 지금은 믿을 만한 두 번째 엔진이다.
+        </p>
+        <p className={DEEP_P}><b>다음에 볼 숫자 — 2026년 4분기(1년 전 +10.6%):</b> <b>+8% 이상</b>이면 안정 유지, +6% 아래면 다시 둔화로 본다.</p>
+      </RmsRegionBox>
+
+      <RmsRegionBox r="JP" title="1-4. 일본 — 성장률은 25% → 10%로 꾸준히 내려오는 중, 유로로는 거의 제자리"
+        intro={<>매출의 약 10%(2025년 15.9억 유로)다. 환율 영향을 뺀 성장률이 2023년 +25.6% → 2024년 +22.5% → 2025년 +14.2% → 2026년(1~3분기) +10.5%로 매년 낮아졌다.</>}>
+        <RmsTwoCol title="분석 — 현지 고객이 받쳐 주지만, 엔화 약세가 유로 매출을 깎는다"
+          good={<>
+            <li><b>여전히 두 자릿수 근처:</b> 2026년 +9.6% → +12.3% → +9.6%. 회사는 "현지 고객의 충성도와 매장 방문객"을 이유로 들었다.</li>
+            <li>오사카 우메다 한큐(3월)·힐튼 플라자(5월) 확장, 나고야 새 매장(6월)이 이어졌다.</li>
+          </>}
+          bad={<>
+            <li><b>4분기 평균 성장률이 2년째 하락:</b> 2024년 말 22.5% → 2025년 말 14.2% → 최근 10.7%. 꾸준히 내려오는 중이다.</li>
+            <li><b>유로로는 거의 안 늘었다:</b> 2026년 1~3분기 유로 기준 −0.3%(환율 영향 뺀 +10.5%). 엔화 약세가 성장분을 거의 다 지웠다.</li>
+          </>} />
+        <p className={DEEP_P}><b>판정 — 천천히 둔화 중, 아직 건강한 수준:</b> 10% 안팎은 에르메스 전체 평균보다 높다. 다만 유로 기준 이익에는 거의 보탬이 안 되고 있다.</p>
+        <p className={DEEP_P}><b>다음에 볼 숫자 — 2026년 4분기(1년 전 +11.2%):</b> <b>+8% 이상</b>이면 두 자릿수 근처 유지, +5% 아래면 둔화가 빨라진다는 신호.</p>
+      </RmsRegionBox>
+
+      <RmsRegionBox r="FR" title="1-5. 프랑스 — 관광객 따라 출렁, 2026년에 크게 느려졌다"
+        intro={<>매출의 약 10%(2025년 15.8억 유로)다. 파리 매장은 해외 관광객 비중이 높다. 환율 영향을 뺀 성장률 2024년 +13.6% → 2025년 +9.1% → 2026년(1~3분기) +2.4%.</>}>
+        <RmsTwoCol title="분석 — 1분기 감소 뒤 회복했지만, 속도는 한참 낮다"
+          good={<>
+            <li><b>1분기 −2.8% 뒤 반등:</b> 2분기 +6.2%, 3분기 +3.6%. 회사는 2분기에 현지 고객과 관광객이 함께 돌아왔다고 했다.</li>
+            <li>3분기에는 휴양지 매장과 현지 고객이 받쳤다.</li>
+          </>}
+          bad={<>
+            <li><b>4분기 평균 성장률 3.7%:</b> 2024년(13.6%)의 4분의 1 수준이다.</li>
+            <li><b>관광객 의존:</b> 1분기 감소는 중동 정세(2026년 3월 이후)로 관광객이 줄어든 영향이라고 회사가 설명했다. 바깥 사정에 따라 언제든 다시 빠질 수 있다.</li>
+          </>} />
+        <p className={DEEP_P}><b>판정 — 크게 둔화:</b> 아시아 다음으로 약하다. 다만 원인이 관광객 흐름이라 한두 분기 만에 바뀔 수 있다.</p>
+        <p className={DEEP_P}><b>다음에 볼 숫자 — 2026년 4분기(1년 전 +7.8%):</b> <b>+5% 이상</b>이면 회복, 0% 아래면 다시 감소.</p>
+      </RmsRegionBox>
+
+      <RmsRegionBox r="OTH" title="1-6. 기타(중동) — 2024년 두 배는 회계 효과, 2026년은 정세 불안으로 감소"
+        intro={<>주로 중동(아랍에미리트·쿠웨이트·카타르 등)으로 매출의 약 4%(2025년 7.0억 유로)다. 작은 지역이라 전체 숫자에 주는 영향은 작다.</>}>
+        <RmsTwoCol title="분석 — 숫자가 크게 튄 이유" goodLab="숫자 읽는 법" badLab="최근 흐름"
+          good={<>
+            <li><b>2024년 +110%는 수요가 아니다:</b> 2024년 1월 에르메스가 아랍에미리트 매장 사업의 최대주주가 되면서, 그 매장 매출이 통째로 에르메스 실적에 들어왔다.</li>
+            <li>그 효과가 끝난 2025년 성장률은 +11~20%로 정상 범위였다.</li>
+          </>}
+          bad={<>
+            <li><b>2026년 3분기 연속 감소:</b> −5.9% → −2.4% → −4.5%. 회사는 2026년 3월 이후 걸프 지역 정세 불안을 이유로 들었다.</li>
+            <li>2분기에 현지 고객 중심으로 조금씩 회복한다고 했지만, 3분기에 다시 감소 폭이 커졌다.</li>
+          </>} />
+        <p className={DEEP_P}><b>판정 — 감소 중, 원인은 지역 정세:</b> 에르메스 경쟁력 문제라기보다 바깥 사정이다. 비중이 4%라 전체 판단에는 참고만 한다.</p>
+      </RmsRegionBox>
+
+      <RmsRegionSummary />
+    </>
+  )
+}
+
+function RmsRegionSummary() {
+  const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-2'
+  const h4 = 'text-sm font-semibold text-gray-800 dark:text-gray-100'
+  const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
+  const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500 text-right whitespace-nowrap'
+  const td = 'py-1.5 px-2 tabular-nums text-right text-gray-700 dark:text-gray-200 whitespace-nowrap'
+  const L = RMS_RQ.length - 1
+  const y25 = (s: (number | null)[]) => s.slice(24, 28).reduce((a: number, b) => a + (b ?? 0), 0)
+  const tot25 = y25(RMS_SEG.TOT.rev)
+  const verdict: Record<RmsRegion, [string, string]> = {
+    AM: ['가장 강함 (3분기 주춤)', 'text-emerald-600 dark:text-emerald-400'],
+    EU: ['둔화 후 안정', 'text-emerald-600 dark:text-emerald-400'],
+    JP: ['천천히 둔화', 'text-amber-600 dark:text-amber-400'],
+    FR: ['크게 둔화', 'text-amber-600 dark:text-amber-400'],
+    APAC: ['정체', 'text-red-500'],
+    OTH: ['감소 (정세)', 'text-red-500'],
+  }
+  const order: RmsRegion[] = ['AM', 'EU', 'JP', 'FR', 'APAC', 'OTH']
+  const avgY = (s: (number | null)[], a: number, b: number) => { const v = s.slice(a, b).filter((x): x is number => x != null); return v.reduce((x, y) => x + y, 0) / v.length }
+  const T = RMS_SEG.TOT
+  const pct = (v: number | null) => v == null ? '—' : `${v > 0 ? '+' : ''}${v.toFixed(1)}%`
+  return (
+    <div className={box}>
+      <h4 className={h4}>1-7. 한 표로 보기 — 아시아가 멈추고, 미주·유럽·일본이 성장을 만든다</h4>
+      <p className={p}>최신 분기(2026년 3분기) 기준, 성장률은 모두 환율 영향을 뺀 값. "4분기 평균"은 분기 출렁임을 없애려고 최근 4분기 성장률을 평균한 값이다. 강한 순서대로 놓았다.</p>
+      <div className="overflow-x-auto">
+        <table className="text-xs">
+          <thead><tr>
+            <th className={`${th} text-left`}>지역</th><th className={th}>매출 비중</th><th className={th}>최근 분기</th><th className={th}>최근 4분기 평균 (1년 전)</th>
+            <th className={th}>2023년 평균</th><th className={`${th} text-left`}>판정</th>
+          </tr></thead>
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+            {order.map(r => {
+              const S = RMS_SEG[r]
+              return (
+                <tr key={r}>
+                  <td className={`${td} text-left`}>{RMS_REG_NAME[r]}</td>
+                  <td className={td}>{(y25(S.rev) / tot25 * 100).toFixed(0)}%</td>
+                  <td className={`${td} ${(S.cc[L] ?? 0) < 0 ? 'text-red-500' : ''}`}>{pct(S.cc[L])}</td>
+                  <td className={td}>{pct(rmsAvg4(S.cc, L))} <span className="text-gray-400">({pct(rmsAvg4(S.cc, L - 4))})</span></td>
+                  <td className={td}>{pct(avgY(S.cc, 16, 20))}</td>
+                  <td className={`${td} text-left font-semibold ${verdict[r][1]}`}>{verdict[r][0]}</td>
+                </tr>
+              )
+            })}
+            <tr className="font-semibold">
+              <td className={`${td} text-left`}>회사 전체</td><td className={td}>100%</td><td className={td}>{pct(T.cc[L])}</td>
+              <td className={td}>{pct(rmsAvg4(T.cc, L))} <span className="text-gray-400">({pct(rmsAvg4(T.cc, L - 4))})</span></td>
+              <td className={td}>{pct(avgY(T.cc, 16, 20))}</td><td className={td}></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div className="rounded bg-amber-50/70 dark:bg-amber-950/20 p-3 space-y-2">
+        <p className={DEEP_LAB}>인사이트</p>
+        <ul className={`${DEEP_P} list-disc pl-4 space-y-1`}>
+          <li><b>모든 지역이 2023년보다 느리다.</b> 회사 전체 성장률(환율 영향 뺀)은 2023년 +20.9% → 2024년 +14.8% → 2025년 +8.9% → 2026년 1~3분기 +5.5%, 최근 분기 +4.3%로 코로나 때 이후 가장 낮다.
+            다만 나이키처럼 매출이 줄어드는 게 아니라 <b>성장 속도가 줄어드는</b> 것이다.</li>
+          <li><b>성장의 출처가 바뀌었다.</b> 2026년 1~3분기 환율 영향을 뺀 매출 증가분(약 6.5억 유로) 중 미주 43%, 유럽(프랑스 제외) 24%, 일본 19%, 아시아(일본 제외) 13%, 프랑스 4%, 중동 −3%.
+            2023년까지 성장을 이끌던 아시아(매출의 42%)가 거의 기여하지 못한다.</li>
+          <li><b>유로로 보면 더 느리다.</b> 엔·달러·위안 약세로 2026년 1~3분기 유로 기준 성장률은 +2.9%(환율 영향 뺀 +5.5%), 환율로 약 3.1억 유로가 깎였다. 주당순이익(EPS)은 유로 기준이라 이 차이가 그대로 이익에 반영된다.</li>
+          <li><b>가격 인상(5~6%)보다 낮은 성장률:</b> 회사 전체 +4.3%(3분기)는 가격 인상분보다 낮다. 가방 대기 수요로 받쳐지는 가죽 제품(1~3분기 +10.2%)은 여전히 강하고, 의류·시계·향수 등이 약해 평균을 끌어내리고 있다.</li>
+        </ul>
+        <p className={DEEP_P}>
+          <b>판정 — 무너지는 곳은 없지만, 성장 속도가 "고성장 → 한 자릿수 중반"으로 내려왔다:</b> 아시아가 멈춰도 미주·유럽·일본이 받쳐 전체는 4~7%를 유지하고 있다.
+          지금 PER(1번 표)은 과거 고성장 시절 기준이라, 이 속도가 이어지면 PER이 더 내려갈 이유가 된다. 반대로 아시아가 다시 5% 이상으로 돌아오면 전체 성장률은 금방 8~10%로 올라간다.
+        </p>
+        <p className={DEEP_P}>
+          <b>2027년 2월 12일 연간 실적(2026년 4분기)에서 한 번에 볼 것:</b> ① 아시아(일본 제외) +3% 이상 ② 미주 +10% 이상 ③ 회사 전체 +6% 이상(1년 전 +9.8%).
+          셋 다면 "둔화 멈춤", 하나 이하면 "둔화 계속"으로 본다.
+        </p>
+      </div>
+      <p className="text-[11px] text-gray-400 dark:text-gray-500">{RMS_SRC} 성장 기여 = 1년 전 1~3분기 매출 × 환율 영향 뺀 성장률. 가격 인상 수준은 2025년 연간 실적 발표 때 회사 설명.</p>
     </div>
   )
 }

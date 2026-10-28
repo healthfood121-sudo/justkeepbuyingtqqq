@@ -11,20 +11,17 @@ OUT = Path(__file__).resolve().parent.parent / "web" / "public" / "data" / "herm
 ROWS = [("FR", r"France"), ("EU", r"Europe \(excl\.? ?France\)|Europe excl(?:uding|\.) France"), ("EUT", r"Total Europe"),
         ("JP", r"Japan"), ("APAC", r"Asia[- ]Pacific \(excl\.? ?Japan\)|Asia[- ]Pacific excl(?:uding|\.) Japan|Asia excl(?:uding|\.) Japan"),
         ("ASIA", r"Total Asia"), ("AM", r"Americas"), ("OTH", r"Other(?: \(Middle East\))?"), ("TOT", r"TOTAL|Total")]
-NUM = r"\(?-?[\d,\.]+%?\)?"
+NUM = r"\(?-?[\d,\.]+\)?%?\)?"
 def num(s):
     s = s.strip(); neg = s.startswith("(") or s.startswith("-")
     v = float(s.strip("()%-").replace(",", "")); return -v if neg else v
 
-def period_of(head, rel_date):
-    h = head.lower()
+def period_of(h):
+    h = h.lower()
     for k, q in [("1st quarter", "Q1"), ("first quarter", "Q1"), ("2nd quarter", "Q2"), ("second quarter", "Q2"), ("3rd quarter", "Q3"), ("third quarter", "Q3"),
-                 ("4th quarter", "Q4"), ("fourth quarter", "Q4")]:
+                 ("4th quarter", "Q4"), ("fourth quarter", "Q4"), ("end of march", "Q1"), ("first half", "H1"), ("end of june", "H1"), ("june 30", "H1"),
+                 ("end of september", "9M"), ("sept", "9M"), ("dec. 31", "FY"), ("dec 31", "FY"), ("end of december", "FY"), ("full year", "FY")]:
         if k in h: return q
-    if "end of march" in h: return "Q1"
-    if "end of june" in h or "first half" in h or "h1" in h: return "H1"
-    if "end of september" in h: return "9M"
-    if "end of december" in h or "full year" in h or "full-year" in h: return "FY"
     return None
 
 recs = []  # (rel_date, period, year, region -> (cur, prev, pub, cc))
@@ -32,21 +29,30 @@ for f in sorted(SRC.glob("*.txt")):
     m = re.search(r"(20\d{6})", f.name)
     if not m: continue
     rd = m.group(1)
-    L = f.read_text(errors="ignore").splitlines()
+    L = [re.sub(r"(?<=[\d)])\s+%", "%", l) for l in f.read_text(errors="ignore").splitlines()]
     for i, line in enumerate(L):
-        if not re.search(r"In millions of [Ee]uros", line): continue
-        yrs = re.findall(r"\b(20\d\d)\b", line + " " + " ".join(L[max(0, i - 3):i]))
-        head = " ".join(L[max(0, i - 8):i + 1])
-        per = period_of(head, rd)
-        if not per or not yrs: continue
+        if not re.match(rf"\s*France\s+{NUM}\s+{NUM}", line): continue
+        per = yrs = None; skip = False
+        for j in range(i - 1, max(-1, i - 15), -1):
+            t = L[j]
+            if "Report" in t: skip = True; break
+            if yrs is None:
+                ys = re.findall(r"\b(20\d\d)\b", t)
+                if len(ys) >= 2: yrs = ys
+            if per is None and not re.search(r"REMINDER", t): per = period_of(t)
+            if re.search(r"REMINDER", t) and per is None: per = period_of(t)
+            if per and yrs: break
+        if skip or not per or not yrs: continue
         y = int(yrs[0]); row = {}
-        for l in L[i + 1:i + 16]:
+        for l in L[i:i + 14]:
             for k, pat in ROWS:
-                mm = re.match(rf"\s*(?:{pat})\s+({NUM})\s+({NUM})\s+({NUM})\s+({NUM})\s*$", l)
-                if mm and k not in row:
-                    row[k] = tuple(num(x) for x in mm.groups()); break
+                mm = re.match(rf"\s*(?:{pat})\s+({NUM})\s+({NUM})\s+({NUM})\s+({NUM})(?:\s+{NUM})?\s*$", l)
+                if mm:
+                    if k not in row: row[k] = tuple(num(x) for x in mm.groups())
+                    break
             if "TOT" in row: break
         if len(row) >= 8: recs.append((rd, per, y, row))
+for r in recs: print("REC", r[0], r[1], r[2], r[3]["TOT"][:2])
 
 # 분기 값 만들기: Q1, Q2, Q3, Q4 직접 + (H1−Q1 → Q2), (9M−H1 → Q3), (FY−9M → Q4)
 Q = {}  # (year, q) -> {region: rev}; G = 성장률(발표, 환율 제외)
