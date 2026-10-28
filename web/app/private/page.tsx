@@ -7706,19 +7706,31 @@ function RmsInsight({ data }: { data: StockData }) {
   )
 }
 
-// ── 나이키 중화권 분기 매출 (백만 달러, 회계연도 6월~이듬해 5월) — 2026-10-28 정리 ─────────
-// 출처: FY21 Q3 이후 YCharts 분기 시계열, FY19~FY20은 10-Q 분기·누적 수치 역산, FY21 Q1·Q2는 연간 합계(82.9억)에 맞춘 추정(est)
-// 연간 합계는 모든 연도에서 공시 연간 매출과 일치. FY27 Q1(2026년 8월)은 실적 발표(11.80억, −22%, 환율 제외 −26%)
-const NKE_CHINA: { q: string; end: string; v: number; est?: boolean }[] = [
-  ['FY19', [1379, 1544, 1588, 1697]], ['FY20', [1679, 1847, 1506, 1647]], ['FY21', [1785, 2293, 2279, 1933]],
-  ['FY22', [1982, 1844, 2160, 1561]], ['FY23', [1656, 1788, 1994, 1810]], ['FY24', [1735, 1863, 2084, 1863]],
-  ['FY25', [1666, 1711, 1733, 1476]], ['FY26', [1512, 1423, 1615, 1297]], ['FY27', [1180]],
-].flatMap(([fy, vs]) => (vs as number[]).map((v, i) => {
-  const y = 2000 + Number((fy as string).slice(2)) - (i < 2 ? 1 : 0)
-  return { q: `${fy} Q${i + 1}`, end: `${String(y).slice(2)}.${['8', '11', '2', '5'][i]}`, v, est: fy === 'FY21' && i < 2 }
-}))
+// ── 나이키 지역별 분기 실적 (백만 달러, 회계연도 6월~이듬해 5월) — 2026-10-28 정리 ─────────
+// 출처: SEC 10-Q·10-K XBRL 지역별 수치(scripts/export_nike_segments.py → process_nike_segments.py → nike_segments.json).
+// 4분기 = 연간 − 9개월 누적. 2026 회계연도 4분기 회사 매출총이익·북미 이익은 10-K 재분류로 역산 불가 → null
+const NKE_Q = ['FY19', 'FY20', 'FY21', 'FY22', 'FY23', 'FY24', 'FY25', 'FY26', 'FY27'].flatMap(fy => [0, 1, 2, 3].map(i => {
+  const y = 2000 + Number(fy.slice(2)) - (i < 2 ? 1 : 0)
+  return { q: `${fy} Q${i + 1}`, end: `${String(y).slice(2)}.${['8', '11', '2', '5'][i]}` }
+})).slice(0, 33)
+type NkeSeg = { rev: number[]; wh: (number | null)[]; dtc: (number | null)[]; ebit: (number | null)[] }
+const NKE_SEG: Record<'NA' | 'EMEA' | 'GC' | 'APLA' | 'CONV', NkeSeg> & { TOT: { rev: number[]; gp: (number | null)[] } } = {
+  NA: { rev: [4145, 3782, 3810, 4165, 4293, 3982, 3979, 2230, 4225, 4006, 3564, 5384, 4879, 4477, 3882, 5115, 5510, 5830, 4913, 5355, 5423, 5625, 5070, 5278, 4826, 5179, 4864, 4703, 5020, 5633, 5026, 4832, 5127], wh: [2829, 2655, 2547, 2844, 2864, 2734, 2521, 1252, 2719, 2354, 1894, 3219, 2678, 2327, 1769, 2847, 3027, 3183, 2323, 2740, 2772, 2902, 2440, 2890, 2475, 2866, 2499, 2644, 2736, 3550, 2768, 2904, 2981], dtc: [1316, 1127, 1263, 1321, 1429, 1248, 1458, 978, 1506, 1652, 1670, 2165, 2201, 2150, 2113, 2268, 2483, 2647, 2590, 2615, 2651, 2723, 2630, 2388, 2351, 2313, 2365, 2059, 2284, 2083, 2258, 1928, 2146], ebit: [1077, 884, 916, null, null, null, null, null, null, null, null, null, 1434, 1235, 967, 1478, 1377, 1497, 1190, 1390, 1434, 1526, 1400, 1462, 1216, 1371, 1103, 1045, 1134, 1261, 981, null, 1170] },
+  EMEA: { rev: [2607, 2313, 2435, 2457, 2773, 2537, 2709, 1328, 2910, 2958, 2609, 2979, 3307, 3142, 2779, 3251, 3333, 3489, 3246, 3350, 3610, 3567, 3138, 3292, 3143, 3303, 2811, 3000, 3331, 3392, 2874, 2975, 3176], wh: [1916, 1617, 1785, 1758, 2042, 1794, 1956, 782, 1973, 1985, 1805, 2049, 2224, 2112, 1858, 2183, 2203, 2242, 2061, 2016, 2379, 2138, 1966, 2079, 2074, 2120, 1817, 2011, 2261, 2188, 1919, 2093, 2233], dtc: [691, 696, 650, 699, 731, 743, 753, 546, 937, 973, 804, 930, 1083, 1030, 921, 1068, 1130, 1247, 1185, 1334, 1231, 1429, 1172, 1213, 1069, 1183, 994, 989, 1070, 1204, 955, 882, 943], ebit: [501, 450, 538, null, null, null, null, null, null, null, null, null, 875, 806, 713, 899, 975, 990, 785, 781, 930, 927, 734, 797, 792, 831, 480, 472, 735, 733, 515, 434, 728] },
+  GC: { rev: [1379, 1544, 1588, 1697, 1679, 1847, 1506, 1647, 1780, 2298, 2279, 1933, 1982, 1844, 2160, 1561, 1656, 1788, 1994, 1810, 1735, 1863, 2084, 1863, 1666, 1711, 1733, 1476, 1512, 1423, 1615, 1297, 1180], wh: [871, 897, 936, 1022, 986, 1028, 881, 908, 964, 1159, 1269, 1121, 1114, 896, 1241, 830, 839, 897, 1126, 1004, 895, 1027, 1243, 1097, 971, 904, 995, 829, 893, 767, 888, 707, 644], dtc: [508, 647, 652, 675, 693, 819, 625, 739, 816, 1139, 1010, 812, 868, 948, 919, 731, 817, 891, 868, 806, 840, 836, 841, 766, 695, 807, 738, 647, 619, 656, 727, 590, 536], ebit: [502, 561, 639, null, null, null, null, null, null, null, null, null, 701, 569, 784, 311, 541, 511, 702, 529, 525, 514, 722, 548, 502, 375, 421, 304, 377, 191, 467, 243, 248] },
+  APLA: { rev: [1270, 1298, 1307, 1379, 1345, 1468, 1414, 801, 1099, 1471, 1315, 1458, 1465, 1347, 1461, 1682, 1535, 1599, 1601, 1696, 1572, 1805, 1647, 1705, 1462, 1744, 1470, 1575, 1490, 1667, 1490, 1596, 1463], wh: [934, 937, 906, 969, 950, 1022, 953, 483, 708, 925, 846, 908, 927, 784, 860, 958, 914, 965, 913, 944, 937, 1051, 939, 1003, 890, 1030, 844, 914, 949, 994, 891, 945, 946], dtc: [336, 361, 401, 410, 395, 446, 461, 318, 391, 546, 469, 550, 538, 563, 601, 724, 621, 634, 688, 752, 635, 754, 708, 702, 572, 714, 626, 661, 541, 673, 599, 651, 517], ebit: [323, 321, 339, null, null, null, null, null, null, null, null, null, 481, 388, 478, 549, 500, 485, 485, 462, 414, 521, 471, 479, 402, 460, 346, 319, 350, 389, 332, 316, 324] },
+  CONV: { rev: [527, 425, 463, 491, 555, 480, 506, 305, 563, 476, 570, 596, 629, 557, 567, 593, 643, 586, 612, 586, 588, 519, 495, 480, 501, 429, 405, 357, 366, 300, 264, 244, 263], wh: [366, 256, 308, 317, 367, 286, 330, 171, 373, 259, 366, 355, 369, 303, 303, 317, 344, 304, 323, 328, 329, 257, 257, 255, 275, 212, 208, 180, 195, 143, 142, 125, 144], dtc: [133, 141, 129, 150, 164, 166, 150, 122, 171, 196, 181, 218, 231, 221, 236, 243, 261, 240, 252, 221, 224, 222, 203, 183, 190, 184, 170, 150, 145, 132, 105, 96, 97], ebit: [98, 44, 79, null, null, null, null, null, null, null, null, null, 204, 132, 168, 165, 209, 153, 164, 150, 167, 115, 98, 94, 121, 53, 39, 27, 39, -4, -40, 23, 25] },
+  TOT: { rev: [9948, 9374, 9611, 10184, 10660, 10326, 10104, 6313, 10594, 11243, 10357, 12344, 12248, 11357, 10871, 12234, 12687, 13315, 12390, 12825, 12939, 13388, 12429, 12606, 11589, 12354, 11269, 11097, 11720, 12427, 11279, 10972, 11213], gp: [4397, 4105, 4339, 4633, 4871, 4544, 4473, 2353, 4741, 4847, 4719, 5655, 5696, 5213, 5067, 5503, 5615, 5711, 5371, 5595, 5720, 5971, 5562, 5634, 5257, 5389, 4675, 4469, 4943, 5045, 4530, null, 4798] },
+}
+type NkeRegion = keyof typeof NKE_SEG & ('NA' | 'EMEA' | 'GC' | 'APLA' | 'CONV')
+const NKE_REG_NAME: Record<NkeRegion, string> = { NA: '북미', EMEA: '유럽·중동·아프리카', GC: '중화권', APLA: '아시아태평양·중남미', CONV: '컨버스' }
+const nkeIdx = (s: number[]) => s.map((v, i) => i >= 24 ? (v / s[20 + (i % 4)]) * 100 : null) // FY24 = 인덱스 20~23
+const nkeYoy = (s: (number | null)[]) => s.map((v, i) => i >= 4 && v != null && s[i - 4] != null ? (v / s[i - 4]! - 1) * 100 : null)
+const nkeSgn = (v: number, d = 1) => `${v > 0 ? '+' : ''}${v.toFixed(d)}`
 
-function NkeChinaBox() {
+function NkeRegionBox({ r, title, intro, y2, children, src }: {
+  r: NkeRegion; title: string; intro: ReactNode; y2: [number, number]; children: ReactNode; src: ReactNode
+}) {
   const chartRef = useRef<ChartJS | null>(null)
   const [pluginLoaded, setPluginLoaded] = useState(false)
   useEffect(() => {
@@ -7729,21 +7741,13 @@ function NkeChinaBox() {
   const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
   const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500 text-right whitespace-nowrap'
   const td = 'py-1.5 px-2 tabular-nums text-right text-gray-700 dark:text-gray-200 whitespace-nowrap'
-  const D = NKE_CHINA
-  const yoy = D.map((d, i) => i >= 4 ? (d.v / D[i - 4].v - 1) * 100 : null)
-  const fy24 = D.filter(d => d.q.startsWith('FY24')).map(d => d.v)
-  // 2024 회계연도(FY24) 같은 분기 = 100
-  const idx = D.map(d => {
-    const fy = Number(d.q.slice(2, 4)); const qi = Number(d.q.slice(-1)) - 1
-    return fy >= 25 ? (d.v / fy24[qi]) * 100 : null
-  })
-  const sgn = (v: number, d = 1) => `${v > 0 ? '+' : ''}${v.toFixed(d)}`
-
+  const S = NKE_SEG[r]; const D = NKE_Q; const name = NKE_REG_NAME[r]
+  const yoy = nkeYoy(S.rev), idx = nkeIdx(S.rev), whY = nkeYoy(S.wh), dtY = nkeYoy(S.dtc)
   const chartData = {
     labels: D.map(d => d.end),
     datasets: [
-      { type: 'bar' as const, label: '중화권 분기 매출(억 달러)', data: D.map(d => d.v / 100), yAxisID: 'y',
-        backgroundColor: D.map(d => d.q.startsWith('FY24') ? 'rgba(16,185,129,0.6)' : d.est ? 'rgba(156,163,175,0.35)' : 'rgba(249,115,22,0.55)') },
+      { type: 'bar' as const, label: `${name} 분기 매출(억 달러)`, data: S.rev.map(v => v / 100), yAxisID: 'y',
+        backgroundColor: D.map(d => d.q.startsWith('FY24') ? 'rgba(16,185,129,0.6)' : 'rgba(249,115,22,0.55)') },
       { type: 'line' as const, label: '2024 회계연도 같은 분기 = 100', data: idx, yAxisID: 'y2',
         borderColor: 'rgba(37,99,235,0.9)', backgroundColor: 'rgba(37,99,235,0.9)', pointRadius: 3, spanGaps: false, tension: 0 },
     ],
@@ -7753,57 +7757,91 @@ function NkeChinaBox() {
     scales: {
       x: { grid: { display: false }, ticks: { font: { size: 10 }, maxRotation: 60 } },
       y: { position: 'left', min: 0, ticks: { font: { size: 11 }, callback: (v: number) => `${v}억` }, grid: { color: 'rgba(128,128,128,0.1)' } },
-      y2: { position: 'right', min: 50, max: 110, ticks: { font: { size: 11 } }, grid: { display: false } },
+      y2: { position: 'right', min: y2[0], max: y2[1], ticks: { font: { size: 11 } }, grid: { display: false } },
     },
     plugins: {
       legend: { position: 'top' as const, labels: { font: { size: 11 }, boxWidth: 12 } },
       tooltip: { mode: 'index' as const, intersect: false, callbacks: {
-        title: (it: any[]) => `${D[it[0].dataIndex].q} (${D[it[0].dataIndex].end}월 끝)${D[it[0].dataIndex].est ? ' · 추정치' : ''}`,
+        title: (it: any[]) => `${D[it[0].dataIndex].q} (${D[it[0].dataIndex].end}월 끝)`,
         label: (c: any) => c.dataset.yAxisID === 'y'
-          ? `매출 ${(D[c.dataIndex].v / 100).toFixed(2)}억 달러${yoy[c.dataIndex] != null ? ` (1년 전보다 ${sgn(yoy[c.dataIndex]!)}%)` : ''}`
+          ? `매출 ${(S.rev[c.dataIndex] / 100).toFixed(2)}억 달러${yoy[c.dataIndex] != null ? ` (1년 전보다 ${nkeSgn(yoy[c.dataIndex]!)}%)` : ''}`
           : `2024 회계연도 같은 분기 대비 ${c.parsed.y.toFixed(1)}`,
       } },
       zoom: pluginLoaded ? { pan: { enabled: true, mode: 'x' }, zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' } } : {},
     },
   }
-  const tail = D.slice(-9)
-  const tidx = idx.slice(-9) as number[]
-  const tyoy = yoy.slice(-9) as number[]
+  const rows = D.map((d, i) => ({ ...d, i })).slice(-9)
+  const red = (v: number | null) => v != null && v < 0 ? 'text-red-500' : ''
+  const pct = (v: number | null) => v == null ? '—' : `${nkeSgn(v)}%`
   return (
     <div className={box}>
-      <h4 className={h4}>1-1. 중화권 매출 — 감소가 둔화되고 있나 (2026년 10월 28일 정리)</h4>
-      <p className={p}>
-        중화권은 나이키 매출의 약 14%(2025 회계연도 65.9억 ÷ 463억 달러)이고, 코로나 직전까지 22분기 연속 두 자릿수 성장하던 시장이다. 분기 최고점은 2021년 2월 분기 22.8억 달러,
-        최근(2026년 8월 분기) 11.8억 달러는 그 절반(−48%)으로 2018년 이후 가장 낮다. 9분기 연속 감소 중이다.
-      </p>
+      <h4 className={h4}>{title}</h4>
+      <p className={p}>{intro}</p>
       <div className="relative">
         <button onClick={() => (chartRef.current as any)?.resetZoom?.()}
           className="absolute top-0 right-0 z-10 px-2 py-0.5 text-xs text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 border border-gray-200 dark:border-gray-700 rounded">줌 초기화</button>
         <div style={{ height: 300 }}>
           <Chart ref={chartRef as any} type="bar" data={chartData as any} options={options} />
         </div>
-        <p className="text-xs text-gray-400 dark:text-gray-600 text-right mt-1">휠: 확대/축소 &nbsp;|&nbsp; 드래그: 이동 · 초록 막대 = 2024 회계연도(기준), 회색 = 추정치</p>
+        <p className="text-xs text-gray-400 dark:text-gray-600 text-right mt-1">휠: 확대/축소 &nbsp;|&nbsp; 드래그: 이동 · 초록 막대 = 2024 회계연도(기준)</p>
       </div>
-      <p className={p}><b>2024 회계연도(2023년 6월~2024년 5월) 같은 분기를 100으로 놓고 본 수준</b> — 계절 차이를 없애고 "하락 직전 대비 얼마나 빠졌나"를 본다.</p>
+      <p className={p}>
+        <b>2024 회계연도(2023년 6월~2024년 5월) 같은 분기를 100으로 놓고 본 수준</b> — 계절 차이를 없애고 "하락 직전 대비 얼마나 빠졌나"를 본다.
+        도매 = 대리점·백화점 등 다른 가게에 넘긴 매출, 직영 = 나이키 매장·공식몰에서 직접 판 매출. 지역 이익률 = 그 지역 이익(이자·세금 전) ÷ 매출.
+      </p>
       <div className="overflow-x-auto">
         <table className="text-xs">
           <thead><tr>
-            <th className={`${th} text-left`}>분기</th><th className={th}>매출(억 달러)</th><th className={th}>1년 전 대비</th><th className={th}>2024년 대비 수준</th><th className={th}>직전 분기 수준 대비</th>
+            <th className={`${th} text-left`}>분기</th><th className={th}>매출(억 달러)</th><th className={th}>1년 전 대비</th><th className={th}>2024년 대비 수준</th>
+            <th className={th}>직전 분기 수준 대비</th><th className={th}>도매 1년 전 대비</th><th className={th}>직영 1년 전 대비</th><th className={th}>지역 이익률</th>
           </tr></thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-            {tail.map((d, i) => (
-              <tr key={d.q}>
-                <td className={`${td} text-left`}>{d.q} <span className="text-gray-400">({d.end}월 끝)</span></td>
-                <td className={td}>{(d.v / 100).toFixed(2)}</td>
-                <td className={`${td} ${tyoy[i] < 0 ? 'text-red-500' : ''}`}>{sgn(tyoy[i])}%</td>
-                <td className={td}>{tidx[i].toFixed(1)}</td>
-                <td className={td}>{i ? sgn(tidx[i] - tidx[i - 1]) : '—'}</td>
+            {rows.map(({ q, end, i }, k) => (
+              <tr key={q}>
+                <td className={`${td} text-left`}>{q} <span className="text-gray-400">({end}월 끝)</span></td>
+                <td className={td}>{(S.rev[i] / 100).toFixed(2)}</td>
+                <td className={`${td} ${red(yoy[i])}`}>{pct(yoy[i])}</td>
+                <td className={td}>{idx[i] == null ? '100' : idx[i]!.toFixed(1)}</td>
+                <td className={td}>{k && idx[i] != null && idx[i - 1] != null ? nkeSgn(idx[i]! - idx[i - 1]!) : '—'}</td>
+                <td className={`${td} ${red(whY[i])}`}>{pct(whY[i])}</td>
+                <td className={`${td} ${red(dtY[i])}`}>{pct(dtY[i])}</td>
+                <td className={td}>{S.ebit[i] == null ? '—' : `${(S.ebit[i]! / S.rev[i] * 100).toFixed(1)}%`}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      <div className="rounded bg-amber-50/70 dark:bg-amber-950/20 p-3 space-y-2">
+      <div className="rounded bg-amber-50/70 dark:bg-amber-950/20 p-3 space-y-2">{children}</div>
+      <p className="text-[11px] text-gray-400 dark:text-gray-500">{src}</p>
+    </div>
+  )
+}
+
+const NKE_SRC = '출처: 나이키 10-Q·10-K(미국 증권거래위원회 공시)의 지역별 수치. 4분기는 연간 − 3분기까지 누적으로 계산했고, 분기 합이 공시된 연간 매출과 일치한다.'
+function NkeTwoCol({ title, good, bad, goodLab = '돌아서는 신호', badLab = '아직 확인되지 않은 부분' }: { title: string; good: ReactNode; bad: ReactNode; goodLab?: string; badLab?: string }) {
+  return (
+    <>
+      <p className={DEEP_LAB}>{title}</p>
+      <div className="grid sm:grid-cols-2 gap-3">
+        <div>
+          <p className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 mb-0.5">{goodLab}</p>
+          <ul className={`${DEEP_P} list-disc pl-4 space-y-1`}>{good}</ul>
+        </div>
+        <div>
+          <p className="text-[11px] font-semibold text-red-500 mb-0.5">{badLab}</p>
+          <ul className={`${DEEP_P} list-disc pl-4 space-y-1`}>{bad}</ul>
+        </div>
+      </div>
+    </>
+  )
+}
+
+function NkeChinaBox() {
+  return (
+    <NkeRegionBox r="GC" y2={[50, 115]} title="1-1. 중화권 매출 — 감소가 둔화되고 있나 (2026년 10월 28일 정리)"
+      intro={<>중화권은 나이키 매출의 약 14%(2025 회계연도 65.9억 ÷ 463억 달러)이고, 코로나 직전까지 22분기 연속 두 자릿수 성장하던 시장이다. 분기 최고점은 2020년 11월 분기 23.0억 달러,
+        최근(2026년 8월 분기) 11.8억 달러는 그 절반(−49%)으로 2018년 이후 가장 낮다. 9분기 연속 감소 중이다.</>}
+      src={<>{NKE_SRC} 최신 분기와 회사 전망은 2026년 10월 1일 실적 발표·컨퍼런스콜 기준.</>}>
         <p className={DEEP_LAB}>분석 — 2024년 기준으로 보면 둔화가 보였다, 그런데 최근 분기에 다시 빨라졌다</p>
         <div className="grid sm:grid-cols-2 gap-3">
           <div>
@@ -7834,11 +7872,218 @@ function NkeChinaBox() {
           <b>다음에 볼 숫자 — 2026년 12월 발표(2027 회계연도 2분기, 1년 전 14.23억 달러):</b> 매출이 <b>12.7억 달러 이상</b>(1년 전 대비 −11% 이내, 2024년 대비 수준 68 유지)이면
           둔화가 이어진다는 신호, <b>11억 달러 아래</b>(−23% 이상 감소)면 아직 바닥이 아니라는 신호로 본다.
         </p>
-      </div>
-      <p className="text-[11px] text-gray-400 dark:text-gray-500">
-        출처: 2021 회계연도 3분기 이후는 YCharts 분기 시계열, 2019~2020 회계연도는 나이키 10-Q 분기·누적 수치로 역산, 2021 회계연도 1·2분기는 연간 합계(82.9억 달러)에 맞춘 추정.
-        모든 연도에서 분기 합이 공시된 연간 매출과 일치한다. 최신 분기와 회사 전망은 2026년 10월 1일 실적 발표·컨퍼런스콜 기준.
+    </NkeRegionBox>
+  )
+}
+
+function NkeNaBox() {
+  return (
+    <NkeRegionBox r="NA" y2={[70, 115]} title="1-2. 북미 매출 — 매출은 돌아섰다, 다만 도매가 끌어올린 회복"
+      intro={<>북미는 나이키 매출의 약 44%(2026 회계연도 205.1억 ÷ 464억 달러)로 가장 큰 지역이다. 2025 회계연도에 −8.5%(213.96억 → 195.72억 달러) 줄었다가
+        2026 회계연도에 +4.8%(205.11억)로 돌아섰고, 최근 5분기 연속 1년 전보다 늘었다. 지역 중 유일하게 다시 성장하고 있다.</>}
+      src={NKE_SRC}>
+      <NkeTwoCol title="분석 — 매출은 2024년 수준에 거의 돌아왔지만, 직영은 10분기째 줄고 있다"
+        good={<>
+          <li><b>5분기 연속 성장:</b> 1년 전 대비 +4.0% → +8.8% → +3.3% → +2.7% → +2.1%. 2024년 대비 수준도 89~96(2025 회계연도) → 92~100(2026 회계연도) → 94.5(최근)로 올라왔다.</li>
+          <li><b>최근 4분기 평균 수준 96.3</b>으로, 1년 전 4분기 평균(92.4)보다 4포인트 높다. 다섯 지역 중 이 숫자가 오른 곳은 북미뿐이다.</li>
+          <li><b>도매 복귀 전략이 숫자로 보인다:</b> 도매 매출은 2026 회계연도 2분기에 1년 전보다 +24%(28.7억 → 35.5억 달러), 최근 분기도 +9%. 2024년 같은 분기보다 7.5% 많다.
+            직영 위주로 가다 줄였던 운동화 가게·백화점 납품을 다시 늘린 결과다.</li>
+          <li><b>이익률이 더 떨어지지 않는다:</b> 지역 이익률이 1년 전 22.6% → 최근 22.8%로 처음 멈췄다.</li>
+        </>}
+        bad={<>
+          <li><b>성장 속도가 계속 느려진다:</b> +8.8% → +3.3% → +2.7% → +2.1%. 반등의 힘이 약해지고 있다.</li>
+          <li><b>직영은 10분기 연속 감소:</b> 최근 분기 21.5억 달러로 1년 전보다 −6%, 2024년 같은 분기(26.5억)의 81% 수준. 북미 매출 중 직영 비중이 49% → 42%로 내려왔다.
+            소비자가 나이키 매장·공식몰에서 사는 수요는 아직 살아나지 않았다는 뜻이다.</li>
+          <li><b>도매 매출은 "가게 진열대 채우기"가 섞여 있다:</b> 가게들이 재고를 새로 들이는 첫해에는 숫자가 크게 늘지만, 그 물건이 실제로 팔려야 다음 주문이 이어진다.</li>
+          <li><b>이익은 덜 돌아왔다:</b> 매출 수준은 2024년의 95%인데 지역 이익률은 26.4% → 22.8%. 도매는 직영보다 남는 게 적고, 할인 판매와 관세 비용도 겹쳤다.</li>
+        </>} />
+      <p className={DEEP_P}>
+        <b>판정 — 다섯 지역 중 가장 먼저 돌아섰다. 다만 아직 "가게에 넣은 물건" 위주의 회복이다:</b> 매출은 2024년 수준에 거의 돌아왔지만,
+        나이키가 소비자에게 직접 판 매출은 계속 줄고 있다. 도매 주문이 한 번 채우고 끝나는지, 실제 판매로 이어지는지는 직영과 다음 도매 주문이 같이 늘어야 확인된다.
       </p>
+      <p className={DEEP_P}>
+        <b>다음에 볼 숫자 — 2026년 12월 발표(2027 회계연도 2분기):</b> 1년 전 분기(56.3억 달러)는 도매가 크게 몰린 분기라 비교 기준이 높다.
+        매출이 <b>55억 달러 이상</b>(−2% 이내)이면 회복이 이어진다는 신호, <b>53억 달러 아래</b>(−6% 이상)면 도매 채우기가 한 번으로 끝났다는 신호로 본다.
+        더 중요한 숫자는 <b>직영이 1년 전(20.8억 달러)보다 늘어나는지</b> — 10분기 감소가 멈추면 소비자 수요가 돌아온다는 첫 신호다.
+      </p>
+    </NkeRegionBox>
+  )
+}
+
+function NkeEmeaBox() {
+  return (
+    <NkeRegionBox r="EMEA" y2={[70, 115]} title="1-3. 유럽·중동·아프리카 매출 — 반짝 회복 뒤 다시 약해지는 중"
+      intro={<>유럽·중동·아프리카는 매출의 약 27%(2026 회계연도 125.7억 달러)로 두 번째로 큰 지역이다. 2025 회계연도 −9.9%(136.07억 → 122.57억 달러) 뒤
+        2026 회계연도 +2.6%(125.72억)로 소폭 늘었지만, 최근 2분기 연속 다시 줄었다.</>}
+      src={NKE_SRC}>
+      <NkeTwoCol title="분석 — 2026 회계연도 초 반등이 이어지지 못했다"
+        good={<>
+          <li><b>2026 회계연도 1~3분기는 성장:</b> 1년 전 대비 +6.0% → +2.7% → +2.2%. 2025 회계연도의 −7~−13% 감소는 멈췄다.</li>
+          <li><b>도매는 버틴다:</b> 최근 분기 도매 22.3억 달러로 1년 전과 거의 같고(−1%), 2024년 같은 분기의 94% 수준.</li>
+          <li><b>이익률이 바닥에서 조금 올랐다:</b> 1분기끼리 비교하면 22.1%(1년 전) → 22.9%(최근).</li>
+        </>}
+        bad={<>
+          <li><b>다시 감소로 돌아섰다:</b> +2.2% → −0.8% → −4.7%. 2024년 대비 수준도 95.1 → 91.6 → 90.4 → 88.0으로 3분기 연속 내려갔다.</li>
+          <li><b>최근 4분기 평균 수준 91.3 — 1년 전(91.4)과 같다.</b> 1년 동안 회복 없이 제자리였다는 뜻이다.</li>
+          <li><b>직영이 빠르게 줄고 있다:</b> 최근 분기 9.4억 달러로 1년 전보다 −12%, 2024년 같은 분기의 77% 수준. 3분기 연속 감소.</li>
+          <li><b>달러 기준 숫자의 착시 가능성:</b> 2026 회계연도에는 유로가 달러 대비 크게 올라, 같은 유로 매출도 달러로 바꾸면 커 보였다.
+            환율 효과를 빼면 2026 회계연도의 +2.6%도 사실상 제자리나 감소였을 가능성이 크다.</li>
+          <li><b>이익은 2024년보다 한참 아래:</b> 지역 이익률 25.8%(2024년 같은 분기) → 22.9%.</li>
+        </>} />
+      <p className={DEEP_P}>
+        <b>판정 — 아직 돌아서지 않았다:</b> 2025 회계연도의 급한 감소는 멈췄지만, 2026 회계연도 초의 반등이 이어지지 못하고 다시 감소로 넘어갔다.
+        북미처럼 도매가 끌어올리는 힘도 없고, 직영은 줄고 있다. 지금은 "바닥 부근에서 다시 밀리는" 구간이다.
+      </p>
+      <p className={DEEP_P}>
+        <b>다음에 볼 숫자 — 2027 회계연도 2분기(1년 전 33.9억 달러):</b> 매출이 <b>33.9억 달러 이상</b>(1년 전 이상)이면 다시 돌아서는 신호,
+        <b>32억 달러 아래</b>(−6% 이상)면 감소가 굳어지는 신호로 본다. 직영 감소 폭(최근 −12%)이 줄어드는지도 같이 본다.
+      </p>
+    </NkeRegionBox>
+  )
+}
+
+function NkeAplaBox() {
+  return (
+    <NkeRegionBox r="APLA" y2={[70, 115]} title="1-4. 아시아태평양·중남미 매출 — 감소는 멈췄지만 오르지도 않는다"
+      intro={<>일본·한국·동남아·호주·중남미를 묶은 지역으로 매출의 약 13%(2026 회계연도 62.4억 달러)다. 2025 회계연도 −7.1%(67.29억 → 62.51억 달러) 뒤
+        2026 회계연도는 −0.1%(62.43억)로 제자리였다.</>}
+      src={NKE_SRC}>
+      <NkeTwoCol title="분석 — 2024년의 90~95% 수준에서 2년째 옆걸음"
+        good={<>
+          <li><b>감소가 멈췄다:</b> 2025 회계연도 분기별 −3~−11% 감소 → 최근 5분기는 +1.9%, −4.4%, +1.4%, +1.3%, −1.8%로 0% 근처.</li>
+          <li><b>도매가 안정적:</b> 최근 분기 도매 9.5억 달러로 1년 전과 같고, 2024년 같은 분기(9.4억)보다 오히려 조금 많다.</li>
+          <li><b>2024년 대비 수준이 좁은 범위에 머문다:</b> 최근 5분기 90.5~94.8. 크게 빠지지 않는다.</li>
+        </>}
+        bad={<>
+          <li><b>오르지도 않는다:</b> 최근 4분기 평균 수준 92.4로 1년 전(93.3)보다 조금 낮다. 2년째 2024년의 90~95% 수준에 묶여 있다.</li>
+          <li><b>직영은 10분기 연속 감소:</b> 최근 분기 5.2억 달러로 1년 전보다 −4%, 2024년 같은 분기(6.4억)의 81%.</li>
+          <li><b>이익률은 계속 내려간다:</b> 지역 이익률 26.3%(2024년 같은 분기) → 23.5%(1년 전) → 22.1%(최근). 매출을 지키려고 할인·마케팅 비용을 더 쓰고 있다는 뜻이다.</li>
+          <li>달러 기준이라 중남미 통화 약세가 섞여 있다. 회사는 이 지역을 여러 나라 합계로만 보여줘 어느 나라가 좋고 나쁜지는 알 수 없다.</li>
+        </>} />
+      <p className={DEEP_P}>
+        <b>판정 — 바닥에서 옆걸음:</b> 더 나빠지지는 않지만 돌아섰다고 할 근거도 없다. 매출은 지키고 있는데 이익률이 계속 내려가는 점이 부담이다.
+      </p>
+      <p className={DEEP_P}>
+        <b>다음에 볼 숫자 — 2027 회계연도 2분기(1년 전 16.7억 달러):</b> <b>17.2억 달러 이상</b>(+3% 이상)이면 옆걸음을 벗어나는 신호,
+        16.2~17.2억 달러면 옆걸음 계속, <b>16.2억 달러 아래</b>(−3% 이상)면 다시 밀리는 신호로 본다. 지역 이익률이 22%를 지키는지도 본다.
+      </p>
+    </NkeRegionBox>
+  )
+}
+
+function NkeConvBox() {
+  return (
+    <NkeRegionBox r="CONV" y2={[30, 115]} title="1-5. 컨버스 매출 — 가장 나쁘다, 아직 바닥 신호 없음"
+      intro={<>나이키가 가진 별도 브랜드 컨버스(척테일러 운동화)다. 매출 비중은 2.5%(2026 회계연도 11.7억 달러)로 작지만, 감소 속도는 가장 빠르다.
+        2024 회계연도 20.8억 → 2025 회계연도 16.9억(−18.7%) → 2026 회계연도 11.7억 달러(−30.6%). 14분기 연속 1년 전보다 줄었고, 분기 최고점(2022년 8월 분기 6.4억 달러)의 41% 수준이다.</>}
+      src={NKE_SRC}>
+      <NkeTwoCol title="분석 — 감소율 숫자는 조금 줄었지만, 매출 수준은 계속 내려간다"
+        goodLab="둔화로 보일 수 있는 숫자" badLab="둔화가 아닌 이유"
+        good={<>
+          <li><b>1년 전 대비 감소율이 조금 줄었다:</b> −34.8% → −31.7% → −28.1%.</li>
+          <li><b>직전 분기보다는 늘었다:</b> 2.44억 → 2.63억 달러. 다만 1분기(6~8월)는 원래 계절적으로 큰 분기다.</li>
+          <li><b>이익은 다시 흑자:</b> 2026 회계연도 2·3분기 적자(−0.04억, −0.40억 달러) 뒤 최근 2분기는 소폭 흑자(이익률 9.5%).</li>
+        </>}
+        bad={<>
+          <li><b>감소율이 줄어든 건 비교 대상이 이미 많이 줄었기 때문:</b> 2024년 대비 수준은 53.3 → 50.8 → 44.7로 최근 분기에 오히려 6포인트 더 빠졌다.</li>
+          <li><b>도매·직영 모두 감소:</b> 최근 분기 도매 −26%, 직영 −33%. 14분기째 직영이 줄고 있다.</li>
+          <li><b>이익이 사라졌다:</b> 연간 지역 이익 6.8억(2023 회계연도) → 4.7억 → 2.4억 → 0.2억 달러(2026 회계연도). 이익률 28%짜리 사업이 거의 0이 됐다.</li>
+        </>} />
+      <p className={DEEP_P}>
+        <b>판정 — 아직 바닥 신호 없음:</b> 매출이 2024년의 절반 아래로 내려갔고 계속 빠지고 있다. 다만 회사 전체 매출의 2.5%라, 컨버스가 더 줄어도 나이키 전체 숫자에는 영향이 작다.
+        나이키 전체를 볼 때는 "참고만 하는" 지역이다.
+      </p>
+      <p className={DEEP_P}>
+        <b>다음에 볼 숫자 — 2027 회계연도 2분기(1년 전 3.0억 달러):</b> 감소율이 <b>−15% 이내</b>(2.55억 달러 이상)로 줄면 바닥을 다지는 신호,
+        2억 달러 아래(−33% 이상)면 감소가 계속되는 신호로 본다.
+      </p>
+    </NkeRegionBox>
+  )
+}
+
+// 1-6. 어느 지역이 먼저 돌아서고 있나 — 지역별 핵심 숫자 한 표
+function NkeRegionSummary() {
+  const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-2'
+  const h4 = 'text-sm font-semibold text-gray-800 dark:text-gray-100'
+  const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
+  const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500 text-right whitespace-nowrap'
+  const td = 'py-1.5 px-2 tabular-nums text-right text-gray-700 dark:text-gray-200 whitespace-nowrap'
+  const L = 32 // 최신 분기(FY27 Q1)
+  const fy26 = (s: number[]) => s.slice(28, 32).reduce((a, b) => a + b, 0)
+  const totFy26 = fy26(NKE_SEG.TOT.rev)
+  const verdict: Record<NkeRegion, [string, string]> = {
+    NA: ['돌아섬 (도매 위주)', 'text-emerald-600 dark:text-emerald-400'],
+    APLA: ['바닥에서 옆걸음', 'text-amber-600 dark:text-amber-400'],
+    EMEA: ['반등 뒤 다시 약해짐', 'text-amber-600 dark:text-amber-400'],
+    GC: ['아직 감소 중', 'text-red-500'],
+    CONV: ['아직 감소 중', 'text-red-500'],
+  }
+  const order: NkeRegion[] = ['NA', 'APLA', 'EMEA', 'GC', 'CONV']
+  const rows = order.map(r => {
+    const S = NKE_SEG[r]; const idx = nkeIdx(S.rev) as number[]; const yoy = nkeYoy(S.rev) as number[]; const dt = nkeYoy(S.dtc) as number[]
+    const avg = (a: number[]) => a.reduce((x, y) => x + y, 0) / a.length
+    return {
+      r, share: fy26(S.rev) / totFy26 * 100, yoy: yoy[L], idx: idx[L],
+      avgNow: avg(idx.slice(L - 3, L + 1)), avgPrev: avg(idx.slice(L - 7, L - 3)), dt: dt[L],
+      mNow: S.ebit[L]! / S.rev[L] * 100, m24: S.ebit[20]! / S.rev[20] * 100,
+    }
+  })
+  const T = NKE_SEG.TOT; const gm = (i: number) => T.gp[i]! / T.rev[i] * 100
+  return (
+    <div className={box}>
+      <h4 className={h4}>1-6. 어느 지역이 먼저 돌아서고 있나 — 북미만 돌아섰고, 나머지가 아직 발목을 잡는다</h4>
+      <p className={p}>최신 분기(2027 회계연도 1분기, 2026년 8월 끝) 기준. 돌아선 순서대로 놓았다. "최근 4분기 평균 수준"은 분기 출렁임을 없애려고 2024년 대비 수준을 4분기씩 평균한 값이다.</p>
+      <div className="overflow-x-auto">
+        <table className="text-xs">
+          <thead><tr>
+            <th className={`${th} text-left`}>지역</th><th className={th}>매출 비중</th><th className={th}>1년 전 대비</th><th className={th}>2024년 대비 수준</th>
+            <th className={th}>최근 4분기 평균 수준 (1년 전)</th><th className={th}>직영 1년 전 대비</th><th className={th}>지역 이익률 (2024년 같은 분기)</th><th className={`${th} text-left`}>판정</th>
+          </tr></thead>
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+            {rows.map(x => (
+              <tr key={x.r}>
+                <td className={`${td} text-left`}>{NKE_REG_NAME[x.r]}</td>
+                <td className={td}>{x.share.toFixed(x.share < 5 ? 1 : 0)}%</td>
+                <td className={`${td} ${x.yoy < 0 ? 'text-red-500' : ''}`}>{nkeSgn(x.yoy)}%</td>
+                <td className={td}>{x.idx.toFixed(1)}</td>
+                <td className={td}>{x.avgNow.toFixed(1)} <span className="text-gray-400">({x.avgPrev.toFixed(1)})</span></td>
+                <td className={`${td} ${x.dt < 0 ? 'text-red-500' : ''}`}>{nkeSgn(x.dt)}%</td>
+                <td className={td}>{x.mNow.toFixed(1)}% <span className="text-gray-400">({x.m24.toFixed(1)}%)</span></td>
+                <td className={`${td} text-left font-semibold ${verdict[x.r][1]}`}>{verdict[x.r][0]}</td>
+              </tr>
+            ))}
+            <tr className="font-semibold">
+              <td className={`${td} text-left`}>회사 전체</td><td className={td}>100%</td>
+              <td className={`${td} text-red-500`}>{nkeSgn((T.rev[L] / T.rev[L - 4] - 1) * 100)}%</td>
+              <td className={td}>{(T.rev[L] / T.rev[20] * 100).toFixed(1)}</td>
+              <td className={td}>—</td><td className={td}>—</td>
+              <td className={td}>매출총이익률 {gm(L).toFixed(1)}% <span className="text-gray-400">({gm(20).toFixed(1)}%)</span></td>
+              <td className={td}></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div className="rounded bg-amber-50/70 dark:bg-amber-950/20 p-3 space-y-2">
+        <p className={DEEP_LAB}>인사이트</p>
+        <ul className={`${DEEP_P} list-disc pl-4 space-y-1`}>
+          <li><b>돌아선 곳은 북미 하나다.</b> 매출의 44%를 차지하는 가장 큰 지역이 먼저 돌아선 건 좋은 출발이지만, 최근 분기 북미 증가분(+1.1억 달러)보다
+            중화권(−3.3억)·유럽(−1.6억)·컨버스(−1.0억) 감소분이 훨씬 커서 회사 전체 매출은 1년 전보다 −4.3% 줄었다.</li>
+          <li><b>다섯 지역 모두 직영이 줄고 있다.</b> 북미의 회복도 도매(다른 가게에 넘긴 물건)에서 나왔다. 나이키가 소비자에게 직접 판 매출이 늘기 시작하는 지역이 나와야
+            "수요가 돌아왔다"고 말할 수 있다.</li>
+          <li><b>이익률은 모든 지역에서 2024년보다 3~19포인트 낮다.</b> 매출이 먼저 돌고, 할인이 줄어 이익률이 따라오는 순서라면 지금은 첫 단계(북미 매출)만 확인된 상태다.</li>
+          <li><b>회사 전체 매출총이익률(팔고 남은 돈의 비율)은 처음으로 멈췄다:</b> 1년 전 {gm(28).toFixed(1)}% → 최근 {gm(L).toFixed(1)}%로,
+            2025 회계연도 2분기부터 이어진 하락 이후 처음 1년 전보다 올랐다(2026 회계연도 4분기는 공시 재분류로 계산 불가). 할인 판매가 줄기 시작했다는 첫 신호일 수 있다.</li>
+        </ul>
+        <p className={DEEP_P}>
+          <b>판정 — 회복은 "북미 → 이익률" 순서로 아주 초기 단계:</b> 나이키 전체가 돌아서려면 북미 성장이 이어지면서 유럽이 다시 플러스로 가고, 중화권 감소 폭이 줄어야 한다.
+          회사가 2027 회계연도 매출을 한 자릿수 후반 감소로 예고한 것도 이 그림과 맞는다 — 북미 하나로는 아직 전체를 끌어올리지 못한다.
+        </p>
+        <p className={DEEP_P}>
+          <b>2026년 12월 발표에서 한 번에 볼 것:</b> ① 북미 직영이 1년 전(20.8억 달러)보다 늘었나 ② 유럽이 1년 전(33.9억) 이상인가 ③ 중화권이 12.7억 달러 이상인가(−11% 이내)
+          ④ 매출총이익률이 1년 전({gm(29).toFixed(1)}%)보다 높은가. 넷 중 셋 이상이면 "돌아서는 중", 하나 이하면 "아직"으로 본다.
+        </p>
+      </div>
+      <p className="text-[11px] text-gray-400 dark:text-gray-500">{NKE_SRC} 매출 비중은 2026 회계연도 기준.</p>
     </div>
   )
 }
@@ -7921,6 +8166,11 @@ function NkeInsight({ data }: { data: StockData }) {
       </div>
 
       <NkeChinaBox />
+      <NkeNaBox />
+      <NkeEmeaBox />
+      <NkeAplaBox />
+      <NkeConvBox />
+      <NkeRegionSummary />
 
       <StockValueClockByKey stockKey="NKE" rolling={data} title="2. 이익 시계 — 적정가 선 vs 주가" />
 

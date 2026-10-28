@@ -1034,3 +1034,13 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 - SEC 자동 데이터로 안 되는 종목 처리(`export_fundamentals.py`): `CIK_EXTRA`(CIK가 바뀐 종목의 예전 번호 — 엑슨모빌 34088, 마시 맥레넌 62709; `export_cashflow.py`도 같은 표로 예전 공시를 합침), `TICKER_NOW`(티커 변경 — MMC→MRSH), `MANUAL_EPS`(주식 종류별로만 EPS를 공시하는 종목의 10-K 희석 EPS 직접 입력 — 비자 2013~2025, 에리 2022~2025). 컨스텔레이션·KKR·아레스는 같은 이유로 EPS가 없지만 검증된 연도별 숫자를 다 못 찾아 아직 비어 있음.
 - `cash.revQ` = 가장 최근 한 분기 매출 `{start, end, rev, prev}`(백만 달러, prev = 1년 전 같은 분기). 10-Q의 80~115일 기간 값, 또는 4분기 = 연간 − 9개월 누적. 매출 항목은 `REV` 목록 순서로 찾음(은행은 회사마다 정의가 달라 참고용). 사용처: `/private` 이익 시계 째깍째깍 칸 '매출: 1초 / 오늘 0시부터' 타일(page.tsx `revQClock`, 끝난 지 240일 넘은 분기는 안 씀). 직접 조사한 판매 숫자는 page.tsx `SALES_CLOCK`·`nkeShoeTiles`·`rmsBagTiles`에 출처와 함께 있음.
 - 에르메스는 SEC 대상이 아니라 page.tsx `RMS_FIN`(회사 발표 2014~2025: 순이익·영업이익·자기자본·재작성 순현금·조정 잉여현금흐름 2017~)으로 계산.
+
+#### 나이키 지역별 분기 실적 (2026-10-28)
+| 파일 | 크기 | 스크립트 | 내용 | 사용처 |
+|---|---|---|---|---|
+| `web/public/data/nike_segments_raw.json` | 약 3.5MB | `scripts/export_nike_segments.py` (Actions 'export-nike-segments', SEC는 샌드박스에서 접속 불가) | 2018-09 이후 10-Q·10-K XBRL에서 매출·EBIT·매출총이익·재고 항목 원자료(차원 포함, 9,592개) | 아래 처리 스크립트 입력 |
+| `web/public/data/nike_segments.json` | 약 30KB | `scripts/process_nike_segments.py` | 지역(북미·유럽·중화권·아시아태평양중남미·컨버스)별 분기 매출·지역 EBIT·도매·직영, 회사 전체 매출·매출총이익. FY19 Q1~FY27 Q1 33분기, 백만 달러 | `/private` 나이키 인사이트 1-1~1-6 (page.tsx `NKE_SEG`에 정적 복사) |
+- 4분기 = 10-K 연간 − 같은 시작일의 9개월 누적. 제품 축(ProductOrService) 차원이 붙은 값은 제외.
+- 2026 회계연도 4분기 회사 매출총이익·북미 EBIT은 10-K 재분류로 역산 값이 비정상(매출총이익률 49%, 북미 EBIT 20억) → null. 매출은 정상.
+- EBIT은 FY19 Q4~FY21 Q4가 태그 차이로 비어 있음.
+- 중화권 분기 매출은 이전에 YCharts·추정으로 넣었던 값과 일치(FY21 Q1·Q2 추정치 1785·2293 → 실제 1780·2298로 교체).
