@@ -1,0 +1,30 @@
+name: 나이키 지역별 분기 매출 원자료 (SEC XBRL)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install requests
+      - run: python scripts/export_nike_segments.py
+        env:
+          PYTHONUNBUFFERED: "1"
+      - name: 커밋 & 푸시
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add web/public/data/nike_segments_raw.json
+          if git diff --cached --quiet; then echo "변경 없음"; else
+            git commit -m "auto: 나이키 지역별 분기 매출 원자료"
+            git pull --rebase origin master
+            git push origin HEAD:master
+          fi
