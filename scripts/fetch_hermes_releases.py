@@ -25,38 +25,35 @@ def harvest(text):
     for m in PDF.findall(t): links.add(m.replace("&amp;", "&"))
     for m in REL.findall(t): links.add("https://assets-finance.hermes.com" + m.replace("&amp;", "&"))
 
-pages = ["https://finance.hermes.com/en/", "https://finance.hermes.com/en/publications/", "https://finance.hermes.com/en/press-releases/",
-         "https://finance.hermes.com/en/financial-information/", "https://finance.hermes.com/en/regulated-information/",
-         "https://finance.hermes.com/en/publications/press-releases/"]
+pages = ["https://finance.hermes.com/en/press-releases-and-news", "https://finance.hermes.com/en/regulated-information/"]
+pages += [f"https://finance.hermes.com/en/press-releases-and-news?page={i}" for i in range(1, 60)]
+pages += [f"https://finance.hermes.com/en/regulated-information?page={i}" for i in range(1, 30)]
 for y in range(2019, 2027):
-    pages += [f"https://finance.hermes.com/en/publications/?year={y}", f"https://finance.hermes.com/en/press-releases/?year={y}"]
-for pg in range(0, 12):
-    pages += [f"https://finance.hermes.com/en/publications/?page={pg}", f"https://finance.hermes.com/en/press-releases/?page={pg}"]
-for u in pages:
+    for sl in [f"first-quarter-{y}-revenue", f"{y}-first-quarter-revenue", f"q1-{y}-revenue", f"revenue-first-quarter-{y}",
+               f"first-half-{y}-results", f"{y}-first-half-results", f"{y}-half-year-results", f"half-year-{y}-results", f"h1-{y}-results",
+               f"third-quarter-{y}-revenue", f"{y}-third-quarter-revenue", f"q3-{y}-revenue", f"revenue-third-quarter-{y}",
+               f"{y}-full-year-results", f"full-year-{y}-results", f"{y}-annual-results", f"annual-results-{y}"]:
+        pages.append(f"https://finance.hermes.com/en/publications/{sl}")
+seen = set(); k = 0
+while k < len(pages) and k < 700:
+    u = pages[k]; k += 1
+    if u in seen: continue
+    seen.add(u)
     r = get(u)
-    if r is not None and r.ok:
-        harvest(r.text)
-        for m in re.findall(r'href="(/en/[^"]*(?:press|publication|revenue|result)[^"]*)"', r.text)[:200]:
-            pages.append("https://finance.hermes.com" + m) if len(pages) < 400 and ("https://finance.hermes.com" + m) not in pages else None
-    time.sleep(0.5)
-
-# 검색엔진 보조
-qs = []
-for y in range(2019, 2027):
-    for k in ["first quarter revenue", "half-year results", "third quarter revenue", "full-year results", "revenue q1", "revenue q3", "results h1", "results fy"]:
-        qs.append(f"site:assets-finance.hermes.com hermes {y} {k} pdf")
-for q in qs:
-    for base in ["https://html.duckduckgo.com/html/?q=", "https://www.bing.com/search?q="]:
-        r = get(base + urllib.parse.quote(q))
-        if r is not None and r.ok: harvest(r.text)
-        time.sleep(1.0)
+    if r is None or not r.ok: continue
+    harvest(r.text)
+    for m in re.findall(r'href="(/en/publications/[^"?#]+)"', r.text):
+        if re.search(r'revenue|result|quarter|half|annual|sales', m) and "https://finance.hermes.com" + m not in seen:
+            pages.append("https://finance.hermes.com" + m)
+    time.sleep(0.3)
 
 (OUT / "links.txt").write_text("\n".join(sorted(links)))
-want = re.compile(r'hermes_(20(19|2\d)\d{4})_.*(revenue|results|ca_|chiffre|resultats).*_en\.pdf', re.I)
+want = re.compile(r'(revenue|result|firsthalf|fullyear|q1|q3|h1)', re.I)
+skip = re.compile(r'(_fr\.pdf|_vf\.pdf|-fr\.pdf|voting|liquidity|urd|rfs|presentation)', re.I)
 got = 0
 for u in sorted(links):
     name = urllib.parse.urlparse(u).path.rsplit("/", 1)[-1]
-    if not want.search(name): continue
+    if not want.search(name) or skip.search(name): continue
     dst = OUT / (name[:-4] + ".txt")
     if dst.exists(): continue
     r = get(u)
