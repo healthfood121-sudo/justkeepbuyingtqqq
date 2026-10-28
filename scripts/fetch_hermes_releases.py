@@ -13,6 +13,8 @@ H = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
 PDF = re.compile(r'https?://assets-finance\.hermes\.com/[^"\'\s<>)]+?\.pdf(?:\?[^"\'\s<>)]*)?', re.I)
 REL = re.compile(r'(/s3fs-public/[^"\'\s<>)]+?\.pdf(?:\?[^"\'\s<>)]*)?)', re.I)
 links, probe = set(), []
+import os
+DEBUG = os.environ.get("HERMES_DEBUG") == "1"
 
 def get(url, **kw):
     try:
@@ -42,6 +44,8 @@ while k < len(pages) and k < 700:
     r = get(u)
     if r is None or not r.ok: continue
     harvest(r.text)
+    if DEBUG and (u.endswith("press-releases-and-news") or u.endswith("third-quarter-2025-revenue") or u.endswith("2025-full-year-results")):
+        (OUT / ("debug_" + u.rstrip("/").rsplit("/", 1)[-1] + ".html")).write_text(r.text)
     for m in re.findall(r'href="(/en/publications/[^"?#]+)"', r.text):
         if re.search(r'revenue|result|quarter|half|annual|sales', m) and "https://finance.hermes.com" + m not in seen:
             pages.append("https://finance.hermes.com" + m)

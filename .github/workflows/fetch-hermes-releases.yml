@@ -18,6 +18,7 @@ jobs:
       - run: python scripts/fetch_hermes_releases.py
         env:
           PYTHONUNBUFFERED: "1"
+          HERMES_DEBUG: "1"
       - name: 커밋 & 푸시
         run: |
           git config user.name "github-actions[bot]"
