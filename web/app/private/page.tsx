@@ -11,7 +11,7 @@ import { Chart } from 'react-chartjs-2'
 import spDesc from '@/app/sp500-holdings/descriptions.json'
 import PrivateTabs from '@/components/PrivateTabs'
 import { WRITTEN_INSIGHTS, WRITTEN_AS_OF } from './insights'
-import { DEEP_INSIGHTS, QUALITY_EXTRA, type DeepInsight, type QualityExtra } from './deep'
+import { DEEP_INSIGHTS, QUALITY_EXTRA, type DeepInsight, type QualityExtra, type Axis } from './deep'
 import { classify, GROUPS, GRADE_LABEL, gradeColor, groupColor, qualityScore, fmt, fmtSgn, type Metrics, type Quality, type GroupKey } from '@/lib/ideas'
 import { EXTRA_METRICS } from './ideas/picks'
 import qldData        from '@/public/data/rolling/QLD_rolling.json'
@@ -8057,7 +8057,96 @@ function WrittenInsightBox({ stockKey }: { stockKey: string }) {
   )
 }
 
-function ScoreBar({ label, v, why }: { label: string; v: number; why?: string }) {
+type AxisKey = 'pricing' | 'profit' | 'growth' | 'durability'
+const AXIS_META: Record<AxisKey, { title: string; label: Record<Axis['state'], string> }> = {
+  pricing: { title: '가격을 올려도 손님이 남나', label: { good: '가격결정력 강함', mid: '가격결정력 보통', bad: '가격결정력 약함' } },
+  profit: { title: '돈을 잘 버나', label: { good: '수익성 좋아지는 중', mid: '수익성 유지', bad: '수익성 나빠지는 중' } },
+  growth: { title: '앞으로도 클 수 있나', label: { good: '성장 빨라지는 중', mid: '성장 유지', bad: '성장 느려지는 중' } },
+  durability: { title: '10년 뒤에도 건재할까', label: { good: '단단함', mid: '보통', bad: '불확실' } },
+}
+const AXIS_CLS: Record<Axis['state'], string> = {
+  good: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300',
+  mid: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300',
+  bad: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
+}
+
+// 데이터로 자동 계산하는 숫자 줄(수익성·성장성·지속가능성) — fundamentals JSON
+function axisAutoLines(k: AxisKey, f: any): string[] {
+  if (!f) return []
+  const m = f.metrics ?? {}
+  const pct = (v: number | null | undefined, d = 0) => v == null ? null : `${v > 0 && k !== 'profit' ? '+' : ''}${v.toFixed(d)}%`
+  const out: string[] = []
+  const yrs = Object.entries((f.cash?.years ?? {}) as Record<string, any>).sort(([a], [b]) => Number(a) - Number(b))
+  if (k === 'profit') {
+    const rs = yrs.filter(([, v]) => v.roic != null).slice(-8)
+    if (rs.length >= 3) out.push(`ROIC(투자한 돈 대비 이익률) 추이: ${rs.map(([y, v]) => `${y.slice(2)}년 ${Math.round(v.roic)}%`).join(' → ')}`)
+    else if (m.roe != null) out.push(`ROE(자기자본 이익률) ${m.roe.toFixed(0)}%${m.roe5 != null ? `, 5년 평균 ${m.roe5.toFixed(0)}%` : ''} (금융사는 ROIC 대신 ROE로 본다)`)
+    if (m.conv5 != null) out.push(`이익이 현금으로 들어오나: 최근 5년 잉여현금 ÷ 순이익 = ${m.conv5.toFixed(2)}배 ${m.conv5 >= 0.9 ? '(이익이 거의 다 현금으로 들어온다)' : m.conv5 >= 0.6 ? '(투자에 일부가 쓰인다)' : '(투자가 많아 현금이 적게 남는다)'}`)
+    const last = yrs.length ? yrs[yrs.length - 1][1] : null
+    if (last && last.debt != null && last.cashInv != null) {
+      const net = last.cashInv - last.debt
+      const ni = last.ni
+      out.push(net >= 0 ? `재무: 현금이 빚보다 ${Math.round(net / 10) / 10}억 달러 많다(순현금)` : `재무: 빚이 현금보다 ${Math.round(-net / 10) / 10}억 달러 많다${ni > 0 ? ` — 순이익의 ${(-net / ni).toFixed(1)}년치` : ''}`)
+    }
+  }
+  if (k === 'growth') {
+    const parts = [m.epsCagr10 != null ? `10년 연 ${pct(m.epsCagr10, 1)}` : null, m.epsCagr5 != null ? `최근 5년 연 ${pct(m.epsCagr5, 1)}` : null].filter(Boolean)
+    if (parts.length) out.push(`EPS(주당 순이익) 성장: ${parts.join(', ')}`)
+    const q = f.cash?.revQ
+    if (q?.prev) out.push(`최근 분기 매출(${q.end}까지): 1년 전보다 ${pct((q.rev / q.prev - 1) * 100)}`)
+  }
+  if (k === 'durability') {
+    const eps = f.eps as Record<string, number | null>
+    const e = (y: number) => eps?.[String(y)] ?? null
+    const shock = (label: string, before: number, from: number, to: number) => {
+      const b = e(before); if (b == null || b <= 0) return null
+      const lows = [] as number[]
+      for (let y = from; y <= to; y++) { const v = e(y); if (v != null) lows.push(v) }
+      if (!lows.length) return null
+      const low = Math.min(...lows)
+      let back: number | null = null
+      for (let y = from; y <= 2025; y++) { const v = e(y); if (v != null && v >= b) { back = y; break } }
+      const chg = (low / b - 1) * 100
+      return `${label}: EPS ${chg >= 0 ? '줄지 않았다' : `최대 ${chg.toFixed(0)}%`}${chg < 0 ? (back ? ` → ${back}년에 이전 수준 회복` : ' → 아직 이전 수준 못 찾음') : ''}`
+    }
+    const a = shock('2008년 금융위기', 2007, 2008, 2010); if (a) out.push(a)
+    const c = shock('2020년 코로나', 2019, 2020, 2021); if (c) out.push(c)
+    if (m.epsDownYears10 != null) out.push(`최근 10년 중 EPS가 줄어든 해: ${m.epsDownYears10}번`)
+  }
+  return out
+}
+
+function AxisBlock({ k, a, f }: { k: AxisKey; a: Axis; f?: any }) {
+  const auto = axisAutoLines(k, f)
+  return (
+    <div className="rounded bg-amber-50/70 dark:bg-amber-950/20 p-3 space-y-2 mt-1">
+      <div className="flex flex-wrap items-center gap-2">
+        <p className={DEEP_LAB}>{AXIS_META[k].title}</p>
+        <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${AXIS_CLS[a.state]}`}>{AXIS_META[k].label[a.state]}</span>
+      </div>
+      {auto.length > 0 && (
+        <div>
+          <p className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 mb-0.5">데이터로 본 숫자 (자동 계산)</p>
+          <ul className={`${DEEP_P} list-disc pl-4 space-y-0.5 tabular-nums`}>{auto.map((t, i) => <li key={i}>{t}</li>)}</ul>
+        </div>
+      )}
+      <div className="grid sm:grid-cols-2 gap-3">
+        <div>
+          <p className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 mb-0.5">근거</p>
+          <ul className={`${DEEP_P} list-disc pl-4 space-y-1`}>{a.sources.map((t, i) => <li key={i}>{t}</li>)}</ul>
+        </div>
+        <div>
+          <p className="text-[11px] font-semibold text-red-500 mb-0.5">위협</p>
+          <ul className={`${DEEP_P} list-disc pl-4 space-y-1`}>{a.threats.map((t, i) => <li key={i}>{t}</li>)}</ul>
+        </div>
+      </div>
+      <p className={DEEP_P}><b>판정 — {AXIS_META[k].label[a.state]}:</b> {a.why}</p>
+    </div>
+  )
+}
+
+function ScoreBar({ label, v, why, axis, f }: { label: string; v: number; why?: string; axis?: { k: AxisKey; a: Axis }; f?: any }) {
+  const [open, setOpen] = useState(false)
   const bar = (
     <div className="flex items-center gap-2 text-xs">
       <span className="w-20 shrink-0 text-gray-500 dark:text-gray-400">{label}</span>
@@ -8067,22 +8156,34 @@ function ScoreBar({ label, v, why }: { label: string; v: number; why?: string })
         ))}
       </div>
       <span className="tabular-nums text-gray-600 dark:text-gray-300">{v}</span>
+      {axis && (
+        <span className={`text-[11px] px-1.5 py-0.5 rounded-full font-medium ${AXIS_CLS[axis.a.state]}`}>{AXIS_META[axis.k].label[axis.a.state]}</span>
+      )}
     </div>
   )
   if (!why) return bar
   return (
     <div className="space-y-0.5">
       {bar}
-      <p className="text-xs leading-relaxed text-gray-600 dark:text-gray-300 pl-[5.5rem] max-sm:pl-0">{why}</p>
+      <p className="text-xs leading-relaxed text-gray-600 dark:text-gray-300 pl-[5.5rem] max-sm:pl-0">
+        {why}
+        {axis && (
+          <button onClick={() => setOpen(o => !o)} className="ml-1.5 text-blue-600 dark:text-blue-400 hover:underline whitespace-nowrap">
+            {open ? '접기 ▴' : '자세히 ▾'}
+          </button>
+        )}
+      </p>
+      {axis && open && <div className="pl-[5.5rem] max-sm:pl-0"><AxisBlock k={axis.k} a={axis.a} f={f} /></div>}
     </div>
   )
 }
 
-function QualityCard({ stockKey }: { stockKey: string }) {
+function QualityCard({ stockKey, fund }: { stockKey: string; fund?: any }) {
   const [q, setQ] = useState<Quality | null | undefined>(undefined)
   useEffect(() => { loadQuality().then(all => setQ(all[stockKey] ?? null)) }, [stockKey])
   if (!q) return null
   const d: QualityExtra | undefined = DEEP_INSIGHTS[stockKey] ?? QUALITY_EXTRA[stockKey]
+  const ax = (k: AxisKey) => d?.axes?.[k] ? { k, a: d.axes[k]! } : undefined
   return (
     <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-3">
       <div className="flex flex-wrap items-center gap-2">
@@ -8098,16 +8199,16 @@ function QualityCard({ stockKey }: { stockKey: string }) {
       </>)}
       <div className={d?.scores ? 'space-y-2.5' : 'grid sm:grid-cols-2 gap-x-6 gap-y-1'}>
         <ScoreBar label="경쟁우위(해자)" v={q.moat} why={d?.scores?.moat} />
-        <ScoreBar label="가격결정력" v={q.pricing} why={d?.scores?.pricing} />
-        <ScoreBar label="수익성" v={q.profit} why={d?.scores?.profit} />
-        <ScoreBar label="성장성" v={q.growth} why={d?.scores?.growth} />
-        <ScoreBar label="지속가능성" v={q.durability} why={d?.scores?.durability} />
+        <ScoreBar label="가격결정력" v={q.pricing} why={d?.scores?.pricing} axis={ax('pricing')} f={fund} />
+        <ScoreBar label="수익성" v={q.profit} why={d?.scores?.profit} axis={ax('profit')} f={fund} />
+        <ScoreBar label="성장성" v={q.growth} why={d?.scores?.growth} axis={ax('growth')} f={fund} />
+        <ScoreBar label="지속가능성" v={q.durability} why={d?.scores?.durability} axis={ax('durability')} f={fund} />
       </div>
       <p className="text-xs text-gray-600 dark:text-gray-300"><b className="text-emerald-600 dark:text-emerald-400">강점:</b> {q.strength}</p>
       <p className="text-xs text-gray-600 dark:text-gray-300"><b className="text-red-500">위험:</b> {q.risk}</p>
       {d && <DeepMoatBlock d={d} />}
       <p className="text-[11px] text-gray-400 dark:text-gray-500">
-        버핏·멍거식 기준(오래가는 경쟁우위, 가격을 올려도 고객이 떠나지 않는 힘, 높은 이익률, 성장 여력, 10년 뒤에도 건재할지)으로 Claude가 매긴 정성 평가다. 2026년 10월 기준이며 투자 판단의 참고용이다.
+        버핏·멍거식 기준(오래가는 경쟁우위, 가격을 올려도 고객이 떠나지 않는 힘, 높은 이익률, 성장 여력, 10년 뒤에도 건재할지)으로 Claude가 매긴 정성 평가다. 2026년 10월 기준이며 투자 판단의 참고용이다.{d?.axes ? ' 가격결정력~지속가능성의 "자세히"를 누르면 근거·위협·판정이 펼쳐진다.' : ''}
       </p>
     </div>
   )
@@ -8451,7 +8552,7 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
     <div className="space-y-4">
       {header}
       {!deep && <WrittenInsightBox stockKey={stockKey} />}
-      <QualityCard stockKey={stockKey} />
+      <QualityCard stockKey={stockKey} fund={f} />
 
       <div className={box}>
         <div className="flex flex-wrap items-center gap-2">
