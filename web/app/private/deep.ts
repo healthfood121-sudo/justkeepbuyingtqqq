@@ -46,6 +46,32 @@ export const QUALITY_EXTRA: Record<string, QualityExtra> = {
       growth: '2점 — 10년 EPS 감소(최근 5년 연 -10%), 최근 분기 매출 -4%.',
       durability: '3점 — 60년 브랜드라 쉽게 사라지지 않지만 회복이 확인되지 않았다.',
     },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['조던·스타 선수 브랜드.'],
+        threats: ['재고를 털기 위해 할인 확대, 관세.'],
+        why: '할인이 늘어 가격 결정력이 약해졌다 — 정가 판매를 되돌리는 중.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['ROIC 약 22%.'],
+        threats: ['5년 평균 32%에서 하락, 매출총이익률 하락.'],
+        why: '할인·관세로 이익률이 내려가는 중.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['러닝화 강화, 도매 복귀.'],
+        threats: ['10년 EPS 감소(최근 5년 연 -10%), 최근 분기 매출 -4%.'],
+        why: '아직 줄어드는 중이다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['60년 브랜드, 스포츠용품 세계 1위.'],
+        threats: ['신생 브랜드에 점유율을 잃는 중.'],
+        why: '쉽게 사라지진 않지만 회복이 확인되지 않아 보통.',
+      },
+    },
   },
   RMS: {
     asOf: '2026-10-28',
@@ -13817,9 +13843,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '애트모스에너지 — 텍사스 등 8개 주 가스 전력·가스 공급 회사(유틸리티).', money: '정부가 정한 요금으로 전기·가스를 공급. 설비 투자액에 정해진 이익률을 붙여 요금을 받는다.' },
     moat: {
       state: 'intact',
-      sources: ['지역 독점 전력·가스망 — 경쟁이 없다.', '데이터센터·전기화로 전력 수요 증가.'],
-      threats: ['요금 인상 승인(규제 당국).', '금리(빚이 많다), 자연재해 비용.'],
-      why: '규제 독점이라 해자는 그대로. 다만 성장과 이익률은 정부가 정한다(해자가 있어도 크게 벌지는 못하는 구조).',
+      sources: ['텍사스 등 8개 주 가스 전력·가스 공급 지역 독점 — 경쟁자가 없다.'],
+      threats: ['요금 인상은 정부 승인이 필요하다.', '금리(빚이 많다).'],
+      why: '규제 독점이라 해자는 그대로 — 다만 이익의 천장도 정부가 정한다.',
     },
     scores: {
       moat: '3점 — 텍사스 등 8개 주 가스 공급 독점.',
@@ -13827,6 +13853,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROE 9%, ROIC 6%.',
       growth: '4점 — 인구가 느는 텍사스 중심이라 EPS 연 6~8%를 꾸준히 낸다(10년 연 9%).',
       durability: '4점 — 10년간 EPS 감소 1번. 40년 넘게 배당 인상.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['요금 인상 신청(설비 투자분 반영).'],
+        threats: ['공공요금 위원회가 승인 여부와 폭을 정한다.'],
+        why: '회사가 스스로 값을 정할 수 없는 구조다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['허용 자기자본 이익률 약 10%(실제 ROE 9.3%).'],
+        threats: ['ROIC 5~7% — 설비가 많이 드는 사업.'],
+        why: '정부가 허용한 수익률 안에서 안정적으로 번다.',
+      },
+      growth: {
+        state: 'good',
+        sources: ['인구가 느는 텍사스 중심이라 EPS 연 6~8%를 꾸준히 낸다.'],
+        threats: ['요금 인상 반발, 금리.'],
+        why: '투자를 늘릴수록 이익도 늘어나는 구조다.',
+      },
+      durability: {
+        state: 'good',
+        sources: ['전기·가스는 경기와 무관한 필수재.'],
+        threats: ['자연재해·산불 책임, 빚.'],
+        why: '필수 인프라 독점이라 단단하다.',
+      },
     },
     now: [
       '8월 2026 회계연도(9월 결산) 3분기: 연간 EPS 전망 8.40~8.50달러 재확인(5월에 8.15~8.35달러에서 상향). 텍사스 규제 변경으로 연 1.6억 달러 안팎의 이익 효과.',
@@ -14177,10 +14229,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '중저소득층 생명보험(글로브 라이프) — 공매도 공격 뒤 회복, PER 11배',
     biz: { what: '생명보험 회사(글로브라이프).', money: '소액 생명보험료.' },
     moat: {
-      state: 'intact',
-      sources: ['중산층 직판망.'],
-      threats: ['판매 관행 조사.'],
-      why: '해자 보통.',
+      state: 'weakening',
+      sources: ['중산층 생명·건강 보험 — 직접 판매 조직으로 비용이 낮다.'],
+      threats: ['2024년 판매 관행 조사(공매도 보고서).'],
+      why: '저비용 판매가 해자지만 평판 위험이 있다.',
     },
     scores: {
       moat: '3점 — 중산층 생명·건강 보험. 직접 판매 조직으로 비용이 낮다.',
@@ -14188,6 +14240,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '4점 — ROE 21%.',
       growth: '3점 — 10년 EPS 연 13%.',
       durability: '3점 — 2024년 판매 관행 조사(공매도 보고서) 이력.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['소액 보험.'],
+        threats: ['규제.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'good',
+        sources: ['ROE 21%.'],
+        threats: ['조사.'],
+        why: '높다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['10년 EPS 연 13%.'],
+        threats: ['판매 조직 이탈.'],
+        why: '꾸준하다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['오랜 역사.'],
+        threats: ['평판.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '7월 2분기: 영업 EPS 3.61달러(예상 3.67달러 소폭 미달). 연간 EPS 전망 15.55~15.95달러로 상향, 생명보험료 성장 전망 6.5~7%로 높였다. 자사주 6.7~7억 달러.',
@@ -14217,9 +14295,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '특수 유리·광섬유 회사(코닝). 휴대폰 화면 유리(고릴라글래스), 광케이블, 디스플레이 유리.', money: '유리·광섬유 판매.' },
     moat: {
       state: 'intact',
-      sources: ['특수 유리 공정 기술 — 따라 하기 어렵다.', 'AI 데이터센터 광케이블 수요.'],
-      threats: ['디스플레이 경기.', '휴대폰 수요.'],
-      why: '해자 보통 — 광통신이 성장 동력.',
+      sources: ['고릴라 글라스·광섬유·디스플레이 유리 — 특수 유리 기술 170년.'],
+      threats: ['디스플레이 경기.'],
+      why: '기술 해자 그대로.',
     },
     scores: {
       moat: '3점 — 고릴라 글라스·광섬유·디스플레이 유리. 특수 유리 기술 170년.',
@@ -14227,6 +14305,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 11%(5년 평균 6%).',
       growth: '4점 — 최근 5년 EPS 연 28%. AI 데이터센터 광섬유 수요(최근 분기 매출 +17%).',
       durability: '3점 — 디스플레이 경기에 흔들린다.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['광섬유는 AI 수요로 협상력.'],
+        threats: ['디스플레이 가격.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'good',
+        sources: ['ROIC 6%(5년 평균) → 11%.'],
+        threats: ['투자.'],
+        why: '좋아지는 중.',
+      },
+      growth: {
+        state: 'good',
+        sources: ['최근 5년 EPS 연 28%, 최근 분기 매출 +17%.'],
+        threats: ['디스플레이.'],
+        why: 'AI 광섬유로 빨라지는 중.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['170년 기술.'],
+        threats: ['경기.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '7월 2분기: 핵심 매출 47.4억 달러(+17%), 핵심 EPS 0.78달러(+30%). 광통신 +32%(기업 네트워크 +65%). 아마존과 수십억 달러 규모 장기 공급 계약, 엔비디아와 미국 광연결 생산 10배 확대 협력.',
@@ -14321,9 +14425,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '바이오 회사(인사이트). 혈액암 약 자카피.', money: '처방약 판매.' },
     moat: {
       state: 'weakening',
-      sources: ['자카피 독점 판매.'],
-      threats: ['2028년 자카피 특허 만료.'],
-      why: '핵심 약 특허 만료가 다가와 약해지는 중.',
+      sources: ['혈액암 약 자카피.'],
+      threats: ['2028년 특허 만료.'],
+      why: '주력 약 특허 만료가 다가와 약해지는 중.',
     },
     scores: {
       moat: '3점 — 혈액암 약 자카피(룩소리티닙).',
@@ -14331,6 +14435,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '4점 — ROIC 61%, 순이익률 높다.',
       growth: '3점 — 피부 크림(옵젤루라) 성장.',
       durability: '3점 — 자카피 특허 만료 공백.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['독점 약.'],
+        threats: ['특허 만료.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'good',
+        sources: ['ROIC 61%.'],
+        threats: ['연구비.'],
+        why: '높다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['피부 크림(옵젤루라).'],
+        threats: ['특허 공백.'],
+        why: '보통이다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['파이프라인.'],
+        threats: ['특허 만료.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '7월 2분기: 매출 16.7억 달러(+38%, 공공보험 정산 일회성 2.46억 달러 포함). 자카피 8.17억 달러(+7%), 피부 크림 오젤루라 4.5억 달러(+173%). 연간 제품 매출 전망 51.3~52.6억 달러로 크게 상향.',
@@ -14490,9 +14620,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '자동차·산업용 반도체 회사(NXP).', money: '차량 레이더·제어 칩 판매.' },
     moat: {
       state: 'intact',
-      sources: ['자동차 칩 상위권 — 설계에 들어가면 수년.'],
-      threats: ['자동차 경기·재고 조정.', '중국.'],
-      why: '해자 보통.',
+      sources: ['자동차 반도체 1위권(차량 제어·레이더).'],
+      threats: ['자동차 경기.'],
+      why: '해자 그대로.',
     },
     scores: {
       moat: '3점 — 자동차 반도체 1위권(차량 제어·레이더).',
@@ -14500,6 +14630,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '4점 — ROE 21%, 조정 영업이익률 약 34%.',
       growth: '3점 — 자동차 전장화로 장기 성장, 단기는 재고 조정.',
       durability: '3점 — 자동차 경기.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['설계에 들어가면 수년간 공급.'],
+        threats: ['자동차 회사 협상력.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'good',
+        sources: ['ROE 21%, 조정 영업이익률 약 34%.'],
+        threats: ['재고.'],
+        why: '높다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['전장화.'],
+        threats: ['재고 조정.'],
+        why: '보통이다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['자동차 칩.'],
+        threats: ['사이클.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '7월 2분기: 매출 35억 달러(+19%), 자동차 19.4억 달러(+12%). 모든 시장·지역 성장. 3분기 전망 매출 36.5~38.5억 달러(+15~21%), 조정 EPS 3.89~4.32달러. 3분기 실적은 10월 말.',
@@ -14725,9 +14881,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '발전 회사(비스트라). 텍사스 가스·원전 발전 + 가정 전기 판매.', money: '발전한 전기를 시장·장기 계약으로 판다(규제 요금 아님).' },
     moat: {
       state: 'intact',
-      sources: ['원전 — 데이터센터가 원하는 24시간 무탄소 전력.', '텍사스 소매 전기 1위.'],
-      threats: ['전력 가격 변동.', '원전 규제.'],
-      why: 'AI 전력 수요로 지위가 강해졌다. 다만 발전업은 가격에 따라 이익이 출렁인다.',
+      sources: ['텍사스 발전 + 원전 — 데이터센터와 장기 전력 계약.'],
+      threats: ['전력 가격 변동.'],
+      why: '원전이 해자 — 그대로.',
     },
     scores: {
       moat: '3점 — 텍사스 발전 + 원전. 데이터센터와 장기 전력 계약.',
@@ -14735,6 +14891,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 7%.',
       growth: '4점 — AI 데이터센터 전력 계약.',
       durability: '3점 — 전력 가격 변동.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['원전 전력은 데이터센터가 프리미엄을 낸다.'],
+        threats: ['시장 가격.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 7%.'],
+        threats: ['가격 변동.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'good',
+        sources: ['AI 데이터센터 전력 계약.'],
+        threats: ['정책.'],
+        why: '빨라지는 중.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['원전.'],
+        threats: ['가격 변동.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '아마존(1.2기가와트, 20년)·메타(원전 2.6기가와트 이상)와 장기 전력 계약을 맺은 AI 전력 수혜주. 그런데 텍사스 도매 전기요금이 낮고, 텍사스 주지사가 데이터센터 전력 연결 요청을 감사하라고 지시하면서 주가가 1년 약 -24~31%.',
@@ -14827,9 +15009,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '에머런 — 미주리·일리노이 전력·가스 공급 회사(유틸리티).', money: '정부가 정한 요금으로 전기·가스를 공급. 설비 투자액에 정해진 이익률을 붙여 요금을 받는다.' },
     moat: {
       state: 'intact',
-      sources: ['지역 독점 전력·가스망 — 경쟁이 없다.', '데이터센터·전기화로 전력 수요 증가.'],
-      threats: ['요금 인상 승인(규제 당국).', '금리(빚이 많다), 자연재해 비용.'],
-      why: '규제 독점이라 해자는 그대로. 다만 성장과 이익률은 정부가 정한다(해자가 있어도 크게 벌지는 못하는 구조).',
+      sources: ['미주리·일리노이 전력·가스 공급 지역 독점 — 경쟁자가 없다.'],
+      threats: ['요금 인상은 정부 승인이 필요하다.', '금리(빚이 많다).'],
+      why: '규제 독점이라 해자는 그대로 — 다만 이익의 천장도 정부가 정한다.',
     },
     scores: {
       moat: '3점 — 지역 전력·가스망 독점. 경쟁은 없지만 정부가 이익률을 정해 "넓은 해자, 낮은 천장" 구조.',
@@ -14837,6 +15019,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 허용된 자기자본 이익률 약 10%(실제 ROE 11.4%). ROIC 5~7%로 낮지만 안정적.',
       growth: '3점 — 설비 투자가 늘어난 만큼 이익이 는다(EPS 연 6~8% 목표).',
       durability: '4점 — 전기·가스는 경기와 무관한 필수재. 금리가 오르면 부담(빚이 많다).',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['요금 인상 신청(설비 투자분 반영).'],
+        threats: ['공공요금 위원회가 승인 여부와 폭을 정한다.'],
+        why: '회사가 스스로 값을 정할 수 없는 구조다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['허용 자기자본 이익률 약 10%(실제 ROE 11.4%).'],
+        threats: ['ROIC 5~7% — 설비가 많이 드는 사업.'],
+        why: '정부가 허용한 수익률 안에서 안정적으로 번다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['설비 투자만큼 이익이 늘어 EPS 연 5~7%.'],
+        threats: ['요금 인상 반발, 금리.'],
+        why: '투자를 늘릴수록 이익도 늘어나는 구조다.',
+      },
+      durability: {
+        state: 'good',
+        sources: ['전기·가스는 경기와 무관한 필수재.'],
+        threats: ['자연재해·산불 책임, 빚.'],
+        why: '필수 인프라 독점이라 단단하다.',
+      },
     },
     now: [
       '2026년 EPS 전망 5.25~5.45달러 유지. 2026~2030년 연 6~8% 성장 목표의 상단 근처 기대.',
@@ -14866,9 +15074,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '아메리칸일렉트릭파워 — 오하이오·텍사스 등 11개 주 전력·가스 공급 회사(유틸리티).', money: '정부가 정한 요금으로 전기·가스를 공급. 설비 투자액에 정해진 이익률을 붙여 요금을 받는다.' },
     moat: {
       state: 'intact',
-      sources: ['지역 독점 전력·가스망 — 경쟁이 없다.', '데이터센터·전기화로 전력 수요 증가. 미국 최대 고압 송전망.'],
-      threats: ['요금 인상 승인(규제 당국).', '금리(빚이 많다), 자연재해 비용.'],
-      why: '규제 독점이라 해자는 그대로. 다만 성장과 이익률은 정부가 정한다(해자가 있어도 크게 벌지는 못하는 구조).',
+      sources: ['오하이오·텍사스 등 11개 주 전력·가스 공급 지역 독점 — 경쟁자가 없다.', '미국 최대 고압 송전망.'],
+      threats: ['요금 인상은 정부 승인이 필요하다.', '금리(빚이 많다).'],
+      why: '규제 독점이라 해자는 그대로 — 다만 이익의 천장도 정부가 정한다.',
     },
     scores: {
       moat: '3점 — 지역 전력·가스망 독점. 경쟁은 없지만 정부가 이익률을 정해 "넓은 해자, 낮은 천장" 구조.',
@@ -14876,6 +15084,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 허용된 자기자본 이익률 약 10%(실제 ROE 12.3%). ROIC 5~7%로 낮지만 안정적.',
       growth: '3점 — 설비 투자가 늘어난 만큼 이익이 는다(EPS 연 6~8% 목표). 데이터센터 전력 수요로 투자 계획이 커졌다.',
       durability: '4점 — 전기·가스는 경기와 무관한 필수재. 금리가 오르면 부담(빚이 많다).',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['요금 인상 신청(설비 투자분 반영).'],
+        threats: ['공공요금 위원회가 승인 여부와 폭을 정한다.'],
+        why: '회사가 스스로 값을 정할 수 없는 구조다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['허용 자기자본 이익률 약 10%(실제 ROE 12.3%).'],
+        threats: ['ROIC 5~7% — 설비가 많이 드는 사업.'],
+        why: '정부가 허용한 수익률 안에서 안정적으로 번다.',
+      },
+      growth: {
+        state: 'good',
+        sources: ['데이터센터 전력 수요로 투자 계획이 크게 늘었다.'],
+        threats: ['요금 인상 반발, 금리.'],
+        why: '투자를 늘릴수록 이익도 늘어나는 구조다.',
+      },
+      durability: {
+        state: 'good',
+        sources: ['전기·가스는 경기와 무관한 필수재.'],
+        threats: ['자연재해·산불 책임, 빚.'],
+        why: '필수 인프라 독점이라 단단하다.',
+      },
     },
     now: [
       '2026년 영업 EPS 전망 6.25~6.55달러로 상향(2분기에만 6기가와트 신규 계약). 2030년까지 연 7~9% 성장 목표, 그 이상(9%+) 가능 언급.',
@@ -14905,9 +15139,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '보증 보험 회사(어슈어런트).', money: '휴대폰·자동차 보증 + 주택 보험.' },
     moat: {
       state: 'intact',
-      sources: ['통신사·자동차 딜러 제휴.'],
-      threats: ['제휴처 이탈.'],
-      why: '해자 보통.',
+      sources: ['휴대폰 파손 보험·주택 보증 등 틈새 보험 — 통신사·은행 제휴.'],
+      threats: ['큰 제휴처 이탈.'],
+      why: '제휴망이 해자 — 그대로(깊지는 않다).',
     },
     scores: {
       moat: '3점 — 휴대폰 파손 보험·주택 보증 등 틈새 보험. 통신사·은행과의 제휴가 강점이지만 제휴처에 의존.',
@@ -14915,6 +15149,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROE 16%.',
       growth: '3점 — 10년 EPS 연 24%(자사주 매입 포함).',
       durability: '3점 — 큰 제휴처를 잃으면 타격.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['제휴 계약.'],
+        threats: ['제휴처와 이익을 나눈다.'],
+        why: '계약 조건에 묶여 보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROE 16%.'],
+        threats: ['재해.'],
+        why: '안정적이다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['10년 EPS 연 24%(자사주 포함).'],
+        threats: ['제휴처 의존.'],
+        why: '자사주로 주당 이익이 꾸준히 는다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['틈새 1위.'],
+        threats: ['제휴처 이탈.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '8월 2분기: 두 분기 연속 사상 최대 이익. 상반기 조정 EPS +14%(재해 제외). 연간 전망 상향 — 기초 기준 약 10% 성장. 자사주 3~3.5억 달러 상단.',
@@ -14944,9 +15204,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '자동차·주택 보험 회사(올스테이트).', money: '보험료.' },
     moat: {
       state: 'intact',
-      sources: ['대리점 브랜드.'],
-      threats: ['자연재해·수리비.'],
-      why: '해자 보통.',
+      sources: ['미국 개인 자동차·주택 보험 상위권, 대리점 브랜드.'],
+      threats: ['재해·사고 비용 변동.'],
+      why: '브랜드 해자 그대로(깊지는 않다).',
     },
     scores: {
       moat: '3점 — 미국 개인 자동차·주택 보험 상위권, 대리점 브랜드.',
@@ -14954,6 +15214,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 최근 ROE 40%로 높지만 2022~2023년 적자 — 해마다 크게 출렁인다.',
       growth: '3점 — 보험료 인상기라 최근 이익 급증.',
       durability: '3점 — 재해·사고 비용에 따라 이익이 크게 변한다.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['사고 비용이 오르면 보험료 인상.'],
+        threats: ['경쟁사도 함께 움직인다.'],
+        why: '시세를 따라간다.',
+      },
+      profit: {
+        state: 'good',
+        sources: ['최근 ROE 40%.'],
+        threats: ['2022~2023년 적자.'],
+        why: '보험료 인상기에 크게 좋아졌다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['보험료 인상.'],
+        threats: ['인상기가 끝나면 둔화.'],
+        why: '앞으로는 둔해질 수 있다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['90년 역사.'],
+        threats: ['재해에 따라 이익이 크게 변한다.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '2분기 합산비율 86.6(4.5포인트 개선), 매출 +11.8%. 보험료를 크게 올린 효과로 이익이 폭발(2023년 적자 → 2025년 EPS 38.06달러 → 최근 1년 49.98달러). 3분기 재해 손실 16.5억 달러 예고, 실적은 11월 4일.',
@@ -14983,9 +15269,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '유전·LNG 장비 회사(베이커휴즈).', money: 'LNG 터빈·압축기 + 유전 서비스.' },
     moat: {
       state: 'intact',
-      sources: ['LNG 설비 장비 강자.'],
-      threats: ['석유사 투자.'],
-      why: '해자 보통.',
+      sources: ['석유 장비 + LNG 설비·가스 터빈 — LNG 장비는 경쟁자가 적다.'],
+      threats: ['에너지 투자 사이클.'],
+      why: 'LNG·발전 장비가 해자 — 그대로.',
     },
     scores: {
       moat: '3점 — 석유 장비 + LNG(액화천연가스) 설비·가스 터빈. LNG 장비는 경쟁자가 적다.',
@@ -14993,6 +15279,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROE 15%, 5년 평균 ROIC 9%.',
       growth: '3점 — 데이터센터 발전용 가스 터빈 수요.',
       durability: '3점 — 에너지 투자 사이클.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['수주 잔고가 많아 협상력.'],
+        threats: ['유전 서비스는 경쟁.'],
+        why: '사업마다 다르다.',
+      },
+      profit: {
+        state: 'good',
+        sources: ['ROE 15%, 이익률 개선.'],
+        threats: ['사이클.'],
+        why: '좋아지는 중.',
+      },
+      growth: {
+        state: 'good',
+        sources: ['데이터센터 발전용 가스 터빈 수요.'],
+        threats: ['유가.'],
+        why: '새 수요로 빨라지는 중.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['장비 기술.'],
+        threats: ['에너지 사이클.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '7월 2분기: 산업·에너지 기술(IET) 수주 71억 달러, 잔고 371억 달러 사상 최대. 가스 장비 수주가 1년 전의 5배(벤처글로벌 LNG 대형 수주). 데이터센터 전력용 가스터빈 수요 증가. 3분기 실적은 10월 27일.',
@@ -15022,9 +15334,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '세계 최대 상업용 부동산 서비스 회사(CBRE).', money: '중개 수수료 + 건물 관리.' },
     moat: {
       state: 'intact',
-      sources: ['규모·브랜드.'],
-      threats: ['상업용 부동산 경기.'],
-      why: '해자 보통.',
+      sources: ['세계 최대 상업 부동산 서비스 — 중개·시설 관리·투자.'],
+      threats: ['부동산 거래 사이클.'],
+      why: '규모 해자 그대로.',
     },
     scores: {
       moat: '3점 — 세계 최대 상업 부동산 서비스(중개·시설 관리·투자).',
@@ -15032,6 +15344,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 11%.',
       growth: '4점 — 시설 관리·데이터센터 공사 등 반복 매출이 커지며 성장(최근 분기 매출 +13%).',
       durability: '3점 — 부동산 거래가 줄면 이익이 크게 준다.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['시설 관리 장기 계약.'],
+        threats: ['중개 수수료 경쟁.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 11%.'],
+        threats: ['거래 감소기.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'good',
+        sources: ['시설 관리·데이터센터 공사 반복 매출, 최근 분기 매출 +13%.'],
+        threats: ['부동산 거래.'],
+        why: '빨라지는 중.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['반복 매출 증가.'],
+        threats: ['거래 사이클.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '2월 AI 도구가 부동산 중개·사무실 수요를 줄일 거라는 공포로 이틀 새 약 -20%(2020년 이후 최악). 실적 자체는 좋았다 — 2026년 조정 핵심 EPS 전망 약 7.45달러(+17%).',
@@ -15126,9 +15464,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '광통신 장비 회사(시에나).', money: '데이터센터 간·해저 광통신 장비 판매.' },
     moat: {
       state: 'intact',
-      sources: ['고속 광통신 기술 선두.'],
-      threats: ['통신 투자 사이클, 경쟁.'],
-      why: 'AI 수요로 좋아지는 중. 해자 보통.',
+      sources: ['광통신 장비 상위권 — AI 데이터센터 간 연결.'],
+      threats: ['고객 투자 사이클.'],
+      why: '해자 그대로(깊지는 않다).',
     },
     scores: {
       moat: '3점 — 광통신 장비 상위권. AI 데이터센터 간 연결 수요.',
@@ -15136,6 +15474,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — ROIC 5%로 낮다(이익이 들쭉날쭉).',
       growth: '4점 — 최근 분기 매출 +37%. AI 데이터센터 연결 투자.',
       durability: '3점 — 대형 고객 투자 사이클에 따라 크게 흔들린다.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['수요가 많을 때 가격 유지.'],
+        threats: ['경쟁.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['이익 개선 중.'],
+        threats: ['ROIC 5%로 낮고 들쭉날쭉.'],
+        why: '아직 낮다.',
+      },
+      growth: {
+        state: 'good',
+        sources: ['최근 분기 매출 +37%.'],
+        threats: ['고객 투자 둔화.'],
+        why: '빨라지는 중.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['광통신 전문.'],
+        threats: ['사이클.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '2026 회계연도(10월 결산) 3분기: 매출 16.7억 달러(+37%), 조정 EPS 2.11달러(+215%). 연간 매출 전망 64.2억 달러로 상향. 대형 클라우드 고객 매출 비중 46%(+70%).',
@@ -15165,9 +15529,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: 'CMS에너지 — 미시간 전력·가스 공급 회사(유틸리티).', money: '정부가 정한 요금으로 전기·가스를 공급. 설비 투자액에 정해진 이익률을 붙여 요금을 받는다.' },
     moat: {
       state: 'intact',
-      sources: ['지역 독점 전력·가스망 — 경쟁이 없다.', '데이터센터·전기화로 전력 수요 증가.'],
-      threats: ['요금 인상 승인(규제 당국).', '금리(빚이 많다), 자연재해 비용.'],
-      why: '규제 독점이라 해자는 그대로. 다만 성장과 이익률은 정부가 정한다(해자가 있어도 크게 벌지는 못하는 구조).',
+      sources: ['미시간 전력·가스 공급 지역 독점 — 경쟁자가 없다.'],
+      threats: ['요금 인상은 정부 승인이 필요하다.', '금리(빚이 많다).'],
+      why: '규제 독점이라 해자는 그대로 — 다만 이익의 천장도 정부가 정한다.',
     },
     scores: {
       moat: '3점 — 지역 전력·가스망 독점. 경쟁은 없지만 정부가 이익률을 정해 "넓은 해자, 낮은 천장" 구조.',
@@ -15175,6 +15539,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 허용된 자기자본 이익률 약 10%(실제 ROE 12.3%). ROIC 5~7%로 낮지만 안정적.',
       growth: '3점 — 설비 투자가 늘어난 만큼 이익이 는다(EPS 연 6~8% 목표).',
       durability: '4점 — 전기·가스는 경기와 무관한 필수재. 금리가 오르면 부담(빚이 많다).',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['요금 인상 신청(설비 투자분 반영).'],
+        threats: ['공공요금 위원회가 승인 여부와 폭을 정한다.'],
+        why: '회사가 스스로 값을 정할 수 없는 구조다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['허용 자기자본 이익률 약 10%(실제 ROE 12.3%).'],
+        threats: ['ROIC 5~7% — 설비가 많이 드는 사업.'],
+        why: '정부가 허용한 수익률 안에서 안정적으로 번다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['설비 투자만큼 이익이 늘어 EPS 연 5~7%.'],
+        threats: ['요금 인상 반발, 금리.'],
+        why: '투자를 늘릴수록 이익도 늘어나는 구조다.',
+      },
+      durability: {
+        state: 'good',
+        sources: ['전기·가스는 경기와 무관한 필수재.'],
+        threats: ['자연재해·산불 책임, 빚.'],
+        why: '필수 인프라 독점이라 단단하다.',
+      },
     },
     now: [
       '2026년 조정 EPS 전망 3.83~3.90달러(상단 자신), 2027년 4.08~4.17달러 첫 제시. 장기 6~8% 성장 유지.',
@@ -15204,9 +15594,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '센터포인트에너지 — 휴스턴 등 전력·가스 공급 회사(유틸리티).', money: '정부가 정한 요금으로 전기·가스를 공급. 설비 투자액에 정해진 이익률을 붙여 요금을 받는다.' },
     moat: {
       state: 'intact',
-      sources: ['지역 독점 전력·가스망 — 경쟁이 없다.', '데이터센터·전기화로 전력 수요 증가.'],
-      threats: ['요금 인상 승인(규제 당국).', '금리(빚이 많다), 자연재해 비용.'],
-      why: '규제 독점이라 해자는 그대로. 다만 성장과 이익률은 정부가 정한다(해자가 있어도 크게 벌지는 못하는 구조).',
+      sources: ['휴스턴 등 전력·가스 공급 지역 독점 — 경쟁자가 없다.'],
+      threats: ['요금 인상은 정부 승인이 필요하다.', '금리(빚이 많다).'],
+      why: '규제 독점이라 해자는 그대로 — 다만 이익의 천장도 정부가 정한다.',
     },
     scores: {
       moat: '3점 — 지역 전력·가스망 독점. 경쟁은 없지만 정부가 이익률을 정해 "넓은 해자, 낮은 천장" 구조.',
@@ -15214,6 +15604,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 허용된 자기자본 이익률 약 10%(실제 ROE 9.6%). ROIC 5~7%로 낮지만 안정적.',
       growth: '3점 — 설비 투자가 늘어난 만큼 이익이 는다(EPS 연 6~8% 목표). 휴스턴 인구 증가.',
       durability: '4점 — 전기·가스는 경기와 무관한 필수재. 금리가 오르면 부담(빚이 많다).',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['요금 인상 신청(설비 투자분 반영).'],
+        threats: ['공공요금 위원회가 승인 여부와 폭을 정한다.'],
+        why: '회사가 스스로 값을 정할 수 없는 구조다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['허용 자기자본 이익률 약 10%(실제 ROE 9.6%).'],
+        threats: ['ROIC 5~7% — 설비가 많이 드는 사업.'],
+        why: '정부가 허용한 수익률 안에서 안정적으로 번다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['휴스턴 인구 증가로 투자 확대.'],
+        threats: ['요금 인상 반발, 금리.'],
+        why: '투자를 늘릴수록 이익도 늘어나는 구조다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['전기·가스는 경기와 무관한 필수재.'],
+        threats: ['자연재해·산불 책임, 빚.'],
+        why: '필수 인프라라 사업은 오래가지만 빚과 재해가 변수다.',
+      },
     },
     now: [
       '2026년 EPS 전망 1.89~1.91달러 중간값 이상(+8%). 1분기 EPS 0.56달러.',
@@ -15243,9 +15659,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '카드·소비자 대출 은행(캐피털원). 디스커버 인수로 자체 결제망까지.', money: '카드 대출 이자·수수료.' },
     moat: {
       state: 'intact',
-      sources: ['데이터 기반 신용 심사.', '디스커버 결제망 — 비자·마스터 수수료를 아낄 수 있다.'],
-      threats: ['경기 침체 시 카드 연체.'],
-      why: '해자가 넓어지는 중.',
+      sources: ['미국 카드 대출 상위권 — 2025년 디스커버 인수로 자체 결제망 확보.'],
+      threats: ['신용손실.'],
+      why: '결제망 확보로 해자가 강해지는 중.',
     },
     scores: {
       moat: '3점 — 미국 카드 대출 상위권. 2025년 디스커버 인수로 자체 결제망까지 확보.',
@@ -15253,6 +15669,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROE 3%(인수 비용으로 일시 하락).',
       growth: '3점 — 디스커버 통합 효과가 성장 동력.',
       durability: '3점 — 경기 침체 때 카드 대손이 크게 는다(10년간 감소 8번).',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['결제망 수수료.'],
+        threats: ['대출 금리 경쟁.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROE 3%(인수 비용으로 일시 하락).'],
+        threats: ['대손.'],
+        why: '인수 효과가 나오면 회복 예상.',
+      },
+      growth: {
+        state: 'good',
+        sources: ['디스커버 통합 시너지.'],
+        threats: ['통합 위험.'],
+        why: '빨라질 전망.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['결제망.'],
+        threats: ['경기 침체 때 대손 급증(10년간 감소 8번).'],
+        why: '보통이다.',
+      },
     },
     now: [
       '버크셔 매도(2026년 2분기): 캐피털원을 팔았다(디스커버 합병 이후).',
@@ -15284,9 +15726,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '콘택트렌즈·여성 건강 회사(쿠퍼).', money: '렌즈·난임 시술 재료 판매.' },
     moat: {
       state: 'intact',
-      sources: ['일회용 렌즈·근시 억제 렌즈.'],
+      sources: ['콘택트렌즈 세계 3위(과점), 불임 치료 기기.'],
       threats: ['경쟁.'],
-      why: '해자 보통.',
+      why: '과점 해자 그대로.',
     },
     scores: {
       moat: '3점 — 콘택트렌즈 세계 3위(과점), 불임 치료 기기.',
@@ -15294,6 +15736,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 조정 영업이익률 약 25%지만 회계 ROIC 4%(인수 자산).',
       growth: '3점 — 매출 연 5~7%.',
       durability: '3점 — 경쟁·성장 둔화.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['렌즈 과점.'],
+        threats: ['경쟁.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['조정 영업이익률 약 25%.'],
+        threats: ['회계 ROIC 4%(인수 자산).'],
+        why: '조정 기준으로 안정적이다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['매출 연 5~7%.'],
+        threats: ['성장 둔화.'],
+        why: '꾸준하다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['과점.'],
+        threats: ['경쟁.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '9월 2026 회계연도(10월 결산) 3분기 발표: 연간 전망을 다시 낮췄고, 1년간 진행한 전략 검토 끝에 난임·여성건강 사업(쿠퍼서지컬)을 팔지 않기로 했다. 자사주 한도를 30억 달러로 확대.',
@@ -15388,9 +15856,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: 'DTE에너지 — 디트로이트 전력·가스 공급 회사(유틸리티).', money: '정부가 정한 요금으로 전기·가스를 공급. 설비 투자액에 정해진 이익률을 붙여 요금을 받는다.' },
     moat: {
       state: 'intact',
-      sources: ['지역 독점 전력·가스망 — 경쟁이 없다.', '데이터센터·전기화로 전력 수요 증가.'],
-      threats: ['요금 인상 승인(규제 당국).', '금리(빚이 많다), 자연재해 비용.'],
-      why: '규제 독점이라 해자는 그대로. 다만 성장과 이익률은 정부가 정한다(해자가 있어도 크게 벌지는 못하는 구조).',
+      sources: ['디트로이트 전력·가스 공급 지역 독점 — 경쟁자가 없다.'],
+      threats: ['요금 인상은 정부 승인이 필요하다.', '금리(빚이 많다).'],
+      why: '규제 독점이라 해자는 그대로 — 다만 이익의 천장도 정부가 정한다.',
     },
     scores: {
       moat: '3점 — 지역 전력·가스망 독점. 경쟁은 없지만 정부가 이익률을 정해 "넓은 해자, 낮은 천장" 구조.',
@@ -15398,6 +15866,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 허용된 자기자본 이익률 약 10%(실제 ROE 12.2%). ROIC 5~7%로 낮지만 안정적.',
       growth: '3점 — 설비 투자가 늘어난 만큼 이익이 는다(EPS 연 6~8% 목표).',
       durability: '4점 — 전기·가스는 경기와 무관한 필수재. 금리가 오르면 부담(빚이 많다).',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['요금 인상 신청(설비 투자분 반영).'],
+        threats: ['공공요금 위원회가 승인 여부와 폭을 정한다.'],
+        why: '회사가 스스로 값을 정할 수 없는 구조다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['허용 자기자본 이익률 약 10%(실제 ROE 12.2%).'],
+        threats: ['ROIC 5~7% — 설비가 많이 드는 사업.'],
+        why: '정부가 허용한 수익률 안에서 안정적으로 번다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['설비 투자만큼 이익이 늘어 EPS 연 5~7%.'],
+        threats: ['요금 인상 반발, 금리.'],
+        why: '투자를 늘릴수록 이익도 늘어나는 구조다.',
+      },
+      durability: {
+        state: 'good',
+        sources: ['전기·가스는 경기와 무관한 필수재.'],
+        threats: ['자연재해·산불 책임, 빚.'],
+        why: '필수 인프라 독점이라 단단하다.',
+      },
     },
     now: [
       '2026년 영업 EPS 전망 7.59~7.73달러(상단 기대). 2분기 EPS 1.32달러.',
@@ -15427,9 +15921,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '듀크에너지 — 캐롤라이나·플로리다 등 전력·가스 공급 회사(유틸리티).', money: '정부가 정한 요금으로 전기·가스를 공급. 설비 투자액에 정해진 이익률을 붙여 요금을 받는다.' },
     moat: {
       state: 'intact',
-      sources: ['지역 독점 전력·가스망 — 경쟁이 없다.', '데이터센터·전기화로 전력 수요 증가.'],
-      threats: ['요금 인상 승인(규제 당국).', '금리(빚이 많다), 자연재해 비용.'],
-      why: '규제 독점이라 해자는 그대로. 다만 성장과 이익률은 정부가 정한다(해자가 있어도 크게 벌지는 못하는 구조).',
+      sources: ['캐롤라이나·플로리다 등 전력·가스 공급 지역 독점 — 경쟁자가 없다.'],
+      threats: ['요금 인상은 정부 승인이 필요하다.', '금리(빚이 많다).'],
+      why: '규제 독점이라 해자는 그대로 — 다만 이익의 천장도 정부가 정한다.',
     },
     scores: {
       moat: '3점 — 지역 전력·가스망 독점. 경쟁은 없지만 정부가 이익률을 정해 "넓은 해자, 낮은 천장" 구조.',
@@ -15437,6 +15931,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 허용된 자기자본 이익률 약 10%(실제 ROE 9.7%). ROIC 5~7%로 낮지만 안정적.',
       growth: '3점 — 설비 투자가 늘어난 만큼 이익이 는다(EPS 연 6~8% 목표). 남동부 인구·데이터센터 증가.',
       durability: '4점 — 전기·가스는 경기와 무관한 필수재. 금리가 오르면 부담(빚이 많다).',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['요금 인상 신청(설비 투자분 반영).'],
+        threats: ['공공요금 위원회가 승인 여부와 폭을 정한다.'],
+        why: '회사가 스스로 값을 정할 수 없는 구조다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['허용 자기자본 이익률 약 10%(실제 ROE 9.7%).'],
+        threats: ['ROIC 5~7% — 설비가 많이 드는 사업.'],
+        why: '정부가 허용한 수익률 안에서 안정적으로 번다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['남동부 인구·데이터센터 증가로 투자 확대.'],
+        threats: ['요금 인상 반발, 금리.'],
+        why: '투자를 늘릴수록 이익도 늘어나는 구조다.',
+      },
+      durability: {
+        state: 'good',
+        sources: ['전기·가스는 경기와 무관한 필수재.'],
+        threats: ['자연재해·산불 책임, 빚.'],
+        why: '필수 인프라 독점이라 단단하다.',
+      },
     },
     now: [
       '2026년 조정 EPS 전망 6.55~6.80달러 유지, 2030년까지 연 5~7% 성장 목표. 5년 투자 1,030억 달러.',
@@ -15465,10 +15985,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '재보험(에베레스트) — 준비금 문제 정리 중, PER 8.6배',
     biz: { what: '재보험 회사(에버레스트).', money: '재보험료.' },
     moat: {
-      state: 'intact',
-      sources: ['재보험 규모.'],
-      threats: ['자연재해·손해 적립 부족.'],
-      why: '해자 보통.',
+      state: 'weakening',
+      sources: ['세계 재보험 상위권.'],
+      threats: ['재해 손실, 준비금 부족 이력.'],
+      why: '규모는 있지만 해자가 얕다.',
     },
     scores: {
       moat: '3점 — 세계 재보험 상위권.',
@@ -15476,6 +15996,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROE 11%. 과거 준비금 부족으로 손실.',
       growth: '3점 — 보험료 인상기.',
       durability: '3점 — 대형 재해·준비금 문제.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['재보험료 인상.'],
+        threats: ['시세.'],
+        why: '시세를 따라간다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROE 11%.'],
+        threats: ['준비금 보강.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['보험료 인상기.'],
+        threats: ['사이클.'],
+        why: '사이클을 탄다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['규모.'],
+        threats: ['대형 재해.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '2025년 10월 미국 배상 보험 준비금 부족으로 대규모 비용 처리(4.78억 달러)와 함께 일반 기업 보험 사업 매각, 12억 달러 손실 보전 재보험 계약.',
@@ -15569,9 +16115,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '셰일 원유 회사(EOG).', money: '원유·가스 판매.' },
     moat: {
       state: 'intact',
-      sources: ['원가가 낮은 시추 노하우.'],
-      threats: ['유가.'],
-      why: '해자 보통.',
+      sources: ['미국 셰일 원가 최저 수준, 빚이 거의 없는 보수적 경영.'],
+      threats: ['유가·가스 가격.', '장기 에너지 전환.'],
+      why: '저원가 자산이 해자 — 그대로(원자재 사업이라 깊지는 않다).',
     },
     scores: {
       moat: '3점 — 미국 셰일 원가 최저 수준, 빚이 거의 없는 보수적 경영.',
@@ -15579,6 +16125,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '4점 — ROIC 16%(5년 평균 24%). 이익은 유가 따라 크게 변한다.',
       growth: '3점 — 생산량 증가는 연 몇 %. 이익 성장은 유가에 달렸다.',
       durability: '3점 — 유가 사이클과 장기 에너지 전환 위험.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['비용 절감.'],
+        threats: ['유가·가스 가격은 세계 시장이 정한다.'],
+        why: '회사가 값을 정할 수 없다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 16%(5년 평균 24%).'],
+        threats: ['유가 하락기.'],
+        why: '이익률은 유가를 따라 오르내린다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['생산량 연 몇 % 증가, 자사주 매입.'],
+        threats: ['유가.'],
+        why: '생산은 늘지만 이익은 유가가 정한다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['저원가 자산.'],
+        threats: ['유가 급락기 적자, 에너지 전환.'],
+        why: '원자재 사이클을 그대로 타 보통이다.',
+      },
     },
     now: [
       '8월 2분기: 잉여현금흐름 28억 달러, 주주 환원 18억 달러(자사주 13억 달러). 유가 상승·원가 하락·생산 증가로 2분기 기준 사상 최대 실적. 올해 잉여현금흐름 약 80억 달러 예상, 서부텍사스유 손익분기 배럴당 50달러 미만.',
@@ -15608,9 +16180,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '엑셀론 — 시카고·필라델피아 등 전력망 전력·가스 공급 회사(유틸리티).', money: '정부가 정한 요금으로 전기·가스를 공급. 설비 투자액에 정해진 이익률을 붙여 요금을 받는다.' },
     moat: {
       state: 'intact',
-      sources: ['지역 독점 전력·가스망 — 경쟁이 없다.', '데이터센터·전기화로 전력 수요 증가.'],
-      threats: ['요금 인상 승인(규제 당국).', '금리(빚이 많다), 자연재해 비용.'],
-      why: '규제 독점이라 해자는 그대로. 다만 성장과 이익률은 정부가 정한다(해자가 있어도 크게 벌지는 못하는 구조).',
+      sources: ['시카고·필라델피아 등 전력·가스 공급 지역 독점 — 경쟁자가 없다.'],
+      threats: ['요금 인상은 정부 승인이 필요하다.', '금리(빚이 많다).'],
+      why: '규제 독점이라 해자는 그대로 — 다만 이익의 천장도 정부가 정한다.',
     },
     scores: {
       moat: '3점 — 지역 전력·가스망 독점. 경쟁은 없지만 정부가 이익률을 정해 "넓은 해자, 낮은 천장" 구조.',
@@ -15618,6 +16190,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 허용된 자기자본 이익률 약 10%(실제 ROE 9.9%). ROIC 5~7%로 낮지만 안정적.',
       growth: '3점 — 설비 투자가 늘어난 만큼 이익이 는다(EPS 연 6~8% 목표).',
       durability: '4점 — 전기·가스는 경기와 무관한 필수재. 금리가 오르면 부담(빚이 많다).',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['요금 인상 신청(설비 투자분 반영).'],
+        threats: ['공공요금 위원회가 승인 여부와 폭을 정한다.'],
+        why: '회사가 스스로 값을 정할 수 없는 구조다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['허용 자기자본 이익률 약 10%(실제 ROE 9.9%).'],
+        threats: ['ROIC 5~7% — 설비가 많이 드는 사업.'],
+        why: '정부가 허용한 수익률 안에서 안정적으로 번다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['설비 투자만큼 이익이 늘어 EPS 연 5~7%.'],
+        threats: ['요금 인상 반발, 금리.'],
+        why: '투자를 늘릴수록 이익도 늘어나는 구조다.',
+      },
+      durability: {
+        state: 'good',
+        sources: ['전기·가스는 경기와 무관한 필수재.'],
+        threats: ['자연재해·산불 책임, 빚.'],
+        why: '필수 인프라 독점이라 단단하다.',
+      },
     },
     now: [
       '2026년 조정 영업 EPS 전망 2.81~2.91달러 유지, 중간값 이상 목표. 2026~2029년 투자 417억 달러(송전 비중 확대).',
@@ -15712,9 +16310,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '셰일 원유 회사(다이아몬드백).', money: '원유 판매.' },
     moat: {
       state: 'intact',
-      sources: ['퍼미안 저원가.'],
-      threats: ['유가.'],
-      why: '해자 보통.',
+      sources: ['퍼미안 셰일 대형 생산(엔데버 합병).'],
+      threats: ['유가·가스 가격.', '장기 에너지 전환.'],
+      why: '저원가 자산이 해자 — 그대로(원자재 사업이라 깊지는 않다).',
     },
     scores: {
       moat: '3점 — 퍼미안 셰일 대형 생산사(엔데버 합병).',
@@ -15722,6 +16320,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '4점 — ROIC 2%(손상 처리, 5년 평균 16%). 이익은 유가 따라 크게 변한다.',
       growth: '3점 — 생산량 증가는 연 몇 %. 이익 성장은 유가에 달렸다.',
       durability: '3점 — 유가 사이클과 장기 에너지 전환 위험.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['비용 절감.'],
+        threats: ['유가·가스 가격은 세계 시장이 정한다.'],
+        why: '회사가 값을 정할 수 없다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 2%(손상 처리, 5년 평균 16%).'],
+        threats: ['유가 하락기.'],
+        why: '이익률은 유가를 따라 오르내린다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['생산량 연 몇 % 증가, 자사주 매입.'],
+        threats: ['유가.'],
+        why: '생산은 늘지만 이익은 유가가 정한다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['저원가 자산.'],
+        threats: ['유가 급락기 적자, 에너지 전환.'],
+        why: '원자재 사이클을 그대로 타 보통이다.',
+      },
     },
     now: [
       '2분기: 매출 55.6억 달러(+51%, 인수와 유가 상승), 잉여현금흐름 이익률 46.6%. 2024년 엔데버 인수로 퍼미안 최대급 생산자가 됐다.',
@@ -15750,9 +16374,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '네트워크 보안·트래픽 장비 회사(F5).', money: '장비 + 소프트웨어 + 유지보수.' },
     moat: {
       state: 'intact',
-      sources: ['대기업 설치 기반.'],
+      sources: ['앱 전송·보안 장비 설치 기반.'],
       threats: ['클라우드 전환.'],
-      why: '해자 보통.',
+      why: '설치 기반 해자 — 그대로.',
     },
     scores: {
       moat: '3점 — 앱 전송·보안 장비 설치 기반.',
@@ -15760,6 +16384,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '4점 — ROIC 31%, 영업이익률 약 35%(조정).',
       growth: '2점 — 매출 연 3~6%.',
       durability: '3점 — 클라우드 전환으로 장비 수요 감소.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['유지보수 매출.'],
+        threats: ['클라우드 경쟁.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'good',
+        sources: ['ROIC 31%, 조정 영업이익률 약 35%.'],
+        threats: ['없음에 가깝다.'],
+        why: '높은 수준이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['보안 소프트웨어.'],
+        threats: ['매출 연 3~6%.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['설치 기반.'],
+        threats: ['클라우드 전환.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '7월 2026 회계연도(9월 결산) 3분기: 매출 8.65억 달러(+11%), 조정 EPS 4.73달러. 장비 매출 +32%(교체 주기). 연간 매출 성장 9~10%, 조정 EPS 17.21~17.33달러로 상향.',
@@ -15788,10 +16438,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '노턴 백신·라이프락(젠 디지털) — 조정 EPS 기준 PER 8.5배',
     biz: { what: '개인 보안 소프트웨어 회사(젠디지털). 노턴·아바스트.', money: '구독료.' },
     moat: {
-      state: 'intact',
-      sources: ['브랜드·구독 고객.'],
-      threats: ['무료 보안(윈도 기본).'],
-      why: '해자 보통.',
+      state: 'weakening',
+      sources: ['소비자 보안(노턴·어바스트) 구독자 약 4,000만 명.'],
+      threats: ['무료 보안(윈도 기본), 스마트폰 보안.'],
+      why: '구독 습관에 기대는 해자라 약해지는 중.',
     },
     scores: {
       moat: '3점 — 소비자 보안(노턴·어바스트), 개인 금융 앱(머니라이언). 구독자 약 4,000만 명.',
@@ -15799,6 +16449,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '4점 — 조정 영업이익률 약 60%, ROIC 14%.',
       growth: '2점 — 매출 연 3~5%(인수 효과 외).',
       durability: '3점 — 무료 보안(윈도 기본)·스마트폰 보안과 경쟁.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['자동 갱신 구독으로 가격 인상.'],
+        threats: ['고객 불만.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'good',
+        sources: ['조정 영업이익률 약 60%, ROIC 14%.'],
+        threats: ['빚.'],
+        why: '높다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['개인 금융 앱(머니라이언) 인수.'],
+        threats: ['자체 성장 연 3~5%.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['구독 기반.'],
+        threats: ['기술 변화.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '8월 2027 회계연도(3월 결산) 1분기: 조정 매출 13.4억 달러(+11%), 조정 EPS 0.71달러(+19%), 잉여현금흐름 4.3억 달러. 연간 조정 EPS 전망 2.87~2.97달러로 상향.',
@@ -15828,9 +16504,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '발전기 회사(제너락). 가정용 비상 발전기 1위.', money: '발전기 판매.' },
     moat: {
       state: 'intact',
-      sources: ['가정용 발전기 점유율 압도적.'],
-      threats: ['정전·허리케인 빈도에 따라 출렁임.'],
-      why: '해자 보통.',
+      sources: ['미국 가정용 비상 발전기 점유율 약 75%.'],
+      threats: ['날씨 의존.'],
+      why: '점유율 해자 그대로.',
     },
     scores: {
       moat: '3점 — 미국 가정용 비상 발전기 점유율 약 75%.',
@@ -15838,6 +16514,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 7%(5년 평균 11%).',
       growth: '3점 — 데이터센터용 대형 발전기 신규 진출.',
       durability: '3점 — 허리케인·정전 같은 날씨에 수요가 들쭉날쭉.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['정전 많을 때 수요.'],
+        threats: ['경쟁.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 7%(5년 평균 11%).'],
+        threats: ['수요 변동.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['데이터센터용 대형 발전기 진출.'],
+        threats: ['날씨.'],
+        why: '새 시장이 기회다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['1위.'],
+        threats: ['수요 들쭉날쭉.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '7월 2분기: 매출 11.7억 달러(+11%), 상업·산업용 +29%(데이터센터). 데이터센터 관련 수주 잔고 약 16억 달러, 대형 클라우드 고객 2곳과 공급 계약. 대형 발전기 생산 능력을 1년 안에 3배로.',
@@ -15932,9 +16634,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '미국 최대 군함 조선소(헌팅턴잉걸스). 핵 항공모함 유일.', money: '해군 계약.' },
     moat: {
       state: 'intact',
-      sources: ['핵 항공모함 독점.'],
-      threats: ['조선소 지연·인력.'],
-      why: '독점은 그대로 — 이익률이 낮다.',
+      sources: ['미국 항공모함 유일한 건조사, 핵잠수함 2곳 중 하나.'],
+      threats: ['인력 부족·지연.'],
+      why: '대체 불가 조선소 — 해자 그대로.',
     },
     scores: {
       moat: '3점 — 미국 항공모함 유일한 건조사, 핵잠수함 2곳 중 하나.',
@@ -15942,6 +16644,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — 영업이익률 약 5~6%로 낮다(인력 부족·지연).',
       growth: '3점 — 해군 예산 증가.',
       durability: '4점 — 대체 불가능한 조선소.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['정부 계약.'],
+        threats: ['원가+이익 구조.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['영업이익률 약 5~6%.'],
+        threats: ['인력 부족·지연 비용.'],
+        why: '낮다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['해군 예산 증가.'],
+        threats: ['생산 지연.'],
+        why: '보통이다.',
+      },
+      durability: {
+        state: 'good',
+        sources: ['대체 불가.'],
+        threats: ['인력.'],
+        why: '단단하다.',
+      },
     },
     now: [
       '7월 2분기: 매출 34억 달러, EPS 5.27달러. 조선 매출 전망 102~104억 달러로 상향, 조선 이익률 6~6.5%. 잉여현금흐름은 2분기에 예상보다 약했다.',
@@ -15971,10 +16699,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '인프라·물 설계 엔지니어링(제이콥스) — 올해 세 번째 전망 상향',
     biz: { what: '엔지니어링·설계 회사(제이콥스).', money: '인프라·시설 설계·감리 계약.' },
     moat: {
-      state: 'intact',
-      sources: ['정부·인프라 실적.'],
-      threats: ['경쟁 입찰.'],
-      why: '해자 보통.',
+      state: 'weakening',
+      sources: ['정부·인프라·물 엔지니어링 컨설팅.'],
+      threats: ['경쟁.'],
+      why: '해자가 얕다.',
     },
     scores: {
       moat: '3점 — 정부·인프라·물 엔지니어링 컨설팅.',
@@ -15982,6 +16710,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 10%.',
       growth: '3점 — 인프라 투자 증가.',
       durability: '3점 — 사업 분리(아마entum) 후 재편.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['전문성.'],
+        threats: ['입찰.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 10%.'],
+        threats: ['분리 비용.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['인프라 투자, 최근 분기 매출 +34%.'],
+        threats: ['정부 예산.'],
+        why: '보통이다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['정부 고객.'],
+        threats: ['예산.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '8월 2026 회계연도(9월 결산) 3분기: 조정 EPS 1.84달러(1년 전 1.62달러). 연간 조정 EPS 전망 7.20~7.30달러(약 +19%)로 올해 세 번째 상향. 수주 잔고 270억 달러 사상 최대. 4분기 실적은 11월.',
@@ -16075,9 +16829,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '빌딩 설비 회사(존슨컨트롤스). 냉방기·소방·보안.', money: '장비 + 서비스.' },
     moat: {
       state: 'intact',
-      sources: ['빌딩 설비 설치 기반.'],
-      threats: ['건설 경기.'],
-      why: '해자 보통.',
+      sources: ['빌딩 냉난방(요크)·제어·보안 — 데이터센터 냉각.'],
+      threats: ['구조조정.'],
+      why: '해자 그대로.',
     },
     scores: {
       moat: '3점 — 빌딩 냉난방(요크)·제어·보안. 데이터센터 냉각.',
@@ -16085,6 +16839,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROE 23%.',
       growth: '3점 — 최근 5년 EPS 연 43%(사업 매각 효과).',
       durability: '3점 — 구조조정·사업 재편 중.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['데이터센터 냉각 수요.'],
+        threats: ['경쟁.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROE 23%.'],
+        threats: ['구조조정 비용.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'good',
+        sources: ['최근 5년 EPS 연 43%(사업 매각 효과).'],
+        threats: ['재편.'],
+        why: '빨라지는 중.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['빌딩 설비.'],
+        threats: ['재편.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '7월 2026 회계연도(9월 결산) 3분기: 매출 66.1억 달러(실질 +10%), 조정 EPS 1.42달러(예상 1.30달러). 연간 조정 EPS 전망 약 5.05달러로 상향. 수주 잔고 210억 달러 사상 최대. 4분기 실적은 11월 초.',
@@ -16179,9 +16959,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '얼라이언트에너지 — 아이오와·위스콘신 전력·가스 공급 회사(유틸리티).', money: '정부가 정한 요금으로 전기·가스를 공급. 설비 투자액에 정해진 이익률을 붙여 요금을 받는다.' },
     moat: {
       state: 'intact',
-      sources: ['지역 독점 전력·가스망 — 경쟁이 없다.', '데이터센터·전기화로 전력 수요 증가.'],
-      threats: ['요금 인상 승인(규제 당국).', '금리(빚이 많다), 자연재해 비용.'],
-      why: '규제 독점이라 해자는 그대로. 다만 성장과 이익률은 정부가 정한다(해자가 있어도 크게 벌지는 못하는 구조).',
+      sources: ['아이오와·위스콘신 전력·가스 공급 지역 독점 — 경쟁자가 없다.'],
+      threats: ['요금 인상은 정부 승인이 필요하다.', '금리(빚이 많다).'],
+      why: '규제 독점이라 해자는 그대로 — 다만 이익의 천장도 정부가 정한다.',
     },
     scores: {
       moat: '3점 — 지역 전력·가스망 독점. 경쟁은 없지만 정부가 이익률을 정해 "넓은 해자, 낮은 천장" 구조.',
@@ -16189,6 +16969,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 허용된 자기자본 이익률 약 10%(실제 ROE 11.3%). ROIC 5~7%로 낮지만 안정적.',
       growth: '3점 — 설비 투자가 늘어난 만큼 이익이 는다(EPS 연 6~8% 목표).',
       durability: '4점 — 전기·가스는 경기와 무관한 필수재. 금리가 오르면 부담(빚이 많다).',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['요금 인상 신청(설비 투자분 반영).'],
+        threats: ['공공요금 위원회가 승인 여부와 폭을 정한다.'],
+        why: '회사가 스스로 값을 정할 수 없는 구조다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['허용 자기자본 이익률 약 10%(실제 ROE 11.3%).'],
+        threats: ['ROIC 5~7% — 설비가 많이 드는 사업.'],
+        why: '정부가 허용한 수익률 안에서 안정적으로 번다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['설비 투자만큼 이익이 늘어 EPS 연 5~7%.'],
+        threats: ['요금 인상 반발, 금리.'],
+        why: '투자를 늘릴수록 이익도 늘어나는 구조다.',
+      },
+      durability: {
+        state: 'good',
+        sources: ['전기·가스는 경기와 무관한 필수재.'],
+        threats: ['자연재해·산불 책임, 빚.'],
+        why: '필수 인프라 독점이라 단단하다.',
+      },
     },
     now: [
       '2026년 EPS 전망 3.36~3.46달러, 상반기 기준 상단 쪽 진행. 데이터센터 계약 약 3.4기가와트.',
@@ -16218,9 +17024,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '요가·운동복 회사(룰루레몬).', money: '의류 판매.' },
     moat: {
       state: 'weakening',
-      sources: ['브랜드·직판.'],
-      threats: ['미국 판매 감소, 경쟁(알로·뷰오리).', '패션 유행.'],
-      why: '미국에서 브랜드 힘이 약해지는 중.',
+      sources: ['요가복 1위 브랜드, 매장 직판.'],
+      threats: ['알로·뷰오리 등 경쟁 브랜드.'],
+      why: '미국 점유율을 잃고 있어 약해지는 중.',
     },
     scores: {
       moat: '3점 — 요가복 브랜드 1위, 매장 직판.',
@@ -16228,6 +17034,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '4점 — ROIC 57%(5년 평균 68%).',
       growth: '2점 — 미국 매출 감소, 중국은 성장. 경쟁 브랜드(알로·뷰오리) 부상.',
       durability: '3점 — 패션 브랜드는 유행을 탄다.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['정가 판매.'],
+        threats: ['할인 증가.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'good',
+        sources: ['ROIC 57%(5년 평균 68%).'],
+        threats: ['관세.'],
+        why: '높다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['중국 성장.'],
+        threats: ['미국 매출 감소.'],
+        why: '느려지는 중.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['브랜드.'],
+        threats: ['유행.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '9월 2026 회계연도(1월 결산) 2분기: 매출 24.2억 달러(-4%), 같은 매장 매출 -9%. 연간 매출 전망 103.5~105억 달러, EPS 9.48~9.73달러로 두 번째 하향. 중국 수요 약화, 미국 경쟁(알로·뷰오리) 심화. 발표 뒤 -15~20%, 8년 만의 최저가.',
@@ -16257,9 +17089,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '카지노 리조트 회사(라스베이거스샌즈). 마카오·싱가포르.', money: '카지노·호텔 매출.' },
     moat: {
       state: 'intact',
-      sources: ['정부 허가 카지노 — 제한된 면허.', '싱가포르 마리나베이샌즈.'],
-      threats: ['중국 경기·마카오 규제.'],
-      why: '면허 해자는 그대로.',
+      sources: ['싱가포르 카지노 라이선스(경쟁자 1곳), 마카오 대형 리조트.'],
+      threats: ['중국 경기, 마카오 라이선스 정책.'],
+      why: '라이선스 해자 그대로.',
     },
     scores: {
       moat: '3점 — 싱가포르 카지노 라이선스(마리나베이샌즈, 경쟁자 1곳), 마카오 대형 리조트.',
@@ -16267,6 +17099,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 18%.',
       growth: '3점 — 싱가포르 확장·마카오 회복.',
       durability: '3점 — 중국 경기·마카오 라이선스 정책.',
+    },
+    axes: {
+      pricing: {
+        state: 'good',
+        sources: ['싱가포르 독점에 가까워 가격 인상.'],
+        threats: ['마카오 경쟁.'],
+        why: '싱가포르는 강하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 18%.'],
+        threats: ['빚.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['싱가포르 확장.'],
+        threats: ['마카오 회복 속도.'],
+        why: '보통이다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['라이선스.'],
+        threats: ['정책.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '7월 2분기: 매출 약 31.5억 달러(보합), 순이익 -28%. 마카오 VIP 승률이 비정상적으로 낮아 이익 미달. 싱가포르 마리나베이샌즈 EBITDA -10.3%. 올해 주가 약 -27%.',
@@ -16295,9 +17153,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '주택 자재 회사(매스코). 델타 수전, 베어 페인트.', money: '주택 자재 판매.' },
     moat: {
       state: 'intact',
-      sources: ['브랜드·홈디포 독점 판매(베어).'],
-      threats: ['주택 경기.'],
-      why: '해자 보통.',
+      sources: ['델타 수도꼭지·베어 페인트(홈디포 독점 공급).'],
+      threats: ['홈디포 의존, 주택 경기.'],
+      why: '브랜드 해자 그대로.',
     },
     scores: {
       moat: '3점 — 델타 수도꼭지·베어 페인트(홈디포 독점 공급).',
@@ -16305,6 +17163,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '4점 — ROIC 46%(5년 평균 48%).',
       growth: '2점 — 최근 5년 EPS 감소. 주택 개보수 경기 부진.',
       durability: '3점 — 홈디포 의존(페인트).',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['교체 수요.'],
+        threats: ['주택 경기.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'good',
+        sources: ['ROIC 46%(5년 평균 48%).'],
+        threats: ['원가.'],
+        why: '높다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['신제품.'],
+        threats: ['최근 5년 EPS 감소.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['브랜드.'],
+        threats: ['홈디포 의존.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '7월 2분기: 매출 19.9억 달러(-3%), 조정 EPS 1.64달러(+26%, 관세 환급 순효과 약 9,500만 달러). 연간 조정 EPS 전망 4.40~4.60달러로 상향(환급 효과 포함). 본업 전망은 기존과 비슷.',
@@ -16334,9 +17218,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '미국 최대 담배 회사(알트리아). 말보로(미국).', money: '담배 판매.' },
     moat: {
       state: 'weakening',
-      sources: ['말보로 브랜드 — 가격을 올려도 팔린다.'],
-      threats: ['흡연 인구가 해마다 줄어든다.', '전자담배 경쟁.'],
-      why: '가격 결정력은 남았지만 시장이 줄어 약해지는 중.',
+      sources: ['미국 말보로(점유율 약 40%) — 광고 금지로 새 경쟁자가 없다.'],
+      threats: ['흡연 인구 감소, 전자담배 전환 실패.'],
+      why: '브랜드는 강하지만 시장이 줄어 약해지는 중.',
     },
     scores: {
       moat: '3점 — 미국 말보로(점유율 약 40%). 담배 광고 금지로 새 경쟁자가 없다.',
@@ -16344,6 +17228,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '5점 — 영업이익률 약 60%, ROIC 39%.',
       growth: '1점 — 흡연 인구가 계속 준다. 전자담배 전환은 PMI·경쟁사에 밀렸다.',
       durability: '2점 — 판매량이 구조적으로 줄어든다.',
+    },
+    axes: {
+      pricing: {
+        state: 'good',
+        sources: ['해마다 가격 인상으로 판매량 감소(연 -8~10%)를 메운다.'],
+        threats: ['세금.'],
+        why: '강하다.',
+      },
+      profit: {
+        state: 'good',
+        sources: ['영업이익률 약 60%.'],
+        threats: ['판매량 감소.'],
+        why: '높다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['니코틴 파우치(온!).'],
+        threats: ['흡연 인구 감소.'],
+        why: '줄어드는 사업이다.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['배당 약 6%.'],
+        threats: ['구조적 감소.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '7월 2분기: 조정 EPS 1.48달러(+2.8%), 상반기 +4.9%. 연간 조정 EPS 전망 5.61~5.72달러(+3.5~5.5%).',
@@ -16373,9 +17283,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '데이터센터 반도체 회사(마벨). 맞춤 AI 칩, 광통신 칩.', money: '칩 판매.' },
     moat: {
       state: 'intact',
-      sources: ['맞춤 AI 칩·광통신 칩 기술.'],
-      threats: ['소수 고객 의존, 브로드컴과 경쟁.'],
-      why: '해자 보통.',
+      sources: ['맞춤형 AI 칩(아마존 트레이니엄 등)·광통신 칩.'],
+      threats: ['소수 대형 고객 의존.'],
+      why: '해자 그대로.',
     },
     scores: {
       moat: '3점 — 맞춤형 AI 칩(아마존 트레이니엄 등)·광통신 칩.',
@@ -16383,6 +17293,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — 회계 ROIC 7%(인수 자산), 이익이 들쭉날쭉.',
       growth: '4점 — 데이터센터 매출 급증(최근 분기 매출 +37%).',
       durability: '3점 — 소수 대형 고객 의존.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['맞춤 칩.'],
+        threats: ['대형 고객 협상력.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['이익 개선 중.'],
+        threats: ['회계 ROIC 7%(인수 자산).'],
+        why: '아직 낮다.',
+      },
+      growth: {
+        state: 'good',
+        sources: ['데이터센터 매출 급증(최근 분기 +37%).'],
+        threats: ['고객 집중.'],
+        why: '빨라지는 중.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['AI 칩.'],
+        threats: ['고객 집중.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '8월 2027 회계연도(1월 결산) 2분기: 매출 27.4억 달러(+37%), 데이터센터 21.7억 달러(+46%), 조정 EPS 0.94달러. 2027·2028 회계연도 매출 전망 상향. 맞춤형 칩 매출이 하반기부터 크게 늘 예정.',
@@ -16411,9 +17347,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '나이소스 — 인디애나 등 전력·가스 공급 회사(유틸리티).', money: '정부가 정한 요금으로 전기·가스를 공급. 설비 투자액에 정해진 이익률을 붙여 요금을 받는다.' },
     moat: {
       state: 'intact',
-      sources: ['지역 독점 전력·가스망 — 경쟁이 없다.', '데이터센터·전기화로 전력 수요 증가.'],
-      threats: ['요금 인상 승인(규제 당국).', '금리(빚이 많다), 자연재해 비용.'],
-      why: '규제 독점이라 해자는 그대로. 다만 성장과 이익률은 정부가 정한다(해자가 있어도 크게 벌지는 못하는 구조).',
+      sources: ['인디애나 등 전력·가스 공급 지역 독점 — 경쟁자가 없다.'],
+      threats: ['요금 인상은 정부 승인이 필요하다.', '금리(빚이 많다).'],
+      why: '규제 독점이라 해자는 그대로 — 다만 이익의 천장도 정부가 정한다.',
     },
     scores: {
       moat: '3점 — 지역 전력·가스망 독점. 경쟁은 없지만 정부가 이익률을 정해 "넓은 해자, 낮은 천장" 구조.',
@@ -16421,6 +17357,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 허용된 자기자본 이익률 약 10%(실제 ROE 10.3%). ROIC 5~7%로 낮지만 안정적.',
       growth: '3점 — 설비 투자가 늘어난 만큼 이익이 는다(EPS 연 6~8% 목표).',
       durability: '4점 — 전기·가스는 경기와 무관한 필수재. 금리가 오르면 부담(빚이 많다).',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['요금 인상 신청(설비 투자분 반영).'],
+        threats: ['공공요금 위원회가 승인 여부와 폭을 정한다.'],
+        why: '회사가 스스로 값을 정할 수 없는 구조다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['허용 자기자본 이익률 약 10%(실제 ROE 10.3%).'],
+        threats: ['ROIC 5~7% — 설비가 많이 드는 사업.'],
+        why: '정부가 허용한 수익률 안에서 안정적으로 번다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['설비 투자만큼 이익이 늘어 EPS 연 5~7%.'],
+        threats: ['요금 인상 반발, 금리.'],
+        why: '투자를 늘릴수록 이익도 늘어나는 구조다.',
+      },
+      durability: {
+        state: 'good',
+        sources: ['전기·가스는 경기와 무관한 필수재.'],
+        threats: ['자연재해·산불 책임, 빚.'],
+        why: '필수 인프라 독점이라 단단하다.',
+      },
     },
     now: [
       '2026년 조정 EPS 전망 2.02~2.07달러. 구글·아마존 데이터센터 협력(고객 가치 약 14억 달러)으로 2033년까지 연 9~10% 성장 목표로 올렸다.',
@@ -16449,10 +17411,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '기업용 데이터 저장(넷앱) — AI 데이터 수요로 매출 +30%',
     biz: { what: '기업 저장장치 회사(넷앱).', money: '저장 장비 + 유지보수.' },
     moat: {
-      state: 'intact',
-      sources: ['대기업 설치 기반.'],
+      state: 'weakening',
+      sources: ['기업 데이터 저장장치(올플래시).'],
       threats: ['클라우드 전환.'],
-      why: '해자 보통.',
+      why: '설치 기반은 있지만 얕다.',
     },
     scores: {
       moat: '3점 — 기업 데이터 저장장치(올플래시).',
@@ -16460,6 +17422,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '4점 — ROE 107%(자사주 매입), 영업이익률 약 28%(조정).',
       growth: '2점 — 매출 연 3~5%. AI 데이터 저장 수요가 기회.',
       durability: '3점 — 클라우드 전환으로 장비 수요 감소 위험.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['유지보수 매출.'],
+        threats: ['클라우드.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'good',
+        sources: ['ROE 107%(자사주), 조정 영업이익률 약 28%.'],
+        threats: ['없음에 가깝다.'],
+        why: '높다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['AI 데이터 저장.'],
+        threats: ['매출 연 3~5%.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['설치 기반.'],
+        threats: ['클라우드 전환.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '9월 2027 회계연도(4월 결산) 1분기: 매출 20.3억 달러(+30%, 한 주 추가분 약 6,500만 달러 포함), 조정 EPS 2.58달러. 올플래시 매출 +46.6%. 연간 매출 전망 79.8~82.3억 달러, 조정 EPS 9.73~10.03달러로 크게 상향.',
@@ -16489,9 +17477,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: 'PSEG — 뉴저지 전력·가스 공급 회사(유틸리티).', money: '정부가 정한 요금으로 전기·가스를 공급. 설비 투자액에 정해진 이익률을 붙여 요금을 받는다.' },
     moat: {
       state: 'intact',
-      sources: ['지역 독점 전력·가스망 — 경쟁이 없다.', '데이터센터·전기화로 전력 수요 증가. 원전 보유.'],
-      threats: ['요금 인상 승인(규제 당국).', '금리(빚이 많다), 자연재해 비용.'],
-      why: '규제 독점이라 해자는 그대로. 다만 성장과 이익률은 정부가 정한다(해자가 있어도 크게 벌지는 못하는 구조).',
+      sources: ['뉴저지 전력·가스 공급 지역 독점 — 경쟁자가 없다.', '원전 보유.'],
+      threats: ['요금 인상은 정부 승인이 필요하다.', '금리(빚이 많다).'],
+      why: '규제 독점이라 해자는 그대로 — 다만 이익의 천장도 정부가 정한다.',
     },
     scores: {
       moat: '3점 — 지역 전력·가스망 독점. 경쟁은 없지만 정부가 이익률을 정해 "넓은 해자, 낮은 천장" 구조.',
@@ -16499,6 +17487,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 허용된 자기자본 이익률 약 10%(실제 ROE 12.8%). ROIC 5~7%로 낮지만 안정적.',
       growth: '3점 — 설비 투자가 늘어난 만큼 이익이 는다(EPS 연 6~8% 목표). 원전 전력 판매 기회.',
       durability: '4점 — 전기·가스는 경기와 무관한 필수재. 금리가 오르면 부담(빚이 많다).',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['요금 인상 신청(설비 투자분 반영).'],
+        threats: ['공공요금 위원회가 승인 여부와 폭을 정한다.'],
+        why: '회사가 스스로 값을 정할 수 없는 구조다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['허용 자기자본 이익률 약 10%(실제 ROE 12.8%).'],
+        threats: ['ROIC 5~7% — 설비가 많이 드는 사업.'],
+        why: '정부가 허용한 수익률 안에서 안정적으로 번다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['원전 전력 판매 기회.'],
+        threats: ['요금 인상 반발, 금리.'],
+        why: '투자를 늘릴수록 이익도 늘어나는 구조다.',
+      },
+      durability: {
+        state: 'good',
+        sources: ['전기·가스는 경기와 무관한 필수재.'],
+        threats: ['자연재해·산불 책임, 빚.'],
+        why: '필수 인프라 독점이라 단단하다.',
+      },
     },
     now: [
       '2026년 영업 EPS 전망 4.28~4.40달러(+7%), 2030년까지 연 6~8% 성장 목표. 5년 투자 240~280억 달러를 새 주식 발행 없이 감당 가능.',
@@ -16528,9 +17542,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '피나클웨스트 — 애리조나 전력·가스 공급 회사(유틸리티).', money: '정부가 정한 요금으로 전기·가스를 공급. 설비 투자액에 정해진 이익률을 붙여 요금을 받는다.' },
     moat: {
       state: 'intact',
-      sources: ['지역 독점 전력·가스망 — 경쟁이 없다.', '데이터센터·전기화로 전력 수요 증가.'],
-      threats: ['요금 인상 승인(규제 당국).', '금리(빚이 많다), 자연재해 비용.'],
-      why: '규제 독점이라 해자는 그대로. 다만 성장과 이익률은 정부가 정한다(해자가 있어도 크게 벌지는 못하는 구조).',
+      sources: ['애리조나 전력·가스 공급 지역 독점 — 경쟁자가 없다.'],
+      threats: ['요금 인상은 정부 승인이 필요하다.', '금리(빚이 많다).'],
+      why: '규제 독점이라 해자는 그대로 — 다만 이익의 천장도 정부가 정한다.',
     },
     scores: {
       moat: '3점 — 지역 전력·가스망 독점. 경쟁은 없지만 정부가 이익률을 정해 "넓은 해자, 낮은 천장" 구조.',
@@ -16538,6 +17552,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 허용된 자기자본 이익률 약 10%(실제 ROE 8.9%). ROIC 5~7%로 낮지만 안정적.',
       growth: '3점 — 설비 투자가 늘어난 만큼 이익이 는다(EPS 연 6~8% 목표). 애리조나 인구·반도체 공장 증가.',
       durability: '4점 — 전기·가스는 경기와 무관한 필수재. 금리가 오르면 부담(빚이 많다).',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['요금 인상 신청(설비 투자분 반영).'],
+        threats: ['공공요금 위원회가 승인 여부와 폭을 정한다.'],
+        why: '회사가 스스로 값을 정할 수 없는 구조다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['허용 자기자본 이익률 약 10%(실제 ROE 8.9%).'],
+        threats: ['ROIC 5~7% — 설비가 많이 드는 사업.'],
+        why: '정부가 허용한 수익률 안에서 안정적으로 번다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['애리조나 인구·반도체 공장 증가로 투자 확대.'],
+        threats: ['요금 인상 반발, 금리.'],
+        why: '투자를 늘릴수록 이익도 늘어나는 구조다.',
+      },
+      durability: {
+        state: 'good',
+        sources: ['전기·가스는 경기와 무관한 필수재.'],
+        threats: ['자연재해·산불 책임, 빚.'],
+        why: '필수 인프라 독점이라 단단하다.',
+      },
     },
     now: [
       '2026년 EPS 전망 4.55~4.75달러. 고객 수 +1.5~2.5%, 판매량 +4~6%(대형 산업·데이터센터 3~5%). 장기 연 5~7% 성장 목표.',
@@ -16567,9 +17607,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: 'PPL — 켄터키·펜실베이니아 전력·가스 공급 회사(유틸리티).', money: '정부가 정한 요금으로 전기·가스를 공급. 설비 투자액에 정해진 이익률을 붙여 요금을 받는다.' },
     moat: {
       state: 'intact',
-      sources: ['지역 독점 전력·가스망 — 경쟁이 없다.', '데이터센터·전기화로 전력 수요 증가.'],
-      threats: ['요금 인상 승인(규제 당국).', '금리(빚이 많다), 자연재해 비용.'],
-      why: '규제 독점이라 해자는 그대로. 다만 성장과 이익률은 정부가 정한다(해자가 있어도 크게 벌지는 못하는 구조).',
+      sources: ['켄터키·펜실베이니아 전력·가스 공급 지역 독점 — 경쟁자가 없다.'],
+      threats: ['요금 인상은 정부 승인이 필요하다.', '금리(빚이 많다).'],
+      why: '규제 독점이라 해자는 그대로 — 다만 이익의 천장도 정부가 정한다.',
     },
     scores: {
       moat: '3점 — 지역 전력·가스망 독점. 경쟁은 없지만 정부가 이익률을 정해 "넓은 해자, 낮은 천장" 구조.',
@@ -16577,6 +17617,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 허용된 자기자본 이익률 약 10%(실제 ROE 8.2%). ROIC 5~7%로 낮지만 안정적.',
       growth: '3점 — 설비 투자가 늘어난 만큼 이익이 는다(EPS 연 6~8% 목표).',
       durability: '4점 — 전기·가스는 경기와 무관한 필수재. 금리가 오르면 부담(빚이 많다).',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['요금 인상 신청(설비 투자분 반영).'],
+        threats: ['공공요금 위원회가 승인 여부와 폭을 정한다.'],
+        why: '회사가 스스로 값을 정할 수 없는 구조다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['허용 자기자본 이익률 약 10%(실제 ROE 8.2%).'],
+        threats: ['ROIC 5~7% — 설비가 많이 드는 사업.'],
+        why: '정부가 허용한 수익률 안에서 안정적으로 번다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['설비 투자만큼 이익이 늘어 EPS 연 5~7%.'],
+        threats: ['요금 인상 반발, 금리.'],
+        why: '투자를 늘릴수록 이익도 늘어나는 구조다.',
+      },
+      durability: {
+        state: 'good',
+        sources: ['전기·가스는 경기와 무관한 필수재.'],
+        threats: ['자연재해·산불 책임, 빚.'],
+        why: '필수 인프라 독점이라 단단하다.',
+      },
     },
     now: [
       '2026년 영업 EPS 전망 1.90~1.98달러, 상단 기대. 장기 연 6~8% 성장 목표.',
@@ -16607,9 +17673,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '공장 자동화 회사(로크웰). 공장 제어 컴퓨터(앨런브래들리).', money: '자동화 장비·소프트웨어.' },
     moat: {
       state: 'intact',
-      sources: ['미국 공장 제어 장치 표준.'],
-      threats: ['제조 투자 경기.'],
-      why: '해자 그대로.',
+      sources: ['북미 공장 자동화 제어기(PLC) 1위급(앨런브래들리).'],
+      threats: ['산업 경기, 지멘스 경쟁.'],
+      why: '공장 표준 해자 그대로.',
     },
     scores: {
       moat: '3점 — 북미 공장 자동화 제어기(PLC) 1위급(앨런브래들리).',
@@ -16617,6 +17683,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '4점 — ROIC 21%, 조정 영업이익률 약 20%.',
       growth: '2점 — 10년 EPS 연 2%. 공장 투자 사이클.',
       durability: '3점 — 산업 경기에 따라 크게 흔들린다.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['공장 표준.'],
+        threats: ['경쟁.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'good',
+        sources: ['ROIC 21%, 조정 영업이익률 약 20%.'],
+        threats: ['경기.'],
+        why: '높다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['리쇼어링 투자.'],
+        threats: ['10년 EPS 연 2%.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['공장 표준.'],
+        threats: ['산업 경기에 크게 흔들린다.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '8월 2026 회계연도(9월 결산) 3분기: 조정 EPS 3.49달러(+22%). 연간 조정 EPS 전망 13.00~13.30달러, 매출 성장 7.5~9.5%로 올해 세 번째 상향. 4분기 실적은 11월 초.',
@@ -16645,9 +17737,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '세계 최대 유전 서비스 회사(SLB).', money: '시추·탐사 서비스·장비.' },
     moat: {
       state: 'intact',
-      sources: ['기술·해외 유전 네트워크.'],
-      threats: ['석유사 투자 축소.'],
-      why: '해자 보통 — 경기 민감.',
+      sources: ['세계 1위 유전 서비스·기술.'],
+      threats: ['유가 사이클.'],
+      why: '기술 해자 그대로.',
     },
     scores: {
       moat: '3점 — 세계 1위 유전 서비스·기술 회사.',
@@ -16655,6 +17747,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROE 14%, 5년 평균 ROIC 16%.',
       growth: '3점 — 중동·해외 시추, 디지털·데이터센터 냉각 사업.',
       durability: '3점 — 유가·시추 사이클.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['기술로 높은 가격.'],
+        threats: ['사이클.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROE 14%.'],
+        threats: ['유가.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['중동 시추, 디지털·데이터센터 냉각.'],
+        threats: ['북미 시추 감소.'],
+        why: '보통이다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['1위 기술.'],
+        threats: ['유가.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '10월 23일 3분기: 매출 94.5억 달러(+6%), 조정 EPS 0.64달러(1년 전보다 -7%), 잉여현금흐름 8.3억 달러. 챔피언X 인수 효과 9.6억 달러. 데이터센터 솔루션 매출 +80%, 2027년 말 연 20억 달러 목표.',
@@ -16684,9 +17802,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '서던컴퍼니 — 조지아·앨라배마 전력·가스 공급 회사(유틸리티).', money: '정부가 정한 요금으로 전기·가스를 공급. 설비 투자액에 정해진 이익률을 붙여 요금을 받는다.' },
     moat: {
       state: 'intact',
-      sources: ['지역 독점 전력·가스망 — 경쟁이 없다.', '데이터센터·전기화로 전력 수요 증가.'],
-      threats: ['요금 인상 승인(규제 당국).', '금리(빚이 많다), 자연재해 비용.'],
-      why: '규제 독점이라 해자는 그대로. 다만 성장과 이익률은 정부가 정한다(해자가 있어도 크게 벌지는 못하는 구조).',
+      sources: ['조지아·앨라배마 전력·가스 공급 지역 독점 — 경쟁자가 없다.', '조지아 원전(보글) 완공.'],
+      threats: ['요금 인상은 정부 승인이 필요하다.', '금리(빚이 많다).'],
+      why: '규제 독점이라 해자는 그대로 — 다만 이익의 천장도 정부가 정한다.',
     },
     scores: {
       moat: '3점 — 지역 전력·가스망 독점. 경쟁은 없지만 정부가 이익률을 정해 "넓은 해자, 낮은 천장" 구조.',
@@ -16694,6 +17812,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 허용된 자기자본 이익률 약 10%(실제 ROE 12.5%). ROIC 5~7%로 낮지만 안정적.',
       growth: '3점 — 설비 투자가 늘어난 만큼 이익이 는다(EPS 연 6~8% 목표). 조지아 원전(보글) 완공, 데이터센터 수요.',
       durability: '4점 — 전기·가스는 경기와 무관한 필수재. 금리가 오르면 부담(빚이 많다).',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['요금 인상 신청(설비 투자분 반영).'],
+        threats: ['공공요금 위원회가 승인 여부와 폭을 정한다.'],
+        why: '회사가 스스로 값을 정할 수 없는 구조다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['허용 자기자본 이익률 약 10%(실제 ROE 12.5%).'],
+        threats: ['ROIC 5~7% — 설비가 많이 드는 사업.'],
+        why: '정부가 허용한 수익률 안에서 안정적으로 번다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['데이터센터 수요로 투자 확대.'],
+        threats: ['요금 인상 반발, 금리.'],
+        why: '투자를 늘릴수록 이익도 늘어나는 구조다.',
+      },
+      durability: {
+        state: 'good',
+        sources: ['전기·가스는 경기와 무관한 필수재.'],
+        threats: ['자연재해·산불 책임, 빚.'],
+        why: '필수 인프라 독점이라 단단하다.',
+      },
     },
     now: [
       '2026년 조정 EPS 전망 4.50~4.60달러, 상단 기대. 2분기 조정 EPS 1.13달러.',
@@ -16723,9 +17867,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '셈프라 — 캘리포니아·텍사스(온코) 전력·가스 공급 회사(유틸리티).', money: '정부가 정한 요금으로 전기·가스를 공급. 설비 투자액에 정해진 이익률을 붙여 요금을 받는다.' },
     moat: {
       state: 'intact',
-      sources: ['지역 독점 전력·가스망 — 경쟁이 없다.', '데이터센터·전기화로 전력 수요 증가.'],
-      threats: ['요금 인상 승인(규제 당국).', '금리(빚이 많다), 자연재해 비용.'],
-      why: '규제 독점이라 해자는 그대로. 다만 성장과 이익률은 정부가 정한다(해자가 있어도 크게 벌지는 못하는 구조).',
+      sources: ['캘리포니아·텍사스(온코) 전력·가스 공급 지역 독점 — 경쟁자가 없다.', '텍사스 송전망 성장.'],
+      threats: ['요금 인상은 정부 승인이 필요하다.', '금리(빚이 많다).'],
+      why: '규제 독점이라 해자는 그대로 — 다만 이익의 천장도 정부가 정한다.',
     },
     scores: {
       moat: '3점 — 지역 전력·가스망 독점. 경쟁은 없지만 정부가 이익률을 정해 "넓은 해자, 낮은 천장" 구조.',
@@ -16733,6 +17877,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — ROIC 3%, 최근 이익 감소.',
       growth: '3점 — 설비 투자가 늘어난 만큼 이익이 는다(EPS 연 6~8% 목표). 텍사스(온코) 송전망 성장.',
       durability: '4점 — 전기·가스는 경기와 무관한 필수재. 금리가 오르면 부담(빚이 많다).',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['요금 인상 신청(설비 투자분 반영).'],
+        threats: ['공공요금 위원회가 승인 여부와 폭을 정한다.'],
+        why: '회사가 스스로 값을 정할 수 없는 구조다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['허용 자기자본 이익률 약 10%(실제 ROE 5.8%).'],
+        threats: ['ROIC 5~7% — 설비가 많이 드는 사업.'],
+        why: '정부가 허용한 수익률 안에서 안정적으로 번다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['텍사스 송전망 투자 확대, 다만 최근 이익 감소.'],
+        threats: ['요금 인상 반발, 금리.'],
+        why: '투자를 늘릴수록 이익도 늘어나는 구조다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['전기·가스는 경기와 무관한 필수재.'],
+        threats: ['자연재해·산불 책임, 빚.'],
+        why: '필수 인프라라 사업은 오래가지만 빚과 재해가 변수다.',
+      },
     },
     now: [
       '2분기: 조정 EPS 1.16달러(예상 약 1.06달러). 텍사스 전력(온코) 이익 3.46억 달러(1년 전 2.08억 달러)로 급증. 2026년 조정 EPS 전망 4.80~5.30달러, 2027년 5.10~5.70달러.',
@@ -16762,9 +17932,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '연구용 시약 회사(바이오테크네).', money: '단백질·항체 시약 판매.' },
     moat: {
       state: 'intact',
-      sources: ['연구자 신뢰가 높은 시약.'],
-      threats: ['연구비 삭감.'],
-      why: '해자 보통.',
+      sources: ['연구용 단백질 시약·항체.'],
+      threats: ['바이오 투자 경기.'],
+      why: '틈새 해자 그대로.',
     },
     scores: {
       moat: '3점 — 연구용 단백질 시약·항체.',
@@ -16772,6 +17942,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 9%.',
       growth: '3점 — 세포 치료·진단 시약.',
       durability: '3점 — 바이오 투자 경기.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['연구 시약은 가격 민감도가 낮다.'],
+        threats: ['예산.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 9%.'],
+        threats: ['투자.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['세포 치료·진단 시약.'],
+        threats: ['바이오 투자.'],
+        why: '보통이다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['시약 기반.'],
+        threats: ['예산.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '독일 머크(Merck KGaA)가 주당 73달러 현금, 기업가치 약 113억 달러에 인수하기로 합의. 현재 주가 72.62달러로 인수 가격에 거의 붙어 있다.',
@@ -16801,9 +17997,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '반도체 시험 장비 회사(테라다인).', money: '칩 검사 장비 + 로봇.' },
     moat: {
       state: 'intact',
-      sources: ['반도체 시험 장비 양강.'],
-      threats: ['반도체 사이클, 로봇 적자.'],
-      why: '해자 보통.',
+      sources: ['반도체 테스트 장비 양강(어드반테스트와), 협동 로봇.'],
+      threats: ['반도체 사이클.'],
+      why: '양강 해자 그대로.',
     },
     scores: {
       moat: '3점 — 반도체 테스트 장비 양강(어드반테스트와), 협동 로봇.',
@@ -16811,6 +18007,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 23%.',
       growth: '3점 — AI 칩 테스트 수요로 최근 분기 매출 2배.',
       durability: '3점 — 반도체 사이클.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['AI 칩 테스트 수요.'],
+        threats: ['경쟁.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'good',
+        sources: ['ROIC 23%.'],
+        threats: ['사이클.'],
+        why: '높다.',
+      },
+      growth: {
+        state: 'good',
+        sources: ['AI 칩 테스트로 최근 분기 매출 2배.'],
+        threats: ['사이클.'],
+        why: '빨라지는 중.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['양강.'],
+        threats: ['사이클.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '2분기: 매출 13.3억 달러(+104%), 반도체 검사 11.2억 달러, 조정 EPS 2.47달러. 매출의 약 70%가 AI 관련(GPU·맞춤형 칩·고대역폭 메모리 검사). 3분기 전망 매출 12~13억 달러, 조정 EPS 1.85~2.15달러.',
@@ -16840,9 +18062,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '가스 처리·가스액 수출 회사(타가리소시스).', money: '처리·운송 수수료.' },
     moat: {
       state: 'intact',
-      sources: ['퍼미안 가스 처리 규모.'],
-      threats: ['물량.'],
-      why: '해자 보통.',
+      sources: ['퍼미안 천연가스 처리·운송 거점.'],
+      threats: ['빚.'],
+      why: '거점 해자 그대로.',
     },
     scores: {
       moat: '3점 — 퍼미안 천연가스 처리·운송.',
@@ -16850,6 +18072,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 14%.',
       growth: '4점 — 퍼미안 생산 증가로 10년 EPS 연 23%.',
       durability: '3점 — 빚·에너지 사이클.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['계약.'],
+        threats: ['시장 가격.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 14%.'],
+        threats: ['빚.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'good',
+        sources: ['퍼미안 생산 증가로 10년 EPS 연 23%.'],
+        threats: ['에너지 사이클.'],
+        why: '빨라졌다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['거점.'],
+        threats: ['사이클.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '2026년 조정 EBITDA 전망 57~59억 달러 상단 기대(연초 54~56억 달러에서 두 번 상향). 성장 투자 약 45억 달러. 퍼미안 신규 가스처리 공장 연이어 가동.',
@@ -16879,9 +18127,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '측량·건설 소프트웨어 회사(트림블).', money: '소프트웨어 + 측량 장비.' },
     moat: {
       state: 'intact',
-      sources: ['건설 현장 GPS 측량 강자.'],
+      sources: ['건설·측량 소프트웨어와 위치 기술.'],
       threats: ['건설 경기.'],
-      why: '해자 보통.',
+      why: '해자 그대로.',
     },
     scores: {
       moat: '3점 — 건설·측량 소프트웨어와 위치 기술.',
@@ -16889,6 +18137,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 7%. 최근 1년 손상 처리.',
       growth: '3점 — 소프트웨어 반복 매출 연 10% 이상.',
       durability: '3점 — 건설 경기.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['구독 전환.'],
+        threats: ['경쟁.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['ROIC 7%.'],
+        threats: ['손상 처리.'],
+        why: '낮다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['소프트웨어 반복 매출 연 10% 이상.'],
+        threats: ['경기.'],
+        why: '보통이다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['기술.'],
+        threats: ['경기.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '8월 2분기: 매출 9.72억 달러(+11%), 연간 반복 매출(ARR) 25.1억 달러(+14%). 연간 매출 전망 39~39.5억 달러, 조정 EPS 3.60~3.70달러로 상향. 자사주 10억 달러 새로 승인.',
@@ -16916,9 +18190,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: 'WEC에너지 — 위스콘신 전력·가스 공급 회사(유틸리티).', money: '정부가 정한 요금으로 전기·가스를 공급. 설비 투자액에 정해진 이익률을 붙여 요금을 받는다.' },
     moat: {
       state: 'intact',
-      sources: ['지역 독점 전력·가스망 — 경쟁이 없다.', '데이터센터·전기화로 전력 수요 증가.'],
-      threats: ['요금 인상 승인(규제 당국).', '금리(빚이 많다), 자연재해 비용.'],
-      why: '규제 독점이라 해자는 그대로. 다만 성장과 이익률은 정부가 정한다(해자가 있어도 크게 벌지는 못하는 구조).',
+      sources: ['위스콘신 전력·가스 공급 지역 독점 — 경쟁자가 없다.'],
+      threats: ['요금 인상은 정부 승인이 필요하다.', '금리(빚이 많다).'],
+      why: '규제 독점이라 해자는 그대로 — 다만 이익의 천장도 정부가 정한다.',
     },
     scores: {
       moat: '3점 — 지역 전력·가스망 독점. 경쟁은 없지만 정부가 이익률을 정해 "넓은 해자, 낮은 천장" 구조.',
@@ -16926,6 +18200,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 허용된 자기자본 이익률 약 10%(실제 ROE 11.6%). ROIC 5~7%로 낮지만 안정적.',
       growth: '3점 — 설비 투자가 늘어난 만큼 이익이 는다(EPS 연 6~8% 목표). 위스콘신 데이터센터(마이크로소프트) 수요.',
       durability: '4점 — 전기·가스는 경기와 무관한 필수재. 금리가 오르면 부담(빚이 많다).',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['요금 인상 신청(설비 투자분 반영).'],
+        threats: ['공공요금 위원회가 승인 여부와 폭을 정한다.'],
+        why: '회사가 스스로 값을 정할 수 없는 구조다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['허용 자기자본 이익률 약 10%(실제 ROE 11.6%).'],
+        threats: ['ROIC 5~7% — 설비가 많이 드는 사업.'],
+        why: '정부가 허용한 수익률 안에서 안정적으로 번다.',
+      },
+      growth: {
+        state: 'good',
+        sources: ['위스콘신 데이터센터(마이크로소프트) 수요로 투자 확대.'],
+        threats: ['요금 인상 반발, 금리.'],
+        why: '투자를 늘릴수록 이익도 늘어나는 구조다.',
+      },
+      durability: {
+        state: 'good',
+        sources: ['전기·가스는 경기와 무관한 필수재.'],
+        threats: ['자연재해·산불 책임, 빚.'],
+        why: '필수 인프라 독점이라 단단하다.',
+      },
     },
     now: [
       '2026년 EPS 전망 5.51~5.61달러. 장기 연 7~8% 성장 목표(2028년부터 가속).',
@@ -16954,9 +18254,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '노인 주거 시설 회사(웰타워, 리츠).', money: '실버타운 운영 수입 + 임대료.' },
     moat: {
       state: 'intact',
-      sources: ['좋은 지역 시설 규모 1위 — 고령화 수혜.'],
-      threats: ['운영 비용.', '공급 증가.'],
-      why: '입주율 상승 중. 해자 그대로.',
+      sources: ['세계 최대 노인 주거 시설 리츠 — 고령화 수혜.'],
+      threats: ['고평가(PER 100배 이상).'],
+      why: '입지가 해자 — 그대로.',
     },
     scores: {
       moat: '3점 — 세계 최대 노인 주거 시설 리츠. 고령화 수혜.',
@@ -16964,6 +18264,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 리츠라 감가상각 때문에 회계 이익이 작게 나온다(ROE 2.5%). 주당 현금이익(FFO)으로 봐야 한다.',
       growth: '4점 — 입주율 상승·인수로 최근 분기 매출 +38%.',
       durability: '3점 — 고평가(PER 100배 이상).',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['계약 갱신 때 임대료 인상.'],
+        threats: ['지역 임대 시세를 따라간다.'],
+        why: '시세를 따라가는 수준이라 보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['리츠라 감가상각 때문에 회계 이익이 작다(ROE 2.5%).'],
+        threats: ['빚·금리.'],
+        why: '회계 이익보다 주당 현금이익(FFO)으로 봐야 하고, 대체로 안정적이다.',
+      },
+      growth: {
+        state: 'good',
+        sources: ['입주율 상승·인수로 최근 분기 매출 +38%.'],
+        threats: ['고평가(PER 100배 이상).'],
+        why: '수요 증가로 빨라지는 중.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['부동산 자체는 오래간다.'],
+        threats: ['금리가 오르면 부담.'],
+        why: '자산은 남지만 금리에 민감해 보통이다.',
+      },
     },
     now: [
       '7월 2분기: 주당 정상화 운영현금(FFO) 1.60달러(+25%). 직영 노인 주거 같은 시설 순영업이익 +20.5%, 입주율 +3.3%포인트. 연간 FFO 전망 6.36~6.44달러로 상향. 배당 15% 인상. 올해 투자 155억 달러.',
@@ -17058,9 +18384,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '엑셀에너지 — 미네소타·콜로라도 등 전력·가스 공급 회사(유틸리티).', money: '정부가 정한 요금으로 전기·가스를 공급. 설비 투자액에 정해진 이익률을 붙여 요금을 받는다.' },
     moat: {
       state: 'intact',
-      sources: ['지역 독점 전력·가스망 — 경쟁이 없다.', '데이터센터·전기화로 전력 수요 증가.'],
-      threats: ['요금 인상 승인(규제 당국).', '금리(빚이 많다), 자연재해 비용.'],
-      why: '규제 독점이라 해자는 그대로. 다만 성장과 이익률은 정부가 정한다(해자가 있어도 크게 벌지는 못하는 구조).',
+      sources: ['미네소타·콜로라도 등 전력·가스 공급 지역 독점 — 경쟁자가 없다.'],
+      threats: ['요금 인상은 정부 승인이 필요하다.', '금리(빚이 많다).', '콜로라도 산불 책임 위험.'],
+      why: '규제 독점이라 해자는 그대로 — 다만 이익의 천장도 정부가 정한다.',
     },
     scores: {
       moat: '3점 — 지역 전력·가스망 독점. 경쟁은 없지만 정부가 이익률을 정해 "넓은 해자, 낮은 천장" 구조.',
@@ -17068,6 +18394,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 허용된 자기자본 이익률 약 10%(실제 ROE 9.4%). ROIC 5~7%로 낮지만 안정적.',
       growth: '3점 — 설비 투자가 늘어난 만큼 이익이 는다(EPS 연 6~8% 목표). 재생에너지·데이터센터 투자.',
       durability: '4점 — 콜로라도 산불 책임 위험이 있다.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['요금 인상 신청(설비 투자분 반영).'],
+        threats: ['공공요금 위원회가 승인 여부와 폭을 정한다.'],
+        why: '회사가 스스로 값을 정할 수 없는 구조다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['허용 자기자본 이익률 약 10%(실제 ROE 9.4%).'],
+        threats: ['ROIC 5~7% — 설비가 많이 드는 사업.'],
+        why: '정부가 허용한 수익률 안에서 안정적으로 번다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['재생에너지·데이터센터 투자 확대.'],
+        threats: ['요금 인상 반발, 금리.'],
+        why: '투자를 늘릴수록 이익도 늘어나는 구조다.',
+      },
+      durability: {
+        state: 'good',
+        sources: ['전기·가스는 경기와 무관한 필수재.'],
+        threats: ['자연재해·산불 책임, 빚.'],
+        why: '필수 인프라 독점이라 단단하다.',
+      },
     },
     now: [
       '2026년 EPS 전망 4.04~4.16달러 유지. 2030년까지 평균 연 9% 넘는 EPS 성장 기대. 2026~2030년 투자 700억 달러 이상.',
@@ -17096,9 +18448,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '바코드 단말기·라벨 프린터 회사(지브라).', money: '장비 + 소모품.' },
     moat: {
       state: 'intact',
-      sources: ['물류 창고 바코드 단말기 1위.'],
-      threats: ['물류 투자 경기.'],
-      why: '해자 보통.',
+      sources: ['바코드 프린터·물류 현장 휴대 컴퓨터 1위.'],
+      threats: ['물류·유통 경기.'],
+      why: '현장 표준 해자 그대로.',
     },
     scores: {
       moat: '3점 — 바코드 프린터·물류 현장 휴대 컴퓨터 1위.',
@@ -17106,6 +18458,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 10%.',
       growth: '3점 — 최근 분기 매출 +20%(인수 포함).',
       durability: '3점 — 물류·유통 경기.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['현장 표준.'],
+        threats: ['경쟁.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 10%.'],
+        threats: ['인수.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['최근 분기 매출 +20%(인수 포함).'],
+        threats: ['경기.'],
+        why: '보통이다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['표준 장비.'],
+        threats: ['경기.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '8월 2분기: 매출 +20.4%(실질 +9.2%), 조정 EPS +76%(관세 환급 7,300만 달러 포함). 연간 매출·이익·현금흐름 전망 상향. 3분기 조정 EBITDA 이익률은 메모리 원가·환급 종료로 약 22%로 하락 예상.',
@@ -17135,9 +18513,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '자동차 전장 부품 회사(앱티브).', money: '차량 배선·전자 부품.' },
     moat: {
       state: 'weakening',
-      sources: ['차량 배선 강자.'],
-      threats: ['자동차 경기, 전기차 둔화.'],
-      why: '약해지는 중.',
+      sources: ['자동차 전기 배선·전장 부품 상위권.'],
+      threats: ['자동차 회사의 가격 압박.'],
+      why: '자동차 부품업이라 해자가 약하다.',
     },
     scores: {
       moat: '3점 — 자동차 전기 배선·전장 부품 상위권.',
@@ -17145,6 +18523,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 영업이익률 약 11%(조정), 최근 1년 손상 처리로 회계 이익이 급감.',
       growth: '3점 — 전기차·자율주행 부품 수요. 2026년 배선 사업 분리.',
       durability: '3점 — 자동차 경기에 크게 흔들린다.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['전장 부품.'],
+        threats: ['자동차 회사가 해마다 단가 인하 요구.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['조정 영업이익률 약 11%.'],
+        threats: ['손상 처리로 회계 이익 급감, ROIC 10%(5년 평균) → 5%.'],
+        why: '나빠졌다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['전기차·자율주행 부품.'],
+        threats: ['자동차 생산 정체.'],
+        why: '2026년 배선 사업 분리 후 재편 중.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['전장화 흐름.'],
+        threats: ['자동차 경기.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '4월 1일 전기 배선(EDS) 사업을 버시전트(Versigent)로 분리. 받은 배당 19억 달러로 빚을 갚았다. 그래서 주가가 크게 낮아졌다(분리 효과 포함 1년 -48%).',
@@ -17173,10 +18577,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '미국 2위 은행(뱅크오브아메리카) — 이자 이익 +8%, PER 12배',
     biz: { what: '미국 2위 은행(뱅크오브아메리카).', money: '대출·예금 이자 + 자산관리(메릴린치) + 투자은행.' },
     moat: {
-      state: 'intact',
-      sources: ['미국 최대 예금 기반 중 하나 — 싼 자금.', '디지털 뱅킹 사용자 최다.'],
-      threats: ['금리.', '대출 부실.'],
-      why: '규모의 해자는 그대로.',
+      state: 'weakening',
+      sources: ['미국 2위 은행 — 지역 예금 기반 — 예금이 싼 자금원.'],
+      threats: ['대형 은행·핀테크 경쟁.', '상업용 부동산 대출 부실.'],
+      why: '지역 기반은 있지만 큰 은행보다 해자가 얕다.',
     },
     scores: {
       moat: '3점 — 미국 2위 은행. 예금 약 2조 달러가 싼 자금원.',
@@ -17184,6 +18588,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROE 10%(JP모건 16%보다 낮다).',
       growth: '3점 — 10년 EPS 연 11%.',
       durability: '3점 — 경기 침체 때 대손이 는다.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['예금 금리 관리.'],
+        threats: ['대출·예금 금리 수준은 시장(연준)이 정한다.'],
+        why: '은행은 구조적으로 값을 정하지 못한다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROE 10.2%.'],
+        threats: ['대손 비용, 예금 이탈.'],
+        why: '자기자본 이익률이 보통 수준이다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['10년 EPS 연 11%.'],
+        threats: ['경기 둔화.'],
+        why: '지역 경제만큼 천천히 큰다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['오랜 지역 영업.'],
+        threats: ['2023년 지역 은행 위기처럼 예금 이탈 위험.'],
+        why: '신용·금리 위기에 취약해 보통이다.',
+      },
     },
     now: [
       '버크셔 매도(2026년): 5분기 연속으로 줄이고 있다(2분기 약 3,020만 주, 약 16억 달러). 다만 1분기 대정리 때 애플과 함께 남겨 둔 핵심 종목이다.',
@@ -17215,9 +18645,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '석유·가스 생산 회사(코노코필립스).', money: '원유·가스 판매.' },
     moat: {
       state: 'intact',
-      sources: ['저원가 셰일·알래스카.'],
-      threats: ['유가.'],
-      why: '해자 보통.',
+      sources: ['미국 최대 독립 석유·가스 생산 — 원가가 낮은 유전.'],
+      threats: ['유가·가스 가격.', '장기 에너지 전환.'],
+      why: '저원가 자산이 해자 — 그대로(원자재 사업이라 깊지는 않다).',
     },
     scores: {
       moat: '3점 — 미국 최대 독립 석유·가스 생산 회사. 원가가 낮은 유전.',
@@ -17225,6 +18655,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 11%(5년 평균 17%).',
       growth: '3점 — 생산량 증가는 연 2~4%. 이익은 유가에 따라 변한다.',
       durability: '3점 — 유가 변동과 에너지 전환.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['비용 절감.'],
+        threats: ['유가·가스 가격은 세계 시장이 정한다.'],
+        why: '회사가 값을 정할 수 없다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 11%(5년 평균 17%).'],
+        threats: ['유가 하락기.'],
+        why: '이익률은 유가를 따라 오르내린다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['생산량 연 몇 % 증가, 자사주 매입.'],
+        threats: ['유가.'],
+        why: '생산은 늘지만 이익은 유가가 정한다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['저원가 자산.'],
+        threats: ['유가 급락기 적자, 에너지 전환.'],
+        why: '원자재 사이클을 그대로 타 보통이다.',
+      },
     },
     now: [
       '2026년 중동 긴장으로 유가가 크게 올라(10월 초 브렌트 약 100달러 안팎) 주가가 1년 +67%. 마라톤오일 인수로 생산 규모를 키웠다.',
@@ -17254,9 +18710,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '신약 동물 실험 대행 회사(찰스리버).', money: '실험 대행·실험용 동물.' },
     moat: {
       state: 'weakening',
-      sources: ['실험 대행 1위.'],
-      threats: ['동물 실험 대체(FDA 방침), 제약 연구 축소.'],
-      why: '약해지는 중.',
+      sources: ['신약 전임상(동물) 시험 대행 세계 1위.'],
+      threats: ['바이오 투자 위축.', 'FDA의 동물실험 축소 방침(2025년).'],
+      why: '1위지만 규제 변화로 약해지는 중.',
     },
     scores: {
       moat: '3점 — 신약 전임상(동물) 시험 대행 세계 1위.',
@@ -17264,6 +18720,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 조정 영업이익률 약 20%지만 최근 손상 처리로 회계 적자.',
       growth: '2점 — 바이오 투자 위축, 미국 FDA의 동물실험 축소 방침.',
       durability: '3점 — 동물실험 대체 기술이 장기 위험.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['규모.'],
+        threats: ['바이오 투자가 식어 협상력 약화.'],
+        why: '약해졌다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['조정 영업이익률 약 20%.'],
+        threats: ['손상 처리로 회계 적자.'],
+        why: '나빠졌다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['비동물 시험 기술 투자.'],
+        threats: ['바이오 투자 위축.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['업계 1위.'],
+        threats: ['동물실험 대체 기술.'],
+        why: '규제 변화로 불확실하다.',
+      },
     },
     now: [
       '8월 2분기: 조정 EPS 3.02달러(예상 2.74달러). 연간 조정 EPS 전망 11.15~11.45달러로 상향. 전임상 시험(안전성 평가) 사업이 2023년 3분기 이후 처음 성장, 수주/매출 비율 1.19배(3분기 연속 1배 이상).',
@@ -17291,9 +18773,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '세계 대형 석유 회사(셰브론).', money: '원유·가스 생산 + 정유.' },
     moat: {
       state: 'intact',
-      sources: ['저원가 유전(퍼미안·헤스 인수 가이아나).'],
-      threats: ['유가.', '에너지 전환.'],
-      why: '원가 우위는 그대로 — 이익은 유가 따라.',
+      sources: ['세계 2위급 통합 석유 회사 — 헤스 인수로 가이아나 유전 확보.'],
+      threats: ['유가·가스 가격.', '장기 에너지 전환.'],
+      why: '저원가 자산이 해자 — 그대로(원자재 사업이라 깊지는 않다).',
     },
     scores: {
       moat: '3점 — 세계 2위급 통합 석유 회사. 헤스 인수로 가이아나 유전 확보.',
@@ -17301,6 +18783,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 7%(5년 평균 10%). 이익은 유가 따라 크게 변한다.',
       growth: '3점 — 생산량 증가는 연 몇 %. 이익 성장은 유가에 달렸다. 헤스 인수 효과.',
       durability: '3점 — 유가 사이클과 장기 에너지 전환 위험.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['비용 절감.'],
+        threats: ['유가·가스 가격은 세계 시장이 정한다.'],
+        why: '회사가 값을 정할 수 없다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 7%(5년 평균 10%).'],
+        threats: ['유가 하락기.'],
+        why: '이익률은 유가를 따라 오르내린다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['생산량 연 몇 % 증가, 자사주 매입.'],
+        threats: ['유가.'],
+        why: '생산은 늘지만 이익은 유가가 정한다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['저원가 자산.'],
+        threats: ['유가 급락기 적자, 에너지 전환.'],
+        why: '원자재 사이클을 그대로 타 보통이다.',
+      },
     },
     now: [
       '버크셔 매도(2026년 1분기): 4,580만 주(약 82억 달러, 지분의 약 35%)를 팔아 그 분기 가장 큰 매도였다.',
@@ -17331,9 +18839,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '특수 소재 회사(듀폰).', money: '방수막(타이벡)·정수 필터·방탄 소재 판매.' },
     moat: {
       state: 'intact',
-      sources: ['특수 소재 브랜드.'],
-      threats: ['분사·구조조정.'],
-      why: '해자 보통.',
+      sources: ['전자 소재·수처리 막 등 특수 소재.'],
+      threats: ['분할 재편, 화학물질 소송.'],
+      why: '특수 소재 해자 그대로.',
     },
     scores: {
       moat: '3점 — 전자 소재·수처리 막 등 특수 소재.',
@@ -17341,6 +18849,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 사업 분할·소송 비용으로 회계 이익이 작다(ROIC 1%).',
       growth: '2점 — 2025년 전자 사업(큐니티) 분리 후 남은 사업 성장은 완만.',
       durability: '3점 — 분할과 화학물질(PFAS) 소송 위험.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['특수 소재는 가격 유지.'],
+        threats: ['경쟁.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['조정 이익률 양호.'],
+        threats: ['분할·소송으로 회계 ROIC 1%.'],
+        why: '회계상 나쁘다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['수처리 소재.'],
+        threats: ['2025년 전자 사업 분리 후 성장 완만.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['오랜 역사.'],
+        threats: ['PFAS 소송.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '2025년 11월 전자 소재 사업을 큐니티(Qnity)로 분리. 분리 비용으로 공시 이익은 적자·왜곡(2025년 EPS -5.58달러).',
@@ -17370,9 +18904,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '미국 최대 진단 검사 회사(퀘스트).', money: '혈액 검사 수수료.' },
     moat: {
       state: 'intact',
-      sources: ['랩코프와 양강.'],
+      sources: ['미국 임상 검사 양강(랩코프와).'],
       threats: ['수가 인하.'],
-      why: '해자 보통.',
+      why: '규모 해자 그대로.',
     },
     scores: {
       moat: '3점 — 미국 임상 검사 양강(랩코프와).',
@@ -17380,6 +18914,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 10%. 2021년 EPS 급증은 코로나 검사 특수.',
       growth: '2점 — 매출 연 4~6%.',
       durability: '4점 — 검사는 필수 의료.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['규모.'],
+        threats: ['검사 수가는 정부·보험사가 정한다.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 10%.'],
+        threats: ['수가.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['매출 연 4~6%.'],
+        threats: ['코로나 특수 소멸.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'good',
+        sources: ['검사는 필수 의료.'],
+        threats: ['수가.'],
+        why: '단단하다.',
+      },
     },
     now: [
       '10월 22일 3분기: 매출 31억 달러(+10%), 조정 EPS 3.00달러(예상 약 2.86달러). 연간 매출 전망 120.7~121.1억 달러, 조정 EPS 11.25~11.35달러로 상향.',
@@ -17409,9 +18969,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '미국 최대 주택 건설 회사(D.R.호턴).', money: '새 집 판매.' },
     moat: {
       state: 'intact',
-      sources: ['규모 — 땅·자재 구매력.'],
-      threats: ['주택 경기·금리.'],
-      why: '해자 보통.',
+      sources: ['미국 1위 주택 건설 — 규모로 땅·자재를 싸게 산다.'],
+      threats: ['금리·주택 경기.'],
+      why: '규모 해자 그대로.',
     },
     scores: {
       moat: '3점 — 미국 1위 주택 건설사. 규모로 땅·자재를 싸게 산다.',
@@ -17419,6 +18979,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 17%(5년 평균 27%).',
       growth: '3점 — 10년 EPS 연 19%. 금리에 따라 주택 수요가 변한다.',
       durability: '3점 — 주택 경기 사이클.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['규모.'],
+        threats: ['집값은 시장이 정한다(금리가 오르면 할인).'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 17%(5년 평균 27%).'],
+        threats: ['할인 증가.'],
+        why: '내려오는 중.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['10년 EPS 연 19%.'],
+        threats: ['금리.'],
+        why: '금리에 달렸다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['1위 규모.'],
+        threats: ['주택 사이클.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '7월 2026 회계연도(9월 결산) 3분기: 순이익 9.05억 달러(EPS 3.20달러), 신규 주문 2만 3,084채. 연간 매출 전망을 325~330억 달러로 낮췄다. 자사주 25억 달러. 4분기 실적은 10월 29일.',
@@ -17448,9 +19034,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '데이터센터 회사(디지털리얼티, 리츠).', money: '데이터센터 임대료.' },
     moat: {
       state: 'intact',
-      sources: ['대형 데이터센터 공급자 — AI 수요.'],
-      threats: ['공급 과잉 가능성.', '전력 확보.'],
-      why: '해자 보통 — 수요는 강하다.',
+      sources: ['세계 최대급 데이터센터 — 글로벌 거점.'],
+      threats: ['투자 부담·금리.'],
+      why: '데이터센터 거점이 해자 — 그대로.',
     },
     scores: {
       moat: '3점 — 세계 최대급 데이터센터 리츠. AI 수요.',
@@ -17458,6 +19044,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — 리츠라 감가상각 때문에 회계 이익이 작게 나온다(ROE 5.9%). 주당 현금이익(FFO)으로 봐야 한다.',
       growth: '4점 — AI 데이터센터 수요로 성장(최근 분기 매출 +16%).',
       durability: '3점 — 데이터센터 투자 부담·금리.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['계약 갱신 때 임대료 인상.'],
+        threats: ['지역 임대 시세를 따라간다.'],
+        why: '시세를 따라가는 수준이라 보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['리츠라 감가상각 때문에 회계 이익이 작다(ROE 5.9%).'],
+        threats: ['빚·금리.'],
+        why: '회계 이익보다 주당 현금이익(FFO)으로 봐야 하고, 대체로 안정적이다.',
+      },
+      growth: {
+        state: 'good',
+        sources: ['AI 데이터센터 수요로 최근 분기 매출 +16%.'],
+        threats: ['투자 부담·금리.'],
+        why: '수요 증가로 빨라지는 중.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['부동산 자체는 오래간다.'],
+        threats: ['금리가 오르면 부담.'],
+        why: '자산은 남지만 금리에 민감해 보통이다.',
+      },
     },
     now: [
       '4월 1분기: 주당 핵심 운영현금(Core FFO) 2.04달러(1년 전 1.77달러, +15%). 회사 역사상 최대 규모의 대형 클라우드 임대 계약, 소형 임대·연결 매출도 사상 최대.',
@@ -17487,9 +19099,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '신장 투석 회사(다비타).', money: '투석 진료비.' },
     moat: {
       state: 'intact',
-      sources: ['미국 투석 양강.'],
-      threats: ['정부 수가, 비만약·신약.'],
-      why: '해자 보통.',
+      sources: ['미국 신장 투석 양강(프레제니우스와), 버크셔 대주주.'],
+      threats: ['비만약이 신장병 환자를 줄일 가능성.'],
+      why: '과점 해자 그대로.',
     },
     scores: {
       moat: '3점 — 미국 신장 투석 양강(프레제니우스와). 버크셔가 대주주.',
@@ -17497,6 +19109,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 18%.',
       growth: '2점 — 환자 수 정체, 비만약이 신장병 환자를 줄일 수 있다.',
       durability: '3점 — 정부 수가 정책 위험.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['민간 보험 환자.'],
+        threats: ['정부 수가.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 18%.'],
+        threats: ['인건비.'],
+        why: '안정적이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['자사주 매입.'],
+        threats: ['환자 수 정체.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['과점.'],
+        threats: ['정부 정책·비만약.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '8월 2분기: 조정 EPS 4.02달러(예상 3.88달러). 연간 조정 EPS 전망 14.10~15.20달러, 잉여현금흐름 10~12.5억 달러 유지. 4월 전망 상향 때 하루 +23.5%.',
@@ -17526,9 +19164,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '콘솔리데이티드에디슨 — 뉴욕시 전력·가스 공급 회사(유틸리티).', money: '정부가 정한 요금으로 전기·가스를 공급. 설비 투자액에 정해진 이익률을 붙여 요금을 받는다.' },
     moat: {
       state: 'intact',
-      sources: ['지역 독점 전력·가스망 — 경쟁이 없다.', '데이터센터·전기화로 전력 수요 증가.'],
-      threats: ['요금 인상 승인(규제 당국).', '금리(빚이 많다), 자연재해 비용.'],
-      why: '규제 독점이라 해자는 그대로. 다만 성장과 이익률은 정부가 정한다(해자가 있어도 크게 벌지는 못하는 구조).',
+      sources: ['뉴욕시 전력·가스 공급 지역 독점 — 경쟁자가 없다.'],
+      threats: ['요금 인상은 정부 승인이 필요하다.', '금리(빚이 많다).'],
+      why: '규제 독점이라 해자는 그대로 — 다만 이익의 천장도 정부가 정한다.',
     },
     scores: {
       moat: '3점 — 지역 전력·가스망 독점. 경쟁은 없지만 정부가 이익률을 정해 "넓은 해자, 낮은 천장" 구조.',
@@ -17536,6 +19174,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 허용된 자기자본 이익률 약 10%(실제 ROE 8.8%). ROIC 5~7%로 낮지만 안정적.',
       growth: '2점 — 뉴욕시는 성장이 느려 EPS 연 5% 안팎.',
       durability: '4점 — 50년 넘게 배당 인상.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['요금 인상 신청(설비 투자분 반영).'],
+        threats: ['공공요금 위원회가 승인 여부와 폭을 정한다.'],
+        why: '회사가 스스로 값을 정할 수 없는 구조다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['허용 자기자본 이익률 약 10%(실제 ROE 8.8%).'],
+        threats: ['ROIC 5~7% — 설비가 많이 드는 사업.'],
+        why: '정부가 허용한 수익률 안에서 안정적으로 번다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['뉴욕시는 성장이 느려 EPS 연 5% 안팎.'],
+        threats: ['요금 인상 반발, 금리.'],
+        why: '투자를 늘릴수록 이익도 늘어나는 구조다.',
+      },
+      durability: {
+        state: 'good',
+        sources: ['전기·가스는 경기와 무관한 필수재.'],
+        threats: ['자연재해·산불 책임, 빚.'],
+        why: '필수 인프라 독점이라 단단하다.',
+      },
     },
     now: [
       '2026년 조정 EPS 전망 6.00~6.20달러 유지. 전력·가스 요금 기반 확대로 이익 증가.',
@@ -17564,9 +19228,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '엔터지 — 루이지애나·아칸소 등 전력·가스 공급 회사(유틸리티).', money: '정부가 정한 요금으로 전기·가스를 공급. 설비 투자액에 정해진 이익률을 붙여 요금을 받는다.' },
     moat: {
       state: 'intact',
-      sources: ['지역 독점 전력·가스망 — 경쟁이 없다.', '데이터센터·전기화로 전력 수요 증가.'],
-      threats: ['요금 인상 승인(규제 당국).', '금리(빚이 많다), 자연재해 비용.'],
-      why: '규제 독점이라 해자는 그대로. 다만 성장과 이익률은 정부가 정한다(해자가 있어도 크게 벌지는 못하는 구조).',
+      sources: ['루이지애나·아칸소 등 전력·가스 공급 지역 독점 — 경쟁자가 없다.'],
+      threats: ['요금 인상은 정부 승인이 필요하다.', '금리(빚이 많다).', '허리케인 피해 반복.'],
+      why: '규제 독점이라 해자는 그대로 — 다만 이익의 천장도 정부가 정한다.',
     },
     scores: {
       moat: '3점 — 지역 전력·가스망 독점. 경쟁은 없지만 정부가 이익률을 정해 "넓은 해자, 낮은 천장" 구조.',
@@ -17574,6 +19238,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 허용된 자기자본 이익률 약 10%(실제 ROE 11.0%). ROIC 5~7%로 낮지만 안정적.',
       growth: '3점 — 설비 투자가 늘어난 만큼 이익이 는다(EPS 연 6~8% 목표). 걸프 연안 산업·데이터센터 수요.',
       durability: '3점 — 허리케인 피해가 반복된다.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['요금 인상 신청(설비 투자분 반영).'],
+        threats: ['공공요금 위원회가 승인 여부와 폭을 정한다.'],
+        why: '회사가 스스로 값을 정할 수 없는 구조다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['허용 자기자본 이익률 약 10%(실제 ROE 11.0%).'],
+        threats: ['ROIC 5~7% — 설비가 많이 드는 사업.'],
+        why: '정부가 허용한 수익률 안에서 안정적으로 번다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['걸프 연안 산업·데이터센터 수요로 투자 확대.'],
+        threats: ['요금 인상 반발, 금리.'],
+        why: '투자를 늘릴수록 이익도 늘어나는 구조다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['전기·가스는 경기와 무관한 필수재.'],
+        threats: ['자연재해·산불 책임, 빚.'],
+        why: '필수 인프라라 사업은 오래가지만 빚과 재해가 변수다.',
+      },
     },
     now: [
       '2026년 조정 EPS 전망 4.25~4.45달러. 2027년·2029년 전망 상향(2029년 6.40달러). 메타 루이지애나 데이터센터 계약으로 4년 투자를 570억 달러로 140억 달러 늘렸다.',
@@ -17602,10 +19292,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '온라인 여행(익스피디아) — 기업 대상 사업 +21%, 잉여현금흐름 수익률 12%',
     biz: { what: '온라인 여행 회사(익스피디아).', money: '예약 수수료.' },
     moat: {
-      state: 'intact',
-      sources: ['브랜드·숙소 네트워크.'],
-      threats: ['부킹·구글.'],
-      why: '해자 보통.',
+      state: 'weakening',
+      sources: ['온라인 여행 2위(익스피디아·호텔스닷컴·VRBO).'],
+      threats: ['부킹에 밀리고 구글·AI 검색 경쟁.'],
+      why: '2위로 밀려 해자가 약하다.',
     },
     scores: {
       moat: '3점 — 온라인 여행 2위(익스피디아·호텔스닷컴·VRBO).',
@@ -17613,6 +19303,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROE 91%(자사주 매입으로 자기자본이 작다).',
       growth: '3점 — 매출 연 6~8%.',
       durability: '3점 — AI 여행 검색이 판을 바꿀 위험.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['회원 프로그램.'],
+        threats: ['광고비를 많이 써야 한다.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'good',
+        sources: ['ROE 91%(자사주로 자기자본이 작다), 비용 절감.'],
+        threats: ['광고비.'],
+        why: '좋아지는 중.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['매출 연 6~8%.'],
+        threats: ['경쟁.'],
+        why: '보통이다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['브랜드.'],
+        threats: ['AI 여행 검색.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '8월 2분기: 총 예약 +12%(기업 대상 B2B +21%, 소비자 +8%), 매출 +14%, 조정 EBITDA +23%. 전망 상단을 넘었고 연간 전망 상향. 50억 달러 자사주 한도.',
@@ -17642,9 +19358,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '개인 창고 회사(엑스트라스페이스, 리츠).', money: '창고 칸 월 임대료.' },
     moat: {
       state: 'intact',
-      sources: ['미국 최대 창고 수.'],
-      threats: ['이사 감소·공급.'],
-      why: '해자 그대로.',
+      sources: ['미국 최대 셀프 창고 리츠 중 하나.'],
+      threats: ['공급 과잉·이사 감소.'],
+      why: '입지가 해자 — 그대로.',
     },
     scores: {
       moat: '3점 — 미국 최대 셀프 창고 리츠 중 하나.',
@@ -17652,6 +19368,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 리츠라 감가상각 때문에 회계 이익이 작게 나온다(ROE 7.1%). 주당 현금이익(FFO)으로 봐야 한다.',
       growth: '3점 — 이사 수요 감소로 정체.',
       durability: '3점 — 공급 과잉·이사 감소.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['계약 갱신 때 임대료 인상.'],
+        threats: ['지역 임대 시세를 따라간다.'],
+        why: '시세를 따라가는 수준이라 보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['리츠라 감가상각 때문에 회계 이익이 작다(ROE 7.1%).'],
+        threats: ['빚·금리.'],
+        why: '회계 이익보다 주당 현금이익(FFO)으로 봐야 하고, 대체로 안정적이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['이사 수요 감소로 정체.'],
+        threats: ['공급 과잉·이사 감소.'],
+        why: '공급 과잉·수요 둔화로 느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['부동산 자체는 오래간다.'],
+        threats: ['금리가 오르면 부담.'],
+        why: '자산은 남지만 금리에 민감해 보통이다.',
+      },
     },
     now: [
       '7월 2분기: 같은 매장 매출 +2.4%, 주당 핵심 운영현금(Core FFO) 2.15달러(예상 2.06달러). 연간 Core FFO 전망 8.25~8.40달러로 상향, 같은 매장 매출 +1~2%.',
@@ -17681,9 +19423,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '결제·은행 시스템 회사(피서브). 가게 단말기 클로버, 은행 계좌 시스템.', money: '결제 처리 수수료 + 은행 시스템 사용료.' },
     moat: {
       state: 'weakening',
-      sources: ['은행 핵심 시스템 전환 비용.', '클로버 가게 단말기.'],
-      threats: ['클로버 성장 둔화(스퀘어·토스트).', '경영진 교체·실적 전망 하향.'],
-      why: '2025년 실적 충격으로 신뢰가 흔들렸다. 약해지는 중.',
+      sources: ['은행 전산·카드 처리, 가맹점 결제 단말 클로버.'],
+      threats: ['스퀘어·토스트 경쟁, 클로버 성장 둔화.'],
+      why: '경쟁 심화로 약해지는 중.',
     },
     scores: {
       moat: '3점 — 은행 전산·카드 처리, 가맹점 결제 단말 클로버.',
@@ -17691,6 +19433,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 조정 영업이익률 높지만 회계 ROIC 9%(인수 자산).',
       growth: '2점 — 2025년 클로버 성장 둔화로 전망 크게 하향.',
       durability: '3점 — 경쟁(스퀘어·토스트) 심화.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['은행 전산 전환 비용.'],
+        threats: ['가맹점 결제 경쟁.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['조정 영업이익률 높음.'],
+        threats: ['회계 ROIC 9%(인수 자산).'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['클로버.'],
+        threats: ['2025년 전망 크게 하향.'],
+        why: '느려지는 중.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['은행 전산.'],
+        threats: ['경쟁.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '2025년 10월 성장 전망을 크게 낮추며 하루 -44% 폭락. 이후 CEO도 투자자의 날 한 달 만에 교체됐다. 새 CEO(타키스 게오르가코풀로스, JP모건 출신) 첫 분기인 2026년 2분기에 연간 전망을 다시 낮췄다 — 실질 매출 -1%~보합, 조정 EPS 7.20~7.40달러.',
@@ -17719,10 +19487,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '전자제품 위탁 생산(플렉스) — AI 데이터센터 전력 장비로 성장, 분사 예정',
     biz: { what: '전자제품 위탁 생산 회사(플렉스).', money: '조립 수수료.' },
     moat: {
-      state: 'intact',
-      sources: ['데이터센터 전원 장비.'],
-      threats: ['얇은 마진.'],
-      why: '해자 약함.',
+      state: 'weakening',
+      sources: ['세계 2위급 전자제품 위탁 생산 — AI 데이터센터 장비 생산 확대.'],
+      threats: ['고객이 공장을 쉽게 옮길 수 있다.', '얇은 마진.'],
+      why: '위탁 생산은 해자가 얕다.',
     },
     scores: {
       moat: '2점 — 세계 2위급 전자제품 위탁 생산. 고객이 공장을 쉽게 옮길 수 있어 해자는 약하다.',
@@ -17730,6 +19498,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 영업이익률 약 5%로 얇지만 자본이 적게 들어 ROIC 16.3%.',
       growth: '4점 — AI 데이터센터 장비 생산이 늘며 최근 분기 매출 +21%.',
       durability: '3점 — 고객 이탈·경기에 따라 크게 흔들린다.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['대량 생산 효율.'],
+        threats: ['대형 고객(애플·엔비디아 등) 협상력.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['영업이익률 약 5%, 자본이 적게 들어 ROIC 16%.'],
+        threats: ['고객 단가 압박.'],
+        why: '얇은 이익률을 회전율로 메운다.',
+      },
+      growth: {
+        state: 'good',
+        sources: ['AI 데이터센터 장비로 최근 분기 매출 +21%.'],
+        threats: ['AI 투자 둔화.'],
+        why: '빨라지는 중.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['대형 고객.'],
+        threats: ['고객 이탈·경기.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '7월 2027 회계연도(3월 결산) 1분기: 매출 79억 달러(+21%), 조정 EPS 1.00달러 사상 최대. 연간 매출 전망 337~352억 달러, 조정 EPS 4.42~4.74달러로 상향.',
@@ -17759,9 +19553,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '고급 상가 회사(페더럴리얼티, 리츠).', money: '상가 임대료.' },
     moat: {
       state: 'intact',
-      sources: ['부유한 동네 상가 — 58년 연속 배당 인상.'],
-      threats: ['금리.'],
-      why: '해자 그대로.',
+      sources: ['부유한 동네 쇼핑센터 — 58년 연속 배당 인상(리츠 최장).'],
+      threats: ['소매 업황·금리.'],
+      why: '입지가 해자 — 그대로.',
     },
     scores: {
       moat: '3점 — 부유한 동네 쇼핑센터 리츠. 58년 연속 배당 인상(리츠 최장).',
@@ -17769,6 +19563,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 리츠라 감가상각 때문에 회계 이익이 작게 나온다(ROE 12.8%). 주당 현금이익(FFO)으로 봐야 한다.',
       growth: '2점 — 임대료 연 3~4%.',
       durability: '4점 — 60년 가까이 배당을 한 번도 안 깎았다.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['계약 갱신 때 임대료 인상.'],
+        threats: ['지역 임대 시세를 따라간다.'],
+        why: '시세를 따라가는 수준이라 보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['리츠라 감가상각 때문에 회계 이익이 작다(ROE 12.8%).'],
+        threats: ['빚·금리.'],
+        why: '회계 이익보다 주당 현금이익(FFO)으로 봐야 하고, 대체로 안정적이다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['임대료 연 3~4%.'],
+        threats: ['소매 업황·금리.'],
+        why: '임대료와 신규 개발만큼 천천히 큰다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['부동산 자체는 오래간다.'],
+        threats: ['금리가 오르면 부담.'],
+        why: '자산은 남지만 금리에 민감해 보통이다.',
+      },
     },
     now: [
       '부유한 교외 지역의 식료품점 중심 쇼핑센터·복합 개발. 입주율이 높고 재계약 임대료가 오르는 중.',
@@ -17798,10 +19618,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '미국 최대 태양광 패널 제조(퍼스트솔라) — 정책 불확실성으로 고점 대비 -46%, PER 10.6배',
     biz: { what: '미국 태양광 모듈 회사(퍼스트솔라).', money: '모듈 판매 + 미국 생산 세액공제.' },
     moat: {
-      state: 'intact',
-      sources: ['미국 생산 — 관세·세액공제 혜택.'],
-      threats: ['정책 변화.'],
-      why: '정책 의존 해자.',
+      state: 'weakening',
+      sources: ['미국 최대 태양광 패널 제조 — 중국산과 다른 기술·미국 생산.'],
+      threats: ['정부 보조금·관세 정책 변화.', '중국 가격 경쟁.'],
+      why: '정책이 만든 해자라 정책이 바뀌면 약해진다.',
     },
     scores: {
       moat: '3점 — 미국 최대 태양광 패널 제조사. 중국산과 다른 기술(카드뮴텔루라이드)·미국 생산.',
@@ -17809,6 +19629,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 22%. 세액 공제가 이익의 큰 부분.',
       growth: '4점 — 최근 5년 EPS 연 31%. 데이터센터 전력 수요.',
       durability: '2점 — 이익이 정부 보조금·관세 정책에 달려 있다.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['미국산 프리미엄.'],
+        threats: ['패널 가격은 세계 시장(중국)이 좌우.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'good',
+        sources: ['ROIC 22%.'],
+        threats: ['세액 공제 의존.'],
+        why: '좋아지는 중.',
+      },
+      growth: {
+        state: 'good',
+        sources: ['최근 5년 EPS 연 31%, 데이터센터 전력 수요.'],
+        threats: ['정책.'],
+        why: '빨라지는 중.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['미국 생산 능력.'],
+        threats: ['보조금 정책 변화.'],
+        why: '정책에 달려 불확실하다.',
+      },
     },
     now: [
       '2월 2026년 매출 전망(49~52억 달러)이 예상(약 61억 달러)보다 크게 낮아 하루 -14%. 관세 비용 1.25~1.35억 달러, 말레이시아·베트남 공장 감산, 반도체·태양광 관련 관세 조사(232조) 불확실성.',
@@ -17837,10 +19683,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '산업 계측·소프트웨어(포티브) — 분사 뒤 이익 +28%, 자사주 대량 매입',
     biz: { what: '계측·산업 기술 회사(포티브).', money: '측정기·소프트웨어.' },
     moat: {
-      state: 'intact',
-      sources: ['플루크 브랜드.'],
-      threats: ['분사·산업 경기.'],
-      why: '해자 보통.',
+      state: 'weakening',
+      sources: ['산업 계측·센서·안전 장비.'],
+      threats: ['분할 후 성장 정체.'],
+      why: '틈새 해자는 있지만 얕다.',
     },
     scores: {
       moat: '3점 — 산업 계측·센서·안전 장비.',
@@ -17848,6 +19694,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 조정 영업이익률 높지만 회계 ROIC 6%(인수 자산).',
       growth: '2점 — 2025년 사업 분할(랄리언트) 후 성장 정체.',
       durability: '3점 — 분할 후 체질 개선 중.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['틈새 제품.'],
+        threats: ['경쟁.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['조정 이익률 양호.'],
+        threats: ['회계 ROIC 6%.'],
+        why: '낮다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['분할(랄리언트) 후 재편.'],
+        threats: ['최근 5년 EPS 감소.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['산업 장비.'],
+        threats: ['경기.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '7월 2분기: 조정 EPS 0.74달러(+28%), 실질 매출 +6.7%. 연간 조정 EPS 전망 2.95~3.05달러로 상향, 실질 성장 약 4%.',
@@ -17876,9 +19748,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '기업 IT 회사(IBM). 레드햇, 메인프레임, 컨설팅.', money: '소프트웨어·하드웨어·컨설팅.' },
     moat: {
       state: 'intact',
-      sources: ['은행 메인프레임 독점, 레드햇 리눅스.'],
-      threats: ['컨설팅 성장 정체.'],
-      why: '해자 보통 — 소프트웨어 성장 중.',
+      sources: ['대기업 메인프레임(은행·항공 핵심 시스템), 레드햇 리눅스.'],
+      threats: ['성장 사업을 여러 번 놓쳤다.'],
+      why: '메인프레임 해자 그대로.',
     },
     scores: {
       moat: '3점 — 대기업 메인프레임(은행·항공 핵심 시스템), 레드햇 리눅스.',
@@ -17886,6 +19758,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 15%.',
       growth: '2점 — 10년 EPS 감소. 소프트웨어 매출 연 7~9%로 개선 중.',
       durability: '3점 — 110년 역사지만 성장 사업을 여러 번 놓쳤다.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['메인프레임 고객은 못 바꾼다.'],
+        threats: ['컨설팅 경쟁.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'good',
+        sources: ['ROIC 10%(5년 평균) → 15%.'],
+        threats: ['구조조정.'],
+        why: '좋아지는 중.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['소프트웨어 연 7~9%.'],
+        threats: ['10년 EPS 감소.'],
+        why: '개선 중이다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['110년 역사.'],
+        threats: ['기술 변화.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '10월 21일 3분기: 매출 171억 달러(+5%), 조정 EPS 2.95달러(예상 2.86달러). 소프트웨어 78억 달러(+8%, 레드햇 +11%, 데이터 +19%). 메인프레임(IBM Z)은 신제품 효과가 끝나 -20%. 컨설팅 보합.',
@@ -17913,10 +19811,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '전자 위탁 생산(자빌) — AI 데이터센터로 내년 매출 +24% 전망',
     biz: { what: '전자제품 위탁 생산 회사(자빌).', money: '조립 수수료.' },
     moat: {
-      state: 'intact',
-      sources: ['애플·데이터센터 고객.'],
-      threats: ['얇은 마진, 고객 집중.'],
-      why: '해자 약함.',
+      state: 'weakening',
+      sources: ['미국 최대급 전자제품 위탁 생산 — AI 데이터센터 장비 생산 확대.'],
+      threats: ['고객이 공장을 쉽게 옮길 수 있다.', '얇은 마진.'],
+      why: '위탁 생산은 해자가 얕다.',
     },
     scores: {
       moat: '2점 — 미국 최대급 전자제품 위탁 생산. 고객이 공장을 쉽게 옮길 수 있어 해자는 약하다.',
@@ -17924,6 +19822,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 영업이익률 약 5%로 얇지만 자본이 적게 들어 ROIC 44.0%.',
       growth: '4점 — AI 데이터센터 장비 생산이 늘며 최근 분기 매출 +29%.',
       durability: '3점 — 고객 이탈·경기에 따라 크게 흔들린다.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['대량 생산 효율.'],
+        threats: ['대형 고객(애플·엔비디아 등) 협상력.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['영업이익률 약 5%, 자본이 적게 들어 ROIC 44%.'],
+        threats: ['고객 단가 압박.'],
+        why: '얇은 이익률을 회전율로 메운다.',
+      },
+      growth: {
+        state: 'good',
+        sources: ['AI 데이터센터 장비로 최근 분기 매출 +29%.'],
+        threats: ['AI 투자 둔화.'],
+        why: '빨라지는 중.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['대형 고객.'],
+        threats: ['고객 이탈·경기.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '9월 2026 회계연도(8월 결산) 4분기: 매출 106억 달러(+29%), AI 인프라 부문 58억 달러(+56%). 연간 매출 360억 달러, 핵심 EPS 13.09달러.',
@@ -17953,9 +19877,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '천연가스관 회사(킨더모건).', money: '가스 운송료.' },
     moat: {
       state: 'intact',
-      sources: ['미국 가스의 약 40%가 지나는 관.'],
-      threats: ['규제.'],
-      why: '해자 그대로.',
+      sources: ['미국 최대 천연가스관(가스의 약 40% 운송).'],
+      threats: ['빚.'],
+      why: '망 해자 그대로.',
     },
     scores: {
       moat: '3점 — 미국 최대 천연가스관 회사(가스의 약 40% 운송).',
@@ -17963,6 +19887,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 6%.',
       growth: '2점 — 데이터센터·LNG 수요로 투자 확대.',
       durability: '4점 — 장기 계약 위주라 안정적.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['장기 계약.'],
+        threats: ['규제.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 6%.'],
+        threats: ['빚.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['데이터센터·LNG 수요로 투자 확대.'],
+        threats: ['허가.'],
+        why: '보통이다.',
+      },
+      durability: {
+        state: 'good',
+        sources: ['장기 계약.'],
+        threats: ['빚.'],
+        why: '단단하다.',
+      },
     },
     now: [
       '10월 21일 3분기: 조정 EPS 0.35달러(+21%), 조정 EBITDA 21.8억 달러(+9%). 신규 프로젝트 54억 달러 추가 — 가스 확장 프로젝트 잔고 132억 달러 사상 최대. 배당 +2%.',
@@ -18058,9 +20008,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '미국 2위 주택 건설 회사(레나).', money: '새 집 판매.' },
     moat: {
       state: 'intact',
-      sources: ['규모.'],
-      threats: ['주택 경기·가격 인하.'],
-      why: '해자 보통.',
+      sources: ['미국 2위 주택 건설.'],
+      threats: ['금리.'],
+      why: '규모 해자 그대로.',
     },
     scores: {
       moat: '3점 — 미국 2위 주택 건설사.',
@@ -18068,6 +20018,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROE 8%.',
       growth: '3점 — 10년 EPS 연 9%. 금리에 따라 수요 변동.',
       durability: '3점 — 주택 경기 사이클.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['규모.'],
+        threats: ['할인 확대.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['ROE 8%.'],
+        threats: ['할인.'],
+        why: '나빠졌다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['10년 EPS 연 9%.'],
+        threats: ['금리.'],
+        why: '금리에 달렸다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['2위 규모.'],
+        threats: ['주택 사이클.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '버크셔 매도(2026년 2분기): 2025년에 산 레나를 팔았다.',
@@ -18098,9 +20074,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '마이크로컨트롤러 회사(마이크로칩).', money: '칩 판매.' },
     moat: {
       state: 'intact',
-      sources: ['수만 개 고객, 장기 공급.'],
-      threats: ['재고 조정 사이클.'],
-      why: '해자 보통.',
+      sources: ['마이크로컨트롤러 상위권, 고객 약 10만 곳.'],
+      threats: ['재고 사이클, 빚.'],
+      why: '고객 기반 해자 그대로.',
     },
     scores: {
       moat: '3점 — 마이크로컨트롤러(전자제품 두뇌 칩) 상위권, 고객 약 10만 곳.',
@@ -18108,6 +20084,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 5년 평균 ROIC 12%. 최근 1년 반도체 불황으로 이익이 고점의 17%.',
       growth: '2점 — 10년 EPS 감소. 재고 조정 이후 회복 중(최근 분기 매출 +38%).',
       durability: '3점 — 반도체 재고 사이클·빚.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['제품 수명이 길어 가격 유지.'],
+        threats: ['재고 조정기 할인.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['5년 평균 ROIC 12%.'],
+        threats: ['최근 이익이 고점의 17%.'],
+        why: '불황으로 크게 나빠졌다.',
+      },
+      growth: {
+        state: 'good',
+        sources: ['재고 조정 이후 최근 분기 매출 +38%.'],
+        threats: ['사이클.'],
+        why: '회복 중이다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['고객 다수.'],
+        threats: ['빚·사이클.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '8월 2027 회계연도(3월 결산) 1분기: 매출 14.9억 달러(+38%, 전분기 +13%), 조정 EPS 0.76달러, 조정 매출총이익률 63.8%. 주문/출하 비율 1배 이상, 재고일수 감소. 발표 뒤 +14%.',
@@ -18137,9 +20139,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '세계 최대 의료기기 회사(메드트로닉).', money: '심장·신경·수술 기기 판매.' },
     moat: {
       state: 'intact',
-      sources: ['폭넓은 제품군, 병원 관계.'],
+      sources: ['세계 최대 의료기기 회사(심장·당뇨·수술·척추).'],
       threats: ['성장 정체.'],
-      why: '해자 보통.',
+      why: '규모 해자 그대로.',
     },
     scores: {
       moat: '3점 — 세계 최대 의료기기 회사(심장·당뇨·수술·척추).',
@@ -18147,6 +20149,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 조정 영업이익률 약 25%지만 회계 ROIC 8%(인수 자산).',
       growth: '2점 — 매출 연 4~5%. 당뇨 사업 분리 예정.',
       durability: '3점 — 성장 정체.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['제품 폭.'],
+        threats: ['병원 압박.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['조정 영업이익률 약 25%.'],
+        threats: ['회계 ROIC 8%.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['당뇨 사업 분리 예정, 최근 분기 매출 +14%(분리 효과 포함).'],
+        threats: ['매출 연 4~5%.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['규모.'],
+        threats: ['성장 정체.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '9월 1일 2027 회계연도(4월 결산) 1분기: 매출 98억 달러(+13.7%, 한 주 추가분 약 5.7억 달러 포함), 조정 EPS 1.45달러. 연간 실질 성장 전망 7.25~7.75%, 조정 EPS 5.94~6.00달러로 상향. 발표 뒤 +5%.',
@@ -18175,10 +20203,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '미국 동부 지역 은행(M&T) — 버크셔가 담았던 은행, PER 11.8배',
     biz: { what: 'M&T — 미국 동북부 은행.', money: '대출 이자에서 예금 이자를 뺀 차익 + 카드·자산관리 수수료.' },
     moat: {
-      state: 'intact',
-      sources: ['지역 예금 기반 — 싼 자금 조달.', '오래된 지역 기업·주민 관계.'],
-      threats: ['경기 침체 시 대출 부실(상업용 부동산).', '금리 변화, 핀테크.'],
-      why: '은행업은 해자가 얕은 편(돈은 어디서나 같은 상품). 지역 기반이 유지되는 한 그대로.',
+      state: 'weakening',
+      sources: ['미국 북동부(보수적 경영, 버크셔 투자 이력) 지역 예금 기반 — 예금이 싼 자금원.'],
+      threats: ['대형 은행·핀테크 경쟁.', '상업용 부동산 대출 부실.'],
+      why: '지역 기반은 있지만 큰 은행보다 해자가 얕다.',
     },
     scores: {
       moat: '2점 — 미국 북동부 지역 예금 기반. 대형 은행보다 규모가 작아 해자는 약하다.',
@@ -18186,6 +20214,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — ROE 9.8%.',
       growth: '2점 — 지역 경제 성장만큼 큰다.',
       durability: '4점 — 보수적 경영으로 위기 때마다 버텼다(버크셔 투자 이력).',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['예금 금리 관리.'],
+        threats: ['대출·예금 금리 수준은 시장(연준)이 정한다.'],
+        why: '은행은 구조적으로 값을 정하지 못한다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['ROE 9.8%.'],
+        threats: ['대손 비용, 예금 이탈.'],
+        why: '자기자본 이익률이 낮은 편이다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['지역 경제 성장만큼 대출이 는다.'],
+        threats: ['경기 둔화.'],
+        why: '지역 경제만큼 천천히 큰다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['오랜 지역 영업.'],
+        threats: ['2023년 지역 은행 위기처럼 예금 이탈 위험.'],
+        why: '신용·금리 위기에 취약해 보통이다.',
+      },
     },
     now: [
       '10월 16일 3분기: 순이익 7.75억 달러(EPS 5.04달러, 조정 5.08달러로 예상 4.93달러 상회). 자사주 3.23억 달러. 보통주 자본비율 10.16%.',
@@ -18215,9 +20269,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '메모리 반도체 회사(마이크론). D램·HBM·낸드.', money: '메모리 판매.' },
     moat: {
       state: 'intact',
-      sources: ['메모리 3강(삼성·SK하이닉스).', 'AI용 HBM.'],
+      sources: ['메모리 3강(삼성·SK하이닉스와), AI용 고대역폭 메모리(HBM).'],
       threats: ['메모리 가격 사이클.'],
-      why: '과점은 그대로 — 이익은 사이클.',
+      why: '과점 해자 그대로.',
     },
     scores: {
       moat: '3점 — 메모리 반도체 3강(삼성·SK하이닉스와). AI용 고대역폭 메모리(HBM) 공급.',
@@ -18225,6 +20279,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 지금 ROIC 111%는 메모리 호황 수치(5년 평균 17%).',
       growth: '4점 — AI 메모리 수요로 매출이 급증 중.',
       durability: '2점 — 메모리는 호황·불황이 매우 크다(2023년 큰 적자).',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['HBM 계약.'],
+        threats: ['메모리 가격은 수요·공급이 정한다.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'good',
+        sources: ['지금 ROIC 111%(5년 평균 17%).'],
+        threats: ['호황기 수치.'],
+        why: '호황으로 크게 좋아졌다.',
+      },
+      growth: {
+        state: 'good',
+        sources: ['AI 메모리 수요로 매출 급증.'],
+        threats: ['사이클.'],
+        why: '빨라지는 중.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['3강.'],
+        threats: ['2023년 큰 적자처럼 호황·불황이 크다.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '9월 2026 회계연도(8월 결산) 4분기: 매출 542억 달러(1년 전의 약 5배), 조정 EPS 33.42달러. 연간 매출 1,332억 달러(+256%). 1분기 전망 매출 615억 달러, 조정 EPS 38.15달러.',
@@ -18254,9 +20334,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '부자·기관 수탁 은행(노던트러스트).', money: '자산 보관·관리 수수료.' },
     moat: {
       state: 'intact',
-      sources: ['초부유층 고객 관계, 수탁 인프라.'],
-      threats: ['수수료 경쟁.'],
-      why: '해자 보통.',
+      sources: ['부유층·기관 수탁·자산관리.'],
+      threats: ['수탁 수수료 하락.'],
+      why: '해자 그대로(깊지는 않다).',
     },
     scores: {
       moat: '3점 — 부유층·기관 수탁·자산관리.',
@@ -18264,6 +20344,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROE 14%.',
       growth: '2점 — 10년 EPS 연 8%.',
       durability: '4점 — 130년 넘은 보수적 은행.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['고객 관계.'],
+        threats: ['수수료 경쟁.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROE 14%.'],
+        threats: ['비용.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['10년 EPS 연 8%.'],
+        threats: ['성숙.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'good',
+        sources: ['130년 넘은 보수적 은행.'],
+        threats: ['금리.'],
+        why: '단단하다.',
+      },
     },
     now: [
       '10월 3분기: 순이익 6.43억 달러(+40%), EPS 3.40달러(1년 전 2.29달러). 매출 23억 달러(+13%), 자산관리 수수료 +9%.',
@@ -18293,9 +20399,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '미국 최대 철강 회사(뉴코).', money: '철강 판매.' },
     moat: {
       state: 'intact',
-      sources: ['저원가 전기로 철강.'],
+      sources: ['미국 최대 철강사, 전기로(고철 재활용) 방식이라 원가가 낮다.'],
       threats: ['철강 가격.'],
-      why: '해자 보통.',
+      why: '원가 해자 그대로.',
     },
     scores: {
       moat: '3점 — 미국 최대 철강사, 전기로(고철 재활용) 방식이라 원가가 낮다.',
@@ -18303,6 +20409,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 9%(5년 평균 25%, 호황 포함).',
       growth: '3점 — 인프라·제조업 리쇼어링 수요.',
       durability: '3점 — 철강 사이클.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['원가.'],
+        threats: ['철강 가격은 시장이 정한다(관세가 지켜 준다).'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['5년 평균 ROIC 25%.'],
+        threats: ['최근 ROIC 9%.'],
+        why: '사이클 하강으로 나빠졌다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['인프라·리쇼어링.'],
+        threats: ['사이클.'],
+        why: '보통이다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['원가 우위.'],
+        threats: ['사이클.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '1분기 EPS 3.23달러, 2분기 5.04달러(1년 전 2.60달러)로 이익이 빠르게 회복. 수입 철강 관세가 미국 철강 가격의 바닥을 높였다.',
@@ -18332,9 +20464,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '상가 건물 장기 임대 회사(리얼티인컴, 리츠). "매달 배당 회사".', money: '편의점·약국 건물 15~20년 장기 임대료.' },
     moat: {
       state: 'intact',
-      sources: ['수천 개 임차인 분산, 낮은 자금 조달 비용.'],
-      threats: ['금리.', '임차인 파산.'],
-      why: '해자 보통 — 안정적.',
+      sources: ['미국 최대 상가 순임대 리츠(약 1만 5,000곳, 15~20년 계약), "매달 배당".'],
+      threats: ['금리.'],
+      why: '입지가 해자 — 그대로.',
     },
     scores: {
       moat: '3점 — 미국 최대 상가 순임대 리츠(약 1만 5,000곳, 15~20년 계약). "매달 배당".',
@@ -18342,6 +20474,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 리츠라 감가상각 때문에 회계 이익이 작게 나온다(ROE 2.7%). 주당 현금이익(FFO)으로 봐야 한다.',
       growth: '2점 — 인수로 성장, 주당 현금이익은 연 2~4%.',
       durability: '4점 — 30년 넘게 배당 인상.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['계약 갱신 때 임대료 인상.'],
+        threats: ['지역 임대 시세를 따라간다.'],
+        why: '시세를 따라가는 수준이라 보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['리츠라 감가상각 때문에 회계 이익이 작다(ROE 2.7%).'],
+        threats: ['빚·금리.'],
+        why: '회계 이익보다 주당 현금이익(FFO)으로 봐야 하고, 대체로 안정적이다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['인수로 성장, 주당 현금이익 연 2~4%.'],
+        threats: ['금리.'],
+        why: '임대료와 신규 개발만큼 천천히 큰다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['부동산 자체는 오래간다.'],
+        threats: ['금리가 오르면 부담.'],
+        why: '자산은 남지만 금리에 민감해 보통이다.',
+      },
     },
     now: [
       '8월 2분기: 주당 조정 운영현금(AFFO) 1.09달러(+3.8%). 연간 AFFO 전망 4.44~4.45달러(+약 4%)로 상향. 투자 규모 100억 달러.',
@@ -18371,9 +20529,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '미국 3위 주택 건설 회사(풀트).', money: '새 집 판매.' },
     moat: {
       state: 'intact',
-      sources: ['은퇴자 단지(델웹).'],
-      threats: ['주택 경기.'],
-      why: '해자 보통.',
+      sources: ['미국 3위 주택 건설.'],
+      threats: ['금리.'],
+      why: '규모 해자 그대로.',
     },
     scores: {
       moat: '3점 — 미국 3위 주택 건설사.',
@@ -18381,6 +20539,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 21%(5년 평균 32%).',
       growth: '3점 — 10년 EPS 연 23%. 금리에 따라 수요 변동.',
       durability: '3점 — 주택 경기 사이클.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['규모.'],
+        threats: ['집값은 시장이 정한다.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 21%(5년 평균 32%).'],
+        threats: ['할인.'],
+        why: '내려오는 중.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['10년 EPS 연 23%.'],
+        threats: ['금리.'],
+        why: '금리에 달렸다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['규모.'],
+        threats: ['주택 사이클.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '10월 22일 3분기 실적 발표. 올해 9개월간 자사주 10억 달러(주식 수 4%). 현금 14억 달러, 부채 비율 12%로 업계에서 가장 튼튼한 재무.',
@@ -18411,9 +20595,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '도료 회사(PPG).', money: '자동차·산업·건축 도료.' },
     moat: {
       state: 'intact',
-      sources: ['자동차 도료 1위.'],
-      threats: ['원가·경기.'],
-      why: '해자 보통.',
+      sources: ['세계 2위 페인트·코팅(자동차·항공기).'],
+      threats: ['원가.'],
+      why: '해자 그대로.',
     },
     scores: {
       moat: '3점 — 세계 2위 페인트·코팅(자동차·항공기).',
@@ -18421,6 +20605,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROE 21%, 5년 평균 ROIC 16%.',
       growth: '2점 — 10년 EPS 연 3%.',
       durability: '3점 — 경기·원가 변동.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['원가 전가.'],
+        threats: ['경쟁.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROE 21%.'],
+        threats: ['원가.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['10년 EPS 연 3%.'],
+        threats: ['정체.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['규모.'],
+        threats: ['경기.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '7월 2분기: 조정 EPS 2.23달러(예상 2.25달러 소폭 미달), 매출 45억 달러(예상 상회). 연간 조정 EPS 전망 7.70~8.10달러 유지. 3분기 실질 매출 한 자릿수 초중반 성장, 이익률은 보합~하락 예상. 3분기 실적은 10월 말.',
@@ -18449,9 +20659,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '마트 중심 상가 회사(리전시센터스, 리츠).', money: '상가 임대료.' },
     moat: {
       state: 'intact',
-      sources: ['대형 마트가 있는 상가 — 공실이 적다.'],
-      threats: ['금리.'],
-      why: '해자 보통.',
+      sources: ['마트 중심 동네 상가, 부유한 교외 위주.'],
+      threats: ['소매 업황.'],
+      why: '입지가 해자 — 그대로.',
     },
     scores: {
       moat: '3점 — 마트 중심 동네 상가 리츠, 부유한 교외 위주.',
@@ -18459,6 +20669,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 리츠라 감가상각 때문에 회계 이익이 작게 나온다(ROE 7.7%). 주당 현금이익(FFO)으로 봐야 한다.',
       growth: '2점 — 임대료 연 3%.',
       durability: '4점 — 공실이 적은 상가 위주.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['계약 갱신 때 임대료 인상.'],
+        threats: ['지역 임대 시세를 따라간다.'],
+        why: '시세를 따라가는 수준이라 보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['리츠라 감가상각 때문에 회계 이익이 작다(ROE 7.7%).'],
+        threats: ['빚·금리.'],
+        why: '회계 이익보다 주당 현금이익(FFO)으로 봐야 하고, 대체로 안정적이다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['임대료 연 3%.'],
+        threats: ['소매 업황.'],
+        why: '임대료와 신규 개발만큼 천천히 큰다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['부동산 자체는 오래간다.'],
+        threats: ['금리가 오르면 부담.'],
+        why: '자산은 남지만 금리에 민감해 보통이다.',
+      },
     },
     now: [
       '7월 2분기: 주당 FFO 1.21달러. 연간 FFO 전망 4.84~4.88달러, 같은 시설 순영업이익 +3.7~4.1%로 상향.',
@@ -18488,9 +20724,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '세계 최대 커피 체인(스타벅스).', money: '음료 판매.' },
     moat: {
       state: 'weakening',
-      sources: ['브랜드·매장 수.'],
-      threats: ['미국 손님 감소, 중국 경쟁(루킨).'],
-      why: '회복 계획 중 — 약해지는 중.',
+      sources: ['세계 최대 커피 체인(약 4만 곳), 앱 회원.'],
+      threats: ['미국·중국 부진, 경쟁.'],
+      why: '브랜드는 강하지만 회복 전이라 약해지는 중.',
     },
     scores: {
       moat: '3점 — 세계 최대 커피 체인(약 4만 곳), 앱 회원.',
@@ -18498,6 +20734,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 5년 평균 ROIC 높음(자기자본 마이너스). 최근 1년 이익은 구조조정 비용으로 고점의 절반.',
       growth: '2점 — 10년 EPS 감소. 새 CEO(브라이언 니콜)의 회복 계획, 중국 사업 지분 매각.',
       durability: '3점 — 브랜드는 강하지만 회복이 확인되지 않았다.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['브랜드.'],
+        threats: ['가격 인상 후 손님 감소.'],
+        why: '한계가 보였다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['자본이 적게 드는 구조.'],
+        threats: ['구조조정 비용으로 이익이 고점의 절반.'],
+        why: '나빠졌다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['새 CEO 회복 계획.'],
+        threats: ['10년 EPS 감소.'],
+        why: '회복 확인 전이다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['세계 브랜드.'],
+        threats: ['회복 불확실.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '7월 2026 회계연도(9월 결산) 3분기: 미국 같은 매장 매출 +7.9%(방문객 +4.2%, 객단가 +3.6%), 네 분기 연속 성장. 조정 EPS 0.85달러. 중국 사업은 합작 라이선스로 전환. 연간 같은 매장 매출 전망을 6% 안팎으로 상향.',
@@ -18527,9 +20789,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '철강 회사(스틸다이내믹스).', money: '철강·알루미늄 판매.' },
     moat: {
       state: 'intact',
-      sources: ['저원가 전기로.'],
+      sources: ['전기로 철강, 업계 최저 원가 수준. 알루미늄 공장 신설.'],
       threats: ['철강 가격.'],
-      why: '해자 보통.',
+      why: '원가 해자 그대로.',
     },
     scores: {
       moat: '3점 — 전기로 철강, 업계 최저 원가 수준. 알루미늄 공장 신설.',
@@ -18537,6 +20799,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 10%(5년 평균 26%, 호황 포함).',
       growth: '3점 — 알루미늄 신사업.',
       durability: '3점 — 철강 사이클.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['원가.'],
+        threats: ['철강 가격.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['5년 평균 ROIC 26%.'],
+        threats: ['최근 10%.'],
+        why: '사이클 하강으로 나빠졌다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['알루미늄 신사업.'],
+        threats: ['사이클.'],
+        why: '보통이다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['원가.'],
+        threats: ['사이클.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '10월 20일 3분기: 매출 65.1억 달러, 조정 EPS 5.26달러(예상 약 5.48달러 미달, 발표 뒤 약 -6%). 철강 출하 사상 최대(380만 톤), 공장 가동률 92%(업계 80%).',
@@ -18566,9 +20854,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '맥주·와인 회사(컨스텔레이션). 코로나·모델로(미국 판권).', money: '맥주 판매.' },
     moat: {
       state: 'weakening',
-      sources: ['미국 수입 맥주 1위.'],
-      threats: ['히스패닉 소비 위축, 관세, 술 소비 감소.'],
-      why: '약해지는 중.',
+      sources: ['미국 수입 맥주 1위(코로나·모델로).'],
+      threats: ['히스패닉 소비 위축(이민 정책), 맥주 수요 감소.'],
+      why: '1위지만 수요가 약해 약해지는 중.',
     },
     scores: {
       moat: '3점 — 미국 수입 맥주 1위(코로나·모델로).',
@@ -18576,6 +20864,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 와인 사업 손상 처리로 회계 이익이 들쭉날쭉.',
       growth: '2점 — 히스패닉 소비자 지출 위축(이민 정책)·맥주 수요 감소.',
       durability: '3점 — 맥주 소비 감소.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['프리미엄 맥주.'],
+        threats: ['수요 둔화.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['맥주 이익률 높음.'],
+        threats: ['와인 손상 처리.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['맥주.'],
+        threats: ['수요 감소.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['브랜드.'],
+        threats: ['맥주 소비 감소.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '10월 2027 회계연도(2월 결산) 2분기: 매출 26.3억 달러(+6%), 조정 EPS 3.74달러(예상 약 3.6달러). 맥주가 업계보다 4%포인트 좋았다. 연간 비교 EPS 전망 11.20~11.90달러 유지. 맥주 출하는 -0.6%.',
@@ -18667,9 +20981,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '전기차·에너지 회사(테슬라). 자율주행·로봇 개발.', money: '전기차 판매 + 에너지 저장장치 + 소프트웨어.' },
     moat: {
       state: 'weakening',
-      sources: ['전기차 원가·소프트웨어·충전망.', '에너지 저장장치 성장.'],
-      threats: ['중국 업체(BYD)의 가격 경쟁, 판매 감소.', '자율주행 성과가 아직 미확인.'],
-      why: '차 판매 해자는 약해지는 중. 주가는 자율주행·로봇 기대에 달렸다.',
+      sources: ['전기차 원가·소프트웨어 앞서 있지만 중국 업체(BYD 등)가 따라왔다.'],
+      threats: ['판매 감소, 경쟁.'],
+      why: '전기차 해자는 약해지는 중 — 자율주행·로봇이 새 해자가 될지 미지수.',
     },
     scores: {
       moat: '3점 — 전기차 원가·소프트웨어 앞서 있지만 중국 업체(BYD 등)가 따라왔다.',
@@ -18677,6 +20991,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — 영업이익률 약 5%, ROIC 7%(5년 평균 30%).',
       growth: '4점 — 자율주행·로봇·에너지 저장 기대(에너지 저장은 빠르게 성장).',
       durability: '3점 — 자동차 판매 감소, 기대가 현실이 될지 불확실.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['브랜드.'],
+        threats: ['판매 부진에 가격을 여러 번 내렸다.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['ROIC 30%(5년 평균) → 7%.'],
+        threats: ['가격 인하.'],
+        why: '나빠졌다.',
+      },
+      growth: {
+        state: 'good',
+        sources: ['에너지 저장 급성장, 자율주행·로봇 기대.'],
+        threats: ['자동차 판매 감소.'],
+        why: '기대는 크지만 숫자는 아직.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['현금 많음.'],
+        threats: ['기대가 현실이 될지 불확실.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '10월 21일 3분기: 인도 48.7만 대(-2%, 예상보다는 많음), 매출 280.5억 달러(보합), 조정 EPS 0.48달러(예상 0.45달러, 1년 전 0.50달러). 영업이익률 2.6%(비용 +39%). 설비투자 47억 달러로 두 배, 잉여현금흐름 -62%.',
@@ -18705,9 +21045,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '인공관절 회사(짐머바이오멧).', money: '무릎·고관절 인공관절 판매.' },
     moat: {
       state: 'intact',
-      sources: ['인공관절 1위급.'],
-      threats: ['스트라이커 로봇 경쟁.'],
-      why: '해자 보통.',
+      sources: ['인공관절(무릎·고관절) 세계 1위권.'],
+      threats: ['로봇 수술(스트라이커 마코)에 밀린다.'],
+      why: '해자 그대로(깊지는 않다).',
     },
     scores: {
       moat: '3점 — 인공관절(무릎·고관절) 세계 1위권.',
@@ -18715,6 +21055,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 조정 영업이익률 약 27%지만 회계 ROIC 5%(바이오메트 합병 자산).',
       growth: '2점 — 매출 연 3~5%.',
       durability: '3점 — 로봇 수술(스트라이커 마코)에 밀린다.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['관절 브랜드.'],
+        threats: ['병원 가격 압박.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['조정 영업이익률 약 27%.'],
+        threats: ['회계 ROIC 5%.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['신제품.'],
+        threats: ['매출 연 3~5%.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['고령화.'],
+        threats: ['경쟁.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '8월 2분기: 매출 21.8억 달러(+4.8%, 실질 +4%), 조정 EPS 2.07달러(예상 상회). 연간 매출 성장 전망 3.9~4.9%, 조정 EPS 8.47~8.59달러로 상향. 발표 뒤 +5%.',
@@ -18744,9 +21110,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '인터넷 보안·전송 회사(아카마이).', money: '보안·콘텐츠 전송 서비스.' },
     moat: {
       state: 'weakening',
-      sources: ['보안 사업.'],
-      threats: ['콘텐츠 전송 사업 쇠퇴.'],
-      why: '약해지는 중.',
+      sources: ['콘텐츠 전송망(CDN) 원조, 보안 사업이 매출 절반 이상.'],
+      threats: ['CDN 가격 경쟁(클라우드플레어 등).'],
+      why: '본업이 쇠퇴하고 보안으로 전환 중이라 약해지는 중.',
     },
     scores: {
       moat: '3점 — 콘텐츠 전송망(CDN) 원조, 보안 사업이 매출의 절반 이상으로 커졌다.',
@@ -18754,6 +21120,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 12%(5년 평균 15%).',
       growth: '2점 — 10년 EPS 연 6%, 최근 5년 감소. 보안·클라우드로 전환 중.',
       durability: '3점 — 본업(CDN)이 쇠퇴하는 중.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['보안 구독.'],
+        threats: ['CDN 가격 하락.'],
+        why: 'CDN은 가격 경쟁이 심하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 12%(5년 평균 15%).'],
+        threats: ['클라우드 투자.'],
+        why: '조금씩 내려오는 중.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['보안·클라우드 컴퓨팅.'],
+        threats: ['10년 EPS 연 6%, 최근 감소.'],
+        why: '성장이 느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['보안 전환.'],
+        threats: ['본업 쇠퇴.'],
+        why: '전환 성공 여부가 변수다.',
+      },
     },
     now: [
       '8월 2분기: 매출 11억 달러, 클라우드 인프라 +39%, 보안 +10%. 조정 EPS 1.59달러(-8%, GPU 투자 비용). 올해 다년 클라우드 계약 28억 달러 넘게(최첨단 AI 모델 회사 7년 18억 달러 포함).',
@@ -18783,9 +21175,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '알루미늄 캔 회사(볼).', money: '음료 캔 판매.' },
     moat: {
       state: 'intact',
-      sources: ['캔 시장 과점.'],
-      threats: ['음료 수요.'],
-      why: '해자 보통.',
+      sources: ['알루미늄 음료 캔 세계 1위권 — 플라스틱에서 캔으로 바꾸는 흐름.'],
+      threats: ['큰 음료 회사의 협상력.'],
+      why: '해자 그대로(깊지는 않다).',
     },
     scores: {
       moat: '3점 — 알루미늄 음료 캔 세계 1위권. 플라스틱에서 캔으로 바꾸는 흐름.',
@@ -18793,6 +21185,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 5년 평균 ROIC 9%. 최근 EPS 급감은 사업 매각 회계 영향.',
       growth: '2점 — 캔 판매량 연 2~4%.',
       durability: '3점 — 꾸준한 수요지만 원가 변동.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['원가 연동.'],
+        threats: ['코카콜라·앤호이저부시 등 큰 고객.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['5년 평균 ROIC 9%.'],
+        threats: ['사업 매각 회계.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['캔 판매량 연 2~4%.'],
+        threats: ['성장 둔화.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['캔 수요 구조적 증가.'],
+        threats: ['원가.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '2분기 비교 EPS 1.03달러(+14.4%), 1분기 0.94달러(+22.1%). 2026년 비교 EPS +10% 이상, 잉여현금흐름 9억 달러 이상 목표. 올해 주주 환원 8억 달러 이상.',
@@ -18822,9 +21240,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: 'IT 유통 회사(CDW).', money: 'IT 제품 판매·설치.' },
     moat: {
       state: 'intact',
-      sources: ['기업·공공 고객 관계.'],
-      threats: ['IT 투자 경기.'],
-      why: '해자 약함.',
+      sources: ['미국 기업·학교·정부 IT 장비 유통 1위.'],
+      threats: ['낮은 마진, 직접 판매.'],
+      why: '규모 해자 그대로(깊지는 않다).',
     },
     scores: {
       moat: '3점 — 미국 기업·학교·정부 IT 장비 유통 1위.',
@@ -18832,6 +21250,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 16%, ROE 43%.',
       growth: '2점 — 매출 연 3~5%. IT 교체 주기에 따라 출렁인다.',
       durability: '3점 — IT 경기에 민감.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['솔루션 서비스.'],
+        threats: ['유통 마진이 얇다.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 16%, ROE 43%.'],
+        threats: ['IT 경기.'],
+        why: '안정적이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['AI PC 교체.'],
+        threats: ['매출 연 3~5%.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['1위 유통.'],
+        threats: ['IT 경기.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '5월 1분기 매출 +9%에도 하루 -20%, 8월 2분기 매출 +10%·조정 EPS 2.91달러(예상 상회)에도 -9~16%. AI 장비 거래의 낮은 이익률, 재고 증가, 매출총이익률 하락(20.1%)이 이유. 연간 전망은 상향.',
@@ -18860,9 +21304,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '트럭 운송 중개 회사(C.H.로빈슨).', money: '중개 수수료.' },
     moat: {
       state: 'intact',
-      sources: ['최대 중개 네트워크, AI 자동화.'],
-      threats: ['화물 경기.'],
-      why: '해자 보통.',
+      sources: ['북미 최대 트럭 화물 중개 — 운송사 약 45만 곳 네트워크.'],
+      threats: ['디지털 중개 경쟁.'],
+      why: '네트워크 해자 그대로(깊지는 않다).',
     },
     scores: {
       moat: '3점 — 북미 최대 트럭 화물 중개(운송사 약 45만 곳 네트워크).',
@@ -18870,6 +21314,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 23%(자산이 가볍다).',
       growth: '2점 — 10년 EPS 연 3%. AI 자동화로 비용을 줄이는 중.',
       durability: '3점 — 화물 사이클과 디지털 중개 경쟁.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['중개 마진.'],
+        threats: ['운임 시세.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'good',
+        sources: ['ROIC 23%, AI 자동화로 비용 절감.'],
+        threats: ['운임 하락.'],
+        why: '효율 개선으로 좋아지는 중.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['자동화.'],
+        threats: ['10년 EPS 연 3%.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['자산이 가볍다.'],
+        threats: ['화물 사이클.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '7월 2분기: 영업이익 +18.4%(2.56억 달러), 북미 육상 운송 이익률 40.9%(+2.8%포인트). 화물 불황(물동량 15분기 연속 감소)에도 이익이 늘었다. 주주 환원 3억 달러.',
@@ -18899,9 +21369,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '생활용품 회사(클로락스).', money: '표백제·쓰레기봉투·정수기 필터.' },
     moat: {
       state: 'intact',
-      sources: ['카테고리 1~2위 브랜드.'],
-      threats: ['자체 브랜드, 시스템 전환 혼란.'],
-      why: '해자 보통.',
+      sources: ['클로락스·글래드·브리타 — 강한 브랜드.'],
+      threats: ['자체 브랜드 경쟁.'],
+      why: '브랜드 해자 그대로.',
     },
     scores: {
       moat: '3점 — 클로락스 표백제·글래드 비닐봉지·브리타 정수기. 브랜드는 강하지만 자체 브랜드(PB) 경쟁.',
@@ -18909,6 +21379,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 34%(5년 평균 19%). 2023년 해킹 사고로 이익 급감.',
       growth: '1점 — 10년 EPS 연 4%, 최근 5년 감소. 매출 정체.',
       durability: '3점 — 생필품이지만 성장이 없다.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['가격 인상.'],
+        threats: ['판매량 감소.'],
+        why: '올리면 판매가 준다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 34%(5년 평균 19%).'],
+        threats: ['2023년 해킹 사고.'],
+        why: '회복했다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['신제품.'],
+        threats: ['10년 EPS 연 4%, 최근 5년 감소.'],
+        why: '성장이 없다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['생필품.'],
+        threats: ['성장 정체.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '8월 2026 회계연도(6월 결산) 4분기: 조정 EPS 1.66달러(-42%), 실질 매출 -13% — 전사 시스템(ERP) 교체 때 미리 쌓은 재고가 빠진 기저 효과. 퓨렐(GOJO) 인수 효과로 매출 +10%포인트.',
@@ -18937,9 +21433,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: 'IT 아웃소싱 회사(코그니전트).', money: 'IT 서비스 계약.' },
     moat: {
       state: 'weakening',
-      sources: ['대기업 고객.'],
-      threats: ['AI 자동화, 인도 경쟁.'],
-      why: '약해지는 중.',
+      sources: ['IT 아웃소싱 대형사(직원 약 34만 명).'],
+      threats: ['AI 코딩 도구가 일감을 줄일 위험.'],
+      why: 'AI 영향으로 약해지는 중.',
     },
     scores: {
       moat: '3점 — IT 아웃소싱 대형사(직원 약 34만 명).',
@@ -18947,6 +21443,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 16%.',
       growth: '2점 — 10년 EPS 연 6%. AI 코딩 도구가 일감을 줄일 위험.',
       durability: '3점 — AI로 사업 구조가 바뀔 수 있다.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['장기 계약.'],
+        threats: ['인도 IT 회사들과 단가 경쟁.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 16%.'],
+        threats: ['인건비.'],
+        why: '안정적이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['AI 서비스.'],
+        threats: ['10년 EPS 연 6%.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['대형 고객.'],
+        threats: ['AI 대체.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '7월 2분기: 매출 55억 달러(+4.5%), 금융 서비스 +12%. 연간 매출 성장 전망을 4~5.5%로 좁혔고, 조정 EPS 전망 5.70~5.82달러(+8~10%)로 올렸다. 자사주 11억 달러. 최근 1년 수주 증가율은 5%로 둔화.',
@@ -18976,9 +21498,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '미국 최대 수익 항공사(델타).', money: '항공권 + 아멕스 제휴 마일리지.' },
     moat: {
       state: 'intact',
-      sources: ['허브 공항 지배력, 프리미엄 고객.'],
+      sources: ['미국 항공사 중 최고 수익 — 프리미엄 좌석·아멕스 카드 제휴(연 약 80억 달러).'],
       threats: ['유가·경기.'],
-      why: '항공업 중에서는 해자가 있는 편.',
+      why: '프리미엄 고객이 해자 — 그대로.',
     },
     scores: {
       moat: '3점 — 미국 항공사 중 최고 수익. 프리미엄 좌석·아멕스 카드 제휴(연 약 80억 달러).',
@@ -18986,6 +21508,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 16%로 항공사치고 높다.',
       growth: '3점 — 프리미엄 여행 수요.',
       durability: '2점 — 코로나 때 대규모 적자. 유가·경기에 매우 취약.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['프리미엄 좌석 가격.'],
+        threats: ['항공권 경쟁.'],
+        why: '프리미엄은 강하고 일반석은 약하다.',
+      },
+      profit: {
+        state: 'good',
+        sources: ['ROIC 16%로 항공사 중 높다.'],
+        threats: ['유가.'],
+        why: '좋아지는 중.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['프리미엄 여행 수요.'],
+        threats: ['경기.'],
+        why: '보통이다.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['업계 최고 수익성.'],
+        threats: ['코로나 때 대규모 적자.'],
+        why: '항공업은 충격에 매우 취약하다.',
+      },
     },
     now: [
       '버크셔 매수(2026년): 1분기에 새로 사고(약 26억 달러) 2분기에 44% 늘렸다(약 5,730만 주, 약 54억 달러). 버핏은 2020년 코로나 때 항공주를 전부 팔며 "실수였다"고 했는데, 6년 만에 항공사로 돌아온 것 — 델타의 프리미엄 좌석·카드 제휴 수입이 예전 항공사와 다르다고 본 것으로 해석된다.',
@@ -19016,10 +21564,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '시골 할인점 1등(달러제너럴) — 회생 성공, 1년 주가 +34%',
     biz: { what: '시골 1달러샵 체인(달러제너럴).', money: '생필품 판매.' },
     moat: {
-      state: 'intact',
-      sources: ['경쟁이 적은 시골 입지.'],
-      threats: ['저소득층 소비, 운영 문제.'],
-      why: '해자 보통.',
+      state: 'weakening',
+      sources: ['미국 소도시 할인점 약 2만 곳.'],
+      threats: ['월마트·달러트리 경쟁.'],
+      why: '입지는 강점이지만 경쟁에 밀려 약해지는 중.',
     },
     scores: {
       moat: '3점 — 미국 소도시 할인점(약 2만 곳). 대형 마트가 없는 시골이 주무대.',
@@ -19027,6 +21575,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 14%.',
       growth: '2점 — 최근 5년 EPS 감소. 매장 관리 문제를 고치는 중.',
       durability: '3점 — 경쟁(월마트·달러트리)·저소득층 소비.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['저가 입지.'],
+        threats: ['저소득층 고객이라 가격을 올리기 어렵다.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 14%.'],
+        threats: ['매장 운영 비용.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['매장 개선.'],
+        threats: ['최근 5년 EPS 감소.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['소도시 입지.'],
+        threats: ['경쟁.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '8월 2분기: 매출 113억 달러(+5.2%), 같은 매장 매출 +3.5%(방문객 +2%), EPS 2.48달러(+33%, 관세 환급 약 0.25달러 포함). 다섯 분기 연속 방문객 증가. 연간 EPS 전망 7.80~8.00달러로 상향.',
@@ -19054,10 +21628,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '중고·수집품 온라인 장터(이베이) — 거래액 +14% 부활, 3년 주가 3배',
     biz: { what: '온라인 중고·수집품 장터(이베이).', money: '거래 수수료.' },
     moat: {
-      state: 'intact',
-      sources: ['수집품·중고 거래 네트워크.'],
-      threats: ['아마존·신생 장터.'],
-      why: '해자 보통.',
+      state: 'weakening',
+      sources: ['중고·수집품(카드·시계·자동차 부품) 시장 강자.'],
+      threats: ['아마존·테무 등 경쟁.'],
+      why: '틈새는 지키지만 전체 거래액이 정체돼 약해지는 중.',
     },
     scores: {
       moat: '3점 — 중고·수집품(카드·시계·자동차 부품) 시장 강자.',
@@ -19065,6 +21639,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '4점 — ROIC 20%, 영업이익률 약 28%. 최근 1년 EPS 급감은 투자 평가 손실.',
       growth: '1점 — 거래액이 10년째 정체(연 0~3%).',
       durability: '3점 — 아마존·테무 등 경쟁.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['수집품 인증 서비스.'],
+        threats: ['판매자 수수료를 올리기 어렵다.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'good',
+        sources: ['ROIC 20%, 영업이익률 약 28%.'],
+        threats: ['투자 평가 손실.'],
+        why: '높은 이익률을 유지한다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['수집품·중고.'],
+        threats: ['거래액이 10년째 정체.'],
+        why: '성장이 없다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['30년 브랜드.'],
+        threats: ['경쟁.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '2분기: 거래액(GMV)·매출 모두 +14%, 회사 전망 상단을 넘었다. 연간 거래액 성장 전망 11.5~12.5%, 조정 EPS +10~12%로 상향. 집중 카테고리(수집품·중고 명품·자동차 부품 등) 거래액 +26%. 7월 중고 패션 앱 디팝 인수 완료.',
@@ -19094,9 +21694,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '서부 해안 아파트 회사(에식스, 리츠).', money: '월세.' },
     moat: {
       state: 'intact',
-      sources: ['새 공급이 어려운 서부 해안.'],
-      threats: ['빅테크 고용.'],
-      why: '해자 보통.',
+      sources: ['서부 해안(실리콘밸리·LA·시애틀) 아파트 — 새 공급이 어려운 지역.'],
+      threats: ['기술 업계 고용.'],
+      why: '입지가 해자 — 그대로.',
     },
     scores: {
       moat: '3점 — 서부 해안(실리콘밸리·LA·시애틀) 아파트 리츠. 새 공급이 어려운 지역.',
@@ -19104,6 +21704,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 리츠라 감가상각 때문에 회계 이익이 작게 나온다(ROE 12.1%). 주당 현금이익(FFO)으로 봐야 한다.',
       growth: '2점 — 임대료 연 2~4%.',
       durability: '3점 — 기술 업계 고용.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['계약 갱신 때 임대료 인상.'],
+        threats: ['지역 임대 시세를 따라간다.'],
+        why: '시세를 따라가는 수준이라 보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['리츠라 감가상각 때문에 회계 이익이 작다(ROE 12.1%).'],
+        threats: ['빚·금리.'],
+        why: '회계 이익보다 주당 현금이익(FFO)으로 봐야 하고, 대체로 안정적이다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['임대료 연 2~4%.'],
+        threats: ['기술 업계 고용.'],
+        why: '임대료와 신규 개발만큼 천천히 큰다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['부동산 자체는 오래간다.'],
+        threats: ['금리가 오르면 부담.'],
+        why: '자산은 남지만 금리에 민감해 보통이다.',
+      },
     },
     now: [
       '7월 2분기: 주당 핵심 FFO 전망을 16.03~16.25달러로 상향(중간값 +0.20달러). 같은 시설 매출 +2.5~3.1%.',
@@ -19133,9 +21759,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '세계 최대 상장 구리 회사(프리포트맥모란).', money: '구리·금 판매.' },
     moat: {
       state: 'intact',
-      sources: ['세계 최대급 구리 광산(그라스버그).'],
-      threats: ['구리 가격, 광산 사고.'],
-      why: '광산 자산은 그대로 — 원자재 가격 따라.',
+      sources: ['세계 최대급 구리 광산(인도네시아 그라스버그).'],
+      threats: ['구리 가격, 광산 사고·정치.'],
+      why: '매장량이 해자 — 그대로.',
     },
     scores: {
       moat: '3점 — 세계 최대급 구리 광산(인도네시아 그라스버그).',
@@ -19143,6 +21769,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 18%.',
       growth: '3점 — 전기화·데이터센터로 구리 수요 증가.',
       durability: '3점 — 광산 사고(2025년 그라스버그)·정치 위험.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['원가 관리.'],
+        threats: ['구리 가격은 시장이 정한다.'],
+        why: '값을 정할 수 없다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 18%.'],
+        threats: ['2025년 그라스버그 사고.'],
+        why: '구리 가격을 따른다.',
+      },
+      growth: {
+        state: 'good',
+        sources: ['전기화·데이터센터 구리 수요.'],
+        threats: ['생산 차질.'],
+        why: '구조적 수요로 빨라질 전망.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['대형 매장량.'],
+        threats: ['정치·사고.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '2분기: 조정 EPS 0.74달러(예상 0.59달러). 평균 구리 판매가 파운드당 6.17달러(1년 전 4.54달러). 구리 가격 0.10달러 변동 시 연 영업현금 약 3억 달러.',
@@ -19172,9 +21824,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '특송·택배 회사(페덱스).', money: '택배 운임.' },
     moat: {
       state: 'intact',
-      sources: ['항공 특송 네트워크.'],
-      threats: ['아마존 자체 배송, 경기.'],
-      why: '해자 보통.',
+      sources: ['세계 항공 택배망.'],
+      threats: ['UPS·아마존 경쟁.'],
+      why: '망 해자 그대로.',
     },
     scores: {
       moat: '3점 — 세계 항공 택배망.',
@@ -19182,6 +21834,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 10%.',
       growth: '2점 — 최근 5년 EPS 연 3%. 화물 사업 분리 예정.',
       durability: '3점 — 경기·아마존 자체 배송.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['요금 인상.'],
+        threats: ['경쟁.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 10%.'],
+        threats: ['비용.'],
+        why: '비용 절감 중이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['화물 사업 분리 예정.'],
+        threats: ['최근 5년 EPS 연 3%.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['글로벌 망.'],
+        threats: ['경기.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '6월 1일 화물 트럭 사업(페덱스 프레이트)을 분리 상장하고 약 41억 달러 배당을 받았다. 2027 회계연도(5월 결산) 조정 EPS 전망 16.90~18.10달러(예상보다 낮았다).',
@@ -19211,9 +21889,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '식품 회사(제너럴밀스). 치리오스 시리얼, 하겐다즈, 블루버팔로 사료.', money: '마트 식품 판매.' },
     moat: {
       state: 'weakening',
-      sources: ['시리얼·반려동물 사료 브랜드.'],
-      threats: ['판매량 감소, 자체 브랜드, 건강 트렌드.'],
-      why: '약해지는 중.',
+      sources: ['치리오스·하겐다즈(해외)·블루버펄로 사료.'],
+      threats: ['자체 브랜드, 가공식품 수요 감소, 비만약.'],
+      why: '브랜드가 약해지는 중.',
     },
     scores: {
       moat: '3점 — 치리오스·하겐다즈(해외)·블루버펄로 사료.',
@@ -19221,6 +21899,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 영업이익률 약 17%. 최근 1년 적자는 사업 매각·손상 처리.',
       growth: '1점 — 매출 감소. 가공식품 수요가 줄고 비만약이 역풍.',
       durability: '3점 — 배당 약 7%지만 성장이 없다.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['가격 인상.'],
+        threats: ['판매량 감소.'],
+        why: '올리면 판매가 준다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['영업이익률 약 17%.'],
+        threats: ['최근 1년 적자(매각·손상).'],
+        why: '나빠졌다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['사료.'],
+        threats: ['매출 감소.'],
+        why: '줄어드는 중.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['배당 약 7%.'],
+        threats: ['성장 없음.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '2027 회계연도(5월 결산) 조정 EPS 전망 3.00~3.20달러(예상 3.41달러보다 크게 낮음), 실질 매출 -1.5~+0.5%, 영업이익 -8~13%. 4년간 30억 달러 비용 절감 계획.',
@@ -19248,10 +21952,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '자동차 부품(NAPA)·산업 부품(모션) — 2027년 초 두 회사로 분리',
     biz: { what: '자동차·산업 부품 유통 회사(제뉴인파츠, NAPA).', money: '부품 판매.' },
     moat: {
-      state: 'intact',
-      sources: ['NAPA 정비소 유통망.'],
-      threats: ['오토존·오라일리와 경쟁.'],
-      why: '해자 보통.',
+      state: 'weakening',
+      sources: ['자동차 부품 유통(NAPA) + 산업 부품(모션).'],
+      threats: ['오토존·오라일리보다 경쟁력 약함.'],
+      why: '해자가 얕다.',
     },
     scores: {
       moat: '3점 — 자동차 부품 유통(NAPA) + 산업 부품(모션). 유통망이 넓다.',
@@ -19259,6 +21963,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 최근 1년 이익은 구조조정·손상 처리로 급감(평소 영업이익률 약 8%).',
       growth: '2점 — 2026년 산업 부품 사업 분리 예정. 매출 연 2~4%.',
       durability: '3점 — 70년 가까이 배당 인상.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['유통망.'],
+        threats: ['가격 경쟁.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['평소 영업이익률 약 8%.'],
+        threats: ['구조조정·손상으로 최근 이익 급감.'],
+        why: '나빠졌다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['산업 부품 분리 예정.'],
+        threats: ['10년 EPS 감소.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['70년 가까이 배당 인상.'],
+        threats: ['경쟁.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '10월 20일 3분기 발표: 연간 조정 EPS 전망을 7.50~7.75달러로 좁혔다(기존 7.50~8.00달러). 2027년 1분기에 자동차 부품(GPC)과 산업 부품(모션) 두 회사로 분리 예정. 12월 투자자의 날.',
@@ -19286,10 +22016,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '치과·의원 소모품 유통(헨리샤인) — KKR 지분 투자, 1년 주가 +35%',
     biz: { what: '치과·의원 용품 유통 회사(헨리샤인).', money: '소모품·장비 유통.' },
     moat: {
-      state: 'intact',
-      sources: ['치과 유통 1위.'],
-      threats: ['얇은 마진.'],
-      why: '해자 보통.',
+      state: 'weakening',
+      sources: ['치과 용품 유통 세계 1위.'],
+      threats: ['성장 정체, 경쟁.'],
+      why: '해자가 얕다.',
     },
     scores: {
       moat: '3점 — 치과 용품 유통 세계 1위.',
@@ -19297,6 +22027,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 8%.',
       growth: '2점 — 10년 EPS 연 4%.',
       durability: '3점 — 성장 정체·2023년 해킹 사고.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['유통.'],
+        threats: ['마진이 얇다.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 8%.'],
+        threats: ['비용.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['소프트웨어.'],
+        threats: ['10년 EPS 연 4%.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['1위.'],
+        threats: ['해킹 사고 이력.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '7월 2분기: 매출 35억 달러(+6.7%), 조정 EPS 1.27달러. 연간 조정 EPS 전망 5.29~5.39달러, 매출 +4.5~5.5%로 상향. 올해 자사주 3.25억 달러.',
@@ -19325,10 +22081,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '향료·식품 원료(IFF) — 식품 원료 사업 매각, 자사주 25억 달러',
     biz: { what: '향료·식품 원료 회사(IFF).', money: '맛·향 원료 판매.' },
     moat: {
-      state: 'intact',
-      sources: ['식품 회사 레시피에 들어간 원료.'],
-      threats: ['빚, 구조조정.'],
-      why: '해자 보통.',
+      state: 'weakening',
+      sources: ['세계 향료 4강.'],
+      threats: ['듀폰 영양 사업 합병 후 통합 문제, 빚.'],
+      why: '해자는 있지만 통합 실패로 약해졌다.',
     },
     scores: {
       moat: '3점 — 세계 향료 4강(향수·식품 향).',
@@ -19336,6 +22092,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — 듀폰 영양 사업 합병 후 손상 처리로 회계 적자.',
       growth: '2점 — 사업 매각으로 빚을 줄이는 중.',
       durability: '3점 — 통합 문제·빚.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['맞춤 향료.'],
+        threats: ['경쟁.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['조정 이익.'],
+        threats: ['손상 처리로 회계 적자.'],
+        why: '나빠졌다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['사업 매각.'],
+        threats: ['통합.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['향료 4강.'],
+        threats: ['빚.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '8월 2분기: 식품 원료 사업 매각 절차로 계속 사업 기준으로 실적을 재편. 연간 매출 전망 74~76억 달러(계속 사업 기준). 자사주 25억 달러 승인(하반기 5억 달러 즉시 매입).',
@@ -19365,9 +22147,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '유전자 분석 장비 회사(일루미나).', money: '장비 + 시약(반복 매출).' },
     moat: {
       state: 'weakening',
-      sources: ['유전자 분석 점유율 1위, 설치 기반.'],
-      threats: ['중국 수출 금지, 경쟁(울티마·엘리먼트).'],
-      why: '약해지는 중.',
+      sources: ['유전체 분석 장비 세계 1위.'],
+      threats: ['중국 제재(2025년), 경쟁사 등장.'],
+      why: '1위지만 약해지는 중.',
     },
     scores: {
       moat: '3점 — 유전체 분석 장비 세계 1위.',
@@ -19375,6 +22157,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — 그레일 인수 실패 손실 이후 회복 중.',
       growth: '2점 — 매출 정체.',
       durability: '3점 — 중국 제재(2025년 수출 금지 목록)·경쟁.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['설치 기반.'],
+        threats: ['경쟁으로 가격 압박.'],
+        why: '약해지는 중.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['그레일 손실 이후 회복.'],
+        threats: ['경쟁.'],
+        why: '회복 중이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['임상 시장.'],
+        threats: ['매출 정체.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['1위.'],
+        threats: ['중국·경쟁.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '7월 2분기: 매출 11.6억 달러(+9.5%), 조정 EPS 1.31달러(예상 1.23달러). 연간 매출 전망 46~46.4억 달러, 조정 EPS 5.30~5.40달러로 상향. 임상 검사 소모품 +15%(미국·캐나다 +20% 넘게), NovaSeq X 장비 95대 넘게 설치.',
@@ -19404,9 +22212,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '동네 상가 회사(킴코, 리츠).', money: '상가 임대료.' },
     moat: {
       state: 'intact',
-      sources: ['마트 중심 상가 다수.'],
-      threats: ['금리.'],
-      why: '해자 보통.',
+      sources: ['마트 중심 동네 상가.'],
+      threats: ['소매 업황·금리.'],
+      why: '입지가 해자 — 그대로.',
     },
     scores: {
       moat: '3점 — 마트 중심 동네 상가 리츠.',
@@ -19414,6 +22222,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 리츠라 감가상각 때문에 회계 이익이 작게 나온다(ROE 5.6%). 주당 현금이익(FFO)으로 봐야 한다.',
       growth: '2점 — 임대료 연 2~3%.',
       durability: '3점 — 소매 업황·금리.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['계약 갱신 때 임대료 인상.'],
+        threats: ['지역 임대 시세를 따라간다.'],
+        why: '시세를 따라가는 수준이라 보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['리츠라 감가상각 때문에 회계 이익이 작다(ROE 5.6%).'],
+        threats: ['빚·금리.'],
+        why: '회계 이익보다 주당 현금이익(FFO)으로 봐야 하고, 대체로 안정적이다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['임대료 연 2~3%.'],
+        threats: ['소매 업황·금리.'],
+        why: '임대료와 신규 개발만큼 천천히 큰다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['부동산 자체는 오래간다.'],
+        threats: ['금리가 오르면 부담.'],
+        why: '자산은 남지만 금리에 민감해 보통이다.',
+      },
     },
     now: [
       '1분기 주당 FFO 0.46달러(+4.5%). 2026년 FFO 전망 1.81~1.84달러(이후 1.83~1.84달러로 상향 보도). 같은 시설 순영업이익 +2.8~3.5%. 3분기 실적은 10월 29일.',
@@ -19442,10 +22276,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '크리넥스·하기스(킴벌리클라크) — 타이레놀 회사 켄뷰 인수 진행 중, 배당 4.7%',
     biz: { what: '생활용품 회사(킴벌리클라크). 하기스·클리넥스.', money: '기저귀·휴지 판매.' },
     moat: {
-      state: 'intact',
-      sources: ['브랜드·유통.'],
-      threats: ['자체 브랜드, 출산율 감소.'],
-      why: '해자 보통.',
+      state: 'weakening',
+      sources: ['하기스·크리넥스·코텍스.'],
+      threats: ['자체 브랜드, 켄뷰 인수 통합.'],
+      why: '브랜드가 약해지는 중.',
     },
     scores: {
       moat: '3점 — 하기스 기저귀·크리넥스 티슈·코텍스.',
@@ -19453,6 +22287,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 22%.',
       growth: '1점 — 매출 정체. 2025년 켄뷰 인수 발표(타이레놀 등) — 통합 위험.',
       durability: '3점 — 생필품이지만 성장이 없다.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['브랜드.'],
+        threats: ['자체 브랜드.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 22%.'],
+        threats: ['원가.'],
+        why: '안정적이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['켄뷰 인수(타이레놀 등).'],
+        threats: ['매출 정체.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['생필품.'],
+        threats: ['인수 위험.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '켄뷰(타이레놀·리스테린·뉴트로지나) 인수 합의 — 켄뷰 주주는 주당 킴벌리클라크 0.14625주 + 현금 3.50달러. 양사 주주 승인, 미국 반독점 대기 기간 종료. 해외 승인 뒤 하반기(4분기 유력) 마무리 예정.',
@@ -19481,10 +22341,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '티시 가문 지주회사(로우스) — 보험사 CNA·호텔·파이프라인, 꾸준한 자사주',
     biz: { what: '지주회사(로우스). 보험(CNA)·가스관·호텔.', money: '자회사 이익.' },
     moat: {
-      state: 'intact',
-      sources: ['분산된 사업.'],
-      threats: ['보험 경기.'],
-      why: '해자 보통.',
+      state: 'weakening',
+      sources: ['보험(CNA)·호텔·가스관 지주회사, 티시 가문 경영.'],
+      threats: ['복합 구조.'],
+      why: '지주회사라 해자가 분산돼 있다.',
     },
     scores: {
       moat: '3점 — 보험(CNA), 호텔(로우스호텔), 가스관(보드워크) 지주회사. 티시 가문 경영.',
@@ -19492,6 +22352,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROE 9%.',
       growth: '2점 — 성장보다 자사주 매입으로 주당 가치를 늘린다.',
       durability: '3점 — 복합 구조, 보험 재해 위험.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['보험료.'],
+        threats: ['시세.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROE 9%.'],
+        threats: ['보험 변동.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['자사주 매입.'],
+        threats: ['성장보다 주당 가치.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['가문 경영.'],
+        threats: ['재해.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '2분기: 순이익 4.44억 달러(EPS 2.16달러, 1년 전 3.91억 달러). 보험 자회사 CNA(약 90% 보유)의 투자 수익 증가가 이익을 끌어올렸다.',
@@ -19520,10 +22406,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '미국 남부 아파트 리츠(MAA) — 신규 공급 과잉으로 고점 대비 -29%, 배당 5.2%',
     biz: { what: '선벨트 아파트 회사(MAA, 리츠).', money: '월세.' },
     moat: {
-      state: 'intact',
-      sources: ['인구가 느는 남부 지역 아파트.'],
-      threats: ['새 아파트 공급 과잉.'],
-      why: '해자 보통.',
+      state: 'weakening',
+      sources: ['선벨트(남부) 아파트 약 10만 가구.'],
+      threats: ['공급 과잉·금리.'],
+      why: '지역은 좋지만 공급이 많아 해자가 약하다.',
     },
     scores: {
       moat: '3점 — 선벨트(남부) 아파트 리츠(약 10만 가구).',
@@ -19531,6 +22417,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 리츠라 감가상각 때문에 회계 이익이 작게 나온다(ROE 7.7%). 주당 현금이익(FFO)으로 봐야 한다.',
       growth: '2점 — 새 아파트 공급 과잉으로 임대료 정체.',
       durability: '3점 — 공급 과잉·금리.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['계약 갱신 때 임대료 인상.'],
+        threats: ['지역 임대 시세를 따라간다.'],
+        why: '시세를 따라가는 수준이라 보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['리츠라 감가상각 때문에 회계 이익이 작다(ROE 7.7%).'],
+        threats: ['빚·금리.'],
+        why: '회계 이익보다 주당 현금이익(FFO)으로 봐야 하고, 대체로 안정적이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['새 아파트 공급 과잉으로 임대료 정체.'],
+        threats: ['공급 과잉·금리.'],
+        why: '공급 과잉·수요 둔화로 느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['부동산 자체는 오래간다.'],
+        threats: ['금리가 오르면 부담.'],
+        why: '자산은 남지만 금리에 민감해 보통이다.',
+      },
     },
     now: [
       '선벨트(남부) 지역에 2023~2025년 신규 아파트가 쏟아져 임대료가 하락·정체. 신규 공급이 줄면서 2026년 하반기부터 회복 기대.',
@@ -19560,9 +22472,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '생명보험 회사(메트라이프).', money: '보험료 + 투자 수익.' },
     moat: {
       state: 'intact',
-      sources: ['직장 단체보험 1위급.'],
-      threats: ['금리.'],
-      why: '해자 보통.',
+      sources: ['미국 최대 생명보험사 — 규모와 판매망.'],
+      threats: ['생명보험·연금은 상품 차이가 작다.', '금리.'],
+      why: '규모 해자는 있지만 깊지는 않다.',
     },
     scores: {
       moat: '3점 — 미국 최대 생명보험사. 규모가 크지만 생명보험·연금은 상품 차이가 작다.',
@@ -19570,6 +22482,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROE 12.1%.',
       growth: '2점 — 10년 EPS가 거의 늘지 않았다. 퇴직연금·자산운용이 성장 동력.',
       durability: '3점 — 금리·증시에 따라 이익이 흔들린다.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['상품 설계.'],
+        threats: ['금리와 경쟁이 보험료를 정한다.'],
+        why: '스스로 정하는 힘이 약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROE 12.1%.'],
+        threats: ['금리·증시 변동.'],
+        why: '보통 수준이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['퇴직연금·자산운용.'],
+        threats: ['10년 EPS가 거의 늘지 않았다.'],
+        why: '성장이 느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['100년 넘은 회사가 많다.'],
+        threats: ['금리·증시 충격.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '8월 2분기: 조정 EPS 2.43달러(+20%), 조정 이익 16억 달러(+15%), 조정 자기자본이익률 17%. 단체 보험·아시아·남미가 성장.',
@@ -19600,9 +22538,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '세계 최대 광고 그룹(옴니콤, IPG 합병).', money: '광고 대행·미디어 구매 수수료.' },
     moat: {
       state: 'weakening',
-      sources: ['대형 광고주 관계.'],
-      threats: ['AI 광고 제작, 구글·메타 직접 광고.'],
-      why: '약해지는 중.',
+      sources: ['세계 광고 대행 1위(2025년 IPG 인수).'],
+      threats: ['AI가 광고 제작을 대체할 위험.'],
+      why: 'AI로 업계 구조가 바뀌어 약해지는 중.',
     },
     scores: {
       moat: '3점 — 세계 2위급 광고 대행(2025년 IPG 인수로 1위).',
@@ -19610,6 +22548,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 5년 평균 ROIC 33%. 최근 1년 이익 급감은 IPG 인수 비용.',
       growth: '2점 — AI가 광고 제작을 대체할 위험.',
       durability: '3점 — 업계 구조 변화.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['데이터 플랫폼.'],
+        threats: ['광고주가 수수료를 깎는다.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['5년 평균 ROIC 33%.'],
+        threats: ['IPG 인수 비용으로 최근 이익 급감.'],
+        why: '인수로 나빠졌다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['인수 시너지.'],
+        threats: ['AI 대체.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['1위 규모.'],
+        threats: ['업계 구조 변화.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '10월 22일 3분기: 매출 64억 달러, 실질 성장 7.2%, 조정 EPS 2.73달러(+22%). 2025년 11월 인터퍼블릭(IPG) 합병 완료 — 2026년 비용 시너지 9억 달러, 2028년 중반 15억 달러 목표. 연간 실질 성장 전망 5%.',
@@ -19639,9 +22603,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '퇴직연금·보험 회사(프린시펄).', money: '퇴직연금 관리 수수료 + 보험.' },
     moat: {
       state: 'intact',
-      sources: ['중소기업 퇴직연금 강자.'],
-      threats: ['수수료 경쟁.'],
-      why: '해자 보통.',
+      sources: ['퇴직연금(401k) 운용 상위권 — 규모와 판매망.'],
+      threats: ['생명보험·연금은 상품 차이가 작다.', '금리.'],
+      why: '규모 해자는 있지만 깊지는 않다.',
     },
     scores: {
       moat: '3점 — 퇴직연금(401k) 운용 상위권. 규모가 크지만 생명보험·연금은 상품 차이가 작다.',
@@ -19649,6 +22613,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROE 10.3%.',
       growth: '2점 — 10년 EPS가 거의 늘지 않았다. 퇴직연금·자산운용이 성장 동력.',
       durability: '3점 — 금리·증시에 따라 이익이 흔들린다.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['상품 설계.'],
+        threats: ['금리와 경쟁이 보험료를 정한다.'],
+        why: '스스로 정하는 힘이 약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROE 10.3%.'],
+        threats: ['금리·증시 변동.'],
+        why: '보통 수준이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['퇴직연금·자산운용.'],
+        threats: ['10년 EPS가 거의 늘지 않았다.'],
+        why: '성장이 느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['100년 넘은 회사가 많다.'],
+        threats: ['금리·증시 충격.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '기업 퇴직연금(401k) 관리·단체 보험·자산운용 회사. 주식시장 상승으로 수수료 수익이 늘었다.',
@@ -19678,9 +22668,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: 'PNC — 미국 동부·중서부 은행.', money: '대출 이자에서 예금 이자를 뺀 차익 + 카드·자산관리 수수료.' },
     moat: {
       state: 'intact',
-      sources: ['지역 예금 기반 — 싼 자금 조달.', '오래된 지역 기업·주민 관계.'],
-      threats: ['경기 침체 시 대출 부실(상업용 부동산).', '금리 변화, 핀테크.'],
-      why: '은행업은 해자가 얕은 편(돈은 어디서나 같은 상품). 지역 기반이 유지되는 한 그대로.',
+      sources: ['미국 대형 지역(6~7위 은행) 지역 예금 기반 — 예금이 싼 자금원.'],
+      threats: ['대형 은행·핀테크 경쟁.', '상업용 부동산 대출 부실.'],
+      why: '지역 기반 해자는 그대로(깊지는 않다).',
     },
     scores: {
       moat: '3점 — 미국 6~7위 은행. 지역 은행 중 가장 크다.',
@@ -19688,6 +22678,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROE 11%.',
       growth: '2점 — 10년 EPS 연 8%.',
       durability: '3점 — 신용·금리 위험.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['예금 금리 관리.'],
+        threats: ['대출·예금 금리 수준은 시장(연준)이 정한다.'],
+        why: '은행은 구조적으로 값을 정하지 못한다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROE 11.4%.'],
+        threats: ['대손 비용, 예금 이탈.'],
+        why: '자기자본 이익률이 보통 수준이다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['2026년 퍼스트뱅크 인수.'],
+        threats: ['경기 둔화.'],
+        why: '지역 경제만큼 천천히 큰다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['오랜 지역 영업.'],
+        threats: ['2023년 지역 은행 위기처럼 예금 이탈 위험.'],
+        why: '신용·금리 위기에 취약해 보통이다.',
+      },
     },
     now: [
       '1월 콜로라도·애리조나 은행 퍼스트뱅크 인수 완료(고객 78만 명·지점 95곳 통합). 3분기 순이익 약 21억 달러(+15%), EPS 약 5.09달러로 예상 상회 보도. 기업 대출 +19%. 자사주 약 5.6억 달러.',
@@ -19717,9 +22733,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '생명보험 회사(프루덴셜파이낸셜).', money: '보험료 + 운용 수수료.' },
     moat: {
       state: 'intact',
-      sources: ['일본 생명보험, 연금 이전.'],
-      threats: ['금리, 일본.'],
-      why: '해자 보통.',
+      sources: ['미국 2위권 생명보험사 — 규모와 판매망.'],
+      threats: ['생명보험·연금은 상품 차이가 작다.', '금리.'],
+      why: '규모 해자는 있지만 깊지는 않다.',
     },
     scores: {
       moat: '3점 — 미국 2위권 생명보험사. 규모가 크지만 생명보험·연금은 상품 차이가 작다.',
@@ -19727,6 +22743,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROE 11.9%.',
       growth: '2점 — 10년 EPS가 거의 늘지 않았다. 퇴직연금·자산운용이 성장 동력.',
       durability: '3점 — 금리·증시에 따라 이익이 흔들린다.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['상품 설계.'],
+        threats: ['금리와 경쟁이 보험료를 정한다.'],
+        why: '스스로 정하는 힘이 약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROE 11.9%.'],
+        threats: ['금리·증시 변동.'],
+        why: '보통 수준이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['퇴직연금·자산운용.'],
+        threats: ['10년 EPS가 거의 늘지 않았다.'],
+        why: '성장이 느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['100년 넘은 회사가 많다.'],
+        threats: ['금리·증시 충격.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '8월 2분기: 조정 영업 EPS 4.08달러(1년 전 3.58달러, +14%), 예상(약 3.4~3.5달러) 상회. 자산운용(PGIM) 이익 2.94억 달러(+28%). 일본 영업 사원 판매 중단(1분기 약 1.3억 달러 영향)이 11월까지 연장.',
@@ -19756,9 +22798,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '온라인 결제 회사(페이팔·벤모).', money: '결제 수수료.' },
     moat: {
       state: 'weakening',
-      sources: ['온라인 결제 버튼 인지도, 벤모 송금.'],
-      threats: ['애플페이 등에 점유율 잠식.'],
-      why: '약해지는 중.',
+      sources: ['온라인 결제 가입자 약 4억 명, 벤모.'],
+      threats: ['애플페이·스트라이프 경쟁.'],
+      why: '가입자는 많지만 경쟁에 밀려 약해지는 중.',
     },
     scores: {
       moat: '3점 — 온라인 결제 가입자 약 4억 명, 벤모.',
@@ -19766,6 +22808,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 19%, PER 11배.',
       growth: '2점 — 거래액 연 5~7%, 이익 성장은 자사주 매입 위주.',
       durability: '3점 — 결제 경쟁 심화.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['브랜드.'],
+        threats: ['수수료를 올리기 어렵다.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 19%, PER 11배.'],
+        threats: ['마진 하락.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['자사주 매입.'],
+        threats: ['거래액 연 5~7%.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['가입자.'],
+        threats: ['경쟁.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '2월 실적 미달과 약한 2026년 전망(조정 이익 감소~소폭 증가)으로 하루 -16~19%. CEO를 HP 출신 엔리케 로어스로 교체하고 2025년 중기 목표를 철회.',
@@ -19794,9 +22862,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '식품 회사(J.M.스머커). 커피·잼·땅콩버터·반려동물 간식.', money: '마트 식품 판매.' },
     moat: {
       state: 'weakening',
-      sources: ['브랜드.'],
-      threats: ['인수(호스티스) 실패, 원두 가격.'],
-      why: '약해지는 중.',
+      sources: ['폴저스 커피·잼·우유뼈 사료·호스티스.'],
+      threats: ['인수 실패, 빚.'],
+      why: '브랜드가 약해지는 중.',
     },
     scores: {
       moat: '3점 — 폴저스 커피·잼·우유뼈 사료·호스티스(트윙키).',
@@ -19804,6 +22872,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 호스티스 인수 손상 처리로 회계 적자.',
       growth: '1점 — 매출 정체, 인수 실패로 이익 감소.',
       durability: '3점 — 빚과 인수 부담.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['커피 원가 반영 가격 인상.'],
+        threats: ['판매량 감소.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['영업이익.'],
+        threats: ['호스티스 손상 처리로 회계 적자.'],
+        why: '나빠졌다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['커피.'],
+        threats: ['매출 정체.'],
+        why: '줄어드는 중.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['브랜드.'],
+        threats: ['빚.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '8월 2027 회계연도(4월 결산) 1분기: 조정 EPS 3.24달러(예상 2.21달러, 관세 환급 약 1.15억 달러 포함). 연간 조정 EPS 전망 10.50~11.00달러로 상향. 커피 매출 +13%(가격 인상).',
@@ -19832,9 +22926,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '수탁 은행 + ETF 운용(스테이트스트리트).', money: '자산 보관 수수료 + SPDR ETF 수수료.' },
     moat: {
       state: 'intact',
-      sources: ['수탁 규모, SPY ETF.'],
-      threats: ['수수료 경쟁.'],
-      why: '해자 보통.',
+      sources: ['세계 2위 수탁 은행, SPDR ETF(SPY).'],
+      threats: ['수탁 수수료 하락.'],
+      why: '해자 그대로(깊지는 않다).',
     },
     scores: {
       moat: '3점 — 세계 2위 수탁 은행, SPDR ETF(SPY) 운용.',
@@ -19842,6 +22936,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROE 11%.',
       growth: '2점 — 10년 EPS 연 8%.',
       durability: '3점 — 수수료 압박.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['규모.'],
+        threats: ['수수료 경쟁.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROE 11%.'],
+        threats: ['비용.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['10년 EPS 연 8%.'],
+        threats: ['성숙.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['수탁 인프라.'],
+        threats: ['수수료.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '10월 14일 3분기: EPS 3.69달러(1년 전 2.78달러), 매출 40억 달러. 수탁·관리 자산 59.2조 달러(+14.5%), 운용 자산 6.3조 달러(+15.8%) 모두 사상 최대. 운용 보수 +20%. 연간 수수료 성장 전망 13~14%로 상향. 주주 환원 6.5억 달러.',
@@ -19871,9 +22991,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '하드디스크 회사(시게이트).', money: '데이터센터용 대용량 하드디스크.' },
     moat: {
       state: 'intact',
-      sources: ['하드디스크 양강(웨스턴디지털).'],
-      threats: ['저장 수요 사이클.'],
-      why: '과점 — 이익은 사이클.',
+      sources: ['하드디스크 양강(웨스턴디지털과) — AI 데이터 저장으로 대용량 수요 급증.'],
+      threats: ['저장장치 사이클.'],
+      why: '양강 해자 그대로.',
     },
     scores: {
       moat: '3점 — 하드디스크 양강(웨스턴디지털과). AI 데이터 저장으로 대용량 수요 급증.',
@@ -19881,6 +23001,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 지금 ROIC 92%는 호황 수치.',
       growth: '3점 — 최근 분기 매출 +48%.',
       durability: '2점 — 저장장치는 호황·불황이 크다.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['수요가 넘칠 때 가격 인상.'],
+        threats: ['사이클.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'good',
+        sources: ['지금 ROIC 92%(호황).'],
+        threats: ['5년 평균 57%.'],
+        why: '호황으로 좋아졌다.',
+      },
+      growth: {
+        state: 'good',
+        sources: ['최근 분기 매출 +48%.'],
+        threats: ['사이클.'],
+        why: '빨라지는 중.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['양강.'],
+        threats: ['호황·불황이 크다.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '2026 회계연도(6월 결산) 4분기 매출 36억 달러(+48%), 13분기 연속 이익률 개선. 2027 회계연도 1분기 전망 매출 41억 달러(+56%), 조정 EPS 7.30달러. 대용량 저장장치 물량이 2027년까지 거의 다 계약됐다.',
@@ -19910,9 +23056,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '미국 통신 회사(AT&T). 휴대폰 + 광인터넷.', money: '월 요금.' },
     moat: {
       state: 'intact',
-      sources: ['통신 3사 과점 — 주파수·망 투자 장벽.', '광인터넷 확대.'],
-      threats: ['가격 경쟁.', '빚.'],
-      why: '과점 해자는 그대로. 성장은 느리다.',
+      sources: ['미국 통신 3강, 광인터넷 확대.'],
+      threats: ['빚(약 1,200억 달러).'],
+      why: '과점 해자 그대로.',
     },
     scores: {
       moat: '3점 — 미국 통신 3강, 광인터넷 확대.',
@@ -19920,6 +23066,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 9%. 최근 PER 7배는 일회성 이익 포함.',
       growth: '2점 — 매출 연 1~2%.',
       durability: '3점 — 빚이 많다(약 1,200억 달러).',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['번들.'],
+        threats: ['3사 가격 경쟁.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 9%.'],
+        threats: ['빚.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['광인터넷.'],
+        threats: ['매출 연 1~2%.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['과점.'],
+        threats: ['빚.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '10월 21일 3분기: 매출 323억 달러(+5.3%), 조정 EPS 0.65달러(+20%). 연간 조정 EPS 전망 2.40달러로 상향(기존 2.25~2.35달러). 광인터넷 순증 41.6만 명. 루멘 광통신망 인수(2월) 통합.',
@@ -19949,9 +23121,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '뮤추얼펀드 운용사(티로우프라이스).', money: '운용 수수료.' },
     moat: {
       state: 'weakening',
-      sources: ['은퇴 펀드 브랜드.'],
-      threats: ['저비용 ETF로 자금 유출이 계속된다.'],
-      why: '구조적 자금 유출로 약해지는 중.',
+      sources: ['액티브 운용사, 은퇴 상품(타깃데이트 펀드).'],
+      threats: ['돈이 패시브(ETF)로 빠져나간다.'],
+      why: '업계 구조가 불리해 약해지는 중.',
     },
     scores: {
       moat: '3점 — 액티브 운용사, 은퇴 상품(타깃데이트 펀드).',
@@ -19959,6 +23131,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '4점 — 영업이익률 약 33%, 빚 없음.',
       growth: '1점 — 돈이 패시브(ETF)로 빠져나가 운용 자산이 정체.',
       durability: '3점 — 40년 가까이 배당 인상, 하지만 업계 구조가 불리.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['브랜드.'],
+        threats: ['수수료 하락.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'good',
+        sources: ['영업이익률 약 33%, 빚 없음.'],
+        threats: ['유출.'],
+        why: '높다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['ETF 출시.'],
+        threats: ['운용 자산 정체.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['40년 가까이 배당 인상.'],
+        threats: ['패시브 전환.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '수년째 액티브 펀드에서 저비용 패시브(인덱스 ETF)로 자금이 빠져나간다. 주식시장 상승 덕에 운용 자산과 이익은 유지.',
@@ -19988,9 +23186,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '항공·방산 회사(텍스트론). 세스나 비즈니스 제트기, 벨 헬기.', money: '항공기 판매.' },
     moat: {
       state: 'intact',
-      sources: ['소형 비즈니스 제트기 강자.'],
-      threats: ['방산 계약·경기.'],
-      why: '해자 보통.',
+      sources: ['세스나 비즈니스 제트·벨 헬기·방산.'],
+      threats: ['방산 프로그램.'],
+      why: '브랜드 해자 그대로.',
     },
     scores: {
       moat: '3점 — 세스나 비즈니스 제트·벨 헬기·방산.',
@@ -19998,6 +23196,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 16%.',
       growth: '2점 — 10년 EPS 연 7%.',
       durability: '3점 — 방산 프로그램·경기.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['브랜드.'],
+        threats: ['정부 계약·경쟁.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 16%.'],
+        threats: ['비용.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['10년 EPS 연 7%.'],
+        threats: ['프로그램 지연.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['브랜드.'],
+        threats: ['경기.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '7월 2분기: 조정 EPS 1.62달러(예상 1.54달러), 매출 38억 달러(+3%). 연간 조정 EPS 전망 6.40~6.60달러 유지. 차세대 군 헬기(MV-75) 추가 예산이 없으면 EPS가 0.20~0.30달러 줄 수 있다는 경고로 주가 약세.',
@@ -20027,9 +23251,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '대도시 아파트 회사(UDR, 리츠).', money: '월세.' },
     moat: {
       state: 'intact',
-      sources: ['대도시 분산.'],
-      threats: ['공급.'],
-      why: '해자 보통.',
+      sources: ['해안 대도시 아파트.'],
+      threats: ['공급·금리.'],
+      why: '입지가 해자 — 그대로.',
     },
     scores: {
       moat: '3점 — 해안 대도시 아파트 리츠.',
@@ -20037,6 +23261,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 리츠라 감가상각 때문에 회계 이익이 작게 나온다(ROE 11.2%). 주당 현금이익(FFO)으로 봐야 한다.',
       growth: '2점 — 임대료 연 2~3%.',
       durability: '3점 — 공급·금리.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['계약 갱신 때 임대료 인상.'],
+        threats: ['지역 임대 시세를 따라간다.'],
+        why: '시세를 따라가는 수준이라 보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['리츠라 감가상각 때문에 회계 이익이 작다(ROE 11.2%).'],
+        threats: ['빚·금리.'],
+        why: '회계 이익보다 주당 현금이익(FFO)으로 봐야 하고, 대체로 안정적이다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['임대료 연 2~3%.'],
+        threats: ['공급·금리.'],
+        why: '임대료와 신규 개발만큼 천천히 큰다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['부동산 자체는 오래간다.'],
+        threats: ['금리가 오르면 부담.'],
+        why: '자산은 남지만 금리에 민감해 보통이다.',
+      },
     },
     now: [
       '해안 대도시·남부 아파트를 고루 보유. 남부 신규 공급 과잉으로 임대료가 정체됐다. 기술로 운영비를 줄이는 데 강점.',
@@ -20066,9 +23316,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '병원 회사(유니버설헬스). 정신 건강 병원 최대.', money: '진료비.' },
     moat: {
       state: 'intact',
-      sources: ['정신과 병원 규모.'],
-      threats: ['정부 수가.'],
-      why: '해자 보통.',
+      sources: ['병원 + 정신건강 병원 1위.'],
+      threats: ['정부 정책.'],
+      why: '해자 그대로.',
     },
     scores: {
       moat: '3점 — 병원 + 정신건강 병원 1위.',
@@ -20076,6 +23326,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 13%.',
       growth: '2점 — 10년 EPS 연 13%(자사주 매입 포함).',
       durability: '3점 — 정부 의료 정책 위험.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['민간 보험.'],
+        threats: ['정부 보험 수가.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 13%.'],
+        threats: ['인건비.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['10년 EPS 연 13%(자사주 포함).'],
+        threats: ['정책.'],
+        why: '보통이다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['정신건강 수요.'],
+        threats: ['정책.'],
+        why: '보통이다.',
+      },
     },
     now: [
       'EPS 2023년 10.23 → 2025년 23.10 → 최근 1년 24.52달러로 크게 늘었다. 일반 병원과 정신과 치료 시설을 함께 운영.',
@@ -20105,9 +23381,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: 'US뱅코프 — 미국 중서부·서부 은행.', money: '대출 이자에서 예금 이자를 뺀 차익 + 카드·자산관리 수수료.' },
     moat: {
       state: 'intact',
-      sources: ['지역 예금 기반 — 싼 자금 조달.', '오래된 지역 기업·주민 관계.'],
-      threats: ['경기 침체 시 대출 부실(상업용 부동산).', '금리 변화, 핀테크.'],
-      why: '은행업은 해자가 얕은 편(돈은 어디서나 같은 상품). 지역 기반이 유지되는 한 그대로.',
+      sources: ['미국 5위 은행(결제 사업 엘라본) 지역 예금 기반 — 예금이 싼 자금원.'],
+      threats: ['대형 은행·핀테크 경쟁.', '상업용 부동산 대출 부실.'],
+      why: '지역 기반 해자는 그대로(깊지는 않다).',
     },
     scores: {
       moat: '3점 — 미국 5위 은행, 결제 사업(엘라본) 보유.',
@@ -20115,6 +23391,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROE 12%.',
       growth: '2점 — 10년 EPS 연 4%.',
       durability: '3점 — 신용·금리 위험.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['예금 금리 관리.'],
+        threats: ['대출·예금 금리 수준은 시장(연준)이 정한다.'],
+        why: '은행은 구조적으로 값을 정하지 못한다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROE 12.2%.'],
+        threats: ['대손 비용, 예금 이탈.'],
+        why: '자기자본 이익률이 보통 수준이다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['지역 경제 성장만큼 대출이 는다.'],
+        threats: ['경기 둔화.'],
+        why: '지역 경제만큼 천천히 큰다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['오랜 지역 영업.'],
+        threats: ['2023년 지역 은행 위기처럼 예금 이탈 위험.'],
+        why: '신용·금리 위기에 취약해 보통이다.',
+      },
     },
     now: [
       '3분기 실적 무난. 강화될 자본 규제에 대비해 자본 비율을 높이느라 자사주를 하지 않았다. 증권사 BTIG 인수 효과는 아직 작다.',
@@ -20144,9 +23446,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '세계 최대 독립 정유 회사(발레로).', money: '정제 마진.' },
     moat: {
       state: 'intact',
-      sources: ['저원가 대형 정유 공장.'],
+      sources: ['미국 최대 독립 정유사, 효율 최고 수준.'],
       threats: ['정제 마진.'],
-      why: '해자 보통.',
+      why: '효율 해자 그대로(깊지는 않다).',
     },
     scores: {
       moat: '3점 — 미국 최대 독립 정유사, 효율 최고 수준.',
@@ -20154,6 +23456,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 9%(5년 평균 11%).',
       growth: '2점 — 10년 EPS 정체.',
       durability: '3점 — 정제 마진 사이클.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['효율.'],
+        threats: ['정제 마진은 시장이 정한다.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 9%(5년 평균 11%).'],
+        threats: ['마진.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['재생 디젤.'],
+        threats: ['10년 EPS 정체.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['효율.'],
+        threats: ['에너지 전환.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '10월 22일 3분기: 순이익 68억 달러, EPS 23.89달러(1년 전 3.53달러, 예상 약 21.23달러 상회). 정유 공장 가동률 사상 최고 수준.',
@@ -20184,9 +23512,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '가스액 처리·송유관 회사(원오크).', money: '운송·처리 수수료.' },
     moat: {
       state: 'intact',
-      sources: ['가스액 처리망.'],
-      threats: ['물량.'],
-      why: '해자 보통.',
+      sources: ['천연가스·액화가스 파이프라인(마젤란 인수로 원유까지).'],
+      threats: ['빚.'],
+      why: '망 해자 그대로.',
     },
     scores: {
       moat: '3점 — 천연가스·액화가스 파이프라인(마젤란 인수 후 원유·석유제품까지).',
@@ -20194,6 +23522,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 9%.',
       growth: '3점 — 인수로 최근 5년 EPS 연 31%.',
       durability: '3점 — 빚이 많다.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['계약.'],
+        threats: ['규제.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 9%.'],
+        threats: ['빚.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'good',
+        sources: ['인수로 최근 5년 EPS 연 31%.'],
+        threats: ['통합.'],
+        why: '빨라졌다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['장기 계약.'],
+        threats: ['빚.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '8월 2026년 EPS 전망을 5.53달러 → 5.68달러로 올렸다. 덴버 정유제품 증설, 7월 요금 인상 효과.',
@@ -20223,9 +23577,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '전력 반도체 회사(온세미).', money: '전기차·산업용 칩 판매.' },
     moat: {
       state: 'weakening',
-      sources: ['탄화규소 칩.'],
-      threats: ['전기차 둔화, 중국 경쟁.'],
-      why: '약해지는 중.',
+      sources: ['전기차·산업용 전력 반도체(실리콘카바이드).'],
+      threats: ['중국 업체 경쟁.'],
+      why: '해자가 약해지는 중.',
     },
     scores: {
       moat: '3점 — 전기차·산업용 전력 반도체(실리콘카바이드).',
@@ -20233,6 +23587,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 최근 1년 손상 처리로 ROIC 1%(5년 평균 18%).',
       growth: '3점 — 전기차 둔화로 감소, AI 데이터센터 전력이 기회.',
       durability: '3점 — 전기차 수요에 크게 의존.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['기술.'],
+        threats: ['중국 가격 하락.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['5년 평균 ROIC 18%.'],
+        threats: ['손상 처리로 최근 1%.'],
+        why: '나빠졌다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['AI 데이터센터 전력.'],
+        threats: ['전기차 둔화.'],
+        why: '보통이다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['기술.'],
+        threats: ['전기차 의존.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '2분기 실적 후 주가 급등. AI 데이터센터 매출이 올해 2배 넘게 늘 것으로 예상(엔비디아 서버 전원 부품 등).',
@@ -20262,9 +23642,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '헬스케어 부동산 회사(벤타스, 리츠).', money: '노인 시설 운영 + 의료 건물 임대.' },
     moat: {
       state: 'intact',
-      sources: ['노인 주거 시설 규모.'],
-      threats: ['운영 비용·금리.'],
-      why: '해자 보통.',
+      sources: ['노인 주거 시설·의료 건물.'],
+      threats: ['금리·운영 비용.'],
+      why: '입지가 해자 — 그대로.',
     },
     scores: {
       moat: '3점 — 노인 주거 시설·의료 건물 리츠.',
@@ -20272,6 +23652,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — 리츠라 감가상각 때문에 회계 이익이 작게 나온다(ROE 2.2%). 주당 현금이익(FFO)으로 봐야 한다.',
       growth: '3점 — 노인 시설 입주율 상승(최근 분기 매출 +22%).',
       durability: '3점 — 금리·운영 비용.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['계약 갱신 때 임대료 인상.'],
+        threats: ['지역 임대 시세를 따라간다.'],
+        why: '시세를 따라가는 수준이라 보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['리츠라 감가상각 때문에 회계 이익이 작다(ROE 2.2%).'],
+        threats: ['빚·금리.'],
+        why: '회계 이익보다 주당 현금이익(FFO)으로 봐야 하고, 대체로 안정적이다.',
+      },
+      growth: {
+        state: 'good',
+        sources: ['노인 시설 입주율 상승(최근 분기 매출 +22%).'],
+        threats: ['금리·운영 비용.'],
+        why: '수요 증가로 빨라지는 중.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['부동산 자체는 오래간다.'],
+        threats: ['금리가 오르면 부담.'],
+        why: '자산은 남지만 금리에 민감해 보통이다.',
+      },
     },
     now: [
       '7월 연간 정상화 FFO(리츠 현금 이익) 전망을 3.85~3.90달러로 올렸다. 직접 운영하는 노인 주거 부문의 같은 시설 이익이 1년 새 16% 증가.',
@@ -20300,9 +23706,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '미국 4위 은행(웰스파고).', money: '대출·예금 이자 + 수수료.' },
     moat: {
       state: 'intact',
-      sources: ['전국 지점망·예금 기반.', '자산 상한 규제 해제(2025)로 성장 재개.'],
-      threats: ['과거 불법 영업 이력.', '금리.'],
-      why: '규제 족쇄가 풀려 오히려 나아지는 중.',
+      sources: ['미국 4위 은행 — 지역 예금 기반 — 예금이 싼 자금원.'],
+      threats: ['대형 은행·핀테크 경쟁.', '상업용 부동산 대출 부실.'],
+      why: '지역 기반 해자는 그대로(깊지는 않다).',
     },
     scores: {
       moat: '3점 — 미국 4위 은행, 예금 기반.',
@@ -20310,6 +23716,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROE 12%. 2025년 자산 상한 규제 해제.',
       growth: '2점 — 규제 해제로 성장 재개 기대.',
       durability: '3점 — 영업 비리(2016년) 이력.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['예금 금리 관리.'],
+        threats: ['대출·예금 금리 수준은 시장(연준)이 정한다.'],
+        why: '은행은 구조적으로 값을 정하지 못한다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROE 11.8%.'],
+        threats: ['대손 비용, 예금 이탈.'],
+        why: '자기자본 이익률이 보통 수준이다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['2025년 자산 상한 규제 해제로 성장 재개.'],
+        threats: ['경기 둔화.'],
+        why: '지역 경제만큼 천천히 큰다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['오랜 지역 영업.'],
+        threats: ['2023년 지역 은행 위기처럼 예금 이탈 위험.'],
+        why: '신용·금리 위기에 취약해 보통이다.',
+      },
     },
     now: [
       '10월 13일 3분기: EPS 1.87달러(+13%), 예상 소폭 상회. 비용 -1%, 주식 수 -5%. 다만 매출은 예상보다 약간 적었다.',
@@ -20339,9 +23771,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '고급 카지노 리조트 회사(윈).', money: '카지노·호텔.' },
     moat: {
       state: 'intact',
-      sources: ['마카오 면허·고급 브랜드.'],
-      threats: ['중국 경기.'],
-      why: '면허 해자.',
+      sources: ['최고급 카지노 브랜드(라스베이거스·마카오, UAE 신규).'],
+      threats: ['빚, 마카오 규제.'],
+      why: '브랜드 해자 그대로.',
     },
     scores: {
       moat: '3점 — 최고급 카지노 브랜드(라스베이거스·마카오, UAE 신규).',
@@ -20349,6 +23781,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — 빚이 많다(ROIC 11%).',
       growth: '3점 — UAE 리조트(2027년 개장 예정).',
       durability: '2점 — 빚·마카오 규제.',
+    },
+    axes: {
+      pricing: {
+        state: 'good',
+        sources: ['고급 고객.'],
+        threats: ['경쟁.'],
+        why: '고급 브랜드라 강하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['ROIC 11%.'],
+        threats: ['빚이 많다.'],
+        why: '빚 부담이 크다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['UAE 리조트(2027년 개장 예정).'],
+        threats: ['마카오.'],
+        why: '보통이다.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['브랜드.'],
+        threats: ['빚·규제.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '2분기 조정 EPS 1.24달러로 예상 상회. 마카오 윈 팰리스 매출 +21%.',
@@ -20377,10 +23835,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '글로벌 손해보험(AIG) — 구조조정 끝, 보험 본업 + 자사주',
     biz: { what: '기업 손해보험 회사(AIG).', money: '보험료 + 투자 수익.' },
     moat: {
-      state: 'intact',
-      sources: ['대기업 보험 글로벌 네트워크.'],
-      threats: ['자연재해.'],
-      why: '구조조정 후 안정. 해자 보통.',
+      state: 'weakening',
+      sources: ['대형 손해보험, 기업 보험 강점.'],
+      threats: ['2008년 구제금융 이후 사업을 많이 팔아 규모 우위 축소.'],
+      why: '해자가 약해진 상태 — 체질 개선 중.',
     },
     scores: {
       moat: '2점 — 대형 손해보험이지만 2008년 구제금융 이후 사업을 많이 팔아 규모 우위가 줄었다.',
@@ -20388,6 +23846,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROE 7%로 낮다(개선 중).',
       growth: '2점 — 사업 매각·축소로 매출 성장이 거의 없다.',
       durability: '3점 — 재무는 안정됐지만 이익 변동이 크다(10년간 감소 5번).',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['인수 규율 강화.'],
+        threats: ['보험료 시세는 시장이 정한다.'],
+        why: '시세를 따라간다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROE 7%.'],
+        threats: ['구조조정 비용.'],
+        why: '개선 중이지만 아직 낮다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['자사주 매입.'],
+        threats: ['사업 매각·축소로 매출 성장이 거의 없다.'],
+        why: '성장이 느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['재무는 안정됐다.'],
+        threats: ['과거 위기 이력, 이익 변동.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '2분기 조정 EPS 2.00달러(+10%), 1분기 2.11달러(+80%). 핵심 자기자본이익률 11~12%.',
@@ -20416,10 +23900,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '세계 최대 포장재(앰코어) — 베리 글로벌 합병 시너지, 배당 5.8%',
     biz: { what: '포장재 회사(앰코).', money: '식품·의약 포장.' },
     moat: {
-      state: 'intact',
-      sources: ['포장 규모(베리 합병).'],
-      threats: ['원가·빚.'],
-      why: '해자 약함.',
+      state: 'weakening',
+      sources: ['세계 최대급 포장재(2025년 베리글로벌 합병).'],
+      threats: ['포장재는 차별화가 어렵다.'],
+      why: '규모는 커졌지만 해자는 얕다.',
     },
     scores: {
       moat: '2점 — 세계 최대급 포장재 회사(2025년 베리글로벌 합병). 포장재는 차별화가 어렵다.',
@@ -20427,6 +23911,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 7%. 배당 약 6%.',
       growth: '2점 — 합병 효과 외 자체 성장은 거의 없다.',
       durability: '3점 — 포장재는 꾸준히 필요하지만 성장이 없다.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['원가 연동 가격.'],
+        threats: ['고객 협상력.'],
+        why: '스스로 정하기 어렵다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 7%, 배당 약 6%.'],
+        threats: ['합병 비용.'],
+        why: '보통 수준이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['합병 시너지.'],
+        threats: ['자체 성장 거의 없음.'],
+        why: '성장이 느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['포장재는 꾸준히 필요.'],
+        threats: ['빚.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '8월 2026 회계연도 조정 EPS 4.02달러(+13%, 주식 병합 반영). 2027년 두 자릿수 성장을 예상.',
@@ -20455,9 +23965,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '제약 회사(브리스톨마이어스스퀴브).', money: '처방약 판매.' },
     moat: {
       state: 'weakening',
-      sources: ['면역 항암제 옵디보.'],
-      threats: ['엘리퀴스·레블리미드 특허 만료.'],
-      why: '주력 약 특허 만료로 약해지는 중.',
+      sources: ['혈액암·항응고제(엘리퀴스)·면역 항암제(옵디보).'],
+      threats: ['주력 약 특허가 2026~2028년 줄줄이 만료.', '약가 협상(엘리퀴스가 첫 대상).'],
+      why: '특허 절벽 앞이라 약해지는 중.',
     },
     scores: {
       moat: '3점 — 혈액암·항응고제(엘리퀴스)·면역 항암제(옵디보) 강자.',
@@ -20465,6 +23975,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 15%. 2024년 적자는 신약 회사 인수 비용.',
       growth: '1점 — 주력 약(엘리퀴스·옵디보·레블리미드) 특허가 2026~2028년 줄줄이 만료 — 매출이 줄어드는 구간.',
       durability: '2점 — 특허 절벽을 신약으로 메울 수 있을지 불확실.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['신약.'],
+        threats: ['특허 만료·약가 협상.'],
+        why: '가격 결정력을 잃는 중이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 15%.'],
+        threats: ['2024년 인수 비용 적자.'],
+        why: '조정 기준으로 유지된다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['신약(코벤피 등).'],
+        threats: ['특허 만료로 매출 감소 구간.'],
+        why: '줄어드는 구간이다.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['배당 약 4%.'],
+        threats: ['특허 절벽을 메울지 불확실.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '7월 올해 조정 EPS 전망을 6.05~6.35달러 → 약 6.75~7.00달러로 크게 올렸다(자료마다 범위 차이). 항응고제 엘리퀴스 성장률 전망을 20~25%로 상향.',
@@ -20494,8 +24030,8 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '의약품 도매 회사(카디널헬스).', money: '약 유통 마진.' },
     moat: {
       state: 'intact',
-      sources: ['3강 과점.'],
-      threats: ['얇은 마진, 고객 이탈.'],
+      sources: ['미국 의약품 도매 3강.'],
+      threats: ['얇은 마진, 소송.'],
       why: '과점 해자 — 그대로.',
     },
     scores: {
@@ -20504,6 +24040,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — 순이익률 1% 미만. 자기자본이 마이너스라 ROIC가 높게 나온다.',
       growth: '2점 — 매출 증가는 대부분 약값 상승. 특수 의약품·비만약 유통이 성장 동력.',
       durability: '3점 — 마약성 진통제 소송 이력.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['도매.'],
+        threats: ['마진 약 1%, 대형 고객.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['자기자본이 마이너스라 ROIC가 높게 나온다.'],
+        threats: ['순이익률 1% 미만.'],
+        why: '얇은 이익률을 규모로 메운다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['특수 의약품·비만약 유통.'],
+        threats: ['약값 규제.'],
+        why: '물량 증가로 꾸준하다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['과점.'],
+        threats: ['소송 이력.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '8월 2027 회계연도 조정 EPS 전망 12.40~12.60달러(+13~15%)를 제시 — 장기 목표보다 높다. 10월 CVS와 계약 갱신 후 전망 유지.',
@@ -20532,10 +24094,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '미국 동부 지방은행(시티즌스) — 3분기 EPS +34%, 자사주 3배 확대',
     biz: { what: '시티즌스 — 미국 동북부 은행.', money: '대출 이자에서 예금 이자를 뺀 차익 + 카드·자산관리 수수료.' },
     moat: {
-      state: 'intact',
-      sources: ['지역 예금 기반 — 싼 자금 조달.', '오래된 지역 기업·주민 관계.'],
-      threats: ['경기 침체 시 대출 부실(상업용 부동산).', '금리 변화, 핀테크.'],
-      why: '은행업은 해자가 얕은 편(돈은 어디서나 같은 상품). 지역 기반이 유지되는 한 그대로.',
+      state: 'weakening',
+      sources: ['미국 동부 지역 예금 기반 — 예금이 싼 자금원.'],
+      threats: ['대형 은행·핀테크 경쟁.', '상업용 부동산 대출 부실.'],
+      why: '지역 기반은 있지만 큰 은행보다 해자가 얕다.',
     },
     scores: {
       moat: '2점 — 미국 동부 지역 은행.',
@@ -20543,6 +24105,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROE 7%로 낮다.',
       growth: '2점 — 10년 EPS 연 10%.',
       durability: '3점 — 지역 은행은 신용·금리 위기에 취약(2023년 지역 은행 위기).',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['예금 금리 관리.'],
+        threats: ['대출·예금 금리 수준은 시장(연준)이 정한다.'],
+        why: '은행은 구조적으로 값을 정하지 못한다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['ROE 7.2%.'],
+        threats: ['대손 비용, 예금 이탈.'],
+        why: '자기자본 이익률이 낮은 편이다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['지역 경제 성장만큼 대출이 는다.'],
+        threats: ['경기 둔화.'],
+        why: '지역 경제만큼 천천히 큰다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['오랜 지역 영업.'],
+        threats: ['2023년 지역 은행 위기처럼 예금 이탈 위험.'],
+        why: '신용·금리 위기에 취약해 보통이다.',
+      },
     },
     now: [
       '10월 3분기: EPS 1.41달러(+34%), 순이자마진 3.19%로 상승. 매출은 예상 소폭 하회.',
@@ -20571,9 +24159,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '질소 비료 회사(CF인더스트리스).', money: '암모니아·요소 판매.' },
     moat: {
       state: 'intact',
-      sources: ['미국 싼 가스 원료 — 원가 우위.'],
-      threats: ['비료 가격.'],
-      why: '원가 우위는 그대로.',
+      sources: ['미국 최대 질소비료 — 싼 미국 천연가스가 원가 우위.'],
+      threats: ['비료 가격 변동.'],
+      why: '원가 우위 해자 그대로.',
     },
     scores: {
       moat: '2점 — 미국 최대 질소비료 회사. 싼 미국 천연가스가 원가 우위.',
@@ -20581,6 +24169,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 30%(호황기 수치), 불황 때는 크게 줄어든다.',
       growth: '2점 — 비료 가격 사이클에 따라 이익이 크게 변한다(10년간 감소 5번). 저탄소 암모니아가 새 기회.',
       durability: '3점 — 농업 수요는 꾸준하지만 가격 변동이 크다.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['원가 우위.'],
+        threats: ['비료 가격은 세계 시장이 정한다.'],
+        why: '값을 정할 수 없다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 30%(호황기).'],
+        threats: ['불황 때 크게 줄어든다.'],
+        why: '사이클을 탄다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['저탄소 암모니아.'],
+        threats: ['비료 사이클(10년간 감소 5번).'],
+        why: '새 사업이 기회다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['원가 우위.'],
+        threats: ['가격 변동.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '2분기 순이익 7.27억 달러(+88%). 요소 판매가 톤당 593달러(1년 전 460달러).',
@@ -20610,8 +24224,8 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '케이블 회사(차터, 스펙트럼).', money: '인터넷·TV·휴대폰 요금.' },
     moat: {
       state: 'weakening',
-      sources: ['지역 유선 인터넷 망.'],
-      threats: ['무선 인터넷·광인터넷 경쟁으로 가입자 감소.', '빚이 많다.'],
+      sources: ['미국 2위 케이블 인터넷(스펙트럼) — 지역 유선망.'],
+      threats: ['무선·광인터넷 경쟁으로 가입자 감소.', '빚 약 950억 달러.'],
       why: '약해지는 중.',
     },
     scores: {
@@ -20620,6 +24234,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 9%. 최근 PER 3배는 콕스 합병 회계 효과.',
       growth: '1점 — 인터넷 가입자 감소(무선·광섬유 경쟁).',
       durability: '2점 — 빚이 매우 많다(약 950억 달러).',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['인터넷 요금 유지.'],
+        threats: ['경쟁.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 9%.'],
+        threats: ['빚.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['콕스 합병.'],
+        threats: ['가입자 감소.'],
+        why: '줄어드는 중.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['망.'],
+        threats: ['빚·경쟁.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '버크셔 매각(2026년 1분기, 13F 5월 15일 공시): 그렉 아벨 CEO의 첫 분기에 이 주식을 전부 팔았다. 같은 분기에 정리한 16개 종목(비자·마스터카드·아마존·유나이티드헬스·도미노·에이온·차터·알리지온·풀·헤이코·라마·디아지오·포뮬러원·리버티라틴아메리카 A·C·브레이브스) 대부분이 2025년 말 JP모건으로 떠난 토드 콤스·테드 웨슐러가 맡던 지분이라, "회사가 나빠졌다"는 판단보다 "아벨이 직접 고른 큰 종목에 집중하려는 정리"로 보는 해석이 많다. 버크셔는 판 이유를 밝히지 않으며, 언제·얼마에 팔았는지도 공시에 나오지 않는다.',
@@ -20651,9 +24291,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '케이블·미디어 회사(컴캐스트). 엑스피니티 인터넷, NBC, 유니버설 테마파크.', money: '인터넷·TV 요금 + 광고 + 테마파크.' },
     moat: {
       state: 'weakening',
-      sources: ['지역 유선 인터넷 망.', '유니버설 테마파크.'],
-      threats: ['무선 인터넷(T모바일 등)으로 가입자 감소.', '케이블TV 쇠퇴.'],
-      why: '인터넷 가입자가 줄고 있다. 약해지는 중.',
+      sources: ['케이블 인터넷망·NBC·유니버설 테마파크.'],
+      threats: ['무선·광인터넷 경쟁으로 가입자 감소.', '케이블 TV 쇠퇴.'],
+      why: '인터넷 가입자가 줄어 약해지는 중.',
     },
     scores: {
       moat: '3점 — 케이블 인터넷망(엑스피니티), NBC, 유니버설 테마파크.',
@@ -20661,6 +24301,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 9%, ROE 22%. 최근 PER 7배는 일회성 이익 포함.',
       growth: '1점 — 인터넷 가입자가 줄고 있다. 케이블 TV 분리(버설런트).',
       durability: '3점 — 본업 인터넷이 약해지는 중.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['테마파크 가격 인상.'],
+        threats: ['인터넷 가격 경쟁.'],
+        why: '본업 가격 결정력이 약해졌다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 9%, ROE 22%.'],
+        threats: ['가입자 감소.'],
+        why: '유지된다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['테마파크(에픽 유니버스).'],
+        threats: ['인터넷 가입자 감소.'],
+        why: '성장이 없다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['망 자산.'],
+        threats: ['구조 변화.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '1월 케이블 채널(버산트)을 분리했고, NBC유니버설도 추가 분할을 준비 중. 이를 위해 7월부터 자사주를 멈췄다.',
@@ -20689,10 +24355,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '선벨트 아파트 리츠(캠든) — 신규 공급 감소로 바닥 통과 중',
     biz: { what: '선벨트 아파트 회사(캠든, 리츠).', money: '월세.' },
     moat: {
-      state: 'intact',
-      sources: ['인구가 느는 남부 지역 아파트.'],
-      threats: ['공급 과잉.'],
-      why: '해자 보통.',
+      state: 'weakening',
+      sources: ['선벨트(남부) 아파트 — 인구가 느는 지역.'],
+      threats: ['공급 과잉·금리.'],
+      why: '지역은 좋지만 공급이 많아 해자가 약하다.',
     },
     scores: {
       moat: '2점 — 선벨트(남부) 아파트 리츠. 인구가 느는 지역이지만 새 아파트 공급이 많다.',
@@ -20700,6 +24366,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 리츠라 감가상각 때문에 회계 이익이 작게 나온다(ROE 8.5%). 주당 현금이익(FFO)으로 봐야 한다.',
       growth: '2점 — 새 아파트 공급 과잉으로 임대료 정체.',
       durability: '3점 — 공급 과잉·금리.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['계약 갱신 때 임대료 인상.'],
+        threats: ['지역 임대 시세를 따라간다.'],
+        why: '시세를 따라가는 수준이라 보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['리츠라 감가상각 때문에 회계 이익이 작다(ROE 8.5%).'],
+        threats: ['빚·금리.'],
+        why: '회계 이익보다 주당 현금이익(FFO)으로 봐야 하고, 대체로 안정적이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['새 아파트 공급 과잉으로 임대료 정체.'],
+        threats: ['공급 과잉·금리.'],
+        why: '공급 과잉·수요 둔화로 느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['부동산 자체는 오래간다.'],
+        threats: ['금리가 오르면 부담.'],
+        why: '자산은 남지만 금리에 민감해 보통이다.',
+      },
     },
     now: [
       '2분기 핵심 FFO(리츠 현금 이익) 1.68달러로 예상 상회. 연간 전망 6.60~6.90달러(중간 6.75달러) 유지.',
@@ -20728,10 +24420,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '미국 최대 천연가스 생산(EQT) — AI 데이터센터·LNG 수요 수혜',
     biz: { what: '미국 최대 천연가스 회사(EQT).', money: '가스 판매.' },
     moat: {
-      state: 'intact',
-      sources: ['애팔래치아 저원가 + 자체 가스관.'],
-      threats: ['가스 가격.'],
-      why: '해자 보통.',
+      state: 'weakening',
+      sources: ['미국 최대 천연가스 생산 회사(애팔래치아).'],
+      threats: ['유가·가스 가격.', '장기 에너지 전환.'],
+      why: '가스 생산은 차별화가 어려워 해자가 얕다.',
     },
     scores: {
       moat: '2점 — 미국 최대 천연가스 생산 회사(애팔래치아).',
@@ -20739,6 +24431,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 8%. 이익은 유가 따라 크게 변한다.',
       growth: '3점 — 생산량 증가는 연 몇 %. 이익 성장은 유가에 달렸다.',
       durability: '3점 — 유가 사이클과 장기 에너지 전환 위험.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['비용 절감.'],
+        threats: ['유가·가스 가격은 세계 시장이 정한다.'],
+        why: '회사가 값을 정할 수 없다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 8%.'],
+        threats: ['유가 하락기.'],
+        why: '이익률은 유가를 따라 오르내린다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['생산량 연 몇 % 증가, 자사주 매입.'],
+        threats: ['유가.'],
+        why: '생산은 늘지만 이익은 유가가 정한다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['저원가 자산.'],
+        threats: ['유가 급락기 적자, 에너지 전환.'],
+        why: '원자재 사이클을 그대로 타 보통이다.',
+      },
     },
     now: [
       '1분기 기록적 실적(잉여현금흐름 18억 달러 이상): 겨울 가스 가격 급등을 헤지 없이 다 누렸다. 2분기는 가스 가격 하락으로 EPS 0.39달러.',
@@ -20768,10 +24486,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '북미 최대 천연가스 생산(익스팬드 에너지) — 겨울 가격 급등으로 현금 폭증',
     biz: { what: '미국 최대 천연가스 회사(익스팬드에너지).', money: '가스 판매.' },
     moat: {
-      state: 'intact',
-      sources: ['규모·저원가.'],
-      threats: ['가스 가격.'],
-      why: '해자 보통.',
+      state: 'weakening',
+      sources: ['미국 최대 천연가스 생산(체서피크+사우스웨스턴 합병).'],
+      threats: ['유가·가스 가격.', '장기 에너지 전환.'],
+      why: '가스 생산은 차별화가 어려워 해자가 얕다.',
     },
     scores: {
       moat: '2점 — 미국 최대 천연가스 생산 회사(체서피크+사우스웨스턴 합병).',
@@ -20779,6 +24497,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 9%. 이익은 유가 따라 크게 변한다.',
       growth: '3점 — 생산량 증가는 연 몇 %. 이익 성장은 유가에 달렸다.',
       durability: '3점 — 유가 사이클과 장기 에너지 전환 위험.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['비용 절감.'],
+        threats: ['유가·가스 가격은 세계 시장이 정한다.'],
+        why: '회사가 값을 정할 수 없다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 9%.'],
+        threats: ['유가 하락기.'],
+        why: '이익률은 유가를 따라 오르내린다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['생산량 연 몇 % 증가, 자사주 매입.'],
+        threats: ['유가.'],
+        why: '생산은 늘지만 이익은 유가가 정한다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['저원가 자산.'],
+        threats: ['유가 급락기 적자, 에너지 전환.'],
+        why: '원자재 사이클을 그대로 타 보통이다.',
+      },
     },
     now: [
       '1분기 잉여현금흐름 17억 달러, 부채 13억 달러 상환. 체서피크·사우스웨스턴 합병으로 하루 약 7.4Bcfe 생산.',
@@ -20806,9 +24550,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '퍼스트에너지 — 오하이오·펜실베이니아 등 전력·가스 공급 회사(유틸리티).', money: '정부가 정한 요금으로 전기·가스를 공급. 설비 투자액에 정해진 이익률을 붙여 요금을 받는다.' },
     moat: {
       state: 'intact',
-      sources: ['지역 독점 전력·가스망 — 경쟁이 없다.', '데이터센터·전기화로 전력 수요 증가.'],
-      threats: ['요금 인상 승인(규제 당국).', '금리(빚이 많다), 자연재해 비용.'],
-      why: '규제 독점이라 해자는 그대로. 다만 성장과 이익률은 정부가 정한다(해자가 있어도 크게 벌지는 못하는 구조).',
+      sources: ['오하이오·펜실베이니아 등 전력·가스 공급 지역 독점 — 경쟁자가 없다.'],
+      threats: ['요금 인상은 정부 승인이 필요하다.', '금리(빚이 많다).', '과거 뇌물 사건.'],
+      why: '규제 독점이라 해자는 그대로 — 다만 이익의 천장도 정부가 정한다.',
     },
     scores: {
       moat: '3점 — 지역 전력·가스망 독점. 경쟁은 없지만 정부가 이익률을 정해 "넓은 해자, 낮은 천장" 구조.',
@@ -20816,6 +24560,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — ROIC 5%.',
       growth: '3점 — 송전망 투자 확대.',
       durability: '3점 — 과거 오하이오 뇌물 사건.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['요금 인상 신청(설비 투자분 반영).'],
+        threats: ['공공요금 위원회가 승인 여부와 폭을 정한다.'],
+        why: '회사가 스스로 값을 정할 수 없는 구조다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['허용 자기자본 이익률 약 10%(실제 ROE 8.2%).'],
+        threats: ['ROIC 5~7% — 설비가 많이 드는 사업.'],
+        why: '정부가 허용한 수익률 안에서 안정적으로 번다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['송전망 투자 확대.'],
+        threats: ['요금 인상 반발, 금리.'],
+        why: '투자를 늘릴수록 이익도 늘어나는 구조다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['전기·가스는 경기와 무관한 필수재.'],
+        threats: ['자연재해·산불 책임, 빚.'],
+        why: '필수 인프라라 사업은 오래가지만 빚과 재해가 변수다.',
+      },
     },
     now: [
       '2분기 핵심 EPS 0.50달러, 올해 2.62~2.82달러 전망 유지. 2030년까지 핵심 EPS 연 6~8% 성장의 상단을 목표.',
@@ -20845,9 +24615,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '은행 시스템·결제 회사(FIS).', money: '은행 계좌 시스템 사용료.' },
     moat: {
       state: 'weakening',
-      sources: ['은행 핵심 시스템 전환 비용.'],
-      threats: ['결제 사업 매각 후 성장 정체.', '핀테크.'],
-      why: '약해지는 중.',
+      sources: ['은행 핵심 전산 시스템 상위권.'],
+      threats: ['대형 인수 실패 이력(월드페이).'],
+      why: '해자가 얕아졌다.',
     },
     scores: {
       moat: '3점 — 은행 핵심 전산 시스템 상위권.',
@@ -20855,6 +24625,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — ROIC 5%(인수 자산). 최근 PER 6배는 사업 매각 이익 포함.',
       growth: '2점 — 매출 연 4~5%.',
       durability: '3점 — 경쟁·대규모 인수 실패 이력(월드페이).',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['은행 전산.'],
+        threats: ['대형 은행 협상력.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['ROIC 5%.'],
+        threats: ['인수 자산.'],
+        why: '낮다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['매출 연 4~5%.'],
+        threats: ['정체.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['은행 전환 비용.'],
+        threats: ['경쟁.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '8월 올해 조정 EPS 전망을 6.22~6.32달러 → 6.15~6.24달러로 낮췄다. 자본시장 부문 성장률 전망이 크게 깎였다.',
@@ -20883,9 +24679,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '피프스서드 — 미국 중서부·남동부 은행.', money: '대출 이자에서 예금 이자를 뺀 차익 + 카드·자산관리 수수료.' },
     moat: {
       state: 'intact',
-      sources: ['지역 예금 기반 — 싼 자금 조달.', '오래된 지역 기업·주민 관계.'],
-      threats: ['경기 침체 시 대출 부실(상업용 부동산).', '금리 변화, 핀테크.'],
-      why: '은행업은 해자가 얕은 편(돈은 어디서나 같은 상품). 지역 기반이 유지되는 한 그대로.',
+      sources: ['미국 중서부·남동부 지역 예금 기반 — 예금이 싼 자금원.'],
+      threats: ['대형 은행·핀테크 경쟁.', '상업용 부동산 대출 부실.'],
+      why: '지역 기반 해자는 그대로(깊지는 않다).',
     },
     scores: {
       moat: '2점 — 미국 중서부·남동부 지역 예금 기반. 대형 은행보다 규모가 작아 해자는 약하다.',
@@ -20893,6 +24689,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROE 12.2%.',
       growth: '2점 — 지역 경제 성장만큼 큰다.',
       durability: '3점 — 지역 은행은 신용·금리 위기에 취약(2023년 지역 은행 위기).',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['예금 금리 관리.'],
+        threats: ['대출·예금 금리 수준은 시장(연준)이 정한다.'],
+        why: '은행은 구조적으로 값을 정하지 못한다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROE 12.2%.'],
+        threats: ['대손 비용, 예금 이탈.'],
+        why: '자기자본 이익률이 보통 수준이다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['지역 경제 성장만큼 대출이 는다.'],
+        threats: ['경기 둔화.'],
+        why: '지역 경제만큼 천천히 큰다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['오랜 지역 영업.'],
+        threats: ['2023년 지역 은행 위기처럼 예금 이탈 위험.'],
+        why: '신용·금리 위기에 취약해 보통이다.',
+      },
     },
     now: [
       '10월 3분기: 조정 EPS 1.13달러(예상 상회), 회계상 0.90달러(합병 비용 2.15억 달러). 합병으로 인건비 절감이 나타나기 시작.',
@@ -20921,10 +24743,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '유전 서비스 2위(핼리버튼) — 해외 성장, 북미 셰일은 부진',
     biz: { what: '유전 서비스 회사(핼리버튼).', money: '셰일 완공(수압 파쇄) 서비스.' },
     moat: {
-      state: 'intact',
-      sources: ['북미 수압 파쇄 1위.'],
-      threats: ['셰일 시추 감소.'],
-      why: '해자 약함 — 경기 민감.',
+      state: 'weakening',
+      sources: ['북미 최대 유전 수압 파쇄 서비스.'],
+      threats: ['유가·가스 가격.', '장기 에너지 전환.'],
+      why: '유전 서비스는 경쟁이 심해 해자가 얕다.',
     },
     scores: {
       moat: '2점 — 북미 최대 유전 수압 파쇄 서비스.',
@@ -20932,6 +24754,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 11%(5년 평균 16%). 이익은 유가 따라 크게 변한다.',
       growth: '3점 — 생산량 증가는 연 몇 %. 이익 성장은 유가에 달렸다.',
       durability: '3점 — 유가 사이클과 장기 에너지 전환 위험.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['비용 절감.'],
+        threats: ['유가·가스 가격은 세계 시장이 정한다.'],
+        why: '회사가 값을 정할 수 없다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 11%(5년 평균 16%).'],
+        threats: ['유가 하락기.'],
+        why: '이익률은 유가를 따라 오르내린다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['생산량 연 몇 % 증가, 자사주 매입.'],
+        threats: ['유가.'],
+        why: '생산은 늘지만 이익은 유가가 정한다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['저원가 자산.'],
+        threats: ['유가 급락기 적자, 에너지 전환.'],
+        why: '원자재 사이클을 그대로 타 보통이다.',
+      },
     },
     now: [
       '10월 20일 3분기: 조정 EPS 0.60달러(예상 0.58달러 상회). 해외 매출 +3%, 북미 -5%.',
@@ -20960,10 +24808,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '미국 중서부 지방은행(헌팅턴) — 캐이던스 인수로 남부 진출',
     biz: { what: '헌팅턴 — 미국 중서부 은행.', money: '대출 이자에서 예금 이자를 뺀 차익 + 카드·자산관리 수수료.' },
     moat: {
-      state: 'intact',
-      sources: ['지역 예금 기반 — 싼 자금 조달.', '오래된 지역 기업·주민 관계.'],
-      threats: ['경기 침체 시 대출 부실(상업용 부동산).', '금리 변화, 핀테크.'],
-      why: '은행업은 해자가 얕은 편(돈은 어디서나 같은 상품). 지역 기반이 유지되는 한 그대로.',
+      state: 'weakening',
+      sources: ['미국 중서부 지역 예금 기반 — 예금이 싼 자금원.'],
+      threats: ['대형 은행·핀테크 경쟁.', '상업용 부동산 대출 부실.'],
+      why: '지역 기반은 있지만 큰 은행보다 해자가 얕다.',
     },
     scores: {
       moat: '2점 — 미국 중서부 지역 예금 기반. 대형 은행보다 규모가 작아 해자는 약하다.',
@@ -20971,6 +24819,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROE 10.0%.',
       growth: '2점 — 지역 경제 성장만큼 큰다. 최근 인수로 덩치 확대.',
       durability: '3점 — 지역 은행은 신용·금리 위기에 취약(2023년 지역 은행 위기).',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['예금 금리 관리.'],
+        threats: ['대출·예금 금리 수준은 시장(연준)이 정한다.'],
+        why: '은행은 구조적으로 값을 정하지 못한다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROE 10.0%.'],
+        threats: ['대손 비용, 예금 이탈.'],
+        why: '자기자본 이익률이 보통 수준이다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['최근 인수로 덩치 확대.'],
+        threats: ['경기 둔화.'],
+        why: '지역 경제만큼 천천히 큰다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['오랜 지역 영업.'],
+        threats: ['2023년 지역 은행 위기처럼 예금 이탈 위험.'],
+        why: '신용·금리 위기에 취약해 보통이다.',
+      },
     },
     now: [
       '2월 캐이던스 은행(74억 달러, 주식) 인수 완료, 6월 전산 통합 끝. 연 3.65억 달러 비용 절감 목표.',
@@ -20999,10 +24873,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: 'AI 서버·네트워크(HPE) — 주니퍼 인수 후 AI 장비주로 재평가, 1년 +140%',
     biz: { what: '기업 IT 장비 회사(HPE). 서버·네트워크(주니퍼 인수).', money: '장비 판매.' },
     moat: {
-      state: 'intact',
-      sources: ['기업 네트워크(아루바·주니퍼).'],
-      threats: ['서버 저마진.'],
-      why: '해자 보통.',
+      state: 'weakening',
+      sources: ['서버·네트워크 장비, 주니퍼 인수.'],
+      threats: ['델·슈퍼마이크로 경쟁.'],
+      why: '해자가 얕다.',
     },
     scores: {
       moat: '2점 — 서버·네트워크 장비. 델·슈퍼마이크로와 경쟁.',
@@ -21010,6 +24884,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — 영업이익률 약 9%, 회계 ROIC는 마이너스(주니퍼 인수 비용).',
       growth: '3점 — AI 서버·주니퍼 네트워크로 최근 분기 매출 +34%.',
       durability: '3점 — 이익률이 얇아 경기·경쟁에 취약.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['네트워크 장비.'],
+        threats: ['서버 가격 경쟁.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['영업이익률 약 9%.'],
+        threats: ['인수 비용으로 회계 ROIC 마이너스.'],
+        why: '낮다.',
+      },
+      growth: {
+        state: 'good',
+        sources: ['AI 서버·주니퍼로 최근 분기 매출 +34%.'],
+        threats: ['마진.'],
+        why: '빨라지는 중.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['대형 고객.'],
+        threats: ['경쟁.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '9월 3분기: 매출 +33%, 조정 EPS 1.11달러(예상 0.93달러). 올해 조정 EPS 전망 3.75~3.85달러로 상향. 2027 회계연도 4.40~4.60달러 제시.',
@@ -21038,9 +24938,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '육가공 식품 회사(호멜). 스팸·스키피.', money: '식품 판매.' },
     moat: {
       state: 'weakening',
-      sources: ['브랜드.'],
-      threats: ['칠면조 질병·원가, 판매 정체.'],
-      why: '약해지는 중.',
+      sources: ['스팸·스키피·플랜터스.'],
+      threats: ['대형 마트 협상력, 원가.'],
+      why: '브랜드가 약해지는 중.',
     },
     scores: {
       moat: '3점 — 스팸·스키피 땅콩버터·플랜터스.',
@@ -21048,6 +24948,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 5%(5년 평균 8%).',
       growth: '1점 — 10년 EPS 감소(연 -4%).',
       durability: '3점 — 50년 넘게 배당 인상했지만 이익 감소 중.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['브랜드.'],
+        threats: ['원가 전가 어려움.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['ROIC 5%(5년 평균 8%).'],
+        threats: ['원가.'],
+        why: '나빠졌다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['신제품.'],
+        threats: ['10년 EPS 감소.'],
+        why: '줄어드는 중.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['50년 넘게 배당 인상.'],
+        threats: ['이익 감소.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '8월 3분기: 조정 EPS 0.37달러로 예상 상회, 매출은 하회. 올해 조정 EPS 1.45~1.51달러, 매출 전망은 하향.',
@@ -21075,10 +25001,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: 'AI 광통신 부품(루멘텀) — 매출 2배, 3년 +1,900%',
     biz: { what: '광통신 부품 회사(루멘텀).', money: 'AI 데이터센터 광 트랜시버·레이저 판매.' },
     moat: {
-      state: 'intact',
-      sources: ['고속 레이저 기술.'],
-      threats: ['경쟁·사이클.'],
-      why: 'AI 수요로 급성장 중. 해자 보통.',
+      state: 'weakening',
+      sources: ['광통신 부품·레이저.'],
+      threats: ['기술 경쟁, 이익 변동.'],
+      why: '해자가 얕다.',
     },
     scores: {
       moat: '2점 — 광통신 부품·레이저. 기술 경쟁이 심하다.',
@@ -21086,6 +25012,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — 최근 1년 회계 적자(이익 변동이 크다).',
       growth: '4점 — AI 광통신 수요로 최근 분기 매출 +109%.',
       durability: '2점 — 기술 교체 주기·경쟁으로 이익이 크게 흔들린다.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['신제품.'],
+        threats: ['대형 고객 협상력.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['이익 회복 중.'],
+        threats: ['최근 1년 회계 적자.'],
+        why: '변동이 크다.',
+      },
+      growth: {
+        state: 'good',
+        sources: ['AI 광통신으로 최근 분기 매출 2배 이상.'],
+        threats: ['기술 교체.'],
+        why: '빨라지는 중.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['기술력.'],
+        threats: ['기술 교체 주기.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '8월 4분기: 매출 10.1억 달러(+109%), 조정 EPS 3.23달러. 다음 분기 조정 EPS 4.05~4.35달러, 매출 +130% 전망.',
@@ -21112,9 +25064,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '산업 복합 기업(3M). 포스트잇·테이프·연마재.', money: '제품 판매.' },
     moat: {
       state: 'weakening',
-      sources: ['소재 기술·브랜드.'],
-      threats: ['소송(귀마개·PFAS), 성장 정체.'],
-      why: '약해지는 중 — 구조조정으로 회복 시도.',
+      sources: ['포스트잇·스카치테이프·산업 소재 수만 가지.'],
+      threats: ['화학물질(PFAS)·귀마개 소송.'],
+      why: '기술은 있지만 소송으로 약해졌다.',
     },
     scores: {
       moat: '3점 — 포스트잇·스카치테이프·산업용 소재 수만 가지.',
@@ -21122,6 +25074,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 30%. 소송(귀마개·화학물질) 합의금이 이익을 깎았다.',
       growth: '1점 — 10년 EPS 감소. 헬스케어 분리(솔벤텀) 후 재건 중.',
       durability: '2점 — 화학물질(PFAS) 소송이 장기 위험.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['소재.'],
+        threats: ['경쟁.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'good',
+        sources: ['ROIC 22%(5년 평균) → 30%.'],
+        threats: ['소송 합의금.'],
+        why: '좋아지는 중.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['재건 중.'],
+        threats: ['10년 EPS 감소.'],
+        why: '줄어드는 중.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['120년 역사.'],
+        threats: ['PFAS 소송.'],
+        why: '소송 때문에 불확실하다.',
+      },
     },
     now: [
       '10월 20일 3분기: 조정 EPS 2.50달러(+12%, 예상 2.38달러). 유기적 성장 3.3%, 조정 영업이익률 26.2%.',
@@ -21150,10 +25128,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '미국 최대 정유사(마라톤페트롤리엄) — 분기 EPS 17.73달러, 정제 마진 2배',
     biz: { what: '미국 최대 정유 회사(마라톤페트롤리엄).', money: '정제 마진 + 송유관(MPLX).' },
     moat: {
-      state: 'intact',
-      sources: ['대형 정유 공장 + 송유관.'],
-      threats: ['정제 마진.'],
-      why: '해자 보통.',
+      state: 'weakening',
+      sources: ['미국 최대 정유사.'],
+      threats: ['정유는 차별화가 어렵다.'],
+      why: '규모는 크지만 해자가 얕다.',
     },
     scores: {
       moat: '2점 — 미국 최대 정유사. 정유는 차별화가 어렵다.',
@@ -21161,6 +25139,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 16%.',
       growth: '2점 — 자사주 매입으로 주당 이익을 늘린다.',
       durability: '3점 — 정제 마진 사이클.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['효율.'],
+        threats: ['정제 마진은 시장이 정한다.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 16%.'],
+        threats: ['마진 변동.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['자사주 매입.'],
+        threats: ['정제 마진.'],
+        why: '보통이다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['규모.'],
+        threats: ['에너지 전환.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '2분기 EPS 17.73달러(예상 약 14달러). 배럴당 정제 마진 36.33달러(1년 전 17.58달러). 호르무즈 해협 차질로 세계 연료 공급이 빡빡하다.',
@@ -21189,10 +25193,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '텍사스 전력 소매·발전(NRG) — LS파워 발전소 인수 후 실적 미스, 1년 -41%',
     biz: { what: '발전·전기 판매 회사(NRG). 텍사스·동부 + 가정 보안(바이빈트).', money: '전기 소매 + 발전 + 보안 구독.' },
     moat: {
-      state: 'intact',
-      sources: ['텍사스 소매 전기 상위권.'],
-      threats: ['전력 가격.', '빚.'],
-      why: '해자 보통.',
+      state: 'weakening',
+      sources: ['발전·전기 소매(텍사스), 가정 보안.'],
+      threats: ['전력 가격 변동.'],
+      why: '해자가 얕다.',
     },
     scores: {
       moat: '2점 — 발전·전기 소매(텍사스). 발전업은 차별화가 어렵다.',
@@ -21200,6 +25204,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROE 42%(자사주 매입으로 자기자본이 작다).',
       growth: '3점 — 데이터센터 전력 수요, 발전소 인수.',
       durability: '2점 — 전력 가격 변동이 크다.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['소매 고객.'],
+        threats: ['전력 가격은 시장이 정한다.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROE 42%(자사주로 자기자본이 작다).'],
+        threats: ['전력 가격.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'good',
+        sources: ['데이터센터 전력 수요, 발전소 인수.'],
+        threats: ['가격 변동.'],
+        why: '빨라지는 중.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['발전 자산.'],
+        threats: ['전력 가격 변동이 크다.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '2026년 초 LS파워 가스 발전소 인수 완료 → 조정 EPS 전망 7.90~9.90달러(유지).',
@@ -21228,10 +25258,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '다우존스·WSJ·호주 부동산 포털(뉴스코프 A) — 부분의 합보다 싸다',
     biz: { what: '뉴스·부동산 정보 회사(뉴스코프). 월스트리트저널, 호주 부동산 사이트.', money: '구독 + 광고.' },
     moat: {
-      state: 'intact',
-      sources: ['월스트리트저널·REA 브랜드.'],
-      threats: ['신문 쇠퇴.'],
-      why: '해자 보통.',
+      state: 'weakening',
+      sources: ['월스트리트저널(다우존스), 호주 부동산 앱(REA) 지분.'],
+      threats: ['인쇄 매체 쇠퇴.'],
+      why: '다우존스는 강하지만 전체 해자는 얕다.',
     },
     scores: {
       moat: '3점 — 월스트리트저널(다우존스), 호주 부동산 앱(REA 그룹 지분).',
@@ -21239,6 +25269,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — ROIC 9%, ROE 7%.',
       growth: '2점 — 다우존스·REA가 크지만 신문·출판 쇠퇴가 상쇄.',
       durability: '3점 — 인쇄 매체 쇠퇴.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['구독.'],
+        threats: ['신문 구독료 인상 한계.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['ROE 7%.'],
+        threats: ['쇠퇴 사업.'],
+        why: '낮다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['다우존스·REA.'],
+        threats: ['출판 쇠퇴.'],
+        why: '보통이다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['다우존스.'],
+        threats: ['매체 쇠퇴.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '8월 2026 회계연도: 매출 +7%, 부문 EBITDA +15%, 잉여현금흐름 +42%(8.1억 달러). 4분기 조정 EPS 0.35달러.',
@@ -21266,10 +25322,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '뉴스코프 B주(의결권주) — A주와 같은 회사, 의결권 때문에 약 9% 비싸다',
     biz: { what: '뉴스·부동산 정보 회사(뉴스코프 B주).', money: '구독 + 광고.' },
     moat: {
-      state: 'intact',
-      sources: ['월스트리트저널·REA 브랜드.'],
-      threats: ['신문 쇠퇴.'],
-      why: '해자 보통.',
+      state: 'weakening',
+      sources: ['뉴스코프 B주(의결권 주식) — 사업은 A주와 같다.'],
+      threats: ['A주와 같다.'],
+      why: 'A주와 같다.',
     },
     scores: {
       moat: '3점 — 뉴스코프 B주(의결권 주식). 사업은 A주와 같다.',
@@ -21277,6 +25333,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — A주와 같다.',
       growth: '2점 — A주와 같다.',
       durability: '3점 — A주와 같다.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['A주와 같다.'],
+        threats: ['A주와 같다.'],
+        why: 'A주와 같다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['A주와 같다.'],
+        threats: ['A주와 같다.'],
+        why: 'A주와 같다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['A주와 같다.'],
+        threats: ['A주와 같다.'],
+        why: 'A주와 같다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['A주와 같다.'],
+        threats: ['A주와 같다.'],
+        why: 'A주와 같다.',
+      },
     },
     now: [
       'NWSA(무의결권 A주)와 경제적 권리는 같고 의결권만 있다. 지금 A주보다 약 9% 비싸게 거래.',
@@ -21304,10 +25386,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '정유·미드스트림·화학(필립스66) — 정제 마진 호황, 1년 +117%',
     biz: { what: '정유·송유관 회사(필립스66).', money: '정제 마진 + 송유관 + 화학.' },
     moat: {
-      state: 'intact',
-      sources: ['송유관 사업.'],
-      threats: ['정제 마진.'],
-      why: '해자 보통.',
+      state: 'weakening',
+      sources: ['정유·화학·가스관.'],
+      threats: ['정유는 차별화가 어렵다.'],
+      why: '해자가 얕다.',
     },
     scores: {
       moat: '2점 — 정유·화학·가스관. 정유는 차별화가 어렵다.',
@@ -21315,6 +25397,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 3%(5년 평균 7%).',
       growth: '2점 — 10년 EPS 연 3%.',
       durability: '3점 — 정제 마진 사이클.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['효율.'],
+        threats: ['정제 마진.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['5년 평균 ROIC 7%.'],
+        threats: ['최근 3%.'],
+        why: '나빠졌다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['가스관.'],
+        threats: ['10년 EPS 연 3%.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['규모.'],
+        threats: ['에너지 전환.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '2분기 조정 EPS 9.41달러(1년 전 2.38달러). 정제 마진 배럴당 24달러(1년 전 11달러), 가동률 96%.',
@@ -21344,9 +25452,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '리전스 — 미국 남동부 은행.', money: '대출 이자에서 예금 이자를 뺀 차익 + 카드·자산관리 수수료.' },
     moat: {
       state: 'intact',
-      sources: ['지역 예금 기반 — 싼 자금 조달.', '오래된 지역 기업·주민 관계.'],
-      threats: ['경기 침체 시 대출 부실(상업용 부동산).', '금리 변화, 핀테크.'],
-      why: '은행업은 해자가 얕은 편(돈은 어디서나 같은 상품). 지역 기반이 유지되는 한 그대로.',
+      sources: ['미국 남부 지역 예금 기반 — 예금이 싼 자금원.'],
+      threats: ['대형 은행·핀테크 경쟁.', '상업용 부동산 대출 부실.'],
+      why: '지역 기반 해자는 그대로(깊지는 않다).',
     },
     scores: {
       moat: '2점 — 미국 남부 지역 예금 기반. 대형 은행보다 규모가 작아 해자는 약하다.',
@@ -21354,6 +25462,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROE 11.7%.',
       growth: '2점 — 지역 경제 성장만큼 큰다.',
       durability: '3점 — 지역 은행은 신용·금리 위기에 취약(2023년 지역 은행 위기).',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['예금 금리 관리.'],
+        threats: ['대출·예금 금리 수준은 시장(연준)이 정한다.'],
+        why: '은행은 구조적으로 값을 정하지 못한다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROE 11.7%.'],
+        threats: ['대손 비용, 예금 이탈.'],
+        why: '자기자본 이익률이 보통 수준이다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['지역 경제 성장만큼 대출이 는다.'],
+        threats: ['경기 둔화.'],
+        why: '지역 경제만큼 천천히 큰다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['오랜 지역 영업.'],
+        threats: ['2023년 지역 은행 위기처럼 예금 이탈 위험.'],
+        why: '신용·금리 위기에 취약해 보통이다.',
+      },
     },
     now: [
       '10월 16일 3분기: EPS 0.71달러(조정 0.73달러, +16%), 예상(약 0.66달러) 상회. 순이자마진 3.68%, 4분기 약 3.7% 예상.',
@@ -21383,9 +25517,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '공구 회사(스탠리블랙앤데커). 디월트.', money: '공구 판매.' },
     moat: {
       state: 'weakening',
-      sources: ['디월트 브랜드.'],
-      threats: ['관세, 소비 경기, 구조조정.'],
-      why: '약해지는 중.',
+      sources: ['디월트·스탠리 공구 세계 1위.'],
+      threats: ['관세·원가, 구조조정.'],
+      why: '브랜드는 강하지만 수익성이 약해졌다.',
     },
     scores: {
       moat: '3점 — 디월트·스탠리 공구 세계 1위.',
@@ -21393,6 +25527,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — ROE 5%. 구조조정 중.',
       growth: '2점 — 10년 EPS 감소.',
       durability: '3점 — 주택·건설 경기.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['브랜드.'],
+        threats: ['관세 부담을 다 전가하지 못한다.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['ROE 5%.'],
+        threats: ['구조조정 비용.'],
+        why: '낮다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['비용 절감.'],
+        threats: ['10년 EPS 감소.'],
+        why: '줄어드는 중.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['180년 브랜드.'],
+        threats: ['주택 경기.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '7월 올해 조정 EPS 전망을 5.20~5.80달러로 상향(관세 환급·이자 감소 포함). 잉여현금흐름 6~8억 달러.',
@@ -21422,9 +25582,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '대형 할인점(타깃).', money: '생활·의류·가전 판매.' },
     moat: {
       state: 'weakening',
-      sources: ['자체 브랜드.'],
-      threats: ['월마트·코스트코에 손님을 뺏기는 중.'],
-      why: '약해지는 중.',
+      sources: ['미국 대형 할인점(약 2,000곳), 자체 브랜드.'],
+      threats: ['월마트·코스트코 경쟁.'],
+      why: '경쟁에 밀려 약해지는 중.',
     },
     scores: {
       moat: '3점 — 미국 대형 할인점(약 2,000곳), 자체 브랜드.',
@@ -21432,6 +25592,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 20%.',
       growth: '1점 — 최근 5년 EPS 감소, 매출 정체.',
       durability: '3점 — 경쟁에 밀리는 중.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['자체 브랜드.'],
+        threats: ['가격 경쟁.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 20%.'],
+        threats: ['도난·비용.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['새 CEO.'],
+        threats: ['최근 5년 EPS 감소, 매출 정체.'],
+        why: '줄어드는 중.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['규모.'],
+        threats: ['경쟁.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '8월 2분기: 동일점 매출 +3.8%, 디지털 +8.7%. EPS 4.11달러에는 관세 환급 1.65달러가 포함.',
@@ -21460,9 +25646,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '미국 대형 항공사(유나이티드) — 수요 강하지만 항공유 급등',
     biz: { what: '항공사(유나이티드).', money: '항공권 + 마일리지.' },
     moat: {
-      state: 'intact',
-      sources: ['국제선 허브.'],
-      threats: ['유가·경기.'],
+      state: 'weakening',
+      sources: ['미국 국제선 강자.'],
+      threats: ['경기·유가.'],
       why: '항공업은 해자가 얕다.',
     },
     scores: {
@@ -21471,6 +25657,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 16%.',
       growth: '3점 — 국제선·프리미엄 수요.',
       durability: '2점 — 코로나 때 대규모 적자. 유가·경기에 매우 취약.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['프리미엄.'],
+        threats: ['가격 경쟁.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'good',
+        sources: ['ROIC 16%.'],
+        threats: ['유가.'],
+        why: '좋아졌다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['국제선·프리미엄.'],
+        threats: ['경기.'],
+        why: '보통이다.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['네트워크.'],
+        threats: ['코로나 때 대규모 적자.'],
+        why: '충격에 매우 취약하다.',
+      },
     },
     now: [
       '7월 연간 조정 EPS 9~11달러 전망. 7월 이후 연료비만 5.75억 달러 늘었다(분기 EPS -1.12달러). 연료비 상승분은 4분기까지 운임으로 100% 전가 목표.',
@@ -21500,9 +25712,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '택배 회사(UPS).', money: '택배 운임.' },
     moat: {
       state: 'weakening',
-      sources: ['미국 택배망.'],
-      threats: ['아마존 물량 축소·자체 배송.'],
-      why: '약해지는 중.',
+      sources: ['세계 최대 택배망.'],
+      threats: ['아마존 물량 축소, 경쟁.'],
+      why: '망은 크지만 최대 고객을 잃어 약해지는 중.',
     },
     scores: {
       moat: '3점 — 세계 최대 택배망.',
@@ -21510,6 +25722,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 19%.',
       growth: '1점 — 아마존 물량을 절반으로 줄이는 중. 10년 EPS 연 2%.',
       durability: '3점 — 배당 약 6.7%가 이익 대비 부담.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['요금 인상.'],
+        threats: ['경쟁.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 19%.'],
+        threats: ['물량 감소.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['헬스케어 물류.'],
+        threats: ['아마존 물량을 절반으로 줄이는 중.'],
+        why: '줄어드는 중.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['망.'],
+        threats: ['배당 부담(약 6.7%).'],
+        why: '보통이다.',
+      },
     },
     now: [
       '2분기에 18개월 걸린 아마존 물량 절반 축소와 물류망 재편을 마쳤다. 연간 전망은 상향.',
@@ -21538,10 +25776,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '미국 통신 1위(버라이즌) — 새 CEO의 가입자 회복, 배당 6.4%',
     biz: { what: '미국 최대 통신 회사(버라이즌).', money: '휴대폰·인터넷 월 요금.' },
     moat: {
-      state: 'intact',
-      sources: ['통신 과점, 망 품질 평판.'],
-      threats: ['T모바일에 가입자를 뺏기는 중.', '빚.'],
-      why: '과점은 그대로지만 경쟁력이 약해지는 중이라 보수적으로.',
+      state: 'weakening',
+      sources: ['미국 최대 통신사, 망 품질 평판.'],
+      threats: ['T모바일에 가입자를 뺏기며 할인.', '빚.'],
+      why: '과점은 그대로지만 경쟁력이 약해지는 중.',
     },
     scores: {
       moat: '3점 — 미국 최대 통신사, 망 품질 평판.',
@@ -21549,6 +25787,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 9%.',
       growth: '1점 — 10년 EPS 감소.',
       durability: '3점 — 빚 많음, 배당 약 6%.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['망 품질.'],
+        threats: ['가격 경쟁.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 9%.'],
+        threats: ['빚.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['광인터넷(프론티어 인수).'],
+        threats: ['10년 EPS 감소.'],
+        why: '줄어드는 중.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['과점.'],
+        threats: ['빚, 배당 약 6%.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '7월 올해 조정 EPS 전망을 4.99~5.04달러로 상향. 2분기 조정 EPS 1.30달러.',
@@ -21577,10 +25841,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '하드디스크 2강(웨스턴디지털) — AI 저장 수요 폭발, 9월 고점 후 -26%',
     biz: { what: '하드디스크 회사(웨스턴디지털).', money: '데이터센터용 하드디스크.' },
     moat: {
-      state: 'intact',
-      sources: ['하드디스크 양강.'],
-      threats: ['사이클.'],
-      why: '과점 — 이익은 사이클.',
+      state: 'weakening',
+      sources: ['하드디스크 양강(낸드 사업 분리 후).'],
+      threats: ['저장장치 사이클.'],
+      why: '양강 해자는 있지만 사이클이 크다.',
     },
     scores: {
       moat: '2점 — 하드디스크 양강(낸드 사업 분리 후).',
@@ -21588,6 +25852,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 지금 ROIC 52%는 호황 수치(5년 평균 10%).',
       growth: '3점 — AI 데이터 저장 수요로 최근 분기 매출 +55%.',
       durability: '2점 — 저장장치는 호황·불황이 크다.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['수요가 넘칠 때 가격 결정력.'],
+        threats: ['사이클.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'good',
+        sources: ['지금 ROIC 52%(호황).'],
+        threats: ['5년 평균 10%.'],
+        why: '호황으로 좋아졌다.',
+      },
+      growth: {
+        state: 'good',
+        sources: ['최근 분기 매출 +55%.'],
+        threats: ['사이클.'],
+        why: '빨라지는 중.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['양강.'],
+        threats: ['호황·불황이 크다.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '8월 4분기 EPS 3.56달러(예상 3.31달러). 이번 분기 EPS 약 4.00달러, 매출 41억 달러, 매출총이익률 55~56% 전망.',
@@ -21617,9 +25907,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '목재·숲 회사(웨어하우저, 리츠).', money: '목재·벌목 판매.' },
     moat: {
       state: 'intact',
-      sources: ['미국 최대 숲 보유.'],
-      threats: ['주택 경기·목재 가격.'],
-      why: '자산은 그대로 — 가격 따라.',
+      sources: ['미국 최대 임야(약 1,000만 에이커).'],
+      threats: ['목재 가격.'],
+      why: '땅이 해자 — 그대로.',
     },
     scores: {
       moat: '3점 — 미국 최대 임야(약 1,000만 에이커) 보유.',
@@ -21627,6 +25917,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — ROIC 5%.',
       growth: '2점 — 10년 EPS 감소.',
       durability: '3점 — 땅 자체는 가치가 오래간다.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['땅.'],
+        threats: ['목재 가격은 시장이 정한다.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['ROIC 5%.'],
+        threats: ['목재 가격.'],
+        why: '낮다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['탄소 크레딧·땅 매각.'],
+        threats: ['10년 EPS 감소.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'good',
+        sources: ['땅 자체는 가치가 오래간다.'],
+        threats: ['가격 변동.'],
+        why: '단단하다.',
+      },
     },
     now: [
       '2분기 조정 EPS 0.13달러. 9월 3분기 목재 부문 이익이 약 3천만 달러 줄 것이라고 하향(연료비·제품 구성).',
@@ -21656,9 +25972,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '발전 회사(AES). 재생에너지 개발 + 미국·해외 전력.', money: '장기 전력 판매 계약.' },
     moat: {
       state: 'weakening',
-      sources: ['데이터센터용 재생에너지 장기 계약.'],
-      threats: ['빚이 많다, 금리.', '해외 사업 위험.'],
-      why: '재무 부담으로 약해지는 중.',
+      sources: ['발전·재생에너지 개발, 장기 전력 계약.'],
+      threats: ['빚이 매우 많다, 신흥국.'],
+      why: '진입 장벽이 낮아 해자가 약하다.',
     },
     scores: {
       moat: '2점 — 발전·재생에너지 개발. 장기 전력 계약은 있지만 진입 장벽이 낮다.',
@@ -21666,6 +25982,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — 빚이 매우 많다. 최근 PER 6배는 일회성 이익 포함.',
       growth: '3점 — 데이터센터 재생에너지 계약 증가.',
       durability: '2점 — 빚·금리·신흥국 위험(10년간 감소 7번).',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['장기 계약.'],
+        threats: ['계약 가격은 경쟁 입찰.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['계약 이익.'],
+        threats: ['빚·금리 부담.'],
+        why: '빚 때문에 수익성이 약하다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['데이터센터 재생에너지 계약.'],
+        threats: ['투자 부담.'],
+        why: '보통이다.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['계약.'],
+        threats: ['빚·금리(10년간 감소 7번).'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '3월 BlackRock 계열 GIP와 EQT가 주당 15달러 현금(지분 107억 달러, 부채 포함 334억 달러)에 인수하기로 합의.',
@@ -21695,9 +26037,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '항공기 회사(보잉).', money: '여객기·방산 판매 + 정비.' },
     moat: {
       state: 'weakening',
-      sources: ['에어버스와 양강 — 신규 진입 불가.'],
-      threats: ['품질 문제·생산 차질, 빚.'],
-      why: '양강 해자는 남았지만 신뢰가 흔들렸다. 약해지는 중.',
+      sources: ['여객기 양강(에어버스와) — 새 경쟁자는 수십 년 걸린다.'],
+      threats: ['737 맥스 사고·품질 문제·생산 중단·파업.'],
+      why: '양강 구조는 남았지만 품질 문제로 약해진 상태.',
     },
     scores: {
       moat: '3점 — 여객기 양강(에어버스와) — 새 경쟁자는 수십 년 걸린다.',
@@ -21705,6 +26047,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '1점 — 몇 년째 적자(737 맥스 사고·생산 중단·파업). 빚이 많다.',
       growth: '3점 — 주문 잔고 약 6,000대 — 생산만 정상화되면 이익 회복.',
       durability: '2점 — 품질·규제 문제가 아직 진행 중.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['양강.'],
+        threats: ['품질 문제로 항공사 보상, 협상력 약화.'],
+        why: '약해졌다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['정상화 기대.'],
+        threats: ['몇 년째 적자, 빚 많음.'],
+        why: '나쁘다.',
+      },
+      growth: {
+        state: 'good',
+        sources: ['주문 잔고 약 6,000대 — 생산만 정상화되면 회복.'],
+        threats: ['생산 속도.'],
+        why: '생산 정상화로 빨라질 수 있다.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['양강 지위.'],
+        threats: ['품질·규제 문제 진행 중.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '2분기 잉여현금흐름 6.3억 달러(1년 전 -2억 달러). 조정 EPS -0.76달러(에어포스원 비용). 올해 잉여현금흐름 10억~30억 달러 전망 유지.',
@@ -21733,9 +26101,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '연료전지 발전 회사(블룸에너지).', money: '연료전지 판매.' },
     moat: {
       state: 'weakening',
-      sources: ['데이터센터 현장 발전.'],
-      threats: ['이익 역사가 짧다.'],
-      why: '해자 미검증.',
+      sources: ['연료전지 발전기 — 데이터센터 현장 발전.'],
+      threats: ['수익성 불안정, 경쟁 기술.'],
+      why: '기술은 있지만 해자는 아직 검증되지 않았다.',
     },
     scores: {
       moat: '2점 — 연료전지 발전기. 데이터센터 현장 발전 수요.',
@@ -21743,6 +26111,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '1점 — 회계 이익이 거의 없거나 적자.',
       growth: '4점 — 데이터센터 전력 수요로 최근 분기 매출 2배 이상.',
       durability: '2점 — 수익성이 확인되지 않았다.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['데이터센터 수요.'],
+        threats: ['대형 계약 협상.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['흑자 전환 시도.'],
+        threats: ['회계 이익이 거의 없거나 적자.'],
+        why: '나쁘다.',
+      },
+      growth: {
+        state: 'good',
+        sources: ['데이터센터 전력 수요로 최근 분기 매출 2배 이상.'],
+        threats: ['수익성.'],
+        why: '빨라지는 중.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['기술.'],
+        threats: ['수익성 미확인.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '2분기 장비 매출 9.35억 달러로 사상 최대. 데이터센터 납품 가속. 장비 매출총이익률 37%.',
@@ -21769,9 +26163,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '통신탑 회사(크라운캐슬, 리츠).', money: '통신사 탑 임대료.' },
     moat: {
       state: 'intact',
-      sources: ['미국 탑 약 4만 개 장기 계약.'],
-      threats: ['통신사 투자 둔화.', '광섬유 사업 매각 후 성장 둔화.'],
-      why: '해자 그대로.',
+      sources: ['미국 통신탑 약 4만 개(장기 계약).'],
+      threats: ['통신사 투자 둔화.'],
+      why: '탑 계약 해자는 그대로.',
     },
     scores: {
       moat: '3점 — 미국 통신탑 약 4만 개(장기 계약).',
@@ -21779,6 +26173,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — 광섬유 사업 손상 처리로 이익이 줄었다. 빚이 많다.',
       growth: '1점 — 10년 EPS 감소. 광섬유 매각 후 탑만 남아 성장이 거의 없다.',
       durability: '3점 — 탑 계약은 안정적이지만 통신사 투자 둔화.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['계약 갱신 때 임대료 인상.'],
+        threats: ['지역 임대 시세를 따라간다.'],
+        why: '시세를 따라가는 수준이라 보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['리츠라 감가상각 때문에 회계 이익이 작다(ROE N/A%).'],
+        threats: ['빚·금리.'],
+        why: '회계 이익보다 주당 현금이익(FFO)으로 봐야 하고, 대체로 안정적이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['광섬유 매각 후 탑만 남아 성장이 거의 없다.'],
+        threats: ['통신사 투자 둔화.'],
+        why: '공급 과잉·수요 둔화로 느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['부동산 자체는 오래간다.'],
+        threats: ['금리가 오르면 부담.'],
+        why: '자산은 남지만 금리에 민감해 보통이다.',
+      },
     },
     now: [
       '5월 1일 광케이블·소형기지국 사업을 85억 달러에 매각 완료(자이오·아리움). 이후 연간 AFFO(리츠 현금 이익) 전망 상향.',
@@ -21808,9 +26228,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '세계 최대 크루즈 회사(카니발).', money: '승선료 + 선상 소비.' },
     moat: {
       state: 'intact',
-      sources: ['크루즈 규모.'],
-      threats: ['빚이 많다.'],
-      why: '해자 보통.',
+      sources: ['세계 최대 크루즈 회사(카니발 등 9개 브랜드).'],
+      threats: ['빚, 경기.'],
+      why: '규모 해자 그대로.',
     },
     scores: {
       moat: '2점 — 세계 최대 크루즈 회사(카니발 등 9개 브랜드).',
@@ -21818,6 +26238,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — 빚이 많다(코로나 때 크게 늘었다).',
       growth: '3점 — 크루즈 수요 사상 최고.',
       durability: '2점 — 코로나 때 3년 적자. 경기·빚.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['수요 강할 때 인상.'],
+        threats: ['불황 할인.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 12%로 회복.'],
+        threats: ['빚.'],
+        why: '회복 중이다.',
+      },
+      growth: {
+        state: 'good',
+        sources: ['크루즈 수요 사상 최고.'],
+        threats: ['경기.'],
+        why: '빨라지는 중.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['규모.'],
+        threats: ['코로나 때 3년 적자, 빚.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '9월 3분기: 조정 EPS 1.43달러(예상 1.35달러), 매출 84.4억 달러로 사상 최대. 연료비가 약 0.10달러 깎았다.',
@@ -21846,10 +26292,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '글로벌 은행(씨티그룹) — 구조조정 결실, 자기자본이익률 목표 상향',
     biz: { what: '글로벌 은행(씨티그룹).', money: '기업 자금 관리·무역 금융 + 트레이딩 + 카드.' },
     moat: {
-      state: 'intact',
-      sources: ['다국적 기업 송금·자금 관리 세계 1위급.'],
-      threats: ['구조조정 실행.', '규제.'],
-      why: '핵심 기업 금융 해자는 그대로. 구조조정 중.',
+      state: 'weakening',
+      sources: ['기업 결제·자금 관리 서비스(TTS)는 세계 1위급.'],
+      threats: ['나머지 사업 경쟁력 약함.'],
+      why: '강한 사업 하나, 나머지는 약해 해자가 얕다.',
     },
     scores: {
       moat: '2점 — 세계 은행 결제망(기업 자금 서비스)은 강하지만 나머지는 경쟁력이 약하다.',
@@ -21857,6 +26303,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — ROE 7%로 대형 은행 중 최하위.',
       growth: '2점 — 구조조정(해외 소매 매각) 중.',
       durability: '3점 — 대형 은행이라 망하진 않지만 수익성이 오래 낮았다.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['자금 관리 서비스.'],
+        threats: ['금리는 시장이 정한다.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['ROE 7%(대형 은행 최하위).'],
+        threats: ['구조조정 비용.'],
+        why: '낮다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['해외 소매 매각·구조조정.'],
+        threats: ['10년 EPS 연 3%.'],
+        why: '개편 효과를 기다리는 중.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['대형 은행.'],
+        threats: ['수익성 낮은 기간이 길었다.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '10월 3분기: EPS 2.85달러(+53%, 일회성 제외 +27%), 유형자기자본이익률 11.5%. 올해 11% 이상으로 목표 상향.',
@@ -21885,10 +26357,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '헬스케어 리츠(헬스피크) — 바이오 연구소·병원 오피스, 배당 6.5%',
     biz: { what: '헬스케어 부동산 회사(헬스피크, 리츠).', money: '의원·연구소 임대료.' },
     moat: {
-      state: 'intact',
-      sources: ['병원 근처 의원 건물.'],
+      state: 'weakening',
+      sources: ['의원·연구소·노인 시설 — 병원 근처 의원 건물.'],
       threats: ['연구소 공실(바이오 투자 위축).'],
-      why: '해자 보통.',
+      why: '연구소 공실로 약해지는 중.',
     },
     scores: {
       moat: '2점 — 의원·연구소·노인 시설 리츠.',
@@ -21896,6 +26368,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — 리츠라 감가상각 때문에 회계 이익이 작게 나온다(ROE 0.9%). 주당 현금이익(FFO)으로 봐야 한다.',
       growth: '2점 — 연구소 공실로 정체.',
       durability: '3점 — 연구소 공실(바이오 투자 위축).',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['계약 갱신 때 임대료 인상.'],
+        threats: ['지역 임대 시세를 따라간다.'],
+        why: '시세를 따라가는 수준이라 보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['리츠라 감가상각 때문에 회계 이익이 작다(ROE 0.9%).'],
+        threats: ['빚·금리.'],
+        why: '회계 이익보다 주당 현금이익(FFO)으로 봐야 하고, 대체로 안정적이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['연구소 공실로 정체.'],
+        threats: ['연구소 공실(바이오 투자 위축).'],
+        why: '공급 과잉·수요 둔화로 느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['부동산 자체는 오래간다.'],
+        threats: ['금리가 오르면 부담.'],
+        why: '자산은 남지만 금리에 민감해 보통이다.',
+      },
     },
     now: [
       '8월 올해 FFO(리츠 현금 이익) 전망을 1.73~1.77달러로 상향. 2분기 FFO 0.46달러.',
@@ -21926,9 +26424,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '버지니아 전력 회사(도미니언).', money: '규제 전기 요금.' },
     moat: {
       state: 'intact',
-      sources: ['세계 최대 데이터센터 지역(북버지니아) 독점 공급.'],
-      threats: ['해상 풍력 투자비.', '금리.'],
-      why: '해자 그대로 — 성장은 데이터센터 덕.',
+      sources: ['버지니아(세계 최대 데이터센터 지역) 전력·가스 공급 지역 독점 — 경쟁자가 없다.', '북버지니아 데이터센터 독점 공급.'],
+      threats: ['요금 인상은 정부 승인이 필요하다.', '금리(빚이 많다).', '해상 풍력 투자비.'],
+      why: '규제 독점이라 해자는 그대로 — 다만 이익의 천장도 정부가 정한다.',
     },
     scores: {
       moat: '3점 — 지역 전력·가스망 독점. 경쟁은 없지만 정부가 이익률을 정해 "넓은 해자, 낮은 천장" 구조.',
@@ -21936,6 +26434,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — ROIC 5%. 해상 풍력 투자비 부담.',
       growth: '2점 — 10년 EPS 연 1%. 데이터센터 수요가 기회.',
       durability: '3점 — 북버지니아 데이터센터 독점 공급.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['요금 인상 신청(설비 투자분 반영).'],
+        threats: ['공공요금 위원회가 승인 여부와 폭을 정한다.'],
+        why: '회사가 스스로 값을 정할 수 없는 구조다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['허용 자기자본 이익률 약 10%(실제 ROE 10.7%).'],
+        threats: ['ROIC 5~7% — 설비가 많이 드는 사업.'],
+        why: '정부가 허용한 수익률 안에서 안정적으로 번다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['데이터센터 수요가 기회지만 10년 EPS는 거의 정체.'],
+        threats: ['요금 인상 반발, 금리.'],
+        why: '투자를 늘릴수록 이익도 늘어나는 구조다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['전기·가스는 경기와 무관한 필수재.'],
+        threats: ['자연재해·산불 책임, 빚.'],
+        why: '필수 인프라라 사업은 오래가지만 빚과 재해가 변수다.',
+      },
     },
     now: [
       '8월 2분기: 올해 영업 EPS 3.45~3.69달러(중간 3.57달러) 유지. 2030년까지 연 5~7% 성장 목표.',
@@ -21964,10 +26488,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '남부 캘리포니아 전력(에디슨) — 이턴 산불 책임 위험으로 싸다, 배당 6.2%',
     biz: { what: '남캘리포니아 전력 회사(에디슨인터내셔널).', money: '규제 전기 요금.' },
     moat: {
-      state: 'weakening',
-      sources: ['지역 독점 전력망.'],
-      threats: ['2025년 LA 산불 배상 책임.'],
-      why: '산불 책임 위험으로 약해지는 중.',
+      state: 'intact',
+      sources: ['남캘리포니아 전력·가스 공급 지역 독점 — 경쟁자가 없다.'],
+      threats: ['요금 인상은 정부 승인이 필요하다.', '금리(빚이 많다).', '2025년 LA 산불 배상 책임.'],
+      why: '규제 독점이라 해자는 그대로 — 다만 이익의 천장도 정부가 정한다.',
     },
     scores: {
       moat: '2점 — 남캘리포니아 전력 독점.',
@@ -21975,6 +26499,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — 산불 배상 위험. 최근 PER 6배는 산불 기금 회계 영향.',
       growth: '3점 — 송전망 투자.',
       durability: '2점 — 2025년 LA 산불 배상 책임.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['요금 인상 신청(설비 투자분 반영).'],
+        threats: ['공공요금 위원회가 승인 여부와 폭을 정한다.'],
+        why: '회사가 스스로 값을 정할 수 없는 구조다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['허용 자기자본 이익률 약 10%(실제 ROE 26.9%).'],
+        threats: ['ROIC 5~7% — 설비가 많이 드는 사업.'],
+        why: '정부가 허용한 수익률 안에서 안정적으로 번다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['송전망 투자 확대.'],
+        threats: ['요금 인상 반발, 금리.'],
+        why: '투자를 늘릴수록 이익도 늘어나는 구조다.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['전기·가스는 경기와 무관한 필수재.'],
+        threats: ['자연재해·산불 책임, 빚.'],
+        why: '필수 인프라라 사업은 오래가지만 빚과 재해가 변수다.',
+      },
     },
     now: [
       '7월 2분기 핵심 EPS 1.54달러. 올해 5.90~6.20달러 유지, 2030년까지 연 5~7% 성장, 증자 없이 가능하다고 밝혔다.',
@@ -22004,9 +26554,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '화장품 회사(에스티로더).', money: '고급 화장품·향수.' },
     moat: {
       state: 'weakening',
-      sources: ['고급 브랜드.'],
-      threats: ['중국·면세점 판매 급감, 경쟁.'],
-      why: '약해지는 중.',
+      sources: ['에스티로더·라메르·맥 — 강한 브랜드.'],
+      threats: ['중국·면세 부진, 구조조정.'],
+      why: '브랜드는 있지만 실적이 무너져 약해지는 중.',
     },
     scores: {
       moat: '3점 — 에스티로더·라메르·맥 — 강한 브랜드.',
@@ -22014,6 +26564,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — 영업이익률 급락(중국·면세 부진), 구조조정 비용.',
       growth: '1점 — 10년 EPS 감소.',
       durability: '2점 — 중국·면세 의존.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['고급 화장품.'],
+        threats: ['할인 증가.'],
+        why: '보통이다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['구조조정.'],
+        threats: ['영업이익률 급락.'],
+        why: '나빠졌다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['새 CEO 회복 계획.'],
+        threats: ['10년 EPS 감소.'],
+        why: '줄어드는 중.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['브랜드.'],
+        threats: ['중국 의존.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '8월 2026 회계연도 조정 EPS 2.51달러(1년 전 1.51달러). 2027 회계연도 3.10~3.35달러 전망 — 예상 상회, 주가 하루 +13%.',
@@ -22043,9 +26619,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '에버소스 — 코네티컷·매사추세츠 전력·가스 공급 회사(유틸리티).', money: '정부가 정한 요금으로 전기·가스를 공급. 설비 투자액에 정해진 이익률을 붙여 요금을 받는다.' },
     moat: {
       state: 'intact',
-      sources: ['지역 독점 전력·가스망 — 경쟁이 없다.', '데이터센터·전기화로 전력 수요 증가.'],
-      threats: ['요금 인상 승인(규제 당국).', '금리(빚이 많다), 자연재해 비용.'],
-      why: '규제 독점이라 해자는 그대로. 다만 성장과 이익률은 정부가 정한다(해자가 있어도 크게 벌지는 못하는 구조).',
+      sources: ['코네티컷·매사추세츠 전력·가스 공급 지역 독점 — 경쟁자가 없다.'],
+      threats: ['요금 인상은 정부 승인이 필요하다.', '금리(빚이 많다).', '해상 풍력 투자 손실.'],
+      why: '규제 독점이라 해자는 그대로 — 다만 이익의 천장도 정부가 정한다.',
     },
     scores: {
       moat: '3점 — 지역 전력·가스망 독점. 경쟁은 없지만 정부가 이익률을 정해 "넓은 해자, 낮은 천장" 구조.',
@@ -22053,6 +26629,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — 해상 풍력 투자 손실, 빚이 많다.',
       growth: '2점 — EPS 연 5~7% 목표.',
       durability: '3점 — 뉴잉글랜드 규제 환경이 까다롭다.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['요금 인상 신청(설비 투자분 반영).'],
+        threats: ['공공요금 위원회가 승인 여부와 폭을 정한다.'],
+        why: '회사가 스스로 값을 정할 수 없는 구조다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['허용 자기자본 이익률 약 10%(실제 ROE 10.8%).'],
+        threats: ['ROIC 5~7% — 설비가 많이 드는 사업.'],
+        why: '정부가 허용한 수익률 안에서 안정적으로 번다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['EPS 연 5~7% 목표.'],
+        threats: ['요금 인상 반발, 금리.'],
+        why: '투자를 늘릴수록 이익도 늘어나는 구조다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['전기·가스는 경기와 무관한 필수재.'],
+        threats: ['자연재해·산불 책임, 빚.'],
+        why: '필수 인프라라 사업은 오래가지만 빚과 재해가 변수다.',
+      },
     },
     now: [
       '3월 올해 EPS 전망을 4.80~4.95달러 → 4.57~4.72달러로 낮췄다(감가상각·이자·지분 희석, 수도 사업 매각). 이후 유지, 장기 5~7% 성장.',
@@ -22082,9 +26684,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '자동차 회사(제너럴모터스).', money: '픽업·SUV 판매 + 할부 금융.' },
     moat: {
       state: 'weakening',
-      sources: ['픽업·SUV 브랜드.'],
-      threats: ['관세, 전기차 손실.'],
-      why: '자동차업은 해자가 얕다.',
+      sources: ['북미 트럭·SUV 강자.'],
+      threats: ['전기차 투자, 관세.'],
+      why: '해자가 얕다.',
     },
     scores: {
       moat: '2점 — 북미 트럭·SUV 강자.',
@@ -22092,6 +26694,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 영업이익률 보통, 회계 ROIC 2%(전기차 손상).',
       growth: '2점 — 10년 EPS 감소.',
       durability: '2점 — 전기차 투자·관세.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['트럭·SUV.'],
+        threats: ['경쟁.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['트럭 이익.'],
+        threats: ['전기차 손상으로 회계 ROIC 2%.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['자사주.'],
+        threats: ['10년 EPS 감소.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['규모.'],
+        threats: ['전기차·관세.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '10월 3분기: 조정 EPS 3.70달러(+32%), 조정 EBIT 41억 달러. 연간 조정 EPS 12.75~13.75달러로 좁혀 상향.',
@@ -22121,9 +26749,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '가맹점 결제 회사(글로벌페이먼츠).', money: '결제 처리 수수료.' },
     moat: {
       state: 'weakening',
-      sources: ['결제 처리 규모.'],
-      threats: ['핀테크 경쟁, 대형 인수.'],
-      why: '약해지는 중.',
+      sources: ['가맹점 결제 대행(2025년 월드페이 인수).'],
+      threats: ['경쟁, 큰 인수 통합.'],
+      why: '해자가 얕다.',
     },
     scores: {
       moat: '2점 — 가맹점 결제 대행. 2025년 월드페이 인수.',
@@ -22131,6 +26759,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 조정 영업이익률 높지만 회계 ROIC 4%(인수 자산).',
       growth: '2점 — 큰 인수 통합.',
       durability: '2점 — 경쟁·빚.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['규모.'],
+        threats: ['결제 수수료 경쟁.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['조정 영업이익률 높음.'],
+        threats: ['회계 ROIC 4%.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['인수.'],
+        threats: ['통합.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['규모.'],
+        threats: ['경쟁·빚.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '1월 월드페이 인수 완료, 카드 발급 처리 사업(TSYS)은 FIS에 매각. 6억 달러 비용 절감 계획.',
@@ -22159,10 +26813,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '미국 최대 고급호텔 리츠(호스트) — 월드컵 효과, 1년 +48%',
     biz: { what: '고급 호텔 소유 회사(호스트호텔스, 리츠).', money: '호텔 객실·식음료 매출.' },
     moat: {
-      state: 'intact',
-      sources: ['좋은 입지의 고급 호텔.'],
-      threats: ['여행 경기.'],
-      why: '해자 보통.',
+      state: 'weakening',
+      sources: ['미국 최대 고급 호텔 리츠.'],
+      threats: ['여행 경기·금리.'],
+      why: '호텔 소유는 해자가 얕다.',
     },
     scores: {
       moat: '2점 — 미국 최대 고급 호텔 리츠.',
@@ -22170,6 +26824,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — 리츠라 감가상각 때문에 회계 이익이 작게 나온다(ROE 11.6%). 주당 현금이익(FFO)으로 봐야 한다.',
       growth: '2점 — 객실 단가 연 2~4%.',
       durability: '3점 — 여행 경기·금리.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['계약 갱신 때 임대료 인상.'],
+        threats: ['지역 임대 시세를 따라간다.'],
+        why: '시세를 따라가는 수준이라 보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['리츠라 감가상각 때문에 회계 이익이 작다(ROE 11.6%).'],
+        threats: ['빚·금리.'],
+        why: '회계 이익보다 주당 현금이익(FFO)으로 봐야 하고, 대체로 안정적이다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['객실 단가 연 2~4%.'],
+        threats: ['여행 경기·금리.'],
+        why: '임대료와 신규 개발만큼 천천히 큰다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['부동산 자체는 오래간다.'],
+        threats: ['금리가 오르면 부담.'],
+        why: '자산은 남지만 금리에 민감해 보통이다.',
+      },
     },
     now: [
       '2분기 조정 FFO(리츠 현금 이익) 0.63달러(+8.6%), 객실당 매출 +7%. 월드컵 개최 도시 효과 1.6%p.',
@@ -22199,9 +26879,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '골판지 상자 회사(인터내셔널페이퍼).', money: '상자 판매.' },
     moat: {
       state: 'weakening',
-      sources: ['규모.'],
-      threats: ['원가 경쟁력 열세, 구조조정.'],
-      why: '약해지는 중.',
+      sources: ['골판지 상자 세계 최대급(DS스미스 인수).'],
+      threats: ['상자는 차별화가 작다.'],
+      why: '규모는 크지만 해자가 얕다.',
     },
     scores: {
       moat: '2점 — 골판지 상자 세계 최대급(DS스미스 인수).',
@@ -22209,6 +26889,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — 최근 1년 적자(공장 폐쇄·인수 비용).',
       growth: '2점 — 구조조정 중.',
       durability: '3점 — 포장재 수요는 꾸준.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['규모.'],
+        threats: ['시세.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['구조조정.'],
+        threats: ['최근 적자(공장 폐쇄·인수 비용).'],
+        why: '나빠졌다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['합병 시너지.'],
+        threats: ['수요 정체.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['포장재 수요.'],
+        threats: ['경기.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '1분기 연간 조정 EBITDA 전망을 35~37억 달러 → 32~35억 달러로 낮췄다(물가·운임·날씨). 주가 하루 약 -10%.',
@@ -22237,9 +26943,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '자산운용사(인베스코). QQQ ETF 운용.', money: '운용 수수료.' },
     moat: {
       state: 'weakening',
-      sources: ['QQQ — 세계 최대급 ETF.'],
+      sources: ['나스닥100 ETF(QQQ) 운용사.'],
       threats: ['액티브 펀드 자금 유출.'],
-      why: '약해지는 중(QQQ는 강점).',
+      why: 'ETF는 강하지만 액티브가 약해 전체 해자는 얕다.',
     },
     scores: {
       moat: '2점 — 나스닥100 ETF(QQQ) 운용사. 액티브 펀드는 돈이 빠져나간다.',
@@ -22247,6 +26953,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — 최근 1년 손상 처리로 회계 적자.',
       growth: '2점 — ETF는 크지만 액티브 유출이 상쇄.',
       durability: '3점 — 증시 하락 시 수수료 감소.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['ETF 브랜드.'],
+        threats: ['수수료 하락.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['운용 수익.'],
+        threats: ['손상 처리로 회계 적자.'],
+        why: '나빠졌다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['ETF 성장.'],
+        threats: ['액티브 유출.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['QQQ.'],
+        threats: ['증시.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '2분기 조정 EPS 0.71달러. 운용자산 2.5조 달러(+14%), 장기 순유입 451억 달러로 사상 최대.',
@@ -22274,10 +27006,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '미국 중서부 지방은행(키코프) — 3분기 EPS +24%, 사상 최대 매출',
     biz: { what: '키코프 — 오하이오 등 은행.', money: '대출 이자에서 예금 이자를 뺀 차익 + 카드·자산관리 수수료.' },
     moat: {
-      state: 'intact',
-      sources: ['지역 예금 기반 — 싼 자금 조달.', '오래된 지역 기업·주민 관계.'],
-      threats: ['경기 침체 시 대출 부실(상업용 부동산).', '금리 변화, 핀테크.'],
-      why: '은행업은 해자가 얕은 편(돈은 어디서나 같은 상품). 지역 기반이 유지되는 한 그대로.',
+      state: 'weakening',
+      sources: ['미국 중서부 지역 예금 기반 — 예금이 싼 자금원.'],
+      threats: ['대형 은행·핀테크 경쟁.', '상업용 부동산 대출 부실.'],
+      why: '지역 기반은 있지만 큰 은행보다 해자가 얕다.',
     },
     scores: {
       moat: '2점 — 미국 중서부 지역 예금 기반. 대형 은행보다 규모가 작아 해자는 약하다.',
@@ -22285,6 +27017,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — ROE 9.5%.',
       growth: '2점 — 지역 경제 성장만큼 큰다.',
       durability: '3점 — 지역 은행은 신용·금리 위기에 취약(2023년 지역 은행 위기).',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['예금 금리 관리.'],
+        threats: ['대출·예금 금리 수준은 시장(연준)이 정한다.'],
+        why: '은행은 구조적으로 값을 정하지 못한다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['ROE 9.5%.'],
+        threats: ['대손 비용, 예금 이탈.'],
+        why: '자기자본 이익률이 낮은 편이다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['지역 경제 성장만큼 대출이 는다.'],
+        threats: ['경기 둔화.'],
+        why: '지역 경제만큼 천천히 큰다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['오랜 지역 영업.'],
+        threats: ['2023년 지역 은행 위기처럼 예금 이탈 위험.'],
+        why: '신용·금리 위기에 취약해 보통이다.',
+      },
     },
     now: [
       '10월 20일 3분기: EPS 0.51달러(1년 전 0.41달러), 매출 약 20.4억 달러(+8%). 순이자마진 2.95%.',
@@ -22314,9 +27072,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '카지노 리조트 회사(MGM).', money: '라스베이거스·마카오 카지노.' },
     moat: {
       state: 'intact',
-      sources: ['라스베이거스 대형 리조트 다수.'],
-      threats: ['경기, 빚.'],
-      why: '해자 보통.',
+      sources: ['라스베이거스 카지노 최대, 일본(오사카) 진출.'],
+      threats: ['빚, 경기.'],
+      why: '규모 해자 그대로.',
     },
     scores: {
       moat: '3점 — 라스베이거스 카지노 최대, 마카오·일본(오사카) 진출.',
@@ -22324,6 +27082,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — ROE 8%, 빚.',
       growth: '2점 — 라스베이거스 정체.',
       durability: '2점 — 경기·빚.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['규모.'],
+        threats: ['경쟁.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 15%.'],
+        threats: ['빚.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['오사카(2030년 개장 예정).'],
+        threats: ['라스베이거스 정체.'],
+        why: '보통이다.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['규모.'],
+        threats: ['빚·경기.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '2분기 조정 EPS 0.59달러(예상 0.63달러 하회). 라스베이거스 매출 +3%, 매출은 사상 최대.',
@@ -22353,9 +27137,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '크루즈 회사(노르웨이지안).', money: '승선료.' },
     moat: {
       state: 'weakening',
-      sources: ['고급 크루즈 브랜드.'],
+      sources: ['크루즈 3위.'],
       threats: ['빚이 많다.'],
-      why: '약해지는 중.',
+      why: '해자가 얕다.',
     },
     scores: {
       moat: '2점 — 크루즈 3위.',
@@ -22363,6 +27147,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — 빚이 많다.',
       growth: '3점 — 수요 회복.',
       durability: '2점 — 빚·경기.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['고급 크루즈.'],
+        threats: ['수요에 따라 할인.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 10%.'],
+        threats: ['빚.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'good',
+        sources: ['수요 회복.'],
+        threats: ['빚.'],
+        why: '빨라지는 중.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['선단.'],
+        threats: ['빚·경기.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '올해 조정 EPS 전망: 2.38달러 → 5월 1.45~1.79달러 → 7월 약 1.50달러. 연료비 급등 + 유럽 예약 부진.',
@@ -22390,10 +27200,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '미국 석유 대형 생산(옥시덴탈) — 화학 사업 매각으로 부채 대폭 감축',
     biz: { what: '석유 회사(옥시덴탈).', money: '원유·가스 판매.' },
     moat: {
-      state: 'intact',
-      sources: ['퍼미안 대규모 땅.'],
-      threats: ['유가, 빚.'],
-      why: '해자 보통.',
+      state: 'weakening',
+      sources: ['퍼미안 대형 생산 — 버크셔가 지분 약 27% 보유.'],
+      threats: ['유가·가스 가격.', '장기 에너지 전환.'],
+      why: '빚이 많아 해자가 얕다.',
     },
     scores: {
       moat: '2점 — 퍼미안 대형 생산사. 버크셔가 지분 약 27% 보유.',
@@ -22401,6 +27211,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 5%(5년 평균 8%). 이익은 유가 따라 크게 변한다.',
       growth: '3점 — 생산량 증가는 연 몇 %. 이익 성장은 유가에 달렸다.',
       durability: '3점 — 유가 사이클과 장기 에너지 전환 위험.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['비용 절감.'],
+        threats: ['유가·가스 가격은 세계 시장이 정한다.'],
+        why: '회사가 값을 정할 수 없다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 5%(5년 평균 8%).'],
+        threats: ['유가 하락기.'],
+        why: '이익률은 유가를 따라 오르내린다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['생산량 연 몇 % 증가, 자사주 매입.'],
+        threats: ['유가.'],
+        why: '생산은 늘지만 이익은 유가가 정한다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['저원가 자산.'],
+        threats: ['유가 급락기 적자, 에너지 전환.'],
+        why: '원자재 사이클을 그대로 타 보통이다.',
+      },
     },
     now: [
       '1월 화학 사업(옥시켐)을 버크셔해서웨이에 약 95억 달러에 매각. 부채가 2025년 초 약 230억 → 약 120~130억 달러.',
@@ -22429,10 +27265,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '북부 캘리포니아 전력(PG&E) — 이익 10% 성장, 산불 위험으로 PER 8배',
     biz: { what: '북캘리포니아 전력 회사(PG&E).', money: '규제 전기·가스 요금.' },
     moat: {
-      state: 'weakening',
-      sources: ['지역 독점 전력망.'],
-      threats: ['산불 배상 책임(파산 이력).', '요금 인상 반발.'],
-      why: '독점은 그대로지만 산불 책임이 이익을 언제든 날릴 수 있다. 약해지는 중.',
+      state: 'intact',
+      sources: ['북캘리포니아 전력·가스 공급 지역 독점 — 경쟁자가 없다.'],
+      threats: ['요금 인상은 정부 승인이 필요하다.', '금리(빚이 많다).', '산불 책임(2019년 파산 이력).'],
+      why: '규제 독점이라 해자는 그대로 — 다만 이익의 천장도 정부가 정한다.',
     },
     scores: {
       moat: '2점 — 북캘리포니아 전력 독점.',
@@ -22440,6 +27276,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — ROIC 5%.',
       growth: '3점 — 송전망 투자.',
       durability: '2점 — 산불 책임(파산 이력).',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['요금 인상 신청(설비 투자분 반영).'],
+        threats: ['공공요금 위원회가 승인 여부와 폭을 정한다.'],
+        why: '회사가 스스로 값을 정할 수 없는 구조다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['허용 자기자본 이익률 약 10%(실제 ROE 8.3%).'],
+        threats: ['ROIC 5~7% — 설비가 많이 드는 사업.'],
+        why: '정부가 허용한 수익률 안에서 안정적으로 번다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['송전망 투자 확대.'],
+        threats: ['요금 인상 반발, 금리.'],
+        why: '투자를 늘릴수록 이익도 늘어나는 구조다.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['전기·가스는 경기와 무관한 필수재.'],
+        threats: ['자연재해·산불 책임, 빚.'],
+        why: '필수 인프라라 사업은 오래가지만 빚과 재해가 변수다.',
+      },
     },
     now: [
       '올해 핵심 EPS 1.64~1.66달러(+10%) 유지. 2분기 0.40달러로 예상 상회.',
@@ -22469,9 +27331,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '생명과학·진단 회사(레비티).', money: '시약·진단 판매.' },
     moat: {
       state: 'weakening',
-      sources: ['신생아 검사.'],
-      threats: ['수요 둔화.'],
-      why: '약해지는 중.',
+      sources: ['생명과학 시약·진단(퍼킨엘머 분리 후).'],
+      threats: ['경쟁, 바이오 투자 둔화.'],
+      why: '해자가 얕다.',
     },
     scores: {
       moat: '2점 — 생명과학 시약·진단(퍼킨엘머 분리 후).',
@@ -22479,6 +27341,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — ROIC 3%(인수 자산·손상 처리).',
       growth: '2점 — 최근 5년 EPS 감소. 코로나 진단 특수 소멸.',
       durability: '3점 — 바이오 투자 둔화.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['시약.'],
+        threats: ['경쟁.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['ROIC 3%.'],
+        threats: ['손상 처리.'],
+        why: '낮다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['진단.'],
+        threats: ['최근 5년 EPS 감소.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['진단 사업.'],
+        threats: ['바이오 투자.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '8월 2분기 조정 EPS 1.41달러(예상 1.21달러). 연간 조정 EPS 전망 5.30~5.40달러로 상향. 진단 유기적 성장 11%.',
@@ -22509,9 +27397,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: 'AI 서버 조립 회사(슈퍼마이크로).', money: '서버 판매.' },
     moat: {
       state: 'broken',
-      sources: ['빠른 신제품 출시.'],
-      threats: ['회계 문제, 낮은 이익률, 경쟁(델).'],
-      why: '해자 흔들림.',
+      sources: ['AI 서버 조립 — 빠른 출시가 장점.'],
+      threats: ['진입 장벽이 낮다, 델·HPE 경쟁.'],
+      why: '해자가 사실상 없다.',
     },
     scores: {
       moat: '2점 — AI 서버 조립. 빠른 출시가 장점이지만 진입 장벽이 낮다.',
@@ -22519,6 +27407,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — 영업이익률 약 5%.',
       growth: '4점 — AI 서버 수요로 매출 급증.',
       durability: '2점 — 회계 문제(감사인 사임) 이력.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['빠른 출시.'],
+        threats: ['가격 경쟁, 마진이 얇다.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['ROIC 높음(호황).'],
+        threats: ['영업이익률 약 5%.'],
+        why: '얇다.',
+      },
+      growth: {
+        state: 'good',
+        sources: ['AI 서버 수요로 매출 급증.'],
+        threats: ['경쟁.'],
+        why: '빨라지는 중.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['고객.'],
+        threats: ['회계 문제(감사인 사임) 이력.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '8월 2027 회계연도 매출 목표 650억~720억 달러 제시(직전 해의 2배 이상). 그러나 이익률 우려로 주가 하락.',
@@ -22547,10 +27461,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '미국 최대 유통 제휴 카드사(싱크로니) — 연체 개선, PER 8배',
     biz: { what: '유통사 제휴 카드 회사(싱크로니).', money: '매장 카드 대출 이자.' },
     moat: {
-      state: 'intact',
-      sources: ['아마존·로우스 등 대형 유통 제휴.'],
-      threats: ['연체 증가.', '연체료 규제.'],
-      why: '해자 보통.',
+      state: 'weakening',
+      sources: ['유통사 제휴 카드(아마존·로우스 등).'],
+      threats: ['큰 제휴사 이탈(2023년 월마트).'],
+      why: '제휴사 의존이라 해자가 얕다.',
     },
     scores: {
       moat: '2점 — 유통사 제휴 카드(아마존·로우스 등).',
@@ -22558,6 +27472,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROE 21%.',
       growth: '2점 — 대출 증가 연 3~5%.',
       durability: '2점 — 경기 침체 때 대손이 크게 늘고, 큰 제휴사를 잃으면 타격(2023년 월마트).',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['제휴.'],
+        threats: ['제휴사와 이익을 나눈다.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'good',
+        sources: ['ROE 21%.'],
+        threats: ['대손.'],
+        why: '높다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['대출 증가 연 3~5%.'],
+        threats: ['경쟁.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['제휴망.'],
+        threats: ['경기 침체 때 대손 급증.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '10월 20일 3분기: EPS 2.68달러(예상 약 2.42달러). 순손실률 4.79%(-0.37%p), 카드 사용액 +8%.',
@@ -22585,10 +27525,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '통신 API(트윌리오) — 음성 AI 수요로 성장 재가속, 1년 +132%',
     biz: { what: '통신 API 회사(트윌리오).', money: '문자·전화 API 사용료.' },
     moat: {
-      state: 'intact',
-      sources: ['개발자 생태계.'],
-      threats: ['가격 경쟁.'],
-      why: '해자 보통.',
+      state: 'weakening',
+      sources: ['통신 API(문자·전화) 개발자 생태계.'],
+      threats: ['경쟁·가격.'],
+      why: '해자가 얕다.',
     },
     scores: {
       moat: '2점 — 통신 API(문자·전화). 경쟁이 많다.',
@@ -22596,6 +27536,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — 회계 ROIC 2%(주식 보상).',
       growth: '3점 — AI 음성 상담 수요로 성장 재가속(최근 분기 +22%).',
       durability: '2점 — 경쟁·이익 변동.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['개발자 기반.'],
+        threats: ['통신사 요금 전가 한계.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['흑자 전환.'],
+        threats: ['회계 ROIC 2%(주식 보상).'],
+        why: '낮다.',
+      },
+      growth: {
+        state: 'good',
+        sources: ['AI 음성 상담 수요로 성장 재가속(최근 분기 +22%).'],
+        threats: ['경쟁.'],
+        why: '빨라지는 중.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['개발자 기반.'],
+        threats: ['경쟁·이익 변동.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '2분기 조정 EPS 1.47달러, 연간 매출 성장 전망 18~18.5%로 두 번째 상향(인수 효과 제외 13~13.5%).',
@@ -22887,9 +27853,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '곡물 가공 회사(ADM).', money: '곡물 매입·가공 마진.' },
     moat: {
       state: 'weakening',
-      sources: ['세계 곡물 물류망.'],
-      threats: ['회계 문제, 마진 하락.'],
-      why: '약해지는 중.',
+      sources: ['세계 곡물 물류망(창고·항구·배).'],
+      threats: ['곡물 가공은 차별화가 어렵다.', '회계 조사 이력(2024년).'],
+      why: '물류망은 크지만 가공 마진을 지키는 힘이 약해 약해지는 중.',
     },
     scores: {
       moat: '2점 — 세계 곡물 물류망은 크지만 곡물 가공은 차별화가 어려운 사업.',
@@ -22897,6 +27863,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — ROIC 5%(5년 평균 10%). 이익이 2022년 고점의 절반 아래.',
       growth: '2점 — 10년 EPS 감소(연 -3%). 바이오연료 정책이 이익을 좌우.',
       durability: '3점 — 120년 역사지만 이익이 원자재 사이클에 따라 크게 출렁인다(10년간 감소 5번).',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['바이오연료 정책 수혜.'],
+        threats: ['곡물·대두 가격과 가공 마진은 시장이 정한다.'],
+        why: '원자재 가공업이라 값을 정하지 못한다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['5년 평균 ROIC 10%.'],
+        threats: ['최근 ROIC 5%, 이익이 고점의 절반 아래.'],
+        why: '마진 하락으로 나빠졌다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['정책 덕 회복 기대.'],
+        threats: ['10년 EPS 감소(연 -3%).'],
+        why: '원자재 사이클을 기다리는 중.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['120년 역사.'],
+        threats: ['이익이 크게 출렁인다(10년간 감소 5번).'],
+        why: '오래 버텼지만 이익 변동이 크다.',
+      },
     },
     now: [
       '올해 조정 EPS 전망: 2월 3.60~4.25달러 → 5월 4.15~4.70달러 → 2분기 후 약 5.15~5.60달러(2차 자료 기준).',
@@ -22925,10 +27917,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '세계 최대 리튬(앨버말) — 리튬 가격 반등으로 이익 급증',
     biz: { what: '리튬·화학 회사(앨버말).', money: '리튬·브롬 판매.' },
     moat: {
-      state: 'weakening',
-      sources: ['리튬 자원.'],
-      threats: ['리튬 가격 폭락, 중국 공급.'],
-      why: '약해지는 중.',
+      state: 'broken',
+      sources: ['세계 최대 리튬 생산 — 자원 보유.'],
+      threats: ['리튬은 원자재 — 2022년 고점 대비 약 -80% 폭락, 중국 공급.'],
+      why: '원자재라 해자가 사실상 없고 흔들리는 중.',
     },
     scores: {
       moat: '2점 — 세계 최대 리튬 생산사. 자원은 있지만 리튬은 원자재라 해자가 약하다.',
@@ -22936,6 +27928,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — 최근 몇 년 적자, ROIC 마이너스.',
       growth: '3점 — 전기차·에너지저장 수요로 반등 가능.',
       durability: '2점 — 리튬 가격에 따라 이익이 극단적으로 흔들린다.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['자원.'],
+        threats: ['리튬 가격은 시장이 정한다.'],
+        why: '값을 정할 수 없다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['비용 절감.'],
+        threats: ['최근 몇 년 적자.'],
+        why: '나쁘다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['전기차·에너지저장 수요로 가격 반등.'],
+        threats: ['공급 과잉.'],
+        why: '반등 중이다.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['자원.'],
+        threats: ['가격에 따라 이익이 극단적으로 흔들린다.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '8월 2분기 조정 EPS 3.75달러(1년 전 0.11달러). 리튬 판매가 kg당 19.5달러(+60%), 판매량 +11%. 잉여현금 6.4억 달러.',
@@ -22965,9 +27983,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '병원 소모품 회사(박스터).', money: '수액·병원 장비.' },
     moat: {
       state: 'weakening',
-      sources: ['수액 공급 규모.'],
-      threats: ['허리케인 공장 피해 이력, 빚, 구조조정.'],
-      why: '약해지는 중.',
+      sources: ['수액·투석·병원 기본 소모품.'],
+      threats: ['구조조정·빚, 리콜.'],
+      why: '필수품이지만 경쟁력이 약해졌다.',
     },
     scores: {
       moat: '2점 — 수액·투석·병원 기본 소모품.',
@@ -22975,6 +27993,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — 회계 적자(사업 매각·손상).',
       growth: '2점 — 신장 사업 매각 후 성장 정체.',
       durability: '2점 — 구조조정·빚·제품 리콜.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['필수품.'],
+        threats: ['병원 구매 단체.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['소모품 이익.'],
+        threats: ['사업 매각·손상으로 회계 적자.'],
+        why: '나빠졌다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['구조조정.'],
+        threats: ['성장 정체.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['필수품.'],
+        threats: ['빚·리콜.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '7월 2분기 조정 EPS 0.56달러(예상 0.37달러). 연간 조정 EPS 1.95~2.15달러로 상향 — 관세 환급(약 0.11달러) 덕.',
@@ -23001,10 +28045,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '자산운용사(프랭클린 템플턴) — 채권 자회사 유출 진정, 배당 4.2%',
     biz: { what: '자산운용사(프랭클린템플턴).', money: '운용 수수료.' },
     moat: {
-      state: 'weakening',
-      sources: ['브랜드·대체투자 인수.'],
-      threats: ['액티브 펀드 자금 유출.'],
-      why: '약해지는 중.',
+      state: 'broken',
+      sources: ['액티브 운용사(프랭클린·템플턴·레그메이슨).'],
+      threats: ['돈이 계속 빠져나간다.'],
+      why: '업계 구조 변화로 흔들리는 중.',
     },
     scores: {
       moat: '2점 — 액티브 운용사(프랭클린·템플턴·레그메이슨).',
@@ -23012,6 +28056,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 이익률이 낮아지는 중(ROE 4%).',
       growth: '1점 — 10년 EPS 감소, 돈이 계속 빠져나간다.',
       durability: '2점 — 패시브 전환으로 업계 구조가 불리.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['브랜드.'],
+        threats: ['수수료 하락.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['운용 수익.'],
+        threats: ['ROE 4%.'],
+        why: '낮다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['인수.'],
+        threats: ['10년 EPS 감소.'],
+        why: '줄어드는 중.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['규모.'],
+        threats: ['패시브 전환.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '6월 말 운용자산 1.79조 달러, 분기 장기 순유입 180억 달러. 채권 자회사(웨스턴 애셋) 유출이 10억 달러로 크게 줄었다.',
@@ -23040,10 +28110,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '곡물·유지 가공(번지) — 비테라 합병 시너지, 전망 두 번 상향',
     biz: { what: '곡물 가공 회사(번지).', money: '콩 가공·식용유 마진.' },
     moat: {
-      state: 'intact',
-      sources: ['콩 가공 1위.'],
-      threats: ['마진 사이클.'],
-      why: '해자 약함.',
+      state: 'weakening',
+      sources: ['세계 곡물 유통·대두 가공 상위권(비테라 합병).'],
+      threats: ['원자재 가공은 차별화가 어렵다.'],
+      why: '규모는 커졌지만 해자는 얕다.',
     },
     scores: {
       moat: '2점 — 세계 곡물 유통·대두 가공 상위권(비테라 합병).',
@@ -23051,6 +28121,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — ROIC 7%(5년 평균 21%) — 곡물 사이클에 따라 크게 변한다.',
       growth: '2점 — 합병 효과 외에는 원자재 사이클에 달렸다.',
       durability: '3점 — 200년 역사지만 이익이 들쭉날쭉.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['물류.'],
+        threats: ['가격·마진은 시장이 정한다.'],
+        why: '값을 정할 수 없다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['5년 평균 ROIC 21%(호황 포함).'],
+        threats: ['최근 ROIC 7%.'],
+        why: '사이클 하강으로 나빠졌다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['합병 시너지.'],
+        threats: ['곡물 사이클.'],
+        why: '사이클에 달렸다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['200년 역사.'],
+        threats: ['이익 변동.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '올해 조정 EPS 전망 7.50~8.00달러 → 9.00~9.50달러 → 9.25~9.75달러. 비테라 시너지 목표 3.5억 달러로 상향.',
@@ -23079,8 +28175,8 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '신경과학 바이오 회사(바이오젠).', money: '다발성 경화증·희귀병 약.' },
     moat: {
       state: 'weakening',
-      sources: ['신경과학 전문성.'],
-      threats: ['주력 약 복제약, 알츠하이머 약 부진.'],
+      sources: ['다발성 경화증·알츠하이머 신약(레켐비).'],
+      threats: ['기존 약 매출 감소.'],
       why: '약해지는 중.',
     },
     scores: {
@@ -23089,6 +28185,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — 순이익률 보통, ROE 7%.',
       growth: '1점 — 10년 EPS 감소. 기존 약 매출이 줄어든다.',
       durability: '2점 — 신약 성공 여부 불확실.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['신약.'],
+        threats: ['복제약 경쟁.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROE 7%.'],
+        threats: ['매출 감소.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['신약 출시.'],
+        threats: ['10년 EPS 감소.'],
+        why: '줄어드는 중.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['파이프라인.'],
+        threats: ['신약 성공 불확실.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '알츠하이머 치료제 레켐비 판매 +74%(1분기). 3월 아펠리스를 56억 달러에 인수(안과·신장 약 2종).',
@@ -23118,9 +28240,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '약국·보험·약제비 관리 회사(CVS).', money: '약국 + 에트나 보험 + 케어마크.' },
     moat: {
       state: 'weakening',
-      sources: ['약국망·보험·약제비 관리 결합.'],
-      threats: ['약국 매출 감소, 보험 의료비.'],
-      why: '약해지는 중.',
+      sources: ['약국 체인 + 보험(애트나) + 약제비 관리(케어마크).'],
+      threats: ['약국 마진 하락, 보험 손실, 규제.'],
+      why: '통합 모델이 아직 성과를 못 내 약해지는 중.',
     },
     scores: {
       moat: '2점 — 약국 체인 + 보험(애트나) + 약제비 관리(케어마크).',
@@ -23128,6 +28250,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — ROIC 3%. 보험 손실.',
       growth: '2점 — 10년 EPS 감소. 매장 축소.',
       durability: '2점 — 약제비 관리 규제.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['규모.'],
+        threats: ['약국 마진·정부 지급액.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['ROIC 3%.'],
+        threats: ['보험 손실.'],
+        why: '낮다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['보험 이익 회복.'],
+        threats: ['10년 EPS 감소.'],
+        why: '회복 중이다.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['규모.'],
+        threats: ['규제.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '5월 연간 조정 EPS 전망을 7.00~7.20달러 → 7.30~7.50달러로 상향. 에트나 의료비율 84.6%(1년 전 87.3%).',
@@ -23156,10 +28304,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '미국 셰일 석유(데본) — 코테라 합병, 자사주 80억 달러',
     biz: { what: '셰일 원유 회사(데번).', money: '원유·가스 판매.' },
     moat: {
-      state: 'intact',
-      sources: ['퍼미안·윌리스턴.'],
-      threats: ['유가.'],
-      why: '해자 약함 — 원자재 회사.',
+      state: 'weakening',
+      sources: ['셰일 석유·가스 생산.'],
+      threats: ['유가·가스 가격.', '장기 에너지 전환.'],
+      why: '셰일 생산은 해자가 얕다.',
     },
     scores: {
       moat: '2점 — 셰일 석유·가스 생산.',
@@ -23167,6 +28315,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROE 18%(유가 따라 변동).',
       growth: '2점 — 생산 증가 제한적.',
       durability: '2점 — 유가 사이클.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['비용 절감.'],
+        threats: ['유가·가스 가격은 세계 시장이 정한다.'],
+        why: '회사가 값을 정할 수 없다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 높음(ROE 18%).'],
+        threats: ['유가 하락기.'],
+        why: '이익률은 유가를 따라 오르내린다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['생산량 연 몇 % 증가, 자사주 매입.'],
+        threats: ['유가.'],
+        why: '생산은 늘지만 이익은 유가가 정한다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['저원가 자산.'],
+        threats: ['유가 급락기 적자, 에너지 전환.'],
+        why: '원자재 사이클을 그대로 타 보통이다.',
+      },
     },
     now: [
       '5월 코테라 합병 완료 — 하루 136만 배럴(석유 환산). 2027년까지 연 10억 달러 이상 시너지 목표.',
@@ -23196,9 +28370,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '장난감·게임 회사(해즈브로).', money: '장난감 + 카드 게임(매직).' },
     moat: {
       state: 'weakening',
-      sources: ['매직 더 개더링.'],
-      threats: ['장난감 부진.'],
-      why: '약해지는 중(카드 게임은 강점).',
+      sources: ['트랜스포머·모노폴리·매직더개더링.'],
+      threats: ['완구 부진, 관세.'],
+      why: '카드 게임은 강하지만 완구가 약하다.',
     },
     scores: {
       moat: '2점 — 트랜스포머·모노폴리·매직더개더링(카드 게임).',
@@ -23206,6 +28380,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — 최근 손상 처리로 큰 회계 적자.',
       growth: '2점 — 디지털 게임·카드 게임이 성장, 완구는 부진.',
       durability: '2점 — 관세(중국 생산).',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['IP.'],
+        threats: ['완구 가격 경쟁.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['카드 게임 이익.'],
+        threats: ['손상 처리로 큰 회계 적자.'],
+        why: '나빠졌다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['디지털·카드 게임.'],
+        threats: ['완구 부진.'],
+        why: '보통이다.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['IP.'],
+        threats: ['관세.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '2분기 조정 EPS 1.28달러(예상 1.15달러), 매출 +16%. 게임 부문(위저즈) +27%, 매직 카드 분기 매출 처음 5억 달러 돌파.',
@@ -23235,8 +28435,8 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: 'PC·프린터 회사(HP).', money: 'PC + 프린터 잉크.' },
     moat: {
       state: 'weakening',
-      sources: ['프린터 잉크 반복 매출.'],
-      threats: ['인쇄 감소, PC 저마진.'],
+      sources: ['PC·프린터 — 잉크 소모품이 핵심.'],
+      threats: ['프린터 사용 감소.'],
       why: '약해지는 중.',
     },
     scores: {
@@ -23245,6 +28445,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 55%(자본이 적다).',
       growth: '1점 — 10년 EPS 거의 정체.',
       durability: '2점 — 프린터 사용 감소.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['잉크.'],
+        threats: ['PC 가격 경쟁.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'good',
+        sources: ['ROIC 55%(자본이 적다).'],
+        threats: ['마진.'],
+        why: '자본 효율은 높다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['AI PC.'],
+        threats: ['10년 EPS 정체.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['설치 기반.'],
+        threats: ['프린터 감소.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '3분기 실적 후 연간 조정 EPS 전망을 3.19~3.29달러로 상향 — 그중 약 0.19달러는 관세 환급.',
@@ -23274,8 +28500,8 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '노인 건강보험 회사(휴매나).', money: '메디케어 어드밴티지 보험료.' },
     moat: {
       state: 'weakening',
-      sources: ['노인 보험 2위.'],
-      threats: ['정부 지급 축소, 평가 등급 하락.'],
+      sources: ['메디케어 어드밴티지(노인 민간 보험) 2위.'],
+      threats: ['정부 지급액·평가 등급 하락.'],
       why: '약해지는 중.',
     },
     scores: {
@@ -23284,6 +28510,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — 의료비 급증으로 이익 감소.',
       growth: '2점 — 정부 지급액에 달렸다.',
       durability: '2점 — 정부 평가 등급(별점) 하락.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['규모.'],
+        threats: ['지급액은 정부가 정한다.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['ROIC 25%.'],
+        threats: ['의료비 급증으로 이익 감소.'],
+        why: '나빠졌다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['회원.'],
+        threats: ['정부 정책.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['규모.'],
+        threats: ['정책.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '10월 9일 2027년 별점 발표: 4성급 이상 가입자 비중 20% → 95%. 주가 하루 +11.6%, 2월 약 187달러에서 2배 넘게 올랐다.',
@@ -23313,8 +28565,8 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '저가 항공사(사우스웨스트).', money: '항공권.' },
     moat: {
       state: 'weakening',
-      sources: ['국내선 규모.'],
-      threats: ['요금 체계 변경, 행동주의 투자자.'],
+      sources: ['미국 국내선 저가 항공 1위.'],
+      threats: ['비용 상승, 차별화 약화.'],
       why: '약해지는 중.',
     },
     scores: {
@@ -23323,6 +28575,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — ROIC 4%.',
       growth: '2점 — 지정 좌석·수하물 요금 도입으로 수익 개선 시도.',
       durability: '2점 — 비용 상승·차별화 약화.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['지정 좌석·수하물 요금 도입.'],
+        threats: ['가격 경쟁.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['ROIC 4%.'],
+        threats: ['비용.'],
+        why: '낮다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['수익 개선 계획.'],
+        threats: ['경쟁.'],
+        why: '보통이다.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['규모.'],
+        threats: ['비용·경기.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '1월부터 좌석 지정·추가 다리 공간 도입, 수하물 요금 부과 — 50년 사업 모델 대전환. 2분기 매출 사상 최대(+16%).',
@@ -23352,10 +28630,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '세계 최대 금광(뉴몬트) — 금값 4천 달러대, 분기 잉여현금 19억 달러',
     biz: { what: '세계 최대 금광 회사(뉴몬트).', money: '금 판매.' },
     moat: {
-      state: 'intact',
-      sources: ['세계 최대 금 매장량.'],
-      threats: ['금값.'],
-      why: '원자재 회사 — 금값 따라.',
+      state: 'weakening',
+      sources: ['세계 최대 금 광산(뉴크레스트 합병).'],
+      threats: ['금값, 광산 비용.'],
+      why: '원자재 회사라 해자가 얕다.',
     },
     scores: {
       moat: '2점 — 세계 최대 금 광산 회사(뉴크레스트 합병).',
@@ -23363,6 +28641,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 21%(금값 상승기), 5년 평균 3%.',
       growth: '2점 — 생산량은 정체, 이익은 금값에 달렸다.',
       durability: '2점 — 광산 비용·금값 변동.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['원가 관리.'],
+        threats: ['금값은 시장이 정한다.'],
+        why: '값을 정할 수 없다.',
+      },
+      profit: {
+        state: 'good',
+        sources: ['ROIC 21%(금값 상승기).'],
+        threats: ['5년 평균 3%.'],
+        why: '금값 덕에 좋아졌다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['자산 정리.'],
+        threats: ['생산량 정체.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['매장량.'],
+        threats: ['금값 변동.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '10월 22일 3분기: 조정 EPS 2.20달러, 조정 EBITDA 40억 달러, 잉여현금 약 19억 달러. 올해 생산 원가 전망을 낮췄다(전체 유지비용 온스당 1,520달러).',
@@ -23392,8 +28696,8 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '대형 제약 회사(화이자).', money: '처방약·백신 판매.' },
     moat: {
       state: 'weakening',
-      sources: ['규모·백신.'],
-      threats: ['코로나 매출 소멸, 특허 만료 다수.'],
+      sources: ['세계 최대급 제약사.'],
+      threats: ['주력 약 특허 만료가 2028년까지 몰려 있다, 코로나 매출 소멸.'],
       why: '약해지는 중.',
     },
     scores: {
@@ -23402,6 +28706,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — ROIC 7%. 코로나 매출 소멸.',
       growth: '1점 — 주력 약 특허 만료가 2028년까지 몰려 있다.',
       durability: '2점 — 신약·인수(시젠·멧세라)로 메워야 한다.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['신약.'],
+        threats: ['특허 만료·약가 협상.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['ROIC 7%.'],
+        threats: ['코로나 매출 소멸.'],
+        why: '나빠졌다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['인수(시젠·멧세라).'],
+        threats: ['특허 절벽.'],
+        why: '줄어드는 구간.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['규모.'],
+        threats: ['특허 절벽.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '올해 조정 EPS 2.80~3.00달러 전망 유지. 매출은 595억~625억 달러로 감소. 비만약 회사 메체라 인수(약 100억 달러)로 EPS 약 0.16달러 희석.',
@@ -23430,10 +28760,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '스마트폰 RF 반도체(스카이웍스) — 코보 합병 완료, 애플 의존 큰 회사',
     biz: { what: '휴대폰 통신 칩 회사(스카이웍스).', money: '칩 판매.' },
     moat: {
-      state: 'weakening',
-      sources: ['애플 공급.'],
-      threats: ['애플 의존·물량 감소.'],
-      why: '약해지는 중.',
+      state: 'broken',
+      sources: ['휴대폰 무선 주파수 칩.'],
+      threats: ['애플 물량 감소.'],
+      why: '흔들리는 중 — 코보와 합병 추진.',
     },
     scores: {
       moat: '2점 — 휴대폰 무선 주파수 칩.',
@@ -23441,6 +28771,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 9%(5년 평균 16%).',
       growth: '1점 — 애플 물량 감소, 10년 EPS 감소. 코보와 합병 추진.',
       durability: '2점 — 애플 의존.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['칩.'],
+        threats: ['애플 협상력.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['5년 평균 ROIC 16%.'],
+        threats: ['최근 9%.'],
+        why: '나빠졌다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['합병.'],
+        threats: ['10년 EPS 감소.'],
+        why: '줄어드는 중.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['기술.'],
+        threats: ['애플 의존.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '10월 5일 코보와 합병 완료(코보 주주에 주당 현금 32.5달러 + 0.96주). 연 5억 달러 이상 비용 절감을 2~3년 안에 목표.',
@@ -23470,9 +28826,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '육류 회사(타이슨).', money: '닭·소·돼지고기 판매.' },
     moat: {
       state: 'weakening',
-      sources: ['규모.'],
-      threats: ['소고기 적자.'],
-      why: '약해지는 중.',
+      sources: ['미국 최대 육가공(닭·소·돼지).'],
+      threats: ['원가·가격 변동.'],
+      why: '해자가 얕다.',
     },
     scores: {
       moat: '2점 — 미국 최대 육가공(닭·소·돼지).',
@@ -23480,6 +28836,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — ROIC 3%.',
       growth: '2점 — 10년 EPS 감소.',
       durability: '3점 — 소고기 사이클 등 원가 변동.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['규모.'],
+        threats: ['고기 가격은 시장이 정한다.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['ROIC 3%.'],
+        threats: ['소고기 사이클.'],
+        why: '낮다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['닭고기 개선.'],
+        threats: ['10년 EPS 감소.'],
+        why: '줄어드는 중.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['식품 수요.'],
+        threats: ['원가.'],
+        why: '보통이다.',
+      },
     },
     now: [
       '소 사육 두수가 수십 년 최저라 소고기 원가 급등 → 소고기 부문 연간 6.25억~7.75억 달러 적자 전망으로 또 확대.',
@@ -23509,9 +28891,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '바이오 연구소 리츠(알렉산드리아).', money: '연구소 임대료.' },
     moat: {
       state: 'broken',
-      sources: ['핵심 바이오 단지 입지.'],
-      threats: ['바이오 투자 위축으로 공실 급증.'],
-      why: '해자 흔들림.',
+      sources: ['생명과학 연구소 리츠(보스턴·샌프란시스코).'],
+      threats: ['공실 증가, 2025년 배당 삭감.'],
+      why: '공실이 늘어 입지 해자도 흔들린다.',
     },
     scores: {
       moat: '2점 — 생명과학 연구소 리츠(보스턴·샌프란시스코). 좋은 입지지만 공실이 늘었다.',
@@ -23519,6 +28901,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — 손상 처리로 회계 적자.',
       growth: '1점 — 바이오 투자 위축, 연구소 공급 과잉.',
       durability: '2점 — 배당 삭감(2025년).',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['계약 갱신 때 임대료 인상.'],
+        threats: ['지역 임대 시세를 따라간다.'],
+        why: '시세를 따라가는 수준이라 보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['리츠라 감가상각 때문에 회계 이익이 작다(ROE -8.6%).'],
+        threats: ['빚·금리.'],
+        why: '회계 이익보다 주당 현금이익(FFO)으로 봐야 하고, 대체로 안정적이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['바이오 투자 위축·연구소 공급 과잉으로 공실 증가.'],
+        threats: ['공실 증가, 2025년 배당 삭감.'],
+        why: '공급 과잉·수요 둔화로 느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['부동산 자체는 오래간다.'],
+        threats: ['금리가 오르면 부담.'],
+        why: '자산은 남지만 금리에 민감해 보통이다.',
+      },
     },
     now: [
       '올해 FFO(리츠 현금 이익) 전망 6.35~6.45달러 — 2025년 9.01달러에서 약 30% 감소. 2분기 같은 건물 이익 -10.6%.',
@@ -23547,9 +28955,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '가전 유통 회사(베스트바이).', money: '가전 판매.' },
     moat: {
       state: 'weakening',
-      sources: ['매장·설치 서비스.'],
-      threats: ['아마존, 가전 수요 정체.'],
-      why: '약해지는 중.',
+      sources: ['미국 최대 전자제품 매장, 설치·수리 서비스.'],
+      threats: ['아마존 등 온라인.'],
+      why: '해자가 약하다.',
     },
     scores: {
       moat: '2점 — 미국 최대 전자제품 매장. 아마존과 경쟁.',
@@ -23557,6 +28965,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '3점 — ROIC 44%(자본이 적게 든다).',
       growth: '1점 — 매출 정체, 최근 5년 EPS 감소.',
       durability: '2점 — 온라인 전환.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['서비스.'],
+        threats: ['제조사 가격·온라인 비교.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'good',
+        sources: ['ROIC 44%(자본이 적게 든다).'],
+        threats: ['마진 얇음.'],
+        why: '자본 효율은 높다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['AI PC 교체.'],
+        threats: ['매출 정체, 최근 5년 EPS 감소.'],
+        why: '줄어드는 중.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['매장망.'],
+        threats: ['온라인 전환.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '8월 2분기: 동일점 매출 +4.1%, 조정 EPS 1.47달러(예상 약 1.39달러). 연간 조정 EPS 전망 6.30~6.60달러 → 6.70~6.90달러.',
@@ -23586,9 +29020,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '고급 사무실 리츠(BXP).', money: '사무실 임대료.' },
     moat: {
       state: 'weakening',
-      sources: ['최고급 빌딩.'],
-      threats: ['재택근무, 금리.'],
-      why: '약해지는 중.',
+      sources: ['대도시 최고급 오피스 리츠.'],
+      threats: ['재택근무·금리.'],
+      why: '최고급 건물은 버티지만 오피스 수요 자체가 약해졌다.',
     },
     scores: {
       moat: '2점 — 대도시 최고급 오피스 리츠.',
@@ -23596,6 +29030,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — ROE 5%.',
       growth: '1점 — 10년 EPS 감소.',
       durability: '2점 — 재택근무·금리.',
+    },
+    axes: {
+      pricing: {
+        state: 'mid',
+        sources: ['계약 갱신 때 임대료 인상.'],
+        threats: ['지역 임대 시세를 따라간다.'],
+        why: '시세를 따라가는 수준이라 보통이다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['리츠라 감가상각 때문에 회계 이익이 작다(ROE 5.2%).'],
+        threats: ['빚·금리.'],
+        why: '회계 이익보다 주당 현금이익(FFO)으로 봐야 하고, 대체로 안정적이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['재택근무로 오피스 수요 회복이 느리다.'],
+        threats: ['재택근무·금리.'],
+        why: '공급 과잉·수요 둔화로 느리다.',
+      },
+      durability: {
+        state: 'mid',
+        sources: ['부동산 자체는 오래간다.'],
+        threats: ['금리가 오르면 부담.'],
+        why: '자산은 남지만 금리에 민감해 보통이다.',
+      },
     },
     now: [
       '7월 연간 FFO(리츠 현금 이익) 전망 6.99~7.05달러로 상향. 2분기 임대 180만 제곱피트 — 과거 10년 평균의 129%.',
@@ -23624,10 +29084,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '저소득층 의료보험(센틴) — 오바마케어 손실 회복, 1년 +98%',
     biz: { what: '정부 보험 운영 회사(센틴).', money: '저소득층·오바마케어 보험료.' },
     moat: {
-      state: 'broken',
-      sources: ['정부 보험 운영 규모.'],
-      threats: ['의료비 급증으로 대규모 손실.', '정부 보험 정책 변화.'],
-      why: '이익 구조가 무너졌다. 해자 흔들림.',
+      state: 'weakening',
+      sources: ['메디케이드(저소득층 정부 보험) 최대 사업자.'],
+      threats: ['의료비 급증, 메디케이드 축소 정책.'],
+      why: '약해지는 중.',
     },
     scores: {
       moat: '2점 — 메디케이드(저소득층 정부 보험) 최대 사업자.',
@@ -23635,6 +29095,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — 최근 1년 큰 적자(의료비 급증·손상 처리).',
       growth: '2점 — 정부 정책에 달렸다.',
       durability: '2점 — 메디케이드 축소 정책.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['규모.'],
+        threats: ['지급액은 정부가 정한다.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['규모.'],
+        threats: ['최근 1년 큰 적자.'],
+        why: '나쁘다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['정부 계약.'],
+        threats: ['정책.'],
+        why: '정책에 달렸다.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['규모.'],
+        threats: ['정책 변화.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '올해 조정 EPS 하한을 3달러 → 3.40달러 → 4.80달러 이상으로 두 번 올렸다. 2분기 조정 EPS 2.51달러(일회성 약 0.50달러 포함).',
@@ -23662,9 +29148,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '1달러 할인점(달러트리).', money: '생필품 판매.' },
     moat: {
       state: 'weakening',
-      sources: ['저가 매장.'],
-      threats: ['패밀리달러 매각, 가격 인상.'],
-      why: '약해지는 중.',
+      sources: ['1달러숍(달러트리).'],
+      threats: ['원가, 저소득층 소비.'],
+      why: '해자가 약하다.',
     },
     scores: {
       moat: '2점 — 1달러숍(달러트리).',
@@ -23672,6 +29158,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — ROIC 21%(패밀리달러 매각 후 개선).',
       growth: '2점 — 매장 수 증가.',
       durability: '2점 — 저소득층 소비·원가.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['저가 포맷.'],
+        threats: ['1.25달러 고정 가격의 한계.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['ROIC 21%(패밀리달러 매각 후 개선).'],
+        threats: ['원가.'],
+        why: '개선 중이다.',
+      },
+      growth: {
+        state: 'mid',
+        sources: ['매장 확대.'],
+        threats: ['경쟁.'],
+        why: '보통이다.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['저가 포맷.'],
+        threats: ['경쟁·원가.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '8월 2분기: EPS 2.70달러(관세 환급 1.31달러 포함), 동일점 매출 +3.7%. 연간 조정 EPS 7.70~8.05달러(환급 0.60달러 포함)로 상향.',
@@ -23701,9 +29213,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '자동차 회사(포드).', money: '픽업·업무용 차 판매 + 할부 금융.' },
     moat: {
       state: 'weakening',
-      sources: ['F-150 픽업, 업무용 차.'],
-      threats: ['전기차 대규모 손실, 리콜.'],
-      why: '약해지는 중.',
+      sources: ['픽업트럭(F-150) 강점.'],
+      threats: ['전기차 손실, 리콜, 노조·관세.'],
+      why: '트럭은 강하지만 전체 해자는 얕다.',
     },
     scores: {
       moat: '2점 — 픽업트럭(F-150)은 강하지만 자동차는 경쟁이 심하다.',
@@ -23711,6 +29223,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — 전기차 손실·리콜 비용으로 최근 적자.',
       growth: '2점 — 전기차 축소, 하이브리드 전환.',
       durability: '2점 — 노조·관세·리콜.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['트럭.'],
+        threats: ['자동차 가격 경쟁.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['트럭 이익.'],
+        threats: ['전기차 손실·리콜로 적자.'],
+        why: '나쁘다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['하이브리드.'],
+        threats: ['전기차 축소.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['120년 역사.'],
+        threats: ['노조·관세·리콜.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '2분기 조정 EBIT 25억 달러. 연간 조정 EBIT 전망 100억~110억 달러로 상향(노벨리스 알루미늄 공장 화재 회복 효과). 배터리 합작사 정리로 회계상 적자.',
@@ -23739,9 +29277,9 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     biz: { what: '반도체 회사(인텔).', money: 'PC·서버 CPU + 위탁 생산.' },
     moat: {
       state: 'broken',
-      sources: ['PC CPU 점유율.'],
-      threats: ['서버 점유율 상실, 위탁 생산 대규모 적자.'],
-      why: 'PC 점유율은 남았지만 서버를 AMD에 내주고 위탁 생산에서 해마다 큰 적자를 낸다. 미국 정부 지분 투자로 회생을 시도하는 중.',
+      sources: ['x86 CPU 설계·미국 생산 능력.'],
+      threats: ['TSMC에 기술 뒤짐, AMD에 점유율 상실.'],
+      why: '흔들리는 중.',
     },
     scores: {
       moat: '2점 — x86 CPU 설계·미국 생산 능력. 기술은 TSMC에 뒤졌다.',
@@ -23749,6 +29287,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '1점 — 큰 적자(파운드리 투자).',
       growth: '2점 — 미국 정부·엔비디아 투자 유치, 회복은 불확실.',
       durability: '2점 — 기술 격차.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['x86.'],
+        threats: ['가격 경쟁.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['정부·엔비디아 투자.'],
+        threats: ['큰 적자(파운드리).'],
+        why: '나쁘다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['파운드리.'],
+        threats: ['기술 격차.'],
+        why: '회복 불확실.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['미국 생산.'],
+        threats: ['기술 격차.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '7월 2분기: 매출 161억 달러(+25%), 조정 EPS 0.42달러, 조정 매출총이익률 41.8%(1년 전 29.7%). 3분기 조정 EPS 약 0.38달러 전망.',
@@ -23776,10 +29340,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '가공식품(크래프트하인즈) — 분할 보류, 판매 감소, 배당 6.7%',
     biz: { what: '식품 회사(크래프트하인즈).', money: '케첩·치즈·가공육 판매.' },
     moat: {
-      state: 'weakening',
-      sources: ['하인즈 브랜드.'],
-      threats: ['판매량 감소, 회사 분할.'],
-      why: '약해지는 중.',
+      state: 'broken',
+      sources: ['하인즈 케첩·크래프트 치즈.'],
+      threats: ['자체 브랜드, 브랜드 약화.'],
+      why: '브랜드가 흔들리는 중 — 2026년 분할 예정.',
     },
     scores: {
       moat: '2점 — 하인즈 케첩·크래프트 치즈. 브랜드가 약해지는 중.',
@@ -23787,6 +29351,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — 손상 처리로 회계 적자.',
       growth: '1점 — 매출 감소. 2026년 회사 분할 예정.',
       durability: '2점 — 버크셔도 지분 매각 검토.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['브랜드.'],
+        threats: ['자체 브랜드에 밀린다.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['영업이익.'],
+        threats: ['손상 처리로 회계 적자.'],
+        why: '나쁘다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['분할.'],
+        threats: ['매출 감소.'],
+        why: '줄어드는 중.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['브랜드.'],
+        threats: ['버크셔도 지분 매각 검토.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '2월 회사 분할 계획을 멈추고 마케팅·연구에 6억 달러 재투자. 올해 조정 EPS 1.98~2.10달러(2025년 2.60달러) — 예상보다 크게 낮다.',
@@ -23812,10 +29402,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '인산·칼륨 비료(모자이크) — 황 가격 폭등으로 생산 차질, 1년 -42%',
     biz: { what: '비료 회사(모자이크). 인산·칼륨.', money: '비료 판매.' },
     moat: {
-      state: 'weakening',
-      sources: ['칼륨 광산.'],
-      threats: ['비료 가격, 운영 문제.'],
-      why: '약해지는 중.',
+      state: 'broken',
+      sources: ['칼륨·인 비료 광산.'],
+      threats: ['비료 가격.'],
+      why: '원자재라 해자가 얕다.',
     },
     scores: {
       moat: '2점 — 칼륨·인 비료 광산.',
@@ -23823,6 +29413,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — ROIC 3%.',
       growth: '2점 — 비료 가격 사이클.',
       durability: '2점 — 가격 변동.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['자원.'],
+        threats: ['가격은 시장이 정한다.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['ROIC 3%.'],
+        threats: ['가격.'],
+        why: '낮다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['비료 수요.'],
+        threats: ['사이클.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['자원.'],
+        threats: ['가격 변동.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '1분기 순손실 2.58억 달러, 브라질 공장 휴지 비용 4.42억 달러. 황 가격이 톤당 1,200달러를 넘어(중동 공급 차질) 인산 생산을 줄이고 생산 전망을 철회.',
@@ -23850,10 +29466,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '석유·가스 생산(APA) — 고유가 수혜, 1년 +116%',
     biz: { what: '석유 회사(APA).', money: '원유·가스 판매.' },
     moat: {
-      state: 'weakening',
-      sources: ['이집트 가스.'],
-      threats: ['유가, 북해 철수.'],
-      why: '약해지는 중.',
+      state: 'broken',
+      sources: ['중소 석유 회사 — 이집트·북해·퍼미안.'],
+      threats: ['원가 우위 없음, 유가.'],
+      why: '해자가 없다.',
     },
     scores: {
       moat: '1점 — 중소 석유 회사, 원가 우위가 없다.',
@@ -23861,6 +29477,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — 호황기 ROIC는 높지만 변동이 크다.',
       growth: '2점 — 생산 정체, 이집트·북해 자산.',
       durability: '2점 — 유가·고비용 자산.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['비용.'],
+        threats: ['유가는 시장이 정한다.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'mid',
+        sources: ['호황기 ROIC 높음.'],
+        threats: ['변동이 크다.'],
+        why: '보통이다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['자산 정리.'],
+        threats: ['생산 정체.'],
+        why: '느리다.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['자산.'],
+        threats: ['고비용·유가.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '2분기 조정 EPS 1.89달러, 잉여현금 7.4억 달러(상반기 12억 달러). 이집트 가스 가격 재협상 효과.',
@@ -23889,10 +29531,10 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     headline: '석유화학(라이온델바젤) — 배당 반토막 후 마진 반등',
     biz: { what: '석유화학 회사(라이온델바젤).', money: '플라스틱 원료 판매.' },
     moat: {
-      state: 'weakening',
-      sources: ['미국 저원가 설비.'],
-      threats: ['유럽 공장 적자, 공급 과잉.'],
-      why: '약해지는 중.',
+      state: 'broken',
+      sources: ['석유화학(폴리에틸렌 등).'],
+      threats: ['화학 경기 침체, 중국 공급.'],
+      why: '흔들리는 중.',
     },
     scores: {
       moat: '2점 — 석유화학(폴리에틸렌 등).',
@@ -23900,6 +29542,32 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       profit: '2점 — 최근 적자(손상 처리).',
       growth: '1점 — 화학 불황, 배당 삭감.',
       durability: '2점 — 업황 침체.',
+    },
+    axes: {
+      pricing: {
+        state: 'bad',
+        sources: ['규모.'],
+        threats: ['가격은 시장이 정한다.'],
+        why: '약하다.',
+      },
+      profit: {
+        state: 'bad',
+        sources: ['5년 평균 ROIC 11%.'],
+        threats: ['최근 적자.'],
+        why: '나쁘다.',
+      },
+      growth: {
+        state: 'bad',
+        sources: ['구조조정.'],
+        threats: ['배당 삭감.'],
+        why: '줄어드는 중.',
+      },
+      durability: {
+        state: 'bad',
+        sources: ['규모.'],
+        threats: ['업황 침체.'],
+        why: '불확실하다.',
+      },
     },
     now: [
       '2월 배당을 분기 1.37달러 → 0.69달러로 약 50% 삭감 — 신용등급 방어. 15년 연속 배당 인상 기록이 끝났다.',
