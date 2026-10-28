@@ -8199,6 +8199,7 @@ function QualityCard({ stockKey, fund }: { stockKey: string; fund?: any }) {
       </>)}
       <div className={d?.scores ? 'space-y-2.5' : 'grid sm:grid-cols-2 gap-x-6 gap-y-1'}>
         <ScoreBar label="경쟁우위(해자)" v={q.moat} why={d?.scores?.moat} />
+        {d?.moat && <div className="pl-[5.5rem] max-sm:pl-0 -mt-1"><DeepMoatBlock d={d} /></div>}
         <ScoreBar label="가격결정력" v={q.pricing} why={d?.scores?.pricing} axis={ax('pricing')} f={fund} />
         <ScoreBar label="수익성" v={q.profit} why={d?.scores?.profit} axis={ax('profit')} f={fund} />
         <ScoreBar label="성장성" v={q.growth} why={d?.scores?.growth} axis={ax('growth')} f={fund} />
@@ -8206,7 +8207,6 @@ function QualityCard({ stockKey, fund }: { stockKey: string; fund?: any }) {
       </div>
       <p className="text-xs text-gray-600 dark:text-gray-300"><b className="text-emerald-600 dark:text-emerald-400">강점:</b> {q.strength}</p>
       <p className="text-xs text-gray-600 dark:text-gray-300"><b className="text-red-500">위험:</b> {q.risk}</p>
-      {d && <DeepMoatBlock d={d} />}
       <p className="text-[11px] text-gray-400 dark:text-gray-500">
         버핏·멍거식 기준(오래가는 경쟁우위, 가격을 올려도 고객이 떠나지 않는 힘, 높은 이익률, 성장 여력, 10년 뒤에도 건재할지)으로 Claude가 매긴 정성 평가다. 2026년 10월 기준이며 투자 판단의 참고용이다.{d?.axes ? ' 가격결정력~지속가능성의 "자세히"를 누르면 근거·위협·판정이 펼쳐진다.' : ''}
       </p>
