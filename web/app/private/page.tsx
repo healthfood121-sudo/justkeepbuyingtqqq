@@ -11,7 +11,7 @@ import { Chart } from 'react-chartjs-2'
 import spDesc from '@/app/sp500-holdings/descriptions.json'
 import PrivateTabs from '@/components/PrivateTabs'
 import { WRITTEN_INSIGHTS, WRITTEN_AS_OF } from './insights'
-import { DEEP_INSIGHTS, type DeepInsight } from './deep'
+import { DEEP_INSIGHTS, QUALITY_EXTRA, type DeepInsight, type QualityExtra } from './deep'
 import { classify, GROUPS, GRADE_LABEL, gradeColor, groupColor, qualityScore, fmt, fmtSgn, type Metrics, type Quality, type GroupKey } from '@/lib/ideas'
 import { EXTRA_METRICS } from './ideas/picks'
 import qldData        from '@/public/data/rolling/QLD_rolling.json'
@@ -7973,7 +7973,7 @@ const MOAT_STATE = {
 } as const
 
 // 사업성 평가 카드 안: 해자 점검(근거·위협·판정) — 개별 분석(deep.ts)에서
-function DeepMoatBlock({ d }: { d: DeepInsight }) {
+function DeepMoatBlock({ d }: { d: QualityExtra }) {
   if (!d.moat) return null
   return (
     <div className="rounded bg-amber-50/70 dark:bg-amber-950/20 p-3 space-y-2">
@@ -8082,7 +8082,7 @@ function QualityCard({ stockKey }: { stockKey: string }) {
   const [q, setQ] = useState<Quality | null | undefined>(undefined)
   useEffect(() => { loadQuality().then(all => setQ(all[stockKey] ?? null)) }, [stockKey])
   if (!q) return null
-  const d = DEEP_INSIGHTS[stockKey]
+  const d: QualityExtra | undefined = DEEP_INSIGHTS[stockKey] ?? QUALITY_EXTRA[stockKey]
   return (
     <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-3">
       <div className="flex flex-wrap items-center gap-2">
