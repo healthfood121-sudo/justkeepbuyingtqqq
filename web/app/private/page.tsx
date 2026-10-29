@@ -9,7 +9,6 @@ import {
 } from 'chart.js'
 import { Chart } from 'react-chartjs-2'
 import spDesc from '@/app/sp500-holdings/descriptions.json'
-import PrivateTabs from '@/components/PrivateTabs'
 import { WRITTEN_INSIGHTS, WRITTEN_AS_OF } from './insights'
 import { DEEP_INSIGHTS, QUALITY_EXTRA, type DeepInsight, type QualityExtra, type Axis } from './deep'
 import { SEG_NOTES } from './segments'
@@ -9491,8 +9490,6 @@ export default function PrivatePage() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 space-y-8">
-
-        <PrivateTabs active="stocks" />
 
         {/* ── 사용 방법 ── */}
         <section className="rounded-xl border-2 border-blue-200 dark:border-blue-900/60 bg-blue-50/60 dark:bg-blue-950/30 p-4 space-y-3">

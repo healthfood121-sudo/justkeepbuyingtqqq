@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import PrivateTabs from '@/components/PrivateTabs'
 import { EXTRA_METRICS, PICKS, PICKS_AS_OF, PICK_SECTIONS } from './picks'
 import {
   classify, GROUPS, GRADE_LABEL, gradeColor, groupColor, qualityScore, fmt, fmtSgn, LENSES,
@@ -79,8 +78,6 @@ export default function IdeasPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 space-y-8">
-        <PrivateTabs active="ideas" />
-
         {/* ── 사용 방법 ── */}
         <section className="rounded-xl border-2 border-blue-200 dark:border-blue-900/60 bg-blue-50/60 dark:bg-blue-950/30 p-4 space-y-3">
           <h2 className="text-base font-bold text-gray-900 dark:text-white">사용 방법 — 3단계로 보면 된다</h2>
