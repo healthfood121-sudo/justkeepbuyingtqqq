@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import { useState } from 'react'
+import { MoneyMindMatrix, EggHistory, KostolanyExtra } from './KostolanyBook'
 
 interface RateStep { phase: string; desc: string }
 interface InvestorType { no: string; label: string; badge: string; icon: string; color: string; tagline: string; desc: string }
@@ -334,6 +335,8 @@ export default function KostolanyEgg() {
         </div>
       </div>
 
+      <MoneyMindMatrix />
+
       {/* 투자자 3가지 유형 */}
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 sm:p-8">
         <div className="text-center mb-6">
@@ -488,6 +491,10 @@ export default function KostolanyEgg() {
           ))}
         </div>
       </div>
+
+      <EggHistory />
+
+      <KostolanyExtra />
 
       {/* 10가지 수칙 & 금기사항 */}
       <div className="space-y-2">
