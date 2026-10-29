@@ -40,22 +40,19 @@ jobs:
           ARGS=""
           if [ -n "$KEYS" ]; then ARGS="--keys $KEYS"; else ARGS="--grade $GRADE"; fi
           if [ "$FORCE" = "1" ]; then ARGS="$ARGS --force"; fi
+          save() {
+            rm -rf /tmp/seg && cp -r scripts/data/segments_raw /tmp/seg
+            git rebase --abort 2>/dev/null || true
+            git fetch -q origin master && git reset -q --hard origin/master
+            mkdir -p scripts/data/segments_raw && cp /tmp/seg/* scripts/data/segments_raw/
+            git add scripts/data/segments_raw
+            if ! git diff --cached --quiet; then git commit -q -m "auto: 사업부·지역별 매출 원자료$1" && git push -q origin HEAD:master || true; fi
+          }
           python scripts/export_segments.py $ARGS &
           PID=$!
           while kill -0 $PID 2>/dev/null; do
             for i in $(seq 1 30); do sleep 60; kill -0 $PID 2>/dev/null || break; done
-            git add scripts/data/segments_raw
-            if ! git diff --cached --quiet; then
-              git commit -q -m "auto: 사업부·지역별 매출 원자료 (중간)"
-              git pull -q --rebase origin master && git push -q origin HEAD:master || true
-            fi
+            kill -0 $PID 2>/dev/null && save " (중간)"
           done
           wait $PID
-      - name: 커밋 & 푸시
-        run: |
-          git add scripts/data/segments_raw
-          if git diff --cached --quiet; then echo "변경 없음"; else
-            git commit -m "auto: 사업부·지역별 매출 원자료"
-            git pull --rebase origin master
-            git push origin HEAD:master
-          fi
+          save ""
