@@ -188,6 +188,8 @@ export default function HowardMarksAnalyzer({ financialData, onResultUpdate }: H
   // 외부에서 전달받은 재무데이터를 inputs에 반영
   useEffect(() => {
     if (financialData) {
+      // 값이 없으면 NaN → 아래 `|| prev.x`로 기존 값 유지
+      const ratio = (a?: number, b?: number) => (a != null && b ? a / b : NaN)
       setInputs(prev => ({
         ...prev,
         ticker: financialData.ticker || prev.ticker,
@@ -195,13 +197,13 @@ export default function HowardMarksAnalyzer({ financialData, onResultUpdate }: H
         currentPrice: financialData.currentStockPrice || prev.currentPrice,
         sharesOutstanding: financialData.sharesOutstanding || prev.sharesOutstanding,
         sector: financialData.sector || prev.sector,
-        eps: (financialData.netIncome / financialData.sharesOutstanding) || prev.eps,
+        eps: ratio(financialData.netIncome, financialData.sharesOutstanding) || prev.eps,
         operatingCashFlow: financialData.operatingCashFlow || prev.operatingCashFlow,
         freeCashFlow: financialData.freeCashFlow || prev.freeCashFlow,
-        operatingMargin: ((financialData.operatingIncome / financialData.revenue) * 100) || prev.operatingMargin,
-        netMargin: ((financialData.netIncome / financialData.revenue) * 100) || prev.netMargin,
-        roe: ((financialData.netIncome / financialData.totalEquity) * 100) || prev.roe,
-        roa: ((financialData.netIncome / financialData.totalAssets) * 100) || prev.roa,
+        operatingMargin: (ratio(financialData.operatingIncome, financialData.revenue) * 100) || prev.operatingMargin,
+        netMargin: (ratio(financialData.netIncome, financialData.revenue) * 100) || prev.netMargin,
+        roe: (ratio(financialData.netIncome, financialData.totalEquity) * 100) || prev.roe,
+        roa: (ratio(financialData.netIncome, financialData.totalAssets) * 100) || prev.roa,
         // 기본값들은 그대로 유지하되 계산 가능한 것들만 업데이트
       }));
     }

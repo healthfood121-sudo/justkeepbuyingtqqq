@@ -6,7 +6,7 @@ import HowardMarksAnalyzer from './HowardMarksAnalyzer'
 export default async function HowardMarksPage() {
   const cookieStore = await cookies()
   const auth = cookieStore.get('private_auth')
-  if (!auth || auth.value !== 'true') {
+  if (!auth || auth.value !== process.env.PRIVATE_PASSWORD) {
     redirect('/private/login')
   }
 
