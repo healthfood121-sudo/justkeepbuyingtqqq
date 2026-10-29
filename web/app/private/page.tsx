@@ -1317,7 +1317,7 @@ function ScenarioTable({ data, pe0, title = '지금 사서 10년 보유 시 예�
         <table className="text-xs">
           <thead>
             <tr className="text-gray-400 dark:text-gray-500">
-              <th className="text-left py-1.5 pr-3 font-medium whitespace-nowrap">EPS 성장률 ↓ / 10년 후 P/E →</th>
+              <th className="text-left py-1.5 pr-3 font-medium break-keep">EPS 성장률 ↓ / 10년 후 P/E →</th>
               {endPEs.map(ep => (
                 <th key={ep} className={`text-right py-1.5 px-2 font-medium ${ep === pe ? 'text-blue-500' : ''}`}>
                   {ep}x{ep === Math.round(pe) ? ' ★' : ''}
@@ -1328,7 +1328,7 @@ function ScenarioTable({ data, pe0, title = '지금 사서 10년 보유 시 예�
           <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
             {growthRates.map(g => (
               <tr key={g} className="hover:bg-gray-50 dark:hover:bg-gray-800/30">
-                <td className="py-1.5 pr-3 text-gray-600 dark:text-gray-300 font-medium whitespace-nowrap">
+                <td className="py-1.5 pr-3 text-gray-600 dark:text-gray-300 font-medium break-keep">
                   연 {g}% 성장
                 </td>
                 {endPEs.map(ep => {
@@ -2134,7 +2134,7 @@ function OverviewTable({
           <tr className="text-xs text-gray-400 dark:text-gray-500">
             <th rowSpan={2} className="pb-1 pr-1 w-6" />
             <th className="text-left pb-1 pr-2" rowSpan={2}>종목</th>
-            <th colSpan={4} className="text-center pb-1 px-1 border-b border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold whitespace-nowrap">
+            <th colSpan={4} className="text-center pb-1 px-1 border-b border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold break-keep">
               <Tip text={TIP_FAIR} below>적정가 대비</Tip>
             </th>
             <th colSpan={3} className="text-center pb-1 px-2 border-b border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold">
@@ -2215,17 +2215,17 @@ function OverviewTable({
                   </div>
                 </td>
                 {/* 지금 가격: 적정가 대비 */}
-                <td className={`py-1.5 pr-1 text-right text-xs tabular-nums whitespace-nowrap font-semibold ${fairGap == null ? 'text-gray-300 dark:text-gray-600' : fairGap < 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'} ${colBg('fairGap')}`}>
+                <td className={`py-1.5 pr-1 text-right text-xs tabular-nums break-keep font-semibold ${fairGap == null ? 'text-gray-300 dark:text-gray-600' : fairGap < 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'} ${colBg('fairGap')}`}>
                   {fairGap != null ? (fairWarn
                     ? <span className="text-gray-400 dark:text-gray-500 font-normal" title={fairWarn}>⚠{fairGap > 0 ? '+' : ''}{fairGap.toFixed(0)}%</span>
                     : `${fairGap > 0 ? '+' : ''}${fairGap.toFixed(0)}%`) : '—'}
                 </td>
-                <td className={`py-1.5 pr-1 text-right text-xs tabular-nums whitespace-nowrap ${fcfGap == null ? 'text-gray-300 dark:text-gray-600' : fcfGap < 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'} ${colBg('fcfGap')}`}>
+                <td className={`py-1.5 pr-1 text-right text-xs tabular-nums break-keep ${fcfGap == null ? 'text-gray-300 dark:text-gray-600' : fcfGap < 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'} ${colBg('fcfGap')}`}>
                   {fcfGap != null ? (fcfWarn
                     ? <span className="text-gray-400 dark:text-gray-500" title={fcfWarn}>⚠{fcfGap > 0 ? '+' : ''}{fcfGap.toFixed(0)}%</span>
                     : `${fcfGap > 0 ? '+' : ''}${fcfGap.toFixed(0)}%`) : '—'}
                 </td>
-                <td className={`py-1.5 pr-1 text-right text-xs tabular-nums whitespace-nowrap ${ocfGap == null ? 'text-gray-300 dark:text-gray-600' : ocfGap < 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'} ${colBg('ocfGap')}`}>
+                <td className={`py-1.5 pr-1 text-right text-xs tabular-nums break-keep ${ocfGap == null ? 'text-gray-300 dark:text-gray-600' : ocfGap < 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'} ${colBg('ocfGap')}`}>
                   {ocfGap != null ? (ocfWarn
                     ? <span className="text-gray-400 dark:text-gray-500" title={ocfWarn}>⚠{ocfGap > 0 ? '+' : ''}{ocfGap.toFixed(0)}%</span>
                     : `${ocfGap > 0 ? '+' : ''}${ocfGap.toFixed(0)}%`) : '—'}
@@ -2263,7 +2263,7 @@ function OverviewTable({
                 <td className={`py-1.5 pr-2 text-right tabular-nums ${roic == null ? 'text-gray-300 dark:text-gray-600' : roic >= 20 ? 'text-emerald-600 dark:text-emerald-400' : roic < 8 ? 'text-red-500' : 'text-gray-700 dark:text-gray-200'} ${colBg('roic')}`}>
                   {roic != null ? `${roic.toFixed(0)}%` : '—'}
                 </td>
-                <td className="py-1.5 whitespace-nowrap">
+                <td className="py-1.5 break-keep">
                   {group ? <span title={GROUPS[group].label} className={`text-[11px] px-1.5 py-0.5 rounded ${groupColor(group)}`}>{({ pause: '쉬는 중', stumble: '이익 주춤', steady: '꾸준', pricey: '비쌈' } as Record<GroupKey, string>)[group]}</span> : <span className="text-gray-300 dark:text-gray-600 text-xs">—</span>}
                 </td>
               </tr>
@@ -2505,13 +2505,13 @@ function DecompSection({
         <table className="text-xs">
           <thead>
             <tr>
-              <th className={`${th} text-left whitespace-nowrap`}>보유 구간</th>
-              <th className={`${th} text-right whitespace-nowrap`}>연평균 수익률</th>
-              <th className={`${th} text-right whitespace-nowrap`}>= EPS 몫</th>
-              {hasDiv && <th className={`${th} text-right whitespace-nowrap`}>+ 배당 몫</th>}
-              <th className={`${th} text-right whitespace-nowrap`}>+ PER 몫</th>
-              <th className={`${th} text-right whitespace-nowrap`}>EPS 성장(연)</th>
-              <th className={`${th} text-right whitespace-nowrap`}>PER 변화</th>
+              <th className={`${th} text-left break-keep`}>보유 구간</th>
+              <th className={`${th} text-right break-keep`}>연평균 수익률</th>
+              <th className={`${th} text-right break-keep`}>= EPS 몫</th>
+              {hasDiv && <th className={`${th} text-right break-keep`}>+ 배당 몫</th>}
+              <th className={`${th} text-right break-keep`}>+ PER 몫</th>
+              <th className={`${th} text-right break-keep`}>EPS 성장(연)</th>
+              <th className={`${th} text-right break-keep`}>PER 변화</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -2519,7 +2519,7 @@ function DecompSection({
               const sh = decompShares(d, divMap.get(d.buyYear) ?? null)
               return (
                 <tr key={d.buyYear} className={d.inProgress ? 'opacity-60 italic' : ''}>
-                  <td className={`${td} whitespace-nowrap`}>
+                  <td className={`${td} break-keep`}>
                     {d.inProgress ? `${d.buyYear} → 현재 (${d.years}년, 진행 중)` : `${d.buyYear} → ${d.sellYear}`}
                     {d.note && <span title={d.note} className="ml-1 text-amber-500 cursor-help">⚠</span>}
                   </td>
@@ -2532,7 +2532,7 @@ function DecompSection({
                     {sgn(sh.pe)}%p{hasDiv && sh.div == null ? '*' : ''}
                   </td>
                   <td className={`${td} text-right text-gray-500 dark:text-gray-400`}>{sgn(d.epsGrowthCagr)}%</td>
-                  <td className={`${td} text-right whitespace-nowrap text-gray-500 dark:text-gray-400`}>{d.peBuy.toFixed(0)}배 → {d.peSell.toFixed(0)}배</td>
+                  <td className={`${td} text-right break-keep text-gray-500 dark:text-gray-400`}>{d.peBuy.toFixed(0)}배 → {d.peSell.toFixed(0)}배</td>
                 </tr>
               )
             })}
@@ -2614,8 +2614,8 @@ function HermesHistory() {
   const rows = HERMES_HISTORY
   const vol = (r: typeof rows[number]) =>
     r.rev != null && r.price != null ? ((1 + r.rev / 100) / (1 + r.price / 100) - 1) * 100 : null
-  const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500 whitespace-nowrap'
-  const td = 'py-1 px-2 tabular-nums text-gray-700 dark:text-gray-200 whitespace-nowrap'
+  const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500 break-keep'
+  const td = 'py-1 px-2 tabular-nums text-gray-700 dark:text-gray-200 break-keep'
   const sg = (v: number | null, d = 1) => (v == null ? '—' : `${v > 0 ? '+' : ''}${v.toFixed(d)}%`)
 
   const chartRows = rows.filter(r => r.y >= 2010)
@@ -2750,8 +2750,8 @@ function HermesEpsQP() {
       },
     },
   }
-  const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500 whitespace-nowrap'
-  const td = 'py-1 px-2 tabular-nums text-gray-700 dark:text-gray-200 whitespace-nowrap'
+  const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500 break-keep'
+  const td = 'py-1 px-2 tabular-nums text-gray-700 dark:text-gray-200 break-keep'
 
   return (
     <div className="space-y-3">
@@ -2833,7 +2833,7 @@ function HermesForecast({ f, setF, peNow, peFair, past10 }: {
 
   const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-3'
   const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
-  const td = 'py-1.5 px-2 tabular-nums text-gray-700 dark:text-gray-200 whitespace-nowrap'
+  const td = 'py-1.5 px-2 tabular-nums text-gray-700 dark:text-gray-200 break-keep'
   const set = (k: keyof Factors) => (v: number) => setF({ ...f, [k]: v })
   const slider = (label: string, v: number, onSet: (n: number) => void, min: number, max: number, hint: string) => (
     <label className="block space-y-1">
@@ -6104,8 +6104,8 @@ function SegmentPanel({ seg, now, shares, sharesOut }: { seg: SegClock; now: num
   const tot = seg.rows.reduce((a, r) => a + r.profit, 0)
   const pos = seg.rows.reduce((a, r) => a + Math.max(r.profit, 0), 0) // 비중은 흑자 사업 합계 대비 (공통 비용이 크면 합계 대비로는 100%를 넘음)
   const totRev = seg.rows.reduce((a, r) => a + r.rev, 0)
-  const th = 'py-1.5 px-1.5 text-right font-medium whitespace-nowrap'
-  const td = 'py-1.5 px-1.5 text-right tabular-nums whitespace-nowrap'
+  const th = 'py-1.5 px-1.5 text-right font-medium break-keep'
+  const td = 'py-1.5 px-1.5 text-right tabular-nums break-keep'
   const maxP = Math.max(...seg.rows.map(r => Math.abs(r.profit)))
   const hasUnits = seg.rows.some(r => r.units)
   const fmtU = (v: number, unit: string) => {
@@ -6136,7 +6136,7 @@ function SegmentPanel({ seg, now, shares, sharesOut }: { seg: SegClock; now: num
             {seg.rows.map((r, ri) => {
               return (
               <tr key={r.name}>
-                <td className="py-1.5 px-2 whitespace-nowrap"><span className={`inline-block w-2 h-2 rounded-full mr-1.5 ${r.color}`} /><FTip text={r.note}>{r.name}</FTip></td>
+                <td className="py-1.5 px-2 break-keep"><span className={`inline-block w-2 h-2 rounded-full mr-1.5 ${r.color}`} /><FTip text={r.note}>{r.name}</FTip></td>
                 <td className={td}>{r.rev ? usd(r.rev / secs) : '—'}</td>
                 <td className={`${td} ${r.profit < 0 ? 'text-red-500' : ''}`}>{usd(r.profit / secs)}</td>
                 <td className={td}>
@@ -6197,7 +6197,7 @@ function SegmentPanel({ seg, now, shares, sharesOut }: { seg: SegClock; now: num
                     const perSec = u ? u.n / secs * mine : 0
                     return (
                       <tr key={r.name}>
-                        <td className="py-1.5 px-2 whitespace-nowrap"><span className={`inline-block w-2 h-2 rounded-full mr-1.5 ${r.color}`} /><FTip text={r.note}>{r.name}</FTip></td>
+                        <td className="py-1.5 px-2 break-keep"><span className={`inline-block w-2 h-2 rounded-full mr-1.5 ${r.color}`} /><FTip text={r.note}>{r.name}</FTip></td>
                         <td className={td}>{usd(r.rev / secs)}</td>
                         <td className={td}>{Math.round(100 * r.rev / tr)}%</td>
                         <td className={td}>{usd(r.rev * (365.25 / seg.days) * mine, 2)}</td>
@@ -6924,12 +6924,12 @@ function CashReturnPanel({ cash, m, cur = '$', source }: {
           <thead>
             <tr className="text-gray-500 dark:text-gray-400">
               <th className="text-left py-1 pr-3 font-medium">연도</th>
-              <th className="text-right py-1 px-2 font-medium whitespace-nowrap">순이익</th>
-              <th className="text-right py-1 px-2 font-medium whitespace-nowrap">잉여현금</th>
-              <th className="text-right py-1 px-2 font-medium whitespace-nowrap">전환율</th>
+              <th className="text-right py-1 px-2 font-medium break-keep">순이익</th>
+              <th className="text-right py-1 px-2 font-medium break-keep">잉여현금</th>
+              <th className="text-right py-1 px-2 font-medium break-keep">전환율</th>
               <th className="text-right py-1 px-2 font-medium">ROE</th>
               <th className="text-right py-1 px-2 font-medium">ROIC</th>
-              <th className="text-right py-1 pl-2 font-medium whitespace-nowrap">잉여현금 수익률</th>
+              <th className="text-right py-1 pl-2 font-medium break-keep">잉여현금 수익률</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-800 tabular-nums">
@@ -7557,25 +7557,25 @@ function RmsInsight({ data }: { data: StockData }) {
           <table className="text-xs">
             <thead>
               <tr>
-                <th className={`${th} text-left whitespace-nowrap`}>매수 시 PER</th>
-                <th className={`${th} text-right whitespace-nowrap`}>경우 수</th>
-                <th className={`${th} text-right whitespace-nowrap`}>평균 수익률</th>
-                <th className={`${th} text-right whitespace-nowrap`}>수익률 범위</th>
-                <th className={`${th} text-right whitespace-nowrap`}>EPS 효과(평균)</th>
-                <th className={`${th} text-right whitespace-nowrap`}>PER 효과(평균)</th>
-                <th className={`${th} text-right whitespace-nowrap`}>PER 효과 범위</th>
+                <th className={`${th} text-left break-keep`}>매수 시 PER</th>
+                <th className={`${th} text-right break-keep`}>경우 수</th>
+                <th className={`${th} text-right break-keep`}>평균 수익률</th>
+                <th className={`${th} text-right break-keep`}>수익률 범위</th>
+                <th className={`${th} text-right break-keep`}>EPS 효과(평균)</th>
+                <th className={`${th} text-right break-keep`}>PER 효과(평균)</th>
+                <th className={`${th} text-right break-keep`}>PER 효과 범위</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
               {peBuckets.map(b => (
                 <tr key={b.label} className={b.hl ? 'bg-blue-50 dark:bg-blue-900/20' : ''}>
-                  <td className={`${td} whitespace-nowrap ${b.hl ? 'font-semibold' : ''}`}>{b.label}</td>
+                  <td className={`${td} break-keep ${b.hl ? 'font-semibold' : ''}`}>{b.label}</td>
                   <td className={`${td} text-right`}>{b.n}</td>
                   <td className={`${td} text-right ${b.hl ? 'font-semibold' : ''}`}>{b.avg.toFixed(1)}%</td>
-                  <td className={`${td} text-right whitespace-nowrap`}>{b.range}</td>
+                  <td className={`${td} text-right break-keep`}>{b.range}</td>
                   <td className={`${td} text-right`}>{sgn(b.eps)}%</td>
                   <td className={`${td} text-right font-semibold ${b.pe >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'}`}>{sgn(b.pe)}%p</td>
-                  <td className={`${td} text-right whitespace-nowrap`}>{b.peRange}%p</td>
+                  <td className={`${td} text-right break-keep`}>{b.peRange}%p</td>
                 </tr>
               ))}
             </tbody>
@@ -7654,36 +7654,36 @@ function RmsInsight({ data }: { data: StockData }) {
           <table className="text-xs">
             <thead>
               <tr>
-                <th className={`${th} text-left whitespace-nowrap`}>저점 구간</th>
-                <th className={`${th} text-right whitespace-nowrap`}>그 구간 수익률</th>
-                <th className={`${th} text-right whitespace-nowrap`}>저점 원인</th>
-                <th className={`${th} text-right whitespace-nowrap`}>직후 매수 (PER)</th>
-                <th className={`${th} text-right whitespace-nowrap`}>이후 10년 수익률</th>
-                <th className={`${th} text-right whitespace-nowrap`}>이후 10년 EPS 성장</th>
+                <th className={`${th} text-left break-keep`}>저점 구간</th>
+                <th className={`${th} text-right break-keep`}>그 구간 수익률</th>
+                <th className={`${th} text-right break-keep`}>저점 원인</th>
+                <th className={`${th} text-right break-keep`}>직후 매수 (PER)</th>
+                <th className={`${th} text-right break-keep`}>이후 10년 수익률</th>
+                <th className={`${th} text-right break-keep`}>이후 10년 EPS 성장</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
               <tr>
-                <td className={`${td} whitespace-nowrap`}>1999 → 2009</td>
+                <td className={`${td} break-keep`}>1999 → 2009</td>
                 <td className={`${td} text-right`}>7.8%</td>
-                <td className={`${td} text-right whitespace-nowrap`}>PER 하락 46 → 34배 (이익은 연 +9.8%)</td>
-                <td className={`${td} text-right whitespace-nowrap`}>2009년 말 (34.0배)</td>
+                <td className={`${td} text-right break-keep`}>PER 하락 46 → 34배 (이익은 연 +9.8%)</td>
+                <td className={`${td} text-right break-keep`}>2009년 말 (34.0배)</td>
                 <td className={`${td} text-right font-semibold text-emerald-600 dark:text-emerald-400`}>23.4%</td>
                 <td className={`${td} text-right`}>연 +18.2%</td>
               </tr>
               <tr>
-                <td className={`${td} whitespace-nowrap`}>2000 → 2010</td>
+                <td className={`${td} break-keep`}>2000 → 2010</td>
                 <td className={`${td} text-right`}>13.7%</td>
-                <td className={`${td} text-right whitespace-nowrap`}>이익 정체 2001~2004년 (10년 이익 연 +9.7%, PER 32 → 39배)</td>
-                <td className={`${td} text-right whitespace-nowrap`}>2010년 말 (39.3배)</td>
+                <td className={`${td} text-right break-keep`}>이익 정체 2001~2004년 (10년 이익 연 +9.7%, PER 32 → 39배)</td>
+                <td className={`${td} text-right break-keep`}>2010년 말 (39.3배)</td>
                 <td className={`${td} text-right font-semibold text-emerald-600 dark:text-emerald-400`}>20.3%</td>
                 <td className={`${td} text-right`}>연 +12.7%</td>
               </tr>
               <tr className="bg-blue-50 dark:bg-blue-900/20">
-                <td className={`${td} whitespace-nowrap font-semibold`}>2019~2024년 매수 (진행 중)</td>
-                <td className={`${td} text-right whitespace-nowrap`}>연 -25% ~ +12%</td>
-                <td className={`${td} text-right whitespace-nowrap font-semibold text-purple-600 dark:text-purple-400`}>PER 하락 45~66배 → 지금</td>
-                <td className={`${td} text-right whitespace-nowrap`}>지금 ({peNow.toFixed(1)}배)</td>
+                <td className={`${td} break-keep font-semibold`}>2019~2024년 매수 (진행 중)</td>
+                <td className={`${td} text-right break-keep`}>연 -25% ~ +12%</td>
+                <td className={`${td} text-right break-keep font-semibold text-purple-600 dark:text-purple-400`}>PER 하락 45~66배 → 지금</td>
+                <td className={`${td} text-right break-keep`}>지금 ({peNow.toFixed(1)}배)</td>
                 <td className={`${td} text-right font-semibold`}>?</td>
                 <td className={`${td} text-right`}>?</td>
               </tr>
@@ -7739,8 +7739,8 @@ function RmsRegionBox({ r, title, intro, children }: { r: RmsRegion; title: stri
   const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-2'
   const h4 = 'text-sm font-semibold text-gray-800 dark:text-gray-100'
   const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
-  const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500 text-right whitespace-nowrap'
-  const td = 'py-1.5 px-2 tabular-nums text-right text-gray-700 dark:text-gray-200 whitespace-nowrap'
+  const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500 text-right break-keep'
+  const td = 'py-1.5 px-2 tabular-nums text-right text-gray-700 dark:text-gray-200 break-keep'
   const S = RMS_SEG[r]; const name = RMS_REG_NAME[r]
   const chartData = {
     labels: RMS_RQ.map(q => `${q.slice(0, 2)}년 ${q.slice(-1)}Q`),
@@ -7958,8 +7958,8 @@ function RmsRegionSummary() {
   const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-2'
   const h4 = 'text-sm font-semibold text-gray-800 dark:text-gray-100'
   const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
-  const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500 text-right whitespace-nowrap'
-  const td = 'py-1.5 px-2 tabular-nums text-right text-gray-700 dark:text-gray-200 whitespace-nowrap'
+  const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500 text-right break-keep'
+  const td = 'py-1.5 px-2 tabular-nums text-right text-gray-700 dark:text-gray-200 break-keep'
   const L = RMS_RQ.length - 1
   const y25 = (s: (number | null)[]) => s.slice(24, 28).reduce((a: number, b) => a + (b ?? 0), 0)
   const tot25 = y25(RMS_SEG.TOT.rev)
@@ -8064,8 +8064,8 @@ function NkeRegionBox({ r, title, intro, y2, children, src }: {
   const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-2'
   const h4 = 'text-sm font-semibold text-gray-800 dark:text-gray-100'
   const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
-  const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500 text-right whitespace-nowrap'
-  const td = 'py-1.5 px-2 tabular-nums text-right text-gray-700 dark:text-gray-200 whitespace-nowrap'
+  const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500 text-right break-keep'
+  const td = 'py-1.5 px-2 tabular-nums text-right text-gray-700 dark:text-gray-200 break-keep'
   const S = NKE_SEG[r]; const D = NKE_Q; const name = NKE_REG_NAME[r]
   const yoy = nkeYoy(S.rev), idx = nkeIdx(S.rev), whY = nkeYoy(S.wh), dtY = nkeYoy(S.dtc)
   const chartData = {
@@ -8469,10 +8469,10 @@ function NkeInsight({ data }: { data: StockData }) {
             <thead>
               <tr>
                 <th className={`${th} text-left`}></th>
-                <th className={`${th} text-right whitespace-nowrap`}>2021년 말 (정점)</th>
-                <th className={`${th} text-right whitespace-nowrap`}>2024년 말</th>
+                <th className={`${th} text-right break-keep`}>2021년 말 (정점)</th>
+                <th className={`${th} text-right break-keep`}>2024년 말</th>
                 <th className={`${th} text-right`}>지금</th>
-                <th className={`${th} text-right whitespace-nowrap`}>2024년 말 대비</th>
+                <th className={`${th} text-right break-keep`}>2024년 말 대비</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
@@ -8510,21 +8510,21 @@ function NkeInsight({ data }: { data: StockData }) {
           <table className="text-xs">
             <thead>
               <tr>
-                <th className={`${th} text-left whitespace-nowrap`}>매수 시 PER</th>
-                <th className={`${th} text-right whitespace-nowrap`}>경우 수</th>
-                <th className={`${th} text-right whitespace-nowrap`}>평균 수익률</th>
-                <th className={`${th} text-right whitespace-nowrap`}>수익률 범위</th>
-                <th className={`${th} text-right whitespace-nowrap`}>EPS 효과(평균)</th>
-                <th className={`${th} text-right whitespace-nowrap`}>PER 효과(평균)</th>
+                <th className={`${th} text-left break-keep`}>매수 시 PER</th>
+                <th className={`${th} text-right break-keep`}>경우 수</th>
+                <th className={`${th} text-right break-keep`}>평균 수익률</th>
+                <th className={`${th} text-right break-keep`}>수익률 범위</th>
+                <th className={`${th} text-right break-keep`}>EPS 효과(평균)</th>
+                <th className={`${th} text-right break-keep`}>PER 효과(평균)</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
               {peBuckets.map(b => (
                 <tr key={b.label} className={b.hl ? 'bg-blue-50 dark:bg-blue-900/20' : ''}>
-                  <td className={`${td} whitespace-nowrap ${b.hl ? 'font-semibold' : ''}`}>{b.label}</td>
+                  <td className={`${td} break-keep ${b.hl ? 'font-semibold' : ''}`}>{b.label}</td>
                   <td className={`${td} text-right`}>{b.n}</td>
                   <td className={`${td} text-right ${b.hl ? 'font-semibold' : ''}`}>{b.avg.toFixed(1)}%</td>
-                  <td className={`${td} text-right whitespace-nowrap`}>{b.range}</td>
+                  <td className={`${td} text-right break-keep`}>{b.range}</td>
                   <td className={`${td} text-right`}>{sgn(b.eps)}%</td>
                   <td className={`${td} text-right font-semibold ${b.pe >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'}`}>{sgn(b.pe)}%p</td>
                 </tr>
@@ -8562,14 +8562,14 @@ function NkeInsight({ data }: { data: StockData }) {
           <table className="text-xs">
             <thead>
               <tr>
-                <th className={`${th} text-left whitespace-nowrap`}>EPS 성장 ↓ / 10년 뒤 PER →</th>
-                {scenarioPEs.map(pe => <th key={pe} className={`${th} text-right whitespace-nowrap`}>{pe}</th>)}
+                <th className={`${th} text-left break-keep`}>EPS 성장 ↓ / 10년 뒤 PER →</th>
+                {scenarioPEs.map(pe => <th key={pe} className={`${th} text-right break-keep`}>{pe}</th>)}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
               {scenarios.map(s => (
                 <tr key={s.g}>
-                  <td className={`${td} whitespace-nowrap ${s.hl ? 'font-semibold' : ''}`}>{s.g}</td>
+                  <td className={`${td} break-keep ${s.hl ? 'font-semibold' : ''}`}>{s.g}</td>
                   {s.v.map((v, i) => (
                     <td key={i} className={`${td} text-right ${s.hl && i === 1 ? 'bg-blue-50 dark:bg-blue-900/20 font-semibold' : ''}`}>{v}</td>
                   ))}
@@ -8603,36 +8603,36 @@ function NkeInsight({ data }: { data: StockData }) {
           <table className="text-xs">
             <thead>
               <tr>
-                <th className={`${th} text-left whitespace-nowrap`}>저점 구간</th>
-                <th className={`${th} text-right whitespace-nowrap`}>그 구간 수익률</th>
-                <th className={`${th} text-right whitespace-nowrap`}>저점 원인</th>
-                <th className={`${th} text-right whitespace-nowrap`}>직후 매수 (PER)</th>
-                <th className={`${th} text-right whitespace-nowrap`}>이후 10년 수익률</th>
-                <th className={`${th} text-right whitespace-nowrap`}>이후 10년 EPS 성장</th>
+                <th className={`${th} text-left break-keep`}>저점 구간</th>
+                <th className={`${th} text-right break-keep`}>그 구간 수익률</th>
+                <th className={`${th} text-right break-keep`}>저점 원인</th>
+                <th className={`${th} text-right break-keep`}>직후 매수 (PER)</th>
+                <th className={`${th} text-right break-keep`}>이후 10년 수익률</th>
+                <th className={`${th} text-right break-keep`}>이후 10년 EPS 성장</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
               <tr>
-                <td className={`${td} whitespace-nowrap`}>1992 → 2002</td>
+                <td className={`${td} break-keep`}>1992 → 2002</td>
                 <td className={`${td} text-right`}>8.3%</td>
-                <td className={`${td} text-right whitespace-nowrap`}>PER 하락 (이익은 연 +8.7%)</td>
-                <td className={`${td} text-right whitespace-nowrap`}>2002년 말 (13배)</td>
+                <td className={`${td} text-right break-keep`}>PER 하락 (이익은 연 +8.7%)</td>
+                <td className={`${td} text-right break-keep`}>2002년 말 (13배)</td>
                 <td className={`${td} text-right font-semibold text-emerald-600 dark:text-emerald-400`}>17.9%</td>
                 <td className={`${td} text-right`}>연 +14.4%</td>
               </tr>
               <tr>
-                <td className={`${td} whitespace-nowrap`}>1996 → 2006</td>
+                <td className={`${td} break-keep`}>1996 → 2006</td>
                 <td className={`${td} text-right`}>5.7%</td>
-                <td className={`${td} text-right whitespace-nowrap`}>PER 하락 (이익은 연 +10.9%)</td>
-                <td className={`${td} text-right whitespace-nowrap`}>2006년 말 (14배) · 2007년 말 (17배)</td>
+                <td className={`${td} text-right break-keep`}>PER 하락 (이익은 연 +10.9%)</td>
+                <td className={`${td} text-right break-keep`}>2006년 말 (14배) · 2007년 말 (17배)</td>
                 <td className={`${td} text-right font-semibold text-emerald-600 dark:text-emerald-400`}>16.8% · 16.2%</td>
                 <td className={`${td} text-right`}>연 +12.6% · +13.1%</td>
               </tr>
               <tr className="bg-blue-50 dark:bg-blue-900/20">
-                <td className={`${td} whitespace-nowrap font-semibold`}>2015 → 2025</td>
+                <td className={`${td} break-keep font-semibold`}>2015 → 2025</td>
                 <td className={`${td} text-right`}>1.5%</td>
-                <td className={`${td} text-right whitespace-nowrap font-semibold text-red-500`}>이익 정체 (연 +1.6%)</td>
-                <td className={`${td} text-right whitespace-nowrap`}>지금 (18배, 내년 기준 28~33배)</td>
+                <td className={`${td} text-right break-keep font-semibold text-red-500`}>이익 정체 (연 +1.6%)</td>
+                <td className={`${td} text-right break-keep`}>지금 (18배, 내년 기준 28~33배)</td>
                 <td className={`${td} text-right font-semibold`}>?</td>
                 <td className={`${td} text-right`}>?</td>
               </tr>
@@ -8934,8 +8934,8 @@ function AutoDeep({ f, data, part, num = '', deep }: { f: Fundamentals; data: St
   const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-2'
   const h4 = 'text-sm font-semibold text-gray-800 dark:text-gray-100'
   const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
-  const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500 whitespace-nowrap'
-  const td = 'py-1.5 px-2 tabular-nums text-gray-700 dark:text-gray-200 whitespace-nowrap'
+  const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500 break-keep'
+  const td = 'py-1.5 px-2 tabular-nums text-gray-700 dark:text-gray-200 break-keep'
   const sgn = (v: number) => `${v > 0 ? '+' : ''}${v.toFixed(1)}`
   const avg = (a: number[]) => a.reduce((x, y) => x + y, 0) / a.length
 
@@ -9217,8 +9217,8 @@ function SegmentBox({ stockKey, num = '1-1.' }: { stockKey: string; num?: string
   const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-2'
   const h4 = 'text-sm font-semibold text-gray-800 dark:text-gray-100'
   const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
-  const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500 text-right whitespace-nowrap'
-  const td = 'py-1.5 px-2 tabular-nums text-right text-gray-700 dark:text-gray-200 whitespace-nowrap'
+  const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500 text-right break-keep'
+  const td = 'py-1.5 px-2 tabular-nums text-right text-gray-700 dark:text-gray-200 break-keep'
   const pct = (v: number | null) => v == null ? '—' : `${v > 0 ? '+' : ''}${v.toFixed(1)}%`
   const red = (v: number | null) => v != null && v < 0 ? 'text-red-500' : ''
   const money = (v: number) => Math.abs(v) >= 100 ? `${(v / 100).toFixed(1)}억` : `${v.toFixed(0)}백만`
