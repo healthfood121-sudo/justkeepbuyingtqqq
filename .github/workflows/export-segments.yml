@@ -43,7 +43,7 @@ jobs:
           python scripts/export_segments.py $ARGS &
           PID=$!
           while kill -0 $PID 2>/dev/null; do
-            sleep 1800
+            for i in $(seq 1 30); do sleep 60; kill -0 $PID 2>/dev/null || break; done
             git add scripts/data/segments_raw
             if ! git diff --cached --quiet; then
               git commit -q -m "auto: 사업부·지역별 매출 원자료 (중간)"
