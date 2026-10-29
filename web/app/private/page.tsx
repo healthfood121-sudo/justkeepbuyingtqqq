@@ -8362,7 +8362,7 @@ function NkeRegionSummary() {
         <table className="w-full text-xs">
           <thead><tr>
             <th className={`${th} text-left`}>지역</th><th className={th}>매출 비중</th><th className={th}>1년 전 대비</th><th className={th}>2024년 대비 수준</th>
-            <th className={th}>최근 4분기 평균 수준 (1년 전)</th><th className={th}>직영 1년 전 대비</th><th className={th}>지역 이익률 (2024년 같은 분기)</th><th className={`${th} text-left`}>판정</th>
+            <th className={th}>최근 4분기 평균 수준<span className="block">(1년 전)</span></th><th className={th}>직영 1년 전 대비</th><th className={th}>지역 이익률<span className="block">(2024년 같은 분기)</span></th><th className={`${th} text-left`}>판정</th>
           </tr></thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
             {rows.map(x => (
