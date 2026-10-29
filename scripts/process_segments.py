@@ -128,7 +128,7 @@ def process(key):
         own = sum(sums[m] for m in chosen if m in kinds["rev"][c_best]) / T4
         if qual and own < 0.6: continue  # 작은 사업부 안의 지역 + 다른 사업부를 섞은 조합은 버림
         if partial and (sh < 0.5 or sh > 1.05 or (qual and sh < 0.85)): continue
-        if re.search("TimingOfTransfer|RevenueRecognition|Measurement", ax): continue
+        if re.search("TimingOfTransfer|RevenueRecognition|Measurement|Milestone|Award|Vesting", ax): continue
         chosen = [m for m in chosen if sums[m] > 0]
         if len(chosen) < 2: continue
         kind = axis_kind(ax)
