@@ -9168,9 +9168,9 @@ function AutoDeep({ f, data, part, num = '', deep }: { f: Fundamentals; data: St
 
 // ── 사업부·지역별 분기 매출 (전 종목 공통) — /data/segments/{KEY}.json + segments.ts 해설 ─────────
 type SegMember = { id: string; name: string; rev: (number | null)[]; oi: (number | null)[] | null }
-type SegAxis = { axis: string; qual: string | null; kind: 'geo' | 'seg' | 'prod' | 'other'; concept: string; partial: boolean; share4: number; members: SegMember[] }
+type SegAxis = { axis: string; qual: string | null; kind: 'geo' | 'seg' | 'prod' | 'other' | 'total'; concept: string; partial: boolean; share4: number; members: SegMember[] }
 type SegData = { key: string; generated: string; ends: string[]; total: number[]; axes: SegAxis[] }
-const SEG_KIND: Record<SegAxis['kind'], string> = { geo: '지역별', seg: '사업부별', prod: '제품·서비스별', other: '판매 경로 등' }
+const SEG_KIND: Record<SegAxis['kind'], string> = { geo: '지역별', seg: '사업부별', prod: '제품·서비스별', other: '판매 경로 등', total: '전체' }
 const SEG_COLORS = ['#f97316', '#2563eb', '#10b981', '#a855f7', '#ef4444', '#eab308', '#06b6d4', '#64748b', '#ec4899', '#84cc16', '#0ea5e9', '#78716c']
 const segTail = (s: string) => s.split(':').pop()!
 function segBold(t: string): ReactNode {
@@ -9192,17 +9192,22 @@ function SegmentBox({ stockKey, num = '1-1.' }: { stockKey: string; num?: string
     fetch(`/data/segments/${stockKey}.json`).then(r => (r.ok ? r.json() : null)).then(j => { if (alive) setD(j) }).catch(() => { if (alive) setD(null) })
     return () => { alive = false }
   }, [stockKey])
-  if (!d || !d.axes?.length) return null
+  if (!d) return null
   const note = SEG_NOTES[stockKey]
-  const defIdx = Math.max(0, note?.axis ? d.axes.findIndex(a => segTail(a.axis) === note.axis || `${segTail(a.axis)}|${a.qual ? segTail(a.qual) : ''}` === note.axis) : 0)
-  const A = d.axes[ai ?? defIdx] ?? d.axes[0]
+  const totalAxis: SegAxis = { axis: 'Total', qual: null, kind: 'total', concept: '', partial: false, share4: 1, members: [{ id: 'TOTAL', name: '회사 전체', rev: d.total, oi: null }] }
+  const axes: SegAxis[] = note?.axis === 'Total' ? [totalAxis] : d.axes?.length ? d.axes : note ? [totalAxis] : []
+  if (!axes.length) return null
+  const defIdx = Math.max(0, note?.axis ? axes.findIndex(a => segTail(a.axis) === note.axis || `${segTail(a.axis)}|${a.qual ? segTail(a.qual) : ''}` === note.axis) : 0)
+  const A = axes[ai ?? defIdx] ?? axes[0]
   const nm = (m: SegMember) => note?.labels?.[segTail(m.id)] ?? m.name
   const n = d.ends.length, L = n - 1
   const lbl = (e: string) => `${e.slice(2, 4)}.${Number(e.slice(5, 7))}`
+  // 1년 전 같은 분기: 끝 날짜가 350~380일 앞선 분기(분기가 하나 빠진 경우도 맞춤)
+  const prevIdx = d.ends.map((e, i) => { for (let j = i - 1; j >= 0; j--) { const g = (Date.parse(e) - Date.parse(d.ends[j])) / 864e5; if (g > 350 && g < 380) return j; if (g >= 380) break } return -1 })
   const yoyAt = (s: (number | null)[], i: number) => {
-    if (i < 4 || s[i] == null || s[i - 4] == null || s[i - 4]! <= 0) return null
-    const gap = (Date.parse(d.ends[i]) - Date.parse(d.ends[i - 4])) / 864e5
-    return gap > 350 && gap < 380 ? (s[i]! / s[i - 4]! - 1) * 100 : null
+    const j = i >= 0 ? prevIdx[i] : -1
+    if (j < 0 || s[i] == null || s[j] == null || s[j]! <= 0) return null
+    return (s[i]! / s[j]! - 1) * 100
   }
   const avg4 = (s: (number | null)[], i: number) => {
     const v = [0, 1, 2, 3].map(k => yoyAt(s, i - k)); return v.every(x => x != null) ? v.reduce((a, b) => a + b!, 0) / 4 : null
@@ -9248,7 +9253,7 @@ function SegmentBox({ stockKey, num = '1-1.' }: { stockKey: string; num?: string
       <h4 className={h4}>{num} {note ? `${SEG_KIND[A.kind]} 매출 — ${note.title}` : `${SEG_KIND[A.kind]} 매출 — 어디서 늘고 어디서 줄고 있나`}</h4>
       {note?.intro && <p className={p}>{segBold(note.intro)}</p>}
       <div className="flex flex-wrap gap-1">
-        {d.axes.map((a, k) => <button key={k} className={btn(a === A)} onClick={() => setAi(k)}>{axisLabel(a)}</button>)}
+        {axes.length > 1 && axes.map((a, k) => <button key={k} className={btn(a === A)} onClick={() => setAi(k)}>{axisLabel(a)}</button>)}
         <span className="mx-1" />
         <button className={btn(mode === 'rev')} onClick={() => setMode('rev')}>분기 매출</button>
         <button className={btn(mode === 'yoy')} onClick={() => setMode('yoy')}>1년 전 대비 성장률</button>
