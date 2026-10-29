@@ -5,6 +5,9 @@ generate_all_sp500.py  —  SP500 상위 종목 롤링 CSV + JSON 일괄 생성
 - 오류 발생 종목은 스킵 후 계속 진행
 """
 import sys, os, json, traceback, argparse, time
+import warnings
+# yfinance 내부에서 나는 pandas 경고(inplace 사용 중단 예정) 숨김 — 로그가 수천 줄로 불어나 실제 오류가 묻힘
+warnings.filterwarnings("ignore", message=".*inplace keyword.*")
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
@@ -468,15 +471,25 @@ SP500_INFO = {
     "CIEN": ("씨에나", 243),
     "RL":   ("랄프 로렌", 373),
     "PEG":  ("퍼블릭 서비스 엔터프라이즈", 286),
+    # ── S&P500 밖이지만 버크셔가 2026년 1분기에 정리한 종목(비교용) ──
+    "POOL": ("풀 코퍼레이션", 900),
+    "HEI":  ("헤이코", 901),
+    "LAMR": ("라마 애드버타이징", 902),
+    "DEO":  ("디아지오", 903),
 }
 
 NEW_TICKERS = [t for t in SP500_INFO if t not in ALREADY_DONE]
+
+# 파일명 티커 → 야후 파이낸스 티커 (티커가 바뀐 종목)
+YF_TICKER = {
+    "MMC": "MRSH",  # 마쉬 맥레넌, 2026년 티커 변경
+}
 
 # ── 헬퍼 함수 ─────────────────────────────────────────────────
 
 def get_metrics(ticker: str) -> dict:
     try:
-        info = yf.Ticker(ticker).info
+        info = yf.Ticker(YF_TICKER.get(ticker, ticker)).info
         pe  = info.get("trailingPE") or info.get("forwardPE")
         div = (info.get("dividendYield") or 0)
         eps = info.get("trailingEps") or info.get("forwardEps")
@@ -551,7 +564,7 @@ def main():
                 print(f"  CSV 이미 존재, 스킵")
             else:
                 try:
-                    az = RollingAnalyzer(ticker, benchmark="^SP500TR")
+                    az = RollingAnalyzer(YF_TICKER.get(ticker, ticker), benchmark="^SP500TR")
                     df10a = az.rolling(years=10, freq="annual")
                     df5a  = az.rolling(years=5,  freq="annual")
                     az.save_csv(df10a, csv_10y)
@@ -578,7 +591,7 @@ def main():
             df10a = pd.read_csv(csv_10y, parse_dates=["buy_date","sell_date"])
             df5a  = pd.read_csv(csv_5y,  parse_dates=["buy_date","sell_date"]) if csv_5y.exists() else df10a.iloc[:0].copy()
 
-            az  = RollingAnalyzer(ticker, benchmark="^SP500TR")
+            az  = RollingAnalyzer(YF_TICKER.get(ticker, ticker), benchmark="^SP500TR")
             fp  = az.full_period()
             st  = summary_stats(df10a, label=ticker)
 

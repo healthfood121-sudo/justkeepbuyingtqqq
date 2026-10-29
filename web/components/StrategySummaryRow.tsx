@@ -14,32 +14,55 @@ const strategyInfo = {
 
 export default function StrategySummaryRow({ summaries, show, onToggle }: Props) {
   return (
-    <div className="grid grid-cols-3 gap-3">
-      {(['A', 'B', 'C'] as const).map(s => {
-        const sum = summaries[s]
-        const info = strategyInfo[s]
-        const isOn = show[s]
-        return (
-          <button
-            key={s}
-            onClick={() => onToggle(s)}
-            className={`rounded-xl p-4 border text-left transition-opacity cursor-pointer select-none ${info.bg} ${isOn ? 'opacity-100' : 'opacity-35'}`}
-          >
-            <div className="flex items-center gap-2 mb-3">
-              <span className={`text-lg font-bold ${info.color}`}>{info.label}</span>
-              <span className="text-xs text-gray-500 dark:text-gray-400">{info.desc}</span>
-              {!isOn && <span className="ml-auto text-xs text-gray-400 dark:text-gray-500">숨김</span>}
-            </div>
-            <div className="space-y-2">
-              <Stat label="완료율" value={`${sum.completionRate.toFixed(1)}%`} />
-              <Stat label="평균 소요" value={sum.avgYears ? `${sum.avgYears.toFixed(1)}년` : '—'} />
-              <Stat label="중간값" value={sum.medianYears ? `${sum.medianYears.toFixed(1)}년` : '—'} />
-              <Stat label="최장" value={sum.maxYears ? `${sum.maxYears.toFixed(1)}년` : '—'} highlight />
-            </div>
-          </button>
-        )
-      })}
+    <div>
+      <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">카드를 누르면 전략을 켜고 끌 수 있어요 · 켜진 전략만 아래 표·차트에 나옵니다</p>
+      <div className="grid grid-cols-3 gap-3">
+        {(['A', 'B', 'C'] as const).map(s => {
+          const sum = summaries[s]
+          const info = strategyInfo[s]
+          const isOn = show[s]
+          return (
+            <button
+              key={s}
+              type="button"
+              onClick={() => onToggle(s)}
+              aria-pressed={isOn}
+              title={isOn ? '눌러서 끄기' : '눌러서 켜기'}
+              className={`rounded-xl p-4 border text-left transition-colors cursor-pointer select-none ${info.bg} ${isOn ? '' : 'hover:brightness-95 dark:hover:brightness-125'}`}
+            >
+              <div className="flex items-start gap-2 mb-3">
+                <div className={`flex flex-wrap items-baseline gap-x-2 min-w-0 transition-opacity ${isOn ? 'opacity-100' : 'opacity-35'}`}>
+                  <span className={`text-lg font-bold ${info.color}`}>{info.label}</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">{info.desc}</span>
+                </div>
+                <OnOffBadge on={isOn} />
+              </div>
+              <div className={`space-y-2 transition-opacity ${isOn ? 'opacity-100' : 'opacity-35'}`}>
+                <Stat label="완료율" value={`${sum.completionRate.toFixed(1)}%`} />
+                <Stat label="평균 소요" value={sum.avgYears ? `${sum.avgYears.toFixed(1)}년` : '—'} />
+                <Stat label="중간값" value={sum.medianYears ? `${sum.medianYears.toFixed(1)}년` : '—'} />
+                <Stat label="최장" value={sum.maxYears ? `${sum.maxYears.toFixed(1)}년` : '—'} highlight />
+              </div>
+            </button>
+          )
+        })}
+      </div>
     </div>
+  )
+}
+
+function OnOffBadge({ on }: { on: boolean }) {
+  return (
+    <span
+      className={`ml-auto shrink-0 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wide border ${
+        on
+          ? 'bg-emerald-600 border-emerald-600 text-white dark:bg-emerald-500 dark:border-emerald-500'
+          : 'bg-white border-gray-300 text-gray-500 dark:bg-gray-900 dark:border-gray-600 dark:text-gray-400'
+      }`}
+    >
+      <span className={`w-1.5 h-1.5 rounded-full ${on ? 'bg-white' : 'bg-gray-400 dark:bg-gray-500'}`} />
+      {on ? 'ON' : 'OFF'}
+    </span>
   )
 }
 

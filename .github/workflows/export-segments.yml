@@ -1,0 +1,58 @@
+name: 사업부·지역별 분기 매출 원자료 (SEC XBRL)
+
+on:
+  workflow_dispatch:
+    inputs:
+      grade:
+        description: '등급 (A, B, C, D 또는 AB 등). 비우면 keys 사용'
+        required: false
+        default: 'A'
+      keys:
+        description: '종목 키 목록 (쉼표 구분)'
+        required: false
+        default: ''
+      force:
+        description: '이미 있는 파일도 다시 받기 (1)'
+        required: false
+        default: ''
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install requests
+      - name: 수집 (30분마다 중간 커밋)
+        env:
+          PYTHONUNBUFFERED: "1"
+          GRADE: ${{ inputs.grade }}
+          KEYS: ${{ inputs.keys }}
+          FORCE: ${{ inputs.force }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          ARGS=""
+          if [ -n "$KEYS" ]; then ARGS="--keys $KEYS"; else ARGS="--grade $GRADE"; fi
+          if [ "$FORCE" = "1" ]; then ARGS="$ARGS --force"; fi
+          save() {
+            rm -rf /tmp/seg && cp -r scripts/data/segments_raw /tmp/seg
+            git rebase --abort 2>/dev/null || true
+            git fetch -q origin master && git reset -q --hard origin/master
+            mkdir -p scripts/data/segments_raw && cp /tmp/seg/* scripts/data/segments_raw/
+            git add scripts/data/segments_raw
+            if ! git diff --cached --quiet; then git commit -q -m "auto: 사업부·지역별 매출 원자료$1" && git push -q origin HEAD:master || true; fi
+          }
+          python scripts/export_segments.py $ARGS &
+          PID=$!
+          while kill -0 $PID 2>/dev/null; do
+            for i in $(seq 1 30); do sleep 60; kill -0 $PID 2>/dev/null || break; done
+            kill -0 $PID 2>/dev/null && save " (중간)"
+          done
+          wait $PID
+          save ""

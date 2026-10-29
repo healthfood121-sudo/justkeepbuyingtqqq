@@ -32,6 +32,16 @@ OUT.mkdir(parents=True, exist_ok=True)
 UA = {"User-Agent": "justkeepbuyingtqqq research research@example.com"}
 CONCEPTS = ["EarningsPerShareDiluted", "EarningsPerShareBasicAndDiluted", "EarningsPerShareBasic"]
 SKIP = {"QQQ", "QLD", "TQQQ", "RMS"}  # ETF·비미국 종목
+# SEC 회사 번호(CIK)가 바뀐 종목: 예전 번호에 과거 공시가 있음 (엑슨모빌 2026년 지주회사 전환, 마시 맥레넌 티커 변경)
+CIK_EXTRA = {"XOM": [34088], "MMC": [62709]}
+TICKER_NOW = {"MMC": "MRSH"}  # 티커가 바뀐 종목: 주가·주식 수는 새 티커로 받음 (마시 맥레넌 2026-01-14 변경)
+# 주식 종류(A·B·C)별로만 EPS를 공시해 SEC 자동 데이터에 EPS가 없는 종목: 회사 10-K의 희석 EPS(현재 주식 수 기준)
+MANUAL_EPS = {
+    "V": {"2013-09-30": 1.90, "2014-09-30": 2.16, "2015-09-30": 2.58, "2016-09-30": 2.48, "2017-09-30": 2.80,
+          "2018-09-30": 4.42, "2019-09-30": 5.32, "2020-09-30": 4.89, "2021-09-30": 5.63, "2022-09-30": 7.00,
+          "2023-09-30": 8.28, "2024-09-30": 9.73, "2025-09-30": 10.20},  # 클래스 A 희석 EPS (2015년 4:1 분할 반영)
+    "ERIE": {"2022-12-31": 5.71, "2023-12-31": 8.53, "2024-12-31": 11.48, "2025-12-31": 10.69},  # 클래스 A 희석 EPS (회사 실적 발표)
+}
 TODAY = pd.Timestamp.today().normalize()
 LAST_FULL = TODAY.year - 1
 
@@ -52,7 +62,7 @@ def load_cik_map():
     return {v["ticker"].upper(): int(v["cik_str"]) for v in r.json().values()}
 
 
-def fetch_eps(cik: int) -> dict:
+def fetch_eps(cik: int, allow_fill: bool = True) -> dict:
     """회계연도 종료일 → (EPS, 공시일). 같은 종료일은 가장 최근 공시값(분할 재작성 반영)."""
     best = {}
     log = []
@@ -91,7 +101,67 @@ def fetch_eps(cik: int) -> dict:
     if not best:
         best = fetch_eps_companyfacts(cik)
         print(f"    개별 항목 비어 있음({', '.join(log)}) → 전체 공시 보완: {len(best)}개", flush=True)
+    elif allow_fill and max(pd.Timestamp(e) for e in best).year < LAST_FULL - 1:
+        # 최근 해가 비면(공시 항목 이름이 바뀐 경우 등) 다른 EPS 항목·순이익 ÷ 희석 주식 수로 채움
+        extra = fetch_eps_companyfacts(cik, fill=True)
+        added = 0
+        for e, v in extra.items():
+            if e not in best:
+                best[e] = v
+                added += 1
+        print(f"    최근 EPS 비어 있음(마지막 {max(best)[:4] if not added else '보완 전'}) → 보완 {added}개", flush=True)
     return best
+
+
+def _latest_shares(url: str, recent_only: bool):
+    try:
+        r = requests.get(url, headers=UA, timeout=30)
+        time.sleep(0.15)
+        if r.status_code != 200:
+            print(f"    주식 수 {url.rsplit('/', 1)[-1]}: HTTP {r.status_code}", flush=True)
+            return None
+        items = [it for v in r.json().get("units", {}).values() for it in v]
+        if recent_only:  # 분기·연간 보고서의 값만
+            items = [it for it in items if it.get("form") in ("10-Q", "10-K", "10-Q/A", "10-K/A")]
+        if not items:
+            return None
+        last = max(it["end"] for it in items)
+        latest = [it for it in items if it["end"] == last]
+        accn = max(it["accn"] for it in latest)
+        vals = [it["val"] for it in latest if it["accn"] == accn]
+        return (float(sum(vals)) if not recent_only else float(max(vals))), last
+    except Exception as e:
+        print(f"    주식 수 오류: {e}", flush=True)
+        return None
+
+
+def fetch_shares(cik: int):
+    """유통 주식 수. 표지(dei) 값이 2년 넘게 오래됐거나 없으면(주식 종류별로만 공시하는 회사 등)
+    최근 보고서의 희석 가중평균 주식 수로 대신한다."""
+    cutoff = (TODAY - pd.Timedelta(days=730)).strftime("%Y-%m-%d")
+    s = _latest_shares(f"https://data.sec.gov/api/xbrl/companyconcept/CIK{cik:010d}/dei/EntityCommonStockSharesOutstanding.json", False)
+    if s and s[1] >= cutoff:
+        return s
+    for c in ("WeightedAverageNumberOfDilutedSharesOutstanding", "WeightedAverageNumberOfSharesOutstandingBasic"):
+        w = _latest_shares(f"https://data.sec.gov/api/xbrl/companyconcept/CIK{cik:010d}/us-gaap/{c}.json", True)
+        if w and w[1] >= cutoff:
+            return w
+    return None
+
+
+def patch_shares_only(keys):
+    """이미 만든 종목 파일의 shares만 다시 채움 (전체 재생성 없이)."""
+    cik_map = load_cik_map()
+    for i, k in enumerate(keys, 1):
+        path = OUT / f"{k}.json"
+        if not path.exists():
+            continue
+        d = json.loads(path.read_text())
+        t = d["ticker"].replace(".", "-").upper()
+        cik = cik_map.get(t) or cik_map.get(t.replace("-", "."))
+        d["shares"] = shares_info(cik, k, d["ticker"])
+        path.write_text(json.dumps(d, ensure_ascii=False, separators=(",", ":")))
+        print(f"[{i}/{len(keys)}] {k} {d['shares']}", flush=True)
 
 
 def _annual_items(units: dict):
@@ -106,8 +176,9 @@ def _annual_items(units: dict):
                 yield unit, it
 
 
-def fetch_eps_companyfacts(cik: int) -> dict:
-    """companyconcept가 비어 있을 때: companyfacts 전체에서 EPS 계열 항목, 없으면 순이익 ÷ 희석 주식수."""
+def fetch_eps_companyfacts(cik: int, fill: bool = False) -> dict:
+    """companyconcept가 비어 있을 때: companyfacts 전체에서 EPS 계열 항목, 없으면 순이익 ÷ 희석 주식수.
+    fill=True: 빈 해를 채우는 용도 — EPS 계열 항목에 순이익 ÷ 주식 수 값을 더해(EPS 항목 우선) 돌려줌."""
     try:
         resp = requests.get(f"https://data.sec.gov/api/xbrl/companyfacts/CIK{cik:010d}.json", headers=UA, timeout=60)
         time.sleep(0.15)
@@ -117,7 +188,7 @@ def fetch_eps_companyfacts(cik: int) -> dict:
     except Exception:
         return {}
     best = {}
-    names = sorted((n for n in gaap if n.startswith("EarningsPerShare")),
+    names = sorted((n for n in gaap if n.startswith("EarningsPerShare") or n == "IncomeLossFromContinuingOperationsPerDilutedShare"),
                    key=lambda n: (0 if "Diluted" in n else 1, n))
     for n in names:
         for unit, it in _annual_items(gaap[n].get("units", {})):
@@ -126,7 +197,7 @@ def fetch_eps_companyfacts(cik: int) -> dict:
             prev = best.get(it["end"])
             if prev is None or (prev[2] == n and it["filed"] > prev[1]):
                 best[it["end"]] = (float(it["val"]), it["filed"], n)
-    if best:
+    if best and not fill:
         return best
     # 순이익 ÷ 희석 가중평균 주식수
     ni = {}
@@ -141,7 +212,7 @@ def fetch_eps_companyfacts(cik: int) -> dict:
         if sh:
             break
     for end, (v, filed) in ni.items():
-        if end in sh and sh[end][0] > 0:
+        if end in sh and sh[end][0] > 0 and end not in best:
             best[end] = (v / sh[end][0], max(filed, sh[end][1]), "NetIncome/Shares")
     return best
 
@@ -171,9 +242,56 @@ def annual_eps_by_year(eps_adj: dict) -> dict:
     return by
 
 
+def ttm_asof() -> str:
+    """최근 1년 EPS가 끝나는 분기말 추정: 오늘보다 45일 이상 지난 가장 최근 분기말(실적 발표 시차)."""
+    t = TODAY - pd.Timedelta(days=45)
+    q = pd.Timestamp(year=t.year, month=((t.month - 1) // 3) * 3 + 1, day=1) - pd.Timedelta(days=1)
+    return q.strftime("%Y-%m-%d")
+
+
+def monthly_close(close: pd.Series) -> dict:
+    """월말 종가(분할 반영, 배당 미반영). 첫 달과 값 목록만 저장해 용량을 줄임."""
+    me = close.groupby([close.index.year, close.index.month]).last()
+    (y0, m0) = me.index[0]
+    return {"start": f"{y0}-{m0:02d}", "c": [r2(v, 2) for v in me.values]}
+
+
+def shares_from_yahoo(ticker: str):
+    """SEC에서 못 찾으면 Yahoo의 유통 주식 수(여러 종류 합산 값)."""
+    try:
+        t = yf.Ticker(ticker.replace(".", "-"))
+        n = None
+        try:
+            n = t.fast_info.get("shares")
+        except Exception:
+            n = None
+        if not n:
+            n = (t.info or {}).get("sharesOutstanding")
+        return (float(n), TODAY.strftime("%Y-%m-%d")) if n else None
+    except Exception as e:
+        print(f"    Yahoo 주식 수 오류: {e}", flush=True)
+        return None
+
+
+def shares_info(cik: int, key: str, ticker: str = ""):
+    if key == "BRKB":  # A·B주가 섞여 있음 → Yahoo의 B주 환산 주식 수(A주 1주 = B주 1,500주)
+        try:
+            n = (yf.Ticker("BRK-B").info or {}).get("impliedSharesOutstanding")
+            print(f"    주식 수(B주 환산): {n}", flush=True)
+            return {"count": float(n), "asOf": TODAY.strftime("%Y-%m-%d"), "src": "Yahoo"} if n else None
+        except Exception:
+            return None
+    s = fetch_shares(cik) if cik else None
+    src = "SEC"
+    if not s and ticker:
+        s, src = shares_from_yahoo(ticker), "Yahoo"
+    print(f"    주식 수: {s} ({src if s else '없음'})", flush=True)
+    return {"count": s[0], "asOf": s[1], "src": src} if s else None
+
+
 def process(key: str, roll: dict, prices: pd.DataFrame, cik_map: dict) -> dict | None:
-    yf_t = roll["ticker"].replace(".", "-")
-    cik = cik_map.get(yf_t.upper()) or cik_map.get(yf_t.upper().replace("-", "."))
+    yf_t = TICKER_NOW.get(key, roll["ticker"]).replace(".", "-")
+    cik = cik_map.get(yf_t.upper()) or cik_map.get(yf_t.upper().replace("-", ".")) or (CIK_EXTRA.get(key) or [None])[0]
     if cik is None:
         print(f"  {key}: CIK 없음")
         return None
@@ -188,7 +306,13 @@ def process(key: str, roll: dict, prices: pd.DataFrame, cik_map: dict) -> dict |
     if close.empty:
         return None
 
-    eps_raw = fetch_eps(cik)
+    eps_raw = fetch_eps(cik, allow_fill=key != "BRKB")  # 버크셔: 공시 순이익이 보유 주식 평가로 크게 흔들려 채우지 않음
+    for c in CIK_EXTRA.get(key, []):  # 예전 CIK의 과거 EPS로 빈 해 채우기
+        if c != cik:
+            for e, v in fetch_eps(c, allow_fill=False).items():
+                eps_raw.setdefault(e, v)
+    for e, v in MANUAL_EPS.get(key, {}).items():  # 공시일을 최근으로 둬서 분할 보정을 다시 하지 않음
+        eps_raw.setdefault(e, (v, "2026-01-01", "manual"))
     if not eps_raw:
         print(f"  {key}: EPS 없음")
         return None
@@ -196,6 +320,9 @@ def process(key: str, roll: dict, prices: pd.DataFrame, cik_map: dict) -> dict |
     if key == "BRKB":  # 버크셔는 A주 기준 EPS 공시 → B주(1/1500)로 환산
         eps_adj = {k: v / 1500 for k, v in eps_adj.items()}
     eps_y = annual_eps_by_year(eps_adj)
+    eps_end = {}
+    for end in sorted(eps_adj):
+        eps_end[end.year - 1 if end.month <= 3 else end.year] = end.strftime("%Y-%m-%d")
 
     ye_close = close.groupby(close.index.year).last()
     ye_adj = adj.groupby(adj.index.year).last()
@@ -203,6 +330,8 @@ def process(key: str, roll: dict, prices: pd.DataFrame, cik_map: dict) -> dict |
     cur = roll.get("current") or {}
     price_now = float(close.iloc[-1])
     ttm = cur.get("eps")
+    if ttm is None and cur.get("pe") and cur.get("price"):  # Yahoo가 EPS를 비워 줄 때(예: 피서브) 주가 ÷ PER로 복원
+        ttm = cur["price"] / cur["pe"]
     pe_now = price_now / ttm if ttm and ttm > 0 else None
 
     # 연말 PER (그해 끝난 회계연도 EPS 기준)
@@ -298,22 +427,69 @@ def process(key: str, roll: dict, prices: pd.DataFrame, cik_map: dict) -> dict |
         "pe": {str(y): r2(v, 1) for y, v in pe_y.items()},
         "decomp": decomp,
         "metrics": metrics,
+        # 이익 시계(적정가 선 vs 주가)용
+        "epsEnd": {str(y): d for y, d in eps_end.items()},
+        "ttmAsOf": ttm_asof(),
+        "monthly": monthly_close(close),
+        "lastPrice": {"date": close.index[-1].strftime("%Y-%m-%d"), "close": r2(price_now)},
+        "shares": shares_info(cik, key, TICKER_NOW.get(key, roll["ticker"])),
     }
-    (OUT / f"{key}.json").write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")))
+    # 다른 스크립트가 덧붙인 항목은 유지 (export_eps_pre2008.py: epsOld, export_cashflow.py: cash·현금 지표)
+    path = OUT / f"{key}.json"
+    if path.exists():
+        prev = json.loads(path.read_text())
+        for k in ("epsOld", "epsOldSrc", "cash"):
+            if k in prev:
+                out[k] = prev[k]
+        for k in ("earnYield", "fcfPs", "fcfYield", "roe", "roic", "conv5", "roic5", "roe5"):
+            if k in prev.get("metrics", {}):
+                metrics[k] = prev["metrics"][k]
+    path.write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")))
     return metrics
 
 
 def main():
+    args = sys.argv[1:]
+    if args and args[0] == "--debug-eps":  # EPS를 못 가져오는 종목 원인 확인용
+        cik_map = load_cik_map()
+        for k in args[1:]:
+            cik = cik_map.get(k)
+            print("==", k, "CIK", cik, flush=True)
+            for c in CONCEPTS:
+                r = requests.get(f"https://data.sec.gov/api/xbrl/companyconcept/CIK{cik:010d}/us-gaap/{c}.json", headers=UA, timeout=30)
+                time.sleep(0.2)
+                if r.status_code != 200:
+                    print(" ", c, r.status_code); continue
+                its = [it for u, v in r.json().get("units", {}).items() for it in v]
+                forms = sorted({it.get("form") for it in its})
+                ann = [it for it in its if it.get("start") and 340 <= (pd.Timestamp(it["end"]) - pd.Timestamp(it["start"])).days <= 390]
+                print(" ", c, len(its), "forms", forms[:8], "annual", len(ann), ann[-1] if ann else None, flush=True)
+            r = requests.get(f"https://data.sec.gov/api/xbrl/companyfacts/CIK{cik:010d}.json", headers=UA, timeout=90)
+            print("  companyfacts", r.status_code, len(r.content), flush=True)
+            if r.status_code == 200:
+                f = r.json().get("facts", {})
+                print("  namespaces", list(f.keys()))
+                for ns, items in f.items():
+                    hits = [n for n in items if "PerShare" in n or "WeightedAverage" in n or n in ("NetIncomeLoss", "ProfitLoss")]
+                    print("  ", ns, hits[:25], flush=True)
+        return
+    if args and args[0] == "--shares-only":  # 주식 수만 다시 채우기
+        only = set(args[1:])
+        keys = sorted(f.stem for f in OUT.glob("*.json") if not f.stem.startswith("_"))
+        if "MISSING" in only:  # 주식 수가 비어 있는 종목만
+            only = {k for k in keys if not json.loads((OUT / f"{k}.json").read_text()).get("shares")}
+        patch_shares_only([k for k in keys if not only or k in only])
+        return
     files = sorted(ROLL.glob("*_rolling.json"))
     keys = [f.stem.replace("_rolling", "") for f in files]
-    only = set(sys.argv[1:])
+    only = set(args)
     keys = [k for k in keys if k not in SKIP and (not only or k in only)]
     rolls = {k: json.loads((ROLL / f"{k}_rolling.json").read_text()) for k in keys}
     keys = [k for k in keys if rolls[k].get("type") != "etf"]
     print(f"대상 {len(keys)}개")
 
     cik_map = load_cik_map()
-    yf_tickers = [rolls[k]["ticker"].replace(".", "-") for k in keys]
+    yf_tickers = [TICKER_NOW.get(k, rolls[k]["ticker"]).replace(".", "-") for k in keys]
     frames = []
     for i in range(0, len(yf_tickers), 80):
         chunk = yf_tickers[i:i + 80]

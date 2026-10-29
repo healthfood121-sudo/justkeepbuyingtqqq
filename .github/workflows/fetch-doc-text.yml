@@ -1,0 +1,62 @@
+name: 문서 텍스트 추출 (조사용)
+
+on:
+  workflow_dispatch:  # 수동 실행. 결과는 로그로만 확인 (커밋 없음)
+    inputs:
+      urls:
+        description: 'PDF 주소 목록 (공백 구분)'
+        required: true
+      pattern:
+        description: '찾을 단어 (grep -E, 대소문자 무시)'
+        required: true
+        default: 'résultat net|bénéfice net par action|par action'
+      after:
+        description: '찾은 줄 뒤로 더 보여줄 줄 수'
+        required: false
+        default: '0'
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils > /dev/null
+      - name: 받아서 찾기
+        env:
+          URLS: ${{ inputs.urls }}
+        run: |
+          i=0
+          for u in $URLS; do
+            i=$((i+1))
+            echo "=================== [$i] $u"
+            case "$u" in *.pdf|*.PDF) ;; *)
+              # PDF가 아니면 페이지의 링크 목록만 출력 (아카이브 목록 확인용)
+              curl -sSL -A "Mozilla/5.0" --max-time 120 -o page$i.txt "$u" || { echo "받기 실패"; continue; }
+              wc -c page$i.txt
+              # JSON(API 응답)이면 항목별 제목·날짜·유형만 요약
+              python3 - page$i.txt <<'PY' || true
+          import json, sys
+          try:
+              d = json.load(open(sys.argv[1]))
+          except Exception:
+              sys.exit(0)
+          def walk(o):
+              if isinstance(o, dict):
+                  if "titre" in o:
+                      keep = {k: v for k, v in o.items() if isinstance(v, (str, int)) and (k in ("id", "titre", "numero") or "date" in k.lower() or "type" in k.lower())}
+                      print(json.dumps(keep, ensure_ascii=False)[:400])
+                  for v in o.values(): walk(v)
+              elif isinstance(o, list):
+                  for v in o: walk(v)
+          walk(d)
+          if isinstance(d, dict): print("keys:", list(d.keys()), "total:", d.get("total"))
+          PY
+              grep -o -i -E 'href="[^"]+"' page$i.txt | grep -i -E "${{ inputs.pattern }}" | head -300
+              grep -o -i -E ".{0,200}(${{ inputs.pattern }}).{0,200}" page$i.txt | head -100
+              head -c 1500 page$i.txt; echo
+              continue;;
+            esac
+            curl -sSL -A "Mozilla/5.0" --max-time 120 -o doc$i.pdf "$u" || { echo "받기 실패"; continue; }
+            pdftotext -layout doc$i.pdf doc$i.txt || { echo "변환 실패"; continue; }
+            wc -l doc$i.txt
+            grep -n -i -E -A "${{ inputs.after }}" "${{ inputs.pattern }}" doc$i.txt | head -400
+          done

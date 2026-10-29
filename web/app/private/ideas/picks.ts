@@ -17,6 +17,9 @@ export const EXTRA_METRICS: Metrics[] = [
     roll10Median: 19.55, roll10Min: 7.84, roll10N: 23, roll10Over10: 95.7,
     beatBench: 23, beatTotal: 23,
     expRet10: 17.8,
+    // 회사 발표 2025년: 이익 수익률 = 43.08 ÷ 주가, 잉여현금 = 조정 잉여현금흐름 38.8억 유로 ÷ 1억 450만 주 = 주당 37.1유로
+    earnYield: 3.18, fcfYield: 2.74, fcfPs: 37.13,
+    roe: 25.0, roic: 79.7, roe5: 28.3, roic5: 98.7, conv5: 0.88,
   },
 ]
 

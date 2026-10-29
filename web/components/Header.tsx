@@ -5,7 +5,7 @@ import { useTheme } from './ThemeProvider'
 
 interface HeaderProps {
   maxWidth?: string
-  activePage?: 'simulator' | 'withdrawal' | 'posts' | 'qqq-holdings' | 'sp500-holdings'
+  activePage?: 'simulator' | 'withdrawal' | 'posts' | 'qqq-holdings' | 'sp500-holdings' | 'private'
 }
 
 export default function Header({ maxWidth = 'max-w-6xl', activePage }: HeaderProps) {
@@ -65,7 +65,9 @@ export default function Header({ maxWidth = 'max-w-6xl', activePage }: HeaderPro
             </Link>
             <Link
               href="/private"
-              className="transition-colors hover:text-gray-900 dark:hover:text-white"
+              className={`transition-colors hover:text-gray-900 dark:hover:text-white ${
+                activePage === 'private' ? 'text-gray-900 dark:text-white font-semibold' : ''
+              }`}
             >
               Private
             </Link>

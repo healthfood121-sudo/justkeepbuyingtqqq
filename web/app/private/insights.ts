@@ -745,3 +745,4 @@ export const WRITTEN_INSIGHTS: Record<string, WrittenInsight> = {
     ],
   },
 }
+

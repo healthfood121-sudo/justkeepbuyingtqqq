@@ -1,0 +1,32 @@
+name: 월별 주가 데이터 생성
+
+on:
+  workflow_dispatch:  # 수동 실행 전용
+    inputs:
+      tickers:
+        description: '키:야후티커 목록 (공백 구분, 예: RMS:RMS.PA NKE:NKE)'
+        required: true
+        default: 'RMS:RMS.PA NKE:NKE'
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r scripts/requirements.txt
+      - run: python scripts/export_monthly_price.py ${{ inputs.tickers }}
+      - name: 커밋 & 푸시
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add web/public/data/rolling/*_monthly_price.json
+          if git diff --cached --quiet; then echo "변경 없음"; else
+            git commit -m "auto: 월별 주가 데이터 생성 (${{ inputs.tickers }})"
+            git pull --rebase origin master
+            git push
+          fi

@@ -23,6 +23,7 @@ jobs:
       - run: python scripts/export_fundamentals.py ${{ inputs.tickers }}
         env:
           PYTHONUNBUFFERED: "1"
+      - run: python scripts/export_fair_value.py   # 종목 비교 표 '적정가 대비' 재료(_fair.json)
       - name: 커밋 & 푸시
         run: |
           git config user.name "github-actions[bot]"
