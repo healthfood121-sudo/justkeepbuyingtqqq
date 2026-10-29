@@ -12,7 +12,7 @@ export default function Header({ maxWidth = 'max-w-6xl', activePage }: HeaderPro
   const { theme, toggle } = useTheme()
 
   return (
-    <header className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 sticky top-0 z-50">
+    <header className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
       <div className={`${maxWidth} mx-auto px-4 sm:px-6 py-3 sm:py-4 flex flex-wrap items-center justify-between gap-y-2`}>
         <Link
           href="/"
