@@ -52,7 +52,7 @@ def quarterize(series):
         if h1 and q1 and h1[0][1] not in q: q[h1[0][1]] = h1[0][2] - q1[0][2]
         if m9 and h1 and m9[0][1] not in q: q[m9[0][1]] = m9[0][2] - h1[0][2]
         if fy and m9 and fy[0][1] not in q: q[fy[0][1]] = fy[0][2] - m9[0][2]
-    return q
+    return {e: v for e, v in q.items() if v >= 0 or abs(v) < 1e5}  # 재분류로 생긴 음수 분기(매출)는 버림
 
 def process(key):
     d = json.loads(gzip.decompress((RAW / f"{key}.json.gz").read_bytes()))
@@ -159,6 +159,7 @@ def process(key):
 if __name__ == "__main__":
     keys = sys.argv[1:] or sorted(p.name[:-8] for p in RAW.glob("*.json.gz"))
     for k in keys:
+        if not (RAW / f"{k}.json.gz").exists(): print(k, "원자료 없음"); continue
         o = process(k)
         if not o: print(k, "매출 없음"); continue
         print(k, len(o["ends"]), o["ends"][-1], "total", o["total"][-1])
