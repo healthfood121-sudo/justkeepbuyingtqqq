@@ -78,7 +78,7 @@ def parse(xml_bytes, acc):
         tag = el.tag
         if not tag.startswith("{") or el.get("contextRef") not in ctx: continue
         name = tag.split("}")[1]
-        if not KEEP.search(name) or DROP.search(re.sub(r"OperatingIncomeLoss|(Ex|In)cludingAssessedTax", "", name)): continue
+        if not KEEP.search(name) or DROP.search(re.sub(r"OperatingIncomeLoss|(Ex|In)cludingAssessedTax|NetOfInterestExpense", "", name)): continue
         try: v = float(el.text)
         except (TypeError, ValueError): continue
         st, en, dims = ctx[el.get("contextRef")]

@@ -12,6 +12,7 @@ import spDesc from '@/app/sp500-holdings/descriptions.json'
 import PrivateTabs from '@/components/PrivateTabs'
 import { WRITTEN_INSIGHTS, WRITTEN_AS_OF } from './insights'
 import { DEEP_INSIGHTS, QUALITY_EXTRA, type DeepInsight, type QualityExtra, type Axis } from './deep'
+import { SEG_NOTES } from './segments'
 import { classify, GROUPS, GRADE_LABEL, gradeColor, groupColor, qualityScore, fmt, fmtSgn, type Metrics, type Quality, type GroupKey } from '@/lib/ideas'
 import { EXTRA_METRICS } from './ideas/picks'
 import qldData        from '@/public/data/rolling/QLD_rolling.json'
@@ -9165,6 +9166,154 @@ function AutoDeep({ f, data, part, num = '', deep }: { f: Fundamentals; data: St
   )
 }
 
+// ── 사업부·지역별 분기 매출 (전 종목 공통) — /data/segments/{KEY}.json + segments.ts 해설 ─────────
+type SegMember = { id: string; name: string; rev: (number | null)[]; oi: (number | null)[] | null }
+type SegAxis = { axis: string; qual: string | null; kind: 'geo' | 'seg' | 'prod' | 'other'; concept: string; partial: boolean; share4: number; members: SegMember[] }
+type SegData = { key: string; generated: string; ends: string[]; total: number[]; axes: SegAxis[] }
+const SEG_KIND: Record<SegAxis['kind'], string> = { geo: '지역별', seg: '사업부별', prod: '제품·서비스별', other: '판매 경로 등' }
+const SEG_COLORS = ['#f97316', '#2563eb', '#10b981', '#a855f7', '#ef4444', '#eab308', '#06b6d4', '#64748b', '#ec4899', '#84cc16', '#0ea5e9', '#78716c']
+const segTail = (s: string) => s.split(':').pop()!
+function segBold(t: string): ReactNode {
+  return t.split('**').map((x, i) => i % 2 ? <b key={i}>{x}</b> : x)
+}
+
+function SegmentBox({ stockKey, num = '1-1.' }: { stockKey: string; num?: string }) {
+  const [d, setD] = useState<SegData | null | undefined>(undefined)
+  const [ai, setAi] = useState<number | null>(null)
+  const [mode, setMode] = useState<'rev' | 'yoy'>('rev')
+  const chartRef = useRef<ChartJS | null>(null)
+  const [pluginLoaded, setPluginLoaded] = useState(false)
+  useEffect(() => {
+    import('chartjs-plugin-zoom').then(({ default: z }) => { ChartJS.register(z); setPluginLoaded(true) })
+  }, [])
+  useEffect(() => {
+    let alive = true
+    setD(undefined); setAi(null)
+    fetch(`/data/segments/${stockKey}.json`).then(r => (r.ok ? r.json() : null)).then(j => { if (alive) setD(j) }).catch(() => { if (alive) setD(null) })
+    return () => { alive = false }
+  }, [stockKey])
+  if (!d || !d.axes?.length) return null
+  const note = SEG_NOTES[stockKey]
+  const defIdx = Math.max(0, note?.axis ? d.axes.findIndex(a => segTail(a.axis) === note.axis || `${segTail(a.axis)}|${a.qual ? segTail(a.qual) : ''}` === note.axis) : 0)
+  const A = d.axes[ai ?? defIdx] ?? d.axes[0]
+  const nm = (m: SegMember) => note?.labels?.[segTail(m.id)] ?? m.name
+  const n = d.ends.length, L = n - 1
+  const lbl = (e: string) => `${e.slice(2, 4)}.${Number(e.slice(5, 7))}`
+  const yoyAt = (s: (number | null)[], i: number) => {
+    if (i < 4 || s[i] == null || s[i - 4] == null || s[i - 4]! <= 0) return null
+    const gap = (Date.parse(d.ends[i]) - Date.parse(d.ends[i - 4])) / 864e5
+    return gap > 350 && gap < 380 ? (s[i]! / s[i - 4]! - 1) * 100 : null
+  }
+  const avg4 = (s: (number | null)[], i: number) => {
+    const v = [0, 1, 2, 3].map(k => yoyAt(s, i - k)); return v.every(x => x != null) ? v.reduce((a, b) => a + b!, 0) / 4 : null
+  }
+  const sum4 = (s: (number | null)[]) => s.slice(-4).reduce((a: number, b) => a + (b ?? 0), 0)
+  const tot4 = sum4(d.total)
+  const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-2'
+  const h4 = 'text-sm font-semibold text-gray-800 dark:text-gray-100'
+  const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
+  const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500 text-right whitespace-nowrap'
+  const td = 'py-1.5 px-2 tabular-nums text-right text-gray-700 dark:text-gray-200 whitespace-nowrap'
+  const pct = (v: number | null) => v == null ? '—' : `${v > 0 ? '+' : ''}${v.toFixed(1)}%`
+  const red = (v: number | null) => v != null && v < 0 ? 'text-red-500' : ''
+  const money = (v: number) => Math.abs(v) >= 100 ? `${(v / 100).toFixed(1)}억` : `${v.toFixed(0)}백만`
+
+  const ds = mode === 'rev'
+    ? A.members.map((m, k) => ({ type: 'bar' as const, label: nm(m), data: m.rev.map(v => v == null ? null : v / 100), backgroundColor: SEG_COLORS[k % 12] + 'cc', stack: 's' }))
+    : [...A.members.map((m, k) => ({ type: 'line' as const, label: nm(m), data: m.rev.map((_, i) => yoyAt(m.rev, i)), borderColor: SEG_COLORS[k % 12], backgroundColor: SEG_COLORS[k % 12], pointRadius: 2, tension: 0, spanGaps: false })),
+       { type: 'line' as const, label: '회사 전체', data: d.total.map((_, i) => yoyAt(d.total, i)), borderColor: '#111827', backgroundColor: '#111827', borderDash: [4, 3], pointRadius: 0, tension: 0, spanGaps: false }]
+  const options: any = {
+    responsive: true, maintainAspectRatio: false, animation: false,
+    scales: {
+      x: { grid: { display: false }, stacked: mode === 'rev', ticks: { font: { size: 10 }, maxRotation: 60 } },
+      y: { stacked: mode === 'rev', ticks: { font: { size: 11 }, callback: (v: number) => mode === 'rev' ? `${v}억` : `${v}%` }, grid: { color: 'rgba(128,128,128,0.1)' } },
+    },
+    plugins: {
+      legend: { position: 'top' as const, labels: { font: { size: 11 }, boxWidth: 12 } },
+      tooltip: { mode: 'index' as const, intersect: false, callbacks: {
+        title: (it: any[]) => `${d.ends[it[0].dataIndex]} 끝난 분기`,
+        label: (c: any) => mode === 'rev' ? `${c.dataset.label} ${c.parsed.y?.toFixed(2)}억 달러` : `${c.dataset.label} ${c.parsed.y > 0 ? '+' : ''}${c.parsed.y?.toFixed(1)}%`,
+      } },
+      zoom: pluginLoaded ? { pan: { enabled: true, mode: 'x' }, zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' } } : {},
+    },
+  }
+  const rows = A.members.map(m => ({ m, share: sum4(m.rev) / tot4 * 100, yoy: yoyAt(m.rev, L), a4: avg4(m.rev, L), a4p: avg4(m.rev, L - 4),
+    margin: m.oi && m.oi[L] != null && m.rev[L] ? m.oi[L]! / m.rev[L]! * 100 : null, margin1: m.oi && m.oi[L - 4] != null && m.rev[L - 4] ? m.oi[L - 4]! / m.rev[L - 4]! * 100 : null }))
+  const hasOi = rows.some(r => r.margin != null)
+  const ranked = rows.filter(r => r.a4 != null).sort((a, b) => b.a4! - a.a4!)
+  const btn = (on: boolean) => `px-2 py-0.5 text-xs rounded border ${on ? 'bg-gray-900 text-white border-gray-900 dark:bg-gray-100 dark:text-gray-900' : 'text-gray-500 border-gray-200 dark:border-gray-700'}`
+  const axisLabel = (a: SegAxis) => `${SEG_KIND[a.kind]}${a.qual ? `(${segTail(a.qual).replace(/Member$/, '')} 안)` : ''}`
+  return (
+    <div className={box}>
+      <h4 className={h4}>{num} {note ? `${SEG_KIND[A.kind]} 매출 — ${note.title}` : `${SEG_KIND[A.kind]} 매출 — 어디서 늘고 어디서 줄고 있나`}</h4>
+      {note?.intro && <p className={p}>{segBold(note.intro)}</p>}
+      <div className="flex flex-wrap gap-1">
+        {d.axes.map((a, k) => <button key={k} className={btn(a === A)} onClick={() => setAi(k)}>{axisLabel(a)}</button>)}
+        <span className="mx-1" />
+        <button className={btn(mode === 'rev')} onClick={() => setMode('rev')}>분기 매출</button>
+        <button className={btn(mode === 'yoy')} onClick={() => setMode('yoy')}>1년 전 대비 성장률</button>
+      </div>
+      <div className="relative">
+        <button onClick={() => (chartRef.current as any)?.resetZoom?.()}
+          className="absolute top-0 right-0 z-10 px-2 py-0.5 text-xs text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 border border-gray-200 dark:border-gray-700 rounded">줌 초기화</button>
+        <div style={{ height: 300 }}>
+          <Chart ref={chartRef as any} type={mode === 'rev' ? 'bar' : 'line'} data={{ labels: d.ends.map(lbl), datasets: ds } as any} options={options} />
+        </div>
+        <p className="text-xs text-gray-400 dark:text-gray-600 text-right mt-1">휠: 확대/축소 &nbsp;|&nbsp; 드래그: 이동 · 가로축 = 분기가 끝난 연·월</p>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="text-xs">
+          <thead><tr>
+            <th className={`${th} text-left`}>{SEG_KIND[A.kind].replace('별', '')}</th><th className={th}>최근 분기 매출(달러)</th><th className={th}>비중(최근 1년)</th>
+            <th className={th}>1년 전 대비</th><th className={th}>최근 4분기 평균 성장률 (1년 전)</th>{hasOi && <th className={th}>이익률 (1년 전)</th>}
+          </tr></thead>
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+            {rows.map(r => (
+              <tr key={r.m.id}>
+                <td className={`${td} text-left`}>{nm(r.m)}</td>
+                <td className={td}>{r.m.rev[L] == null ? '—' : money(r.m.rev[L]!)}</td>
+                <td className={td}>{r.share.toFixed(0)}%</td>
+                <td className={`${td} ${red(r.yoy)}`}>{pct(r.yoy)}</td>
+                <td className={td}><span className={red(r.a4)}>{pct(r.a4)}</span> <span className="text-gray-400">({pct(r.a4p)})</span></td>
+                {hasOi && <td className={td}>{r.margin == null ? '—' : `${r.margin.toFixed(1)}%`} <span className="text-gray-400">({r.margin1 == null ? '—' : `${r.margin1.toFixed(1)}%`})</span></td>}
+              </tr>
+            ))}
+            <tr className="font-semibold">
+              <td className={`${td} text-left`}>회사 전체</td><td className={td}>{money(d.total[L])}</td><td className={td}>100%</td>
+              <td className={`${td} ${red(yoyAt(d.total, L))}`}>{pct(yoyAt(d.total, L))}</td>
+              <td className={td}>{pct(avg4(d.total, L))} <span className="text-gray-400">({pct(avg4(d.total, L - 4))})</span></td>{hasOi && <td className={td}></td>}
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      {A.partial && <p className="text-[11px] text-amber-600 dark:text-amber-400">이 구분은 회사가 공시한 항목만 모은 것이라 합이 회사 전체 매출의 {(A.share4 * 100).toFixed(0)}%다.</p>}
+      {note ? (
+        <div className="rounded bg-amber-50/70 dark:bg-amber-950/20 p-3 space-y-2">
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div>
+              <p className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 mb-0.5">{note.goodLab ?? '좋은 신호'}</p>
+              <ul className={`${DEEP_P} list-disc pl-4 space-y-1`}>{note.good.map((t, i) => <li key={i}>{segBold(t)}</li>)}</ul>
+            </div>
+            <div>
+              <p className="text-[11px] font-semibold text-red-500 mb-0.5">{note.badLab ?? '걱정되는 신호'}</p>
+              <ul className={`${DEEP_P} list-disc pl-4 space-y-1`}>{note.bad.map((t, i) => <li key={i}>{segBold(t)}</li>)}</ul>
+            </div>
+          </div>
+          <p className={DEEP_P}><b>판정 — </b>{segBold(note.verdict)}</p>
+          <p className={DEEP_P}><b>다음에 볼 숫자 — </b>{segBold(note.next)}</p>
+        </div>
+      ) : ranked.length >= 2 && (
+        <p className={p}>
+          자동 요약: 최근 4분기 평균으로 가장 빨리 크는 곳은 <b>{nm(ranked[0].m)}</b>({pct(ranked[0].a4)}), 가장 느린 곳은 <b>{nm(ranked[ranked.length - 1].m)}</b>({pct(ranked[ranked.length - 1].a4)}).
+        </p>
+      )}
+      <p className="text-[11px] text-gray-400 dark:text-gray-500">
+        출처: 회사 10-Q·10-K(미국 증권거래위원회 공시)의 {SEG_KIND[A.kind].replace('별', '')} 매출. 4분기는 연간 − 3분기까지 누적으로 계산. 자료 {d.generated}{note ? ` · 해설 ${note.asOf}` : ''}.
+      </p>
+    </div>
+  )
+}
+
 function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) {
   const [f, setF] = useState<Fundamentals | null | undefined>(undefined)
   const [q, setQ] = useState<Quality | undefined>(undefined)
@@ -9204,6 +9353,7 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
         {header}
         <QualityCard stockKey={stockKey} />
         <p className="text-xs text-gray-400">이 종목은 연도별 EPS 공시 데이터를 찾지 못해 숫자 분석을 생략했다.</p>
+        <SegmentBox stockKey={stockKey} />
         {deep && (<>
           <div className={box}><h4 className={h4}>1. 지금 한눈에</h4><DeepNow d={deep} /></div>
           <DeepFuture d={deep} num="2." />
@@ -9293,6 +9443,8 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
           {group && <li><b>{GROUPS[group].label}:</b> {GROUPS[group].desc}</li>}
         </ul>
       </div>
+
+      <SegmentBox stockKey={stockKey} num={`${nNow}-1.`} />
 
       {live && <StockValueClock f={f as ClockFund} stockKey={stockKey} rolling={data} title={`${nClock}. 이익 시계 — 적정가 선 vs 주가`} judged={deep?.growth} />}
 

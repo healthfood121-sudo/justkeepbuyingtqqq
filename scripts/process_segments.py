@@ -19,7 +19,7 @@ REV_PRI = ["RevenueFromContractWithCustomerExcludingAssessedTax", "Revenues", "R
 OI = ["OperatingIncomeLoss", "SegmentOperatingIncomeLoss", "EarningsBeforeInterestAndTaxes"]
 NEUTRAL = {("us-gaap:ConsolidationItemsAxis", "us-gaap:OperatingSegmentsMember"), ("srt:ConsolidationItemsAxis", "srt:OperatingSegmentsMember"),
            ("srt:ConsolidationItemsAxis", "us-gaap:OperatingSegmentsMember")}
-KO = [("UnitedStates", "미국"), ("NonUs", "미국 외"), ("Americas", "미주"), ("NorthAmerica", "북미"), ("LatinAmerica", "중남미"), ("SouthAmerica", "남미"),
+KO = [("UnitedStates", "미국"), ("US", "미국"), ("Us", "미국"), ("Domestic", "미국"), ("NonUs", "미국 외"), ("Americas", "미주"), ("NorthAmerica", "북미"), ("LatinAmerica", "중남미"), ("SouthAmerica", "남미"),
       ("Canada", "캐나다"), ("Mexico", "멕시코"), ("EuropeMiddleEastAndAfrica", "유럽·중동·아프리카"), ("Emea", "유럽·중동·아프리카"), ("Europe", "유럽"),
       ("GreaterChina", "중화권"), ("China", "중국"), ("Japan", "일본"), ("RestOfAsiaPacific", "기타 아시아태평양"), ("AsiaPacific", "아시아태평양"),
       ("Asia", "아시아"), ("International", "해외"), ("Foreign", "해외"), ("Other", "기타"), ("UnitedKingdom", "영국"), ("Germany", "독일"),
@@ -63,11 +63,15 @@ def process(key):
         if len(dk) > 2: continue
         S.setdefault((c, dk), {})[(s, e)] = v
     # 회사 전체 매출
-    tot_c = None; tot = {}
+    tot_c = None; tot = {}; cands = []
     for c in REV_PRI + sorted({c for c, dk in S if not dk and re.search("Revenue|Sales", c)}):
         if (c, ()) in S:
             qq = quarterize(S[(c, ())])
-            if len(qq) > len(tot): tot, tot_c = qq, c
+            if qq: cands.append((len(qq), qq[max(qq)], c, qq))
+    if cands:
+        mx = max(x[0] for x in cands)
+        ok = [x for x in cands if x[0] >= min(8, mx)]  # 충분히 긴 것 중 가장 큰 값(은행 등 부분 매출 항목 배제)
+        _, _, tot_c, tot = max(ok, key=lambda x: x[1])
     if not tot: return None
     ends = sorted(tot)[-20:]
     def near(qd, e):  # 끝 날짜가 며칠 다른 경우(52·53주 회계연도)
