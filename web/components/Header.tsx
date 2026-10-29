@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useTheme } from './ThemeProvider'
 
 interface HeaderProps {
@@ -10,9 +11,19 @@ interface HeaderProps {
 
 export default function Header({ maxWidth = 'max-w-6xl', activePage }: HeaderProps) {
   const { theme, toggle } = useTheme()
+  const pathname = usePathname() ?? ''
+  // /private 아래에서는 메뉴가 프라이빗 전용 탭으로 바뀐다 (로고는 그대로 메인 페이지로)
+  const isPrivate = pathname.startsWith('/private')
+  const privTabs: Array<[string, string, string]> = [
+    ['/private', '위대한 기업', '위대한 기업'],
+    ['/private/ideas', '종목 아이디어', '종목 아이디어'],
+    ['/private/kostolany', '코스톨라니', '코스톨라니 달걀'],
+    ['/private/howard-marks', '하워드 막스', '하워드 막스'],
+  ]
+  const privOn = (href: string) => href === '/private' ? pathname === '/private' : pathname.startsWith(href)
 
   return (
-    <header className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
+    <header className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 sticky top-0 z-50">
       <div className={`${maxWidth} mx-auto px-4 sm:px-6 py-3 sm:py-4 flex flex-wrap items-center justify-between gap-y-2`}>
         <Link
           href="/"
@@ -23,6 +34,19 @@ export default function Header({ maxWidth = 'max-w-6xl', activePage }: HeaderPro
         <div className="contents sm:flex sm:items-center sm:gap-3">
           {/* 휴대폰: 로고·테마 버튼 아래 한 줄로 메뉴 (줄바꿈 없이) */}
           <nav className="order-3 w-full sm:order-none sm:w-auto flex items-center gap-5 sm:gap-4 text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap overflow-x-auto">
+            {isPrivate ? (<>
+            {privTabs.map(([href, short, long]) => (
+              <Link
+                key={href}
+                href={href}
+                className={`transition-colors hover:text-gray-900 dark:hover:text-white ${
+                  privOn(href) ? 'text-gray-900 dark:text-white font-semibold' : ''
+                }`}
+              >
+                <span className="sm:hidden">{short}</span><span className="hidden sm:inline">{long}</span>
+              </Link>
+            ))}
+          </>) : (<>
             <Link
               href="/simulator/custom"
               className={`transition-colors hover:text-gray-900 dark:hover:text-white ${
@@ -71,6 +95,7 @@ export default function Header({ maxWidth = 'max-w-6xl', activePage }: HeaderPro
             >
               Private
             </Link>
+          </>)}
           </nav>
           <button
             onClick={toggle}

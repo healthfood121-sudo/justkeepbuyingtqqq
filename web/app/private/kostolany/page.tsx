@@ -6,7 +6,7 @@ import KostolanyEgg from '@/components/kostolany/KostolanyEgg'
 export default async function KostolanyPage() {
   const cookieStore = await cookies()
   const auth = cookieStore.get('private_auth')
-  if (!auth || auth.value !== 'true') {
+  if (!auth || auth.value !== process.env.PRIVATE_PASSWORD) {
     redirect('/private/login')
   }
 
