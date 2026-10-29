@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
-import HowardMarksAnalyzer from './HowardMarksAnalyzer'
+import PrivateTabs from '@/components/PrivateTabs'
+import CycleChecklist from '@/components/howard-marks/CycleChecklist'
 
 export default async function HowardMarksPage() {
   const cookieStore = await cookies()
@@ -12,8 +13,9 @@ export default async function HowardMarksPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+        <PrivateTabs active="howard-marks" />
         <div className="mt-6">
-          <HowardMarksAnalyzer />
+          <CycleChecklist />
         </div>
       </div>
     </div>
