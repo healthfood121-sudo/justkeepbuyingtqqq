@@ -220,7 +220,7 @@ export default function CycleChecklist() {
   const verdict = useMemo<VerdictInfo | null>(() => {
     if (!verdictKey) return null;
     return VERDICT_LEVELS[verdictKey];
-  }, [verdictKey, t]);
+  }, [verdictKey]);
 
   const verdictColor = verdictKey ? VERDICT_COLORS[VERDICT_COLOR_MAP[verdictKey]] : null;
   const meterPos = Math.min(100, Math.max(0, ((netScore + 100) / 200) * 100));
