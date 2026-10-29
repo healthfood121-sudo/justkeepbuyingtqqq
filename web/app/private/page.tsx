@@ -8331,8 +8331,8 @@ function NkeRegionSummary() {
   const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-2'
   const h4 = 'text-sm font-semibold text-gray-800 dark:text-gray-100'
   const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
-  const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500 text-right whitespace-nowrap'
-  const td = 'py-1.5 px-2 tabular-nums text-right text-gray-700 dark:text-gray-200 whitespace-nowrap'
+  const th = 'py-1.5 px-1.5 font-medium text-gray-400 dark:text-gray-500 text-right align-bottom leading-tight'
+  const td = 'py-1.5 px-1.5 tabular-nums text-right text-gray-700 dark:text-gray-200 align-top leading-tight'
   const L = 32 // 최신 분기(FY27 Q1)
   const fy26 = (s: number[]) => s.slice(28, 32).reduce((a, b) => a + b, 0)
   const totFy26 = fy26(NKE_SEG.TOT.rev)
@@ -8359,7 +8359,7 @@ function NkeRegionSummary() {
       <h4 className={h4}>1-6. 어느 지역이 먼저 돌아서고 있나 — 북미만 돌아섰고, 나머지가 아직 발목을 잡는다</h4>
       <p className={p}>최신 분기(2027 회계연도 1분기, 2026년 8월 끝) 기준. 돌아선 순서대로 놓았다. "최근 4분기 평균 수준"은 분기 출렁임을 없애려고 2024년 대비 수준을 4분기씩 평균한 값이다.</p>
       <div className="overflow-x-auto">
-        <table className="text-xs">
+        <table className="w-full text-xs">
           <thead><tr>
             <th className={`${th} text-left`}>지역</th><th className={th}>매출 비중</th><th className={th}>1년 전 대비</th><th className={th}>2024년 대비 수준</th>
             <th className={th}>최근 4분기 평균 수준 (1년 전)</th><th className={th}>직영 1년 전 대비</th><th className={th}>지역 이익률 (2024년 같은 분기)</th><th className={`${th} text-left`}>판정</th>
@@ -8371,9 +8371,9 @@ function NkeRegionSummary() {
                 <td className={td}>{x.share.toFixed(x.share < 5 ? 1 : 0)}%</td>
                 <td className={`${td} ${x.yoy < 0 ? 'text-red-500' : ''}`}>{nkeSgn(x.yoy)}%</td>
                 <td className={td}>{x.idx.toFixed(1)}</td>
-                <td className={td}>{x.avgNow.toFixed(1)} <span className="text-gray-400">({x.avgPrev.toFixed(1)})</span></td>
+                <td className={td}>{x.avgNow.toFixed(1)} <span className="block text-gray-400">({x.avgPrev.toFixed(1)})</span></td>
                 <td className={`${td} ${x.dt < 0 ? 'text-red-500' : ''}`}>{nkeSgn(x.dt)}%</td>
-                <td className={td}>{x.mNow.toFixed(1)}% <span className="text-gray-400">({x.m24.toFixed(1)}%)</span></td>
+                <td className={td}>{x.mNow.toFixed(1)}% <span className="block text-gray-400">({x.m24.toFixed(1)}%)</span></td>
                 <td className={`${td} text-left font-semibold ${verdict[x.r][1]}`}>{verdict[x.r][0]}</td>
               </tr>
             ))}
@@ -8382,7 +8382,7 @@ function NkeRegionSummary() {
               <td className={`${td} text-red-500`}>{nkeSgn((T.rev[L] / T.rev[L - 4] - 1) * 100)}%</td>
               <td className={td}>{(T.rev[L] / T.rev[20] * 100).toFixed(1)}</td>
               <td className={td}>—</td><td className={td}>—</td>
-              <td className={td}>매출총이익률 {gm(L).toFixed(1)}% <span className="text-gray-400">({gm(20).toFixed(1)}%)</span></td>
+              <td className={td}>매출총이익률 {gm(L).toFixed(1)}% <span className="block text-gray-400">({gm(20).toFixed(1)}%)</span></td>
               <td className={td}></td>
             </tr>
           </tbody>
