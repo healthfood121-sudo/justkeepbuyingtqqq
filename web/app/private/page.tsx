@@ -8331,8 +8331,8 @@ function NkeRegionSummary() {
   const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-2'
   const h4 = 'text-sm font-semibold text-gray-800 dark:text-gray-100'
   const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
-  const th = 'py-1.5 px-1.5 font-medium text-gray-400 dark:text-gray-500 text-right align-bottom leading-tight'
-  const td = 'py-1.5 px-1.5 tabular-nums text-right text-gray-700 dark:text-gray-200 align-top leading-tight'
+  const th = 'py-1.5 px-1.5 font-medium text-gray-400 dark:text-gray-500 text-right align-bottom leading-tight break-keep'
+  const td = 'py-1.5 px-1.5 tabular-nums text-right text-gray-700 dark:text-gray-200 align-top leading-tight break-keep'
   const L = 32 // 최신 분기(FY27 Q1)
   const fy26 = (s: number[]) => s.slice(28, 32).reduce((a, b) => a + b, 0)
   const totFy26 = fy26(NKE_SEG.TOT.rev)
