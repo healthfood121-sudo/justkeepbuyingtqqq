@@ -5,7 +5,7 @@
       python scripts/export_segments.py --keys AAPL,MSFT
 결과: scripts/data/segments_raw/{KEY}.json.gz
   {key, ticker, cik, generated, facts: [[concept, start, end, {축: 멤버}, value, accn], ...]}
-  매출·영업이익 계열 항목만, 기간(시작~끝) 값만, 축 2개 이하만 남김. 이미 있는 파일은 --force 없으면 건너뜀.
+  매출·영업이익 계열 항목만, 기간(시작~끝) 값만, 축 3개 이하만 남김. 이미 있는 파일은 --force 없으면 건너뜀.
 가공은 scripts/process_segments.py.
 """
 import argparse, gzip, json, re, time, sys
@@ -71,7 +71,7 @@ def parse(xml_bytes, acc):
         st = per.find(f"{nx}startDate"); en = per.find(f"{nx}endDate")
         if st is None or en is None: continue
         dims = {m.get("dimension"): (m.text or "").strip() for m in c.iter(f"{nd}explicitMember")}
-        if len(dims) > 2: continue
+        if len(dims) > 3: continue
         ctx[c.get("id")] = (st.text.strip(), en.text.strip(), dims)
     out, seen = [], set()
     for el in root:
