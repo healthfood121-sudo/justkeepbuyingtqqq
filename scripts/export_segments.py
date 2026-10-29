@@ -105,8 +105,9 @@ def main():
         if not cik:
             print(f"[{i+1}/{len(keys)}] {key} CIK 없음", flush=True); continue
         t0 = time.time(); facts = []; n = 0
-        for date, form, acc in filings(cik):
-            u = instance_url(cik, acc)
+        jobs = [(c, f) for c in [cik] + [x for x in CIK_EXTRA.get(key, []) if x != cik] for f in filings(c)]
+        for c, (date, form, acc) in jobs:
+            u = instance_url(c, acc)
             x = get(u) if u else None
             if not x: continue
             try: facts += parse(x, acc); n += 1
