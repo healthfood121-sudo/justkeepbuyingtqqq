@@ -12,6 +12,7 @@ import spDesc from '@/app/sp500-holdings/descriptions.json'
 import { WRITTEN_INSIGHTS, WRITTEN_AS_OF } from './insights'
 import { DEEP_INSIGHTS, QUALITY_EXTRA, type DeepInsight, type QualityExtra, type Axis } from './deep'
 import { SEG_NOTES } from './segments'
+import { DIVES, type DiveState, type DiveUnit } from './dives'
 import { classify, GROUPS, GRADE_LABEL, gradeColor, groupColor, qualityScore, fmt, fmtSgn, type Metrics, type Quality, type GroupKey } from '@/lib/ideas'
 import { EXTRA_METRICS } from './ideas/picks'
 import qldData        from '@/public/data/rolling/QLD_rolling.json'
@@ -9306,6 +9307,153 @@ function SegmentBox({ stockKey, num = '1-1.' }: { stockKey: string; num?: string
   )
 }
 
+// ── 사업부별 심층 분석(나이키·에르메스 틀을 다른 종목에) — 내용은 dives.ts ──
+const DIVE_STATE: Record<DiveState, { label: string; cls: string }> = {
+  up: { label: '좋아지는 중', cls: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' },
+  hold: { label: '그대로', cls: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' },
+  watch: { label: '확인 필요', cls: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' },
+  down: { label: '약해지는 중', cls: 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-300' },
+}
+function DiveBox({ stockKey, num }: { stockKey: string; num: string }) {
+  const dv = DIVES[stockKey]
+  const [d, setD] = useState<SegData | null>(null)
+  useEffect(() => {
+    if (!dv) return
+    let alive = true
+    fetch(`/data/segments/${stockKey}.json`).then(r => (r.ok ? r.json() : null)).then(j => { if (alive) setD(j) }).catch(() => {})
+    return () => { alive = false }
+  }, [stockKey, dv])
+  if (!dv) return null
+  const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-3'
+  const h4 = 'text-sm font-semibold text-gray-800 dark:text-gray-100'
+  const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500 text-right break-keep'
+  const td = 'py-1.5 px-2 tabular-nums text-right text-gray-700 dark:text-gray-200 break-keep'
+  const pct = (v: number | null | undefined) => v == null ? '—' : `${v > 0 ? '+' : ''}${v.toFixed(1)}%`
+  const red = (v: number | null | undefined) => v != null && v < 0 ? 'text-red-500' : ''
+  // 자동 숫자: 부문 자료에서 그 부문의 최근 6분기 1년 전 대비 성장률·비중·이익률
+  const auto = (u: DiveUnit) => {
+    if (!d || !u.seg) return null
+    const [ax, mem] = u.seg.includes('/') ? u.seg.split('/') : [null, u.seg]
+    let m: SegMember | undefined
+    for (const a of d.axes ?? []) { if (ax && segTail(a.axis) !== ax) continue; m = a.members.find(x => segTail(x.id) === mem); if (m) break }
+    if (!m) return null
+    const n = d.ends.length, L = n - 1
+    const prev = (i: number) => { for (let j = i - 1; j >= 0; j--) { const g = (Date.parse(d.ends[i]) - Date.parse(d.ends[j])) / 864e5; if (g > 350 && g < 380) return j; if (g >= 380) break } return -1 }
+    const yoy = (i: number) => { const j = prev(i); return j < 0 || m!.rev[i] == null || !m!.rev[j] || m!.rev[j]! <= 0 ? null : (m!.rev[i]! / m!.rev[j]! - 1) * 100 }
+    const strip = [5, 4, 3, 2, 1, 0].map(k => ({ e: d.ends[L - k], v: L - k >= 0 ? yoy(L - k) : null }))
+    const a4 = [0, 1, 2, 3].map(k => yoy(L - k)); const avg = a4.every(x => x != null) ? a4.reduce((a, b) => a + b!, 0) / 4 : null
+    const s4 = (arr: (number | null)[]) => arr.slice(-4).reduce((a: number, b) => a + (b ?? 0), 0)
+    const share = s4(m.rev) / s4(d.total) * 100
+    const margin = m.oi && m.oi[L] != null && m.rev[L] ? m.oi[L]! / m.rev[L]! * 100 : null
+    return { strip, avg, share, margin, last: d.ends[L], yoy: yoy(L) }
+  }
+  const lbl = (e: string) => `${e.slice(2, 4)}.${Number(e.slice(5, 7))}`
+  return (
+    <div className="space-y-3">
+      <div className={box}>
+        <h4 className={h4}>{num} 부문별 심층 분석 — {dv.question}</h4>
+        <div className="grid sm:grid-cols-2 gap-3">
+          <div>
+            <p className="text-[11px] font-semibold text-red-500 mb-0.5">시장이 걱정하는 것</p>
+            <ul className={`${DEEP_P} list-disc pl-4 space-y-1`}>{dv.worry.map((t, i) => <li key={i}>{segBold(t)}</li>)}</ul>
+          </div>
+          <div>
+            <p className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 mb-0.5">숫자가 말하는 것</p>
+            <ul className={`${DEEP_P} list-disc pl-4 space-y-1`}>{dv.fact.map((t, i) => <li key={i}>{segBold(t)}</li>)}</ul>
+          </div>
+        </div>
+        <p className={DEEP_LAB}>부문별 판정 요약</p>
+        <div className="overflow-x-auto">
+          <table className="text-xs">
+            <thead><tr>
+              <th className={`${th} text-left`}>부문</th><th className={th}>매출 비중</th><th className={th}>최근 분기 1년 전 대비</th><th className={th}>최근 4분기 평균</th><th className={th}>이익률</th><th className={`${th} text-left`}>판정</th>
+            </tr></thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+              {dv.units.map(u => {
+                const a = auto(u)
+                const yoy = u.cur?.yoy ?? a?.yoy, share = u.cur?.share ?? a?.share, margin = u.cur?.margin ?? a?.margin
+                return (
+                  <tr key={u.name}>
+                    <td className={`${td} text-left`}>{u.name}</td>
+                    <td className={td}>{share == null ? '—' : `${share.toFixed(0)}%`}</td>
+                    <td className={`${td} ${red(yoy)}`}>{u.cur?.txt ?? pct(yoy)}</td>
+                    <td className={`${td} ${red(a?.avg)}`}>{u.cur ? '—' : pct(a?.avg)}</td>
+                    <td className={td}>{margin == null ? '—' : `${margin.toFixed(1)}%`}</td>
+                    <td className={`${td} text-left`}><span className={`px-1.5 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap ${DIVE_STATE[u.state].cls}`}>{DIVE_STATE[u.state].label}</span></td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+        <p className="text-[11px] text-gray-400 dark:text-gray-500">숫자는 회사 공시(10-Q·10-K) 부문 매출에서 자동 계산{d ? `(최근 분기 ${d.ends[d.ends.length - 1]} 끝)` : ''}. 공시 자료가 아직 없는 최신 분기나 부문 구분이 없는 회사는 실적 발표 숫자를 직접 넣었다(최근 4분기 평균 '—').</p>
+      </div>
+
+      {dv.units.map((u, k) => {
+        const a = auto(u)
+        return (
+          <div key={u.name} className={box}>
+            <div className="flex flex-wrap items-center gap-2">
+              <h4 className={h4}>{num.replace(/\.$/, '')}-{k + 1}. {u.name} — {u.title}</h4>
+              <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${DIVE_STATE[u.state].cls}`}>{DIVE_STATE[u.state].label}</span>
+            </div>
+            <p className={DEEP_P}>{segBold(u.role)}</p>
+            {a && (
+              <div className="overflow-x-auto">
+                <table className="text-xs">
+                  <thead><tr><th className={`${th} text-left`}>분기(끝난 연·월)</th>{a.strip.map(x => <th key={x.e} className={th}>{x.e ? lbl(x.e) : ''}</th>)}</tr></thead>
+                  <tbody><tr><td className={`${td} text-left`}>1년 전 대비</td>{a.strip.map(x => <td key={x.e} className={`${td} ${red(x.v)}`}>{pct(x.v)}</td>)}</tr></tbody>
+                </table>
+              </div>
+            )}
+            <div className="rounded bg-amber-50/70 dark:bg-amber-950/20 p-3 space-y-2">
+              <div className="grid sm:grid-cols-2 gap-3">
+                <div>
+                  <p className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 mb-0.5">버티는 근거</p>
+                  <ul className={`${DEEP_P} list-disc pl-4 space-y-1`}>{u.good.map((t, i) => <li key={i}>{segBold(t)}</li>)}</ul>
+                </div>
+                <div>
+                  <p className="text-[11px] font-semibold text-red-500 mb-0.5">걱정되는 신호</p>
+                  <ul className={`${DEEP_P} list-disc pl-4 space-y-1`}>{u.bad.map((t, i) => <li key={i}>{segBold(t)}</li>)}</ul>
+                </div>
+              </div>
+              <p className={DEEP_P}><b>판정 — </b>{segBold(u.verdict)}</p>
+              <p className={DEEP_P}><b>다음에 볼 숫자 — </b>{segBold(u.next)}</p>
+            </div>
+          </div>
+        )
+      })}
+
+      <div className={box}>
+        <h4 className={h4}>{num.replace(/\.$/, '')}-{dv.units.length + 1}. 어떻게 판단할까 — 해자가 그대로인지 가르는 숫자</h4>
+        <div className="overflow-x-auto">
+          <table className="text-xs">
+            <thead><tr>
+              <th className={`${th} text-left`}>볼 숫자</th><th className={`${th} text-left`}>지금</th><th className={`${th} text-left`}>이러면 괜찮다</th><th className={`${th} text-left`}>이러면 걱정</th>
+            </tr></thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+              {dv.judge.map(j => (
+                <tr key={j.k}>
+                  <td className={`${td} text-left font-medium`}>{j.k}</td>
+                  <td className={`${td} text-left`}>{segBold(j.now)}</td>
+                  <td className={`${td} text-left text-emerald-700 dark:text-emerald-400`}>{segBold(j.good)}</td>
+                  <td className={`${td} text-left text-red-500`}>{segBold(j.bad)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="rounded bg-amber-50/70 dark:bg-amber-950/20 p-3 space-y-2">
+          <p className={DEEP_P}><b>종합 판정 — </b>{segBold(dv.verdict)}</p>
+          <p className={DEEP_LAB}>다음 발표에서 볼 것</p>
+          <ul className={`${DEEP_P} list-disc pl-4 space-y-1`}>{dv.checklist.map((t, i) => <li key={i}>{segBold(t)}</li>)}</ul>
+        </div>
+        <p className="text-[11px] text-gray-400 dark:text-gray-500">심층 분석 {dv.asOf} 기준. 판정은 숫자 해석이며 매수·매도 권유가 아니다.</p>
+      </div>
+    </div>
+  )
+}
+
 function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) {
   const [f, setF] = useState<Fundamentals | null | undefined>(undefined)
   const [q, setQ] = useState<Quality | undefined>(undefined)
@@ -9346,6 +9494,7 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
         <QualityCard stockKey={stockKey} />
         <p className="text-xs text-gray-400">이 종목은 연도별 EPS 공시 데이터를 찾지 못해 숫자 분석을 생략했다.</p>
         <SegmentBox stockKey={stockKey} />
+        <DiveBox stockKey={stockKey} num="1-2." />
         {deep && (<>
           <div className={box}><h4 className={h4}>1. 지금 한눈에</h4><DeepNow d={deep} /></div>
           <DeepFuture d={deep} num="2." />
@@ -9437,6 +9586,7 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
       </div>
 
       <SegmentBox stockKey={stockKey} num={`${nNow}-1.`} />
+      <DiveBox stockKey={stockKey} num={`${nNow}-2.`} />
 
       {live && <StockValueClock f={f as ClockFund} stockKey={stockKey} rolling={data} title={`${nClock}. 이익 시계 — 적정가 선 vs 주가`} judged={deep?.growth} />}
 
