@@ -36,7 +36,7 @@ def text_of(page):
     return re.sub(r'\n\s*\n+', '\n', body).strip()
 
 BRIEF = True   # 로그가 너무 길어지지 않게 경영진 발언 위주로 줄인다
-def brief(t, budget=16000):
+def brief(t, budget=36000):
     lines = [l.strip() for l in t.split('\n') if l.strip()]
     # 발언자 줄: "이름: 내용"
     turns = []
@@ -57,9 +57,9 @@ def brief(t, budget=16000):
             continue
         is_an = sp in analysts
         if first_q is None:          # 준비된 발표: 넉넉히
-            cut = 3500
+            cut = 12000
         else:
-            cut = 220 if is_an else 900
+            cut = 300 if is_an else 1800
         piece = f"[{'Q ' if is_an else ''}{sp}] {tx[:cut]}{'…' if len(tx) > cut else ''}"
         if used + len(piece) > budget: out.append('…(이하 생략)'); break
         out.append(piece); used += len(piece)
