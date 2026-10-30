@@ -35,6 +35,36 @@ def text_of(page):
     body = html.unescape(body)
     return re.sub(r'\n\s*\n+', '\n', body).strip()
 
+BRIEF = True   # 로그가 너무 길어지지 않게 경영진 발언 위주로 줄인다
+def brief(t, budget=16000):
+    lines = [l.strip() for l in t.split('\n') if l.strip()]
+    # 발언자 줄: "이름: 내용"
+    turns = []
+    for l in lines:
+        m = re.match(r"^([A-Z][A-Za-z\.\-' ]{2,40}):\s+(.*)$", l)
+        if m: turns.append([m.group(1).strip(), m.group(2)])
+        elif turns: turns[-1][1] += ' ' + l
+    if not turns: return t[:budget]
+    # 애널리스트: 사회자가 소개한 이름 + 질문 형태 발언자
+    analysts = set()
+    for sp, tx in turns:
+        if sp.lower().startswith('operator'):
+            for m in re.finditer(r"(?:from|with)\s+([A-Z][a-z]+ [A-Z][A-Za-z\.\-']+)", tx): analysts.add(m.group(1))
+    out, used, first_q = [], 0, None
+    for i, (sp, tx) in enumerate(turns):
+        if sp.lower().startswith('operator'):
+            if first_q is None and re.search(r'question', tx, re.I): first_q = i
+            continue
+        is_an = sp in analysts
+        if first_q is None:          # 준비된 발표: 넉넉히
+            cut = 3500
+        else:
+            cut = 220 if is_an else 900
+        piece = f"[{'Q ' if is_an else ''}{sp}] {tx[:cut]}{'…' if len(tx) > cut else ''}"
+        if used + len(piece) > budget: out.append('…(이하 생략)'); break
+        out.append(piece); used += len(piece)
+    return '\n'.join(out)
+
 for a in sys.argv[1:]:
     key, url = (a.split('=', 1) + [None])[:2]
     print(f'\n######## {key}', flush=True)
@@ -45,5 +75,5 @@ for a in sys.argv[1:]:
     print(f'  URL {url} -> {code} {len(page)}')
     if code == 200:
         t = text_of(page)
-        print(f'  TEXT {len(t)} chars\n<<<BEGIN {key}>>>\n{t}\n<<<END {key}>>>')
+        print(f'  TEXT {len(t)} chars\n<<<BEGIN {key}>>>\n{brief(t) if BRIEF else t}\n<<<END {key}>>>')
     time.sleep(2)
