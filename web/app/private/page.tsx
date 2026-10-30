@@ -9425,7 +9425,7 @@ function CallBox({ stockKey }: { stockKey: string }) {
           <p className={DEEP_LAB}>이 콜을 어떻게 읽을까</p>
           <ul className={`${DEEP_P} list-disc pl-4 space-y-1`}>{c.read.map((t, i) => <li key={i}>{segBold(t)}</li>)}</ul>
         </div>
-        <p className="text-[11px] text-gray-400 dark:text-gray-500">출처: <a href={c.url} target="_blank" rel="noreferrer" className="underline">컨퍼런스콜 녹취록(Motley Fool)</a>. 경영진 발언은 한국어 요지이고, 따옴표 안만 원문 그대로 옮긴 것이다.</p>
+        <p className="text-[11px] text-gray-400 dark:text-gray-500">출처: <a href={c.url} target="_blank" rel="noreferrer" className="underline">{c.url.includes('fool.com') ? '컨퍼런스콜 녹취록(Motley Fool)' : '컨퍼런스콜 관련 보도'}</a>. 경영진 발언은 한국어 요지이고, 따옴표 안만 원문 그대로 옮긴 것이다.</p>
       </>)}
     </div>
   )
