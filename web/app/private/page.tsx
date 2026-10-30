@@ -9391,6 +9391,7 @@ function CallBox({ stockKey }: { stockKey: string }) {
             <ul className={`${DEEP_P} list-disc pl-4 space-y-0.5`}>{c.numbers.map((t, i) => <li key={i}>{segBold(t)}</li>)}</ul>
           </div>
         )}
+        {c.said.length > 0 && (
         <div>
           <p className={lab}>경영진이 한 말</p>
           <div className="space-y-1.5">
@@ -9402,6 +9403,7 @@ function CallBox({ stockKey }: { stockKey: string }) {
             ))}
           </div>
         </div>
+        )}
         {c.qa.length > 0 && (
           <div>
             <p className={lab}>애널리스트 질문과 답</p>
