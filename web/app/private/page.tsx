@@ -7584,6 +7584,7 @@ function RmsInsight({ data }: { data: StockData }) {
         <p className="text-[11px] text-gray-400 dark:text-gray-500">주가는 자동 갱신(실제 종가), EPS는 회사 발표 최근 1년 값(2025년 연간 43.15 − 2025년 상반기 21.43 + 2026년 상반기 21.36). 해설 문장은 2026년 10월 21일 기준.</p>
       </div>
 
+      <CallBox stockKey="RMS" />
       <RmsRegions />
 
       <HermesValueClock g={gNow} f={f} />
@@ -8539,6 +8540,7 @@ function NkeInsight({ data }: { data: StockData }) {
       <NkeConvBox />
       <NkeRegionSummary />
 
+      <CallBox stockKey="NKE" />
       <StockValueClockByKey stockKey="NKE" rolling={data} title="2. 이익 시계 — 적정가 선 vs 주가" />
 
       <div className="space-y-1">
