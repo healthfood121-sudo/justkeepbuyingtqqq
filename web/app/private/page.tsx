@@ -14,6 +14,7 @@ import { DEEP_INSIGHTS, QUALITY_EXTRA, type DeepInsight, type QualityExtra, type
 import { SEG_NOTES } from './segments'
 import { DIVES, type DiveState, type DiveUnit } from './dives'
 import { SHORTLIST, SHORTLIST_AS_OF } from './shortlist'
+import { CALLS } from './calls'
 import { classify, GROUPS, GRADE_LABEL, gradeColor, groupColor, qualityScore, fmt, fmtSgn, type Metrics, type Quality, type GroupKey } from '@/lib/ideas'
 import { EXTRA_METRICS } from './ideas/picks'
 import qldData        from '@/public/data/rolling/QLD_rolling.json'
@@ -9367,6 +9368,67 @@ const DIVE_STATE: Record<DiveState, { label: string; cls: string }> = {
   watch: { label: '확인 필요', cls: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' },
   down: { label: '약해지는 중', cls: 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-300' },
 }
+// 최근 실적 발표 컨퍼런스콜 정리 (calls.ts)
+function CallBox({ stockKey }: { stockKey: string }) {
+  const c = CALLS[stockKey]
+  const [open, setOpen] = useState(true)
+  if (!c) return null
+  const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-3'
+  const lab = 'text-[11px] font-semibold text-gray-500 dark:text-gray-400 mb-0.5'
+  return (
+    <div className={box}>
+      <button type="button" onClick={() => setOpen(o => !o)} className="w-full text-left">
+        <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">최근 컨퍼런스콜 — {c.quarter} ({c.date}) <span className="text-xs font-normal text-gray-400">{open ? '접기 ▲' : '펼치기 ▼'}</span></h4>
+        <p className="text-sm font-semibold text-amber-700 dark:text-amber-400 mt-1">{segBold(c.headline)}</p>
+      </button>
+      {open && (<>
+        <p className="text-[11px] text-gray-400 dark:text-gray-500">참석: {c.people.join(' · ')}</p>
+        {c.numbers.length > 0 && (
+          <div>
+            <p className={lab}>발표된 핵심 숫자</p>
+            <ul className={`${DEEP_P} list-disc pl-4 space-y-0.5`}>{c.numbers.map((t, i) => <li key={i}>{segBold(t)}</li>)}</ul>
+          </div>
+        )}
+        <div>
+          <p className={lab}>경영진이 한 말</p>
+          <div className="space-y-1.5">
+            {c.said.map((x, i) => (
+              <div key={i} className="rounded bg-gray-50 dark:bg-gray-800/40 px-3 py-2">
+                <p className="text-[11px] font-semibold text-blue-700 dark:text-blue-300">{x.who} · {x.topic}</p>
+                <p className={DEEP_P}>{segBold(x.text)}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        {c.qa.length > 0 && (
+          <div>
+            <p className={lab}>애널리스트 질문과 답</p>
+            <div className="space-y-1.5">
+              {c.qa.map((x, i) => (
+                <div key={i} className="border-l-2 border-gray-200 dark:border-gray-700 pl-3">
+                  <p className="text-xs text-gray-500 dark:text-gray-400"><b>질문</b> {segBold(x.q)}</p>
+                  <p className={DEEP_P}><b>답</b> {segBold(x.a)}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        {c.guide.length > 0 && (
+          <div>
+            <p className={lab}>회사 전망·계획</p>
+            <ul className={`${DEEP_P} list-disc pl-4 space-y-0.5`}>{c.guide.map((t, i) => <li key={i}>{segBold(t)}</li>)}</ul>
+          </div>
+        )}
+        <div className="rounded bg-amber-50/70 dark:bg-amber-950/20 p-3">
+          <p className={DEEP_LAB}>이 콜을 어떻게 읽을까</p>
+          <ul className={`${DEEP_P} list-disc pl-4 space-y-1`}>{c.read.map((t, i) => <li key={i}>{segBold(t)}</li>)}</ul>
+        </div>
+        <p className="text-[11px] text-gray-400 dark:text-gray-500">출처: <a href={c.url} target="_blank" rel="noreferrer" className="underline">컨퍼런스콜 녹취록(Motley Fool)</a>. 경영진 발언은 한국어 요지이고, 따옴표 안만 원문 그대로 옮긴 것이다.</p>
+      </>)}
+    </div>
+  )
+}
+
 function DiveBox({ stockKey, num }: { stockKey: string; num: string }) {
   const dv = DIVES[stockKey]
   const [d, setD] = useState<SegData | null>(null)
@@ -9546,6 +9608,7 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
         {header}
         <QualityCard stockKey={stockKey} />
         <p className="text-xs text-gray-400">이 종목은 연도별 EPS 공시 데이터를 찾지 못해 숫자 분석을 생략했다.</p>
+        <CallBox stockKey={stockKey} />
         <SegmentBox stockKey={stockKey} />
         <DiveBox stockKey={stockKey} num="1-2." />
         {deep && (<>
@@ -9638,6 +9701,7 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
         </ul>
       </div>
 
+      <CallBox stockKey={stockKey} />
       <SegmentBox stockKey={stockKey} num={`${nNow}-1.`} />
       <DiveBox stockKey={stockKey} num={`${nNow}-2.`} />
 
