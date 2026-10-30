@@ -1,0 +1,22 @@
+name: 컨퍼런스콜 녹취록 받기 (조사용)
+
+on:
+  workflow_dispatch:  # 결과는 로그로만 확인 (저작권 때문에 커밋 없음)
+    inputs:
+      tickers:
+        description: '종목(공백 구분). 주소를 알면 KEY=URL'
+        required: true
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install requests
+      - run: python scripts/fetch_transcripts.py ${{ inputs.tickers }}
+        env:
+          PYTHONUNBUFFERED: "1"
