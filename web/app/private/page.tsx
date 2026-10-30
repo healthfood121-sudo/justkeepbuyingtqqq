@@ -1562,32 +1562,20 @@ function describeFilter(F: FilterSnap): string {
 
 // Claude 추천 프리셋 (코드에 고정, 어느 기기에서나 보임). 근거는 툴팁에
 const BUILTIN_PRESETS: Array<{ name: string; why: string; f: Partial<FilterSnap> }> = [
-  { name: '① 위대한 기업 정석', why: '등급 A + 사업성 20점 이상 + ROIC 20% 이상. Claude 정성 평가와 실제 숫자(ROIC)가 둘 다 높은 기업만.',
-    f: { excludeEtf: true, gradeF: 'A', minScore: 20, minRoic: 20 } },
-  { name: '② 오래 증명된 기업', why: 'A·B등급 + 10년 보유 결과 10번 이상 + 가장 나쁜 해에 샀어도 연 5% 이상 + 중앙값 연 12% 이상. 운이 아니라 꾸준함.',
-    f: { excludeEtf: true, gradeF: 'AB', minPeriods: 10, minCagrMin: 5, minMedian: 12 } },
-  { name: '③ 시장을 한 번도 안 진 기업', why: '10년 보유 결과 10번 이상 + 어느 해에 샀든 S&P 500 이상(초과수익 최솟값 0 이상) + 초과수익 중앙값 3%p 이상.',
-    f: { excludeEtf: true, minPeriods: 10, minDiffMin: 0, minDiffMedian: 3 } },
-  { name: '④ 최정예', why: '①(정석)에 ②의 과거 성과 조건(10번 이상, 최솟값 연 5% 이상)을 더함. 지금 사업도 좋고 과거로도 증명된 핵심 명단.',
+  { name: '① 최정예', why: '등급 A + 사업성 20점 이상 + ROIC 20% 이상 + 10년 보유 결과 10번 이상 + 가장 나쁜 해에 샀어도 연 5% 이상. 지금 사업도 좋고(Claude 평가·ROIC) 과거로도 증명된 핵심 명단.',
     f: { excludeEtf: true, gradeF: 'A', minScore: 20, minRoic: 20, minPeriods: 10, minCagrMin: 5 } },
-  { name: '성장형', why: '성장성 4점 이상 + ROIC 15% 이상 + 10년 수익 중앙값 연 15% 이상.',
-    f: { excludeEtf: true, subMins: { growth: 4 }, minRoic: 15, minMedian: 15 } },
-  { name: '버핏형', why: '지속가능성 5점 + 경쟁우위 4점 이상 + ROIC 15% 이상. 오래가는 기업.',
-    f: { excludeEtf: true, subMins: { durability: 5, moat: 4 }, minRoic: 15 } },
+  { name: '② 오래 증명된 기업', why: 'A·B등급 + 10년 보유 결과 10번 이상 + 가장 나쁜 해에 샀어도 연 5% 이상 + 중앙값 연 12% 이상 + S&P 500보다 중앙값 3%p 이상 높음. 운이 아니라 꾸준히 시장을 이긴 기업.',
+    f: { excludeEtf: true, gradeF: 'AB', minPeriods: 10, minCagrMin: 5, minMedian: 12, minDiffMedian: 3 } },
+  { name: '③ 최정예 · 주가만 쉬는 중', why: '① 최정예 중 이익은 괜찮은데 PER이 평소보다 싸거나 주가가 3년 고점보다 20% 넘게 빠진 종목. 실제 매수 후보 보기용(좁은 명단). 주가에 따라 매일 바뀐다.',
+    f: { excludeEtf: true, gradeF: 'A', minScore: 20, minRoic: 20, minPeriods: 10, minCagrMin: 5, groupF: 'pause' } },
+  { name: '④ 해자 그대로 · 주가 쉬는 중', why: '경쟁우위 4점 이상인 A·B등급(해자가 안 무너진 회사) + 주가가 3년 고점보다 20% 넘게 빠졌거나 PER이 평소보다 낮음 + 지금 끝나 가는 10년 막대가 그 회사 과거 10년 막대 중 하위 25%(바닥권). ③보다 넓은 매수 후보 명단. 막대가 평소 수준에서 떨어진 바닥에서 사면 다음 10년 결과가 좋았던 경우가 많았다는 생각에서 출발. 이익이 잠깐 줄어든 회사(유나이티드헬스형)도 포함되니, 이익이 고점의 절반 아래로 떨어진 곳은 일시적인지 따로 확인. 과거 패턴이 반복된다는 보장은 없다.',
+    f: { excludeEtf: true, gradeF: 'AB', subMins: { moat: 4 }, restF: true, maxLastPct: 25 } },
+  { name: '⑤ 역발상(이익 성장 중)', why: '지금 진행 중인 마지막 10년 막대(2016년 매수 → 지금)가 마이너스인데, 그 10년 동안 EPS는 늘어난(연 0% 이상) 종목 = 이익은 자랐는데 주가만 쉰 신타스형. 신타스는 1998~2001년 PER 40~60배에 샀다가 10년 마이너스가 났지만, 그동안 EPS는 매년 늘었고 PER이 11~21배로 내려온 끝 무렵이 큰 매수 기회였다. 지금 PER이 너무 낮으면(한 자릿수) 빚·일회성 이익을 따로 확인.',
+    f: { excludeEtf: true, maxLast10: 0, minEpsG10: 0 } },
+  { name: '⑥ 이익 주춤 (주의)', why: '좋은 기업인데 이익이 고점보다 15% 넘게 줄어든 종목. 싸 보여도 일시적인지 구조적인지 확인이 필요한 관찰 명단(사라는 뜻 아님).',
+    f: { excludeEtf: true, groupF: 'stumble' } },
   { name: '에르메스형', why: '가격결정력 5점 + 경쟁우위 5점 + ROIC 25% 이상. 값을 올려도 고객이 떠나지 않는 기업.',
     f: { excludeEtf: true, subMins: { pricing: 5, moat: 5 }, minRoic: 25 } },
-  { name: '⑥ 최정예 · 주가만 쉬는 중', why: '④ 최정예 중 이익은 괜찮은데 PER이 평소보다 싸거나 주가가 3년 고점보다 20% 넘게 빠진 종목. 실제 매수 후보 보기용. 주가에 따라 매일 바뀐다.',
-    f: { excludeEtf: true, gradeF: 'A', minScore: 20, minRoic: 20, minPeriods: 10, minCagrMin: 5, groupF: 'pause' } },
-  { name: '⑦ 이익 주춤 (주의)', why: '좋은 기업인데 이익이 고점보다 15% 넘게 줄어든 종목. 싸 보여도 일시적인지 구조적인지 확인이 필요한 관찰 명단(사라는 뜻 아님).',
-    f: { excludeEtf: true, groupF: 'stumble' } },
-  { name: '⑧ Claude 관심 목록', why: '2026-10-24 Claude가 고른 8개. 위대한 기업(④ 최정예)이면서 지금 값이 적정 수준 이하이고 세 기준(이익·잉여현금·영업현금)이 대체로 같은 말을 하는 종목. 싸고 신호 일치: 롤린스·레녹스·코파트·맥도날드·IDEXX·에르메스 / 적정 수준: 마스터카드·인튜이티브서지컬. 투자 권유 아님.',
-    f: { keys: ['ROL', 'LII', 'CPRT', 'MCD', 'IDXX', 'RMS', 'MA', 'ISRG'] } },
-  { name: '⑨ 역발상 후보', why: '지금 진행 중인 마지막 10년 막대(2016년 매수 → 지금, 9년 이상 지남)가 마이너스 = 10년을 들고 있어도 손해인 종목(예: 나이키). 신타스는 1998~2001년 매수 막대가 연속으로 마이너스였고, 그 구간이 끝날 무렵 산 사람은 큰 수익을 냈다. 다만 회사 자체가 망가져서 마이너스인 경우가 더 많으니 등급·사업의 질·상황을 꼭 같이 본다(등급 필터를 A·B로 걸면 좁혀진다).',
-    f: { excludeEtf: true, maxLast10: 0 } },
-  { name: '⑩ 역발상(이익 성장 중)', why: '⑨ 중에서 10년 동안 EPS는 늘어난(연 0% 이상) 종목만 = 이익은 자랐는데 주가만 쉰 신타스형. 신타스는 1998~2001년 PER 40~60배에 샀다가 10년 마이너스가 났지만, 그동안 EPS는 매년 늘었고 PER이 11~21배로 내려온 끝 무렵이 큰 매수 기회였다. 지금 PER이 너무 낮으면(한 자릿수) 빚·일회성 이익을 따로 확인.',
-    f: { excludeEtf: true, maxLast10: 0, minEpsG10: 0 } },
-  { name: '⑪ 해자 그대로 · 주가 쉬는 중', why: '경쟁우위 4점 이상인 A·B등급(해자가 안 무너진 회사) + 주가가 3년 고점보다 20% 넘게 빠졌거나 PER이 평소보다 낮음 + 지금 끝나 가는 10년 막대가 그 회사 과거 10년 막대 중 하위 25%(바닥권). 막대가 평소 수준에서 떨어진 바닥에서 사면 다음 10년 결과가 좋았던 경우가 많았다는 생각에서 출발. 이익이 잠깐 줄어든 회사(유나이티드헬스형)도 포함되니, 이익이 고점의 절반 아래로 떨어진 곳은 일시적인지 따로 확인. 과거 패턴이 반복된다는 보장은 없다.',
-    f: { excludeEtf: true, gradeF: 'AB', subMins: { moat: 4 }, restF: true, maxLastPct: 25 } },
 ]
 
 function OverviewTable({
@@ -3670,7 +3658,7 @@ const SEG_MIX: Record<string, SegMix> = {
     { n: '버번·기타 위스키', r: 15, p: 15, c: 'bg-amber-700', note: '우드포드리저브·올드포레스터.' },
     { n: '데킬라·진·기타', r: 15, p: 10, c: 'bg-emerald-500', note: '엘 히마도르 데킬라 등.' },
   ] },
-  // ── ⑨ 역발상 후보 ──
+  // ── 역발상 후보 ──
   FISV: { basis: '2025년 사업 보고서', rows: [
     { n: '가맹점 결제(클로버 등)', r: 50, p: 50, c: 'bg-emerald-600', note: '가게 카드 단말기 클로버, 온라인 결제 처리. 클로버 성장 둔화로 주가 급락.' },
     { n: '금융기관 시스템', r: 50, p: 50, c: 'bg-blue-700', note: '은행 계좌 관리 시스템, 카드 발급 처리.' },
