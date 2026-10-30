@@ -13,6 +13,7 @@ import { WRITTEN_INSIGHTS, WRITTEN_AS_OF } from './insights'
 import { DEEP_INSIGHTS, QUALITY_EXTRA, type DeepInsight, type QualityExtra, type Axis } from './deep'
 import { SEG_NOTES } from './segments'
 import { DIVES, type DiveState, type DiveUnit } from './dives'
+import { SHORTLIST, SHORTLIST_AS_OF } from './shortlist'
 import { classify, GROUPS, GRADE_LABEL, gradeColor, groupColor, qualityScore, fmt, fmtSgn, type Metrics, type Quality, type GroupKey } from '@/lib/ideas'
 import { EXTRA_METRICS } from './ideas/picks'
 import qldData        from '@/public/data/rolling/QLD_rolling.json'
@@ -1579,6 +1580,57 @@ const BUILTIN_PRESETS: Array<{ name: string; why: string; f: Partial<FilterSnap>
     f: { excludeEtf: true, groupF: 'stumble' } },
 ]
 
+// ① 프리셋을 켰을 때 보이는 묶음 판정표 (shortlist.ts) — 매수 추천이 아니라 판단 근거 공유
+function ShortlistBox() {
+  const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500 text-left break-keep'
+  const td = 'py-1.5 px-2 text-gray-700 dark:text-gray-200 break-keep align-top'
+  const grpCls = { A: 'text-emerald-700 dark:text-emerald-400', B: 'text-amber-700 dark:text-amber-400', C: 'text-red-500' } as const
+  return (
+    <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-3 mb-3 space-y-3">
+      <div className="rounded-md border-2 border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-950/30 px-3 py-2 space-y-1">
+        <p className="text-sm font-bold text-red-600 dark:text-red-400">이 표는 매수 추천이 아닙니다.</p>
+        <ul className="text-xs leading-relaxed text-red-700 dark:text-red-300 list-disc pl-4 space-y-0.5">
+          <li>공시·실적 발표 숫자로 "지금 사업이 어떤지, 값이 평소보다 싼지"를 정리한 <b>판단 근거 공유</b>입니다. 앞으로의 주가나 수익을 맞히는 순위가 아닙니다.</li>
+          <li>과거 성적과 지금 숫자가 미래 수익을 보장하지 않습니다. 시장이 이미 아는 정보라 상당 부분 주가에 들어가 있을 수 있습니다.</li>
+          <li>{SHORTLIST_AS_OF} 기준 스냅샷입니다. 주가·실적이 바뀌면 판정도 바뀝니다. 투자 결정과 그 책임은 본인에게 있습니다.</li>
+          <li>묶음 안의 순서는 점수 합계 순일 뿐, 1등·2등 같은 순위가 아닙니다.</li>
+        </ul>
+      </div>
+      <p className="text-xs leading-relaxed text-gray-600 dark:text-gray-300">
+        <b>① 지금 살 만한 최정예 13개 — 세 묶음으로 나눈 판정표.</b> 네 가지 기준을 1~5점으로 매겼다(높을수록 좋음).
+        해자 = 경쟁우위가 그대로인지, 이익 추세 = 이익이 늘거나 버티는지, 값 = 지금 PER이 10년 평소보다 싼지, 위험 = 판단을 뒤집을 변수가 작은지(5점 = 위험 작음).
+        종목마다 <b>"이 숫자가 나오면 판단이 틀린 것"</b>을 함께 적었다 — 그 숫자가 나오면 예고한 기준대로 판정을 바꾼다. 자세한 근거는 각 종목의 "부문별 심층 분석".
+      </p>
+      {SHORTLIST.map(g => (
+        <div key={g.id} className="space-y-1">
+          <p className={`text-sm font-semibold ${grpCls[g.id]}`}>{g.id}. {g.title}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">{g.desc}</p>
+          <div className="overflow-x-auto">
+            <table className="text-xs w-full">
+              <thead><tr>
+                <th className={th}>종목</th><th className={`${th} text-center`}>해자</th><th className={`${th} text-center`}>이익 추세</th><th className={`${th} text-center`}>값</th><th className={`${th} text-center`}>위험</th><th className={`${th} text-center`}>합계</th>
+                <th className={th}>근거</th><th className={th}>판단이 틀렸다고 볼 숫자</th>
+              </tr></thead>
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                {g.rows.map(r => (
+                  <tr key={r.key}>
+                    <td className={`${td} font-medium whitespace-nowrap`}>{r.name} <span className="text-gray-400">{r.key}</span></td>
+                    {[r.moat, r.profit, r.price, r.risk].map((v, i) => <td key={i} className={`${td} text-center tabular-nums ${v <= 2 ? 'text-red-500' : v >= 5 ? 'text-emerald-600 dark:text-emerald-400' : ''}`}>{v}</td>)}
+                    <td className={`${td} text-center tabular-nums font-semibold`}>{r.moat + r.profit + r.price + r.risk}</td>
+                    <td className={`${td} min-w-[14rem]`}>{r.why}</td>
+                    <td className={`${td} min-w-[12rem]`}>{segBold(r.wrong)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ))}
+      <p className="text-[11px] text-gray-400 dark:text-gray-500">프리셋 명단은 주가에 따라 매일 바뀌지만 이 판정표는 {SHORTLIST_AS_OF} 기준으로 고정돼 있다. 명단과 표가 다르면 표가 오래된 것이다.</p>
+    </div>
+  )
+}
+
 function OverviewTable({
   activeStock,
   setActiveStock,
@@ -1887,6 +1939,7 @@ function OverviewTable({
             </p>
           )
         })()}
+        {builtinNorm[0] && sameFilter(builtinNorm[0].nf, F) && <ShortlistBox />}
         <div className="flex flex-wrap items-center gap-2 mb-2">
           <span className="text-xs text-gray-400 dark:text-gray-600 shrink-0">내 프리셋:</span>
           {presets.map(p => (
