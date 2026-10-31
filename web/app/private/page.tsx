@@ -8539,6 +8539,7 @@ function NkeInsight({ data }: { data: StockData }) {
         </ul>
       </div>
 
+      <CallBox stockKey="NKE" />
       <NkeChinaBox />
       <NkeNaBox />
       <NkeEmeaBox />
@@ -8546,7 +8547,6 @@ function NkeInsight({ data }: { data: StockData }) {
       <NkeConvBox />
       <NkeRegionSummary />
 
-      <CallBox stockKey="NKE" />
       <StockValueClockByKey stockKey="NKE" rolling={data} title="2. 이익 시계 — 적정가 선 vs 주가" />
 
       <div className="space-y-1">
