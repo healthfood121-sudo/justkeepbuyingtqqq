@@ -1,4 +1,4 @@
-// 종목 아이디어 공통: 데이터 타입·분류 규칙 (/private, /private/ideas 공용)
+// 종목 아이디어 공통: 데이터 타입·분류 규칙 (/private 에서 사용)
 
 export type Metrics = {
   key: string; ticker: string; name: string
