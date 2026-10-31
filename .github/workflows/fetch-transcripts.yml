@@ -6,6 +6,10 @@ on:
       tickers:
         description: '종목(공백 구분). 주소를 알면 KEY=URL'
         required: true
+      full:
+        description: '전문 받기(1이면 줄이지 않음)'
+        required: false
+        default: '0'
 
 jobs:
   fetch:
@@ -20,3 +24,4 @@ jobs:
       - run: python scripts/fetch_transcripts.py ${{ inputs.tickers }}
         env:
           PYTHONUNBUFFERED: "1"
+          FULL: ${{ inputs.full }}

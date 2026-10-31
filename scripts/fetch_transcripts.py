@@ -1,7 +1,7 @@
 """최근 실적 발표 컨퍼런스콜 녹취록(Motley Fool)을 찾아 텍스트로 로그에 출력한다 (조사용, 커밋 없음).
 사용: python scripts/fetch_transcripts.py ROL ADBE ...   또는  ROL=https://www.fool.com/earnings/call-transcripts/...
 녹취록 원문은 저작권 때문에 저장소에 넣지 않고 로그로만 본다."""
-import re, sys, time, html
+import os, re, sys, time, html
 import requests
 
 UA = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36',
@@ -35,7 +35,7 @@ def text_of(page):
     body = html.unescape(body)
     return re.sub(r'\n\s*\n+', '\n', body).strip()
 
-BRIEF = True   # 로그가 너무 길어지지 않게 경영진 발언 위주로 줄인다
+BRIEF = os.environ.get('FULL') != '1'   # 기본은 경영진 발언 위주로 줄인다. FULL=1이면 전문
 def brief(t, budget=36000):
     lines = [l.strip() for l in t.split('\n') if l.strip()]
     # 발언자 줄: "이름: 내용"
