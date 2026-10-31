@@ -9765,7 +9765,7 @@ export default function PrivatePage() {
               <div>
                 <b>종목을 고른다.</b>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                  아래 &lsquo;종목 비교 개요&rsquo; 표에서 행을 누르거나 &lsquo;종목 선택&rsquo; 목록에서 고른다. 어떤 종목을 볼지 모르겠다면 위 &lsquo;종목 아이디어&rsquo; 탭에서 추천 목록부터 보자.
+                  아래 &lsquo;종목 비교 개요&rsquo; 표에서 행을 누르거나 &lsquo;종목 선택&rsquo; 목록에서 고른다. 어떤 종목을 볼지 모르겠다면 표 위 기본 프리셋(①~⑦)을 눌러 보자 — 프리셋마다 해자·이익 추세·값·위험 점수를 매긴 <b>판정표</b>가 함께 나온다.
                 </p>
               </div>
             </li>
@@ -9787,6 +9787,8 @@ export default function PrivatePage() {
                   <span className="text-amber-600 dark:text-amber-400"> 노란 박스</span>(Claude가 뉴스로 직접 쓴 분석, 추천 종목만) →
                   사업성 평가(회사가 얼마나 좋은가, 주가와 무관) →
                   1. 지금 한눈에(지금 PER이 평소보다 싼가, 이익이 늘고 있나) →
+                  최근 컨퍼런스콜(경영진이 한 말·애널리스트 질문·회사 전망, 접혀 있음) →
+                  1-1·1-2. 부문별 분석·심층 분석(어느 사업이 좋아지고 나빠지나) →
                   2. 이익 시계(적정가 선, 내 몫 이익·잉여현금, 1달러당 이익·현금·ROE·ROIC) →
                   3. 과거(수익이 이익·배당·PER 중 어디서 왔나, 매수 PER별 결과) →
                   4. 앞으로(지금 사면 10년 뒤 예상) → 5. 결론 → 부록(과거 바닥 직후 매수, 접혀 있음).
@@ -9795,7 +9797,7 @@ export default function PrivatePage() {
             </li>
           </ol>
           <div className="text-xs text-gray-500 dark:text-gray-400 border-t border-blue-200 dark:border-blue-900/60 pt-2 space-y-1">
-            <p><b>핵심만 보려면:</b> 노란 박스의 &lsquo;결론&rsquo;과 &lsquo;숫자로 본 결론&rsquo; 두 곳만 읽어도 된다.</p>
+            <p><b>핵심만 보려면:</b> 노란 박스의 &lsquo;결론&rsquo;과 &lsquo;숫자로 본 결론&rsquo;, 그리고 컨퍼런스콜의 &lsquo;이 콜을 어떻게 읽을까&rsquo;만 읽어도 된다.</p>
             <p><b>숫자 읽는 법:</b> 지금 PER이 10년 중간 PER보다 낮으면 평소보다 싸다. 이익/10년 고점이 85% 미만이면 이익이 꺾인 상태라 PER이 실제보다 비싸 보일 수 있다. 시나리오 표에서 과거 이익 성장률 줄(회색 배경)을 보면 &lsquo;과거 속도라면 몇 %&rsquo;가 바로 보인다.</p>
           </div>
         </section>
