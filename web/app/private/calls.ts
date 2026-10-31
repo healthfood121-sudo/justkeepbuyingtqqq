@@ -8586,7 +8586,7 @@ export const CALLS: Record<string, CallNote> = {
     ],
   },
   WY: {
-    quarter: "2026년 3분기", date: "2026-10-29",
+    quarter: "2026년 3분기", date: "2026-10-30",
     url: "https://www.fool.com/earnings/call-transcripts/2026/10/30/weyerhaeuser-wy-q3-2026-earnings-call-transcript/",
     people: ["데빈 스톡피시 (CEO)", "데이비 월드 (CFO)"],
     headline: "조정 EBITDA 2.48억 달러 +14% — 그러나 목재 가격 하락과 경유값 급등으로 목재 제품 이익 감소",
