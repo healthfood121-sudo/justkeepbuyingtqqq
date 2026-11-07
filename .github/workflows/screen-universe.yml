@@ -1,0 +1,32 @@
+name: 숨은 알짜 1차 선별 (나스닥·러셀2000)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  screen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install -r scripts/requirements.txt
+      - name: 선별
+        run: python scripts/screen_universe.py
+        env:
+          PYTHONUNBUFFERED: "1"
+      - name: 변경사항 커밋 & 푸시
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add web/public/data/screen
+          if git diff --cached --quiet; then
+            echo "변경사항 없음 — 스킵"
+          else
+            git commit -m "auto: 숨은 알짜 1차 선별 $(date +'%Y-%m-%d')"
+            git pull --rebase origin master
+            git push origin HEAD:master
+          fi
