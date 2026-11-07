@@ -2,11 +2,11 @@
 import requests, json, re
 UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
       "Accept-Language": "en-US,en;q=0.9"}
-def get(u, **kw):
-    r = requests.get(u, headers=UA, timeout=30, **kw); return r
+def get(u, headers=None):
+    return requests.get(u, headers=headers or UA, timeout=30)
 SHOPS = {"priveporter": "https://priveporter.com", "mac": "https://www.madisonavenuecouture.com",
          "rebag": "https://shop.rebag.com", "fashionphile": "https://www.fashionphile.com"}
-for name, base in SHOPS.items():
+for name, base in {}.items():
     for coll in ["hermes", "hermes-bags", "birkin", "brands-hermes"]:
         r = get(f"{base}/collections/{coll}/products.json?limit=250")
         n = len(r.json().get("products", [])) if r.status_code == 200 and r.text.startswith("{") else -1
