@@ -1,0 +1,86 @@
+{
+  "ticker": "XMTR",
+  "name": "엑소메트리",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "",
+  "current": {
+    "price": 114.95,
+    "pe": 83.8,
+    "divYield": 0,
+    "eps": -0.33
+  },
+  "fullPeriod": {
+    "start_date": "2021-06-30",
+    "end_date": "2026-11-06",
+    "start_price": 87.39,
+    "end_price": 114.95,
+    "years": 5.4,
+    "cagr": 5.25,
+    "multiple": 1.3154
+  },
+  "stats": {
+    "n": 0,
+    "min": null,
+    "minBuy": "",
+    "median": null,
+    "mean": null,
+    "max": null,
+    "maxBuy": "",
+    "over10": null,
+    "over15": null,
+    "over20": null,
+    "losses": 0,
+    "beatBench": null,
+    "beatTotal": null
+  },
+  "rows10y": [
+    {
+      "buyYear": 2021,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 4.8,
+      "cagr": 18.13,
+      "multiple": 2.24,
+      "isComplete": false,
+      "benchCagr": 10.99,
+      "diff": 7.14
+    },
+    {
+      "buyYear": 2022,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 3.9,
+      "cagr": 39.14,
+      "multiple": 3.57,
+      "isComplete": false,
+      "benchCagr": 20.11,
+      "diff": 19.03
+    },
+    {
+      "buyYear": 2023,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 2.9,
+      "cagr": 50.41,
+      "multiple": 3.2,
+      "isComplete": false,
+      "benchCagr": 18.01,
+      "diff": 32.4
+    },
+    {
+      "buyYear": 2024,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 1.9,
+      "cagr": 70.98,
+      "multiple": 2.69,
+      "isComplete": false,
+      "benchCagr": 14.4,
+      "diff": 56.57
+    }
+  ],
+  "loss5y": [],
+  "epsDecomp": [],
+  "epsNote": "EPS 데이터 미수집"
+}

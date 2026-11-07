@@ -1,0 +1,86 @@
+{
+  "ticker": "CCSI",
+  "name": "컨센서스 클라우드 솔루션즈",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "",
+  "current": {
+    "price": 43.15,
+    "pe": 8.7,
+    "divYield": 0,
+    "eps": 4.94
+  },
+  "fullPeriod": {
+    "start_date": "2021-09-30",
+    "end_date": "2026-11-06",
+    "start_price": 35.63,
+    "end_price": 43.15,
+    "years": 5.1,
+    "cagr": 3.83,
+    "multiple": 1.2111
+  },
+  "stats": {
+    "n": 0,
+    "min": null,
+    "minBuy": "",
+    "median": null,
+    "mean": null,
+    "max": null,
+    "maxBuy": "",
+    "over10": null,
+    "over15": null,
+    "over20": null,
+    "losses": 0,
+    "beatBench": null,
+    "beatTotal": null
+  },
+  "rows10y": [
+    {
+      "buyYear": 2021,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 4.8,
+      "cagr": -5.87,
+      "multiple": 0.75,
+      "isComplete": false,
+      "benchCagr": 10.99,
+      "diff": -16.86
+    },
+    {
+      "buyYear": 2022,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 3.9,
+      "cagr": -5.55,
+      "multiple": 0.8,
+      "isComplete": false,
+      "benchCagr": 20.11,
+      "diff": -25.66
+    },
+    {
+      "buyYear": 2023,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 2.9,
+      "cagr": 19.12,
+      "multiple": 1.65,
+      "isComplete": false,
+      "benchCagr": 18.01,
+      "diff": 1.1
+    },
+    {
+      "buyYear": 2024,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 1.9,
+      "cagr": 37.8,
+      "multiple": 1.81,
+      "isComplete": false,
+      "benchCagr": 14.4,
+      "diff": 23.39
+    }
+  ],
+  "loss5y": [],
+  "epsDecomp": [],
+  "epsNote": "EPS 데이터 미수집"
+}

@@ -1,0 +1,64 @@
+{
+  "ticker": "VLTO",
+  "name": "베랄토",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "",
+  "current": {
+    "price": 117.09,
+    "pe": 28.9,
+    "divYield": 0.44,
+    "eps": 4.05
+  },
+  "fullPeriod": {
+    "start_date": "2023-10-04",
+    "end_date": "2026-11-06",
+    "start_price": 76.7338,
+    "end_price": 117.09,
+    "years": 3.1,
+    "cagr": 14.65,
+    "multiple": 1.5259
+  },
+  "stats": {
+    "n": 0,
+    "min": null,
+    "minBuy": "",
+    "median": null,
+    "mean": null,
+    "max": null,
+    "maxBuy": "",
+    "over10": null,
+    "over15": null,
+    "over20": null,
+    "losses": 0,
+    "beatBench": null,
+    "beatTotal": null
+  },
+  "rows10y": [
+    {
+      "buyYear": 2023,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 2.9,
+      "cagr": 13.69,
+      "multiple": 1.44,
+      "isComplete": false,
+      "benchCagr": 18.01,
+      "diff": -4.32
+    },
+    {
+      "buyYear": 2024,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 1.9,
+      "cagr": 8.36,
+      "multiple": 1.16,
+      "isComplete": false,
+      "benchCagr": 14.4,
+      "diff": -6.05
+    }
+  ],
+  "loss5y": [],
+  "epsDecomp": [],
+  "epsNote": "EPS 데이터 미수집"
+}
