@@ -181,6 +181,7 @@ import expdData       from '@/public/data/rolling/EXPD_rolling.json'
 import expeData       from '@/public/data/rolling/EXPE_rolling.json'
 import exrData        from '@/public/data/rolling/EXR_rolling.json'
 import fData          from '@/public/data/rolling/F_rolling.json'
+import faData         from '@/public/data/rolling/FA_rolling.json'
 import fangData       from '@/public/data/rolling/FANG_rolling.json'
 import fastData       from '@/public/data/rolling/FAST_rolling.json'
 import fcxData        from '@/public/data/rolling/FCX_rolling.json'
@@ -653,6 +654,7 @@ const STOCKS: Array<{ key: string; data: StockData }> = [
   { key: 'EXPE',     data: expeData       as unknown as StockData },
   { key: 'EXR',      data: exrData        as unknown as StockData },
   { key: 'F',        data: fData          as unknown as StockData },
+  { key: 'FA',       data: faData         as unknown as StockData },
   { key: 'FANG',     data: fangData       as unknown as StockData },
   { key: 'FAST',     data: fastData       as unknown as StockData },
   { key: 'FCX',      data: fcxData        as unknown as StockData },
