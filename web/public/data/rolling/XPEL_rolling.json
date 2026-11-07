@@ -1,0 +1,114 @@
+{
+  "ticker": "XPEL",
+  "name": "엑스펠",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "",
+  "current": {
+    "price": 38.39,
+    "pe": 18.3,
+    "divYield": 0,
+    "eps": 2.1
+  },
+  "fullPeriod": {
+    "start_date": "2019-07-01",
+    "end_date": "2026-11-06",
+    "start_price": 5.409,
+    "end_price": 38.39,
+    "years": 7.4,
+    "cagr": 30.55,
+    "multiple": 7.0974
+  },
+  "stats": {
+    "n": 0,
+    "min": null,
+    "minBuy": "",
+    "median": null,
+    "mean": null,
+    "max": null,
+    "maxBuy": "",
+    "over10": null,
+    "over15": null,
+    "over20": null,
+    "losses": 0,
+    "beatBench": null,
+    "beatTotal": null
+  },
+  "rows10y": [
+    {
+      "buyYear": 2019,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 6.8,
+      "cagr": 15.1,
+      "multiple": 2.62,
+      "isComplete": false,
+      "benchCagr": 14.49,
+      "diff": 0.61
+    },
+    {
+      "buyYear": 2020,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 5.8,
+      "cagr": -4.92,
+      "multiple": 0.74,
+      "isComplete": false,
+      "benchCagr": 13.84,
+      "diff": -18.76
+    },
+    {
+      "buyYear": 2021,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 4.8,
+      "cagr": -11.2,
+      "multiple": 0.56,
+      "isComplete": false,
+      "benchCagr": 10.99,
+      "diff": -22.19
+    },
+    {
+      "buyYear": 2022,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 3.9,
+      "cagr": -10.98,
+      "multiple": 0.64,
+      "isComplete": false,
+      "benchCagr": 20.11,
+      "diff": -31.09
+    },
+    {
+      "buyYear": 2023,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 2.9,
+      "cagr": -11.2,
+      "multiple": 0.71,
+      "isComplete": false,
+      "benchCagr": 18.01,
+      "diff": -29.21
+    },
+    {
+      "buyYear": 2024,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 1.9,
+      "cagr": -2.12,
+      "multiple": 0.96,
+      "isComplete": false,
+      "benchCagr": 14.4,
+      "diff": -16.52
+    }
+  ],
+  "loss5y": [
+    {
+      "buyYear": 2020,
+      "sellYear": 2025,
+      "cagr": -0.65
+    }
+  ],
+  "epsDecomp": [],
+  "epsNote": "EPS 데이터 미수집"
+}
