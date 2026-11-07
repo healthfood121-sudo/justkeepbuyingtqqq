@@ -7820,7 +7820,7 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
       pricing: '4점 — 필수 소모품이라 가격 인상이 잘 통한다.',
       profit: '4점 — 조정 영업이익률 25.6%, 잉여현금흐름이 순이익보다 많다.',
       growth: '3점 — 기존 사업 5~6% + 인수.',
-      durability: '4점 — 물 재활용·이상 기후·물 부족이 장기 수요.',
+      durability: '5점 — 수질 측정은 규제로 꼭 해야 하고, 물 재활용·이상 기후·물 부족이 장기 수요(에코랩과 같은 기준).',
     },
     axes: {
       pricing: { state: 'good', sources: ['소모품·서비스 60%.'], threats: ['산업 고객 경기.'], why: '꾸준하다.' },

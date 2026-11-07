@@ -1083,5 +1083,5 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 
 #### VLTO·FTDR·U·CCSI·XMTR 종목 추가 (2026-11-07)
 - ABNB와 같은 절차: `generate_all_sp500.py` `SP500_INFO` 추가(S&P 500 밖 종목 포함, 순위 999) → 'update-rolling-annual'(only) → 'export-fundamentals' → 'export-cashflow' → 'export-segments'(keys) → `process_segments.py` → 'export-monthly-price'. 모두 상장·분사 10년 미만이라 10년 완결 구간 0개.
-- 설명: `web/app/sp500-holdings/descriptions.json`에 FTDR·U·CCSI·XMTR 추가(VLTO는 기존). 사업의 질: `quality.tsv`에 VLTO(B)·FTDR(C)·U(C)·CCSI(C)·XMTR(C).
+- 설명: `web/app/sp500-holdings/descriptions.json`에 FTDR·U·CCSI·XMTR 추가(VLTO는 기존). 사업의 질: `quality.tsv`에 VLTO(A, 처음 B였다가 다나허·에코랩과 맞춰 상향)·FTDR(C)·U(C)·CCSI(C)·XMTR(C).
 - XMTR은 분기 사업부·지역 공시가 없어 회사 전체 매출만. U 전체 매출엔 정리 중 사업이 섞여 회사 '전략 매출'과 다르다.
