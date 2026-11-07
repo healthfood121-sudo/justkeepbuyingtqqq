@@ -7562,10 +7562,22 @@ function dayAgo<T extends { date: string }>(days: T[], n: number): T | null {
 const usd = (v: number) => `$${Math.round(v).toLocaleString('en-US')}`
 const shortDate = (s: string) => s.slice(5).replace('-', '/')
 
+// 웃돈 종합: 정가가 확인된 모델들의 새 가방 웃돈(매물 2개 이상)을 모아 평균·중간값·최저·최고
+function premSummary(day: any, keys: string[]) {
+  const rows = keys.map(k => ({ k, v: day?.keys?.[k]?.new?.n >= 2 ? day.keys[k].new.prem as number : null }))
+    .filter((r): r is { k: string; v: number } => r.v != null)
+  if (!rows.length) return null
+  const vs = rows.map(r => r.v).sort((a, b) => a - b)
+  const mid = vs.length % 2 ? vs[(vs.length - 1) / 2] : (vs[vs.length / 2 - 1] + vs[vs.length / 2]) / 2
+  const lo = rows.reduce((a, b) => (b.v < a.v ? b : a)), hi = rows.reduce((a, b) => (b.v > a.v ? b : a))
+  return { avg: vs.reduce((a, b) => a + b, 0) / vs.length, med: mid, lo, hi, n: vs.length }
+}
+
 function HermesResaleCard() {
   const [daily, setDaily] = useState<any>(null)
   const [sold, setSold] = useState<any[]>([])
   const [err, setErr] = useState(false)
+  const [sel, setSel] = useState<string>('ALL')
   useEffect(() => {
     fetch('/data/resale/hermes_daily.json').then(r => r.ok ? r.json() : Promise.reject()).then(setDaily).catch(() => setErr(true))
     fetch('/data/resale/hermes_sold.json').then(r => r.ok ? r.json() : []).then(setSold).catch(() => {})
@@ -7582,19 +7594,59 @@ function HermesResaleCard() {
   const days: any[] = daily.days
   const last = days[days.length - 1]
   const basket: Record<string, { label: string; retail: number | null }> = daily.basket
+  const premKeys: string[] = daily.premKeys
   const m30 = dayAgo(days, 30), m90 = dayAgo(days, 90)
-  const pi = last.premIndex as number | null
-  const chg = (a: number | null | undefined, b: number | null | undefined) => a != null && b != null ? (a - b) * 100 : null
-  const c30 = chg(pi, m30?.premIndex), c90 = chg(pi, m90?.premIndex)
+  const sNow = premSummary(last, premKeys), s30 = premSummary(m30, premKeys), s90 = premSummary(m90, premKeys)
+  const chg = (a?: number | null, b?: number | null) => a != null && b != null ? (a - b) * 100 : null
+  const c30 = chg(sNow?.avg, s30?.avg), c90 = chg(sNow?.avg, s90?.avg)
   const fmtPp = (v: number | null) => v == null ? '기록 쌓는 중' : `${v >= 0 ? '+' : ''}${v.toFixed(1)}%포인트`
   const listedNow = last.listed.new + last.listed.pre
   const listed30 = m30 ? m30.listed.new + m30.listed.pre : null
   // 최근 30일 팔림
   const cutoff = new Date(new Date(last.date).getTime() - 30 * 86400000).toISOString().slice(0, 10)
   const recent = sold.filter(s => s.date > cutoff)
-  const dayList = (rows: any[]) => rows.map(r => r.days).filter((d: any) => typeof d === 'number' && d >= 0).sort((a: number, b: number) => a - b)
-  const medDays = (rows: any[]) => { const a = dayList(rows); return a.length ? a[Math.floor(a.length / 2)] : null }
+  const medDays = (rows: any[]) => {
+    const a = rows.map(r => r.days).filter((d: any) => typeof d === 'number' && d >= 0).sort((x: number, y: number) => x - y)
+    return a.length ? a[Math.floor(a.length / 2)] : null
+  }
   const md = medDays(recent)
+  const labels = days.map(d => shortDate(d.date))
+  const bx = (v: number) => `${v.toFixed(2)}배`
+
+  // 차트: 종합 또는 선택한 모델
+  let chart: ReactNode
+  if (sel === 'ALL') {
+    const ss = days.map(d => premSummary(d, premKeys))
+    chart = <TrendChart key="ALL" labels={labels} yFmt={bx} series={[
+      { label: '평균', data: ss.map(s => s?.avg ?? null), color: 'rgba(234,88,12,0.95)' },
+      { label: '중간값', data: ss.map(s => s?.med ?? null), color: 'rgba(37,99,235,0.85)' },
+      { label: '최고', data: ss.map(s => s?.hi.v ?? null), color: 'rgba(220,38,38,0.6)', dash: true },
+      { label: '최저', data: ss.map(s => s?.lo.v ?? null), color: 'rgba(107,114,128,0.7)', dash: true },
+    ]} />
+  } else {
+    const b = basket[sel]
+    const cnt = { label: '매물 수(오른쪽)', data: days.map(d => (d.keys[sel]?.new?.n ?? 0) + (d.keys[sel]?.pre?.n ?? 0)), color: 'rgba(107,114,128,0.6)', axis: 'y2' as const, dash: true }
+    chart = b.retail
+      ? <TrendChart key={sel} labels={labels} yFmt={bx} y2Fmt={v => `${Math.round(v)}개`} series={[
+          { label: '새 가방 웃돈', data: days.map(d => d.keys[sel]?.new?.prem ?? null), color: 'rgba(234,88,12,0.95)' },
+          { label: '중고 웃돈', data: days.map(d => d.keys[sel]?.pre?.prem ?? null), color: 'rgba(37,99,235,0.85)' }, cnt]} />
+      : <TrendChart key={sel} labels={labels} yFmt={usd} y2Fmt={v => `${Math.round(v)}개`} series={[
+          { label: '새 가방 희망가', data: days.map(d => d.keys[sel]?.new?.med ?? null), color: 'rgba(234,88,12,0.95)' },
+          { label: '중고 희망가', data: days.map(d => d.keys[sel]?.pre?.med ?? null), color: 'rgba(37,99,235,0.85)' }, cnt]} />
+  }
+  const btn = (k: string, lb: string) => (
+    <button key={k} onClick={() => setSel(k)}
+      className={`px-2 py-0.5 rounded text-xs border ${sel === k
+        ? 'bg-orange-600 text-white border-orange-600'
+        : 'text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-orange-400'}`}>{lb}</button>
+  )
+  const sumRow = (lb: string, v: number | undefined, note?: string) => (
+    <tr className="text-gray-700 dark:text-gray-200 bg-orange-50/60 dark:bg-orange-950/20">
+      <td className="py-1 pr-2">{lb}{note && <span className="text-gray-400"> · {note}</span>}</td>
+      <td className="text-right py-1 px-2 font-medium" colSpan={1}>{v != null ? bx(v) : '-'}</td>
+      <td colSpan={5}></td>
+    </tr>
+  )
   return (
     <div className={box}>
       <div className="flex items-baseline justify-between gap-2 flex-wrap">
@@ -7602,27 +7654,27 @@ function HermesResaleCard() {
         <span className="text-[11px] text-gray-400">{last.date} 기준 · 기록 {days.length}일</span>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-        <Tile label="웃돈 지수 (새 가방)" value={pi == null ? '-' : `정가의 ${pi.toFixed(2)}배`}
-          sub={pi == null ? '매물 부족' : `정가보다 ${Math.round((pi - 1) * 100)}% 비싸게 내놓음`} />
-        <Tile label="30일 전보다" value={fmtPp(c30)} tone={c30 == null ? 'flat' : c30 >= 0 ? 'up' : 'down'} sub={`90일 전보다 ${fmtPp(c90)}`} />
-        <Tile label="대표 모델 매물 수" value={`${listedNow}개`} sub={`새 ${last.listed.new} · 중고 ${last.listed.pre}${listed30 != null ? ` · 30일 전 ${listed30}` : ''}`} />
-        <Tile label="최근 30일 팔림" value={`${recent.length}개`} sub={md != null ? `올라온 뒤 팔리기까지 중간 ${md}일` : '기록 쌓는 중'} />
+        <Tile label={`평균 웃돈 (정가 확인 ${sNow?.n ?? 0}종)`} value={sNow ? `정가의 ${sNow.avg.toFixed(2)}배` : '-'}
+          sub={sNow ? `중간값 ${bx(sNow.med)}` : '매물 부족'} />
+        <Tile label="평균 웃돈 30일 변화" value={fmtPp(c30)} tone={c30 == null ? 'flat' : c30 >= 0 ? 'up' : 'down'} sub={`90일 전보다 ${fmtPp(c90)}`} />
+        <Tile label="웃돈 범위" value={sNow ? `${sNow.lo.v.toFixed(2)}~${sNow.hi.v.toFixed(2)}배` : '-'}
+          sub={sNow ? `최저 ${basket[sNow.lo.k].label} · 최고 ${basket[sNow.hi.k].label}` : undefined} />
+        <Tile label="매물 · 최근 30일 팔림" value={`${listedNow}개 · ${recent.length}개`}
+          sub={`${listed30 != null ? `30일 전 매물 ${listed30} · ` : ''}${md != null ? `팔리기까지 중간 ${md}일` : '팔림 기록 쌓는 중'}`} />
       </div>
-      <TrendChart
-        labels={days.map(d => shortDate(d.date))}
-        series={[
-          { label: '웃돈 지수(배)', data: days.map(d => d.premIndex), color: 'rgba(234,88,12,0.95)' },
-          { label: '매물 수(오른쪽)', data: days.map(d => d.listed.new + d.listed.pre), color: 'rgba(107,114,128,0.7)', axis: 'y2', dash: true },
-        ]}
-        yFmt={v => `${v.toFixed(2)}배`} y2Fmt={v => `${Math.round(v)}개`} />
+      <div className="flex flex-wrap gap-1">
+        {btn('ALL', '종합')}
+        {Object.entries(basket).map(([k, b]) => btn(k, b.label))}
+      </div>
+      {chart}
       <div className="overflow-x-auto">
         <table className="w-full text-xs">
           <thead>
             <tr className="text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-800">
-              <th className="text-left py-1 pr-2 font-medium">모델</th>
-              <th className="text-right py-1 px-2 font-medium">새 가방 희망가<br />(중간값)</th>
-              <th className="text-right py-1 px-2 font-medium">웃돈</th>
+              <th className="text-left py-1 pr-2 font-medium">모델 <span className="font-normal">(누르면 위 차트)</span></th>
+              <th className="text-right py-1 px-2 font-medium">웃돈<br />(새 가방)</th>
               <th className="text-right py-1 px-2 font-medium">30일 변화</th>
+              <th className="text-right py-1 px-2 font-medium">새 가방 희망가<br />(중간값)</th>
               <th className="text-right py-1 px-2 font-medium">중고 희망가<br />(중간값)</th>
               <th className="text-right py-1 px-2 font-medium">매물<br />새/중고</th>
               <th className="text-right py-1 pl-2 font-medium">30일 팔림<br />(중간 일수)</th>
@@ -7637,32 +7689,38 @@ function HermesResaleCard() {
               const rs = recent.filter(s => s.key === k)
               const rd = medDays(rs)
               return (
-                <tr key={k} className="border-b border-gray-100 dark:border-gray-900 text-gray-700 dark:text-gray-200">
+                <tr key={k} onClick={() => setSel(k)}
+                  className={`border-b border-gray-100 dark:border-gray-900 text-gray-700 dark:text-gray-200 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-900 ${sel === k ? 'bg-orange-50 dark:bg-orange-950/30' : ''}`}>
                   <td className="py-1 pr-2 whitespace-nowrap">{b.label}{b.retail ? <span className="text-gray-400"> · 정가 {usd(b.retail)}</span> : null}</td>
-                  <td className="text-right py-1 px-2">{nw ? usd(nw.med) : '-'}</td>
-                  <td className="text-right py-1 px-2 font-medium">{nw?.prem != null ? `${nw.prem.toFixed(2)}배` : '-'}</td>
+                  <td className="text-right py-1 px-2 font-medium">{nw?.prem != null ? bx(nw.prem) : '-'}</td>
                   <td className={`text-right py-1 px-2 ${d30 == null ? 'text-gray-400' : d30 >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
                     {d30 == null ? '-' : `${d30 >= 0 ? '+' : ''}${d30.toFixed(0)}%p`}</td>
+                  <td className="text-right py-1 px-2">{nw ? usd(nw.med) : '-'}</td>
                   <td className="text-right py-1 px-2">{pre ? usd(pre.med) : '-'}</td>
                   <td className="text-right py-1 px-2">{nw?.n ?? 0}/{pre?.n ?? 0}</td>
                   <td className="text-right py-1 pl-2">{rs.length}{rd != null ? ` (${rd}일)` : ''}</td>
                 </tr>
               )
             })}
+            {sumRow('종합 평균', sNow?.avg, `정가 확인 ${sNow?.n ?? 0}종`)}
+            {sumRow('종합 중간값', sNow?.med)}
+            {sumRow('최고', sNow?.hi.v, sNow ? basket[sNow.hi.k].label : undefined)}
+            {sumRow('최저', sNow?.lo.v, sNow ? basket[sNow.lo.k].label : undefined)}
           </tbody>
         </table>
       </div>
       <div className="rounded-md bg-amber-50 dark:bg-amber-950/30 p-3 space-y-1">
         <p className="text-xs font-semibold text-amber-800 dark:text-amber-300">읽는 법</p>
-        <p className={p}>· <b>웃돈 지수</b> = 매장에서 새로 산 가방을 되파는 가격 ÷ 매장 정가. 1.5배면 정가보다 50% 비싸게 내놓는다는 뜻. 매장에서 못 사서 웃돈을 주고라도 사려는 수요가 얼마나 남았는지 보여준다.</p>
-        <p className={p}>· <b>좋은 신호</b>: 웃돈이 유지되거나 오르면서 매물이 줄고, 팔리기까지 걸리는 날짜가 짧아짐 → 매장 공급보다 수요가 많다. 에르메스가 정가를 올려도 손님이 따라온다는 뜻이라 가죽 부문 매출·이익률이 튼튼하다.</p>
+        <p className={p}>· <b>웃돈</b> = 매장에서 새로 산 가방을 되파는 가격 ÷ 매장 정가. 1.5배면 정가보다 50% 비싸게 내놓는다는 뜻. 매장에서 못 사서 웃돈을 주고라도 사려는 수요가 얼마나 남았는지 보여준다.</p>
+        <p className={p}>· <b>종합은 평균을 주로 본다.</b> 중간값은 그날 가운데 있는 모델 하나의 값이라 기준 모델이 바뀌면 선이 튈 수 있다. 평균은 5종이 모두 반영돼 흐름이 매끄럽다. 최고·최저는 인기 모델(보통 미니 켈리·버킨 25)과 덜 인기 모델의 차이 — 이 간격이 벌어지면 수요가 일부 모델에만 몰리는 것.</p>
+        <p className={p}>· <b>좋은 신호</b>: 웃돈이 유지되거나 오르면서 매물이 줄고, 팔리기까지 걸리는 날짜가 짧아짐 → 매장 공급보다 수요가 많다. 정가를 올려도 손님이 따라온다는 뜻이라 가죽 부문 매출·이익률이 튼튼하다.</p>
         <p className={p}>· <b>나쁜 신호</b>: 웃돈이 몇 달 연속 빠지고 매물이 쌓이며 잘 안 팔림 → 되팔이 수요가 식고 있다. 보통 1~2분기 뒤 실적 발표에서 가죽 부문 성장 둔화로 나타날 수 있다.</p>
-        <p className={p}>· 하루하루 움직임은 잡음이 크다. <b>한 달 이상 같은 방향</b>인지 보고, 1월 정가 인상 직후 웃돈이 잠깐 줄어드는 것은 정상이다(분모인 정가가 올랐기 때문).</p>
+        <p className={p}>· 하루하루 움직임은 잡음이 크다. <b>한 달 이상 같은 방향</b>인지 보고, 1월 정가 인상 직후 웃돈이 잠깐 줄어드는 것은 정상이다(나누는 기준인 정가가 올랐기 때문).</p>
       </div>
       <p className="text-[11px] leading-relaxed text-gray-400 dark:text-gray-500">
         출처: 리셀 매장 4곳(Privé Porter, Madison Avenue Couture는 주로 새 가방 / Rebag, Fashionphile은 중고)의 공개 상품 목록. 악어·타조 같은 특수 가죽과 한정판은 뺐다.
         희망가는 <b>판매자가 내놓은 가격</b>이지 실제 거래가가 아니다. 어제 있던 매물이 오늘 사라지면 팔린 것으로 본다(내린 경우도 섞일 수 있음).
-        {' '}{daily.retailNote} 웃돈은 정가가 확인된 5종(버킨 25·30, 켈리 25·28, 미니 켈리 20)만 계산한다.
+        {' '}{daily.retailNote} 웃돈은 정가가 확인된 5종(버킨 25·30, 켈리 25·28, 미니 켈리 20)만 계산하고, 나머지 5종은 희망가 추이로 본다. 종합은 새 가방 매물이 2개 이상인 모델만 넣는다.
       </p>
     </div>
   )
