@@ -1587,7 +1587,7 @@ const BUILTIN_PRESETS: Array<{ name: string; why: string; f: Partial<FilterSnap>
     f: { excludeEtf: true, gradeF: 'AB', subMins: { moat: 4 }, restF: true, maxLastPct: 25 } },
   { name: '③ 최정예 (값 기다리는 명단)', why: '등급 A + 사업성 20점 이상 + ROIC 20% 이상 + 10년 보유 결과 10번 이상 + 가장 나쁜 해에 샀어도 연 5% 이상. 지금 사업도 좋고(Claude 평가·ROIC) 과거로도 증명된 핵심 명단. 이 중 주가가 쉬는 종목이 ①에 들어간다 — 나머지는 값이 내려오길 기다리는 관심 명단.',
     f: { excludeEtf: true, gradeF: 'A', minScore: 20, minRoic: 20, minPeriods: 10, minCagrMin: 5 } },
-  { name: '④ 에르메스형', why: '가격결정력 5점 + 경쟁우위 5점 + ROIC 25% 이상. 값을 올려도 고객이 떠나지 않는 기업.',
+  { name: '④ 가격결정력 5점 + 경쟁우위 5점 + ROIC 25% 이상', why: '가격결정력 5점 + 경쟁우위 5점 + ROIC 25% 이상. 값을 올려도 고객이 떠나지 않는 기업.',
     f: { excludeEtf: true, subMins: { pricing: 5, moat: 5 }, minRoic: 25 } },
   { name: '⑤ 오래 증명된 기업', why: 'A·B등급 + 10년 보유 결과 10번 이상 + 가장 나쁜 해에 샀어도 연 5% 이상 + 중앙값 연 12% 이상 + S&P 500보다 중앙값 3%p 이상 높음. 운이 아니라 꾸준히 시장을 이긴 기업.',
     f: { excludeEtf: true, gradeF: 'AB', minPeriods: 10, minCagrMin: 5, minMedian: 12, minDiffMedian: 3 } },

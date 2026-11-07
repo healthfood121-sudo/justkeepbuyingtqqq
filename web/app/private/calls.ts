@@ -1983,7 +1983,7 @@ export const CALLS: Record<string, CallNote> = {
       '**위험:** 가격보다 원가가 더 빨리 올라 이익률이 목표에 못 미쳤다. 데이터센터 투자 경기가 꺾이면 수주잔고가 줄 수 있다. 판단: 해자 그대로, 2027년 이익률이 25% 기준으로 돌아오는지 본다.',
     ],
   },
-  // ── ④ 에르메스형 ──
+  // ── ④ 가격결정력 5점 + 경쟁우위 5점 + ROIC 25% 이상 ──
   FICO: {
     quarter: "2026 회계연도 4분기(7~9월)", date: "2026-11-05",
     url: "https://www.fool.com/earnings/call-transcripts/2026/11/05/fair-isaac-fico-q4-2026-earnings-call-transcript/",

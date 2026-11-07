@@ -674,7 +674,7 @@ export const WRITTEN_INSIGHTS: Record<string, WrittenInsight> = {
         "해외 스낵 성장 지속",
       ]},
       { title: "결론", items: [
-        "에르메스형 그룹 2위(에르메스와 사실상 공동 1위). 가장 싸고 브랜드는 확실하지만 성장 회복이 숙제.",
+        "④ 프리셋 2위(에르메스와 사실상 공동 1위). 가장 싸고 브랜드는 확실하지만 성장 회복이 숙제.",
       ]},
     ],
   },
@@ -694,7 +694,7 @@ export const WRITTEN_INSIGHTS: Record<string, WrittenInsight> = {
         "배달앱과의 경쟁, 가성비 메뉴",
       ]},
       { title: "결론", items: [
-        "할인 폭은 크고 이익도 늘지만 성장 엔진이 다시 돌아야 한다. 에르메스형 4위.",
+        "할인 폭은 크고 이익도 늘지만 성장 엔진이 다시 돌아야 한다. ④ 프리셋 4위.",
       ]},
     ],
   },
@@ -717,7 +717,7 @@ export const WRITTEN_INSIGHTS: Record<string, WrittenInsight> = {
         "관세·운임 비용",
       ]},
       { title: "결론", items: [
-        "숫자는 가장 싸지만 호카 성장이 두 분기 연속 한 자릿수. 유행이 식으면 해자가 약하다. 에르메스형 6위.",
+        "숫자는 가장 싸지만 호카 성장이 두 분기 연속 한 자릿수. 유행이 식으면 해자가 약하다. ④ 프리셋 6위.",
       ]},
     ],
   },
@@ -737,7 +737,7 @@ export const WRITTEN_INSIGHTS: Record<string, WrittenInsight> = {
         "케이트스페이드 정리 여부",
       ]},
       { title: "결론", items: [
-        "브랜드 회복은 진짜지만 할인이 크지 않다. 에르메스형 7위.",
+        "브랜드 회복은 진짜지만 할인이 크지 않다. ④ 프리셋 7위.",
       ]},
     ],
   },
@@ -757,7 +757,7 @@ export const WRITTEN_INSIGHTS: Record<string, WrittenInsight> = {
         "유가·원자재 원가 부담이 줄어드는지",
       ]},
       { title: "결론", items: [
-        "가장 안정적이지만 할인도 성장도 작다. 에르메스형 8위.",
+        "가장 안정적이지만 할인도 성장도 작다. ④ 프리셋 8위.",
       ]},
     ],
   },
