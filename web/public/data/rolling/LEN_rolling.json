@@ -5,19 +5,19 @@
   "benchmark": "S&P 500",
   "note": "",
   "current": {
-    "price": 86.94,
-    "pe": 16.5,
-    "divYield": 2.3,
+    "price": 88.74,
+    "pe": 16.8,
+    "divYield": 2.25,
     "eps": 5.28
   },
   "fullPeriod": {
     "start_date": "1980-03-17",
-    "end_date": "2026-10-31",
+    "end_date": "2026-11-07",
     "start_price": 0.2868,
-    "end_price": 86.94,
+    "end_price": 88.74,
     "years": 46.6,
-    "cagr": 13.04,
-    "multiple": 303.1381
+    "cagr": 13.08,
+    "multiple": 309.4142
   },
   "stats": {
     "n": 36,
@@ -434,101 +434,101 @@
     {
       "buyYear": 2016,
       "sellYear": 2026,
-      "sellDate": "2026-10-31",
-      "yearsActual": 9.8,
-      "cagr": 9.23,
-      "multiple": 2.3826,
+      "sellDate": "2026-11-07",
+      "yearsActual": 9.9,
+      "cagr": 9.44,
+      "multiple": 2.432,
       "isComplete": false,
-      "benchCagr": 15.07,
-      "diff": -5.84
+      "benchCagr": 14.73,
+      "diff": -5.29
     },
     {
       "buyYear": 2017,
       "sellYear": 2026,
-      "sellDate": "2026-10-31",
-      "yearsActual": 8.8,
-      "cagr": 5.36,
-      "multiple": 1.5855,
+      "sellDate": "2026-11-07",
+      "yearsActual": 8.9,
+      "cagr": 5.59,
+      "multiple": 1.6183,
       "isComplete": false,
-      "benchCagr": 14.33,
-      "diff": -8.97
+      "benchCagr": 13.95,
+      "diff": -8.36
     },
     {
       "buyYear": 2018,
       "sellYear": 2026,
-      "sellDate": "2026-10-31",
-      "yearsActual": 7.8,
-      "cagr": 12.71,
-      "multiple": 2.5535,
+      "sellDate": "2026-11-07",
+      "yearsActual": 7.9,
+      "cagr": 12.98,
+      "multiple": 2.6064,
       "isComplete": false,
-      "benchCagr": 16.97,
-      "diff": -4.26
+      "benchCagr": 16.52,
+      "diff": -3.54
     },
     {
       "buyYear": 2019,
       "sellYear": 2026,
-      "sellDate": "2026-10-31",
-      "yearsActual": 6.8,
-      "cagr": 8.86,
-      "multiple": 1.7862,
+      "sellDate": "2026-11-07",
+      "yearsActual": 6.9,
+      "cagr": 9.16,
+      "multiple": 1.8232,
       "isComplete": false,
-      "benchCagr": 14.98,
-      "diff": -6.12
+      "benchCagr": 14.48,
+      "diff": -5.32
     },
     {
       "buyYear": 2020,
       "sellYear": 2026,
-      "sellDate": "2026-10-31",
-      "yearsActual": 5.8,
-      "cagr": 4.53,
-      "multiple": 1.2946,
+      "sellDate": "2026-11-07",
+      "yearsActual": 5.9,
+      "cagr": 4.88,
+      "multiple": 1.3214,
       "isComplete": false,
-      "benchCagr": 14.41,
-      "diff": -9.88
+      "benchCagr": 13.83,
+      "diff": -8.95
     },
     {
       "buyYear": 2021,
       "sellYear": 2026,
-      "sellDate": "2026-10-31",
-      "yearsActual": 4.8,
-      "cagr": -3.53,
-      "multiple": 0.8407,
+      "sellDate": "2026-11-07",
+      "yearsActual": 4.9,
+      "cagr": -3.11,
+      "multiple": 0.8581,
       "isComplete": false,
-      "benchCagr": 11.65,
-      "diff": -15.18
+      "benchCagr": 10.98,
+      "diff": -14.09
     },
     {
       "buyYear": 2022,
       "sellYear": 2026,
-      "sellDate": "2026-10-31",
-      "yearsActual": 3.8,
-      "cagr": 1.52,
-      "multiple": 1.0594,
+      "sellDate": "2026-11-07",
+      "yearsActual": 3.9,
+      "cagr": 2.05,
+      "multiple": 1.0813,
       "isComplete": false,
-      "benchCagr": 21.06,
-      "diff": -19.54
+      "benchCagr": 20.1,
+      "diff": -18.05
     },
     {
       "buyYear": 2023,
       "sellYear": 2026,
-      "sellDate": "2026-10-31",
-      "yearsActual": 2.8,
-      "cagr": -14.82,
-      "multiple": 0.6347,
+      "sellDate": "2026-11-07",
+      "yearsActual": 2.9,
+      "cagr": -14.12,
+      "multiple": 0.6478,
       "isComplete": false,
-      "benchCagr": 19.26,
-      "diff": -34.08
+      "benchCagr": 17.99,
+      "diff": -32.11
     },
     {
       "buyYear": 2024,
       "sellYear": 2026,
-      "sellDate": "2026-10-31",
-      "yearsActual": 1.8,
-      "cagr": -18.67,
-      "multiple": 0.6848,
+      "sellDate": "2026-11-07",
+      "yearsActual": 1.9,
+      "cagr": -17.59,
+      "multiple": 0.699,
       "isComplete": false,
-      "benchCagr": 16.25,
-      "diff": -34.92
+      "benchCagr": 14.38,
+      "diff": -31.97
     }
   ],
   "loss5y": [

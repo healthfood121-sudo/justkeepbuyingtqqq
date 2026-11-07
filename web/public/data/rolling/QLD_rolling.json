@@ -6,19 +6,19 @@
   "type": "etf",
   "note": "합성가격: NDX 일별수익률 기반, 스왑금리(SOFR+0.50%/년)·운용보수 차감. 1985-10-01 이전은 스플라이스 전 구간 (NDX 공식 출범 전). 실제 ETF 상장일과 무관하게 NDX 역사 전체 시뮬레이션. | QLD 운용보수: 0.95%/년, 스왑비용: SOFR+0.50%×1",
   "current": {
-    "price": 82.59,
-    "pe": 24.5,
-    "divYield": 0.13,
+    "price": 74.11,
+    "pe": 25.5,
+    "divYield": 0.15,
     "eps": null
   },
   "fullPeriod": {
     "start_date": "1971-02-05",
-    "end_date": "2026-10-31",
+    "end_date": "2026-11-07",
     "start_price": 100.0,
-    "end_price": 82.59,
-    "years": 55.7,
-    "cagr": -0.34,
-    "multiple": 0.8259
+    "end_price": 74.11,
+    "years": 55.8,
+    "cagr": -0.54,
+    "multiple": 0.7411
   },
   "stats": {
     "n": 45,
@@ -534,101 +534,101 @@
     {
       "buyYear": 2016,
       "sellYear": 2026,
-      "sellDate": "2026-10-31",
-      "yearsActual": 9.8,
-      "cagr": 32.22,
-      "multiple": 15.5792,
+      "sellDate": "2026-11-07",
+      "yearsActual": 9.9,
+      "cagr": 30.7,
+      "multiple": 13.9796,
       "isComplete": false,
-      "benchCagr": 15.07,
-      "diff": 17.15
+      "benchCagr": 14.73,
+      "diff": 15.97
     },
     {
       "buyYear": 2017,
       "sellYear": 2026,
-      "sellDate": "2026-10-31",
-      "yearsActual": 8.8,
-      "cagr": 28.48,
-      "multiple": 9.146,
+      "sellDate": "2026-11-07",
+      "yearsActual": 8.9,
+      "cagr": 26.85,
+      "multiple": 8.207,
       "isComplete": false,
-      "benchCagr": 14.33,
-      "diff": 14.15
+      "benchCagr": 13.95,
+      "diff": 12.9
     },
     {
       "buyYear": 2018,
       "sellYear": 2026,
-      "sellDate": "2026-10-31",
-      "yearsActual": 7.8,
-      "cagr": 34.13,
-      "multiple": 9.975,
+      "sellDate": "2026-11-07",
+      "yearsActual": 7.9,
+      "cagr": 32.2,
+      "multiple": 8.9508,
       "isComplete": false,
-      "benchCagr": 16.97,
-      "diff": 17.16
+      "benchCagr": 16.52,
+      "diff": 15.68
     },
     {
       "buyYear": 2019,
       "sellYear": 2026,
-      "sellDate": "2026-10-31",
-      "yearsActual": 6.8,
-      "cagr": 28.3,
-      "multiple": 5.4901,
+      "sellDate": "2026-11-07",
+      "yearsActual": 6.9,
+      "cagr": 26.2,
+      "multiple": 4.9264,
       "isComplete": false,
-      "benchCagr": 14.98,
-      "diff": 13.32
+      "benchCagr": 14.48,
+      "diff": 11.72
     },
     {
       "buyYear": 2020,
       "sellYear": 2026,
-      "sellDate": "2026-10-31",
-      "yearsActual": 5.8,
-      "cagr": 20.08,
-      "multiple": 2.9064,
+      "sellDate": "2026-11-07",
+      "yearsActual": 5.9,
+      "cagr": 17.8,
+      "multiple": 2.608,
       "isComplete": false,
-      "benchCagr": 14.41,
-      "diff": 5.67
+      "benchCagr": 13.83,
+      "diff": 3.97
     },
     {
       "buyYear": 2021,
       "sellYear": 2026,
-      "sellDate": "2026-10-31",
-      "yearsActual": 4.8,
-      "cagr": 13.94,
-      "multiple": 1.8791,
+      "sellDate": "2026-11-07",
+      "yearsActual": 4.9,
+      "cagr": 11.37,
+      "multiple": 1.6862,
       "isComplete": false,
-      "benchCagr": 11.65,
-      "diff": 2.29
+      "benchCagr": 10.98,
+      "diff": 0.39
     },
     {
       "buyYear": 2022,
       "sellYear": 2026,
-      "sellDate": "2026-10-31",
-      "yearsActual": 3.8,
-      "cagr": 50.24,
-      "multiple": 4.76,
+      "sellDate": "2026-11-07",
+      "yearsActual": 3.9,
+      "cagr": 45.78,
+      "multiple": 4.2712,
       "isComplete": false,
-      "benchCagr": 21.06,
-      "diff": 29.18
+      "benchCagr": 20.1,
+      "diff": 25.68
     },
     {
       "buyYear": 2023,
       "sellYear": 2026,
-      "sellDate": "2026-10-31",
-      "yearsActual": 2.8,
-      "cagr": 31.79,
-      "multiple": 2.1863,
+      "sellDate": "2026-11-07",
+      "yearsActual": 2.9,
+      "cagr": 26.64,
+      "multiple": 1.9618,
       "isComplete": false,
-      "benchCagr": 19.26,
-      "diff": 12.53
+      "benchCagr": 17.99,
+      "diff": 8.65
     },
     {
       "buyYear": 2024,
       "sellYear": 2026,
-      "sellDate": "2026-10-31",
-      "yearsActual": 1.8,
-      "cagr": 26.17,
-      "multiple": 1.5308,
+      "sellDate": "2026-11-07",
+      "yearsActual": 1.9,
+      "cagr": 18.71,
+      "multiple": 1.3737,
       "isComplete": false,
-      "benchCagr": 16.25,
-      "diff": 9.92
+      "benchCagr": 14.38,
+      "diff": 4.33
     }
   ],
   "loss5y": [
