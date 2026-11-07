@@ -3040,5 +3040,29 @@
     "sector": "주류",
     "products": "조니워커·기네스·스미노프·돈훌리오·탱커레이 등 200여 주류 브랜드",
     "type": "stock"
+  },
+  "FTDR": {
+    "name": "프론트도어",
+    "sector": "주택 보증 서비스",
+    "products": "주택 설비·가전 고장 수리 보증(American Home Shield), 수리 기사 연결",
+    "type": "stock"
+  },
+  "U": {
+    "name": "유니티 소프트웨어",
+    "sector": "게임 엔진/광고 소프트웨어",
+    "products": "게임 개발 엔진(Unity), 모바일 게임 광고 플랫폼(Grow·Vector)",
+    "type": "stock"
+  },
+  "CCSI": {
+    "name": "컨센서스 클라우드 솔루션즈",
+    "sector": "클라우드 팩스/의료 데이터 교환",
+    "products": "클라우드 팩스(eFax Corporate), 의료 문서 디지털 교환",
+    "type": "stock"
+  },
+  "XMTR": {
+    "name": "엑소메트리",
+    "sector": "제조 부품 온라인 장터",
+    "products": "맞춤 제조 부품 주문 장터(CNC 가공·3D 프린팅·사출), 공급사용 소프트웨어",
+    "type": "stock"
   }
 }
