@@ -18,13 +18,14 @@ const BASE_DATE = new Date('2026-01-01T00:00:00Z').getTime()
 
 export default function WorldPopCounter() {
   const phaseRef = useRef<'birth' | 'death'>('birth')
-  const [pop, setPop] = useState(() => {
-    const elapsed = (Date.now() - BASE_DATE) / 1000
-    return Math.round(BASE_POPULATION + elapsed * NET_RATE)
-  })
+  const [pop, setPop] = useState(BASE_POPULATION)
   const [isUp, setIsUp] = useState(true)
 
   useEffect(() => {
+    // 클라이언트에서만 실제 현재 인구로 초기화
+    const elapsed = (Date.now() - BASE_DATE) / 1000
+    setPop(Math.round(BASE_POPULATION + elapsed * NET_RATE))
+
     const id = setInterval(() => {
       const elapsed = (Date.now() - BASE_DATE) / 1000
       const truePop = BASE_POPULATION + elapsed * NET_RATE
