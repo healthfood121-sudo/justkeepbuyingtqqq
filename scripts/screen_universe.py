@@ -2,7 +2,8 @@
 screen_universe.py — 미국 상장 전 종목(나스닥·뉴욕 등, 러셀2000·나스닥100 표시)에서 '숨은 알짜'를 숫자로 1차 선별
 
 데이터 (모두 무료·공개, 샌드박스에서 접속 불가 → GitHub Actions 'screen-universe'에서 실행)
-  - 종목 목록: nasdaqtrader.com 나스닥·기타 상장 목록, iShares IWM 또는 뱅가드 VTWO(러셀2000 표시), 저장소 나스닥100 보유 종목 파일
+  - 종목 목록: nasdaqtrader.com 나스닥·기타 상장 목록, 저장소 나스닥100 보유 종목 파일
+  - 러셀2000 표시: 정의대로 추정(공시가 있는 미국 상장사 시가총액 1,001~3,000위)
   - 업종: SEC 회사 정보 SIC 코드
   - 재무: SEC XBRL frames API (항목·연도별로 전 회사 값을 한 번에 받음 — 회사별 요청 대신 약 200번 요청)
   - 주가: Yahoo Finance 월간 수정주가(배당 포함)
@@ -23,7 +24,7 @@ OUT.mkdir(parents=True, exist_ok=True)
 ROLL = ROOT / "web" / "public" / "data" / "rolling"
 
 UA = {"User-Agent": "justkeepbuyingtqqq research research@example.com"}
-WEB_UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"}
+WEB_UA = UA  # 평범한 연구용 요청 표시(브라우저 흉내 안 함)
 YEARS = list(range(2015, 2026))  # CY2015 ~ CY2025
 MIN_MCAP = 300e6
 
@@ -86,37 +87,9 @@ def other_listed():
 
 
 def russell2000():
-    url = ("https://www.ishares.com/us/products/239710/ishares-russell-2000-etf/1467271812596.ajax"
-           "?fileType=csv&fileName=IWM_holdings&dataType=fund")
-    out = {}
-    h = {**WEB_UA, "Accept": "text/csv,application/octet-stream,*/*",
-         "Referer": "https://www.ishares.com/us/products/239710/ishares-russell-2000-etf"}
-    r = get(url, h)
-    if r is None or "<html" in r.text[:500].lower():
-        # 대안: 뱅가드 러셀2000 ETF(VTWO) 보유 종목
-        try:
-            j = get("https://investor.vanguard.com/investment-products/etfs/profile/api/VTWO/portfolio-holding/stock", WEB_UA).json()
-            for it in j.get("fund", {}).get("entity", []):
-                t = (it.get("ticker") or "").strip()
-                if t:
-                    out[t] = (it.get("longName") or "", it.get("sectorName") or "")
-        except Exception as e:
-            print("VTWO err", e, flush=True)
-        print("russell2000 (vanguard)", len(out), flush=True)
-        return out
-    lines = r.text.splitlines()
-    hdr = next((i for i, l in enumerate(lines) if l.startswith("Ticker,")), None)
-    if hdr is None:
-        print("IWM header not found", lines[:5], flush=True)
-        return out
-    df = pd.read_csv(io.StringIO("\n".join(lines[hdr:])), on_bad_lines="skip")
-    df = df[df.get("Asset Class", "Equity") == "Equity"] if "Asset Class" in df.columns else df
-    for _, row in df.iterrows():
-        t = str(row.get("Ticker", "")).strip()
-        if t and t != "nan" and t != "-":
-            out[t] = (str(row.get("Name", "")).strip(), str(row.get("Sector", "")).strip())
-    print("russell2000", len(out), flush=True)
-    return out
+    """러셀2000 실제 목록은 ETF 운용사 사이트가 자동 요청을 막아 받지 않는다.
+    대신 아래 main()에서 정의(미국 상장사 시가총액 1,001~3,000위)로 추정 표시한다."""
+    return {}
 
 
 def nasdaq100():
@@ -316,6 +289,15 @@ def main():
                         sc=r["sc"], yrs=r["yrs"], py=r["py"], rg=rd(r["rg"]), eg=rd(r["eg"]), roic=rd(r["roic"]),
                         fpy=rd(r["fpy"], 2), fcfm=rd(r["fcfm"]), nd=rd(r["nd"], 2), nc=r["netcash"], dil=rd(r["dil"]),
                         pe=rd(pe, 1), fy=rd(fyld), pc=rd(pc), xs=rd(xs), sp=round(span, 1), fyr=r["_last"]))
+    # 러셀2000 표시(추정): 공시가 있는 미국 상장사를 시가총액 순으로 세워 1,001~3,000위
+    allmc = sorted((((rows[t]["_sh"] or 0) * float(prices[ytk[t]].iloc[-1])), t) for t in rows if ytk[t] in prices)
+    allmc.sort(reverse=True)
+    approx = {t for _, t in allmc[1000:3000]}
+    for o in out:
+        if o["t"] in approx and "R" not in o["f"]:
+            o["f"] += "R"
+    print("russell2000 approx", len(approx), flush=True)
+
     # 업종: SEC 회사 정보(SIC 코드) — 시가총액 조건을 통과한 회사만 조회
     for i, o in enumerate(out):
         cik = rows[o["t"]]["cik"]
@@ -334,6 +316,7 @@ def main():
     (OUT / "universe.json").write_text(json.dumps({
         "asOf": time.strftime("%Y-%m-%d"),
         "minMcap": MIN_MCAP,
+        "r2kSrc": "추정: 공시가 있는 미국 상장사 중 시가총액 1,001~3,000위(러셀2000의 선정 기준. 실제 목록과 일부 다를 수 있음)",
         "note": "SEC XBRL frames(달력 연도 기준) + Yahoo 월간 수정주가. 투하자본이익률은 영업이익×0.79÷(자기자본+빚−현금) 근사.",
         "rows": out}, ensure_ascii=False, separators=(",", ":")))
     print("saved", len(out), "rows", flush=True)

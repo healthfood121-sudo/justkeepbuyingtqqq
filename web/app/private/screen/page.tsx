@@ -12,7 +12,7 @@ type Row = {
   pe: number | null; fy: number | null; pc: number | null; xs: number | null; sp: number; fyr: number
   sic?: string; sicd?: string; ind?: string
 }
-type Data = { asOf: string; minMcap: number; note: string; rows: Row[] }
+type Data = { asOf: string; minMcap: number; note: string; r2kSrc?: string; rows: Row[] }
 type Key = 'sc' | 'mc' | 'py' | 'rg' | 'eg' | 'roic' | 'fcfm' | 'nd' | 'dil' | 'pe' | 'fy' | 'pc' | 'xs'
 
 const pct = (v: number | null, d = 0) => v == null ? '–' : `${v >= 0 ? '' : '−'}${Math.abs(v * 100).toFixed(d)}%`
@@ -93,6 +93,7 @@ export default function ScreenPage() {
         <p className="text-xs leading-relaxed text-gray-600 dark:text-gray-300">
           · <b>점수</b>는 &lsquo;오래, 꾸준히, 돈을 잘 버는가&rsquo;만 본다: 10년 중 흑자 연도, 매출·EPS 성장, 투하자본이익률, 잉여현금, 빚, 주식 수 희석. 값이 싼지는 PER·잉여현금 수익률로 따로 본다.
           <br />· 숨은 알짜 후보 = 점수 높음 + 주가 연수익률이 S&amp;P 500보다 높음 + 아직 &lsquo;위대한 기업&rsquo; 표에 없음.
+          {data?.r2kSrc && <><br />· 러셀2000 표시: {data.r2kSrc}</>}
           <br />· 한계: SEC 공시 숫자를 달력 연도로 맞춘 근사값이다. 은행·보험·리츠는 투하자본이익률이 맞지 않고, 인수로 커진 회사는 성장률이 부풀려질 수 있다.
         </p>
       </div>
