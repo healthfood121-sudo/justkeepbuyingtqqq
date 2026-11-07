@@ -7578,6 +7578,7 @@ function HermesResaleCard() {
   const [sold, setSold] = useState<any[]>([])
   const [err, setErr] = useState(false)
   const [sel, setSel] = useState<string>('ALL')
+  const [gran, setGran] = useState<'D' | 'W' | 'M'>('D')
   useEffect(() => {
     fetch('/data/resale/hermes_daily.json').then(r => r.ok ? r.json() : Promise.reject()).then(setDaily).catch(() => setErr(true))
     fetch('/data/resale/hermes_sold.json').then(r => r.ok ? r.json() : []).then(setSold).catch(() => {})
@@ -7610,30 +7611,45 @@ function HermesResaleCard() {
     return a.length ? a[Math.floor(a.length / 2)] : null
   }
   const md = medDays(recent)
-  const labels = days.map(d => shortDate(d.date))
   const bx = (v: number) => `${v.toFixed(2)}배`
+  // 일/주/월 묶기: 같은 주(월요일 시작)·같은 달의 날짜 값을 평균
+  const gkey = (ds: string) => {
+    if (gran === 'M') return ds.slice(0, 7)
+    if (gran === 'W') {
+      const t = new Date(ds + 'T00:00:00Z'); t.setUTCDate(t.getUTCDate() - ((t.getUTCDay() + 6) % 7))
+      return t.toISOString().slice(0, 10)
+    }
+    return ds
+  }
+  const gIdx: number[][] = [], gKeys: string[] = []
+  days.forEach((d, i) => { const k = gkey(d.date); if (gKeys[gKeys.length - 1] !== k) { gKeys.push(k); gIdx.push([]) } gIdx[gIdx.length - 1].push(i) })
+  const labels = gKeys.map(k => gran === 'M' ? `${k.slice(2, 4)}년 ${Number(k.slice(5))}월` : gran === 'W' ? `${shortDate(k)}주` : shortDate(k))
+  const mk = (ss: TrendSeries[]): TrendSeries[] => ss.map(s => ({ ...s, data: gIdx.map(ix => {
+    const v = ix.map(i => s.data[i]).filter((x): x is number => x != null)
+    return v.length ? v.reduce((a, c) => a + c, 0) / v.length : null
+  }) }))
 
   // 차트: 종합 또는 선택한 모델
   let chart: ReactNode
   if (sel === 'ALL') {
     const ss = days.map(d => premSummary(d, premKeys))
-    chart = <TrendChart key="ALL" labels={labels} yFmt={bx} y2Fmt={v => `${Math.round(v)}개`} height={260} series={[
+    chart = <TrendChart key={`ALL-${gran}`} labels={labels} yFmt={bx} y2Fmt={v => `${Math.round(v)}개`} height={260} series={mk([
       { label: '평균 웃돈', data: ss.map(s => s?.avg ?? null), color: 'rgba(234,88,12,0.95)' },
       { label: '최고', data: ss.map(s => s?.hi.v ?? null), color: 'rgba(220,38,38,0.55)', dash: true },
       { label: '최저', data: ss.map(s => s?.lo.v ?? null), color: 'rgba(234,88,12,0.4)', dash: true },
       { label: '새 가방 매물(오른쪽)', data: days.map(d => d.listed.new), color: 'rgba(37,99,235,0.8)', axis: 'y2' },
       { label: '중고 매물(오른쪽)', data: days.map(d => d.listed.pre), color: 'rgba(107,114,128,0.7)', axis: 'y2' },
-    ]} />
+    ])} />
   } else {
     const b = basket[sel]
     const cnt = { label: '매물 수(오른쪽)', data: days.map(d => (d.keys[sel]?.new?.n ?? 0) + (d.keys[sel]?.pre?.n ?? 0)), color: 'rgba(107,114,128,0.6)', axis: 'y2' as const, dash: true }
     chart = b.retail
-      ? <TrendChart key={sel} labels={labels} yFmt={bx} y2Fmt={v => `${Math.round(v)}개`} series={[
+      ? <TrendChart key={`${sel}-${gran}`} labels={labels} yFmt={bx} y2Fmt={v => `${Math.round(v)}개`} series={mk([
           { label: '새 가방 웃돈', data: days.map(d => d.keys[sel]?.new?.prem ?? null), color: 'rgba(234,88,12,0.95)' },
-          { label: '중고 웃돈', data: days.map(d => d.keys[sel]?.pre?.prem ?? null), color: 'rgba(37,99,235,0.85)' }, cnt]} />
-      : <TrendChart key={sel} labels={labels} yFmt={usd} y2Fmt={v => `${Math.round(v)}개`} series={[
+          { label: '중고 웃돈', data: days.map(d => d.keys[sel]?.pre?.prem ?? null), color: 'rgba(37,99,235,0.85)' }, cnt])} />
+      : <TrendChart key={`${sel}-${gran}`} labels={labels} yFmt={usd} y2Fmt={v => `${Math.round(v)}개`} series={mk([
           { label: '새 가방 희망가', data: days.map(d => d.keys[sel]?.new?.med ?? null), color: 'rgba(234,88,12,0.95)' },
-          { label: '중고 희망가', data: days.map(d => d.keys[sel]?.pre?.med ?? null), color: 'rgba(37,99,235,0.85)' }, cnt]} />
+          { label: '중고 희망가', data: days.map(d => d.keys[sel]?.pre?.med ?? null), color: 'rgba(37,99,235,0.85)' }, cnt])} />
   }
   const btn = (k: string, lb: string) => (
     <button key={k} onClick={() => setSel(k)}
@@ -7660,12 +7676,20 @@ function HermesResaleCard() {
         <Tile label="평균 웃돈 30일 변화" value={fmtPp(c30)} tone={c30 == null ? 'flat' : c30 >= 0 ? 'up' : 'down'} sub={`90일 전보다 ${fmtPp(c90)}`} />
         <Tile label="웃돈 범위" value={sNow ? `${sNow.lo.v.toFixed(2)}~${sNow.hi.v.toFixed(2)}배` : '-'}
           sub={sNow ? `최저 ${basket[sNow.lo.k].label} · 최고 ${basket[sNow.hi.k].label}` : undefined} />
-        <Tile label="매물 · 최근 30일 팔림" value={`${listedNow}개 · ${recent.length}개`}
+        <Tile label="매물 · 최근 30일 팔림" value={`${listedNow}개 · ${recent.length}개${recent.length ? ` (${(recent.length / listedNow * 100).toFixed(0)}%)` : ''}`}
           sub={`${listed30 != null ? `30일 전 매물 ${listed30} · ` : ''}${md != null ? `팔리기까지 중간 ${md}일` : '팔림 기록 쌓는 중'}`} />
       </div>
       <div className="flex flex-wrap gap-1">
         {btn('ALL', '종합')}
         {Object.entries(basket).map(([k, b]) => btn(k, b.label))}
+      </div>
+      <div className="flex items-center gap-1 text-xs">
+        <span className="text-gray-400 mr-1">차트 단위</span>
+        {([['D', '일'], ['W', '주'], ['M', '월']] as const).map(([g, lb]) => (
+          <button key={g} onClick={() => setGran(g)}
+            className={`px-2 py-0.5 rounded border ${gran === g ? 'bg-gray-800 text-white border-gray-800 dark:bg-gray-200 dark:text-gray-900' : 'text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700'}`}>{lb}</button>
+        ))}
+        <span className="text-[11px] text-gray-400 ml-1">주·월은 그 기간 하루 값들의 평균</span>
       </div>
       {chart}
       <div className="overflow-x-auto">
@@ -7714,7 +7738,9 @@ function HermesResaleCard() {
         <p className="text-xs font-semibold text-amber-800 dark:text-amber-300">읽는 법</p>
         <p className={p}>· <b>웃돈</b> = 매장에서 새로 산 가방을 되파는 가격 ÷ 매장 정가. 1.5배면 정가보다 50% 비싸게 내놓는다는 뜻. 매장에서 못 사서 웃돈을 주고라도 사려는 수요가 얼마나 남았는지 보여준다.</p>
         <p className={p}>· <b>종합은 평균을 주로 본다.</b> 중간값은 그날 가운데 있는 모델 하나의 값이라 기준 모델이 바뀌면 선이 튈 수 있다. 평균은 5종이 모두 반영돼 흐름이 매끄럽다. 최고·최저는 인기 모델(보통 미니 켈리·버킨 25)과 덜 인기 모델의 차이 — 이 간격이 벌어지면 수요가 일부 모델에만 몰리는 것.</p>
-        <p className={p}>· <b>매물 수</b>: 새 가방 매물은 매장에서 산 사람이 바로 되파는 물량이다. 웃돈이 그대로인데 새 가방 매물이 늘면, 판매자는 많은데 가격을 아직 안 내린 것이라 몇 주 뒤 웃돈이 빠질 수 있다(가격보다 매물이 먼저 움직인다). 중고 매물이 늘면 기존 소유자가 팔고 나오는 것 — 경기가 나쁠 때 늘어난다. 매장이 상품 목록을 한꺼번에 정리하는 날은 갑자기 튈 수 있다.</p>
+        <p className={p}>· <b>가격이 주인공, 매물 수는 보조</b>: 에르메스는 공방을 매년 조금씩만 늘려 생산량이 천천히 늘어난다(회사 발표 자료 참고). 그래서 생산이 늘어 매물이 느는 효과는 1년에 걸쳐 완만하게 나타나고, 몇 주~몇 달 사이 매물이 크게 움직이면 생산보다 <b>되팔려는 사람·사려는 사람의 변화</b>로 보는 게 맞다.</p>
+        <p className={p}>· <b>가격과 매물을 같이 본다</b>: ① 웃돈 유지 + 매물 증가 → 물량이 늘었는데 다 소화됨, 수요 튼튼 ② 웃돈 유지 + 새 가방 매물 급증 → 판매자가 아직 값을 안 내렸을 뿐, 몇 주 뒤 웃돈이 빠질 수 있는 먼저 오는 신호 ③ 웃돈 하락 + 매물 증가 → 수요 식음, 가장 나쁜 조합 ④ 웃돈 하락 + 매물 감소 → 정가 인상 직후 등 일시적인 경우가 많음. 중고 매물이 늘면 기존 소유자가 팔고 나오는 것으로 경기가 나쁠 때 늘어난다.</p>
+        <p className={p}>· 생산량 영향을 빼고 보려면 매물 개수보다 <b>팔림 비율(30일 팔림 ÷ 매물)</b>을 본다. 물량이 늘어도 팔림 비율이 유지되면 수요가 따라오는 것이다. 매장이 상품 목록을 한꺼번에 정리하는 날은 개수가 갑자기 튈 수 있다.</p>
         <p className={p}>· <b>좋은 신호</b>: 웃돈이 유지되거나 오르면서 매물이 줄고, 팔리기까지 걸리는 날짜가 짧아짐 → 매장 공급보다 수요가 많다. 정가를 올려도 손님이 따라온다는 뜻이라 가죽 부문 매출·이익률이 튼튼하다.</p>
         <p className={p}>· <b>나쁜 신호</b>: 웃돈이 몇 달 연속 빠지고 매물이 쌓이며 잘 안 팔림 → 되팔이 수요가 식고 있다. 보통 1~2분기 뒤 실적 발표에서 가죽 부문 성장 둔화로 나타날 수 있다.</p>
         <p className={p}>· 하루하루 움직임은 잡음이 크다. <b>한 달 이상 같은 방향</b>인지 보고, 1월 정가 인상 직후 웃돈이 잠깐 줄어드는 것은 정상이다(나누는 기준인 정가가 올랐기 때문).</p>
