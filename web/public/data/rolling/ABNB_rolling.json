@@ -1,0 +1,103 @@
+{
+  "ticker": "ABNB",
+  "name": "에어비앤비",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "",
+  "current": {
+    "price": 189.99,
+    "pe": 35.6,
+    "divYield": 0,
+    "eps": 5.33
+  },
+  "fullPeriod": {
+    "start_date": "2020-12-10",
+    "end_date": "2026-11-06",
+    "start_price": 144.71,
+    "end_price": 189.99,
+    "years": 5.9,
+    "cagr": 4.72,
+    "multiple": 1.3129
+  },
+  "stats": {
+    "n": 0,
+    "min": null,
+    "minBuy": "",
+    "median": null,
+    "mean": null,
+    "max": null,
+    "maxBuy": "",
+    "over10": null,
+    "over15": null,
+    "over20": null,
+    "losses": 0,
+    "beatBench": null,
+    "beatTotal": null
+  },
+  "rows10y": [
+    {
+      "buyYear": 2020,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 5.8,
+      "cagr": 4.51,
+      "multiple": 1.29,
+      "isComplete": false,
+      "benchCagr": 13.84,
+      "diff": -9.33
+    },
+    {
+      "buyYear": 2021,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 4.8,
+      "cagr": 2.76,
+      "multiple": 1.14,
+      "isComplete": false,
+      "benchCagr": 10.99,
+      "diff": -8.23
+    },
+    {
+      "buyYear": 2022,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 3.9,
+      "cagr": 23.05,
+      "multiple": 2.22,
+      "isComplete": false,
+      "benchCagr": 20.11,
+      "diff": 2.94
+    },
+    {
+      "buyYear": 2023,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 2.9,
+      "cagr": 12.41,
+      "multiple": 1.4,
+      "isComplete": false,
+      "benchCagr": 18.01,
+      "diff": -5.61
+    },
+    {
+      "buyYear": 2024,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 1.9,
+      "cagr": 22.08,
+      "multiple": 1.45,
+      "isComplete": false,
+      "benchCagr": 14.4,
+      "diff": 7.67
+    }
+  ],
+  "loss5y": [
+    {
+      "buyYear": 2020,
+      "sellYear": 2025,
+      "cagr": -1.56
+    }
+  ],
+  "epsDecomp": [],
+  "epsNote": "EPS 데이터 미수집"
+}
