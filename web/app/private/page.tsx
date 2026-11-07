@@ -1791,11 +1791,12 @@ function OverviewTable({
 
   function SortIcon({ col }: { col: SortKey }) {
     const ri = sortStack.findIndex(x => x.field === col)
-    if (ri < 0) return <span className="ml-0.5 opacity-30">↕</span>
+    // 표시 자리 폭을 항상 같게 고정 — 정렬을 바꿔도 칸 너비가 변하지 않게(순위 숫자는 화살표 위에 겹쳐 띄움)
+    if (ri < 0) return <span className="ml-0.5 inline-block w-2.5 text-center opacity-30">↕</span>
     return (
-      <span className="ml-0.5 text-blue-500 inline-flex items-center gap-0.5">
+      <span className="ml-0.5 relative inline-block w-2.5 text-center text-blue-500 text-[10px]">
         {sortStack[ri].asc ? '▲' : '▼'}
-        {sortStack.length > 1 && <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-blue-500 text-white text-[9px] leading-none">{ri + 1}</span>}
+        {sortStack.length > 1 && <span className="absolute -top-2 -right-2 inline-flex items-center justify-center w-3 h-3 rounded-full bg-blue-500 text-white text-[8px] leading-none pointer-events-none">{ri + 1}</span>}
       </span>
     )
   }
