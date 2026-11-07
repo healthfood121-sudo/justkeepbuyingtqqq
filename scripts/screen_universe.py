@@ -1,8 +1,9 @@
 """
-screen_universe.py — 나스닥 상장·러셀2000·나스닥100 종목에서 '숨은 알짜'를 숫자로 1차 선별
+screen_universe.py — 미국 상장 전 종목(나스닥·뉴욕 등, 러셀2000·나스닥100 표시)에서 '숨은 알짜'를 숫자로 1차 선별
 
 데이터 (모두 무료·공개, 샌드박스에서 접속 불가 → GitHub Actions 'screen-universe'에서 실행)
-  - 종목 목록: nasdaqtrader.com 나스닥 상장 목록, iShares IWM(러셀2000) 보유 종목, Invesco QQQ(나스닥100) 보유 종목
+  - 종목 목록: nasdaqtrader.com 나스닥·기타 상장 목록, iShares IWM 또는 뱅가드 VTWO(러셀2000 표시), 저장소 나스닥100 보유 종목 파일
+  - 업종: SEC 회사 정보 SIC 코드
   - 재무: SEC XBRL frames API (항목·연도별로 전 회사 값을 한 번에 받음 — 회사별 요청 대신 약 200번 요청)
   - 주가: Yahoo Finance 월간 수정주가(배당 포함)
 
@@ -63,12 +64,45 @@ def nasdaq_listed():
     return out
 
 
+def other_listed():
+    """뉴욕증권거래소·NYSE American 등 (나스닥 외) 상장 보통주"""
+    r = get("https://www.nasdaqtrader.com/dynamic/SymDir/otherlisted.txt", WEB_UA)
+    out = {}
+    if not r:
+        return out
+    for ln in r.text.splitlines()[1:]:
+        f = ln.split("|")
+        if len(f) < 8 or f[0].startswith("File Creation"):
+            continue
+        sym, name, etf, test = f[0], f[1], f[4], f[6]
+        if test == "Y" or etf == "Y" or "$" in sym:
+            continue
+        low = name.lower()
+        if any(w in low for w in ("warrant", " unit", " right", "preferred", "depositary", "notes due", "%")):
+            continue
+        out[sym] = name
+    print("other listed", len(out), flush=True)
+    return out
+
+
 def russell2000():
     url = ("https://www.ishares.com/us/products/239710/ishares-russell-2000-etf/1467271812596.ajax"
            "?fileType=csv&fileName=IWM_holdings&dataType=fund")
-    r = get(url, WEB_UA)
     out = {}
-    if not r:
+    h = {**WEB_UA, "Accept": "text/csv,application/octet-stream,*/*",
+         "Referer": "https://www.ishares.com/us/products/239710/ishares-russell-2000-etf"}
+    r = get(url, h)
+    if r is None or "<html" in r.text[:500].lower():
+        # 대안: 뱅가드 러셀2000 ETF(VTWO) 보유 종목
+        try:
+            j = get("https://investor.vanguard.com/investment-products/etfs/profile/api/VTWO/portfolio-holding/stock", WEB_UA).json()
+            for it in j.get("fund", {}).get("entity", []):
+                t = (it.get("ticker") or "").strip()
+                if t:
+                    out[t] = (it.get("longName") or "", it.get("sectorName") or "")
+        except Exception as e:
+            print("VTWO err", e, flush=True)
+        print("russell2000 (vanguard)", len(out), flush=True)
         return out
     lines = r.text.splitlines()
     hdr = next((i for i, l in enumerate(lines) if l.startswith("Ticker,")), None)
@@ -86,15 +120,10 @@ def russell2000():
 
 
 def nasdaq100():
-    r = get("https://dng-api.invesco.com/cache/v1/accounts/en_US/shareclasses/QQQ/holdings/fund", WEB_UA)
-    out = set()
-    try:
-        for h in r.json().get("holdings", []):
-            t = (h.get("ticker") or "").strip()
-            if t:
-                out.add(t)
-    except Exception as e:
-        print("ndx err", e, flush=True)
+    """저장소의 나스닥100 보유 종목 파일(update_nasdaq100_holdings.py가 갱신)에서 읽는다"""
+    import re
+    src = (ROOT / "web" / "app" / "nasdaq100-holdings" / "data.ts").read_text()
+    out = {t for t, typ in re.findall(r"ticker: '([A-Z.\-]+)'.*?type: '(\w+)'", src, re.S) if typ == "stock"}
     print("nasdaq100", len(out), flush=True)
     return out
 
@@ -120,6 +149,29 @@ def series(concepts, unit, instant=False, tax="us-gaap"):
     return out
 
 
+SIC2 = {"01": "농업", "10": "금속 광업", "12": "석탄", "13": "석유·가스", "14": "광물", "15": "건설", "16": "건설", "17": "건설",
+        "20": "식품", "21": "담배", "22": "섬유", "23": "의류", "24": "목재", "25": "가구", "26": "종이·포장", "27": "인쇄·출판",
+        "28": "화학·제약", "29": "정유", "30": "고무·플라스틱", "31": "가죽·신발", "32": "유리·시멘트", "33": "철강·금속",
+        "34": "금속 제품", "35": "기계·컴퓨터", "36": "전자·반도체", "37": "운송 장비", "38": "계측·의료기기", "39": "기타 제조",
+        "40": "철도", "42": "트럭 운송", "44": "해운", "45": "항공", "47": "운송 서비스", "48": "통신", "49": "유틸리티",
+        "50": "도매", "51": "도매", "52": "소매(건자재)", "53": "소매(종합)", "54": "소매(식품)", "55": "소매(자동차)",
+        "56": "소매(의류)", "57": "소매(가구)", "58": "외식", "59": "소매(기타)", "60": "은행", "61": "대출", "62": "증권·거래소",
+        "63": "보험", "64": "보험 중개", "65": "부동산", "67": "지주·리츠", "70": "숙박", "72": "개인 서비스",
+        "73": "소프트웨어·IT 서비스", "75": "자동차 서비스", "78": "영화·오락", "79": "오락·레저", "80": "의료 서비스",
+        "82": "교육", "83": "사회 서비스", "87": "엔지니어링·연구·컨설팅", "99": "기타"}
+
+
+def sic_kr(sic):
+    s = str(sic or "")
+    if s == "2834" or s == "2836":
+        return "제약·바이오"
+    if s in ("3674",):
+        return "반도체"
+    if s in ("7372", "7370", "7371", "7373", "7374"):
+        return "소프트웨어·IT 서비스"
+    return SIC2.get(s[:2], "")
+
+
 def cagr(a, b, n):
     if a is None or b is None or a <= 0 or b <= 0 or n <= 0:
         return None
@@ -132,6 +184,7 @@ def clip(x, lo=0.0, hi=1.0):
 
 def main():
     nq = nasdaq_listed()
+    ol = other_listed()
     r2k = russell2000()
     ndx = nasdaq100()
     in_private = {f.stem.replace("_rolling", "") for f in ROLL.glob("*_rolling.json")}
@@ -139,6 +192,8 @@ def main():
     uni = {}
     for t, nm in nq.items():
         uni[t] = {"name": nm, "sec": "", "f": "Q"}
+    for t, nm in ol.items():
+        uni.setdefault(t, {"name": nm, "sec": "", "f": "Y"})
     for t, (nm, sec) in r2k.items():
         u = uni.setdefault(t, {"name": nm, "sec": "", "f": ""})
         u["sec"] = sec
@@ -261,6 +316,20 @@ def main():
                         sc=r["sc"], yrs=r["yrs"], py=r["py"], rg=rd(r["rg"]), eg=rd(r["eg"]), roic=rd(r["roic"]),
                         fpy=rd(r["fpy"], 2), fcfm=rd(r["fcfm"]), nd=rd(r["nd"], 2), nc=r["netcash"], dil=rd(r["dil"]),
                         pe=rd(pe, 1), fy=rd(fyld), pc=rd(pc), xs=rd(xs), sp=round(span, 1), fyr=r["_last"]))
+    # 업종: SEC 회사 정보(SIC 코드) — 시가총액 조건을 통과한 회사만 조회
+    for i, o in enumerate(out):
+        cik = rows[o["t"]]["cik"]
+        r = get(f"https://data.sec.gov/submissions/CIK{cik:010d}.json")
+        time.sleep(0.11)
+        if r:
+            j = r.json()
+            o["sic"] = j.get("sic") or ""
+            o["sicd"] = (j.get("sicDescription") or "")[:60]
+            o["ind"] = sic_kr(o["sic"])
+            if not o["sec"]:
+                o["sec"] = o["ind"]
+        if i % 200 == 0:
+            print("  sic", i, "/", len(out), flush=True)
     out.sort(key=lambda x: -x["sc"])
     (OUT / "universe.json").write_text(json.dumps({
         "asOf": time.strftime("%Y-%m-%d"),

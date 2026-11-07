@@ -10,6 +10,7 @@ type Row = {
   yrs: number; py: number; rg: number | null; eg: number | null; roic: number | null
   fpy: number | null; fcfm: number | null; nd: number | null; nc: boolean; dil: number | null
   pe: number | null; fy: number | null; pc: number | null; xs: number | null; sp: number; fyr: number
+  sic?: string; sicd?: string; ind?: string
 }
 type Data = { asOf: string; minMcap: number; note: string; rows: Row[] }
 type Key = 'sc' | 'mc' | 'py' | 'rg' | 'eg' | 'roic' | 'fcfm' | 'nd' | 'dil' | 'pe' | 'fy' | 'pc' | 'xs'
@@ -41,7 +42,7 @@ const COLS: Array<{ k: Key; label: string; tip: string }> = [
 export default function ScreenPage() {
   const [data, setData] = useState<Data | null>(null)
   const [err, setErr] = useState(false)
-  const [idx, setIdx] = useState<'all' | 'R' | 'N' | 'Q'>('all')
+  const [idx, setIdx] = useState<'all' | 'R' | 'N' | 'Q' | 'Y'>('all')
   const [hidePriv, setHidePriv] = useState(true)
   const [minSc, setMinSc] = useState(60)
   const [sec, setSec] = useState('')
@@ -81,7 +82,7 @@ export default function ScreenPage() {
       <div>
         <h1 className="text-lg font-bold text-gray-900 dark:text-white">숨은 알짜 찾기</h1>
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-          나스닥 상장·러셀2000(미국 소형주)·나스닥100 종목 중 시가총액 3억 달러 이상인 회사를 10년 재무로 1차 선별했다.
+          미국 상장 전 종목(나스닥·뉴욕 등, 러셀2000·나스닥100 포함) 중 시가총액 3억 달러 이상인 회사를 10년 재무로 1차 선별했다.
           숫자만 본 순위라 사업의 질은 아직 판단 전 — 상위 종목은 하나씩 깊게 보고 &lsquo;위대한 기업&rsquo; 표에 추가한다.
           {data && <> · 기준일 {data.asOf} · {data.rows.length.toLocaleString()}개</>}
         </p>
@@ -102,6 +103,7 @@ export default function ScreenPage() {
           <option value="R">러셀2000</option>
           <option value="N">나스닥100</option>
           <option value="Q">나스닥 상장</option>
+          <option value="Y">뉴욕 등 기타 상장</option>
         </select>
         <select className={sel} value={minSc} onChange={e => setMinSc(Number(e.target.value))}>
           {[0, 50, 60, 70, 80].map(v => <option key={v} value={v}>점수 {v}점 이상</option>)}
@@ -145,7 +147,7 @@ export default function ScreenPage() {
                       {r.f.includes('N') && <span className="ml-1 text-[10px] text-gray-400">NDX100</span>}
                       {r.f.includes('S') && <span className="ml-1 text-[10px] text-blue-500">분석됨</span>}
                     </div>
-                    <div className="text-[10px] text-gray-400 truncate" title={r.n}>{r.n}{r.sec ? ` · ${r.sec}` : ''}</div>
+                    <div className="text-[10px] text-gray-400 truncate" title={`${r.n}${r.sicd ? ` — ${r.sicd}` : ''}`}>{r.n}{r.sec ? ` · ${r.sec}` : ''}</div>
                   </td>
                   <td className="text-right px-1.5 font-semibold">{r.sc.toFixed(0)}</td>
                   <td className="text-right px-1.5">{r.mc >= 10 ? r.mc.toFixed(0) : r.mc.toFixed(1)}</td>
