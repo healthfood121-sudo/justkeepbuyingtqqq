@@ -1080,3 +1080,8 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 - `generate_all_sp500.py` `SP500_INFO`에 ABNB 추가 → Actions 'update-rolling-annual'(only=ABNB)로 `scripts/data/rolling/ABNB_{10y,5y}_annual.csv`, `web/public/data/rolling/ABNB_rolling.json` 생성. 2020-12 상장이라 10년 완결 구간 0개.
 - 같은 날 `ABNB_monthly_price.json`(export-monthly-price), `fundamentals/ABNB.json`(export-fundamentals), 현금흐름(export-cashflow), `segments_raw/ABNB.json.gz`(export-segments keys=ABNB) → `segments/ABNB.json`(`process_segments.py ABNB`) 생성. 배당 없음이라 배당 분해는 만들지 않음.
 - 사업의 질 평가: `scripts/data/quality/quality.tsv`에 ABNB(B등급) 추가 → `build_quality_json.py` 재실행.
+
+#### VLTO·FTDR·U·CCSI·XMTR 종목 추가 (2026-11-07)
+- ABNB와 같은 절차: `generate_all_sp500.py` `SP500_INFO` 추가(S&P 500 밖 종목 포함, 순위 999) → 'update-rolling-annual'(only) → 'export-fundamentals' → 'export-cashflow' → 'export-segments'(keys) → `process_segments.py` → 'export-monthly-price'. 모두 상장·분사 10년 미만이라 10년 완결 구간 0개.
+- 설명: `web/app/sp500-holdings/descriptions.json`에 FTDR·U·CCSI·XMTR 추가(VLTO는 기존). 사업의 질: `quality.tsv`에 VLTO(B)·FTDR(C)·U(C)·CCSI(C)·XMTR(C).
+- XMTR은 분기 사업부·지역 공시가 없어 회사 전체 매출만. U 전체 매출엔 정리 중 사업이 섞여 회사 '전략 매출'과 다르다.
