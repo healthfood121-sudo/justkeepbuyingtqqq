@@ -7,7 +7,6 @@
 
 출력: web/public/data/resale/
 - hermes_daily.json    날짜별 대표 모델 희망가·웃돈·매물 수
-- hermes_snapshot.json 어제 매물 목록(팔림 판정용)
 - hermes_sold.json     매물이 사라진 기록(=팔린 것으로 간주) 최근 3000건
 - nike_daily.json      날짜별 할인 상품 비율·평균 할인율
 """
@@ -118,7 +117,7 @@ def hermes():
             if BASKET[k]["retail"]: d["prem"] = round(d["med"] / BASKET[k]["retail"], 3)
             keys[k][cond] = d
     # 팔림 판정: 어제 있던 매물이 오늘 없어지거나 품절로 바뀜
-    snap_p = OUT / "hermes_snapshot.json"
+    snap_p = Path("scripts/data/resale_snapshot.json")  # 배포 폴더 밖에 둠
     prev = json.loads(snap_p.read_text()) if snap_p.exists() else {"date": None, "items": []}
     now_live = {l["id"] for l in live}
     sold_today = []
@@ -135,7 +134,8 @@ def hermes():
     sold = json.loads(sold_p.read_text()) if sold_p.exists() else []
     sold = (sold + sold_today)[-3000:]
     sold_p.write_text(json.dumps(sold, ensure_ascii=False))
-    snap_p.write_text(json.dumps({"date": TODAY, "items": live}, ensure_ascii=False))
+    keep = ("id", "shop", "key", "cond", "price", "created")
+    snap_p.write_text(json.dumps({"date": TODAY, "items": [{f: l[f] for f in keep} for l in live]}, ensure_ascii=False, separators=(",", ":")))
     # 핵심 웃돈 지수: 정가가 확인된 5종의 새 가방 웃돈 중간값(매물 2개 이상인 모델만)
     prems = [keys[k]["new"]["prem"] for k in PREM_KEYS if "new" in keys[k] and keys[k]["new"]["n"] >= 2]
     day = {"date": TODAY, "keys": keys, "shops": shop_n,

@@ -7694,7 +7694,7 @@ function NikeMarkdownCard() {
   return (
     <div className={box}>
       <div className="flex items-baseline justify-between gap-2 flex-wrap">
-        <h4 className={h4}>나이키 공식몰 할인 추이 <span className="font-normal text-gray-400">· 미국 nike.com 전 상품</span></h4>
+        <h4 className={h4}>나이키 공식몰 할인 추이 <span className="font-normal text-gray-400">· 미국 nike.com 상품 약 2만 개</span></h4>
         <span className="text-[11px] text-gray-400">{last.date} 기준 · 기록 {days.length}일</span>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -7751,7 +7751,7 @@ function NikeMarkdownCard() {
         <p className={p}>· 블랙프라이데이(11월 말), 여름·연말 시즌 세일 때는 원래 크게 오른다. <b>작년 같은 시기와 비교</b>하거나 세일 끝난 뒤 얼마나 빨리 내려오는지를 본다.</p>
       </div>
       <p className="text-[11px] leading-relaxed text-gray-400 dark:text-gray-500">
-        출처: 미국 nike.com 공개 상품 목록(정가·판매가). 리셀가(StockX 등)는 무료로 가져올 수 없어 대신 공식몰 할인 정도로 재고 상태를 본다. 매장·도매 채널 할인은 포함되지 않는다.
+        출처: 미국 nike.com 공개 상품 목록(정가·판매가). 사이트가 한 번에 약 2만 개까지만 보여줘서 매일 같은 순서의 앞부분을 센다. 리셀가(StockX 등)는 무료로 가져올 수 없어 대신 공식몰 할인 정도로 재고 상태를 본다. 매장·도매 채널 할인은 포함되지 않는다.
       </p>
     </div>
   )
