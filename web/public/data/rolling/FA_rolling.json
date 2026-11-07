@@ -1,0 +1,86 @@
+{
+  "ticker": "FA",
+  "name": "퍼스트 어드밴티지",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "",
+  "current": {
+    "price": 23.53,
+    "pe": 94.1,
+    "divYield": 0,
+    "eps": 0.25
+  },
+  "fullPeriod": {
+    "start_date": "2021-06-23",
+    "end_date": "2026-11-06",
+    "start_price": 17.7418,
+    "end_price": 23.53,
+    "years": 5.4,
+    "cagr": 5.4,
+    "multiple": 1.3263
+  },
+  "stats": {
+    "n": 0,
+    "min": null,
+    "minBuy": "",
+    "median": null,
+    "mean": null,
+    "max": null,
+    "maxBuy": "",
+    "over10": null,
+    "over15": null,
+    "over20": null,
+    "losses": 0,
+    "beatBench": null,
+    "beatTotal": null
+  },
+  "rows10y": [
+    {
+      "buyYear": 2021,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 4.8,
+      "cagr": 6.74,
+      "multiple": 1.37,
+      "isComplete": false,
+      "benchCagr": 10.99,
+      "diff": -4.25
+    },
+    {
+      "buyYear": 2022,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 3.9,
+      "cagr": 19.88,
+      "multiple": 2.01,
+      "isComplete": false,
+      "benchCagr": 20.11,
+      "diff": -0.23
+    },
+    {
+      "buyYear": 2023,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 2.9,
+      "cagr": 13.09,
+      "multiple": 1.42,
+      "isComplete": false,
+      "benchCagr": 18.01,
+      "diff": -4.92
+    },
+    {
+      "buyYear": 2024,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 1.9,
+      "cagr": 13.14,
+      "multiple": 1.26,
+      "isComplete": false,
+      "benchCagr": 14.4,
+      "diff": -1.26
+    }
+  ],
+  "loss5y": [],
+  "epsDecomp": [],
+  "epsNote": "EPS 데이터 미수집"
+}
