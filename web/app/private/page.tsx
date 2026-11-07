@@ -123,10 +123,12 @@ import cofData        from '@/public/data/rolling/COF_rolling.json'
 import cooData        from '@/public/data/rolling/COO_rolling.json'
 import copData        from '@/public/data/rolling/COP_rolling.json'
 import corData        from '@/public/data/rolling/COR_rolling.json'
+import cortData       from '@/public/data/rolling/CORT_rolling.json'
 import costData       from '@/public/data/rolling/COST_rolling.json'
 import cpayData       from '@/public/data/rolling/CPAY_rolling.json'
 import cprtData       from '@/public/data/rolling/CPRT_rolling.json'
 import cptData        from '@/public/data/rolling/CPT_rolling.json'
+import craiData       from '@/public/data/rolling/CRAI_rolling.json'
 import crlData        from '@/public/data/rolling/CRL_rolling.json'
 import crmData        from '@/public/data/rolling/CRM_rolling.json'
 import cscoData       from '@/public/data/rolling/CSCO_rolling.json'
@@ -196,6 +198,7 @@ import fisvData       from '@/public/data/rolling/FISV_rolling.json'
 import fitbData       from '@/public/data/rolling/FITB_rolling.json'
 import fixData        from '@/public/data/rolling/FIX_rolling.json'
 import flexData       from '@/public/data/rolling/FLEX_rolling.json'
+import fnData         from '@/public/data/rolling/FN_rolling.json'
 import frtData        from '@/public/data/rolling/FRT_rolling.json'
 import fslrData       from '@/public/data/rolling/FSLR_rolling.json'
 import ftdrData       from '@/public/data/rolling/FTDR_rolling.json'
@@ -235,8 +238,10 @@ import hubbData       from '@/public/data/rolling/HUBB_rolling.json'
 import humData        from '@/public/data/rolling/HUM_rolling.json'
 import ibkrData       from '@/public/data/rolling/IBKR_rolling.json'
 import ibmData        from '@/public/data/rolling/IBM_rolling.json'
+import ibpData        from '@/public/data/rolling/IBP_rolling.json'
 import iceData        from '@/public/data/rolling/ICE_rolling.json'
 import idxxData       from '@/public/data/rolling/IDXX_rolling.json'
+import iescData       from '@/public/data/rolling/IESC_rolling.json'
 import iexData        from '@/public/data/rolling/IEX_rolling.json'
 import iffData        from '@/public/data/rolling/IFF_rolling.json'
 import ilmnData       from '@/public/data/rolling/ILMN_rolling.json'
@@ -292,6 +297,8 @@ import mckData        from '@/public/data/rolling/MCK_rolling.json'
 import mcoData        from '@/public/data/rolling/MCO_rolling.json'
 import mdlzData       from '@/public/data/rolling/MDLZ_rolling.json'
 import mdtData        from '@/public/data/rolling/MDT_rolling.json'
+import medpData       from '@/public/data/rolling/MEDP_rolling.json'
+import meliData       from '@/public/data/rolling/MELI_rolling.json'
 import metData        from '@/public/data/rolling/MET_rolling.json'
 import metaData       from '@/public/data/rolling/META_rolling.json'
 import mgmData        from '@/public/data/rolling/MGM_rolling.json'
@@ -325,6 +332,7 @@ import nocData        from '@/public/data/rolling/NOC_rolling.json'
 import nowData        from '@/public/data/rolling/NOW_rolling.json'
 import nrgData        from '@/public/data/rolling/NRG_rolling.json'
 import nscData        from '@/public/data/rolling/NSC_rolling.json'
+import nsscData       from '@/public/data/rolling/NSSC_rolling.json'
 import ntapData       from '@/public/data/rolling/NTAP_rolling.json'
 import ntrsData       from '@/public/data/rolling/NTRS_rolling.json'
 import nueData        from '@/public/data/rolling/NUE_rolling.json'
@@ -369,6 +377,7 @@ import ptcData        from '@/public/data/rolling/PTC_rolling.json'
 import pwrData        from '@/public/data/rolling/PWR_rolling.json'
 import pyplData       from '@/public/data/rolling/PYPL_rolling.json'
 import qcomData       from '@/public/data/rolling/QCOM_rolling.json'
+import qlysData       from '@/public/data/rolling/QLYS_rolling.json'
 import rclData        from '@/public/data/rolling/RCL_rolling.json'
 import regData        from '@/public/data/rolling/REG_rolling.json'
 import regnData       from '@/public/data/rolling/REGN_rolling.json'
@@ -389,6 +398,7 @@ import sbuxData       from '@/public/data/rolling/SBUX_rolling.json'
 import schwData       from '@/public/data/rolling/SCHW_rolling.json'
 import shwData        from '@/public/data/rolling/SHW_rolling.json'
 import sjmData        from '@/public/data/rolling/SJM_rolling.json'
+import skyData        from '@/public/data/rolling/SKY_rolling.json'
 import slbData        from '@/public/data/rolling/SLB_rolling.json'
 import smciData       from '@/public/data/rolling/SMCI_rolling.json'
 import snaData        from '@/public/data/rolling/SNA_rolling.json'
@@ -435,6 +445,7 @@ import uData          from '@/public/data/rolling/U_rolling.json'
 import ualData        from '@/public/data/rolling/UAL_rolling.json'
 import udrData        from '@/public/data/rolling/UDR_rolling.json'
 import uhsData        from '@/public/data/rolling/UHS_rolling.json'
+import uiData         from '@/public/data/rolling/UI_rolling.json'
 import ultaData       from '@/public/data/rolling/ULTA_rolling.json'
 import unhData        from '@/public/data/rolling/UNH_rolling.json'
 import unpData        from '@/public/data/rolling/UNP_rolling.json'
@@ -470,6 +481,7 @@ import wynnData       from '@/public/data/rolling/WYNN_rolling.json'
 import xelData        from '@/public/data/rolling/XEL_rolling.json'
 import xmtrData       from '@/public/data/rolling/XMTR_rolling.json'
 import xomData        from '@/public/data/rolling/XOM_rolling.json'
+import xpelData       from '@/public/data/rolling/XPEL_rolling.json'
 import xylData        from '@/public/data/rolling/XYL_rolling.json'
 import yumData        from '@/public/data/rolling/YUM_rolling.json'
 import zbhData        from '@/public/data/rolling/ZBH_rolling.json'
@@ -597,10 +609,12 @@ const STOCKS: Array<{ key: string; data: StockData }> = [
   { key: 'COO',      data: cooData        as unknown as StockData },
   { key: 'COP',      data: copData        as unknown as StockData },
   { key: 'COR',      data: corData        as unknown as StockData },
+  { key: 'CORT',     data: cortData       as unknown as StockData },
   { key: 'COST',     data: costData       as unknown as StockData },
   { key: 'CPAY',     data: cpayData       as unknown as StockData },
   { key: 'CPRT',     data: cprtData       as unknown as StockData },
   { key: 'CPT',      data: cptData        as unknown as StockData },
+  { key: 'CRAI',     data: craiData       as unknown as StockData },
   { key: 'CRL',      data: crlData        as unknown as StockData },
   { key: 'CRM',      data: crmData        as unknown as StockData },
   { key: 'CSCO',     data: cscoData       as unknown as StockData },
@@ -670,6 +684,7 @@ const STOCKS: Array<{ key: string; data: StockData }> = [
   { key: 'FITB',     data: fitbData       as unknown as StockData },
   { key: 'FIX',      data: fixData        as unknown as StockData },
   { key: 'FLEX',     data: flexData       as unknown as StockData },
+  { key: 'FN',       data: fnData         as unknown as StockData },
   { key: 'FRT',      data: frtData        as unknown as StockData },
   { key: 'FSLR',     data: fslrData       as unknown as StockData },
   { key: 'FTDR',     data: ftdrData       as unknown as StockData },
@@ -709,8 +724,10 @@ const STOCKS: Array<{ key: string; data: StockData }> = [
   { key: 'HUM',      data: humData        as unknown as StockData },
   { key: 'IBKR',     data: ibkrData       as unknown as StockData },
   { key: 'IBM',      data: ibmData        as unknown as StockData },
+  { key: 'IBP',      data: ibpData        as unknown as StockData },
   { key: 'ICE',      data: iceData        as unknown as StockData },
   { key: 'IDXX',     data: idxxData       as unknown as StockData },
+  { key: 'IESC',     data: iescData       as unknown as StockData },
   { key: 'IEX',      data: iexData        as unknown as StockData },
   { key: 'IFF',      data: iffData        as unknown as StockData },
   { key: 'ILMN',     data: ilmnData       as unknown as StockData },
@@ -766,6 +783,8 @@ const STOCKS: Array<{ key: string; data: StockData }> = [
   { key: 'MCO',      data: mcoData        as unknown as StockData },
   { key: 'MDLZ',     data: mdlzData       as unknown as StockData },
   { key: 'MDT',      data: mdtData        as unknown as StockData },
+  { key: 'MEDP',     data: medpData       as unknown as StockData },
+  { key: 'MELI',     data: meliData       as unknown as StockData },
   { key: 'MET',      data: metData        as unknown as StockData },
   { key: 'META',     data: metaData       as unknown as StockData },
   { key: 'MGM',      data: mgmData        as unknown as StockData },
@@ -798,6 +817,7 @@ const STOCKS: Array<{ key: string; data: StockData }> = [
   { key: 'NOW',      data: nowData        as unknown as StockData },
   { key: 'NRG',      data: nrgData        as unknown as StockData },
   { key: 'NSC',      data: nscData        as unknown as StockData },
+  { key: 'NSSC',     data: nsscData       as unknown as StockData },
   { key: 'NTAP',     data: ntapData       as unknown as StockData },
   { key: 'NTRS',     data: ntrsData       as unknown as StockData },
   { key: 'NUE',      data: nueData        as unknown as StockData },
@@ -842,6 +862,7 @@ const STOCKS: Array<{ key: string; data: StockData }> = [
   { key: 'PWR',      data: pwrData        as unknown as StockData },
   { key: 'PYPL',     data: pyplData       as unknown as StockData },
   { key: 'QCOM',     data: qcomData       as unknown as StockData },
+  { key: 'QLYS',     data: qlysData       as unknown as StockData },
   { key: 'RCL',      data: rclData        as unknown as StockData },
   { key: 'REG',      data: regData        as unknown as StockData },
   { key: 'REGN',     data: regnData       as unknown as StockData },
@@ -861,6 +882,7 @@ const STOCKS: Array<{ key: string; data: StockData }> = [
   { key: 'SCHW',     data: schwData       as unknown as StockData },
   { key: 'SHW',      data: shwData        as unknown as StockData },
   { key: 'SJM',      data: sjmData        as unknown as StockData },
+  { key: 'SKY',      data: skyData        as unknown as StockData },
   { key: 'SLB',      data: slbData        as unknown as StockData },
   { key: 'SMCI',     data: smciData       as unknown as StockData },
   { key: 'SNA',      data: snaData        as unknown as StockData },
@@ -907,6 +929,7 @@ const STOCKS: Array<{ key: string; data: StockData }> = [
   { key: 'UAL',      data: ualData        as unknown as StockData },
   { key: 'UDR',      data: udrData        as unknown as StockData },
   { key: 'UHS',      data: uhsData        as unknown as StockData },
+  { key: 'UI',       data: uiData         as unknown as StockData },
   { key: 'ULTA',     data: ultaData       as unknown as StockData },
   { key: 'UNH',      data: unhData        as unknown as StockData },
   { key: 'UNP',      data: unpData        as unknown as StockData },
@@ -942,6 +965,7 @@ const STOCKS: Array<{ key: string; data: StockData }> = [
   { key: 'XEL',      data: xelData        as unknown as StockData },
   { key: 'XMTR',     data: xmtrData       as unknown as StockData },
   { key: 'XOM',      data: xomData        as unknown as StockData },
+  { key: 'XPEL',     data: xpelData       as unknown as StockData },
   { key: 'XYL',      data: xylData        as unknown as StockData },
   { key: 'YUM',      data: yumData        as unknown as StockData },
   { key: 'ZBH',      data: zbhData        as unknown as StockData },
