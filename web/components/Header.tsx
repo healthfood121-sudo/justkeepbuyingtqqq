@@ -16,6 +16,7 @@ export default function Header({ maxWidth = 'max-w-6xl', activePage }: HeaderPro
   const isPrivate = pathname.startsWith('/private')
   const privTabs: Array<[string, string, string]> = [
     ['/private', '위대한 기업', '위대한 기업'],
+    ['/private/screen', '숨은 알짜', '숨은 알짜 찾기'],
     ['/private/kostolany', '코스톨라니', '코스톨라니 달걀'],
     ['/private/howard-marks', '하워드 막스', '하워드 막스'],
   ]
