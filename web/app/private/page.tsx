@@ -1641,10 +1641,8 @@ function OverviewTable({
   activeStock: number
   setActiveStock: (i: number) => void
 }) {
-  const [sortKey, setSortKey] = useState<SortKey>('diffMn')
-  const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc')
-  // 2·3차 정렬: 전에 1차였던 열들(최근 것부터). 1차 값이 같을 때 차례로 이 열들로 순서를 정한다
-  const [sortRest, setSortRest] = useState<Array<{ k: SortKey; d: 'desc' | 'asc' }>>([])
+  // 정렬 순서: 먼저 누른 열이 1차, 다음이 2차… (헤더 클릭: 오름차순 ▲ → 내림차순 ▼ → 해제)
+  const [sortStack, setSortStack] = useState<Array<{ field: SortKey; asc: boolean }>>([{ field: 'diffMn', asc: false }])
   const [search, setSearch] = useState('')
   const [viewMode, setViewMode] = useState<'all' | 'starred'>('all')
   const [starred, setStarred] = useState<Set<string>>(new Set())
@@ -1706,9 +1704,8 @@ function OverviewTable({
     try {
       // 예전에 저장된 필터 값은 쓰지 않는다(정렬만 기억)
       const f = JSON.parse(localStorage.getItem('private_filters') ?? '{}')
-      if (f.sortKey) setSortKey(f.sortKey)
-      if (f.sortDir) setSortDir(f.sortDir)
-      if (Array.isArray(f.sortRest)) setSortRest(f.sortRest.filter((x: any) => x?.k).slice(0, 2))
+      if (Array.isArray(f.sortStack)) setSortStack(f.sortStack.filter((x: any) => x?.field))
+      else if (f.sortKey) setSortStack([{ field: f.sortKey, asc: f.sortDir === 'asc' }]) // 예전 저장 형식
     } catch {}
     try {
       const p = JSON.parse(localStorage.getItem('private_presets') ?? '[]')
@@ -1717,8 +1714,8 @@ function OverviewTable({
   }, [])
 
   useEffect(() => {
-    try { localStorage.setItem('private_filters', JSON.stringify({ sortKey, sortDir, sortRest })) } catch {}
-  }, [sortKey, sortDir, sortRest])
+    try { localStorage.setItem('private_filters', JSON.stringify({ sortStack })) } catch {}
+  }, [sortStack])
 
   function currentFilterSnapshot() { return F }
 
@@ -1757,26 +1754,30 @@ function OverviewTable({
     })
   }
 
+  // 1번 클릭: 맨 뒤에 오름차순으로 추가 → 2번: 내림차순 → 3번: 정렬에서 뺌
   function handleSort(key: SortKey) {
-    if (sortKey === key) {
-      setSortDir(d => d === 'desc' ? 'asc' : 'desc')
-    } else {
-      // 지금 1차를 2차로, 2차를 3차로 내리고 새 열을 1차로(같은 열이 겹치면 빼고, 최대 3단계)
-      setSortRest(r => [{ k: sortKey, d: sortDir }, ...r.filter(x => x.k !== key && x.k !== sortKey)].slice(0, 2))
-      setSortKey(key)
-      setSortDir('desc')
-    }
+    setSortStack(st => {
+      const cur = st.find(x => x.field === key)
+      if (!cur) return [...st, { field: key, asc: true }]
+      if (cur.asc) return st.map(x => x.field === key ? { field: key, asc: false } : x)
+      return st.filter(x => x.field !== key)
+    })
   }
 
   function colBg(col: SortKey) {
-    return sortKey === col ? 'bg-blue-50 dark:bg-blue-900/25' : ''
+    const ri = sortStack.findIndex(x => x.field === col)
+    return ri === 0 ? 'bg-blue-50 dark:bg-blue-900/25' : ri > 0 ? 'bg-blue-50/50 dark:bg-blue-900/10' : ''
   }
 
   function SortIcon({ col }: { col: SortKey }) {
-    const ri = sortKey !== col ? sortRest.findIndex(x => x.k === col) : -1
-    if (ri >= 0) return <span className="ml-0.5 text-blue-400 text-[10px]">{sortRest[ri].d === 'desc' ? '↓' : '↑'}{ri + 2}</span>
-    if (sortKey !== col) return <span className="ml-0.5 opacity-30">↕</span>
-    return <span className="ml-0.5 text-blue-500">{sortDir === 'desc' ? '↓' : '↑'}</span>
+    const ri = sortStack.findIndex(x => x.field === col)
+    if (ri < 0) return <span className="ml-0.5 opacity-30">↕</span>
+    return (
+      <span className="ml-0.5 text-blue-500 inline-flex items-center gap-0.5">
+        {sortStack[ri].asc ? '▲' : '▼'}
+        {sortStack.length > 1 && <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-blue-500 text-white text-[9px] leading-none">{ri + 1}</span>}
+      </span>
+    )
   }
 
   function SortTh({ col, children, className }: { col: SortKey; children: React.ReactNode; className?: string }) {
@@ -1850,9 +1851,8 @@ function OverviewTable({
       if (va == null || vb == null) return va == null && vb == null ? 0 : va == null ? 1 : -1 // 빈 값은 방향과 상관없이 맨 아래
       return d === 'desc' ? vb - va : va - vb
     }
-    let c = cmp(sortKey, sortDir)
-    for (const x of sortRest) { if (c) break; if (x.k !== sortKey) c = cmp(x.k, x.d) }
-    return c
+    for (const x of sortStack) { const c = cmp(x.field, x.asc ? 'asc' : 'desc'); if (c) return c }
+    return a.i - b.i // 정렬을 다 풀면 원래 순서
   })
 
   // 검색어가 있으면 필터·즐겨찾기 보기를 잠시 무시하고 전체에서 찾는다(검색해도 안 나오는 문제 방지)
@@ -2168,12 +2168,12 @@ function OverviewTable({
         )
       })()}
 
-      {/* 정렬 상태: 마지막에 누른 열 = 1차, 그 전 열 = 2차 */}
+      {/* 정렬 상태: 먼저 누른 열 = 1차, 다음 = 2차 … */}
       <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">
-        정렬: <b className="text-gray-600 dark:text-gray-300">{SORT_LABEL[sortKey]} {sortDir === 'desc' ? '높은 순' : '낮은 순'}</b>
-        {sortRest.filter(x => x.k !== sortKey).map((x, i) => <span key={x.k}>, {i === 0 ? '같으면' : '그래도 같으면'} <b className="text-gray-600 dark:text-gray-300">{SORT_LABEL[x.k]} {x.d === 'desc' ? '높은 순' : '낮은 순'}</b></span>)}
-        {sortRest.length > 0 && <button type="button" onClick={() => setSortRest([])} className="ml-1.5 underline hover:text-gray-600 dark:hover:text-gray-300">2·3차 끄기</button>}
-        <span className="ml-2 opacity-80">· 열을 차례로 누르면 마지막에 누른 열이 1차, 그 전이 2차, 그 전전이 3차(같은 열을 다시 누르면 방향만 바뀜)</span>
+        정렬: {sortStack.length === 0 ? <b className="text-gray-600 dark:text-gray-300">없음(기본 순서)</b>
+          : sortStack.map((x, i) => <span key={x.field}>{i > 0 && ' → '}<b className="text-gray-600 dark:text-gray-300">{sortStack.length > 1 ? `${i + 1}. ` : ''}{SORT_LABEL[x.field]} {x.asc ? '낮은 순' : '높은 순'}</b></span>)}
+        {sortStack.length > 0 && <button type="button" onClick={() => setSortStack([])} className="ml-1.5 underline hover:text-gray-600 dark:hover:text-gray-300">정렬 모두 해제</button>}
+        <span className="ml-2 opacity-80">· 열 제목을 누를 때마다 ▲ 낮은 순 → ▼ 높은 순 → 해제. 여러 열을 누르면 먼저 누른 열이 1순위(동그라미 숫자)</span>
       </p>
       {/* 넓은 화면에서는 스크롤 상자를 끈다(종목·제목 말풍선이 잘리지 않게). 좁은 화면에서만 옆으로 밀기 */}
       <div className="overflow-x-auto md:overflow-visible">
