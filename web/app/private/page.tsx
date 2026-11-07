@@ -7617,11 +7617,12 @@ function HermesResaleCard() {
   let chart: ReactNode
   if (sel === 'ALL') {
     const ss = days.map(d => premSummary(d, premKeys))
-    chart = <TrendChart key="ALL" labels={labels} yFmt={bx} series={[
-      { label: '평균', data: ss.map(s => s?.avg ?? null), color: 'rgba(234,88,12,0.95)' },
-      { label: '중간값', data: ss.map(s => s?.med ?? null), color: 'rgba(37,99,235,0.85)' },
-      { label: '최고', data: ss.map(s => s?.hi.v ?? null), color: 'rgba(220,38,38,0.6)', dash: true },
-      { label: '최저', data: ss.map(s => s?.lo.v ?? null), color: 'rgba(107,114,128,0.7)', dash: true },
+    chart = <TrendChart key="ALL" labels={labels} yFmt={bx} y2Fmt={v => `${Math.round(v)}개`} height={260} series={[
+      { label: '평균 웃돈', data: ss.map(s => s?.avg ?? null), color: 'rgba(234,88,12,0.95)' },
+      { label: '최고', data: ss.map(s => s?.hi.v ?? null), color: 'rgba(220,38,38,0.55)', dash: true },
+      { label: '최저', data: ss.map(s => s?.lo.v ?? null), color: 'rgba(234,88,12,0.4)', dash: true },
+      { label: '새 가방 매물(오른쪽)', data: days.map(d => d.listed.new), color: 'rgba(37,99,235,0.8)', axis: 'y2' },
+      { label: '중고 매물(오른쪽)', data: days.map(d => d.listed.pre), color: 'rgba(107,114,128,0.7)', axis: 'y2' },
     ]} />
   } else {
     const b = basket[sel]
@@ -7713,6 +7714,7 @@ function HermesResaleCard() {
         <p className="text-xs font-semibold text-amber-800 dark:text-amber-300">읽는 법</p>
         <p className={p}>· <b>웃돈</b> = 매장에서 새로 산 가방을 되파는 가격 ÷ 매장 정가. 1.5배면 정가보다 50% 비싸게 내놓는다는 뜻. 매장에서 못 사서 웃돈을 주고라도 사려는 수요가 얼마나 남았는지 보여준다.</p>
         <p className={p}>· <b>종합은 평균을 주로 본다.</b> 중간값은 그날 가운데 있는 모델 하나의 값이라 기준 모델이 바뀌면 선이 튈 수 있다. 평균은 5종이 모두 반영돼 흐름이 매끄럽다. 최고·최저는 인기 모델(보통 미니 켈리·버킨 25)과 덜 인기 모델의 차이 — 이 간격이 벌어지면 수요가 일부 모델에만 몰리는 것.</p>
+        <p className={p}>· <b>매물 수</b>: 새 가방 매물은 매장에서 산 사람이 바로 되파는 물량이다. 웃돈이 그대로인데 새 가방 매물이 늘면, 판매자는 많은데 가격을 아직 안 내린 것이라 몇 주 뒤 웃돈이 빠질 수 있다(가격보다 매물이 먼저 움직인다). 중고 매물이 늘면 기존 소유자가 팔고 나오는 것 — 경기가 나쁠 때 늘어난다. 매장이 상품 목록을 한꺼번에 정리하는 날은 갑자기 튈 수 있다.</p>
         <p className={p}>· <b>좋은 신호</b>: 웃돈이 유지되거나 오르면서 매물이 줄고, 팔리기까지 걸리는 날짜가 짧아짐 → 매장 공급보다 수요가 많다. 정가를 올려도 손님이 따라온다는 뜻이라 가죽 부문 매출·이익률이 튼튼하다.</p>
         <p className={p}>· <b>나쁜 신호</b>: 웃돈이 몇 달 연속 빠지고 매물이 쌓이며 잘 안 팔림 → 되팔이 수요가 식고 있다. 보통 1~2분기 뒤 실적 발표에서 가죽 부문 성장 둔화로 나타날 수 있다.</p>
         <p className={p}>· 하루하루 움직임은 잡음이 크다. <b>한 달 이상 같은 방향</b>인지 보고, 1월 정가 인상 직후 웃돈이 잠깐 줄어드는 것은 정상이다(나누는 기준인 정가가 올랐기 때문).</p>
