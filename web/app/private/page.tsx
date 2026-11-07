@@ -99,6 +99,7 @@ import cboeData       from '@/public/data/rolling/CBOE_rolling.json'
 import cbreData       from '@/public/data/rolling/CBRE_rolling.json'
 import cciData        from '@/public/data/rolling/CCI_rolling.json'
 import cclData        from '@/public/data/rolling/CCL_rolling.json'
+import ccsiData       from '@/public/data/rolling/CCSI_rolling.json'
 import cdnsData       from '@/public/data/rolling/CDNS_rolling.json'
 import cdwData        from '@/public/data/rolling/CDW_rolling.json'
 import cfData         from '@/public/data/rolling/CF_rolling.json'
@@ -195,6 +196,7 @@ import fixData        from '@/public/data/rolling/FIX_rolling.json'
 import flexData       from '@/public/data/rolling/FLEX_rolling.json'
 import frtData        from '@/public/data/rolling/FRT_rolling.json'
 import fslrData       from '@/public/data/rolling/FSLR_rolling.json'
+import ftdrData       from '@/public/data/rolling/FTDR_rolling.json'
 import ftntData       from '@/public/data/rolling/FTNT_rolling.json'
 import gdData         from '@/public/data/rolling/GD_rolling.json'
 import gddyData       from '@/public/data/rolling/GDDY_rolling.json'
@@ -427,6 +429,7 @@ import ttwoData       from '@/public/data/rolling/TTWO_rolling.json'
 import txnData        from '@/public/data/rolling/TXN_rolling.json'
 import txtData        from '@/public/data/rolling/TXT_rolling.json'
 import tylData        from '@/public/data/rolling/TYL_rolling.json'
+import uData          from '@/public/data/rolling/U_rolling.json'
 import ualData        from '@/public/data/rolling/UAL_rolling.json'
 import udrData        from '@/public/data/rolling/UDR_rolling.json'
 import uhsData        from '@/public/data/rolling/UHS_rolling.json'
@@ -439,6 +442,7 @@ import usbData        from '@/public/data/rolling/USB_rolling.json'
 import vData          from '@/public/data/rolling/V_rolling.json'
 import veevData       from '@/public/data/rolling/VEEV_rolling.json'
 import vloData        from '@/public/data/rolling/VLO_rolling.json'
+import vltoData       from '@/public/data/rolling/VLTO_rolling.json'
 import vmcData        from '@/public/data/rolling/VMC_rolling.json'
 import vrskData       from '@/public/data/rolling/VRSK_rolling.json'
 import vrsnData       from '@/public/data/rolling/VRSN_rolling.json'
@@ -462,6 +466,7 @@ import wtwData        from '@/public/data/rolling/WTW_rolling.json'
 import wyData         from '@/public/data/rolling/WY_rolling.json'
 import wynnData       from '@/public/data/rolling/WYNN_rolling.json'
 import xelData        from '@/public/data/rolling/XEL_rolling.json'
+import xmtrData       from '@/public/data/rolling/XMTR_rolling.json'
 import xomData        from '@/public/data/rolling/XOM_rolling.json'
 import xylData        from '@/public/data/rolling/XYL_rolling.json'
 import yumData        from '@/public/data/rolling/YUM_rolling.json'
@@ -566,6 +571,7 @@ const STOCKS: Array<{ key: string; data: StockData }> = [
   { key: 'CBRE',     data: cbreData       as unknown as StockData },
   { key: 'CCI',      data: cciData        as unknown as StockData },
   { key: 'CCL',      data: cclData        as unknown as StockData },
+  { key: 'CCSI',     data: ccsiData       as unknown as StockData },
   { key: 'CDNS',     data: cdnsData       as unknown as StockData },
   { key: 'CDW',      data: cdwData        as unknown as StockData },
   { key: 'CF',       data: cfData         as unknown as StockData },
@@ -662,6 +668,7 @@ const STOCKS: Array<{ key: string; data: StockData }> = [
   { key: 'FLEX',     data: flexData       as unknown as StockData },
   { key: 'FRT',      data: frtData        as unknown as StockData },
   { key: 'FSLR',     data: fslrData       as unknown as StockData },
+  { key: 'FTDR',     data: ftdrData       as unknown as StockData },
   { key: 'FTNT',     data: ftntData       as unknown as StockData },
   { key: 'GD',       data: gdData         as unknown as StockData },
   { key: 'GDDY',     data: gddyData       as unknown as StockData },
@@ -892,6 +899,7 @@ const STOCKS: Array<{ key: string; data: StockData }> = [
   { key: 'TXN',      data: txnData        as unknown as StockData },
   { key: 'TXT',      data: txtData        as unknown as StockData },
   { key: 'TYL',      data: tylData        as unknown as StockData },
+  { key: 'U',        data: uData          as unknown as StockData },
   { key: 'UAL',      data: ualData        as unknown as StockData },
   { key: 'UDR',      data: udrData        as unknown as StockData },
   { key: 'UHS',      data: uhsData        as unknown as StockData },
@@ -904,6 +912,7 @@ const STOCKS: Array<{ key: string; data: StockData }> = [
   { key: 'V',        data: vData          as unknown as StockData },
   { key: 'VEEV',     data: veevData       as unknown as StockData },
   { key: 'VLO',      data: vloData        as unknown as StockData },
+  { key: 'VLTO',     data: vltoData       as unknown as StockData },
   { key: 'VMC',      data: vmcData        as unknown as StockData },
   { key: 'VRSK',     data: vrskData       as unknown as StockData },
   { key: 'VRSN',     data: vrsnData       as unknown as StockData },
@@ -927,6 +936,7 @@ const STOCKS: Array<{ key: string; data: StockData }> = [
   { key: 'WY',       data: wyData         as unknown as StockData },
   { key: 'WYNN',     data: wynnData       as unknown as StockData },
   { key: 'XEL',      data: xelData        as unknown as StockData },
+  { key: 'XMTR',     data: xmtrData       as unknown as StockData },
   { key: 'XOM',      data: xomData        as unknown as StockData },
   { key: 'XYL',      data: xylData        as unknown as StockData },
   { key: 'YUM',      data: yumData        as unknown as StockData },
