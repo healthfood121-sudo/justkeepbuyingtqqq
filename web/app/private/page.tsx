@@ -23,6 +23,7 @@ import tqqqData       from '@/public/data/rolling/TQQQ_rolling.json'
 import aData          from '@/public/data/rolling/A_rolling.json'
 import aaplData       from '@/public/data/rolling/AAPL_rolling.json'
 import abbvData       from '@/public/data/rolling/ABBV_rolling.json'
+import abnbData       from '@/public/data/rolling/ABNB_rolling.json'
 import abtData        from '@/public/data/rolling/ABT_rolling.json'
 import acglData       from '@/public/data/rolling/ACGL_rolling.json'
 import acnData        from '@/public/data/rolling/ACN_rolling.json'
@@ -489,6 +490,7 @@ const STOCKS: Array<{ key: string; data: StockData }> = [
   { key: 'A',        data: aData          as unknown as StockData },
   { key: 'AAPL',     data: aaplData       as unknown as StockData },
   { key: 'ABBV',     data: abbvData       as unknown as StockData },
+  { key: 'ABNB',     data: abnbData       as unknown as StockData },
   { key: 'ABT',      data: abtData        as unknown as StockData },
   { key: 'ACGL',     data: acglData       as unknown as StockData },
   { key: 'ACN',      data: acnData        as unknown as StockData },
