@@ -134,6 +134,7 @@ import csgpData       from '@/public/data/rolling/CSGP_rolling.json'
 import csxData        from '@/public/data/rolling/CSX_rolling.json'
 import ctasData       from '@/public/data/rolling/CTAS_rolling.json'
 import ctshData       from '@/public/data/rolling/CTSH_rolling.json'
+import cvcoData       from '@/public/data/rolling/CVCO_rolling.json'
 import cvsData        from '@/public/data/rolling/CVS_rolling.json'
 import cvxData        from '@/public/data/rolling/CVX_rolling.json'
 import dData          from '@/public/data/rolling/D_rolling.json'
@@ -607,6 +608,7 @@ const STOCKS: Array<{ key: string; data: StockData }> = [
   { key: 'CSX',      data: csxData        as unknown as StockData },
   { key: 'CTAS',     data: ctasData       as unknown as StockData },
   { key: 'CTSH',     data: ctshData       as unknown as StockData },
+  { key: 'CVCO',     data: cvcoData       as unknown as StockData },
   { key: 'CVS',      data: cvsData        as unknown as StockData },
   { key: 'CVX',      data: cvxData        as unknown as StockData },
   { key: 'D',        data: dData          as unknown as StockData },
