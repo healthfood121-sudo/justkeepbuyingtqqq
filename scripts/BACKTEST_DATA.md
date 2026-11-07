@@ -1064,3 +1064,14 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 - 버리는 축: 인식 시점·측정·성과보상(Milestone·Award) 축, 같은 항목 구성의 중복 축.
 - 해설 메모는 스크래치 스크립트로 생성(종목당 좋은 점·걱정·판정·다음에 볼 숫자). 지역 공시가 없는 회사는 사업부·상품·판매 경로·고객 유형 축, 그것도 없으면 회사 전체 매출(`axis: 'Total'`)로 설명.
 - 문제 종목: CPT(임대 매출 항목 미수집, 해설 없음), RF(자료 없음), DEO(20-F 제출사라 대상 아님), FISV·LITE·PHM(이력 짧음).
+
+#### 에르메스 리셀 웃돈·나이키 공식몰 할인율 (2026-11-07, 매일 누적)
+| 파일 | 크기 | 스크립트 | 내용 | 사용처 |
+|---|---|---|---|---|
+| `web/public/data/resale/hermes_daily.json` | 하루 약 3KB씩 증가 | `scripts/collect_resale.py` (Actions '에르메스 웃돈·나이키 할인율 수집 (매일)', KST 07:40. 샌드박스에서 접속 불가) | 날짜별 대표 가방 10종(버킨 25·30·35, 미니 켈리 20, 켈리 25·28, 콘스탄스 18, 피코탄 18, 에블린 PM, 린디 26)의 새/중고 희망가 중간값·25/75% 값·매물 수, 정가 확인된 5종의 웃돈(희망가÷미국 정가), 웃돈 지수(5종 중간값), 매물 수, 그날 팔린 수 | `/private` 에르메스 맨 위 `HermesResaleCard` |
+| `web/public/data/resale/hermes_snapshot.json` | 수백 KB | 같은 스크립트 | 어제 매물 목록(팔림 판정용) | 수집 스크립트 내부 |
+| `web/public/data/resale/hermes_sold.json` | 최근 3000건 | 같은 스크립트 | 어제 있다가 오늘 사라진 매물 = 팔린 것으로 간주. 가격·올라온 뒤 걸린 날짜 | `HermesResaleCard` 30일 팔림·중간 일수 |
+| `web/public/data/resale/nike_daily.json` | 하루 약 1KB씩 증가 | 같은 스크립트 | 미국 nike.com 전 상품(api.nike.com product_wall) 전체·신발·옷·조던별 상품 수, 할인 비율, 평균 할인율, 40% 이상 할인 비율 | `/private` 나이키 맨 위 `NikeMarkdownCard` |
+- 에르메스 출처: Shopify 공개 `products.json` — Privé Porter·Madison Avenue Couture(새 가방), Rebag·Fashionphile(중고). StockX·GOAT·eBay·TheRealReal·Vestiaire·hermes.com은 403 차단.
+- 특수 가죽(악어·타조·도마뱀 등)·한정판 제외. 정가는 2026년 1월 미국 매장가, 정가 인상 시 `BASKET` 수정.
+- 나이키 리셀(StockX 등)은 무료 접근 불가라 공식몰 할인율로 대체.

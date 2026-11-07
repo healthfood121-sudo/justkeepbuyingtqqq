@@ -7495,6 +7495,268 @@ function PeTimelineChart({ timeline, peNow }: { timeline: Array<[number, number]
 // 에르메스 최근 1년 EPS (회사 발표: 2025년 연간 43.15 − 2025년 상반기 21.43 + 2026년 상반기 21.36)
 const RMS_TTM_EPS = 43.08
 
+// ── 리셀가·할인율 추이 (에르메스 웃돈 / 나이키 할인) ─────────────────
+type TrendSeries = { label: string; data: Array<number | null>; color: string; axis?: 'y' | 'y2'; dash?: boolean }
+function TrendChart({ labels, series, yFmt, y2Fmt, height = 220 }: {
+  labels: string[]; series: TrendSeries[]; yFmt: (v: number) => string; y2Fmt?: (v: number) => string; height?: number
+}) {
+  const chartRef = useRef<ChartJS | null>(null)
+  const [pluginLoaded, setPluginLoaded] = useState(false)
+  useEffect(() => {
+    import('chartjs-plugin-zoom').then(({ default: z }) => { ChartJS.register(z); setPluginLoaded(true) })
+  }, [])
+  const one = labels.length === 1
+  const data: any = {
+    labels,
+    datasets: series.map(s => ({
+      label: s.label, data: s.data, borderColor: s.color, backgroundColor: s.color, yAxisID: s.axis ?? 'y',
+      borderWidth: 2, borderDash: s.dash ? [5, 4] : [], pointRadius: one ? 4 : 2, pointHoverRadius: 5, tension: 0.2, spanGaps: true,
+    })),
+  }
+  const options: any = {
+    responsive: true, maintainAspectRatio: false, animation: false,
+    interaction: { mode: 'index', intersect: false },
+    scales: {
+      x: { ticks: { font: { size: 11 }, maxTicksLimit: 8 }, grid: { color: 'rgba(128,128,128,0.08)' } },
+      y: { position: 'left', ticks: { font: { size: 11 }, callback: (v: number) => yFmt(v) }, grid: { color: 'rgba(128,128,128,0.08)' } },
+      ...(y2Fmt ? { y2: { position: 'right', ticks: { font: { size: 11 }, callback: (v: number) => y2Fmt(v) }, grid: { display: false } } } : {}),
+    },
+    plugins: {
+      legend: { display: true, labels: { boxWidth: 10, font: { size: 11 } } },
+      tooltip: { callbacks: { label: (c: any) => `${c.dataset.label}: ${c.parsed.y == null ? '-' : (c.dataset.yAxisID === 'y2' && y2Fmt ? y2Fmt : yFmt)(c.parsed.y)}` } },
+      zoom: pluginLoaded ? { pan: { enabled: true, mode: 'x' }, zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' } } : {},
+    },
+  }
+  return (
+    <div className="relative">
+      <button onClick={() => (chartRef.current as any)?.resetZoom?.()}
+        className="absolute top-0 right-0 z-10 px-2 py-0.5 text-xs text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 border border-gray-200 dark:border-gray-700 rounded">줌 초기화</button>
+      <div style={{ height }}>
+        <Chart ref={chartRef as any} type="line" data={data} options={options} />
+      </div>
+      <p className="text-xs text-gray-400 dark:text-gray-600 text-right mt-1">휠: 확대/축소 &nbsp;|&nbsp; 드래그: 이동</p>
+    </div>
+  )
+}
+
+function Tile({ label, value, sub, tone }: { label: string; value: string; sub?: string; tone?: 'up' | 'down' | 'flat' }) {
+  const c = tone === 'up' ? 'text-emerald-600 dark:text-emerald-400' : tone === 'down' ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-gray-100'
+  return (
+    <div className="rounded-md bg-gray-50 dark:bg-gray-900 px-3 py-2">
+      <div className="text-[11px] text-gray-500 dark:text-gray-400">{label}</div>
+      <div className={`text-base font-semibold ${c}`}>{value}</div>
+      {sub && <div className="text-[11px] text-gray-500 dark:text-gray-400">{sub}</div>}
+    </div>
+  )
+}
+
+// n일 전(가장 가까운 과거) 기록 찾기
+function dayAgo<T extends { date: string }>(days: T[], n: number): T | null {
+  if (!days.length) return null
+  const last = new Date(days[days.length - 1].date).getTime()
+  const target = last - n * 86400000
+  let pick: T | null = null
+  for (const d of days) { if (new Date(d.date).getTime() <= target) pick = d }
+  return pick
+}
+const usd = (v: number) => `$${Math.round(v).toLocaleString('en-US')}`
+const shortDate = (s: string) => s.slice(5).replace('-', '/')
+
+function HermesResaleCard() {
+  const [daily, setDaily] = useState<any>(null)
+  const [sold, setSold] = useState<any[]>([])
+  const [err, setErr] = useState(false)
+  useEffect(() => {
+    fetch('/data/resale/hermes_daily.json').then(r => r.ok ? r.json() : Promise.reject()).then(setDaily).catch(() => setErr(true))
+    fetch('/data/resale/hermes_sold.json').then(r => r.ok ? r.json() : []).then(setSold).catch(() => {})
+  }, [])
+  const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-3'
+  const h4 = 'text-sm font-semibold text-gray-800 dark:text-gray-100'
+  const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
+  if (err || !daily?.days?.length) return (
+    <div className={box}>
+      <h4 className={h4}>에르메스 리셀 웃돈 추이</h4>
+      <p className={p}>{err ? '아직 수집된 데이터가 없습니다. 매일 아침 7시 40분(한국 시간)에 자동으로 모입니다.' : '불러오는 중…'}</p>
+    </div>
+  )
+  const days: any[] = daily.days
+  const last = days[days.length - 1]
+  const basket: Record<string, { label: string; retail: number | null }> = daily.basket
+  const m30 = dayAgo(days, 30), m90 = dayAgo(days, 90)
+  const pi = last.premIndex as number | null
+  const chg = (a: number | null | undefined, b: number | null | undefined) => a != null && b != null ? (a - b) * 100 : null
+  const c30 = chg(pi, m30?.premIndex), c90 = chg(pi, m90?.premIndex)
+  const fmtPp = (v: number | null) => v == null ? '기록 쌓는 중' : `${v >= 0 ? '+' : ''}${v.toFixed(1)}%포인트`
+  const listedNow = last.listed.new + last.listed.pre
+  const listed30 = m30 ? m30.listed.new + m30.listed.pre : null
+  // 최근 30일 팔림
+  const cutoff = new Date(new Date(last.date).getTime() - 30 * 86400000).toISOString().slice(0, 10)
+  const recent = sold.filter(s => s.date > cutoff)
+  const dayList = (rows: any[]) => rows.map(r => r.days).filter((d: any) => typeof d === 'number' && d >= 0).sort((a: number, b: number) => a - b)
+  const medDays = (rows: any[]) => { const a = dayList(rows); return a.length ? a[Math.floor(a.length / 2)] : null }
+  const md = medDays(recent)
+  return (
+    <div className={box}>
+      <div className="flex items-baseline justify-between gap-2 flex-wrap">
+        <h4 className={h4}>에르메스 리셀 웃돈 추이 <span className="font-normal text-gray-400">· 대표 가방 10종</span></h4>
+        <span className="text-[11px] text-gray-400">{last.date} 기준 · 기록 {days.length}일</span>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <Tile label="웃돈 지수 (새 가방)" value={pi == null ? '-' : `정가의 ${pi.toFixed(2)}배`}
+          sub={pi == null ? '매물 부족' : `정가보다 ${Math.round((pi - 1) * 100)}% 비싸게 내놓음`} />
+        <Tile label="30일 전보다" value={fmtPp(c30)} tone={c30 == null ? 'flat' : c30 >= 0 ? 'up' : 'down'} sub={`90일 전보다 ${fmtPp(c90)}`} />
+        <Tile label="대표 모델 매물 수" value={`${listedNow}개`} sub={`새 ${last.listed.new} · 중고 ${last.listed.pre}${listed30 != null ? ` · 30일 전 ${listed30}` : ''}`} />
+        <Tile label="최근 30일 팔림" value={`${recent.length}개`} sub={md != null ? `올라온 뒤 팔리기까지 중간 ${md}일` : '기록 쌓는 중'} />
+      </div>
+      <TrendChart
+        labels={days.map(d => shortDate(d.date))}
+        series={[
+          { label: '웃돈 지수(배)', data: days.map(d => d.premIndex), color: 'rgba(234,88,12,0.95)' },
+          { label: '매물 수(오른쪽)', data: days.map(d => d.listed.new + d.listed.pre), color: 'rgba(107,114,128,0.7)', axis: 'y2', dash: true },
+        ]}
+        yFmt={v => `${v.toFixed(2)}배`} y2Fmt={v => `${Math.round(v)}개`} />
+      <div className="overflow-x-auto">
+        <table className="w-full text-xs">
+          <thead>
+            <tr className="text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-800">
+              <th className="text-left py-1 pr-2 font-medium">모델</th>
+              <th className="text-right py-1 px-2 font-medium">새 가방 희망가<br />(중간값)</th>
+              <th className="text-right py-1 px-2 font-medium">웃돈</th>
+              <th className="text-right py-1 px-2 font-medium">30일 변화</th>
+              <th className="text-right py-1 px-2 font-medium">중고 희망가<br />(중간값)</th>
+              <th className="text-right py-1 px-2 font-medium">매물<br />새/중고</th>
+              <th className="text-right py-1 pl-2 font-medium">30일 팔림<br />(중간 일수)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Object.entries(basket).map(([k, b]) => {
+              const kk = last.keys[k] || {}
+              const nw = kk.new, pre = kk.pre
+              const old = m30?.keys?.[k]?.new?.prem
+              const d30 = nw?.prem != null && old != null ? (nw.prem - old) * 100 : null
+              const rs = recent.filter(s => s.key === k)
+              const rd = medDays(rs)
+              return (
+                <tr key={k} className="border-b border-gray-100 dark:border-gray-900 text-gray-700 dark:text-gray-200">
+                  <td className="py-1 pr-2 whitespace-nowrap">{b.label}{b.retail ? <span className="text-gray-400"> · 정가 {usd(b.retail)}</span> : null}</td>
+                  <td className="text-right py-1 px-2">{nw ? usd(nw.med) : '-'}</td>
+                  <td className="text-right py-1 px-2 font-medium">{nw?.prem != null ? `${nw.prem.toFixed(2)}배` : '-'}</td>
+                  <td className={`text-right py-1 px-2 ${d30 == null ? 'text-gray-400' : d30 >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+                    {d30 == null ? '-' : `${d30 >= 0 ? '+' : ''}${d30.toFixed(0)}%p`}</td>
+                  <td className="text-right py-1 px-2">{pre ? usd(pre.med) : '-'}</td>
+                  <td className="text-right py-1 px-2">{nw?.n ?? 0}/{pre?.n ?? 0}</td>
+                  <td className="text-right py-1 pl-2">{rs.length}{rd != null ? ` (${rd}일)` : ''}</td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+      <div className="rounded-md bg-amber-50 dark:bg-amber-950/30 p-3 space-y-1">
+        <p className="text-xs font-semibold text-amber-800 dark:text-amber-300">읽는 법</p>
+        <p className={p}>· <b>웃돈 지수</b> = 매장에서 새로 산 가방을 되파는 가격 ÷ 매장 정가. 1.5배면 정가보다 50% 비싸게 내놓는다는 뜻. 매장에서 못 사서 웃돈을 주고라도 사려는 수요가 얼마나 남았는지 보여준다.</p>
+        <p className={p}>· <b>좋은 신호</b>: 웃돈이 유지되거나 오르면서 매물이 줄고, 팔리기까지 걸리는 날짜가 짧아짐 → 매장 공급보다 수요가 많다. 에르메스가 정가를 올려도 손님이 따라온다는 뜻이라 가죽 부문 매출·이익률이 튼튼하다.</p>
+        <p className={p}>· <b>나쁜 신호</b>: 웃돈이 몇 달 연속 빠지고 매물이 쌓이며 잘 안 팔림 → 되팔이 수요가 식고 있다. 보통 1~2분기 뒤 실적 발표에서 가죽 부문 성장 둔화로 나타날 수 있다.</p>
+        <p className={p}>· 하루하루 움직임은 잡음이 크다. <b>한 달 이상 같은 방향</b>인지 보고, 1월 정가 인상 직후 웃돈이 잠깐 줄어드는 것은 정상이다(분모인 정가가 올랐기 때문).</p>
+      </div>
+      <p className="text-[11px] leading-relaxed text-gray-400 dark:text-gray-500">
+        출처: 리셀 매장 4곳(Privé Porter, Madison Avenue Couture는 주로 새 가방 / Rebag, Fashionphile은 중고)의 공개 상품 목록. 악어·타조 같은 특수 가죽과 한정판은 뺐다.
+        희망가는 <b>판매자가 내놓은 가격</b>이지 실제 거래가가 아니다. 어제 있던 매물이 오늘 사라지면 팔린 것으로 본다(내린 경우도 섞일 수 있음).
+        {' '}{daily.retailNote} 웃돈은 정가가 확인된 5종(버킨 25·30, 켈리 25·28, 미니 켈리 20)만 계산한다.
+      </p>
+    </div>
+  )
+}
+
+function NikeMarkdownCard() {
+  const [d, setD] = useState<any>(null)
+  const [err, setErr] = useState(false)
+  useEffect(() => {
+    fetch('/data/resale/nike_daily.json').then(r => r.ok ? r.json() : Promise.reject()).then(setD).catch(() => setErr(true))
+  }, [])
+  const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-3'
+  const h4 = 'text-sm font-semibold text-gray-800 dark:text-gray-100'
+  const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
+  if (err || !d?.days?.length) return (
+    <div className={box}>
+      <h4 className={h4}>나이키 공식몰 할인 추이</h4>
+      <p className={p}>{err ? '아직 수집된 데이터가 없습니다. 매일 아침 7시 40분(한국 시간)에 자동으로 모입니다.' : '불러오는 중…'}</p>
+    </div>
+  )
+  const days: any[] = d.days.filter((x: any) => x.all)
+  if (!days.length) return null
+  const last = days[days.length - 1]
+  const m30 = dayAgo(days, 30)
+  const diff = (a?: number, b?: number) => a != null && b != null ? a - b : null
+  const s30 = diff(last.all.saleShare, m30?.all?.saleShare)
+  const pp = (v: number | null) => v == null ? '기록 쌓는 중' : `${v >= 0 ? '+' : ''}${v.toFixed(1)}%포인트`
+  const cats: Array<[string, string]> = [['all', '전체'], ['footwear', '신발'], ['apparel', '옷'], ['jordan', '조던']]
+  return (
+    <div className={box}>
+      <div className="flex items-baseline justify-between gap-2 flex-wrap">
+        <h4 className={h4}>나이키 공식몰 할인 추이 <span className="font-normal text-gray-400">· 미국 nike.com 전 상품</span></h4>
+        <span className="text-[11px] text-gray-400">{last.date} 기준 · 기록 {days.length}일</span>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <Tile label="할인 중인 상품 비율" value={`${last.all.saleShare.toFixed(1)}%`} sub={`${last.all.onSale.toLocaleString()} / ${last.all.n.toLocaleString()}개`} />
+        <Tile label="30일 전보다" value={pp(s30)} tone={s30 == null ? 'flat' : s30 <= 0 ? 'up' : 'down'} sub="할인 비율이 줄면 좋은 신호" />
+        <Tile label="할인 상품 평균 할인율" value={`${last.all.avgDiscSale.toFixed(1)}%`} sub={`전 상품 평균 ${last.all.avgDiscAll.toFixed(1)}%`} />
+        <Tile label="40% 이상 깊은 할인" value={`${last.all.deepShare.toFixed(1)}%`} sub="전체 상품 중 비율" />
+      </div>
+      <TrendChart
+        labels={days.map(x => shortDate(x.date))}
+        series={[
+          { label: '전체 할인 비율', data: days.map(x => x.all?.saleShare ?? null), color: 'rgba(17,24,39,0.9)' },
+          { label: '신발', data: days.map(x => x.footwear?.saleShare ?? null), color: 'rgba(234,88,12,0.9)' },
+          { label: '옷', data: days.map(x => x.apparel?.saleShare ?? null), color: 'rgba(37,99,235,0.9)' },
+          { label: '40% 이상 할인', data: days.map(x => x.all?.deepShare ?? null), color: 'rgba(220,38,38,0.8)', dash: true },
+        ]}
+        yFmt={v => `${v.toFixed(0)}%`} />
+      <div className="overflow-x-auto">
+        <table className="w-full text-xs">
+          <thead>
+            <tr className="text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-800">
+              <th className="text-left py-1 pr-2 font-medium">구분</th>
+              <th className="text-right py-1 px-2 font-medium">상품 수</th>
+              <th className="text-right py-1 px-2 font-medium">할인 비율</th>
+              <th className="text-right py-1 px-2 font-medium">30일 변화</th>
+              <th className="text-right py-1 px-2 font-medium">할인 상품<br />평균 할인율</th>
+              <th className="text-right py-1 pl-2 font-medium">40% 이상</th>
+            </tr>
+          </thead>
+          <tbody>
+            {cats.map(([k, lb]) => {
+              const s = last[k]; if (!s) return null
+              const c = diff(s.saleShare, m30?.[k]?.saleShare)
+              return (
+                <tr key={k} className="border-b border-gray-100 dark:border-gray-900 text-gray-700 dark:text-gray-200">
+                  <td className="py-1 pr-2">{lb}</td>
+                  <td className="text-right py-1 px-2">{s.n.toLocaleString()}</td>
+                  <td className="text-right py-1 px-2 font-medium">{s.saleShare.toFixed(1)}%</td>
+                  <td className={`text-right py-1 px-2 ${c == null ? 'text-gray-400' : c <= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+                    {c == null ? '-' : `${c >= 0 ? '+' : ''}${c.toFixed(1)}%p`}</td>
+                  <td className="text-right py-1 px-2">{s.avgDiscSale.toFixed(1)}%</td>
+                  <td className="text-right py-1 pl-2">{s.deepShare.toFixed(1)}%</td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+      <div className="rounded-md bg-amber-50 dark:bg-amber-950/30 p-3 space-y-1">
+        <p className="text-xs font-semibold text-amber-800 dark:text-amber-300">읽는 법</p>
+        <p className={p}>· 나이키 실적의 핵심 걱정은 <b>쌓인 재고를 깎아 파느라 이익률이 낮아지는 것</b>이다. 공식몰에서 할인 중인 상품 비율과 할인 폭은 그 재고 정리가 어디까지 왔는지 보여준다.</p>
+        <p className={p}>· <b>좋은 신호</b>: 할인 비율과 40% 이상 깊은 할인 비율이 몇 달에 걸쳐 내려감 → 재고가 정상으로 돌아오고 제값에 팔리고 있다. 다음 분기 이익률 회복으로 이어질 가능성이 높다.</p>
+        <p className={p}>· <b>나쁜 신호</b>: 비율이 계속 오르거나, 신발만 따로 오름 → 신제품이 안 팔려 재고를 밀어내는 중. 이익률 압박이 이어진다.</p>
+        <p className={p}>· 블랙프라이데이(11월 말), 여름·연말 시즌 세일 때는 원래 크게 오른다. <b>작년 같은 시기와 비교</b>하거나 세일 끝난 뒤 얼마나 빨리 내려오는지를 본다.</p>
+      </div>
+      <p className="text-[11px] leading-relaxed text-gray-400 dark:text-gray-500">
+        출처: 미국 nike.com 공개 상품 목록(정가·판매가). 리셀가(StockX 등)는 무료로 가져올 수 없어 대신 공식몰 할인 정도로 재고 상태를 본다. 매장·도매 채널 할인은 포함되지 않는다.
+      </p>
+    </div>
+  )
+}
+
 function RmsInsight({ data }: { data: StockData }) {
   // 숫자는 한 곳에서: 주가는 월말 주가 파일의 최신 종가(자동 갱신), EPS는 회사 발표 최근 1년 값
   const [px, setPx] = useState<MonthlyPrice | null>(null)
@@ -9856,6 +10118,10 @@ export default function PrivatePage() {
             )
           })()}
         </div>
+
+        {/* 리셀 웃돈·할인 추이 (에르메스·나이키) */}
+        {current.key === 'RMS' && <HermesResaleCard />}
+        {current.key === 'NKE' && <NikeMarkdownCard />}
 
         {/* 차트 */}
         <RollingChart key={`chart-${current.key}`} data={current.data} />
