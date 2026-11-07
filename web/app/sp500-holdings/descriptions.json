@@ -3076,5 +3076,77 @@
     "sector": "조립식(공장 제작) 주택",
     "products": "공장에서 지은 이동·모듈 주택(Cavco·Fleetwood·Palm Harbor), 주택 담보 대출·보험",
     "type": "stock"
+  },
+  "MEDP": {
+    "name": "메드페이스",
+    "sector": "의료 임상시험 대행(CRO)",
+    "products": "중소 바이오 제약사의 임상시험 설계·운영 대행",
+    "type": "stock"
+  },
+  "UI": {
+    "name": "유비쿼티",
+    "sector": "네트워크 장비",
+    "products": "기업·통신사용 와이파이·라우터·스위치(UniFi·airMAX)",
+    "type": "stock"
+  },
+  "IESC": {
+    "name": "IES 홀딩스",
+    "sector": "전기·통신 설비 시공",
+    "products": "데이터센터·상업 건물·주택 전기 공사, 통신 인프라 설치",
+    "type": "stock"
+  },
+  "SKY": {
+    "name": "챔피언 홈스",
+    "sector": "조립식(공장 제작) 주택",
+    "products": "공장에서 지은 이동·모듈 주택, 판매점",
+    "type": "stock"
+  },
+  "XPEL": {
+    "name": "엑스펠",
+    "sector": "자동차 보호 필름",
+    "products": "자동차 도장 보호 필름(PPF)·윈도 틴팅, 시공 소프트웨어",
+    "type": "stock"
+  },
+  "CORT": {
+    "name": "코어셉트 테라퓨틱스",
+    "sector": "제약(내분비)",
+    "products": "쿠싱 증후군 치료제(코를림), 코르티솔 조절 신약",
+    "type": "stock"
+  },
+  "FN": {
+    "name": "파브리넷",
+    "sector": "광부품 위탁생산",
+    "products": "광통신 모듈·레이저·자동차 센서 정밀 위탁생산(태국)",
+    "type": "stock"
+  },
+  "NSSC": {
+    "name": "나프코 시큐리티",
+    "sector": "보안 장비",
+    "products": "출입통제 잠금장치·화재경보·무선 통신 보안 장비, 구독 서비스",
+    "type": "stock"
+  },
+  "CRAI": {
+    "name": "CRA 인터내셔널",
+    "sector": "경제·경영 컨설팅",
+    "products": "반독점·소송 경제 분석, 경영 컨설팅",
+    "type": "stock"
+  },
+  "IBP": {
+    "name": "인스톨드 빌딩 프로덕츠",
+    "sector": "건축 자재 시공",
+    "products": "주택·상업 건물 단열재·방수·차고 문 시공",
+    "type": "stock"
+  },
+  "QLYS": {
+    "name": "퀄리스",
+    "sector": "보안 소프트웨어",
+    "products": "클라우드 취약점 관리·IT 자산 보안 구독 소프트웨어",
+    "type": "stock"
+  },
+  "MELI": {
+    "name": "메르카도리브레",
+    "sector": "남미 전자상거래·핀테크",
+    "products": "중남미 온라인 장터·물류(Mercado Envios)·결제·대출(Mercado Pago)",
+    "type": "stock"
   }
 }
