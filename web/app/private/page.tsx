@@ -7562,6 +7562,39 @@ function dayAgo<T extends { date: string }>(days: T[], n: number): T | null {
 const usd = (v: number) => `$${Math.round(v).toLocaleString('en-US')}`
 const shortDate = (s: string) => s.slice(5).replace('-', '/')
 
+type Gran = 'D' | 'W' | 'M'
+// 일/주/월 묶기: 같은 주(월요일 시작)·같은 달의 하루 값들을 평균
+function granGroup(dates: string[], gran: Gran) {
+  const gkey = (ds: string) => {
+    if (gran === 'M') return ds.slice(0, 7)
+    if (gran === 'W') {
+      const t = new Date(ds + 'T00:00:00Z'); t.setUTCDate(t.getUTCDate() - ((t.getUTCDay() + 6) % 7))
+      return t.toISOString().slice(0, 10)
+    }
+    return ds
+  }
+  const gIdx: number[][] = [], gKeys: string[] = []
+  dates.forEach((ds, i) => { const k = gkey(ds); if (gKeys[gKeys.length - 1] !== k) { gKeys.push(k); gIdx.push([]) } gIdx[gIdx.length - 1].push(i) })
+  const labels = gKeys.map(k => gran === 'M' ? `${k.slice(2, 4)}년 ${Number(k.slice(5))}월` : gran === 'W' ? `${shortDate(k)}주` : shortDate(k))
+  const mk = (ss: TrendSeries[]): TrendSeries[] => ss.map(s => ({ ...s, data: gIdx.map(ix => {
+    const v = ix.map(i => s.data[i]).filter((x): x is number => x != null)
+    return v.length ? v.reduce((a, c) => a + c, 0) / v.length : null
+  }) }))
+  return { labels, mk }
+}
+function GranButtons({ gran, setGran }: { gran: Gran; setGran: (g: Gran) => void }) {
+  return (
+    <div className="flex items-center gap-1 text-xs">
+      <span className="text-gray-400 mr-1">차트 단위</span>
+      {([['D', '일'], ['W', '주'], ['M', '월']] as const).map(([g, lb]) => (
+        <button key={g} onClick={() => setGran(g)}
+          className={`px-2 py-0.5 rounded border ${gran === g ? 'bg-gray-800 text-white border-gray-800 dark:bg-gray-200 dark:text-gray-900' : 'text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700'}`}>{lb}</button>
+      ))}
+      <span className="text-[11px] text-gray-400 ml-1">주·월은 그 기간 하루 값들의 평균</span>
+    </div>
+  )
+}
+
 // 웃돈 종합: 정가가 확인된 모델들의 새 가방 웃돈(매물 2개 이상)을 모아 평균·중간값·최저·최고
 function premSummary(day: any, keys: string[]) {
   const rows = keys.map(k => ({ k, v: day?.keys?.[k]?.new?.n >= 2 ? day.keys[k].new.prem as number : null }))
@@ -7578,7 +7611,7 @@ function HermesResaleCard() {
   const [sold, setSold] = useState<any[]>([])
   const [err, setErr] = useState(false)
   const [sel, setSel] = useState<string>('ALL')
-  const [gran, setGran] = useState<'D' | 'W' | 'M'>('D')
+  const [gran, setGran] = useState<Gran>('D')
   useEffect(() => {
     fetch('/data/resale/hermes_daily.json').then(r => r.ok ? r.json() : Promise.reject()).then(setDaily).catch(() => setErr(true))
     fetch('/data/resale/hermes_sold.json').then(r => r.ok ? r.json() : []).then(setSold).catch(() => {})
@@ -7612,22 +7645,7 @@ function HermesResaleCard() {
   }
   const md = medDays(recent)
   const bx = (v: number) => `${v.toFixed(2)}배`
-  // 일/주/월 묶기: 같은 주(월요일 시작)·같은 달의 날짜 값을 평균
-  const gkey = (ds: string) => {
-    if (gran === 'M') return ds.slice(0, 7)
-    if (gran === 'W') {
-      const t = new Date(ds + 'T00:00:00Z'); t.setUTCDate(t.getUTCDate() - ((t.getUTCDay() + 6) % 7))
-      return t.toISOString().slice(0, 10)
-    }
-    return ds
-  }
-  const gIdx: number[][] = [], gKeys: string[] = []
-  days.forEach((d, i) => { const k = gkey(d.date); if (gKeys[gKeys.length - 1] !== k) { gKeys.push(k); gIdx.push([]) } gIdx[gIdx.length - 1].push(i) })
-  const labels = gKeys.map(k => gran === 'M' ? `${k.slice(2, 4)}년 ${Number(k.slice(5))}월` : gran === 'W' ? `${shortDate(k)}주` : shortDate(k))
-  const mk = (ss: TrendSeries[]): TrendSeries[] => ss.map(s => ({ ...s, data: gIdx.map(ix => {
-    const v = ix.map(i => s.data[i]).filter((x): x is number => x != null)
-    return v.length ? v.reduce((a, c) => a + c, 0) / v.length : null
-  }) }))
+  const { labels, mk } = granGroup(days.map(d => d.date), gran)
 
   // 차트: 종합 또는 선택한 모델
   let chart: ReactNode
@@ -7683,14 +7701,7 @@ function HermesResaleCard() {
         {btn('ALL', '종합')}
         {Object.entries(basket).map(([k, b]) => btn(k, b.label))}
       </div>
-      <div className="flex items-center gap-1 text-xs">
-        <span className="text-gray-400 mr-1">차트 단위</span>
-        {([['D', '일'], ['W', '주'], ['M', '월']] as const).map(([g, lb]) => (
-          <button key={g} onClick={() => setGran(g)}
-            className={`px-2 py-0.5 rounded border ${gran === g ? 'bg-gray-800 text-white border-gray-800 dark:bg-gray-200 dark:text-gray-900' : 'text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700'}`}>{lb}</button>
-        ))}
-        <span className="text-[11px] text-gray-400 ml-1">주·월은 그 기간 하루 값들의 평균</span>
-      </div>
+      <GranButtons gran={gran} setGran={setGran} />
       {chart}
       <div className="overflow-x-auto">
         <table className="w-full text-xs">
@@ -7757,6 +7768,7 @@ function HermesResaleCard() {
 function NikeMarkdownCard() {
   const [d, setD] = useState<any>(null)
   const [err, setErr] = useState(false)
+  const [gran, setGran] = useState<Gran>('D')
   useEffect(() => {
     fetch('/data/resale/nike_daily.json').then(r => r.ok ? r.json() : Promise.reject()).then(setD).catch(() => setErr(true))
   }, [])
@@ -7776,6 +7788,7 @@ function NikeMarkdownCard() {
   const diff = (a?: number, b?: number) => a != null && b != null ? a - b : null
   const s30 = diff(last.all.saleShare, m30?.all?.saleShare)
   const pp = (v: number | null) => v == null ? '기록 쌓는 중' : `${v >= 0 ? '+' : ''}${v.toFixed(1)}%포인트`
+  const ng = granGroup(days.map(x => x.date), gran)
   const cats: Array<[string, string]> = [['all', '전체'], ['footwear', '신발'], ['apparel', '옷'], ['jordan', '조던']]
   return (
     <div className={box}>
@@ -7789,14 +7802,15 @@ function NikeMarkdownCard() {
         <Tile label="할인 상품 평균 할인율" value={`${last.all.avgDiscSale.toFixed(1)}%`} sub={`전 상품 평균 ${last.all.avgDiscAll.toFixed(1)}%`} />
         <Tile label="40% 이상 깊은 할인" value={`${last.all.deepShare.toFixed(1)}%`} sub="전체 상품 중 비율" />
       </div>
-      <TrendChart
-        labels={days.map(x => shortDate(x.date))}
-        series={[
+      <GranButtons gran={gran} setGran={setGran} />
+      <TrendChart key={`nk-${gran}`}
+        labels={ng.labels}
+        series={ng.mk([
           { label: '전체 할인 비율', data: days.map(x => x.all?.saleShare ?? null), color: 'rgba(17,24,39,0.9)' },
           { label: '신발', data: days.map(x => x.footwear?.saleShare ?? null), color: 'rgba(234,88,12,0.9)' },
           { label: '옷', data: days.map(x => x.apparel?.saleShare ?? null), color: 'rgba(37,99,235,0.9)' },
           { label: '40% 이상 할인', data: days.map(x => x.all?.deepShare ?? null), color: 'rgba(220,38,38,0.8)', dash: true },
-        ]}
+        ])}
         yFmt={v => `${v.toFixed(0)}%`} />
       <div className="overflow-x-auto">
         <table className="w-full text-xs">
