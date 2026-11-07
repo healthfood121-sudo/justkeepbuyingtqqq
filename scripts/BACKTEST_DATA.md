@@ -1075,3 +1075,8 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 - 에르메스 출처: Shopify 공개 `products.json` — Privé Porter·Madison Avenue Couture(새 가방), Rebag·Fashionphile(중고). StockX·GOAT·eBay·TheRealReal·Vestiaire·hermes.com은 403 차단.
 - 특수 가죽(악어·타조·도마뱀 등)·한정판 제외. 정가는 2026년 1월 미국 매장가, 정가 인상 시 `BASKET` 수정.
 - 나이키 리셀(StockX 등)은 무료 접근 불가라 공식몰 할인율로 대체. API가 최대 100쪽(약 2만 3천 상품)까지만 줘서 전 상품이 아니라 같은 순서의 앞부분 표본이다.
+
+#### 에어비앤비(ABNB) 종목 추가 (2026-11-07)
+- `generate_all_sp500.py` `SP500_INFO`에 ABNB 추가 → Actions 'update-rolling-annual'(only=ABNB)로 `scripts/data/rolling/ABNB_{10y,5y}_annual.csv`, `web/public/data/rolling/ABNB_rolling.json` 생성. 2020-12 상장이라 10년 완결 구간 0개.
+- 같은 날 `ABNB_monthly_price.json`(export-monthly-price), `fundamentals/ABNB.json`(export-fundamentals), 현금흐름(export-cashflow), `segments_raw/ABNB.json.gz`(export-segments keys=ABNB) → `segments/ABNB.json`(`process_segments.py ABNB`) 생성. 배당 없음이라 배당 분해는 만들지 않음.
+- 사업의 질 평가: `scripts/data/quality/quality.tsv`에 ABNB(B등급) 추가 → `build_quality_json.py` 재실행.
