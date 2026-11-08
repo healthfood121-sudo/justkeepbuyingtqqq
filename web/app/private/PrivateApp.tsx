@@ -10153,6 +10153,7 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
         자동 분석{f ? ` · 데이터 ${f.generated}` : ''} · EPS는 SEC 공시(10-K) 기준{deep ? ` · 개별 분석 ${deep.asOf}` : ''}
       </p>
       {deep && <p className="text-sm font-semibold text-amber-700 dark:text-amber-400 mt-1">{deep.headline}</p>}
+      {REPORTS[stockKey] && <Link href={REPORTS[stockKey]} className="inline-block mt-1 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">심층 리포트 읽기 →</Link>}
     </div>
   )
 
@@ -10293,6 +10294,9 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
 
 // ── 메인 페이지 ──────────────────────────────────────────────
 // ── 탭(종목 묶음): 엄선 · S&P 500 · 나스닥100 · 중형주 · 러셀2000 · 나스닥 상장 · 기타 ──
+// 종목별 심층 리포트(긴 글) 주소
+const REPORTS: Record<string, string> = { COCO: '/private/report/coco' }
+
 export type Universe = 'picks' | 'sp500' | 'ndx' | 'mid' | 'r2k' | 'nasdaq' | 'other'
 const PICK_KEYS = new Set(PICK_GROUPS.flatMap(g => g.items.map(it => it.key)))
 const UNIVERSES: { u: Universe; href: string; label: string; title: string; sub: string; test: (k: string) => boolean }[] = [
