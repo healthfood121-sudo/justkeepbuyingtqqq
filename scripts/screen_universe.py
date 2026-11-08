@@ -86,10 +86,17 @@ def other_listed():
     return out
 
 
+R2K_FILE = ROOT / "scripts" / "data" / "russell2000.json"
+
+
 def russell2000():
-    """러셀2000 실제 목록은 ETF 운용사 사이트가 자동 요청을 막아 받지 않는다.
-    대신 아래 main()에서 정의(미국 상장사 시가총액 1,001~3,000위)로 추정 표시한다."""
-    return {}
+    """러셀2000 실제 구성 종목: fetch_russell2000.py가 IWM의 SEC 보유 종목 보고서(N-PORT)에서 만든 파일.
+    파일이 없으면 빈 값 → main()에서 시가총액 1,001~3,000위로 추정 표시한다."""
+    if not R2K_FILE.exists():
+        return {}
+    j = json.loads(R2K_FILE.read_text())
+    print("russell2000", len(j["tickers"]), j["asOf"], flush=True)
+    return {t: (nm, "") for t, nm in j["tickers"].items()}
 
 
 def nasdaq100():
@@ -289,10 +296,11 @@ def main():
                         sc=r["sc"], yrs=r["yrs"], py=r["py"], rg=rd(r["rg"]), eg=rd(r["eg"]), roic=rd(r["roic"]),
                         fpy=rd(r["fpy"], 2), fcfm=rd(r["fcfm"]), nd=rd(r["nd"], 2), nc=r["netcash"], dil=rd(r["dil"]),
                         pe=rd(pe, 1), fy=rd(fyld), pc=rd(pc), xs=rd(xs), sp=round(span, 1), fyr=r["_last"]))
-    # 러셀2000 표시(추정): 공시가 있는 미국 상장사를 시가총액 순으로 세워 1,001~3,000위
+    # 러셀2000 실제 목록이 없을 때만 추정: 공시가 있는 미국 상장사를 시가총액 순으로 세워 1,001~3,000위
+    r2k_src = json.loads(R2K_FILE.read_text())["src"] if r2k else None
     allmc = sorted((((rows[t]["_sh"] or 0) * float(prices[ytk[t]].iloc[-1])), t) for t in rows if ytk[t] in prices)
     allmc.sort(reverse=True)
-    approx = {t for _, t in allmc[1000:3000]}
+    approx = set() if r2k else {t for _, t in allmc[1000:3000]}
     for o in out:
         if o["t"] in approx and "R" not in o["f"]:
             o["f"] += "R"
@@ -316,7 +324,7 @@ def main():
     (OUT / "universe.json").write_text(json.dumps({
         "asOf": time.strftime("%Y-%m-%d"),
         "minMcap": MIN_MCAP,
-        "r2kSrc": "추정: 공시가 있는 미국 상장사 중 시가총액 1,001~3,000위(러셀2000의 선정 기준. 실제 목록과 일부 다를 수 있음)",
+        "r2kSrc": r2k_src or "추정: 공시가 있는 미국 상장사 중 시가총액 1,001~3,000위(러셀2000의 선정 기준. 실제 목록과 일부 다를 수 있음)",
         "note": "SEC XBRL frames(달력 연도 기준) + Yahoo 월간 수정주가. 투하자본이익률은 영업이익×0.79÷(자기자본+빚−현금) 근사.",
         "rows": out}, ensure_ascii=False, separators=(",", ":")))
     print("saved", len(out), "rows", flush=True)
