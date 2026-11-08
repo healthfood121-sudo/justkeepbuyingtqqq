@@ -1,6 +1,6 @@
 // 자동 생성 — scripts/build_private_universe.py (직접 수정 금지)
 // S=S&P 500 · N=나스닥100 · R=러셀2000(2026-06-30 기준) · Q=나스닥 상장. 빈 문자열 = 어느 지수에도 없음(해외·ETF·중형주)
-export const UNIV_COUNT = {"S": 452, "N": 74, "R": 31, "Q": 156} as const
+export const UNIV_COUNT = {"S": 452, "N": 74, "R": 41, "Q": 161} as const
 export const UNIV: Record<string, string> = {
   "QLD": "",
   "QQQ": "",
@@ -304,6 +304,16 @@ export const UNIV: Record<string, string> = {
   "WDFC": "RQ",
   "IDCC": "RQ",
   "AGX": "R",
+  "ANF": "R",
+  "KFY": "R",
+  "SPSC": "RQ",
+  "CARG": "RQ",
+  "TNET": "R",
+  "AMPH": "RQ",
+  "TPB": "R",
+  "LAUR": "RQ",
+  "EAT": "R",
+  "CALM": "RQ",
   "MET": "S",
   "META": "SNQ",
   "MGM": "S",
