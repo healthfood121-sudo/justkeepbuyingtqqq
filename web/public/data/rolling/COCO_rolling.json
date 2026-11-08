@@ -1,0 +1,86 @@
+{
+  "ticker": "COCO",
+  "name": "바이타 코코",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "",
+  "current": {
+    "price": 62.45,
+    "pe": 31.5,
+    "divYield": 0,
+    "eps": 1.98
+  },
+  "fullPeriod": {
+    "start_date": "2021-10-21",
+    "end_date": "2026-11-06",
+    "start_price": 13.52,
+    "end_price": 62.45,
+    "years": 5.0,
+    "cagr": 35.45,
+    "multiple": 4.6191
+  },
+  "stats": {
+    "n": 0,
+    "min": null,
+    "minBuy": "",
+    "median": null,
+    "mean": null,
+    "max": null,
+    "maxBuy": "",
+    "over10": null,
+    "over15": null,
+    "over20": null,
+    "losses": 0,
+    "beatBench": null,
+    "beatTotal": null
+  },
+  "rows10y": [
+    {
+      "buyYear": 2021,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 4.8,
+      "cagr": 42.61,
+      "multiple": 5.59,
+      "isComplete": false,
+      "benchCagr": 10.99,
+      "diff": 31.62
+    },
+    {
+      "buyYear": 2022,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 3.9,
+      "cagr": 47.97,
+      "multiple": 4.52,
+      "isComplete": false,
+      "benchCagr": 20.11,
+      "diff": 27.86
+    },
+    {
+      "buyYear": 2023,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 2.9,
+      "cagr": 36.64,
+      "multiple": 2.43,
+      "isComplete": false,
+      "benchCagr": 18.01,
+      "diff": 18.63
+    },
+    {
+      "buyYear": 2024,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 1.9,
+      "cagr": 32.92,
+      "multiple": 1.69,
+      "isComplete": false,
+      "benchCagr": 14.4,
+      "diff": 18.51
+    }
+  ],
+  "loss5y": [],
+  "epsDecomp": [],
+  "epsNote": "EPS 데이터 미수집"
+}

@@ -1,0 +1,152 @@
+{
+  "ticker": "LNTH",
+  "name": "랜티어스",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "",
+  "current": {
+    "price": 100.61,
+    "pe": 25.0,
+    "divYield": 0,
+    "eps": 4.02
+  },
+  "fullPeriod": {
+    "start_date": "2015-06-25",
+    "end_date": "2026-11-06",
+    "start_price": 6.77,
+    "end_price": 100.61,
+    "years": 11.4,
+    "cagr": 26.8,
+    "multiple": 14.8612
+  },
+  "stats": {
+    "n": 1,
+    "min": 34.71,
+    "minBuy": "2015",
+    "median": 34.71,
+    "mean": 34.71,
+    "max": 34.71,
+    "maxBuy": "2015",
+    "over10": 100.0,
+    "over15": 100.0,
+    "over20": 100.0,
+    "losses": 0,
+    "beatBench": 1,
+    "beatTotal": 1
+  },
+  "rows10y": [
+    {
+      "buyYear": 2015,
+      "sellYear": 2025,
+      "sellDate": "2025-12-31",
+      "yearsActual": 10.0,
+      "cagr": 34.71,
+      "multiple": 19.69,
+      "isComplete": true,
+      "benchCagr": 14.82,
+      "diff": 19.89
+    },
+    {
+      "buyYear": 2016,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 9.8,
+      "cagr": 28.37,
+      "multiple": 11.7,
+      "isComplete": false,
+      "benchCagr": 14.73,
+      "diff": 13.64
+    },
+    {
+      "buyYear": 2017,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 8.8,
+      "cagr": 19.73,
+      "multiple": 4.92,
+      "isComplete": false,
+      "benchCagr": 13.95,
+      "diff": 5.78
+    },
+    {
+      "buyYear": 2018,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 7.8,
+      "cagr": 26.75,
+      "multiple": 6.43,
+      "isComplete": false,
+      "benchCagr": 16.53,
+      "diff": 10.23
+    },
+    {
+      "buyYear": 2019,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 6.8,
+      "cagr": 26.13,
+      "multiple": 4.91,
+      "isComplete": false,
+      "benchCagr": 14.49,
+      "diff": 11.64
+    },
+    {
+      "buyYear": 2020,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 5.8,
+      "cagr": 41.0,
+      "multiple": 7.46,
+      "isComplete": false,
+      "benchCagr": 13.84,
+      "diff": 27.16
+    },
+    {
+      "buyYear": 2021,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 4.8,
+      "cagr": 29.35,
+      "multiple": 3.48,
+      "isComplete": false,
+      "benchCagr": 10.99,
+      "diff": 18.36
+    },
+    {
+      "buyYear": 2022,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 3.9,
+      "cagr": 19.33,
+      "multiple": 1.97,
+      "isComplete": false,
+      "benchCagr": 20.11,
+      "diff": -0.78
+    },
+    {
+      "buyYear": 2023,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 2.9,
+      "cagr": 18.51,
+      "multiple": 1.62,
+      "isComplete": false,
+      "benchCagr": 18.01,
+      "diff": 0.5
+    },
+    {
+      "buyYear": 2024,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 1.9,
+      "cagr": 6.56,
+      "multiple": 1.12,
+      "isComplete": false,
+      "benchCagr": 14.4,
+      "diff": -7.84
+    }
+  ],
+  "loss5y": [],
+  "epsDecomp": [],
+  "epsNote": "EPS 데이터 미수집"
+}
