@@ -14,6 +14,7 @@ const STATUS_STYLE: Record<BStatus, string> = {
   mistake: 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300',
   private: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300',
   missed: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300',
+  mentioned: 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300',
 }
 
 function hrefOf(key: string) {
@@ -60,7 +61,7 @@ export default function BuffettPage() {
         </section>
 
         <div className="flex flex-wrap gap-1.5">
-          {(['all', 'hold', 'sold', 'mistake', 'private', 'missed'] as const).map(f => (
+          {(['all', 'hold', 'sold', 'mistake', 'private', 'missed', 'mentioned'] as const).map(f => (
             <button key={f} onClick={() => setFilter(f)}
               className={`px-3 py-1 rounded-full text-xs ${filter === f ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'}`}>
               {f === 'all' ? '전체' : STATUS_LABEL[f]}
