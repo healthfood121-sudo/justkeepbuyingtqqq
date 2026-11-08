@@ -10255,7 +10255,7 @@ export const DEEP_INSIGHTS: Record<string, DeepInsight> = {
     "scores": {
       "moat": "3점 — 되살아난 브랜드.",
       "pricing": "3점 — 할인 감소로 객단가 상승.",
-      "profit": "4점 — 영업이익률 10%대 중반(환급 제외), 빚 적음.",
+      "profit": "4점 — 영업이익률 12% 안팎(관세 환급 제외), 빚 적음.",
       "growth": "4점 — EPS 2022년 0.05 → 2024년 10.69달러.",
       "durability": "2점 — 의류 유행 사업."
     },
