@@ -1,5 +1,6 @@
 """최근 실적 발표 컨퍼런스콜 녹취록(Motley Fool)을 찾아 텍스트로 로그에 출력한다 (조사용, 커밋 없음).
 사용: python scripts/fetch_transcripts.py ROL ADBE ...   또는  ROL=https://www.fool.com/earnings/call-transcripts/...
+      COCO=ALL → 회사 페이지에 걸린 모든 분기 녹취록을 오래된 순서로 받는다
 녹취록 원문은 저작권 때문에 저장소에 넣지 않고 로그로만 본다."""
 import os, re, sys, time, html
 import requests
@@ -14,6 +15,19 @@ def get(u):
         return r.status_code, r.text
     except Exception as e:
         return 0, str(e)
+
+def find_all(t):
+    tl = t.lower().replace('-', '.')
+    found = set()
+    for ex in ('nasdaq', 'nyse'):
+        for suffix in ('', '#quote-earnings-transcripts'):
+            code, txt = get(f'https://www.fool.com/quote/{ex}/{tl}/{suffix}')
+            if code == 200:
+                found |= set(re.findall(r'/earnings/call-transcripts/\d{4}/\d{2}/\d{2}/[a-z0-9\-]+/', txt))
+    slug = f'-{tl}-'
+    hits = sorted({u for u in found if slug in u}, key=lambda x: x.split('/')[3:6])
+    print(f'  all transcripts on quote page: {len(hits)}', flush=True)
+    return ['https://www.fool.com' + u for u in hits]
 
 def find_url(t):
     tl = t.lower().replace('-', '.')
@@ -65,8 +79,14 @@ def brief(t, budget=36000):
         out.append(piece); used += len(piece)
     return '\n'.join(out)
 
+args = []
 for a in sys.argv[1:]:
     key, url = (a.split('=', 1) + [None])[:2]
+    if url == 'ALL':
+        args += [(f'{key}_{i:02d}', u) for i, u in enumerate(find_all(key))]
+    else:
+        args.append((key, url))
+for key, url in args:
     print(f'\n######## {key}', flush=True)
     url = url or find_url(key)
     if not url:
