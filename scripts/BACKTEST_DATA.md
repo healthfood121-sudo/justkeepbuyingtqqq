@@ -1117,3 +1117,8 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 - 절차는 앞의 10종목과 같음. BMI·RVLV는 export-fundamentals 첫 실행 때 야후 다운로드 오류("database is locked")로 빠져 단독으로 다시 실행.
 - 컨퍼런스콜이 최신 분기가 아닌 종목: PLAB(8월)·AGX(9월)·ANF(9월)·KFY(9월)·TPB(5월)·ENS(8월)·ASO(9월) — 받을 수 있는 최신.
 - `/private` 탭 재구성: `web/app/private/PrivateApp.tsx`(본문) + 탭별 `page.tsx`(엄선·sp500·ndx·r2k·nasdaq·other). 소속 지수는 `scripts/build_private_universe.py` → `web/app/private/universe.ts`(종목 추가 때마다 실행). 엄선 목록은 `web/app/private/picks.ts`(손으로 관리).
+
+#### LVMH 추가 (2026-11-08)
+- 파리 상장(MC.PA, 유로)이라 SEC 공시가 없다. `generate_all_sp500.py`에 `YF_TICKER["LVMH"]="MC.PA"`, `CURRENCY["LVMH"]="EUR"` → 'update-rolling-annual'(only=LVMH)로 `LVMH_rolling.json`(2000년부터, 10년 완결 16개).
+- `export_fundamentals.py`: `TICKER_NOW["LVMH"]="MC.PA"`, `NO_SEC={"LVMH"}`, `MANUAL_EPS["LVMH"]`(회사 발표 희석 EPS 2014~2025, 2017만 재작성 순이익 ÷ 주식 수 추정), 해외 거래소 접미사(.PA 등)를 유지하는 `yft()` 추가. 2014년 EPS는 에르메스 지분 분배 이익 포함(그해 PER이 낮게 보임).
+- 현금흐름·사업부 원자료(SEC)는 없음 → `export_segments.py` SKIP에 추가. 사업부 분석은 `dives.ts`에 회사 발표 숫자를 직접(`cur`) 넣었다. 컨퍼런스콜은 원문 사이트가 막혀 언론 보도 요약으로 정리.
