@@ -342,6 +342,31 @@ import feleData   from '@/public/data/rolling/FELE_rolling.json'
 import matxData   from '@/public/data/rolling/MATX_rolling.json'
 import kaiData    from '@/public/data/rolling/KAI_rolling.json'
 import asoData    from '@/public/data/rolling/ASO_rolling.json'
+import txrhData  from '@/public/data/rolling/TXRH_rolling.json'
+import gggData   from '@/public/data/rolling/GGG_rolling.json'
+import lecoData  from '@/public/data/rolling/LECO_rolling.json'
+import cheData   from '@/public/data/rolling/CHE_rolling.json'
+import ensgData  from '@/public/data/rolling/ENSG_rolling.json'
+import musaData  from '@/public/data/rolling/MUSA_rolling.json'
+import mklData   from '@/public/data/rolling/MKL_rolling.json'
+import ssdData   from '@/public/data/rolling/SSD_rolling.json'
+import dciData   from '@/public/data/rolling/DCI_rolling.json'
+import expData   from '@/public/data/rolling/EXP_rolling.json'
+import mliData   from '@/public/data/rolling/MLI_rolling.json'
+import fiveData  from '@/public/data/rolling/FIVE_rolling.json'
+import cslData   from '@/public/data/rolling/CSL_rolling.json'
+import msaData   from '@/public/data/rolling/MSA_rolling.json'
+import bjData    from '@/public/data/rolling/BJ_rolling.json'
+import cvltData  from '@/public/data/rolling/CVLT_rolling.json'
+import lrnData   from '@/public/data/rolling/LRN_rolling.json'
+import fizzData  from '@/public/data/rolling/FIZZ_rolling.json'
+import uslmData  from '@/public/data/rolling/USLM_rolling.json'
+import smplData  from '@/public/data/rolling/SMPL_rolling.json'
+import gctData   from '@/public/data/rolling/GCT_rolling.json'
+import bcpcData  from '@/public/data/rolling/BCPC_rolling.json'
+import nmihData  from '@/public/data/rolling/NMIH_rolling.json'
+import plmrData  from '@/public/data/rolling/PLMR_rolling.json'
+import algData   from '@/public/data/rolling/ALG_rolling.json'
 import lvmhData   from '@/public/data/rolling/LVMH_rolling.json'
 import metData        from '@/public/data/rolling/MET_rolling.json'
 import metaData       from '@/public/data/rolling/META_rolling.json'
@@ -869,6 +894,31 @@ const STOCKS: Array<{ key: string; data: StockData }> = [
   { key: 'MATX',  data: matxData   as unknown as StockData },
   { key: 'KAI',   data: kaiData    as unknown as StockData },
   { key: 'ASO',   data: asoData    as unknown as StockData },
+  { key: 'TXRH',  data: txrhData   as unknown as StockData },
+  { key: 'GGG',   data: gggData    as unknown as StockData },
+  { key: 'LECO',  data: lecoData   as unknown as StockData },
+  { key: 'CHE',   data: cheData    as unknown as StockData },
+  { key: 'ENSG',  data: ensgData   as unknown as StockData },
+  { key: 'MUSA',  data: musaData   as unknown as StockData },
+  { key: 'MKL',   data: mklData    as unknown as StockData },
+  { key: 'SSD',   data: ssdData    as unknown as StockData },
+  { key: 'DCI',   data: dciData    as unknown as StockData },
+  { key: 'EXP',   data: expData    as unknown as StockData },
+  { key: 'MLI',   data: mliData    as unknown as StockData },
+  { key: 'FIVE',  data: fiveData   as unknown as StockData },
+  { key: 'CSL',   data: cslData    as unknown as StockData },
+  { key: 'MSA',   data: msaData    as unknown as StockData },
+  { key: 'BJ',    data: bjData     as unknown as StockData },
+  { key: 'CVLT',  data: cvltData   as unknown as StockData },
+  { key: 'LRN',   data: lrnData    as unknown as StockData },
+  { key: 'FIZZ',  data: fizzData   as unknown as StockData },
+  { key: 'USLM',  data: uslmData   as unknown as StockData },
+  { key: 'SMPL',  data: smplData   as unknown as StockData },
+  { key: 'GCT',   data: gctData    as unknown as StockData },
+  { key: 'BCPC',  data: bcpcData   as unknown as StockData },
+  { key: 'NMIH',  data: nmihData   as unknown as StockData },
+  { key: 'PLMR',  data: plmrData   as unknown as StockData },
+  { key: 'ALG',   data: algData    as unknown as StockData },
   { key: 'LVMH',  data: lvmhData   as unknown as StockData },
   { key: 'MET',      data: metData        as unknown as StockData },
   { key: 'META',     data: metaData       as unknown as StockData },
