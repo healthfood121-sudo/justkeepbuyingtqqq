@@ -1,0 +1,25 @@
+name: 실적 발표문 받기 (SEC, 조사용)
+
+on:
+  workflow_dispatch:  # 결과는 로그로만 확인 (커밋 없음)
+    inputs:
+      ticker:
+        description: '종목 티커'
+        required: true
+      limit:
+        description: '최근 몇 개까지'
+        required: false
+        default: '40'
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install requests
+      - run: python scripts/fetch_sec_releases.py "${{ inputs.ticker }}" "${{ inputs.limit }}"
+        env:
+          PYTHONUNBUFFERED: "1"
