@@ -1,0 +1,119 @@
+{
+  "ticker": "BJ",
+  "name": "BJ's 홀세일 클럽",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "",
+  "current": {
+    "price": 109.4,
+    "pe": 23.9,
+    "divYield": 0,
+    "eps": 4.57
+  },
+  "fullPeriod": {
+    "start_date": "2018-06-28",
+    "end_date": "2026-11-06",
+    "start_price": 22.0,
+    "end_price": 109.4,
+    "years": 8.4,
+    "cagr": 21.15,
+    "multiple": 4.9727
+  },
+  "stats": {
+    "n": 0,
+    "min": null,
+    "minBuy": "",
+    "median": null,
+    "mean": null,
+    "max": null,
+    "maxBuy": "",
+    "over10": null,
+    "over15": null,
+    "over20": null,
+    "losses": 0,
+    "beatBench": null,
+    "beatTotal": null
+  },
+  "rows10y": [
+    {
+      "buyYear": 2018,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 7.8,
+      "cagr": 22.56,
+      "multiple": 4.94,
+      "isComplete": false,
+      "benchCagr": 16.53,
+      "diff": 6.03
+    },
+    {
+      "buyYear": 2019,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 6.8,
+      "cagr": 25.77,
+      "multiple": 4.81,
+      "isComplete": false,
+      "benchCagr": 14.49,
+      "diff": 11.29
+    },
+    {
+      "buyYear": 2020,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 5.8,
+      "cagr": 20.21,
+      "multiple": 2.93,
+      "isComplete": false,
+      "benchCagr": 13.84,
+      "diff": 6.37
+    },
+    {
+      "buyYear": 2021,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 4.8,
+      "cagr": 10.65,
+      "multiple": 1.63,
+      "isComplete": false,
+      "benchCagr": 10.99,
+      "diff": -0.34
+    },
+    {
+      "buyYear": 2022,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 3.9,
+      "cagr": 13.96,
+      "multiple": 1.65,
+      "isComplete": false,
+      "benchCagr": 20.11,
+      "diff": -6.15
+    },
+    {
+      "buyYear": 2023,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 2.9,
+      "cagr": 18.98,
+      "multiple": 1.64,
+      "isComplete": false,
+      "benchCagr": 18.01,
+      "diff": 0.97
+    },
+    {
+      "buyYear": 2024,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 1.9,
+      "cagr": 11.58,
+      "multiple": 1.22,
+      "isComplete": false,
+      "benchCagr": 14.4,
+      "diff": -2.83
+    }
+  ],
+  "loss5y": [],
+  "epsDecomp": [],
+  "epsNote": "EPS 데이터 미수집"
+}

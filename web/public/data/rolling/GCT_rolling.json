@@ -1,0 +1,75 @@
+{
+  "ticker": "GCT",
+  "name": "기가클라우드 테크놀로지",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "",
+  "current": {
+    "price": 58.37,
+    "pe": 12.6,
+    "divYield": 0,
+    "eps": 4.63
+  },
+  "fullPeriod": {
+    "start_date": "2022-08-18",
+    "end_date": "2026-11-06",
+    "start_price": 15.69,
+    "end_price": 58.37,
+    "years": 4.2,
+    "cagr": 36.53,
+    "multiple": 3.7202
+  },
+  "stats": {
+    "n": 0,
+    "min": null,
+    "minBuy": "",
+    "median": null,
+    "mean": null,
+    "max": null,
+    "maxBuy": "",
+    "over10": null,
+    "over15": null,
+    "over20": null,
+    "losses": 0,
+    "beatBench": null,
+    "beatTotal": null
+  },
+  "rows10y": [
+    {
+      "buyYear": 2022,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 3.9,
+      "cagr": 83.09,
+      "multiple": 10.26,
+      "isComplete": false,
+      "benchCagr": 20.11,
+      "diff": 62.98
+    },
+    {
+      "buyYear": 2023,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 2.9,
+      "cagr": 50.24,
+      "multiple": 3.19,
+      "isComplete": false,
+      "benchCagr": 18.01,
+      "diff": 32.23
+    },
+    {
+      "buyYear": 2024,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 1.9,
+      "cagr": 86.11,
+      "multiple": 3.15,
+      "isComplete": false,
+      "benchCagr": 14.4,
+      "diff": 71.71
+    }
+  ],
+  "loss5y": [],
+  "epsDecomp": [],
+  "epsNote": "EPS 데이터 미수집"
+}

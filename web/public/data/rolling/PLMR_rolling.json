@@ -1,0 +1,108 @@
+{
+  "ticker": "PLMR",
+  "name": "팔로마 홀딩스",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "",
+  "current": {
+    "price": 155.71,
+    "pe": 19.5,
+    "divYield": 1.15,
+    "eps": 7.98
+  },
+  "fullPeriod": {
+    "start_date": "2019-04-17",
+    "end_date": "2026-11-06",
+    "start_price": 18.9241,
+    "end_price": 155.71,
+    "years": 7.6,
+    "cagr": 32.17,
+    "multiple": 8.2281
+  },
+  "stats": {
+    "n": 0,
+    "min": null,
+    "minBuy": "",
+    "median": null,
+    "mean": null,
+    "max": null,
+    "maxBuy": "",
+    "over10": null,
+    "over15": null,
+    "over20": null,
+    "losses": 0,
+    "beatBench": null,
+    "beatTotal": null
+  },
+  "rows10y": [
+    {
+      "buyYear": 2019,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 6.8,
+      "cagr": 17.93,
+      "multiple": 3.09,
+      "isComplete": false,
+      "benchCagr": 14.49,
+      "diff": 3.44
+    },
+    {
+      "buyYear": 2020,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 5.8,
+      "cagr": 10.14,
+      "multiple": 1.76,
+      "isComplete": false,
+      "benchCagr": 13.84,
+      "diff": -3.7
+    },
+    {
+      "buyYear": 2021,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 4.8,
+      "cagr": 19.92,
+      "multiple": 2.41,
+      "isComplete": false,
+      "benchCagr": 10.99,
+      "diff": 8.93
+    },
+    {
+      "buyYear": 2022,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 3.9,
+      "cagr": 38.05,
+      "multiple": 3.46,
+      "isComplete": false,
+      "benchCagr": 20.11,
+      "diff": 17.94
+    },
+    {
+      "buyYear": 2023,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 2.9,
+      "cagr": 43.79,
+      "multiple": 2.82,
+      "isComplete": false,
+      "benchCagr": 18.01,
+      "diff": 25.78
+    },
+    {
+      "buyYear": 2024,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 1.9,
+      "cagr": 23.62,
+      "multiple": 1.48,
+      "isComplete": false,
+      "benchCagr": 14.4,
+      "diff": 9.22
+    }
+  ],
+  "loss5y": [],
+  "epsDecomp": [],
+  "epsNote": "EPS 데이터 미수집"
+}
