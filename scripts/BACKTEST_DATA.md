@@ -1118,6 +1118,12 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 - 컨퍼런스콜이 최신 분기가 아닌 종목: PLAB(8월)·AGX(9월)·ANF(9월)·KFY(9월)·TPB(5월)·ENS(8월)·ASO(9월) — 받을 수 있는 최신.
 - `/private` 탭 재구성: `web/app/private/PrivateApp.tsx`(본문) + 탭별 `page.tsx`(엄선·sp500·ndx·r2k·nasdaq·other). 소속 지수는 `scripts/build_private_universe.py` → `web/app/private/universe.ts`(종목 추가 때마다 실행). 엄선 목록은 `web/app/private/picks.ts`(손으로 관리).
 
+#### 숨은 알짜 2차 25종목 + 중형주 탭 (2026-11-08)
+- 새 파일 `scripts/data/sp400.json`(400종목): `scripts/fetch_russell2000.py IJH`(Actions '지수 구성 종목', 입력 etf=IJH) — iShares S&P 미드캡 400 ETF(IJH) SEC 보유 종목 보고서(N-PORT, 2026-06-30 기준). `build_private_universe.py`가 S&P 500이 아닌 종목에 M(중형주) 표시 → `/private/mid` 탭.
+- 선별표에서 S&P 400 상위: TXRH·GGG·LECO·CHE·ENSG·MUSA·SSD·DCI·EXP·MLI·FIVE·CSL·MSA·BJ + 지수 밖 MKL(작은 버크셔). 러셀2000 남은 상위: CVLT·LRN·FIZZ·USLM·SMPL·GCT·BCPC·NMIH·PLMR·ALG. (AWI는 S&P 400이 아니어서 FIVE로 교체)
+- 절차는 앞과 같음. MLI·FIZZ·USLM은 실적 콜을 열지 않아 `calls.ts`는 회사 발표문 기준. DCI·FIVE·BJ·PLMR 콜은 8~9월 것(받을 수 있는 최신).
+- 사업의 질: A 9(TXRH·GGG·SSD·DCI·EXP·CSL·MSA·USLM·BCPC), B 11, C 3(MLI·FIZZ·GCT), D 2(LRN·SMPL — 지금 위기). 엄선 탭에 GGG·DCI(핵심)·TXRH(고성장)·BCPC(숨은 알짜) 추가.
+
 #### LVMH 추가 (2026-11-08)
 - 파리 상장(MC.PA, 유로)이라 SEC 공시가 없다. `generate_all_sp500.py`에 `YF_TICKER["LVMH"]="MC.PA"`, `CURRENCY["LVMH"]="EUR"` → 'update-rolling-annual'(only=LVMH)로 `LVMH_rolling.json`(2000년부터, 10년 완결 16개).
 - `export_fundamentals.py`: `TICKER_NOW["LVMH"]="MC.PA"`, `NO_SEC={"LVMH"}`, `MANUAL_EPS["LVMH"]`(회사 발표 희석 EPS 2014~2025, 2017만 재작성 순이익 ÷ 주식 수 추정), 해외 거래소 접미사(.PA 등)를 유지하는 `yft()` 추가. 2014년 EPS는 에르메스 지분 분배 이익 포함(그해 PER이 낮게 보임).
