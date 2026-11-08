@@ -1,0 +1,114 @@
+{
+  "ticker": "RVLV",
+  "name": "리볼브 그룹",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "",
+  "current": {
+    "price": 18.53,
+    "pe": 20.1,
+    "divYield": 0,
+    "eps": 0.92
+  },
+  "fullPeriod": {
+    "start_date": "2019-06-07",
+    "end_date": "2026-11-06",
+    "start_price": 34.0,
+    "end_price": 18.53,
+    "years": 7.4,
+    "cagr": -7.86,
+    "multiple": 0.545
+  },
+  "stats": {
+    "n": 0,
+    "min": null,
+    "minBuy": "",
+    "median": null,
+    "mean": null,
+    "max": null,
+    "maxBuy": "",
+    "over10": null,
+    "over15": null,
+    "over20": null,
+    "losses": 0,
+    "beatBench": null,
+    "beatTotal": null
+  },
+  "rows10y": [
+    {
+      "buyYear": 2019,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 6.8,
+      "cagr": 0.13,
+      "multiple": 1.01,
+      "isComplete": false,
+      "benchCagr": 14.49,
+      "diff": -14.35
+    },
+    {
+      "buyYear": 2020,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 5.8,
+      "cagr": -8.51,
+      "multiple": 0.59,
+      "isComplete": false,
+      "benchCagr": 13.84,
+      "diff": -22.35
+    },
+    {
+      "buyYear": 2021,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 4.8,
+      "cagr": -20.41,
+      "multiple": 0.33,
+      "isComplete": false,
+      "benchCagr": 10.99,
+      "diff": -31.4
+    },
+    {
+      "buyYear": 2022,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 3.9,
+      "cagr": -4.65,
+      "multiple": 0.83,
+      "isComplete": false,
+      "benchCagr": 20.11,
+      "diff": -24.76
+    },
+    {
+      "buyYear": 2023,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 2.9,
+      "cagr": 3.98,
+      "multiple": 1.12,
+      "isComplete": false,
+      "benchCagr": 18.01,
+      "diff": -14.03
+    },
+    {
+      "buyYear": 2024,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 1.9,
+      "cagr": -27.4,
+      "multiple": 0.55,
+      "isComplete": false,
+      "benchCagr": 14.4,
+      "diff": -41.81
+    }
+  ],
+  "loss5y": [
+    {
+      "buyYear": 2020,
+      "sellYear": 2025,
+      "cagr": -0.64
+    }
+  ],
+  "epsDecomp": [],
+  "epsNote": "EPS 데이터 미수집"
+}

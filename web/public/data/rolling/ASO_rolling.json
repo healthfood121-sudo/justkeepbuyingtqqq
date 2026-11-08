@@ -1,0 +1,97 @@
+{
+  "ticker": "ASO",
+  "name": "아카데미 스포츠",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "",
+  "current": {
+    "price": 67.27,
+    "pe": 11.3,
+    "divYield": 0.89,
+    "eps": 5.96
+  },
+  "fullPeriod": {
+    "start_date": "2020-10-02",
+    "end_date": "2026-11-06",
+    "start_price": 12.4716,
+    "end_price": 67.265,
+    "years": 6.1,
+    "cagr": 31.85,
+    "multiple": 5.3934
+  },
+  "stats": {
+    "n": 0,
+    "min": null,
+    "minBuy": "",
+    "median": null,
+    "mean": null,
+    "max": null,
+    "maxBuy": "",
+    "over10": null,
+    "over15": null,
+    "over20": null,
+    "losses": 0,
+    "beatBench": null,
+    "beatTotal": null
+  },
+  "rows10y": [
+    {
+      "buyYear": 2020,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 5.8,
+      "cagr": 23.15,
+      "multiple": 3.38,
+      "isComplete": false,
+      "benchCagr": 13.84,
+      "diff": 9.31
+    },
+    {
+      "buyYear": 2021,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 4.8,
+      "cagr": 10.12,
+      "multiple": 1.6,
+      "isComplete": false,
+      "benchCagr": 10.99,
+      "diff": -0.87
+    },
+    {
+      "buyYear": 2022,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 3.9,
+      "cagr": 7.56,
+      "multiple": 1.32,
+      "isComplete": false,
+      "benchCagr": 20.11,
+      "diff": -12.55
+    },
+    {
+      "buyYear": 2023,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 2.9,
+      "cagr": 1.62,
+      "multiple": 1.05,
+      "isComplete": false,
+      "benchCagr": 18.01,
+      "diff": -16.39
+    },
+    {
+      "buyYear": 2024,
+      "sellYear": 2026,
+      "sellDate": "2026-11-06",
+      "yearsActual": 1.9,
+      "cagr": 9.98,
+      "multiple": 1.19,
+      "isComplete": false,
+      "benchCagr": 14.4,
+      "diff": -4.43
+    }
+  ],
+  "loss5y": [],
+  "epsDecomp": [],
+  "epsNote": "EPS 데이터 미수집"
+}
