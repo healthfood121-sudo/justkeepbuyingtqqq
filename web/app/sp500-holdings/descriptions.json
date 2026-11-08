@@ -3208,5 +3208,65 @@
     "sector": "의료용 부품 제조",
     "products": "수술용 일회용 부품·포장·로봇 수술 드레이프 맞춤 제조",
     "type": "stock"
+  },
+  "IRMD": {
+    "name": "아이라디메드",
+    "sector": "MRI용 의료기기",
+    "products": "MRI 촬영실에서 쓰는 비자성 수액 펌프·환자 모니터",
+    "type": "stock"
+  },
+  "PLAB": {
+    "name": "포트로닉스",
+    "sector": "반도체 포토마스크",
+    "products": "반도체·평판 디스플레이 회로 원판(포토마스크) 제조",
+    "type": "stock"
+  },
+  "EXPO": {
+    "name": "익스포넌트",
+    "sector": "공학·과학 컨설팅",
+    "products": "사고·제품 결함 원인 분석, 소송 전문가 증언, 규제 대응 컨설팅",
+    "type": "stock"
+  },
+  "CSW": {
+    "name": "CSW 인더스트리얼스",
+    "sector": "건물 설비 부품",
+    "products": "냉난방·배관용 부품, 특수 화학·실란트",
+    "type": "stock"
+  },
+  "BMI": {
+    "name": "배저 미터",
+    "sector": "스마트 수도 계량",
+    "products": "초음파 수도 계량기·원격 검침·수질 모니터링 소프트웨어",
+    "type": "stock"
+  },
+  "LMAT": {
+    "name": "르메이트르 배스큘러",
+    "sector": "혈관 수술 기기",
+    "products": "말초혈관 수술용 기기·생체 이식재(혈관 패치·이식편)",
+    "type": "stock"
+  },
+  "MWA": {
+    "name": "뮬러 워터 프로덕츠",
+    "sector": "수도 인프라 장비",
+    "products": "소화전·수도 밸브·누수 감지·계량 장비",
+    "type": "stock"
+  },
+  "WDFC": {
+    "name": "WD-40",
+    "sector": "다용도 윤활제",
+    "products": "WD-40 방청 윤활제·청소용품 브랜드",
+    "type": "stock"
+  },
+  "IDCC": {
+    "name": "인터디지털",
+    "sector": "무선·영상 특허",
+    "products": "휴대폰·TV·영상 압축 표준 특허 라이선스",
+    "type": "stock"
+  },
+  "AGX": {
+    "name": "아르간",
+    "sector": "발전소 시공",
+    "products": "가스·재생에너지 발전소 설계·조달·시공(EPC)",
+    "type": "stock"
   }
 }
