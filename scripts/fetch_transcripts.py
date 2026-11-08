@@ -1,6 +1,7 @@
 """최근 실적 발표 컨퍼런스콜 녹취록(Motley Fool)을 찾아 텍스트로 로그에 출력한다 (조사용, 커밋 없음).
 사용: python scripts/fetch_transcripts.py ROL ADBE ...   또는  ROL=https://www.fool.com/earnings/call-transcripts/...
       COCO=ALL → 회사 페이지에 걸린 모든 분기 녹취록을 오래된 순서로 받는다
+      COCO=MB  → MarketBeat 실적 페이지에 걸린 모든 분기 녹취록(Motley Fool에 없는 옛 분기용)
 녹취록 원문은 저작권 때문에 저장소에 넣지 않고 로그로만 본다."""
 import os, re, sys, time, html
 import requests
@@ -28,6 +29,18 @@ def find_all(t):
     hits = sorted({u for u in found if slug in u}, key=lambda x: x.split('/')[3:6])
     print(f'  all transcripts on quote page: {len(hits)}', flush=True)
     return ['https://www.fool.com' + u for u in hits]
+
+def find_mb(t):
+    hits = set()
+    for ex in ('NASDAQ', 'NYSE'):
+        code, txt = get(f'https://www.marketbeat.com/stocks/{ex}/{t.upper()}/earnings/')
+        print(f'  marketbeat {ex} {code} {len(txt)}', flush=True)
+        if code == 200:
+            hits |= set(re.findall(r'/earnings/reports/\d{4}-\d{1,2}-\d{1,2}-[a-z0-9\-]+/', txt))
+    key = lambda u: tuple(int(x) for x in u.split('/')[3].split('-')[:3])
+    hits = sorted(hits, key=key)
+    print(f'  marketbeat transcripts: {len(hits)}', flush=True)
+    return ['https://www.marketbeat.com' + u for u in hits]
 
 def find_url(t):
     tl = t.lower().replace('-', '.')
@@ -84,6 +97,8 @@ for a in sys.argv[1:]:
     key, url = (a.split('=', 1) + [None])[:2]
     if url == 'ALL':
         args += [(f'{key}_{i:02d}', u) for i, u in enumerate(find_all(key))]
+    elif url == 'MB':
+        args += [(f'{key}_MB{i:02d}', u) for i, u in enumerate(find_mb(key))]
     else:
         args.append((key, url))
 for key, url in args:
