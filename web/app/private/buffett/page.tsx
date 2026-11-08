@@ -19,7 +19,7 @@ const STATUS_STYLE: Record<BStatus, string> = {
 
 function hrefOf(key: string) {
   const f = UNIV[key] ?? ''
-  const u = f.includes('S') ? 'sp500' : f.includes('N') ? 'ndx' : f.includes('R') ? 'r2k' : f.includes('Q') ? 'nasdaq' : 'other'
+  const u = f.includes('S') ? 'sp500' : f.includes('N') ? 'ndx' : f.includes('M') ? 'mid' : f.includes('R') ? 'r2k' : f.includes('Q') ? 'nasdaq' : 'other'
   return `/private/${u}?s=${key}`
 }
 

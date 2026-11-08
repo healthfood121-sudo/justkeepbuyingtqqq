@@ -10242,16 +10242,17 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
 }
 
 // ── 메인 페이지 ──────────────────────────────────────────────
-// ── 탭(종목 묶음): 엄선 · S&P 500 · 나스닥100 · 러셀2000 · 나스닥 상장 · 기타 ──
-export type Universe = 'picks' | 'sp500' | 'ndx' | 'r2k' | 'nasdaq' | 'other'
+// ── 탭(종목 묶음): 엄선 · S&P 500 · 나스닥100 · 중형주 · 러셀2000 · 나스닥 상장 · 기타 ──
+export type Universe = 'picks' | 'sp500' | 'ndx' | 'mid' | 'r2k' | 'nasdaq' | 'other'
 const PICK_KEYS = new Set(PICK_GROUPS.flatMap(g => g.items.map(it => it.key)))
 const UNIVERSES: { u: Universe; href: string; label: string; title: string; sub: string; test: (k: string) => boolean }[] = [
   { u: 'picks', href: '/private', label: '엄선', title: '엄선 포트폴리오', sub: '전체 지수에서 고른 종목을 포트폴리오 안의 역할별로 묶었다', test: k => PICK_KEYS.has(k) },
   { u: 'sp500', href: '/private/sp500', label: 'S&P 500', title: 'S&P 500', sub: '미국 대형주 500 — 지금 S&P 500에 들어 있는 분석 종목', test: k => (UNIV[k] ?? '').includes('S') },
   { u: 'ndx', href: '/private/ndx', label: '나스닥100', title: '나스닥100', sub: '나스닥 상장 대형 비금융 100 — 분석한 종목', test: k => (UNIV[k] ?? '').includes('N') },
+  { u: 'mid', href: '/private/mid', label: '중형주', title: '중형주(S&P 미드캡 400)', sub: 'S&P 500보다 작고 러셀2000보다 큰 미국 중형주 400(IJH SEC 보유 종목 보고서 기준) — 분석한 종목', test: k => (UNIV[k] ?? '').includes('M') },
   { u: 'r2k', href: '/private/r2k', label: '러셀2000', title: '러셀2000', sub: '미국 소형주 2000(IWM SEC 보유 종목 보고서 기준) — 분석한 종목', test: k => (UNIV[k] ?? '').includes('R') },
   { u: 'nasdaq', href: '/private/nasdaq', label: '나스닥 상장', title: '나스닥 상장 종목', sub: '나스닥 거래소에 상장된 분석 종목(나스닥 종합지수 구성)', test: k => (UNIV[k] ?? '').includes('Q') },
-  { u: 'other', href: '/private/other', label: '기타', title: '기타(해외·중형·ETF)', sub: '위 지수 어디에도 없는 종목 — 해외 상장, 러셀1000 중형주, 나스닥100 ETF', test: k => !(UNIV[k] ?? '') },
+  { u: 'other', href: '/private/other', label: '기타', title: '기타(해외·중형·ETF)', sub: '위 지수 어디에도 없는 종목 — 해외 상장, 지수 밖 중대형주, 나스닥100 ETF', test: k => !(UNIV[k] ?? '') },
 ]
 
 function UniverseTabs({ u, counts }: { u: Universe; counts: Record<string, number> }) {
@@ -10274,7 +10275,7 @@ function PicksPanel({ onPick, activeKey }: { onPick: (key: string) => void; acti
   return (
     <section className="space-y-4">
       <div className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-        S&amp;P 500·나스닥100·러셀2000·나스닥 상장 전체 분석 종목 중에서, <b>사업의 질(A등급 중심)</b> + <b>10년 보유 성적</b> + <b>지금 값(PER이 평소 대비 어디인지)</b> + <b>증시가 빠질 때 얼마나 같이 빠지는지</b>를 보고 Claude가 고른 목록이다. 역할별 비중은 예시일 뿐 — 각 묶음에서 몇 개씩 골라 포트폴리오를 짜면 된다. 종목을 누르면 아래에 상세 분석이 열린다. ({PICKS_AS_OF} 기준)
+        S&amp;P 500·나스닥100·중형주·러셀2000·나스닥 상장 전체 분석 종목 중에서, <b>사업의 질(A등급 중심)</b> + <b>10년 보유 성적</b> + <b>지금 값(PER이 평소 대비 어디인지)</b> + <b>증시가 빠질 때 얼마나 같이 빠지는지</b>를 보고 Claude가 고른 목록이다. 역할별 비중은 예시일 뿐 — 각 묶음에서 몇 개씩 골라 포트폴리오를 짜면 된다. 종목을 누르면 아래에 상세 분석이 열린다. ({PICKS_AS_OF} 기준)
       </div>
       {PICK_GROUPS.map(g => (
         <div key={g.id} className="rounded-xl border border-gray-200 dark:border-gray-800 p-3 sm:p-4">
