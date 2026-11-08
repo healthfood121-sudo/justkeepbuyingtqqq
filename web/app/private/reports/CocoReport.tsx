@@ -109,7 +109,7 @@ export default function CocoReport() {
 
 
         <nav className="flex flex-wrap gap-1.5 text-xs">
-          {[['#pb', 'PB란?'], ['#plan', '분석 계획 9가지'], ['#history', '20년 역사'], ['#how', '어떻게 이겼나'], ['#peers', '유행일까?'], ['#cost', '운임·원료 분석'], ['#calls', '전 분기 실적·콜'], ['#scen', '10년 시나리오'], ['#warn', '유행 경고 신호']].map(([h, t]) => (
+          {[['#pb', 'PB란?'], ['#plan', '분석 계획 9가지'], ['#history', '20년 역사'], ['#how', '어떻게 이겼나'], ['#peers', '유행일까?'], ['#cost', '운임·원료 분석'], ['#calls', '전 분기 실적·콜'], ['#why15', '왜 15%로 보나'], ['#scen', '10년 시나리오'], ['#warn', '유행 경고 신호']].map(([h, t]) => (
             <a key={h} href={h} className="px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">{t}</a>
           ))}
         </nav>
@@ -346,6 +346,29 @@ export default function CocoReport() {
           </div>
           {!allQ && <button onClick={() => setAllQ(true)} className="text-xs text-blue-600 dark:text-blue-400 hover:underline">2021~2024년 분기도 모두 보기 ({CALLS.length - 8}개 더) ↓</button>}
           <p className={small}><b>21분기를 이어 보면:</b> 브랜드 매출이 줄어든 분기는 한 번도 없다. 이익률은 20%(2022년 1분기)에서 42%(2024년 1분기) 사이를 오갔고, 흔들릴 때마다 원인은 운임·컨테이너·관세였다. 2025년부터는 성장이 오히려 빨라졌다(브랜드 +25% → +42%).</p>
+        </section>
+
+        <section id="why15" className={`${sec} scroll-mt-20`}>
+          <h2 className={h2}>7-2. 주가는 해마다 40%씩 올랐는데, 왜 앞으로는 EPS 연 15% 안팎으로 보나</h2>
+          <p className={small}><b>주가 수익률 = EPS 성장 + PER 변화.</b> 상장(2021년 말) 뒤 주가는 연 약 43% 올랐는데, 같은 기간 EPS도 연 약 43% 늘었고 PER은 32배 → 31배로 거의 그대로였다. 즉 <b>주가는 이익만큼 정확히 올랐다.</b> 문제는 그 이익 성장이 앞으로도 반복될 수 있는 종류인가다.</p>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead><tr className="text-gray-400 border-b border-gray-200 dark:border-gray-800"><th className="text-left py-1.5 px-2 font-medium"></th><th className="text-right py-1.5 px-2 font-medium">2022년</th><th className="text-right py-1.5 px-2 font-medium">최근 1년(2026년 3분기까지)</th><th className="text-right py-1.5 px-2 font-medium">배수</th></tr></thead>
+              <tbody className="text-gray-700 dark:text-gray-200">
+                <tr className="border-b border-gray-100 dark:border-gray-900"><td className="py-1.5 px-2 font-medium">매출</td><td className="py-1.5 px-2 text-right tabular-nums">4.28억 달러</td><td className="py-1.5 px-2 text-right tabular-nums">약 7.7억 달러</td><td className="py-1.5 px-2 text-right tabular-nums">약 1.8배</td></tr>
+                <tr className="border-b border-gray-100 dark:border-gray-900"><td className="py-1.5 px-2 font-medium">순이익률(순이익÷매출)</td><td className="py-1.5 px-2 text-right tabular-nums">약 2%</td><td className="py-1.5 px-2 text-right tabular-nums">약 15%</td><td className="py-1.5 px-2 text-right tabular-nums">약 8배</td></tr>
+                <tr><td className="py-1.5 px-2 font-medium">EPS</td><td className="py-1.5 px-2 text-right tabular-nums">0.14달러</td><td className="py-1.5 px-2 text-right tabular-nums">1.98달러</td><td className="py-1.5 px-2 text-right tabular-nums">약 14배</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <ul className="list-disc pl-5 space-y-1 text-xs leading-relaxed text-gray-700 dark:text-gray-200">
+            <li><b>이익이 14배 된 이유의 대부분은 "이익률 회복"이다.</b> 2022년은 운임 폭등으로 이익이 거의 사라진 해(매출총이익률 24%)였다. 운임이 정상화되며 이익률이 원래 자리(37~40%)로 돌아오자 이익이 8배로 뛰었다. 이건 <b>한 번뿐인 회복</b>이다 — 이익률이 다시 24%에서 40%로 올라갈 일은 없다.</li>
+            <li><b>매출 자체는 연 약 17~19% 늘었다.</b> 이게 반복 가능한 성장에 가깝다. 그런데 2026년 매출 +30%대에는 코프라 인수(약 1억 달러)·월마트 매대 탈환·가격 인상 같은 <b>해마다 반복되지 않는 효과</b>가 섞여 있다.</li>
+            <li><b>최근 1년 EPS 1.98달러에도 일회성이 있다.</b> 2026년 2분기 관세 환급 1,560만 달러(세후 주당 약 0.2달러)를 빼면 바탕 이익은 1.8달러 안팎이다.</li>
+            <li><b>그래서 앞으로는:</b> 매출 연 12~15%(회사의 장기 목표가 "매출 연 10%대 중반 성장") + 이익률은 대체로 유지 + 자사주로 주식 수 조금 감소 → <b>EPS 연 13~17%</b>가 기본 가정. 이게 15%의 근거다.</li>
+          </ul>
+          <p className={small}><b>더 빠를 수는 없나?</b> 가까운 1~2년은 15%보다 빠를 수 있다 — 범주가 미국 +28%·유럽 +66%로 크고, 2027년 하반기 증설과 가격 인상이 있다. 예를 들어 <b>3년 동안 연 25%, 이후 7년 연 12%</b>로 가정해도 10년 뒤 EPS는 약 8.5달러로, 리포트의 &ldquo;좋은 그림&rdquo;(연 15% → 약 8달러)과 비슷한 곳에 도착한다. 고성장은 대개 처음 몇 년에 몰리고 회사가 커질수록 느려지기 때문에, <b>10년 평균</b>으로는 15% 안팎이 현실적인 눈높이다.</p>
+          <p className={small}><b>주가에 주는 뜻:</b> 앞으로 주가가 다시 연 40%씩 오르려면 이익이 연 40%씩 늘거나, PER이 31배에서 더 올라가야 한다. 이익률 회복이 끝난 지금 둘 다 쉽지 않다. 지난 4년의 40%는 <b>&ldquo;무너진 이익이 정상으로 돌아온 효과 + 매출 성장&rdquo;</b>이었고, 앞으로 기대할 수 있는 건 주로 <b>매출 성장분</b>이다.</p>
         </section>
 
         {/* 시나리오 */}
