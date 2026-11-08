@@ -3148,5 +3148,65 @@
     "sector": "남미 전자상거래·핀테크",
     "products": "중남미 온라인 장터·물류(Mercado Envios)·결제·대출(Mercado Pago)",
     "type": "stock"
+  },
+  "COCO": {
+    "name": "바이타 코코",
+    "sector": "코코넛워터 음료",
+    "products": "코코넛워터(Vita Coco)·자체 브랜드 음료·대형 유통사 PB 제조",
+    "type": "stock"
+  },
+  "TGLS": {
+    "name": "테크노글라스",
+    "sector": "건축용 유리·창호",
+    "products": "고층 건물·주택용 강화 유리·알루미늄 창호(콜롬비아 생산, 미국 판매)",
+    "type": "stock"
+  },
+  "IPAR": {
+    "name": "인터퍼퓸",
+    "sector": "향수 라이선스",
+    "products": "몽블랑·지미추·코치·랑방 등 브랜드 향수 기획·제조·유통",
+    "type": "stock"
+  },
+  "BOOT": {
+    "name": "부트 반",
+    "sector": "웨스턴·작업복 소매",
+    "products": "카우보이 부츠·청바지·작업화 매장 체인과 자체 브랜드",
+    "type": "stock"
+  },
+  "FSS": {
+    "name": "페더럴 시그널",
+    "sector": "특수 차량",
+    "products": "도로 청소차·하수 처리차·제설 장비·경고 신호 장비",
+    "type": "stock"
+  },
+  "MHO": {
+    "name": "M/I 홈즈",
+    "sector": "주택 건설",
+    "products": "미국 중서부·남부 단독주택 건설·주택담보대출",
+    "type": "stock"
+  },
+  "MGRC": {
+    "name": "맥그래스 렌트코프",
+    "sector": "장비 임대",
+    "products": "조립식 사무실·교실(모바일 모듈러)·전자 시험 장비 임대",
+    "type": "stock"
+  },
+  "MYRG": {
+    "name": "MYR 그룹",
+    "sector": "전력망 시공",
+    "products": "송배전선·변전소 건설, 상업·산업용 전기 공사",
+    "type": "stock"
+  },
+  "LNTH": {
+    "name": "랜티어스",
+    "sector": "방사성 진단 의약품",
+    "products": "전립선암 PET 진단제(Pylarify)·심장 초음파 조영제(Definity)",
+    "type": "stock"
+  },
+  "UFPT": {
+    "name": "UFP 테크놀로지스",
+    "sector": "의료용 부품 제조",
+    "products": "수술용 일회용 부품·포장·로봇 수술 드레이프 맞춤 제조",
+    "type": "stock"
   }
 }
