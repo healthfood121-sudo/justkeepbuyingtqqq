@@ -324,6 +324,7 @@ export const UNIV: Record<string, string> = {
   "MATX": "R",
   "KAI": "R",
   "ASO": "RQ",
+  "LVMH": "",
   "MET": "S",
   "META": "SNQ",
   "MGM": "S",

@@ -342,6 +342,7 @@ import feleData   from '@/public/data/rolling/FELE_rolling.json'
 import matxData   from '@/public/data/rolling/MATX_rolling.json'
 import kaiData    from '@/public/data/rolling/KAI_rolling.json'
 import asoData    from '@/public/data/rolling/ASO_rolling.json'
+import lvmhData   from '@/public/data/rolling/LVMH_rolling.json'
 import metData        from '@/public/data/rolling/MET_rolling.json'
 import metaData       from '@/public/data/rolling/META_rolling.json'
 import mgmData        from '@/public/data/rolling/MGM_rolling.json'
@@ -868,6 +869,7 @@ const STOCKS: Array<{ key: string; data: StockData }> = [
   { key: 'MATX',  data: matxData   as unknown as StockData },
   { key: 'KAI',   data: kaiData    as unknown as StockData },
   { key: 'ASO',   data: asoData    as unknown as StockData },
+  { key: 'LVMH',  data: lvmhData   as unknown as StockData },
   { key: 'MET',      data: metData        as unknown as StockData },
   { key: 'META',     data: metaData       as unknown as StockData },
   { key: 'MGM',      data: mgmData        as unknown as StockData },
