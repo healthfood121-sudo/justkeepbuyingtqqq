@@ -2,9 +2,10 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { PB, HISTORY, CALLS } from './data'
+import { PB, HISTORY, CALLS } from './cocoData'
 
-// 바이타 코코(COCO) 심층 리포트 — "유행으로 끝날 음료인가, 오래 살아남을 음료인가"
+// 바이타 코코(COCO) 심층 리포트 — 종목 분석 화면(PrivateApp) 안에 함께 보여 준다.
+// "유행으로 끝날 음료인가, 오래 살아남을 음료인가"
 // 숫자 출처: 회사 실적 발표·SEC 공시(매출총이익률 2021~2024), 컨퍼런스콜(2026년 2·3분기), CAGNY 2026 발표 보도.
 // 2025년 매출총이익률은 외부 집계 자료라 '약'으로 표시. 시나리오 숫자는 추정.
 
@@ -85,11 +86,11 @@ export default function CocoReport() {
   const [openQ, setOpenQ] = useState<string | null>('2026년 3분기')
   const [allQ, setAllQ] = useState(false)
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950">
-      <article className="max-w-4xl mx-auto px-4 sm:px-6 py-10 space-y-10">
+    <div id="coco-report" className="rounded-xl border-2 border-blue-200 dark:border-blue-900/60 scroll-mt-20">
+      <article className="px-3 sm:px-5 py-6 space-y-10">
         <header className="space-y-2">
-          <p className="text-xs text-gray-400">심층 리포트 · 2026-11-08 기준 · <Link href="/private/r2k?s=COCO" className="text-blue-600 dark:text-blue-400 hover:underline">COCO 종목 분석으로 →</Link></p>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">바이타 코코(COCO) — 유행으로 끝날까, 오래 살아남을까?</h1>
+          <p className="text-xs text-gray-400">심층 리포트 · 2026-11-08 기준</p>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">바이타 코코(COCO) — 유행으로 끝날까, 오래 살아남을까?</h2>
           <p className={p}>
             음료는 수천 가지가 나왔다 사라진다. 이 리포트는 &ldquo;바이타 코코가 좋은 회사인가&rdquo;보다 먼저 <b>&ldquo;코코넛워터가 10년 뒤에도 사람들이 마시는 음료일까&rdquo;</b>를 따진다.
             아래 9가지 질문으로 쪼개서 답하고, 20년 역사(어떻게 경쟁에서 이기고 위기를 넘었나)와 상장 뒤 21개 분기의 실적·컨퍼런스콜을 모두 훑은 다음, 비슷한 음료들이 걸어간 길과 비교해 10년 시나리오와 &ldquo;유행이 꺼지는 신호&rdquo; 체크리스트로 마무리한다.

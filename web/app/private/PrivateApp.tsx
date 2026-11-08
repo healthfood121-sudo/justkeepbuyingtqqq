@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, type ReactNode } from 'react'
+import CocoReport from './reports/CocoReport'
 import Link from 'next/link'
 import { UNIV } from './universe'
 import { PICK_GROUPS, PICKS_AS_OF } from './picks'
@@ -10153,7 +10154,7 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
         자동 분석{f ? ` · 데이터 ${f.generated}` : ''} · EPS는 SEC 공시(10-K) 기준{deep ? ` · 개별 분석 ${deep.asOf}` : ''}
       </p>
       {deep && <p className="text-sm font-semibold text-amber-700 dark:text-amber-400 mt-1">{deep.headline}</p>}
-      {REPORTS[stockKey] && <Link href={REPORTS[stockKey]} className="inline-block mt-1 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">심층 리포트 읽기 →</Link>}
+      {REPORTS[stockKey] && <a href="#coco-report" className="inline-block mt-1 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">아래 심층 리포트로 ↓</a>}
     </div>
   )
 
@@ -10166,6 +10167,7 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
         <CallBox stockKey={stockKey} />
         <SegmentBox stockKey={stockKey} />
         <DiveBox stockKey={stockKey} num="1-2." />
+        {REPORTS[stockKey]?.()}
         {deep && (<>
           <div className={box}><h4 className={h4}>1. 지금 한눈에</h4><DeepNow d={deep} /></div>
           <DeepFuture d={deep} num="2." />
@@ -10259,6 +10261,7 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
       <CallBox stockKey={stockKey} />
       <SegmentBox stockKey={stockKey} num={`${nNow}-1.`} />
       <DiveBox stockKey={stockKey} num={`${nNow}-2.`} />
+      {REPORTS[stockKey]?.()}
 
       {live && <StockValueClock f={f as ClockFund} stockKey={stockKey} rolling={data} title={`${nClock}. 이익 시계 — 적정가 선 vs 주가`} judged={deep?.growth} />}
 
@@ -10294,8 +10297,8 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
 
 // ── 메인 페이지 ──────────────────────────────────────────────
 // ── 탭(종목 묶음): 엄선 · S&P 500 · 나스닥100 · 중형주 · 러셀2000 · 나스닥 상장 · 기타 ──
-// 종목별 심층 리포트(긴 글) 주소
-const REPORTS: Record<string, string> = { COCO: '/private/report/coco' }
+// 종목별 심층 리포트(긴 글) — 종목 분석 화면 안에 함께 보여 준다
+const REPORTS: Record<string, () => ReactNode> = { COCO: () => <CocoReport /> }
 
 export type Universe = 'picks' | 'sp500' | 'ndx' | 'mid' | 'r2k' | 'nasdaq' | 'other'
 const PICK_KEYS = new Set(PICK_GROUPS.flatMap(g => g.items.map(it => it.key)))
