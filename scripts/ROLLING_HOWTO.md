@@ -117,7 +117,7 @@ print(f"  저장 → {out_path}")
 
 ## 5. 웹 페이지 연결
 
-`web/app/private/page.tsx` 상단에 import 추가:
+`web/app/private/PrivateApp.tsx` 상단에 import 추가:
 
 ```tsx
 import xxxData from '@/public/data/rolling/XXX_rolling.json'
@@ -132,6 +132,8 @@ const STOCKS = [
   { key: 'XXX', data: xxxData as StockData },  // 추가
 ]
 ```
+
+그다음 `python3 scripts/build_private_universe.py` 를 실행해 소속 지수(S&P 500·나스닥100·러셀2000·나스닥 상장) 표시(`web/app/private/universe.ts`)를 갱신한다 — 안 하면 그 종목이 '기타' 탭에 들어간다. 엄선 탭에 넣으려면 `web/app/private/picks.ts`에 추가.
 
 → 나머지 UI(탭, 차트, 테이블, EPS 분해)는 `StockData` 타입 기반으로 자동 렌더링됨.
 

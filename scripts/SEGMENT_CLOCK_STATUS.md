@@ -1,6 +1,6 @@
 # 사업부별 시계 진행 현황
 
-`/private` 이익 시계 아래 "사업부별 시계"(`web/app/private/page.tsx`).
+`/private` 이익 시계 아래 "사업부별 시계"(`web/app/private/PrivateApp.tsx`).
 마지막 정리: 2026-10-27
 
 ## 두 가지 방식

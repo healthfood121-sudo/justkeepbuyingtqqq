@@ -21,7 +21,7 @@ ROLL = ROOT / "web" / "public" / "data" / "rolling"
 
 
 # 1993~1999년 연말 종가 (EUR, 트레이딩뷰 RMS 월봉 종가, 2026-10 입력). 1993년은 1994년 1월 시가.
-# 월별 전체 값은 web/app/private/page.tsx 의 RMS_PRE2000_MONTHLY 에 있다.
+# 월별 전체 값은 web/app/private/PrivateApp.tsx 의 RMS_PRE2000_MONTHLY 에 있다.
 MANUAL_YE = {1993: 7.96, 1994: 9.824, 1995: 15.585, 1996: 24.39, 1997: 21.34, 1998: 23.02, 1999: 49.93}
 
 

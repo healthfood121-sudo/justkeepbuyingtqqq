@@ -15,12 +15,13 @@ export default function Header({ maxWidth = 'max-w-6xl', activePage }: HeaderPro
   // /private 아래에서는 메뉴가 프라이빗 전용 탭으로 바뀐다 (로고는 그대로 메인 페이지로)
   const isPrivate = pathname.startsWith('/private')
   const privTabs: Array<[string, string, string]> = [
-    ['/private', '위대한 기업', '위대한 기업'],
-    ['/private/screen', '숨은 알짜', '숨은 알짜 찾기'],
+    ['/private', '종목 분석', '종목 분석(엄선·S&P 500·나스닥100·러셀2000)'],
+    ['/private/screen', '전체 선별표', '미국 상장 전 종목 숫자 선별표'],
     ['/private/kostolany', '코스톨라니', '코스톨라니 달걀'],
     ['/private/howard-marks', '하워드 막스', '하워드 막스'],
   ]
-  const privOn = (href: string) => href === '/private' ? pathname === '/private' : pathname.startsWith(href)
+  const UNIV_PATHS = ['/private/sp500', '/private/ndx', '/private/r2k', '/private/nasdaq', '/private/other']
+  const privOn = (href: string) => href === '/private' ? (pathname === '/private' || UNIV_PATHS.some(p => pathname.startsWith(p))) : pathname.startsWith(href)
 
   return (
     <header className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 sticky top-0 z-50">
