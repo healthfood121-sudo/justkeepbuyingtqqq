@@ -3268,5 +3268,65 @@
     "sector": "발전소 시공",
     "products": "가스·재생에너지 발전소 설계·조달·시공(EPC)",
     "type": "stock"
+  },
+  "ANF": {
+    "name": "애버크롬비 앤 피치",
+    "sector": "의류 소매",
+    "products": "애버크롬비·홀리스터 의류 매장·온라인",
+    "type": "stock"
+  },
+  "KFY": {
+    "name": "콘 페리",
+    "sector": "임원 채용·HR 컨설팅",
+    "products": "임원 헤드헌팅, 조직·보상 컨설팅, 인재 채용 대행",
+    "type": "stock"
+  },
+  "SPSC": {
+    "name": "SPS 커머스",
+    "sector": "유통 전자문서 클라우드",
+    "products": "유통사·공급사 간 주문·송장 전자문서(EDI) 클라우드 네트워크",
+    "type": "stock"
+  },
+  "CARG": {
+    "name": "카구루스",
+    "sector": "중고차 온라인 장터",
+    "products": "중고차 매물 검색·딜러 광고 장터, 딜러 간 도매(CarOffer)",
+    "type": "stock"
+  },
+  "TNET": {
+    "name": "트라이넷",
+    "sector": "중소기업 HR 아웃소싱",
+    "products": "중소기업 급여·복리후생·보험을 대신 처리하는 공동 고용(PEO)",
+    "type": "stock"
+  },
+  "AMPH": {
+    "name": "앰파스타 제약",
+    "sector": "주사제·특수 의약품",
+    "products": "주사제·흡입제 복제약과 자체 개발 특수 의약품(바크시미 등)",
+    "type": "stock"
+  },
+  "TPB": {
+    "name": "터닝 포인트 브랜즈",
+    "sector": "담배 소모품·니코틴",
+    "products": "잭잭(Zig-Zag) 말이 종이, 니코틴 파우치(FRE)",
+    "type": "stock"
+  },
+  "LAUR": {
+    "name": "로리어트 에듀케이션",
+    "sector": "사립 대학",
+    "products": "멕시코·페루 사립 대학 운영",
+    "type": "stock"
+  },
+  "EAT": {
+    "name": "브링커 인터내셔널",
+    "sector": "캐주얼 레스토랑",
+    "products": "칠리스·매기아노스 레스토랑 체인",
+    "type": "stock"
+  },
+  "CALM": {
+    "name": "칼메인 푸즈",
+    "sector": "달걀 생산",
+    "products": "미국 1위 달걀 생산·유통(일반·케이지프리)",
+    "type": "stock"
   }
 }
