@@ -1106,3 +1106,8 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 - 위 선별에서 점수 85 이상, 10년 보유 시 S&P 500을 대체로 이김, 8년 이상 자료, 거의 매년 흑자, 시가총액 8억~600억 달러, 금융·리츠 제외 기준으로 MEDP·UI·IESC·SKY·XPEL·CORT·FN·NSSC·CRAI·IBP·QLYS + 나스닥100의 MELI 선정.
 - VLTO 등과 같은 절차(SP500_INFO 순위 999 → rolling → fundamentals → cashflow → segments → monthly-price → 컨퍼런스콜 → quality.tsv → deep.ts·segments.ts 해설).
 - 사업의 질: MEDP·UI·QLYS·MELI A, 나머지 B. UI·IESC는 실적 컨퍼런스콜을 하지 않아 `calls.ts` 항목 없음.
+
+#### 숨은 알짜(러셀2000) 10종목 추가 (2026-11-08)
+- 실제 러셀2000 목록(`scripts/data/russell2000.json`)으로 다시 돌린 선별에서, 아직 분석 안 한 러셀2000 종목 중 점수 84 이상·자료 7년 이상·거의 매년 흑자·금융 제외로 COCO·TGLS·IPAR·BOOT·FSS·MHO·MGRC·MYRG·LNTH·UFPT 선정.
+- 12종목과 같은 절차(SP500_INFO 순위 999 → rolling → fundamentals → cashflow → segments → monthly-price → 컨퍼런스콜 → quality.tsv → deep.ts·segments.ts 해설).
+- 사업의 질: MHO·MYRG C, 나머지 B. 컨퍼런스콜은 IPAR 2분기·LNTH 1분기가 받을 수 있는 최신(나머지 3분기). BOOT·UFPT는 사업부 공시가 없어 회사 전체 매출만.
