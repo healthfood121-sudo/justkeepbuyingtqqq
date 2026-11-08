@@ -1087,3 +1087,17 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 - 설명: `web/app/sp500-holdings/descriptions.json`에 FTDR·U·CCSI·XMTR 추가(VLTO는 기존). 사업의 질: `quality.tsv`에 VLTO(A, 처음 B였다가 다나허·에코랩과 맞춰 상향)·FTDR(C)·U(C)·CCSI(C)·XMTR(C).
 - 같은 날 FA(퍼스트 어드밴티지, C등급)·CVCO(캐브코, B등급, 10년 보유 13번 모두 S&P 500 이김)도 같은 절차로 추가.
 - XMTR은 분기 사업부·지역 공시가 없어 회사 전체 매출만. U 전체 매출엔 정리 중 사업이 섞여 회사 '전략 매출'과 다르다.
+
+#### 숨은 알짜 1차 선별 — 나스닥·뉴욕 상장 전체 (2026-11-07)
+| 파일 | 크기 | 스크립트 | 내용 | 사용처 |
+|---|---|---|---|---|
+| `web/public/data/screen/universe.json` | 2,269종목 | `scripts/screen_universe.py` (Actions '숨은 알짜 1차 선별 (나스닥·러셀2000)', 수동 실행. SEC·야후는 샌드박스에서 접속 불가) | 종목별 점수(이익 꾸준함 20·매출 성장 15·주당순이익 성장 15·ROIC 20·잉여현금 10·재무 10·주식 수 희석 10), 흑자 연수, 매출·주당순이익 연평균 증가율, ROIC(3년 중간값), 잉여현금 흑자 연수·마진, 순부채÷영업현금, 5년 희석, PER, 시가총액, 업종(SEC SIC), 지수 표시 | `/private/screen` 숨은 알짜 찾기 |
+- 대상: nasdaqtrader.com `nasdaqlisted.txt`(Q)·`otherlisted.txt`(Y, 뉴욕 등) 보통주, 시가총액 3억 달러 이상. 재무는 SEC XBRL frames API(연도별 전 회사 한 번에, 약 190회 요청), 주가는 yfinance 월별 수정주가.
+- 나스닥100(N): 저장소의 `web/app/nasdaq100-holdings/data.ts` 구성 종목. 이미 `/private` 분석 종목(S)은 롤링 JSON 유무로 표시.
+- 러셀2000(R): iShares·Vanguard 보유종목 파일이 자동 요청을 막아, 공시가 있는 미국 상장사 중 시가총액 1,001~3,000위로 추정(러셀 선정 방식). 실제 목록과 일부 다름 → JSON `r2kSrc`에 표기.
+- 은행·보험·리츠는 ROIC·잉여현금 의미가 달라 점수가 왜곡될 수 있음(페이지에서 업종 필터로 제외 가능).
+
+#### 숨은 알짜 12종목 추가 (2026-11-08)
+- 위 선별에서 점수 85 이상, 10년 보유 시 S&P 500을 대체로 이김, 8년 이상 자료, 거의 매년 흑자, 시가총액 8억~600억 달러, 금융·리츠 제외 기준으로 MEDP·UI·IESC·SKY·XPEL·CORT·FN·NSSC·CRAI·IBP·QLYS + 나스닥100의 MELI 선정.
+- VLTO 등과 같은 절차(SP500_INFO 순위 999 → rolling → fundamentals → cashflow → segments → monthly-price → 컨퍼런스콜 → quality.tsv → deep.ts·segments.ts 해설).
+- 사업의 질: MEDP·UI·QLYS·MELI A, 나머지 B. UI·IESC는 실적 컨퍼런스콜을 하지 않아 `calls.ts` 항목 없음.
