@@ -10311,6 +10311,12 @@ export default function PrivateApp({ u = 'picks' }: { u?: Universe }) {
     const first = u === 'picks' ? PICK_GROUPS[0].items[0].key : STOCKS.find(s => only.has(s.key))?.key
     return Math.max(0, STOCKS.findIndex(s => s.key === first))
   })
+  // 다른 페이지(버핏·멍거 등)에서 ?s=티커 로 들어오면 그 종목을 연다
+  useEffect(() => {
+    const k = new URLSearchParams(window.location.search).get('s')
+    const i = k ? STOCKS.findIndex(s => s.key === k.toUpperCase()) : -1
+    if (i >= 0) setActiveStock(i)
+  }, [])
   const current = STOCKS[activeStock]
   const pick = (key: string) => {
     const i = STOCKS.findIndex(s => s.key === key)

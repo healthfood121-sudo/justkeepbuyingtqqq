@@ -17,6 +17,8 @@ export default function Header({ maxWidth = 'max-w-6xl', activePage }: HeaderPro
   const privTabs: Array<[string, string, string]> = [
     ['/private', '종목 분석', '종목 분석(엄선·S&P 500·나스닥100·러셀2000)'],
     ['/private/screen', '전체 선별표', '미국 상장 전 종목 숫자 선별표'],
+    ['/private/buffett', '버핏·멍거', '버핏·멍거의 회사들'],
+    ['/private/failures', '실패 공부방', '기업 실패 사례 공부방'],
     ['/private/kostolany', '코스톨라니', '코스톨라니 달걀'],
     ['/private/howard-marks', '하워드 막스', '하워드 막스'],
   ]
