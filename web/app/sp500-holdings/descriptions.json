@@ -3328,5 +3328,65 @@
     "sector": "달걀 생산",
     "products": "미국 1위 달걀 생산·유통(일반·케이지프리)",
     "type": "stock"
+  },
+  "GPI": {
+    "name": "그룹 1 오토모티브",
+    "sector": "자동차 딜러",
+    "products": "미국·영국 신차·중고차 딜러, 정비·금융",
+    "type": "stock"
+  },
+  "ABG": {
+    "name": "애즈버리 오토모티브",
+    "sector": "자동차 딜러",
+    "products": "미국 신차·중고차 딜러, 정비·부품, 온라인 판매(클릭리스)",
+    "type": "stock"
+  },
+  "UFPI": {
+    "name": "UFP 인더스트리스",
+    "sector": "목재 가공·건축 자재",
+    "products": "주택 건축용 목재·트러스, 포장재 팔레트, 산업용 목재",
+    "type": "stock"
+  },
+  "ARHS": {
+    "name": "아하우스",
+    "sector": "고급 가구 매장",
+    "products": "고급 가구·인테리어 매장(쇼룸)과 온라인",
+    "type": "stock"
+  },
+  "RVLV": {
+    "name": "리볼브 그룹",
+    "sector": "온라인 패션 플랫폼",
+    "products": "젊은 여성 대상 온라인 패션(리볼브·FWRD)",
+    "type": "stock"
+  },
+  "ENS": {
+    "name": "에너시스",
+    "sector": "산업용 배터리",
+    "products": "지게차·통신·데이터센터·군용 배터리와 에너지 저장",
+    "type": "stock"
+  },
+  "FELE": {
+    "name": "프랭클린 일렉트릭",
+    "sector": "물·연료 펌프",
+    "products": "지하수·급수 펌프, 주유소 연료 펌프 시스템",
+    "type": "stock"
+  },
+  "MATX": {
+    "name": "맷슨",
+    "sector": "해운",
+    "products": "하와이·알래스카·괌 해운, 중국-미국 급행 해운",
+    "type": "stock"
+  },
+  "KAI": {
+    "name": "카단트",
+    "sector": "제지·포장 장비",
+    "products": "제지·포장·재활용 공장 장비와 소모성 부품",
+    "type": "stock"
+  },
+  "ASO": {
+    "name": "아카데미 스포츠",
+    "sector": "스포츠·아웃도어 매장",
+    "products": "미국 남부 스포츠·아웃도어 용품 매장",
+    "type": "stock"
   }
 }
