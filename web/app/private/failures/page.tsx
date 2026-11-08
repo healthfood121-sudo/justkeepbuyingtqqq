@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { CATS, CASES, SURVIVORS, CHECKLIST } from './data'
 import { CORE, CAT_RULES, ME } from './lessons'
 import { WATCH, WATCH_AS_OF } from './watch'
-import { TIMELINES, TL_LABEL, type TLKind } from './timelines'
+import { TIMELINES, TL_LABEL, tlOf, type TLKind } from './timelines'
 import { UNIV } from '../universe'
 
 // 실패 공부방 — 기업이 무너진 길을 원인별로 모아 "내가 지킬 원칙"을 배운다 (멍거의 거꾸로 생각하기)
@@ -24,7 +24,7 @@ const TXT: Record<TLKind, string> = {
 }
 
 function TimelineView({ name }: { name: string }) {
-  const tl = TIMELINES[name]
+  const tl = tlOf(name)
   if (!tl) return null
   return (
     <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50/60 dark:bg-gray-900/40 p-3 space-y-2">
@@ -50,7 +50,7 @@ function TimelineView({ name }: { name: string }) {
   )
 }
 
-const TLBadge = ({ name }: { name: string }) => TIMELINES[name] ? <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300">히스토리 {TIMELINES[name].events.length}</span> : null
+const TLBadge = ({ name }: { name: string }) => { const tl = tlOf(name); return tl ? <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300">히스토리 {tl.events.length}</span> : null }
 
 const chip = (on: boolean) => `px-2.5 py-0.5 rounded-full text-xs ${on ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'}`
 
