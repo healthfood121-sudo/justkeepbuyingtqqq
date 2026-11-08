@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { PB, HISTORY, CALLS } from './cocoData'
+import { PB, HISTORY, CALLS, COST } from './cocoData'
 
 // 바이타 코코(COCO) 심층 리포트 — 종목 분석 화면(PrivateApp) 안에 함께 보여 준다.
 // "유행으로 끝날 음료인가, 오래 살아남을 음료인가"
@@ -109,7 +109,7 @@ export default function CocoReport() {
 
 
         <nav className="flex flex-wrap gap-1.5 text-xs">
-          {[['#pb', 'PB란?'], ['#plan', '분석 계획 9가지'], ['#history', '20년 역사'], ['#how', '어떻게 이겼나'], ['#peers', '유행일까?'], ['#calls', '전 분기 실적·콜'], ['#scen', '10년 시나리오'], ['#warn', '유행 경고 신호']].map(([h, t]) => (
+          {[['#pb', 'PB란?'], ['#plan', '분석 계획 9가지'], ['#history', '20년 역사'], ['#how', '어떻게 이겼나'], ['#peers', '유행일까?'], ['#cost', '운임·원료 분석'], ['#calls', '전 분기 실적·콜'], ['#scen', '10년 시나리오'], ['#warn', '유행 경고 신호']].map(([h, t]) => (
             <a key={h} href={h} className="px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">{t}</a>
           ))}
         </nav>
@@ -246,15 +246,60 @@ export default function CocoReport() {
         </section>
 
         {/* 원가 */}
-        <section className={sec}>
-          <h2 className={h2}>6. 가장 큰 약점 — 원가와 공급망</h2>
+        <section id="cost" className={`${sec} scroll-mt-20`}>
+          <h2 className={h2}>6. 가장 큰 약점 — 운임과 원료, 어떻게 헤쳐 나가나</h2>
+          <p className={small}>이익이 왜 해마다 출렁이는지, 그 원인을 하나씩 뜯어 본다: 원가가 무엇으로 이뤄졌나 → 운임은 왜 오르나 → 원가가 코코넛 값을 따르나 → 회사의 대응 무기 → 투자자가 볼 숫자.</p>
+
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white pt-1">6-1. 원가는 무엇으로 이뤄졌나</h3>
+          <div className="grid sm:grid-cols-2 gap-2">
+            {COST.structure.map(x => (
+              <div key={x.k} className="rounded-lg border border-gray-200 dark:border-gray-800 p-3">
+                <p className="text-xs font-semibold text-gray-900 dark:text-white">{x.k}</p>
+                <p className={`${small} mt-0.5`}><B t={x.v} /></p>
+              </div>
+            ))}
+          </div>
+
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white pt-2">6-2. 운임은 왜 오르나 — 네 가지 원인</h3>
+          <p className={small}>해상 컨테이너 운임은 &ldquo;배(공급)&rdquo;와 &ldquo;실을 짐(수요)&rdquo;의 균형, 그리고 기름값으로 정해진다. 바이타 코코는 여기에 &ldquo;환적&rdquo;이라는 자기만의 사정이 더해진다.</p>
+          <div className="space-y-1.5">
+            {COST.freightWhy.map(x => (
+              <div key={x.k} className="rounded-lg bg-gray-50 dark:bg-gray-900 p-3">
+                <p className="text-xs font-semibold text-gray-900 dark:text-white">{x.k}</p>
+                <p className={`${small} mt-0.5`}><B t={x.v} /></p>
+              </div>
+            ))}
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs mt-1">
+              <thead><tr className="text-gray-400 border-b border-gray-200 dark:border-gray-800"><th className="text-left py-1.5 px-2 font-medium">시기</th><th className="text-left py-1.5 px-2 font-medium">무슨 일이</th><th className="text-left py-1.5 px-2 font-medium">매출총이익률</th><th className="text-left py-1.5 px-2 font-medium">회사의 대응</th></tr></thead>
+              <tbody className="text-gray-700 dark:text-gray-200">
+                {COST.history.map(r => <tr key={r.y} className="border-b border-gray-100 dark:border-gray-900"><td className="py-1.5 px-2 font-medium whitespace-nowrap">{r.y}</td><td className="py-1.5 px-2">{r.freight}</td><td className="py-1.5 px-2 tabular-nums whitespace-nowrap">{r.gm}</td><td className="py-1.5 px-2">{r.how}</td></tr>)}
+              </tbody>
+            </table>
+          </div>
+          <p className={small}><b>읽는 법:</b> 운임이 오르면 이익률은 <b>3~4개월 뒤</b> 내려간다 — 비싸게 실어 온 재고가 팔릴 때 비용으로 잡히기 때문. 반대로 운임이 내려가면 몇 달 뒤 이익률이 빠르게 오른다(2023년).</p>
+
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white pt-2">6-3. 원가는 코코넛 값을 따르나?</h3>
           <ul className="list-disc pl-5 space-y-1 text-xs leading-relaxed text-gray-700 dark:text-gray-200">
-            <li><b>원료 하나, 산지는 바다 건너:</b> 최대 산지 필리핀, 다음 브라질, 고급 품종은 태국. 어느 쪽이든 배로 미국·유럽까지 실어 온다. 운임이 오르면 이익률이 곧바로 깎인다(2022년 24%, 2026년 4분기 33% 예상).</li>
-            <li><b>설비는 늘 늦다:</b> 공장(협력사) 증설 결정에 18~24개월. 2026년엔 수요가 예상보다 빨라 물량을 다 못 댔다 — 2027년 상반기 가동률 95%, 하반기 증설.</li>
-            <li><b>작황과 정치:</b> 날씨(엘니뇨)·태풍·산지 국가의 수출 정책·관세. 2026년 2분기엔 관세 환급 1,560만 달러가 이익률을 약 7%포인트 올렸다 — 일회성.</li>
-            <li><b>회사의 대응:</b> 산지 다변화, 코프라 인수로 태국 고급 생산 확보, 농축액 제품(시장 가까이서 생산 → 운임 회피 실험), 가격 인상(2027년 초).</li>
+            {COST.coconut.map((t, i) => <li key={i}><B t={t} /></li>)}
           </ul>
-          <p className={small}><b>판단:</b> 이 약점은 &ldquo;회사가 망할&rdquo; 약점이 아니라 <b>&ldquo;이익이 해마다 출렁이는&rdquo;</b> 약점이다. 투자자 입장에선 오히려 운임 충격으로 주가가 빠질 때가 사는 기회였다(2022년 저점 → 이후 몇 배 상승).</p>
+
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white pt-2">6-4. 어떻게 헤쳐 나가나 — 회사의 여섯 가지 무기</h3>
+          <div className="space-y-1.5">
+            {COST.tools.map(x => (
+              <div key={x.k} className="rounded-lg border border-gray-200 dark:border-gray-800 p-3">
+                <div className="flex gap-2"><Dot l={x.l} /><p className="text-xs font-semibold text-gray-900 dark:text-white">{x.k} <span className="font-normal text-gray-400">{LIGHT[x.l].txt}</span></p></div>
+                <p className={`${small} mt-0.5`}>{x.v}</p>
+              </div>
+            ))}
+          </div>
+
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white pt-2">6-5. 투자자가 미리 볼 수 있는 숫자</h3>
+          <ul className="list-disc pl-5 space-y-1 text-xs leading-relaxed text-gray-700 dark:text-gray-200">
+            {COST.watch.map(x => <li key={x.k}><b>{x.k}:</b> {x.why}</li>)}
+          </ul>
+          <p className={small}><b>판단:</b> 이 약점은 &ldquo;회사가 망할&rdquo; 약점이 아니라 <b>&ldquo;이익이 해마다 출렁이는&rdquo;</b> 약점이다. 운임·코코넛 값은 회사가 통제할 수 없지만, 가격 인상과 산지 분산으로 1~2년 안에 대부분 넘겨 왔다. 투자자 입장에선 운임 충격으로 주가가 빠질 때가 오히려 사는 기회였다(2022년 저점 → 이후 몇 배 상승). 세계 운임 지수가 이미 꺾이기 시작했다면(2026년 10~11월 하락 중) 몇 달 뒤 이익률 회복을 기대할 수 있다.</p>
         </section>
 
         {/* 코카콜라 비교 */}
