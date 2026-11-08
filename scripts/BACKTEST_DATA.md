@@ -1111,3 +1111,9 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 - 실제 러셀2000 목록(`scripts/data/russell2000.json`)으로 다시 돌린 선별에서, 아직 분석 안 한 러셀2000 종목 중 점수 84 이상·자료 7년 이상·거의 매년 흑자·금융 제외로 COCO·TGLS·IPAR·BOOT·FSS·MHO·MGRC·MYRG·LNTH·UFPT 선정.
 - 12종목과 같은 절차(SP500_INFO 순위 999 → rolling → fundamentals → cashflow → segments → monthly-price → 컨퍼런스콜 → quality.tsv → deep.ts·segments.ts 해설).
 - 사업의 질: MHO·MYRG C, 나머지 B. 컨퍼런스콜은 IPAR 2분기·LNTH 1분기가 받을 수 있는 최신(나머지 3분기). BOOT·UFPT는 사업부 공시가 없어 회사 전체 매출만.
+
+#### 러셀2000 30종목 추가(1~3차) + 종목 분석 탭 재구성 (2026-11-08)
+- 1차: IRMD·PLAB·EXPO·CSW·BMI·LMAT·MWA·WDFC·IDCC·AGX / 2차: ANF·KFY·SPSC·CARG·TNET·AMPH·TPB·LAUR·EAT·CALM / 3차: GPI·ABG·UFPI·ARHS·RVLV·ENS·FELE·MATX·KAI·ASO. 선별 점수 80 안팎 이상, 자료 7년 이상, 금융·시가총액 8억 달러 미만 제외.
+- 절차는 앞의 10종목과 같음. BMI·RVLV는 export-fundamentals 첫 실행 때 야후 다운로드 오류("database is locked")로 빠져 단독으로 다시 실행.
+- 컨퍼런스콜이 최신 분기가 아닌 종목: PLAB(8월)·AGX(9월)·ANF(9월)·KFY(9월)·TPB(5월)·ENS(8월)·ASO(9월) — 받을 수 있는 최신.
+- `/private` 탭 재구성: `web/app/private/PrivateApp.tsx`(본문) + 탭별 `page.tsx`(엄선·sp500·ndx·r2k·nasdaq·other). 소속 지수는 `scripts/build_private_universe.py` → `web/app/private/universe.ts`(종목 추가 때마다 실행). 엄선 목록은 `web/app/private/picks.ts`(손으로 관리).
