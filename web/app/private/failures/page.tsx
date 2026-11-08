@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { CATS, CASES, SURVIVORS, CHECKLIST } from './data'
 import { CORE, CAT_RULES, ME } from './lessons'
 import { WATCH, WATCH_AS_OF } from './watch'
+import { TIMELINES, TL_LABEL, type TLKind } from './timelines'
 import { UNIV } from '../universe'
 
 // 실패 공부방 — 기업이 무너진 길을 원인별로 모아 "내가 지킬 원칙"을 배운다 (멍거의 거꾸로 생각하기)
@@ -14,6 +15,42 @@ function hrefOf(key: string) {
   const u = f.includes('S') ? 'sp500' : f.includes('N') ? 'ndx' : f.includes('R') ? 'r2k' : f.includes('Q') ? 'nasdaq' : 'other'
   return `/private/${u}?s=${key}`
 }
+
+const DOT: Record<TLKind, string> = {
+  warn: 'bg-amber-500', move: 'bg-blue-500', say: 'bg-purple-500', hit: 'bg-red-500', up: 'bg-emerald-500',
+}
+const TXT: Record<TLKind, string> = {
+  warn: 'text-amber-700 dark:text-amber-300', move: 'text-blue-700 dark:text-blue-300', say: 'text-purple-700 dark:text-purple-300', hit: 'text-red-600 dark:text-red-400', up: 'text-emerald-700 dark:text-emerald-300',
+}
+
+function TimelineView({ name }: { name: string }) {
+  const tl = TIMELINES[name]
+  if (!tl) return null
+  return (
+    <div className="rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50/60 dark:bg-gray-900/40 p-3 space-y-2">
+      <p className="text-xs font-semibold text-gray-900 dark:text-white">히스토리 라인</p>
+      <p className="text-[11px] text-gray-600 dark:text-gray-300 leading-relaxed">{tl.summary}</p>
+      <ol className="relative border-l-2 border-gray-200 dark:border-gray-700 ml-1.5 space-y-2.5">
+        {tl.events.map((e, i) => (
+          <li key={i} className="pl-3 relative">
+            <span className={`absolute -left-[7px] top-1 w-3 h-3 rounded-full ring-2 ring-white dark:ring-gray-950 ${DOT[e.kind]}`} />
+            <div className="flex flex-wrap items-baseline gap-x-1.5">
+              <span className="text-[11px] font-semibold text-gray-800 dark:text-gray-100 tabular-nums">{e.d}</span>
+              <span className={`text-[10px] ${TXT[e.kind]}`}>{TL_LABEL[e.kind]}{e.who ? ` · ${e.who}` : ''}</span>
+            </div>
+            <p className="text-xs text-gray-700 dark:text-gray-200 leading-relaxed">{e.t}</p>
+            {e.q && <p className="text-xs italic text-purple-700 dark:text-purple-300 border-l-2 border-purple-300 dark:border-purple-700 pl-2 mt-0.5">&ldquo;{e.q}&rdquo;</p>}
+          </li>
+        ))}
+      </ol>
+      {tl.src && (
+        <p className="text-[10px] text-gray-400">자료: {tl.src.map((x, i) => <span key={x.u}>{i > 0 && ' · '}<a href={x.u} target="_blank" rel="noreferrer" className="hover:underline">{x.t}</a></span>)}</p>
+      )}
+    </div>
+  )
+}
+
+const TLBadge = ({ name }: { name: string }) => TIMELINES[name] ? <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300">히스토리 {TIMELINES[name].events.length}</span> : null
 
 const chip = (on: boolean) => `px-2.5 py-0.5 rounded-full text-xs ${on ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'}`
 
@@ -25,6 +62,14 @@ export default function FailuresPage() {
   const shown = CASES.filter(c => cat === 'all' || c.cat === cat)
   const catOf = (id: string) => CATS.find(c => c.id === id)
 
+  const jumpW = (name: string) => {
+    const w = WATCH.find(x => x.name === name)
+    if (!w) return false
+    setSide(w.side)
+    setOpenW(name)
+    setTimeout(() => document.getElementById(`watch-${name}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50)
+    return true
+  }
   const jump = (name: string) => {
     setCat('all')
     setOpen(name)
@@ -41,6 +86,23 @@ export default function FailuresPage() {
             먼저 사례 {CASES.length}개에서 반복된 교훈 {CORE.length}가지를 보고, 지금 위기에 있는 회사로 연습한 뒤, 원인별 사례로 깊게 들어간다.
           </p>
         </div>
+
+        {/* 히스토리 라인 모아보기 */}
+        <section className="rounded-xl border border-purple-200 dark:border-purple-900/60 bg-purple-50/50 dark:bg-purple-950/20 p-4 space-y-2">
+          <h2 className="text-sm font-semibold text-gray-900 dark:text-white">히스토리 라인으로 보기 — {Object.keys(TIMELINES).length}개 회사</h2>
+          <p className="text-xs text-gray-600 dark:text-gray-300">무너지거나 살아나는 과정을 날짜순으로 정리했다. 경고 신호 → 경영진의 결정과 발언 → 충격 → 반전 조짐을 따라가면 &ldquo;어느 시점에 알 수 있었나&rdquo;가 보인다.</p>
+          <div className="flex flex-wrap gap-1.5 text-[10px]">
+            {(Object.keys(TL_LABEL) as TLKind[]).map(k => <span key={k} className="inline-flex items-center gap-1 text-gray-500 dark:text-gray-400"><span className={`w-2 h-2 rounded-full ${DOT[k]}`} />{TL_LABEL[k]}</span>)}
+          </div>
+          {([['살리려는 회사', (n: string) => WATCH.some(w => w.name === n && w.side === 'turn')], ['무너지는 중', (n: string) => WATCH.some(w => w.name === n && w.side === 'drift')], ['과거 실패', (n: string) => !WATCH.some(w => w.name === n)]] as const).map(([lab, f]) => (
+            <div key={lab} className="flex flex-wrap items-center gap-1">
+              <span className="text-[11px] text-gray-500 dark:text-gray-400 w-20 shrink-0">{lab}</span>
+              {Object.keys(TIMELINES).filter(f).map(n => (
+                <button key={n} onClick={() => { if (!jumpW(n)) jump(n) }} className="text-[11px] px-2 py-0.5 rounded-full bg-white dark:bg-gray-900 border border-purple-200 dark:border-purple-800 text-gray-700 dark:text-gray-200 hover:border-purple-500">{n}</button>
+              ))}
+            </div>
+          ))}
+        </section>
 
         {/* 핵심 교훈 */}
         <section className="space-y-3">
@@ -82,11 +144,12 @@ export default function FailuresPage() {
               const isOpen = openW === w.name
               const h = w.key ? hrefOf(w.key) : null
               return (
-                <div key={w.name} className="rounded-lg border border-gray-200 dark:border-gray-800">
+                <div key={w.name} id={`watch-${w.name}`} className={`rounded-lg border ${isOpen ? 'border-blue-400 dark:border-blue-700' : 'border-gray-200 dark:border-gray-800'}`}>
                   <button onClick={() => setOpenW(isOpen ? null : w.name)} className="w-full text-left px-3 py-2">
                     <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
                       <span className="text-sm font-semibold text-gray-900 dark:text-white">{w.name}</span>
                       <span className="text-[11px] text-gray-400">{w.since}</span>
+                      <TLBadge name={w.name} />
                       <span className={`text-[10px] px-1.5 py-0.5 rounded ${w.side === 'turn' ? 'bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-300' : 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300'}`}>{catOf(w.cat)?.short}</span>
                       <span className="ml-auto text-xs text-gray-400">{isOpen ? '접기 ▲' : '펼치기 ▼'}</span>
                     </div>
@@ -97,6 +160,7 @@ export default function FailuresPage() {
                       <p className="text-gray-700 dark:text-gray-200"><b>무엇이 무너지고 있나:</b> {w.problem}</p>
                       <p className="text-gray-700 dark:text-gray-200"><b>{w.side === 'turn' ? '어떻게 바꾸고 있나' : '어떻게 버티고 있나'}:</b> {w.action}</p>
                       <p className="text-blue-700 dark:text-blue-300"><b>살아나는지 확인할 신호:</b> {w.check}</p>
+                      <TimelineView name={w.name} />
                       {h && <Link href={h} className="inline-block text-blue-600 dark:text-blue-400 hover:underline">이 회사의 지금 분석 보기 →</Link>}
                     </div>
                   )}
@@ -150,6 +214,7 @@ export default function FailuresPage() {
                       <span className="text-sm font-semibold text-gray-900 dark:text-white">{c.name}</span>
                       <span className="text-[11px] text-gray-400">{c.years}</span>
                       <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-300">{catOf(c.cat)?.short}</span>
+                      <TLBadge name={c.name} />
                       <span className="ml-auto text-xs text-gray-400">{isOpen ? '접기 ▲' : '펼치기 ▼'}</span>
                     </div>
                     <p className="text-xs text-emerald-700 dark:text-emerald-300 mt-1 leading-relaxed"><b>교훈:</b> {c.lesson}</p>
@@ -159,6 +224,7 @@ export default function FailuresPage() {
                       {ME[c.name] && <p className="rounded bg-blue-50 dark:bg-blue-950/40 text-blue-800 dark:text-blue-200 px-2 py-1.5"><b>내가 주주였다면:</b> {ME[c.name]}</p>}
                       <p className="text-amber-700 dark:text-amber-300"><b>그때 놓친 신호:</b> {c.missed}</p>
                       <p className="text-gray-700 dark:text-gray-200"><b>무슨 일이 있었나:</b> {c.story}</p>
+                      <TimelineView name={c.name} />
                       {h && <Link href={h} className="inline-block text-blue-600 dark:text-blue-400 hover:underline">이 회사의 지금 분석 보기 →</Link>}
                     </div>
                   )}
