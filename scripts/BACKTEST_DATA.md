@@ -1094,7 +1094,12 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 | `web/public/data/screen/universe.json` | 2,269종목 | `scripts/screen_universe.py` (Actions '숨은 알짜 1차 선별 (나스닥·러셀2000)', 수동 실행. SEC·야후는 샌드박스에서 접속 불가) | 종목별 점수(이익 꾸준함 20·매출 성장 15·주당순이익 성장 15·ROIC 20·잉여현금 10·재무 10·주식 수 희석 10), 흑자 연수, 매출·주당순이익 연평균 증가율, ROIC(3년 중간값), 잉여현금 흑자 연수·마진, 순부채÷영업현금, 5년 희석, PER, 시가총액, 업종(SEC SIC), 지수 표시 | `/private/screen` 숨은 알짜 찾기 |
 - 대상: nasdaqtrader.com `nasdaqlisted.txt`(Q)·`otherlisted.txt`(Y, 뉴욕 등) 보통주, 시가총액 3억 달러 이상. 재무는 SEC XBRL frames API(연도별 전 회사 한 번에, 약 190회 요청), 주가는 yfinance 월별 수정주가.
 - 나스닥100(N): 저장소의 `web/app/nasdaq100-holdings/data.ts` 구성 종목. 이미 `/private` 분석 종목(S)은 롤링 JSON 유무로 표시.
-- 러셀2000(R): iShares·Vanguard 보유종목 파일이 자동 요청을 막아, 공시가 있는 미국 상장사 중 시가총액 1,001~3,000위로 추정(러셀 선정 방식). 실제 목록과 일부 다름 → JSON `r2kSrc`에 표기.
+- 러셀2000(R): `scripts/data/russell2000.json`(아래)의 실제 구성 종목. 파일이 없을 때만 시가총액 1,001~3,000위로 추정. 출처는 JSON `r2kSrc`에 표기.
+
+| 파일 | 크기 | 스크립트 | 내용 | 사용처 |
+|---|---|---|---|---|
+| `scripts/data/russell2000.json` | 약 1,960종목 | `scripts/fetch_russell2000.py` (Actions '러셀2000 구성 종목 (IWM SEC 보유 종목 보고서)', 수동) | iShares 러셀2000 ETF(IWM)가 SEC에 낸 최신 분기 보유 종목 보고서(N-PORT, 2026-06-30 기준)의 주식만. 티커는 보고서 → CUSIP을 OpenFIGI로 변환 → SEC 회사명 순으로 맞춤. 못 맞춘 약 40종목은 `missing` | `screen_universe.py` 러셀2000 표시 |
+- iShares 사이트 CSV는 클라우드·Actions에서 막혀 쓰지 않음(차단 우회 안 함). N-PORT는 분기말 기준·약 2달 뒤 공개라 최신 편입·편출과 최대 몇 달 차이.
 - 은행·보험·리츠는 ROIC·잉여현금 의미가 달라 점수가 왜곡될 수 있음(페이지에서 업종 필터로 제외 가능).
 
 #### 숨은 알짜 12종목 추가 (2026-11-08)
