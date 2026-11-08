@@ -1,0 +1,31 @@
+name: 러셀2000 구성 종목 (IWM SEC 보유 종목 보고서)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install requests
+      - run: python scripts/fetch_russell2000.py
+        env:
+          PYTHONUNBUFFERED: "1"
+      - name: 변경사항 커밋 & 푸시
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add scripts/data/russell2000.json
+          if git diff --cached --quiet; then
+            echo "변경사항 없음 — 스킵"
+          else
+            git commit -m "auto: 러셀2000 구성 종목 $(date +'%Y-%m-%d')"
+            git pull --rebase origin master
+            git push origin HEAD:master
+          fi
