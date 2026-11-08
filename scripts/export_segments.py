@@ -19,7 +19,7 @@ OUT = ROOT / "scripts" / "data" / "segments_raw"; OUT.mkdir(parents=True, exist_
 UA = {"User-Agent": "justkeepbuyingtqqq research justkeepbuyingtqqq@gmail.com"}
 SINCE = "2022-06-01"
 CIK_EXTRA = {"XOM": [34088], "MMC": [62709]}
-SKIP = {"RMS", "DEO", "QQQ", "QLD", "TQQQ"}  # 비미국(SEC 10-Q 없음)·ETF
+SKIP = {"RMS", "DEO", "LVMH", "QQQ", "QLD", "TQQQ"}  # 비미국(SEC 10-Q 없음)·ETF
 KEEP = re.compile(r"Revenue|Sales|OperatingIncomeLoss|OperatingProfit|SegmentOperatingIncome|EarningsBeforeInterestAndTaxes|NetInterestIncome|PremiumsEarned", re.I)
 DROP = re.compile(r"Cost|Expense|Deferred|Receivable|Liabilit|Asset|Tax|Unbilled|Remaining|Percentage|Proceeds|Payment|Gain|Loss(?!$)|Allowance", re.I)
 

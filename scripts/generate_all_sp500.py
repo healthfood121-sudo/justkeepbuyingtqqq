@@ -366,6 +366,7 @@ SP500_INFO = {
     "MATX": ("맷슨", 999),  # 2026-11 숨은 알짜 선별(러셀2000)
     "KAI": ("카단트", 999),  # 2026-11 숨은 알짜 선별(러셀2000)
     "ASO": ("아카데미 스포츠", 999),  # 2026-11 숨은 알짜 선별(러셀2000)
+    "LVMH": ("LVMH 모에 헤네시 루이비통", 999),  # 2026-11 추가(파리 상장 MC.PA, EUR)
     "ACGL": ("아치 캐피털 그룹", 294),
     "STLD": ("스틸 다이나믹스", 295),
     "EQT":  ("EQT", 299),
@@ -543,7 +544,9 @@ NEW_TICKERS = [t for t in SP500_INFO if t not in ALREADY_DONE]
 # 파일명 티커 → 야후 파이낸스 티커 (티커가 바뀐 종목)
 YF_TICKER = {
     "MMC": "MRSH",  # 마쉬 맥레넌, 2026년 티커 변경
+    "LVMH": "MC.PA",  # 파리 상장 (모엣 헤네시 루이비통)
 }
+CURRENCY = {"LVMH": "EUR"}  # 미국 달러가 아닌 종목
 
 # ── 헬퍼 함수 ─────────────────────────────────────────────────
 
@@ -661,7 +664,7 @@ def main():
             out = {
                 "ticker":    ticker,
                 "name":      name,
-                "currency":  "USD",
+                "currency":  CURRENCY.get(ticker, "USD"),
                 "benchmark": "S&P 500",
                 "note":      "",
                 "current":   metrics,

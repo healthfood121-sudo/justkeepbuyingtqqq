@@ -34,16 +34,28 @@ CONCEPTS = ["EarningsPerShareDiluted", "EarningsPerShareBasicAndDiluted", "Earni
 SKIP = {"QQQ", "QLD", "TQQQ", "RMS"}  # ETF·비미국 종목
 # SEC 회사 번호(CIK)가 바뀐 종목: 예전 번호에 과거 공시가 있음 (엑슨모빌 2026년 지주회사 전환, 마시 맥레넌 티커 변경)
 CIK_EXTRA = {"XOM": [34088], "MMC": [62709]}
-TICKER_NOW = {"MMC": "MRSH"}  # 티커가 바뀐 종목: 주가·주식 수는 새 티커로 받음 (마시 맥레넌 2026-01-14 변경)
+TICKER_NOW = {"MMC": "MRSH", "LVMH": "MC.PA"}  # 티커가 바뀐 종목: 주가·주식 수는 새 티커로 받음 (마시 맥레넌 2026-01-14 변경)
 # 주식 종류(A·B·C)별로만 EPS를 공시해 SEC 자동 데이터에 EPS가 없는 종목: 회사 10-K의 희석 EPS(현재 주식 수 기준)
 MANUAL_EPS = {
     "V": {"2013-09-30": 1.90, "2014-09-30": 2.16, "2015-09-30": 2.58, "2016-09-30": 2.48, "2017-09-30": 2.80,
           "2018-09-30": 4.42, "2019-09-30": 5.32, "2020-09-30": 4.89, "2021-09-30": 5.63, "2022-09-30": 7.00,
           "2023-09-30": 8.28, "2024-09-30": 9.73, "2025-09-30": 10.20},  # 클래스 A 희석 EPS (2015년 4:1 분할 반영)
     "ERIE": {"2022-12-31": 5.71, "2023-12-31": 8.53, "2024-12-31": 11.48, "2025-12-31": 10.69},  # 클래스 A 희석 EPS (회사 실적 발표)
+    # LVMH(파리 상장, SEC 공시 없음): 회사 연간 실적 발표의 희석 주당순이익(그룹 몫, 유로).
+    # 2014·2015·2016은 2016 발표, 2018·2019·2020은 2020 발표, 2021~2023은 2023 연차보고서, 2024·2025는 2025 재무제표.
+    # 2017은 원자료를 못 찾아 재작성 순이익(53.65억 유로) ÷ 약 5.04억 주로 계산한 추정치.
+    "LVMH": {"2014-12-31": 11.21, "2015-12-31": 7.08, "2016-12-31": 7.89, "2017-12-31": 10.64, "2018-12-31": 12.61,
+             "2019-12-31": 14.23, "2020-12-31": 9.32, "2021-12-31": 23.89, "2022-12-31": 28.03, "2023-12-31": 30.33,
+             "2024-12-31": 25.12, "2025-12-31": 21.85},
 }
+NO_SEC = {"LVMH"}  # SEC 공시가 없어 MANUAL_EPS만 쓰는 종목
 TODAY = pd.Timestamp.today().normalize()
 LAST_FULL = TODAY.year - 1
+
+
+def yft(t: str) -> str:
+    """야후 티커: 미국 종목은 BRK.B → BRK-B, 해외 거래소 접미사(.PA 등)는 그대로."""
+    return t if t.endswith((".PA", ".L", ".DE", ".AS", ".SW", ".MI")) else t.replace(".", "-")
 
 
 def r2(x, n=2):
@@ -259,7 +271,7 @@ def monthly_close(close: pd.Series) -> dict:
 def shares_from_yahoo(ticker: str):
     """SEC에서 못 찾으면 Yahoo의 유통 주식 수(여러 종류 합산 값)."""
     try:
-        t = yf.Ticker(ticker.replace(".", "-"))
+        t = yf.Ticker(yft(ticker))
         n = None
         try:
             n = t.fast_info.get("shares")
@@ -290,9 +302,11 @@ def shares_info(cik: int, key: str, ticker: str = ""):
 
 
 def process(key: str, roll: dict, prices: pd.DataFrame, cik_map: dict) -> dict | None:
-    yf_t = TICKER_NOW.get(key, roll["ticker"]).replace(".", "-")
+    yf_t = yft(TICKER_NOW.get(key, roll["ticker"]))
     cik = cik_map.get(yf_t.upper()) or cik_map.get(yf_t.upper().replace("-", ".")) or (CIK_EXTRA.get(key) or [None])[0]
-    if cik is None:
+    if key in NO_SEC:
+        cik = None
+    elif cik is None:
         print(f"  {key}: CIK 없음")
         return None
     try:
@@ -306,7 +320,7 @@ def process(key: str, roll: dict, prices: pd.DataFrame, cik_map: dict) -> dict |
     if close.empty:
         return None
 
-    eps_raw = fetch_eps(cik, allow_fill=key != "BRKB")  # 버크셔: 공시 순이익이 보유 주식 평가로 크게 흔들려 채우지 않음
+    eps_raw = fetch_eps(cik, allow_fill=key != "BRKB") if cik else {}  # 버크셔: 공시 순이익이 보유 주식 평가로 크게 흔들려 채우지 않음
     for c in CIK_EXTRA.get(key, []):  # 예전 CIK의 과거 EPS로 빈 해 채우기
         if c != cik:
             for e, v in fetch_eps(c, allow_fill=False).items():
@@ -489,7 +503,7 @@ def main():
     print(f"대상 {len(keys)}개")
 
     cik_map = load_cik_map()
-    yf_tickers = [TICKER_NOW.get(k, rolls[k]["ticker"]).replace(".", "-") for k in keys]
+    yf_tickers = [yft(TICKER_NOW.get(k, rolls[k]["ticker"])) for k in keys]
     frames = []
     for i in range(0, len(yf_tickers), 80):
         chunk = yf_tickers[i:i + 80]
