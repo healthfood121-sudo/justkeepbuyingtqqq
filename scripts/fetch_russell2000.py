@@ -32,7 +32,8 @@ def get(url):
 
 
 def norm(s):
-    s = re.sub(r"[^A-Z0-9 ]", " ", (s or "").upper())
+    s = re.sub(r"['’.]", "", (s or "").upper())
+    s = re.sub(r"[^A-Z0-9 ]", " ", s)
     s = re.sub(r"\b(INC|CORP|CORPORATION|CO|COMPANY|LTD|LIMITED|PLC|HOLDINGS?|GROUP|CLASS [A-C]|CL [A-C]|THE|NEW|LLC|LP|SA|NV|AG)\b", " ", s)
     return " ".join(s.split())
 
@@ -72,21 +73,45 @@ def main():
     for c in ct:
         by_name.setdefault(norm(c["title"]), c["ticker"].upper())
 
-    out, miss = {}, []
+    eq = []
     for s in secs:
         if (s.findtext("assetCat") or "") != "EC":  # 주식만(현금·선물·채권 제외)
             continue
         name = (s.findtext("name") or s.findtext("title") or "").strip()
-        tk = None
         t = s.find(".//identifiers/ticker")
-        if t is not None:
-            tk = (t.get("value") or "").strip().upper()
-        if not tk:
-            tk = by_name.get(norm(name))
+        tk = (t.get("value") or "").strip().upper() if t is not None else ""
+        eq.append((name, (s.findtext("cusip") or "").strip(), tk))
+    print("equities", len(eq), "보고서에 티커 있음", sum(1 for e in eq if e[2]), flush=True)
+
+    # 티커가 빠진 종목: CUSIP → 티커 (OpenFIGI 공개 변환 API, 키 없이 분당 25회·요청당 10개)
+    need = sorted({c for _, c, tk in eq if not tk and c and c != "000000000"})
+    figi = {}
+    for i in range(0, len(need), 10):
+        chunk = need[i:i + 10]
+        body = [{"idType": "ID_CUSIP", "idValue": c, "exchCode": "US"} for c in chunk]
+        for _ in range(3):
+            r = requests.post("https://api.openfigi.com/v3/mapping", json=body, timeout=60)
+            if r.status_code == 429:
+                time.sleep(30)
+                continue
+            break
+        if r.status_code == 200:
+            for c, res in zip(chunk, r.json()):
+                d = (res.get("data") or [{}])[0]
+                if d.get("ticker"):
+                    figi[c] = d["ticker"].upper()
+        else:
+            print("  openfigi", r.status_code, flush=True)
+        time.sleep(2.6)
+    print("openfigi", len(figi), "/", len(need), flush=True)
+
+    out, miss = {}, []
+    for name, cusip, tk in eq:
+        tk = tk or figi.get(cusip) or by_name.get(norm(name))
         if not tk:
             miss.append(name)
             continue
-        out[tk.replace("/", "-").replace(".", "-")] = name
+        out[tk.replace("/", "-").replace(".", "-").replace(" ", "-")] = name
 
     print("stocks", len(out), "ticker 못 찾음", len(miss), miss[:20], flush=True)
     if len(out) < 1500:
