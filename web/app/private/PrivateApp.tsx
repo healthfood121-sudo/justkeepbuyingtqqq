@@ -332,6 +332,16 @@ import tpbData    from '@/public/data/rolling/TPB_rolling.json'
 import laurData   from '@/public/data/rolling/LAUR_rolling.json'
 import eatData    from '@/public/data/rolling/EAT_rolling.json'
 import calmData   from '@/public/data/rolling/CALM_rolling.json'
+import gpiData    from '@/public/data/rolling/GPI_rolling.json'
+import abgData    from '@/public/data/rolling/ABG_rolling.json'
+import ufpiData   from '@/public/data/rolling/UFPI_rolling.json'
+import arhsData   from '@/public/data/rolling/ARHS_rolling.json'
+import rvlvData   from '@/public/data/rolling/RVLV_rolling.json'
+import ensData    from '@/public/data/rolling/ENS_rolling.json'
+import feleData   from '@/public/data/rolling/FELE_rolling.json'
+import matxData   from '@/public/data/rolling/MATX_rolling.json'
+import kaiData    from '@/public/data/rolling/KAI_rolling.json'
+import asoData    from '@/public/data/rolling/ASO_rolling.json'
 import metData        from '@/public/data/rolling/MET_rolling.json'
 import metaData       from '@/public/data/rolling/META_rolling.json'
 import mgmData        from '@/public/data/rolling/MGM_rolling.json'
@@ -848,6 +858,16 @@ const STOCKS: Array<{ key: string; data: StockData }> = [
   { key: 'LAUR',  data: laurData   as unknown as StockData },
   { key: 'EAT',   data: eatData    as unknown as StockData },
   { key: 'CALM',  data: calmData   as unknown as StockData },
+  { key: 'GPI',   data: gpiData    as unknown as StockData },
+  { key: 'ABG',   data: abgData    as unknown as StockData },
+  { key: 'UFPI',  data: ufpiData   as unknown as StockData },
+  { key: 'ARHS',  data: arhsData   as unknown as StockData },
+  { key: 'RVLV',  data: rvlvData   as unknown as StockData },
+  { key: 'ENS',   data: ensData    as unknown as StockData },
+  { key: 'FELE',  data: feleData   as unknown as StockData },
+  { key: 'MATX',  data: matxData   as unknown as StockData },
+  { key: 'KAI',   data: kaiData    as unknown as StockData },
+  { key: 'ASO',   data: asoData    as unknown as StockData },
   { key: 'MET',      data: metData        as unknown as StockData },
   { key: 'META',     data: metaData       as unknown as StockData },
   { key: 'MGM',      data: mgmData        as unknown as StockData },
