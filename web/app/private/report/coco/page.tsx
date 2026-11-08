@@ -1,6 +1,8 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
+import { PB, HISTORY, CALLS } from './data'
 
 // 바이타 코코(COCO) 심층 리포트 — "유행으로 끝날 음료인가, 오래 살아남을 음료인가"
 // 숫자 출처: 회사 실적 발표·SEC 공시(매출총이익률 2021~2024), 컨퍼런스콜(2026년 2·3분기), CAGNY 2026 발표 보도.
@@ -17,13 +19,13 @@ const PLAN: { q: string; why: string; how: string; now: string; l: Light }[] = [
   { q: '① 코코넛워터라는 범주 자체가 계속 커지나?', why: '1위 회사도 범주가 줄면 같이 줄어든다(탄산수·오렌지주스 사례).', how: '시장 크기와 소매 판매 성장률, 몇 년째 이어지는지.',
     now: '미국 코코넛워터 소매 시장 약 16억 달러, 2026년 판매액 +28%·유럽 +66%. 2000년대 중반 거의 없던 범주가 20년 동안 커졌다.', l: 'g' },
   { q: '② 아직 안 마셔 본 사람이 많은가?', why: '유행은 "살 사람은 다 샀을 때" 꺾인다. 새 고객이 계속 들어오는지가 핵심.', how: '가구 침투율(한 번이라도 사는 집 비율), 성장 중 새 가구 비중.',
-    now: '미국 브랜드 성장의 약 3분의 2가 새로 사는 가구에서 나온다(회사 발표). 사는 집은 미국 가구의 약 4분의 1로 알려져 있다 — 넓어질 여지가 크다.', l: 'g' },
+    now: '미국 브랜드 성장의 절반~3분의 2가 새로 사는 가구에서 나온다(회사 발표). 회사가 마지막으로 숫자를 밝힌 2022년 기준 바이타 코코를 사는 집은 미국 가구의 약 11%(해마다 +1.7%포인트) — 회사는 오렌지·크랜베리 주스보다 훨씬 낮다고 강조한다. 넓어질 여지가 크다.', l: 'g' },
   { q: '③ 한 번 산 사람이 계속 사나?', why: '유행 음료는 첫 구매는 많고 재구매가 약하다(비욘드미트·블루에이프런과 같은 함정).', how: '기존 가구의 구매 빈도, 재구매율.',
     now: '성장의 약 3분의 1은 기존 가구가 더 자주 사서 나온다. 다만 회사가 재구매율 숫자를 자세히 공개하지 않아 확인이 제한적.', l: 'y' },
   { q: '④ 왜 마시나 — 이유가 일상적인가?', why: '"갈증·수분·카페인"처럼 매일 반복되는 이유는 오래 가고, "SNS에서 유명해서"는 금방 식는다.', how: '소비 이유(수분 보충, 운동, 천연, 칵테일·요리 재료), 마시는 상황이 넓어지는지.',
     now: '수분·전해질 보충(스포츠 음료 대체), 짧은 성분표의 천연 음료, 운동 뒤 회복 — 모두 반복되는 일상 수요. 아이용·스포츠 맛 제품으로 마시는 상황을 넓히는 중.', l: 'g' },
   { q: '⑤ 그 범주에서 1위가 얼마나 단단한가?', why: '범주가 커져도 1위가 밀리면 소용없다.', how: '점유율 추이, 유통사 자체 브랜드(PB)와의 관계.',
-    now: '미국 점유율 약 42%, 영국 약 68%(2026년 보도). PB가 크지만 바이타 코코가 그 PB를 만들어 납품한다 — 범주가 커지면 어느 쪽이든 몫을 가져간다.', l: 'y' },
+    now: '미국 점유율 43%(2021년 초) → 49%(2021년 말) → 51%(2022년, 회사 발표). 2026년 투자 설명회 보도는 약 42%(집계 기준 차이일 수 있어 추이 확인 필요). 영국은 80% 넘음(2025년 콜). PB가 크지만 바이타 코코가 그 PB를 만들어 납품한다 — 범주가 커지면 어느 쪽으로 팔려도 몫을 가져간다.', l: 'y' },
   { q: '⑥ 거대 음료 회사가 들어오면?', why: '작은 브랜드가 무너지는 가장 흔한 길.', how: '과거 대형사 진입 때 무슨 일이 있었나.',
     now: '이미 한 번 이겼다. 2009~2013년 펩시(원)·코카콜라(지코)가 들어왔지만, 코카콜라는 2020년 지코를 접었고 바이타 코코는 1위를 지켰다. 2017년엔 펩시가 인수를 타진했다.', l: 'g' },
   { q: '⑦ 원가와 공급이 버티나?', why: '좋은 브랜드도 원가 구조가 약하면 이익이 흔들린다.', how: '매출총이익률 변동, 원료 산지·운임·설비.',
@@ -32,18 +34,6 @@ const PLAN: { q: string; why: string; how: string; now: string; l: Light }[] = [
     now: '창업자 마이크 커번이 회장, 맥주 회사(보스턴 비어) CEO 출신 마틴 로퍼가 CEO. 빚 없음, 2026년 자사주 7,000만 달러, 첫 대형 인수(코프라)는 지금까지 계획대로.', l: 'g' },
   { q: '⑨ 값은 적정한가?', why: '좋은 회사도 비싸게 사면 나쁜 투자.', how: 'PER과 평소 PER, 이익 성장 대비 값.',
     now: '주가 약 62달러, PER 31.5배(평소 39배), 3년 고점 대비 −26%. 싸진 편이지만 음료 회사치고는 여전히 높은 기대가 들어 있다.', l: 'y' },
-]
-
-const TIMELINE: { d: string; t: string; k?: 'good' | 'bad' }[] = [
-  { d: '2004', t: '마이클 커번과 아이라 리런이 뉴욕에서 창업. 브라질 출신 지인에게서 "고향에선 코코넛워터를 마신다"는 이야기를 듣고 시작했다는 일화가 유명하다. 첫 몇 년은 창업자들이 직접 매장을 돌며 시음회를 열었다.' },
-  { d: '2009~2013', t: '건강 음료 붐. 펩시가 경쟁 브랜드 "원(O.N.E.)"에 투자하고, 코카콜라가 "지코" 지분을 사들여 2013년 완전 인수. 거대 회사의 유통망과 정면 대결.', k: 'bad' },
-  { d: '2017', t: '펩시가 바이타 코코 모회사 인수를 타진했지만, 회사가 10억 달러 이상을 원해 무산됐다고 보도됐다.' },
-  { d: '2020', t: '코카콜라가 실적 부진 브랜드 정리 과정에서 지코를 중단(2021년 창업자 측에 매각). 바이타 코코는 1위를 지켰다 — "대형사가 와도 살아남은" 첫 시험 통과.', k: 'good' },
-  { d: '2021.10', t: '나스닥 상장. 같은 해 매출 약 3.8억 달러, 매출총이익률 29.8%.' },
-  { d: '2022', t: '코로나 뒤 해상 운임 폭등. 매출총이익률 24.2%, EPS 0.14달러 — 원가 구조의 약점이 그대로 드러났다.', k: 'bad' },
-  { d: '2023~2024', t: '운임이 내려오며 매출총이익률 36.6% → 39%로 회복. EPS 0.79 → 0.94달러.', k: 'good' },
-  { d: '2025', t: '매출 약 6.1억 달러, EPS 1.19달러. 코코넛워터 판매량이 두 자릿수로 다시 빨라졌다.', k: 'good' },
-  { d: '2026', t: '태국 고급 코코넛워터 회사 코프라 인수(첫 대형 인수). 2분기 매출 +28%(브랜드 판매량 +15%), 3분기 +34%. 연간 매출 전망 8.1억~8.2억 달러. 대신 해상 운임 재급등으로 4분기 매출총이익률 33% 예상, 물량 부족으로 판매를 놓쳤다.' },
 ]
 
 const NUM: { y: string; rev: string; gm: string; eps: string }[] = [
@@ -66,7 +56,7 @@ const PEERS: { name: string; fate: string; why: string; l: Light }[] = [
 ]
 
 const SCEN: { name: string; l: Light; story: string; eps: string; pe: string; ret: string }[] = [
-  { name: '좋은 그림', l: 'g', story: '미국 가구 침투율이 4분의 1에서 40% 안팎으로, 유럽·아시아가 미국의 길을 따라온다. 설비가 수요를 따라잡고 운임은 평소 수준. "코코넛워터의 몬스터"가 되는 길.', eps: 'EPS 연 15% → 10년 뒤 약 8달러', pe: 'PER 30배', ret: '연 약 14%' },
+  { name: '좋은 그림', l: 'g', story: '미국 가구 침투율이 10%대에서 주스류 수준으로 올라가고, 유럽(미국보다 약 10년 뒤처진 시장)이 미국의 길을 따라온다. 설비가 수요를 따라잡고 운임은 평소 수준. "코코넛워터의 몬스터"가 되는 길.', eps: 'EPS 연 15% → 10년 뒤 약 8달러', pe: 'PER 30배', ret: '연 약 14%' },
   { name: '기본 그림', l: 'y', story: '범주는 계속 크지만 속도가 한 자릿수 후반으로 느려지고, PB가 몫을 늘린다. 운임에 따라 이익이 해마다 들쭉날쭉.', eps: 'EPS 연 10% → 약 5.1달러', pe: 'PER 25배', ret: '연 약 7~8%' },
   { name: '나쁜 그림', l: 'r', story: '탄산수처럼 범주가 "흔한 음료"가 되며 가격 경쟁, PB가 브랜드를 잠식. 또는 당·성분 논란으로 건강 이미지가 흔들린다. 운임 충격이 반복된다.', eps: 'EPS 연 3% → 약 2.7달러', pe: 'PER 15배', ret: '연 약 −4%' },
 ]
@@ -86,9 +76,14 @@ const sec = 'space-y-2'
 const h2 = 'text-base font-semibold text-gray-900 dark:text-white'
 const p = 'text-sm leading-relaxed text-gray-700 dark:text-gray-200'
 const small = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
+const B = ({ t }: { t: string }) => <>{t.split(/\*\*(.+?)\*\*/g).map((x, i) => i % 2 ? <b key={i}>{x}</b> : x)}</>
+const CH: Record<string, string> = { start: 'bg-gray-400', crisis: 'bg-red-500', win: 'bg-emerald-500', now: 'bg-blue-500' }
+const CHL: Record<string, string> = { start: '시작', crisis: '난관', win: '돌파', now: '지금' }
 const Dot = ({ l }: { l: Light }) => <span className={`inline-block w-2.5 h-2.5 rounded-full ${LIGHT[l].dot} shrink-0 mt-1`} title={LIGHT[l].txt} />
 
 export default function CocoReport() {
+  const [openQ, setOpenQ] = useState<string | null>('2026년 3분기')
+  const [allQ, setAllQ] = useState(false)
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
       <article className="max-w-4xl mx-auto px-4 sm:px-6 py-10 space-y-10">
@@ -97,7 +92,7 @@ export default function CocoReport() {
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">바이타 코코(COCO) — 유행으로 끝날까, 오래 살아남을까?</h1>
           <p className={p}>
             음료는 수천 가지가 나왔다 사라진다. 이 리포트는 &ldquo;바이타 코코가 좋은 회사인가&rdquo;보다 먼저 <b>&ldquo;코코넛워터가 10년 뒤에도 사람들이 마시는 음료일까&rdquo;</b>를 따진다.
-            아래 9가지 질문으로 쪼개서 답하고, 비슷한 음료들이 걸어간 길과 비교한 뒤, 10년 시나리오와 &ldquo;유행이 꺼지는 신호&rdquo; 체크리스트로 마무리한다.
+            아래 9가지 질문으로 쪼개서 답하고, 20년 역사(어떻게 경쟁에서 이기고 위기를 넘었나)와 상장 뒤 21개 분기의 실적·컨퍼런스콜을 모두 훑은 다음, 비슷한 음료들이 걸어간 길과 비교해 10년 시나리오와 &ldquo;유행이 꺼지는 신호&rdquo; 체크리스트로 마무리한다.
           </p>
         </header>
 
@@ -105,14 +100,28 @@ export default function CocoReport() {
         <section className="rounded-xl border border-blue-200 dark:border-blue-900/60 bg-blue-50/60 dark:bg-blue-950/30 p-4 space-y-2">
           <h2 className={h2}>결론 먼저</h2>
           <ul className="list-disc pl-5 space-y-1.5 text-sm leading-relaxed text-gray-700 dark:text-gray-200">
-            <li><b>잠깐 유행하다 사라질 제품일 가능성은 낮다.</b> 20년 동안 범주가 커져 왔고, 2010년대 초 코카콜라·펩시가 들어왔다 나간 뒤에도 1위를 지켰다. 지금도 성장의 3분의 2가 처음 사는 가구에서 나온다 — 유행 정점의 모습이 아니다.</li>
+            <li><b>잠깐 유행하다 사라질 제품일 가능성은 낮다.</b> 20년 동안 범주가 커져 왔고, 2010년대 초 코카콜라·펩시가 들어왔다 나간 뒤에도 1위를 지켰다. 지금도 성장의 절반 이상이 처음 사는 가구에서 나오고, 사는 집은 아직 미국 가구의 10%대로 추정된다 — 유행 정점의 모습이 아니다.</li>
             <li><b>그렇다고 코카콜라 같은 거대 복리 기업이 될 가능성도 낮다.</b> 원료가 코코넛 하나, 산지는 바다 건너, 매대에서는 유통사 PB와 경쟁한다. 이익이 운임 하나에 크게 흔들린다(2022년 EPS 0.14달러).</li>
             <li><b>그래서 판단은 &ldquo;커지는 범주의 1위 소비재 성장주&rdquo;.</b> 비중은 작게, 운임 충격이나 공급 문제로 주가가 빠질 때 나눠 담고, 분기마다 아래 &ldquo;유행 경고 신호&rdquo; 8가지를 확인한다.</li>
           </ul>
         </section>
 
+
+        <nav className="flex flex-wrap gap-1.5 text-xs">
+          {[['#pb', 'PB란?'], ['#plan', '분석 계획 9가지'], ['#history', '20년 역사'], ['#how', '어떻게 이겼나'], ['#peers', '유행일까?'], ['#calls', '전 분기 실적·콜'], ['#scen', '10년 시나리오'], ['#warn', '유행 경고 신호']].map(([h, t]) => (
+            <a key={h} href={h} className="px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">{t}</a>
+          ))}
+        </nav>
+
+        <section id="pb" className="rounded-xl border border-amber-200 dark:border-amber-900/60 bg-amber-50/60 dark:bg-amber-950/20 p-4 space-y-2 scroll-mt-20">
+          <h2 className={h2}>{PB.title}</h2>
+          <ul className="space-y-1.5 text-sm leading-relaxed text-gray-700 dark:text-gray-200">
+            {PB.lines.map((l, i) => <li key={i}><B t={l} /></li>)}
+          </ul>
+        </section>
+
         {/* 분석 계획 */}
-        <section className={sec}>
+        <section id="plan" className={`${sec} scroll-mt-20`}>
           <h2 className={h2}>1. 분석 계획 — 음료 회사를 볼 때 던질 9가지 질문</h2>
           <p className={small}>음료가 오래 살아남는지는 &ldquo;맛있다&rdquo;보다 <b>범주 크기·새 고객·재구매·마시는 이유·1위의 힘·원가</b>가 정한다. 질문마다 왜 중요한지, 무엇으로 확인하는지, 지금 답이 무엇인지 적었다.</p>
           <div className="space-y-2">
@@ -129,18 +138,24 @@ export default function CocoReport() {
         </section>
 
         {/* 20년 역사와 숫자 */}
-        <section className={sec}>
-          <h2 className={h2}>2. 20년 히스토리 — 이미 두 번의 시험을 통과했다</h2>
-          <ol className="relative border-l-2 border-gray-200 dark:border-gray-700 ml-1.5 space-y-2.5">
-            {TIMELINE.map(e => (
-              <li key={e.d} className="pl-3 relative">
-                <span className={`absolute -left-[7px] top-1 w-3 h-3 rounded-full ring-2 ring-white dark:ring-gray-950 ${e.k === 'good' ? 'bg-emerald-500' : e.k === 'bad' ? 'bg-red-500' : 'bg-gray-400'}`} />
-                <span className="text-xs font-semibold text-gray-800 dark:text-gray-100 tabular-nums">{e.d}</span>
-                <p className={small}>{e.t}</p>
-              </li>
+        <section id="history" className={`${sec} scroll-mt-20`}>
+          <h2 className={h2}>2. 20년 역사 — 바에서 시작해 범주의 주인이 되기까지</h2>
+          <p className={small}>창업 이야기와 경쟁, 위기와 회복을 시기별로 나눴다. 빨간 점은 난관, 초록 점은 돌파.</p>
+          <div className="space-y-3">
+            {HISTORY.map(c => (
+              <div key={c.years} className="rounded-lg border border-gray-200 dark:border-gray-800 p-3 space-y-1.5">
+                <div className="flex flex-wrap items-baseline gap-x-2">
+                  <span className={`inline-block w-2.5 h-2.5 rounded-full ${CH[c.kind]}`} />
+                  <span className="text-xs font-semibold tabular-nums text-gray-500 dark:text-gray-400">{c.years}</span>
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{c.title}</h3>
+                  <span className="text-[10px] text-gray-400">{CHL[c.kind]}</span>
+                </div>
+                {c.story.map((t, i) => <p key={i} className={small}>{t}</p>)}
+                <p className="text-xs leading-relaxed text-emerald-800 dark:text-emerald-300"><b>교훈:</b> {c.lesson}</p>
+              </div>
             ))}
-          </ol>
-          <p className={small}><b>두 번의 시험:</b> ① 거대 음료사의 정면 진입(2009~2020) — 살아남았다. ② 운임 폭등(2022) — 이익은 무너졌지만 판매와 1위 자리는 지켰고 1년 만에 회복했다. 유행 음료는 보통 첫 번째 시험에서 사라진다.</p>
+          </div>
+          <p className="text-xs font-semibold text-gray-800 dark:text-gray-100 pt-1">숫자로 본 상장 전후</p>
           <div className="overflow-x-auto">
             <table className="w-full text-xs mt-1">
               <thead><tr className="text-gray-400 border-b border-gray-200 dark:border-gray-800"><th className="text-left py-1.5 px-2 font-medium">연도</th><th className="text-right py-1.5 px-2 font-medium">매출(억 달러)</th><th className="text-right py-1.5 px-2 font-medium">매출총이익률</th><th className="text-right py-1.5 px-2 font-medium">EPS(달러)</th></tr></thead>
@@ -157,8 +172,30 @@ export default function CocoReport() {
           <p className={small}><b>숫자가 말하는 것:</b> 매출은 4년 만에 약 2배(인수 포함). 그런데 매출총이익률이 24%와 39% 사이를 오간다 — 브랜드 음료 회사치고 이례적으로 크게 흔들린다. <b>수요가 아니라 운임이 이익을 정하는 회사</b>라는 뜻이다.</p>
         </section>
 
+        <section id="how" className="rounded-xl border border-emerald-200 dark:border-emerald-900/60 bg-emerald-50/40 dark:bg-emerald-950/20 p-4 space-y-2 scroll-mt-20">
+          <h2 className={h2}>2-1. 어떻게 이겼고, 어떻게 헤쳐 나갔나</h2>
+          <p className="text-sm font-semibold text-gray-900 dark:text-white">경쟁에서 이긴 방법</p>
+          <ul className="list-disc pl-5 space-y-1 text-xs leading-relaxed text-gray-700 dark:text-gray-200">
+            <li><b>먼저, 많이 맛보게 했다:</b> 범주가 생기던 시기에 창업자가 직접 가게를 돌며 시음 — 1위는 범주 초기에 정해진다.</li>
+            <li><b>한 가지에만 집중했다:</b> 코카콜라(지코)·펩시(원)에게 코코넛워터는 수백 개 중 하나였고, 바이타 코코에게는 전부였다. 결국 코카콜라가 먼저 손을 뗐다(2020년).</li>
+            <li><b>경쟁자(PB)를 직접 만들었다:</b> 유통사 자체 브랜드를 적으로 두지 않고 대신 만들어 납품 — 범주가 어느 쪽으로 커지든 몫을 가져간다.</li>
+            <li><b>범주를 키우는 데 돈을 썼다:</b> "스포츠 음료보다 전해질 3.5배, 나무에서 나온 천연"이라는 이야기로 새 음용 상황(운동·아이 음료)을 만들었다. 1위는 범주가 커질수록 가장 많이 가져간다.</li>
+            <li><b>나라별로 1위를 굳혔다:</b> 영국 80% 넘는 점유율 — 한때 10~20%였던 이노센트를 한 자릿수로 밀어냈다.</li>
+          </ul>
+          <p className="text-sm font-semibold text-gray-900 dark:text-white pt-1">난관을 헤쳐 나간 방법</p>
+          <ul className="list-disc pl-5 space-y-1 text-xs leading-relaxed text-gray-700 dark:text-gray-200">
+            <li><b>2012 성분 표시 소송:</b> 빠르게 합의하고 표시를 고쳤다 — 건강 음료의 생명인 신뢰를 지켰다.</li>
+            <li><b>2022 운임 폭등:</b> 비싼 장기 운임 계약을 서두르지 않고 가격을 두 번 올렸다. 운임이 내려오자 이익률이 24% → 37%로 빠르게 회복.</li>
+            <li><b>2024 컨테이너 부족·월마트 매대 축소:</b> 재고를 다시 쌓고, 판매 데이터로 월마트를 설득해 2025년 11월 잃은 자리보다 더 넓은 매대를 되찾았다.</li>
+            <li><b>2025 관세:</b> 원가의 약 60%에 관세가 붙자 두 차례 가격 인상 — 그래도 브랜드 판매량은 +20~30%로 빨라졌다.</li>
+            <li><b>2025 PB 지역 상실:</b> 입찰에서 잃은 지역을 2026년 되찾고 새 유통사·코프라 인수로 PB를 키웠다.</li>
+            <li><b>2026 물량 부족:</b> 증설을 앞당기고 산지를 넓히는 중(필리핀·브라질 의존을 줄이는 게 과제).</li>
+          </ul>
+          <p className={small}><b>공통점:</b> 위기는 거의 모두 <b>공급·원가</b>(운임·컨테이너·관세·물량)에서 왔고, <b>수요</b>가 꺾여서 온 위기는 한 번도 없었다. 유행 음료는 보통 그 반대다.</p>
+        </section>
+
         {/* 유행인가 — 비교 */}
-        <section className={sec}>
+        <section id="peers" className={`${sec} scroll-mt-20`}>
           <h2 className={h2}>3. 유행일까? — 비슷한 음료들이 걸어간 길</h2>
           <p className={small}>음료의 운명을 가른 건 대부분 <b>&ldquo;마시는 이유가 매일 반복되는가&rdquo;</b>와 <b>&ldquo;그 이유가 사라질 수 있는가&rdquo;</b>였다.</p>
           <div className="grid sm:grid-cols-2 gap-2">
@@ -200,7 +237,7 @@ export default function CocoReport() {
         <section className={sec}>
           <h2 className={h2}>5. 경쟁 구도 — 브랜드·PB·대형사</h2>
           <ul className="list-disc pl-5 space-y-1 text-xs leading-relaxed text-gray-700 dark:text-gray-200">
-            <li><b>브랜드 1위:</b> 미국 약 42%, 영국 약 68%(2026년 보도). 2위 이하 브랜드는 훨씬 작다.</li>
+            <li><b>브랜드 1위:</b> 미국 약 42~51%(집계 기준에 따라), 영국 80% 넘음 — 영국에선 한때 10~20%를 가졌던 이노센트의 코코넛워터가 한 자릿수 초반으로 밀려났다(2025년 콜).</li>
             <li><b>PB(유통사 자체 브랜드):</b> 코스트코·월마트 같은 유통사가 싼 PB를 키운다. 그런데 바이타 코코는 이 PB를 만들어 납품한다(2026년 3분기 PB 납품 +152%, 코프라 인수 효과 포함). 브랜드가 밀려도 범주 성장의 몫을 가져가는 <b>&ldquo;무기상&rdquo; 전략</b>. 대신 PB 이익률은 브랜드보다 낮다.</li>
             <li><b>대형 음료사:</b> 코카콜라·펩시는 한 번 들어왔다 나갔다. 범주가 그들에겐 작고, 열대 원료 조달·품질 관리가 까다로웠던 것으로 보인다. 범주가 훨씬 커지면 다시 올 수 있다 — 그땐 인수 후보가 될 가능성도 있다(2017년 펩시 인수 타진).</li>
             <li><b>대체재:</b> 전해질 가루·스포츠 음료·기능성 물. 코코넛워터만의 경쟁이 아니라 &ldquo;수분 보충 음료&rdquo; 전체와 싸운다.</li>
@@ -235,8 +272,38 @@ export default function CocoReport() {
           </div>
         </section>
 
+        <section id="calls" className={`${sec} scroll-mt-20`}>
+          <h2 className={h2}>7-1. 상장 뒤 전 분기 실적·컨퍼런스콜 ({CALLS.length}분기)</h2>
+          <p className={small}>2021년 10월 상장 이후 모든 분기를 모았다. 2025년 2분기부터는 컨퍼런스콜 녹취록 전문을 읽고 요약했고, 그 전 분기는 녹취록을 구할 수 없어 회사가 SEC에 낸 실적 발표문(숫자와 경영진 발언)으로 정리했다. 제목을 누르면 펼쳐진다.</p>
+          <div className="space-y-1.5">
+            {[...CALLS].reverse().filter((c, i) => allQ || i < 8).map(c => {
+              const on = openQ === c.q
+              return (
+                <div key={c.q} className={`rounded-lg border ${on ? 'border-blue-400 dark:border-blue-700' : 'border-gray-200 dark:border-gray-800'}`}>
+                  <button onClick={() => setOpenQ(on ? null : c.q)} className="w-full text-left px-3 py-2 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                    <span className="text-sm font-semibold text-gray-900 dark:text-white">{c.q}</span>
+                    <span className="text-[11px] text-gray-400 tabular-nums">{c.date}</span>
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded ${c.src === 'call' ? 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'}`}>{c.src === 'call' ? '콜 녹취록' : '실적 발표문'}</span>
+                    <span className="basis-full text-xs text-gray-700 dark:text-gray-200">{c.head}</span>
+                  </button>
+                  {on && (
+                    <div className="px-3 pb-3 space-y-1.5 text-xs leading-relaxed">
+                      <ul className="list-disc pl-4 space-y-0.5 text-gray-700 dark:text-gray-200">{c.nums.map(n => <li key={n}>{n}</li>)}</ul>
+                      {c.said && <p className="italic text-purple-700 dark:text-purple-300 border-l-2 border-purple-300 dark:border-purple-700 pl-2">{c.said}</p>}
+                      <p className="text-emerald-800 dark:text-emerald-300"><b>의미:</b> {c.note}</p>
+                      <a href={c.url} target="_blank" rel="noreferrer" className="text-[11px] text-gray-400 hover:underline">원문 보기 →</a>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+          {!allQ && <button onClick={() => setAllQ(true)} className="text-xs text-blue-600 dark:text-blue-400 hover:underline">2021~2024년 분기도 모두 보기 ({CALLS.length - 8}개 더) ↓</button>}
+          <p className={small}><b>21분기를 이어 보면:</b> 브랜드 매출이 줄어든 분기는 한 번도 없다. 이익률은 20%(2022년 1분기)에서 42%(2024년 1분기) 사이를 오갔고, 흔들릴 때마다 원인은 운임·컨테이너·관세였다. 2025년부터는 성장이 오히려 빨라졌다(브랜드 +25% → +42%).</p>
+        </section>
+
         {/* 시나리오 */}
-        <section className={sec}>
+        <section id="scen" className={`${sec} scroll-mt-20`}>
           <h2 className={h2}>8. 10년 시나리오(추정)</h2>
           <p className={small}>출발점: 주가 약 62달러, 최근 1년 EPS 1.98달러, 배당 없음. 아래 수익률은 &ldquo;10년 뒤 EPS × 그때 PER&rdquo;을 지금 주가와 비교한 대략값이다.</p>
           <div className="grid sm:grid-cols-3 gap-2">
@@ -253,7 +320,7 @@ export default function CocoReport() {
         </section>
 
         {/* 체크리스트 */}
-        <section className={sec}>
+        <section id="warn" className={`${sec} scroll-mt-20`}>
           <h2 className={h2}>9. 분기마다 확인할 &ldquo;유행 경고 신호&rdquo; 8가지</h2>
           <p className={small}>실패 공부방의 유행 의존 사례(펠로톤·비욘드미트·그루폰)는 모두 이 숫자들이 먼저 꺾였다. 실적 발표 때 이 표만 다시 보면 된다.</p>
           <div className="overflow-x-auto">
@@ -266,7 +333,7 @@ export default function CocoReport() {
               </tbody>
             </table>
           </div>
-          <p className={small}><b>지금(2026년 3분기) 상태:</b> 브랜드 매출 +15%(판매량은 물량 부족으로 눌림), 새 가구가 성장의 3분의 2, 미국 점유율 약 42%, 해외 +48%, 매출총이익률 38%(4분기 33% 예상 — 경고선 근처지만 원인은 운임), 자사주 매입 중. <b>8개 중 7개가 괜찮은 범위, 1개(이익률)가 주의.</b></p>
+          <p className={small}><b>지금(2026년 3분기) 상태:</b> 브랜드 매출 +15%(판매량은 물량 부족으로 눌림), 새 가구가 성장의 절반 이상, 미국 점유율 약 42%(보도), 해외 +48%, 매출총이익률 38%(4분기 33% 예상 — 경고선 근처지만 원인은 운임), 자사주 매입 중. <b>8개 중 7개가 괜찮은 범위, 1개(이익률)가 주의.</b></p>
         </section>
 
         {/* 마무리 */}
