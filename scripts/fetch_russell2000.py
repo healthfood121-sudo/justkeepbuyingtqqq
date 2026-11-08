@@ -1,4 +1,6 @@
-"""러셀2000 구성 종목 — iShares 러셀2000 ETF(IWM)가 SEC에 내는 보유 종목 보고서(N-PORT)에서 읽는다.
+"""지수 구성 종목 — iShares ETF가 SEC에 내는 보유 종목 보고서(N-PORT)에서 읽는다.
+  python fetch_russell2000.py          → 러셀2000 (IWM) → scripts/data/russell2000.json
+  python fetch_russell2000.py IJH      → S&P 미드캡 400 (IJH) → scripts/data/sp400.json
 
 N-PORT는 펀드가 분기마다 SEC에 제출하는 전체 보유 종목 공시다(분기말 기준, 약 60일 뒤 공개).
 SEC 공개 자료라 누구나 받을 수 있고, 운용사 사이트 차단과 상관없다.
@@ -16,9 +18,13 @@ from pathlib import Path
 import requests
 
 ROOT = Path(__file__).resolve().parent.parent
-OUT = ROOT / "scripts" / "data" / "russell2000.json"
 UA = {"User-Agent": "justkeepbuyingtqqq research research@example.com"}
-ETF = "IWM"
+CFG = {
+    "IWM": ("russell2000.json", "iShares 러셀2000 ETF(IWM)", 1500),
+    "IJH": ("sp400.json", "iShares S&P 미드캡 400 ETF(IJH)", 350),
+}
+ETF = sys.argv[1].upper() if len(sys.argv) > 1 else "IWM"
+OUT = ROOT / "scripts" / "data" / CFG[ETF][0]
 
 
 def get(url):
@@ -44,7 +50,7 @@ def main():
     f = mf["fields"]
     row = next(dict(zip(f, d)) for d in mf["data"] if d[f.index("symbol")] == ETF)
     cik, series = int(row["cik"]), row["seriesId"]
-    print("IWM", cik, series, flush=True)
+    print(ETF, cik, series, flush=True)
 
     # 2) 그 시리즈의 최근 N-PORT 공시
     atom = get(f"https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK={series}&type=NPORT-P"
@@ -114,12 +120,12 @@ def main():
         out[tk.replace("/", "-").replace(".", "-").replace(" ", "-")] = name
 
     print("stocks", len(out), "ticker 못 찾음", len(miss), miss[:20], flush=True)
-    if len(out) < 1500:
+    if len(out) < CFG[ETF][2]:
         sys.exit("종목 수가 너무 적음 — 저장 안 함")
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps({
         "asOf": asof,
-        "src": f"iShares 러셀2000 ETF(IWM) SEC 보유 종목 보고서(N-PORT, {asof} 기준)",
+        "src": f"{CFG[ETF][1]} SEC 보유 종목 보고서(N-PORT, {asof} 기준)",
         "filing": acc,
         "missing": miss,
         "tickers": dict(sorted(out.items())),
