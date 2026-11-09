@@ -7794,6 +7794,85 @@ function premSummary(day: any, keys: string[]) {
   return { avg: vs.reduce((a, b) => a + b, 0) / vs.length, med: mid, lo, hi, n: vs.length }
 }
 
+// 에르메스 리셀 과거 기록(1984~2026) — 출처별로 나눠 보여 준다(서로 재는 방식이 달라 이어 붙이지 않음)
+const RH_LABELS = ['2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025', '25년 11월', '25년 4분기', '26년 1분기', '26년 2분기', '26년 3분기']
+const RH_POS: Record<string, number> = { '2018': 0, '2019': 1, '2020': 2, '2021': 3, '2022': 4, '2023': 5, '2024': 6, '2025': 7, '2025-11': 8, '2025Q4': 9, '2026Q1': 10, '2026': 10, '2026Q2': 11, '2026Q3': 12 }
+function HermesResaleHistory() {
+  const [h, setH] = useState<any>(null)
+  const [open, setOpen] = useState(false)
+  const [tl, setTl] = useState(false)
+  useEffect(() => { fetch('/data/resale/hermes_history.json').then(r => r.ok ? r.json() : null).then(setH).catch(() => {}) }, [])
+  if (!h) return null
+  const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-3'
+  const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
+  const th = 'py-1.5 px-2 font-medium text-gray-400 text-left whitespace-nowrap'
+  const td = 'py-1.5 px-2 text-gray-700 dark:text-gray-200 align-top'
+  const line = (id: string) => {
+    const s = h.series.find((x: any) => x.id === id)
+    const arr: (number | null)[] = RH_LABELS.map(() => null)
+    s?.points.forEach(([k, v]: [string, string]) => { const i = RH_POS[k]; const n = parseFloat(v); if (i != null && !isNaN(n) && /^[0-9.]+$/.test(v)) arr[i] = n })
+    return arr
+  }
+  const GC: Record<string, string> = { A: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300', B: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300', C: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300' }
+  const Grade = ({ g }: { g: string }) => <span className={`inline-block px-1.5 rounded text-[10px] font-semibold ${GC[g[0]] ?? GC.C}`}>{g}</span>
+  const btn = 'block text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline'
+  return (
+    <div className={box}>
+      <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">에르메스 리셀 웃돈 — 과거 기록 (1984~2026, 뉴스·보고서 조사)</h4>
+      <p className={p}>웃돈 = 중고 가격 ÷ 매장 정가. <b>2022년 정점 뒤 크게 내려왔다가 2026년 들어 조금 반등</b>했다. 출처마다 재는 방식이 달라 선을 서로 비교할 때는 방향만 본다. 자료가 없는 해는 비워 뒀다.</p>
+      <TrendChart labels={RH_LABELS} yFmt={v => `${v.toFixed(1)}배`} height={260} series={[
+        { label: '번스타인 핵심(버킨·켈리 평균, 경매) A', data: line('bern_core'), color: 'rgba(37,99,235,0.95)' },
+        { label: '번스타인 버킨 25(경매) A', data: line('bern_b25'), color: 'rgba(234,88,12,0.95)' },
+        { label: '번스타인 버킨 30 토고(경매) A', data: line('bern_b30'), color: 'rgba(220,38,38,0.8)', dash: true },
+        { label: '번스타인 확장(미니 켈리·포셰트 포함) A', data: line('bern_exp'), color: 'rgba(147,51,234,0.8)', dash: true },
+        { label: '소더비 마켓 버킨 25·30 최상 상태 B', data: line('sothebys'), color: 'rgba(16,185,129,0.9)' },
+      ]} />
+      <ul className={`${p} list-disc pl-4 space-y-1`}>
+        <li><b>믿을 만한 중심선은 번스타인(경매 낙찰가):</b> 2022년 2.2배 → 2025년 4분기 1.22배(최저) → 2026년 2분기 1.45배. 버킨 25는 2.6배 → 1.7배, 버킨 30 토고는 1.9배(2018) → 1.0배(정가 수준).</li>
+        <li><b>소더비 숫자가 더 높은 이유:</b> 최상 상태·최근 생산분만 보고, 파는 쪽이 낸 숫자다(2.4~3배).</li>
+        <li><b>사이즈가 클수록 웃돈이 작다:</b> 켈리 포셰트·미니 켈리(약 3배 이상) &gt; 버킨 25·켈리 25(1.7~2.5배) &gt; 버킨 30(정가 수준) &gt; 35 이상(정가 근처 또는 아래).</li>
+        <li><b>정가도 계속 오른다:</b> 버킨 25 미국 정가 9,400달러(2016) → 13,500달러(2026). 배수가 내려가도 중고 달러 가격은 덜 내려갔다(소더비 최상 상태 버킨 25·30 약 2만 8천~3만 달러, 2024~2026년).</li>
+        <li><b>투자자에게 의미:</b> 웃돈 하락은 &ldquo;가방이 안 팔린다&rdquo;가 아니라 <b>코로나 때 들뜬 수요가 빠지고 중고 매물이 늘었다</b>는 신호. 다만 웃돈이 1배(정가) 아래로 내려가면 희소성 모델이 흔들린다는 경고(UBS 2026년 10월 &lsquo;매도&rsquo; 의견의 근거).</li>
+      </ul>
+      <div className="overflow-x-auto"><table className="w-full text-xs">
+        <thead><tr className="border-b border-gray-200 dark:border-gray-800"><th className={th}>제품별 지금 웃돈</th><th className={th}>웃돈</th><th className={th}>미국 정가</th><th className={th}>신뢰</th><th className={th}>출처</th></tr></thead>
+        <tbody>{h.models.map((m: any) => <tr key={m.model} className="border-b border-gray-100 dark:border-gray-900"><td className={`${td} font-medium whitespace-nowrap`}>{m.model}</td><td className={td}>{m.premium}</td><td className={`${td} whitespace-nowrap`}>{m.retail ?? '—'}</td><td className={td}><Grade g={m.grade} /></td><td className={`${td} text-gray-400`}>{m.src}</td></tr>)}</tbody>
+      </table></div>
+      <button onClick={() => setTl(!tl)} className={btn}>{tl ? '1984~2026 연표 접기' : `1984~2026 연표 — 정가·중고·경매 기록 (${h.timeline?.length ?? 0}개) ↓`}</button>
+      {tl && h.timeline && (
+        <div className="space-y-2">
+          <p className={p}>{h.platforms}</p>
+          <div className="overflow-x-auto"><table className="w-full text-xs">
+            <thead><tr className="border-b border-gray-200 dark:border-gray-800"><th className={th}>시기</th><th className={th}>분류</th><th className={th}>기록</th><th className={th}>신뢰</th></tr></thead>
+            <tbody>{h.timeline.map(([y, c, t, g]: string[], i: number) => <tr key={i} className="border-b border-gray-100 dark:border-gray-900"><td className={`${td} font-medium whitespace-nowrap`}>{y}</td><td className={`${td} whitespace-nowrap text-gray-500`}>{c}</td><td className={td}>{t || '— 찾은 자료 없음'}</td><td className={td}>{g && <Grade g={g} />}</td></tr>)}</tbody>
+          </table></div>
+          <p className="text-xs font-semibold text-gray-700 dark:text-gray-200 pt-1">정가 이력 (미국)</p>
+          <div className="overflow-x-auto"><table className="w-full text-xs">
+            <thead><tr className="border-b border-gray-200 dark:border-gray-800"><th className={th}>연도</th><th className={th}>모델</th><th className={th}>정가</th><th className={th}>신뢰</th><th className={th}>출처</th></tr></thead>
+            <tbody>{h.retail.map((r: any, i: number) => <tr key={i} className="border-b border-gray-100 dark:border-gray-900"><td className={`${td} whitespace-nowrap font-medium`}>{r.y}</td><td className={td}>{r.model}</td><td className={`${td} whitespace-nowrap`}>{r.price}</td><td className={td}><Grade g={r.grade} /></td><td className={`${td} text-gray-400`}>{r.src}</td></tr>)}</tbody>
+          </table></div>
+          <p className={p}>{h.retailNote}</p>
+        </div>
+      )}
+      <button onClick={() => setOpen(!open)} className={btn}>{open ? '출처별 전체 기록 접기' : `출처별 전체 기록과 신뢰도 보기 (${h.series.length}곳) ↓`}</button>
+      {open && (
+        <div className="space-y-2">
+          <ul className={`${p} space-y-0.5`}>{Object.entries(h.grades).map(([g, t]) => <li key={g}><Grade g={g} /> {t as string}</li>)}</ul>
+          {h.series.map((s: any) => (
+            <div key={s.id} className="rounded bg-gray-50 dark:bg-gray-800/40 px-3 py-2 space-y-1">
+              <p className="text-xs font-semibold text-gray-800 dark:text-gray-100"><Grade g={s.grade} /> {s.name} <span className="font-normal text-gray-400">· {s.basis}</span></p>
+              <p className={p}>{s.points.map(([k, v]: [string, string]) => `${k}: ${v}${/^[0-9.]+$/.test(v) ? '배' : ''}`).join(' → ')}</p>
+              <p className={p}>{s.note}</p>
+              <p className="text-[11px] text-gray-400">{s.src.map(([t, u]: [string, string], i: number) => <span key={i}>{i > 0 && ' · '}<a href={u} target="_blank" rel="noreferrer" className="underline">{t}</a></span>)}</p>
+            </div>
+          ))}
+          <p className="text-[11px] text-gray-400">빈 해(특히 2023~2024년 분기별 경매 웃돈)는 번스타인 원자료가 비공개라 채우지 못했다. 숫자는 보도에 인용된 값이며, 보도마다 소수점이 조금 다를 때는 가장 늦게 나온 값을 썼다. {h.updated} 조사.</p>
+        </div>
+      )}
+    </div>
+  )
+}
+
 function HermesResaleCard() {
   const [daily, setDaily] = useState<any>(null)
   const [sold, setSold] = useState<any[]>([])
