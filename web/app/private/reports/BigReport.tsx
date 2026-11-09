@@ -4,6 +4,39 @@ import { useState } from 'react'
 
 // 심층 리포트(아마존·알파벳·마이크로소프트·에르메스 공용) — 종목 분석 화면 안에 함께 보여 준다.
 export type Light = 'g' | 'y' | 'r'
+export type Sc = 'bad' | 'base' | 'good'
+// 사업부별로 매출·이익률을 쌓아 10년 뒤 주당이익을 계산하는 미래 모델
+export type Model = {
+  cur: string                         // 통화 이름 (달러·유로)
+  price: number; eps: number          // 지금 주가, 출발 주당이익(본업)
+  sh: number; shc: number             // 주식 수(억 주), 연 변화율 %(자사주 매입은 −)
+  tax: number; div: number            // 세율 %, 배당수익률 %
+  pe: Record<Sc, number>              // 10년 뒤 PER
+  other: { name: string; now: number; g: number; why: string }  // 사업부 밖 비용·수익(억), 연 증가율
+  segs: { name: string; rev: number; m0: number; g: Record<Sc, [number, number]>; mEnd: Record<Sc, number>; why: string }[]
+  scen: Record<Sc, { name: string; story: string }>
+  note: string
+}
+export function runModel(m: Model, sc: Sc, Y: number) {
+  let oi = 0
+  const segs = m.segs.map(s => {
+    let r = s.rev
+    for (let y = 1; y <= Y; y++) r *= 1 + (y <= 5 ? s.g[sc][0] : s.g[sc][1]) / 100
+    const mg = s.m0 + (s.mEnd[sc] - s.m0) * Y / 10
+    oi += r * mg / 100
+    return { name: s.name, rev: r, mg, oi: r * mg / 100 }
+  })
+  const oth = m.other.now * Math.pow(1 + m.other.g / 100, Y)
+  const net = (oi + oth) * (1 - m.tax / 100)
+  const eps = net / (m.sh * Math.pow(1 + m.shc / 100, Y))
+  return { segs, oi, oth, eps }
+}
+export function modelResult(m: Model, sc: Sc) {
+  const e5 = runModel(m, sc, 5).eps, e10 = runModel(m, sc, 10).eps
+  const cagr = (Math.pow(e10 / m.eps, 0.1) - 1) * 100
+  const ret = (Math.pow(e10 * m.pe[sc] / m.price, 0.1) - 1) * 100 + m.div
+  return { e5, e10, cagr, ret }
+}
 export type BigReportData = {
   key: string
   asOf: string
@@ -12,10 +45,10 @@ export type BigReportData = {
   conclusion: string[]
   epsFix?: { note: string; rows: { k: string; v: string }[]; per: string }
   plan: { q: string; now: string; l: Light }[]
-  units: { name: string; share: string; growth: string; role: string; view: string }[]
+  units?: { name: string; share: string; growth: string; role: string; view: string }[]
   history: { years: string; kind: 'start' | 'crisis' | 'win' | 'now'; title: string; story: string[]; lesson: string }[]
   ai?: { opp: string[]; threat: string[]; verdict: string }
-  worries: { w: string; fact: string; l: Light }[]
+  worries?: { w: string; fact: string; l: Light }[]
   calls: { q: string; date: string; url?: string; head: string; nums: string[]; said?: string; note: string }[]
   hermes?: { k: string; it: string; rms: string }[]
   hermesVerdict?: string
@@ -24,8 +57,9 @@ export type BigReportData = {
   callsTitle?: string
   extra?: { id: string; toc: string; title: string; intro?: string; parts: { h?: string; p?: string[]; list?: string[]; table?: { cols: string[]; rows: string[][] } }[] }[]
   callsNote?: string
-  scen: { name: string; l: Light; story: string; eps: string; pe: string; ret: string }[]
+  scen?: { name: string; l: Light; story: string; eps: string; pe: string; ret: string }[]
   scenNote: string
+  model?: Model
   warn: { k: string; ok: string; bad: string }[]
   final: string[]
 }
@@ -47,7 +81,7 @@ export default function BigReport({ d }: { d: BigReportData }) {
   const [openQ, setOpenQ] = useState<string | null>(d.calls[0]?.q ?? null)
   const [allCalls, setAllCalls] = useState(false)
   const id = (s: string) => `${d.key.toLowerCase()}-${s}`
-  const toc = ([['fix', 'PER 바로잡기', !!d.epsFix], ['plan', '분석 질문', true], ['units', '사업부', true], ['history', '역사·위기', true], ['nums', '연도별 숫자', !!d.numbers], ['peers', '경쟁사와 비교', !!d.peers], ...(d.extra ?? []).map(x => [x.id, x.toc, true]), ['ai', 'AI', !!d.ai], ['worry', '걱정 vs 숫자', true], ['calls', d.callsTitle ? '실적 발표' : '최근 콜', true], ['rms', '에르메스와 비교', !!d.hermes], ['scen', '10년 시나리오', true], ['warn', '경고 신호', true]] as [string, string, boolean][]).filter(t => t[2])
+  const toc = ([['fix', 'PER 바로잡기', !!d.epsFix], ['plan', '분석 질문', true], ['units', '사업부', !!d.units], ['model', '미래 이익 모델', !!d.model], ['history', '역사·위기', true], ['nums', '연도별 숫자', !!d.numbers], ['peers', '경쟁사와 비교', !!d.peers], ...(d.extra ?? []).map(x => [x.id, x.toc, true]), ['ai', 'AI', !!d.ai], ['worry', '걱정 vs 숫자', !!d.worries], ['calls', d.callsTitle ? '실적 발표' : '최근 콜', true], ['rms', '에르메스와 비교', !!d.hermes], ['scen', '10년 시나리오', !!(d.scen || d.model)], ['warn', '경고 신호', true]] as [string, string, boolean][]).filter(t => t[2])
   let n = 0
   const N = () => `${++n}. `
   return (
@@ -88,14 +122,16 @@ export default function BigReport({ d }: { d: BigReportData }) {
           </div>
         </section>
 
-        <section id={id('units')} className={sec}>
+        {d.units && <section id={id('units')} className={sec}>
           <h3 className={h2}>{N()}돈을 버는 곳 — 사업부 한눈에</h3>
           <div className="overflow-x-auto"><table className="w-full text-xs">
             <thead><tr className="text-gray-400 border-b border-gray-200 dark:border-gray-800"><th className={th}>사업</th><th className={th}>비중</th><th className={th}>성장</th><th className={th}>회사 안의 역할</th><th className={th}>판단</th></tr></thead>
             <tbody className="text-gray-700 dark:text-gray-200">{d.units.map(u => <tr key={u.name} className="border-b border-gray-100 dark:border-gray-900 align-top"><td className={`${td} font-medium whitespace-nowrap`}>{u.name}</td><td className={`${td} whitespace-nowrap`}>{u.share}</td><td className={`${td} whitespace-nowrap`}>{u.growth}</td><td className={td}>{u.role}</td><td className={td}><B t={u.view} /></td></tr>)}</tbody>
           </table></div>
           <p className="text-[11px] text-gray-400">분기별 자세한 숫자는 위 &ldquo;사업부·지역별 매출&rdquo;과 사업부 심층 분석에 있다.</p>
-        </section>
+        </section>}
+
+        {d.model && <ModelSection m={d.model} sid={id('model')} title={`${N()}미래 이익 모델 — 사업부별로 10년 뒤를 쌓아 보기`} />}
 
         <section id={id('history')} className={sec}>
           <h3 className={h2}>{N()}역사 — 위기를 어떻게 넘었나</h3>
@@ -160,7 +196,7 @@ export default function BigReport({ d }: { d: BigReportData }) {
           <p className={small}><B t={d.ai.verdict} /></p>
         </section>}
 
-        <section id={id('worry')} className={sec}>
+        {d.worries && <section id={id('worry')} className={sec}>
           <h3 className={h2}>{N()}시장의 걱정 vs 숫자가 말하는 것</h3>
           <div className="space-y-1.5">
             {d.worries.map(x => (
@@ -170,7 +206,7 @@ export default function BigReport({ d }: { d: BigReportData }) {
               </div>
             ))}
           </div>
-        </section>
+        </section>}
 
         <section id={id('calls')} className={sec}>
           <h3 className={h2}>{N()}{d.callsTitle ?? `최근 컨퍼런스콜 (${d.calls.length}개 분기)`}</h3>
@@ -209,10 +245,20 @@ export default function BigReport({ d }: { d: BigReportData }) {
           <p className={small}><B t={d.hermesVerdict ?? ''} /></p>
         </section>}
 
-        <section id={id('scen')} className={sec}>
+        {(d.scen || d.model) && <section id={id('scen')} className={sec}>
           <h3 className={h2}>{N()}10년 시나리오(추정)</h3>
           <div className="grid sm:grid-cols-3 gap-2">
-            {d.scen.map(s => (
+            {d.model ? (['good', 'base', 'bad'] as Sc[]).map(sc => {
+              const m = d.model!, r = modelResult(m, sc)
+              return (
+                <div key={sc} className="rounded-lg border border-gray-200 dark:border-gray-800 p-3 space-y-1">
+                  <div className="flex gap-2"><Dot l={sc === 'good' ? 'g' : sc === 'base' ? 'y' : 'r'} /><p className="text-sm font-semibold text-gray-900 dark:text-white">{m.scen[sc].name}</p></div>
+                  <p className={small}>{m.scen[sc].story}</p>
+                  <p className="text-xs text-gray-800 dark:text-gray-100"><b>주당이익 연 {r.cagr.toFixed(1)}% → 10년 뒤 약 {r.e10.toFixed(0)}{m.cur}</b>, PER {m.pe[sc]}배</p>
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white">연 약 {r.ret.toFixed(0)}%{m.div > 0 ? ' (배당 포함)' : ''}</p>
+                </div>
+              )
+            }) : d.scen!.map(s => (
               <div key={s.name} className="rounded-lg border border-gray-200 dark:border-gray-800 p-3 space-y-1">
                 <div className="flex gap-2"><Dot l={s.l} /><p className="text-sm font-semibold text-gray-900 dark:text-white">{s.name}</p></div>
                 <p className={small}>{s.story}</p>
@@ -222,7 +268,8 @@ export default function BigReport({ d }: { d: BigReportData }) {
             ))}
           </div>
           <p className={small}><B t={d.scenNote} /></p>
-        </section>
+          {d.model && <p className="text-[11px] text-gray-400">위 미래 이익 모델에서 사업부별 가정을 그대로 계산한 값이다.</p>}
+        </section>}
 
         <section id={id('warn')} className={sec}>
           <h3 className={h2}>{N()}분기마다 확인할 신호</h3>
@@ -239,5 +286,72 @@ export default function BigReport({ d }: { d: BigReportData }) {
         </section>
       </article>
     </div>
+  )
+}
+
+const fmtAmt = (v: number) => {
+  const r = Math.round(v)
+  if (Math.abs(r) >= 10000) { const jo = Math.floor(Math.abs(r) / 10000), rest = Math.abs(r) % 10000; return `${r < 0 ? '−' : ''}${jo}조${rest ? ` ${rest.toLocaleString('ko-KR')}` : ''}억` }
+  return `${r < 0 ? '−' : ''}${Math.abs(r).toLocaleString('ko-KR')}억`
+}
+const SC_LABEL: Record<Sc, string> = { bad: '나쁜 그림', base: '기본 그림', good: '좋은 그림' }
+
+function ModelSection({ m, sid, title }: { m: Model; sid: string; title: string }) {
+  const [sc, setSc] = useState<Sc>('base')
+  const y5 = runModel(m, sc, 5), y10 = runModel(m, sc, 10), r = modelResult(m, sc)
+  const oi0 = m.segs.reduce((a, s) => a + s.rev * s.m0 / 100, 0)
+  return (
+    <section id={sid} className={sec}>
+      <h3 className={h2}>{title}</h3>
+      <p className={small}>과거 성장률을 그대로 늘리는 대신, <b>사업부마다 앞으로의 성장률과 이익률을 따로 가정</b>해 10년 뒤 이익을 쌓아 올렸다. 빨리 크는 사업(클라우드 등)이 회사 안에서 커질수록 회사 전체 성장률도 올라가는 효과가 그대로 반영된다. 버튼으로 시나리오를 바꿔 본다.</p>
+      <div className="flex gap-1.5">
+        {(['bad', 'base', 'good'] as Sc[]).map(x => (
+          <button key={x} onClick={() => setSc(x)} className={`px-3 py-1 rounded-full text-xs font-semibold ${sc === x ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'}`}>{SC_LABEL[x]}</button>
+        ))}
+      </div>
+      <p className={small}><b>{m.scen[sc].name}:</b> {m.scen[sc].story}</p>
+      <div className="overflow-x-auto"><table className="w-full text-xs">
+        <thead><tr className="text-gray-400 border-b border-gray-200 dark:border-gray-800">
+          {['사업부', '지금 매출(1년)', '성장 가정 1~5년 / 6~10년', '10년 뒤 매출', '이익률 지금 → 10년 뒤', '10년 뒤 영업이익', '이익 비중 지금 → 10년 뒤'].map(c => <th key={c} className={`${th} whitespace-nowrap`}>{c}</th>)}
+        </tr></thead>
+        <tbody className="text-gray-700 dark:text-gray-200">
+          {m.segs.map((s, i) => {
+            const z = y10.segs[i]
+            return (
+              <tr key={s.name} className="border-b border-gray-100 dark:border-gray-900 align-top">
+                <td className={`${td} font-medium whitespace-nowrap`}>{s.name}</td>
+                <td className={`${td} tabular-nums whitespace-nowrap`}>{fmtAmt(s.rev)} {m.cur}</td>
+                <td className={`${td} tabular-nums whitespace-nowrap`}>연 {s.g[sc][0]}% / {s.g[sc][1]}%</td>
+                <td className={`${td} tabular-nums whitespace-nowrap font-semibold`}>{fmtAmt(z.rev)} {m.cur} <span className="font-normal text-gray-400">(×{(z.rev / s.rev).toFixed(1)})</span></td>
+                <td className={`${td} tabular-nums whitespace-nowrap`}>{s.m0}% → {s.mEnd[sc]}%</td>
+                <td className={`${td} tabular-nums whitespace-nowrap`}>{fmtAmt(z.oi)} {m.cur}</td>
+                <td className={`${td} tabular-nums whitespace-nowrap`}>{Math.round(s.rev * s.m0 / oi0 * 100)}% → {Math.round(z.oi / y10.oi * 100)}%</td>
+              </tr>
+            )
+          })}
+          <tr className="border-b border-gray-100 dark:border-gray-900 align-top text-gray-500">
+            <td className={`${td} whitespace-nowrap`}>{m.other.name}</td>
+            <td className={`${td} tabular-nums whitespace-nowrap`}>{fmtAmt(m.other.now)} {m.cur}</td>
+            <td className={`${td} tabular-nums whitespace-nowrap`}>연 {m.other.g}%</td>
+            <td className={td} colSpan={2}></td>
+            <td className={`${td} tabular-nums whitespace-nowrap`}>{fmtAmt(y10.oth)} {m.cur}</td>
+            <td className={td}></td>
+          </tr>
+        </tbody>
+      </table></div>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        {[['주당이익 지금', `${m.eps}${m.cur}`], ['5년 뒤', `약 ${y5.eps.toFixed(1)}${m.cur}`], ['10년 뒤', `약 ${y10.eps.toFixed(1)}${m.cur} (연 ${r.cagr.toFixed(1)}%)`], [`10년 연 수익률 (PER ${m.pe[sc]}배)`, `약 ${r.ret.toFixed(1)}%`]].map(([k, v]) => (
+          <div key={k} className="rounded-lg bg-gray-50 dark:bg-gray-900 p-2"><p className="text-[11px] text-gray-400">{k}</p><p className="text-sm font-semibold text-gray-900 dark:text-white">{v}</p></div>
+        ))}
+      </div>
+      <div className="space-y-1">
+        <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">가정의 근거</p>
+        <ul className="list-disc pl-4 space-y-1 text-xs leading-relaxed text-gray-700 dark:text-gray-200">
+          {m.segs.map(s => <li key={s.name}><b>{s.name}:</b> <B t={s.why} /></li>)}
+          <li><b>{m.other.name}:</b> <B t={m.other.why} /></li>
+        </ul>
+      </div>
+      <p className="text-[11px] text-gray-400"><B t={m.note} /> 세율 {m.tax}%, 주식 수 연 {m.shc > 0 ? '+' : ''}{m.shc}%{m.shc < 0 ? '(자사주 매입)' : '(주식 보상으로 늘어남)'}. 이익률은 10년에 걸쳐 고르게 바뀐다고 가정. 단위: 억 {m.cur}(1조 = 1만 억).</p>
+    </section>
   )
 }

@@ -10253,8 +10253,8 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
             SEC 공시에서 찾은 EPS가 {m.lastFy}년까지만 있어 PER 비교·성장률·기대수익률은 생략했다.
           </p>
         )}
-        {deep && <DeepNow d={deep} />}
-        {deep && <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 pt-1">숫자로 보면 (자동 계산)</p>}
+        {deep && !REPORTS[stockKey] && <DeepNow d={deep} />}
+        {deep && !REPORTS[stockKey] && <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 pt-1">숫자로 보면 (자동 계산)</p>}
         <ul className={`${p} list-disc pl-4 space-y-1`}>
           {lines.map((l, i) => <li key={i}>{l}</li>)}
           {group && <li><b>{GROUPS[group].label}:</b> {GROUPS[group].desc}</li>}
@@ -10289,9 +10289,9 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
           <h3 className={h3}>{nFuture}. 앞으로</h3>
         </div>
       )}
-      {deep && <DeepFuture d={deep} num={`${nFuture}-1.`} />}
-      {live && <AutoDeep f={f} data={data} part="future" num={deep ? `${nFuture}-2.` : `${nFuture}.`} />}
-      {live && <AutoDeep f={f} data={data} part="conclusion" num={`${nConcl}.`} deep={deep} />}
+      {deep && !REPORTS[stockKey] && <DeepFuture d={deep} num={`${nFuture}-1.`} />}
+      {live && <AutoDeep f={f} data={data} part="future" num={deep && !REPORTS[stockKey] ? `${nFuture}-2.` : `${nFuture}.`} />}
+      {live && <AutoDeep f={f} data={data} part="conclusion" num={`${nConcl}.`} deep={REPORTS[stockKey] ? undefined : deep} />}
       {!live && deep && <DeepConclusion d={deep} num={`${nConcl}.`} auto={[]} />}
       {live && <AutoDeep f={f} data={data} part="appendix" />}
     </div>
