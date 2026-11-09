@@ -42,10 +42,18 @@ for date, acc in rows:
     names = [it['name'] for it in idx.json()['directory']['item']]
     pick = [n for n in names if n.lower().endswith(('.htm', '.html')) and re.search(r'ex.?99|99\.?1|press|release', n, re.I)]
     if not pick:
-        print('  첨부 못 찾음', date, names[:10]); continue
+        # 보도자료를 별도 첨부로 두지 않는 회사(ADP 등): 공시 원문 전체(.txt)에서 EX-99 부분을 읽는다
+        full = [n for n in names if n.endswith('.txt') and n.startswith(acc)]
+        if not full:
+            print('  첨부 못 찾음', date, names[:10]); continue
+        pick = full
     r = get(base + pick[0])
     if not r:
         continue
-    tx = text(r.text)
+    raw = r.text
+    if pick[0].endswith('.txt'):
+        m = re.search(r'<TYPE>EX-99.*?</DOCUMENT>', raw, re.S)
+        raw = m.group(0) if m else raw
+    tx = text(raw)
     print(f'\n######## {t}_{date}\n  URL {base + pick[0]}\n<<<BEGIN {t}_{date}>>>\n{tx[:14000]}\n<<<END {t}_{date}>>>', flush=True)
     time.sleep(0.5)
