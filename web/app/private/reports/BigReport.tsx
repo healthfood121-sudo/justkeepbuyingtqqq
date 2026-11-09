@@ -22,6 +22,7 @@ export type BigReportData = {
   numbers?: { title: string; cols: string[]; rows: string[][]; note: string }
   peers?: { title: string; cols: string[]; rows: { k: string; v: string[] }[]; verdict: string }
   callsTitle?: string
+  extra?: { id: string; toc: string; title: string; intro?: string; parts: { h?: string; p?: string[]; list?: string[]; table?: { cols: string[]; rows: string[][] } }[] }[]
   callsNote?: string
   scen: { name: string; l: Light; story: string; eps: string; pe: string; ret: string }[]
   scenNote: string
@@ -44,8 +45,9 @@ const td = 'py-1.5 px-2'
 
 export default function BigReport({ d }: { d: BigReportData }) {
   const [openQ, setOpenQ] = useState<string | null>(d.calls[0]?.q ?? null)
+  const [allCalls, setAllCalls] = useState(false)
   const id = (s: string) => `${d.key.toLowerCase()}-${s}`
-  const toc = ([['fix', 'PER 바로잡기', !!d.epsFix], ['plan', '분석 질문', true], ['units', '사업부', true], ['history', '역사·위기', true], ['nums', '연도별 숫자', !!d.numbers], ['peers', '경쟁사와 비교', !!d.peers], ['ai', 'AI', !!d.ai], ['worry', '걱정 vs 숫자', true], ['calls', d.callsTitle ? '실적 발표' : '최근 콜', true], ['rms', '에르메스와 비교', !!d.hermes], ['scen', '10년 시나리오', true], ['warn', '경고 신호', true]] as [string, string, boolean][]).filter(t => t[2])
+  const toc = ([['fix', 'PER 바로잡기', !!d.epsFix], ['plan', '분석 질문', true], ['units', '사업부', true], ['history', '역사·위기', true], ['nums', '연도별 숫자', !!d.numbers], ['peers', '경쟁사와 비교', !!d.peers], ...(d.extra ?? []).map(x => [x.id, x.toc, true]), ['ai', 'AI', !!d.ai], ['worry', '걱정 vs 숫자', true], ['calls', d.callsTitle ? '실적 발표' : '최근 콜', true], ['rms', '에르메스와 비교', !!d.hermes], ['scen', '10년 시나리오', true], ['warn', '경고 신호', true]] as [string, string, boolean][]).filter(t => t[2])
   let n = 0
   const N = () => `${++n}. `
   return (
@@ -131,6 +133,24 @@ export default function BigReport({ d }: { d: BigReportData }) {
           <p className={small}><B t={d.peers.verdict} /></p>
         </section>}
 
+        {(d.extra ?? []).map(x => (
+          <section key={x.id} id={id(x.id)} className={sec}>
+            <h3 className={h2}>{N()}{x.title}</h3>
+            {x.intro && <p className={small}><B t={x.intro} /></p>}
+            {x.parts.map((pt, i) => (
+              <div key={i} className="space-y-1.5 pt-1">
+                {pt.h && <h4 className="text-sm font-semibold text-gray-900 dark:text-white">{pt.h}</h4>}
+                {pt.p?.map((t, j) => <p key={j} className={small}><B t={t} /></p>)}
+                {pt.list && <ul className="list-disc pl-4 space-y-1 text-xs leading-relaxed text-gray-700 dark:text-gray-200">{pt.list.map((t, j) => <li key={j}><B t={t} /></li>)}</ul>}
+                {pt.table && <div className="overflow-x-auto"><table className="w-full text-xs">
+                  <thead><tr className="text-gray-400 border-b border-gray-200 dark:border-gray-800">{pt.table.cols.map(c => <th key={c} className={`${th} whitespace-nowrap`}>{c}</th>)}</tr></thead>
+                  <tbody className="text-gray-700 dark:text-gray-200">{pt.table.rows.map((r, k) => <tr key={k} className="border-b border-gray-100 dark:border-gray-900 align-top">{r.map((v, m) => <td key={m} className={`${td} ${m === 0 ? 'font-medium whitespace-nowrap' : ''}`}><B t={v} /></td>)}</tr>)}</tbody>
+                </table></div>}
+              </div>
+            ))}
+          </section>
+        ))}
+
         {d.ai && <section id={id('ai')} className={sec}>
           <h3 className={h2}>{N()}AI — 기회인가 위협인가</h3>
           <div className="grid sm:grid-cols-2 gap-2">
@@ -156,7 +176,7 @@ export default function BigReport({ d }: { d: BigReportData }) {
           <h3 className={h2}>{N()}{d.callsTitle ?? `최근 컨퍼런스콜 (${d.calls.length}개 분기)`}</h3>
           <p className={small}>{d.callsNote ?? '녹취록 전문을 읽고 요약했다. 제목을 누르면 펼쳐진다.'}</p>
           <div className="space-y-1.5">
-            {d.calls.map(c => {
+            {(allCalls ? d.calls : d.calls.slice(0, 8)).map(c => {
               const on = openQ === c.q
               return (
                 <div key={c.q} className={`rounded-lg border ${on ? 'border-blue-400 dark:border-blue-700' : 'border-gray-200 dark:border-gray-800'}`}>
@@ -177,6 +197,7 @@ export default function BigReport({ d }: { d: BigReportData }) {
               )
             })}
           </div>
+          {d.calls.length > 8 && <button onClick={() => setAllCalls(!allCalls)} className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">{allCalls ? '최근 8개만 보기' : `나머지 ${d.calls.length - 8}개 더 보기 ↓`}</button>}
         </section>
 
         {d.hermes && <section id={id('rms')} className={sec}>
