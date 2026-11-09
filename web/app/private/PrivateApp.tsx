@@ -1832,6 +1832,7 @@ function OverviewTable({
   const [sortStack, setSortStack] = useState<Array<{ field: SortKey; asc: boolean }>>([{ field: 'diffMn', asc: false }])
   const [search, setSearch] = useState('')
   const [viewMode, setViewMode] = useState<'all' | 'starred'>('all')
+  const [scopeAll, setScopeAll] = useState(false)
   const [starred, setStarred] = useState<Set<string>>(new Set())
   // 필터는 한 묶음으로 관리. 새로고침하면 항상 전체 목록(필터 없음)으로 시작한다
   const [F, setF] = useState<FilterSnap>(DEFAULT_F)
@@ -1980,7 +1981,7 @@ function OverviewTable({
   }
 
   const [tNowYr] = useState(() => decYear(Date.now()))
-  const allRows = STOCKS.map((s, i) => ({ s, i })).filter(({ s }) => only.has(s.key)).map(({ s, i }) => {
+  const rowsAll = STOCKS.map((s, i) => ({ s, i })).map(({ s, i }) => {
     const allCompleted = s.data.rows10y.filter((r: any) => r.isComplete)
     // 10년 막대: 다 채운 것 + 거의 다 채운(9년 이상) 지금 진행 중인 마지막 막대
     const bars10 = s.data.rows10y.filter((r: any) => r.cagr != null && (r.isComplete || (r.yearsActual ?? 0) >= 9))
@@ -2046,6 +2047,15 @@ function OverviewTable({
   // 검색어가 있으면 필터·즐겨찾기 보기를 잠시 무시하고 전체에서 찾는다(검색해도 안 나오는 문제 방지)
   const q = search.trim().toLowerCase()
   const searching = q.length > 0
+  // 범위: 이 탭만 / 전체 탭. 프리셋 적중 표시는 항상 전체 종목 기준으로 계산한다.
+  const allRows = rowsAll.filter(r => scopeAll || only.has(r.s.key))
+  const isPicksTab = only.size === PICK_KEYS.size && [...only].every(k => PICK_KEYS.has(k))
+  const presetHits = new Map<string, number[]>()
+  BUILTIN_PRESETS.forEach((bp, n) => {
+    const nf = normFilter(bp.f)
+    rowsAll.forEach(r => { if (passesFilter(r, nf)) { const a = presetHits.get(r.s.key) ?? []; a.push(n); presetHits.set(r.s.key, a) } })
+  })
+  const CIRC = '①②③④⑤⑥⑦'
   const rows = allRows.filter(row => {
     if (searching) return row.s.key.toLowerCase().includes(q) || row.s.data.name.toLowerCase().includes(q)
     if (viewMode === 'starred' && !starred.has(row.s.key)) return false
@@ -2094,6 +2104,38 @@ function OverviewTable({
         </div>
       </div>
 
+      {/* 범위 전환 */}
+      <div className="flex flex-wrap items-center gap-2 mb-2 text-xs">
+        <span className="text-gray-400 dark:text-gray-600">목록·프리셋 범위</span>
+        <span className="inline-flex rounded-full border border-gray-300 dark:border-gray-700 overflow-hidden">
+          <button type="button" onClick={() => setScopeAll(false)} className={`px-2.5 py-1 ${!scopeAll ? 'bg-gray-800 text-white dark:bg-gray-200 dark:text-gray-900' : 'text-gray-600 dark:text-gray-300'}`}>이 탭만 ({only.size})</button>
+          <button type="button" onClick={() => setScopeAll(true)} className={`px-2.5 py-1 ${scopeAll ? 'bg-gray-800 text-white dark:bg-gray-200 dark:text-gray-900' : 'text-gray-600 dark:text-gray-300'}`}>전체 탭 ({rowsAll.length})</button>
+        </span>
+        <span className="text-gray-400 dark:text-gray-600">전체 탭이면 S&amp;P 500·나스닥·중형주·러셀2000·해외를 한 번에 걸러 본다. 종목 이름 아래 ①~⑦ = 그 종목이 걸리는 추천 프리셋.</span>
+      </div>
+      {isPicksTab && (() => {
+        const noHit = [...PICK_KEYS].filter(k => !(presetHits.get(k)?.length))
+        const missed = rowsAll.filter(r => !PICK_KEYS.has(r.s.key) && (presetHits.get(r.s.key) ?? []).some(n => n === 0 || n === 2))
+        const btn = (r: { s: { key: string }; i: number }) => (
+          <button key={r.s.key} type="button" onClick={() => setActiveStock(r.i)} className="px-1.5 py-0.5 rounded bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 hover:border-blue-400">
+            {r.s.key} <span className="text-blue-600 dark:text-blue-400">{(presetHits.get(r.s.key) ?? []).map(n => CIRC[n]).join('')}</span>
+          </button>
+        )
+        const byKey = new Map(rowsAll.map(r => [r.s.key, r]))
+        return (
+          <div className="rounded-lg border border-amber-200 dark:border-amber-900/60 bg-amber-50/50 dark:bg-amber-950/20 p-3 mb-3 space-y-2 text-xs">
+            <p className="font-semibold text-gray-800 dark:text-gray-100">엄선과 프리셋이 어디서 갈리나 — 숫자(프리셋)와 판단(엄선)의 차이</p>
+            <div>
+              <p className="text-gray-600 dark:text-gray-300 mb-1"><b>엄선인데 추천 프리셋 어디에도 안 걸린 종목 ({noHit.length})</b> — 숫자 조건 밖이지만 판단으로 넣은 종목(해외 상장이라 데이터가 다르거나, 지금 숫자가 일시적으로 나쁘거나, 미래 모습을 보고 고른 경우). 종목 페이지의 &ldquo;미래 모습&rdquo;에서 이유를 확인.</p>
+              <div className="flex flex-wrap gap-1">{noHit.map(k => byKey.get(k)).filter(Boolean).map(r => btn(r!))}</div>
+            </div>
+            <div>
+              <p className="text-gray-600 dark:text-gray-300 mb-1"><b>프리셋 ①(지금 살 만한 최정예)·③(최정예)에 걸리는데 엄선에 없는 종목 ({missed.length})</b> — 숫자는 좋은데 엄선에서 뺀 종목. 뺀 이유(해자 약화·뉴스·값)를 확인하거나, 엄선 후보로 다시 볼 명단.</p>
+              <div className="flex flex-wrap gap-1">{missed.slice(0, 60).map(btn)}{missed.length > 60 && <span className="text-gray-400">… 외 {missed.length - 60}개(위 &lsquo;전체 탭&rsquo;에서 프리셋을 눌러 전부 확인)</span>}</div>
+            </div>
+          </div>
+        )
+      })()}
       {/* 프리셋 행 */}
       {(presets.length > 0 || true) && (<>
         <div className="flex flex-wrap items-center gap-2 mb-2">
@@ -2449,6 +2491,12 @@ function OverviewTable({
                       )
                     })()}
                   </div>
+                  {((presetHits.get(s.key)?.length ?? 0) > 0 || (scopeAll && PICK_KEYS.has(s.key))) && (
+                    <div className="text-[10px] leading-tight whitespace-nowrap">
+                      {scopeAll && PICK_KEYS.has(s.key) && <span className="text-amber-600 dark:text-amber-400 mr-1">엄선</span>}
+                      <span className="text-blue-600 dark:text-blue-400">{(presetHits.get(s.key) ?? []).map(n => CIRC[n]).join('')}</span>
+                    </div>
+                  )}
                 </td>
                 {/* 지금 가격: 적정가 대비 */}
                 <td className={`py-1.5 pr-1 text-right text-xs tabular-nums break-keep font-semibold ${fairGap == null ? 'text-gray-300 dark:text-gray-600' : fairGap < 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-500'} ${colBg('fairGap')}`}>
