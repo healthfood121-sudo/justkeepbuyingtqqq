@@ -8,6 +8,7 @@ import { RMS_REPORT } from './reports/rmsData'
 import { ModelSection, OddsBlock, modelResult, type Sc } from './reports/BigReport'
 import { FUTURES } from './futures'
 import GoogleMyShare from './reports/GoogleMyShare'
+import TrioCompare from './reports/TrioCompare'
 import Link from 'next/link'
 import { UNIV } from './universe'
 import { PICK_GROUPS, PICKS_AS_OF } from './picks'
@@ -10607,6 +10608,7 @@ export default function PrivateApp({ u = 'picks' }: { u?: Universe }) {
         </div>
 
         {/* 엄선 탭: 역할별 목록 */}
+        {u === 'picks' && <TrioCompare onPick={pick} />}
         {u === 'picks' && <PicksPanel onPick={pick} activeKey={current.key} />}
 
         {/* 종목 비교 개요 */}
