@@ -5,6 +5,8 @@ import CocoReport from './reports/CocoReport'
 import BigReport from './reports/BigReport'
 import { AMZN_REPORT, GOOGL_REPORT, MSFT_REPORT } from './reports/bigData'
 import { RMS_REPORT } from './reports/rmsData'
+import { ModelSection, OddsBlock, modelResult, type Sc } from './reports/BigReport'
+import { FUTURES } from './futures'
 import Link from 'next/link'
 import { UNIV } from './universe'
 import { PICK_GROUPS, PICKS_AS_OF } from './picks'
@@ -9314,6 +9316,28 @@ function DeepNow({ d }: { d: DeepInsight }) {
   )
 }
 
+// 종목별 미래 모습(제품·사업부별 10년 모델 + 시나리오 가능성) — futures.ts
+function FutureBox({ stockKey, num }: { stockKey: string; num: string }) {
+  const fu = FUTURES[stockKey]
+  if (!fu) return null
+  const sid = `${stockKey.toLowerCase()}-future`
+  const B = ({ t }: { t: string }) => <>{t.split(/\*\*(.+?)\*\*/g).map((x, i) => i % 2 ? <b key={i}>{x}</b> : x)}</>
+  const items = (['good', 'base', 'bad'] as Sc[]).map(sc => { const r = modelResult(fu.model, sc); return { ...fu.model.scen[sc], sc, ret: r.ret, eps: `주당이익 연 ${r.cagr.toFixed(1)}% → 10년 뒤 약 ${r.e10.toFixed(0)}${fu.model.cur}, PER ${fu.model.pe[sc]}배` } })
+  return (
+    <div className="rounded-lg border-2 border-blue-200 dark:border-blue-900/60 p-4 space-y-4">
+      <div className="space-y-1.5">
+        <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">{num} 미래 모습 — 회사·제품·매출이 10년 뒤 어떻게 될까 <span className="text-xs font-normal text-gray-400">({fu.asOf})</span></h4>
+        <ul className="list-disc pl-4 space-y-1 text-xs leading-relaxed text-gray-700 dark:text-gray-200">{fu.vision.map((t, i) => <li key={i}><B t={t} /></li>)}</ul>
+      </div>
+      <ModelSection m={fu.model} sid={sid} title="제품·사업부별 미래 모델" />
+      <div className="space-y-2">
+        <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">시나리오와 가능성</h4>
+        <OddsBlock items={items} why={fu.oddsWhy} />
+      </div>
+    </div>
+  )
+}
+
 function DeepFuture({ d, num }: { d: DeepInsight; num: string }) {
   return (
     <div className="rounded-lg border border-amber-200 dark:border-amber-900/60 p-4 space-y-2">
@@ -10284,13 +10308,14 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
       )}
 
       {live && <AutoDeep f={f} data={data} part="pastPe" num={nPastPe} />}
-      {deep && (
+      {(deep || FUTURES[stockKey]) && (
         <div className="space-y-1">
           <h3 className={h3}>{nFuture}. 앞으로</h3>
         </div>
       )}
-      {deep && !REPORTS[stockKey] && <DeepFuture d={deep} num={`${nFuture}-1.`} />}
-      {live && <AutoDeep f={f} data={data} part="future" num={deep && !REPORTS[stockKey] ? `${nFuture}-2.` : `${nFuture}.`} />}
+      {FUTURES[stockKey] && !REPORTS[stockKey] && <FutureBox stockKey={stockKey} num={`${nFuture}-1.`} />}
+      {deep && !REPORTS[stockKey] && !FUTURES[stockKey] && <DeepFuture d={deep} num={`${nFuture}-1.`} />}
+      {live && <AutoDeep f={f} data={data} part="future" num={(deep || FUTURES[stockKey]) && !REPORTS[stockKey] ? `${nFuture}-2.` : `${nFuture}.`} />}
       {live && <AutoDeep f={f} data={data} part="conclusion" num={`${nConcl}.`} deep={REPORTS[stockKey] ? undefined : deep} />}
       {!live && deep && <DeepConclusion d={deep} num={`${nConcl}.`} auto={[]} />}
       {live && <AutoDeep f={f} data={data} part="appendix" />}

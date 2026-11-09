@@ -290,7 +290,7 @@ const fmtAmt = (v: number) => {
 }
 const SC_LABEL: Record<Sc, string> = { bad: '나쁜 그림', base: '기본 그림', good: '좋은 그림' }
 
-function ModelSection({ m, sid, title }: { m: Model; sid: string; title: string }) {
+export function ModelSection({ m, sid, title }: { m: Model; sid: string; title: string }) {
   const [sc, setSc] = useState<Sc>('base')
   const y5 = runModel(m, sc, 5), y10 = runModel(m, sc, 10), r = modelResult(m, sc)
   const oi0 = m.segs.reduce((a, s) => a + s.rev * s.m0 / 100, 0)
@@ -351,7 +351,7 @@ function ModelSection({ m, sid, title }: { m: Model; sid: string; title: string 
 }
 
 const SC_DOT: Record<Sc, Light> = { good: 'g', base: 'y', bad: 'r' }
-function OddsBlock({ items, why }: { items: (Odds & { sc: Sc; ret: number })[]; why: string }) {
+export function OddsBlock({ items, why }: { items: (Odds & { sc: Sc; ret: number })[]; why: string }) {
   const tot = items.reduce((a, x) => a + x.p, 0)
   const ev = items.reduce((a, x) => a + x.p * x.ret, 0) / tot
   const loss = items.filter(x => x.ret < 0).reduce((a, x) => a + x.p, 0)
