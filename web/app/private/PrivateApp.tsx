@@ -7,6 +7,7 @@ import { AMZN_REPORT, GOOGL_REPORT, MSFT_REPORT } from './reports/bigData'
 import { RMS_REPORT } from './reports/rmsData'
 import { ModelSection, OddsBlock, modelResult, type Sc } from './reports/BigReport'
 import { FUTURES } from './futures'
+import GoogleMyShare from './reports/GoogleMyShare'
 import Link from 'next/link'
 import { UNIV } from './universe'
 import { PICK_GROUPS, PICKS_AS_OF } from './picks'
@@ -10415,6 +10416,7 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
       <CallBox stockKey={stockKey} />
       <SegmentBox stockKey={stockKey} num={`${nNow}-1.`} />
       <DiveBox stockKey={stockKey} num={`${nNow}-2.`} />
+      {stockKey === 'GOOGL' && <GoogleMyShare />}
       {REPORTS[stockKey]?.()}
 
       {live && <StockValueClock f={f as ClockFund} stockKey={stockKey} rolling={data} title={`${nClock}. 이익 시계 — 적정가 선 vs 주가`} judged={deep?.growth} />}
