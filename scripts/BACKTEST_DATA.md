@@ -1070,6 +1070,7 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 | 파일 | 크기 | 스크립트 | 내용 | 사용처 |
 |---|---|---|---|---|
 | `web/public/data/resale/hermes_daily.json` | 하루 약 3KB씩 증가 | `scripts/collect_resale.py` (Actions '에르메스 웃돈·나이키 할인율 수집 (매일)', KST 07:40. 샌드박스에서 접속 불가) | 날짜별 대표 가방 10종(버킨 25·30·35, 미니 켈리 20, 켈리 25·28, 콘스탄스 18, 피코탄 18, 에블린 PM, 린디 26)의 새/중고 희망가 중간값·25/75% 값·매물 수, 정가 확인된 5종의 웃돈(희망가÷미국 정가), 웃돈 지수(5종 중간값), 매물 수, 그날 팔린 수 | `/private` 에르메스 맨 위 `HermesResaleCard` |
+| `web/public/data/resale/hermes_history.json` | 약 9KB | 손으로 조사(웹 검색, 2026-11-09). 스크립트 없음 | 에르메스 리셀 웃돈 과거 기록: 번스타인 경매 추적 지표(핵심·확장·버킨 25·버킨 30, 2018~2026년 3분기), 소더비 마켓(2021~2026), 나이트프랭크 핸드백 지수(2019·2020·2024), 더리얼리얼·리백·사클랩·백헌터, 제품별 지금 웃돈, 버킨 25 미국 정가 이력. 출처마다 신뢰 등급(A/B/C)·측정 방식 표시 | `/private` 에르메스 `HermesResaleHistory` |
 | `scripts/data/resale_snapshot.json` | 약 300KB(매일 덮어씀) | 같은 스크립트 | 어제 매물 목록(팔림 판정용, 배포 폴더 밖) | 수집 스크립트 내부 |
 | `web/public/data/resale/hermes_sold.json` | 최근 3000건 | 같은 스크립트 | 어제 있다가 오늘 사라진 매물 = 팔린 것으로 간주. 가격·올라온 뒤 걸린 날짜 | `HermesResaleCard` 30일 팔림·중간 일수 |
 | `web/public/data/resale/nike_daily.json` | 하루 약 1KB씩 증가 | 같은 스크립트 | 미국 nike.com 전 상품(api.nike.com product_wall) 전체·신발·옷·조던별 상품 수, 할인 비율, 평균 할인율, 40% 이상 할인 비율 | `/private` 나이키 맨 위 `NikeMarkdownCard` |

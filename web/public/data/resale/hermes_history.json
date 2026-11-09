@@ -1,0 +1,367 @@
+{
+ "updated": "2026-11-09",
+ "about": "에르메스 리셀 가격 과거 기록 — 뉴스·증권사 보고서·경매사·리셀 업체 보고서에서 모은 숫자. 출처마다 재는 방식(경매 낙찰가 / 마켓 판매가 / 판매 희망가)과 분모(그때 정가 / 지금 정가)가 달라 서로 이어 붙이지 않는다.",
+ "grades": {
+  "A": "독립 기관이 실제 거래(경매 낙찰) 데이터를 정해진 방법으로 꾸준히 집계 — 원자료는 비공개라 보도로 확인",
+  "B": "실제 거래 데이터지만 파는 쪽(경매사·리셀 업체)이 낸 숫자 — 좋게 보이게 할 이해관계가 있다",
+  "C": "방법이 불분명하거나 한 곳에서만 나온 숫자 — 참고만"
+ },
+ "series": [
+  {
+   "id": "bern_core",
+   "name": "번스타인 핵심 지표(버킨·켈리 평균)",
+   "grade": "A",
+   "basis": "경매 낙찰가 ÷ 정가, 거래량 가중",
+   "points": [
+    [
+     "2022",
+     "2.2"
+    ],
+    [
+     "2025-11",
+     "1.4"
+    ],
+    [
+     "2025Q4",
+     "1.22"
+    ],
+    [
+     "2026Q1",
+     "1.25"
+    ],
+    [
+     "2026Q2",
+     "1.45"
+    ]
+   ],
+   "note": "2022년 정점 2.2배 → 2025년 4분기 1.22배(최저) → 2026년 2분기 1.45배로 반등. 2025년 11월 1.4배(포춘 보도)와 4분기 1.22배(2026년 6월 번스타인 노트)는 같은 지표의 다른 시점·수정치로 보인다. 2026년 2분기는 4월 예비치 1.6배, 5월 1.5배, 6월 확정 1.45배로 보도마다 다르다 — 가장 늦은 6월 값을 썼다.",
+   "src": [
+    [
+     "포춘 2025-12-17",
+     "https://fortune.com/2025/12/17/gen-z-reality-check-birkin-resale-prices-slump-aspirational-luxury-slowdown/"
+    ],
+    [
+     "로이터 2026-10-21",
+     "https://www.ctvnews.ca/lifestyle/article/end-of-an-era-how-the-hermes-birkin-bag-is-losing-its-scarcity-appeal/"
+    ]
+   ]
+  },
+  {
+   "id": "bern_exp",
+   "name": "번스타인 확장 지표(켈리 포셰트·미니 켈리 포함)",
+   "grade": "A",
+   "basis": "경매 낙찰가 ÷ 정가",
+   "points": [
+    [
+     "2026Q1",
+     "1.63"
+    ],
+    [
+     "2026Q2",
+     "1.66"
+    ]
+   ],
+   "note": "작은 가방(미니 켈리·포셰트)을 넣으면 웃돈이 더 높다 — 작은 가방이 평균을 끌어올린다.",
+   "src": [
+    [
+     "번스타인 2026년 6월 노트(보도 인용)",
+     "https://www.mexc.com/news/282109"
+    ]
+   ]
+  },
+  {
+   "id": "bern_b25",
+   "name": "번스타인 버킨 25",
+   "grade": "A",
+   "basis": "경매 낙찰가 ÷ 정가",
+   "points": [
+    [
+     "2022",
+     "2.6"
+    ],
+    [
+     "2026Q3",
+     "1.7"
+    ]
+   ],
+   "note": "2022년 정점 약 2.6배 → 2026년 3분기 약 1.7배.",
+   "src": [
+    [
+     "로이터 2026-10-21",
+     "https://www.ctvnews.ca/lifestyle/article/end-of-an-era-how-the-hermes-birkin-bag-is-losing-its-scarcity-appeal/"
+    ]
+   ]
+  },
+  {
+   "id": "bern_b30",
+   "name": "번스타인 버킨 30(토고 가죽)",
+   "grade": "A",
+   "basis": "경매 낙찰가 ÷ 정가",
+   "points": [
+    [
+     "2018",
+     "1.9"
+    ],
+    [
+     "2022",
+     "1.7"
+    ],
+    [
+     "2025-11",
+     "1.0"
+    ]
+   ],
+   "note": "큰 사이즈는 이미 정가 수준. WSJ도 '미니를 빼면 큰 버킨·켈리는 경매 수수료를 감안하면 정가 근처'라고 보도.",
+   "src": [
+    [
+     "포춘 2025-12-17",
+     "https://fortune.com/2025/12/17/gen-z-reality-check-birkin-resale-prices-slump-aspirational-luxury-slowdown/"
+    ],
+    [
+     "WSJ(티거 재게재)",
+     "https://www.itiger.com/news/2606199802"
+    ]
+   ]
+  },
+  {
+   "id": "sothebys",
+   "name": "소더비 마켓 — 새것 같은 버킨 25·30",
+   "grade": "B",
+   "basis": "소더비 마켓 판매가 ÷ 그해 정가(최상 상태)",
+   "points": [
+    [
+     "2021",
+     "3.0"
+    ],
+    [
+     "2024",
+     "2.5"
+    ],
+    [
+     "2025",
+     "2.4"
+    ],
+    [
+     "2026",
+     "2.4"
+    ]
+   ],
+   "note": "버킨 25·30 최상 상태 약 2만 8천~3만 달러(2024~2026년). 경매 평균(번스타인)보다 높다 — 최상 상태·최근 생산분만 보기 때문. 판매자로서 이해관계가 있다.",
+   "src": [
+    [
+     "소더비 2025",
+     "https://www.sothebys.com/en/articles/higher-hermes-bag-prices-in-2025-what-you-need-to-know"
+    ],
+    [
+     "소더비 2026",
+     "https://www.sothebys.com/en/articles/higher-hermes-bag-prices-in-2026-what-you-need-to-know"
+    ]
+   ]
+  },
+  {
+   "id": "kf",
+   "name": "나이트프랭크 사치품 투자 지수 — 핸드백(연간 상승률)",
+   "grade": "A",
+   "basis": "경매 데이터 바구니 방식(AMR 제공), 연간 변화율 %",
+   "points": [
+    [
+     "2019",
+     "+13%"
+    ],
+    [
+     "2020",
+     "+17%"
+    ],
+    [
+     "2024",
+     "+2.8%"
+    ]
+   ],
+   "note": "10년(2010→2019) +108%. 2021~2023년·2025년 숫자는 찾지 못했다. 에르메스 가방 중심 바구니.",
+   "src": [
+    [
+     "나이트프랭크 2020",
+     "https://www.knightfrank.com.au/blog/amp/2020/03/03/collectable-handbags-takes-top-spot-in-the-luxury-investment-index"
+    ],
+    [
+     "2021 보도",
+     "https://www.laconceria.it/en/luxury/hermes-bags-grew-in-value-by-17-in-2020-more-than-diamonds/"
+    ],
+    [
+     "2025 보도",
+     "https://primeresi.com/the-great-luxury-correction-handbags-hold-their-own-as-other-investments-of-passion-slip/"
+    ]
+   ]
+  },
+  {
+   "id": "trr",
+   "name": "더리얼리얼 리셀 보고서",
+   "grade": "B",
+   "basis": "자사 판매 데이터",
+   "points": [
+    [
+     "2018",
+     "+7%(전년 대비)"
+    ],
+    [
+     "2021",
+     "+28%(전년 대비)"
+    ],
+    [
+     "2023",
+     "버킨 25 평균 정가의 2배 이상, 2019년보다 +55%"
+    ]
+   ],
+   "note": "매년 같은 방식으로 내지 않아 이어 붙이기 어렵다.",
+   "src": [
+    [
+     "더리얼리얼",
+     "https://realstyle.therealreal.com/?p=5610011"
+    ],
+    [
+     "2018 보도",
+     "https://ca.fashionnetwork.com/news/Hermes-gucci-and-canada-goose-ranked-highest-valued-brands-for-resale,1043101.html"
+    ]
+   ]
+  },
+  {
+   "id": "rebag",
+   "name": "리백 — 버킨 리셀 가치",
+   "grade": "B",
+   "basis": "자사 판매 데이터, 정가 대비 %",
+   "points": [
+    [
+     "2025-12",
+     "122%"
+    ]
+   ],
+   "note": "최근 2년 정체. '평균 138%'라는 다른 인용은 원문 확인 불가.",
+   "src": [
+    [
+     "포춘 2025-12-17 인용",
+     "https://fortune.com/2025/12/17/gen-z-reality-check-birkin-resale-prices-slump-aspirational-luxury-slowdown/"
+    ]
+   ]
+  },
+  {
+   "id": "saclab",
+   "name": "사클랩 — 평균 리셀가 변화",
+   "grade": "C",
+   "basis": "방법 불명(리셀 업체)",
+   "points": [
+    [
+     "2023→2026 중반",
+     "켈리 −15.5%, 버킨 −6.9%"
+    ]
+   ],
+   "note": "방향은 다른 자료와 같다.",
+   "src": [
+    [
+     "사클랩 2026",
+     "https://saclab.com/hermes-investment-report/"
+    ]
+   ]
+  },
+  {
+   "id": "baghunter",
+   "name": "백헌터 — 버킨 장기 가치 상승",
+   "grade": "C",
+   "basis": "판매 업체 자체 연구, 방법 불명",
+   "points": [
+    [
+     "1980~2015",
+     "연 평균 +14.2%, 한 해도 안 떨어짐"
+    ]
+   ],
+   "note": "가방을 파는 회사가 낸 연구라 널리 인용되지만 검증되지 않았다.",
+   "src": [
+    [
+     "2016 보도",
+     "https://www.thefashionlaw.com/birkin-bags-make-for-better-investment-than-gold-or-stocks-per-new-report/"
+    ]
+   ]
+  }
+ ],
+ "models": [
+  {
+   "model": "켈리 포셰트",
+   "premium": "4.5배 이상",
+   "grade": "C",
+   "src": "소더비 인용(2차 출처, 원문 미확인)"
+  },
+  {
+   "model": "미니 켈리 20",
+   "premium": "약 3배, 2만 8천~3만 3천 달러",
+   "retail": "11,400달러(2026 미국)",
+   "grade": "B",
+   "src": "소더비 2026"
+  },
+  {
+   "model": "버킨 25",
+   "premium": "경매 약 1.7배(2026년 3분기) / 소더비 최상 상태 약 2.4배",
+   "retail": "13,500달러(2026 미국)",
+   "grade": "A/B",
+   "src": "번스타인·소더비"
+  },
+  {
+   "model": "켈리 25·28",
+   "premium": "약 2.5배(최상 상태)",
+   "retail": "13,700 / 14,400달러(2026 미국)",
+   "grade": "B",
+   "src": "소더비 2026"
+  },
+  {
+   "model": "버킨 30(토고)",
+   "premium": "경매 약 1.0배(정가 수준)",
+   "retail": "14,900달러(2026 미국)",
+   "grade": "A",
+   "src": "번스타인(포춘 보도)"
+  },
+  {
+   "model": "버킨 35 이상",
+   "premium": "정가 근처 또는 아래",
+   "grade": "B",
+   "src": "WSJ·소더비(큰 사이즈일수록 웃돈 작음)"
+  }
+ ],
+ "retail_b25": [
+  [
+   "2016",
+   "9,400"
+  ],
+  [
+   "2019~2021",
+   "동결"
+  ],
+  [
+   "2024",
+   "약 12,000"
+  ],
+  [
+   "2025-05",
+   "12,700"
+  ],
+  [
+   "2026",
+   "13,500"
+  ]
+ ],
+ "events": [
+  [
+   "2022",
+   "코로나 뒤 보복 소비 — 웃돈 정점"
+  ],
+  [
+   "2025-07",
+   "제인 버킨 원조 가방 소더비 파리 경매 약 1,010만 달러(역대 최고, 일반 시세와 무관)"
+  ],
+  [
+   "2025-12",
+   "포춘·번스타인: 웃돈 2.2배 → 1.4배, '코로나 이후 들뜸이 가라앉는 중'"
+  ],
+  [
+   "2026-10",
+   "로이터: '희소성 매력을 잃나' — UBS가 중고 매물 증가를 이유로 에르메스 주식 '매도' 의견"
+  ]
+ ]
+}

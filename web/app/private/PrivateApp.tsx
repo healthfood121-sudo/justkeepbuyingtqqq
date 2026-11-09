@@ -10527,6 +10527,7 @@ export default function PrivateApp({ u = 'picks' }: { u?: Universe }) {
         {/* 리셀 웃돈·할인 추이 (에르메스·나이키) */}
         {current.key === 'RMS' && <a href="#rms-report" className="inline-block text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">심층 리포트(역사·위기·경쟁사 비교)로 ↓</a>}
         {current.key === 'RMS' && <HermesResaleCard />}
+        {current.key === 'RMS' && <HermesResaleHistory />}
         {current.key === 'NKE' && <NikeMarkdownCard />}
 
         {/* 차트 */}
