@@ -10671,6 +10671,7 @@ export default function PrivateApp({ u = 'picks' }: { u?: Universe }) {
         {current.key === 'RMS' && <BigReport d={RMS_REPORT} />}
         {current.key === 'NKE' && <QualityCard stockKey="NKE" />}
         {current.key === 'NKE' && <NkeInsight data={current.data} />}
+        {current.key === 'NKE' && <FutureBox stockKey="NKE" num="6." />}
         {current.key !== 'RMS' && current.key !== 'NKE' && (current.data as any).type !== 'etf' && (
           <AutoInsight key={`insight-${current.key}`} stockKey={current.key} data={current.data} />
         )}
