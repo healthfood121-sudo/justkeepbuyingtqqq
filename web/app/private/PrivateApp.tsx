@@ -5,6 +5,7 @@ import CocoReport from './reports/CocoReport'
 import BigReport from './reports/BigReport'
 import { AMZN_REPORT, GOOGL_REPORT, MSFT_REPORT } from './reports/bigData'
 import { META_REPORT } from './reports/metaData'
+import { AAPL_REPORT } from './reports/aaplData'
 import { RMS_REPORT } from './reports/rmsData'
 import { ModelSection, OddsBlock, modelResult, type Sc } from './reports/BigReport'
 import { FUTURES } from './futures'
@@ -10463,6 +10464,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   GOOGL: () => <BigReport d={GOOGL_REPORT} />,
   MSFT: () => <BigReport d={MSFT_REPORT} />,
   META: () => <BigReport d={META_REPORT} />,
+  AAPL: () => <BigReport d={AAPL_REPORT} />,
 }
 
 export type Universe = 'picks' | 'sp500' | 'ndx' | 'mid' | 'r2k' | 'nasdaq' | 'other'
