@@ -14,9 +14,11 @@ export type Model = {
   pe: Record<Sc, number>              // 10년 뒤 PER
   other: { name: string; now: number; g: number; why: string }  // 사업부 밖 비용·수익(억), 연 증가율
   segs: { name: string; rev: number; m0: number; g: Record<Sc, [number, number]>; mEnd: Record<Sc, number>; why: string }[]
-  scen: Record<Sc, { name: string; story: string }>
+  scen: Record<Sc, Odds>
   note: string
 }
+// 미래 시나리오: 그 세계가 어떤 모습인지, 가능성(%), 확률을 바꿀 신호
+export type Odds = { name: string; story: string; p: number; world: string[]; signs: string[]; ret?: number; eps?: string }
 export function runModel(m: Model, sc: Sc, Y: number) {
   let oi = 0
   const segs = m.segs.map(s => {
@@ -60,6 +62,8 @@ export type BigReportData = {
   scen?: { name: string; l: Light; story: string; eps: string; pe: string; ret: string }[]
   scenNote: string
   model?: Model
+  odds?: { items: (Odds & { sc: Sc; ret: number })[]; why: string }
+  oddsWhy?: string
   warn: { k: string; ok: string; bad: string }[]
   final: string[]
 }
@@ -81,7 +85,7 @@ export default function BigReport({ d }: { d: BigReportData }) {
   const [openQ, setOpenQ] = useState<string | null>(d.calls[0]?.q ?? null)
   const [allCalls, setAllCalls] = useState(false)
   const id = (s: string) => `${d.key.toLowerCase()}-${s}`
-  const toc = ([['fix', 'PER 바로잡기', !!d.epsFix], ['plan', '분석 질문', true], ['units', '사업부', !!d.units], ['model', '미래 이익 모델', !!d.model], ['history', '역사·위기', true], ['nums', '연도별 숫자', !!d.numbers], ['peers', '경쟁사와 비교', !!d.peers], ...(d.extra ?? []).map(x => [x.id, x.toc, true]), ['ai', 'AI', !!d.ai], ['worry', '걱정 vs 숫자', !!d.worries], ['calls', d.callsTitle ? '실적 발표' : '최근 콜', true], ['rms', '에르메스와 비교', !!d.hermes], ['scen', '10년 시나리오', !!(d.scen || d.model)], ['warn', '경고 신호', true]] as [string, string, boolean][]).filter(t => t[2])
+  const toc = ([['fix', 'PER 바로잡기', !!d.epsFix], ['plan', '분석 질문', true], ['units', '사업부', !!d.units], ['model', '미래 이익 모델', !!d.model], ['history', '역사·위기', true], ['nums', '연도별 숫자', !!d.numbers], ['peers', '경쟁사와 비교', !!d.peers], ...(d.extra ?? []).map(x => [x.id, x.toc, true]), ['ai', 'AI', !!d.ai], ['worry', '걱정 vs 숫자', !!d.worries], ['calls', d.callsTitle ? '실적 발표' : '최근 콜', true], ['rms', '에르메스와 비교', !!d.hermes], ['scen', '미래 시나리오·가능성', !!(d.scen || d.model || d.odds)], ['warn', '경고 신호', true]] as [string, string, boolean][]).filter(t => t[2])
   let n = 0
   const N = () => `${++n}. `
   return (
@@ -245,20 +249,11 @@ export default function BigReport({ d }: { d: BigReportData }) {
           <p className={small}><B t={d.hermesVerdict ?? ''} /></p>
         </section>}
 
-        {(d.scen || d.model) && <section id={id('scen')} className={sec}>
-          <h3 className={h2}>{N()}10년 시나리오(추정)</h3>
+        {(d.scen || d.model || d.odds) && <section id={id('scen')} className={sec}>
+          <h3 className={h2}>{N()}{d.model || d.odds ? '미래 시나리오와 가능성 — 10년 뒤 어떤 세계일까' : '10년 시나리오(추정)'}</h3>
+          {(d.model || d.odds) ? <OddsBlock items={d.model ? (['good', 'base', 'bad'] as Sc[]).map(sc => { const r = modelResult(d.model!, sc); return { ...d.model!.scen[sc], sc, ret: r.ret, eps: `주당이익 연 ${r.cagr.toFixed(1)}% → 10년 뒤 약 ${r.e10.toFixed(0)}${d.model!.cur}, PER ${d.model!.pe[sc]}배` } }) : d.odds!.items} why={d.oddsWhy ?? d.odds?.why ?? ''} /> : (
           <div className="grid sm:grid-cols-3 gap-2">
-            {d.model ? (['good', 'base', 'bad'] as Sc[]).map(sc => {
-              const m = d.model!, r = modelResult(m, sc)
-              return (
-                <div key={sc} className="rounded-lg border border-gray-200 dark:border-gray-800 p-3 space-y-1">
-                  <div className="flex gap-2"><Dot l={sc === 'good' ? 'g' : sc === 'base' ? 'y' : 'r'} /><p className="text-sm font-semibold text-gray-900 dark:text-white">{m.scen[sc].name}</p></div>
-                  <p className={small}>{m.scen[sc].story}</p>
-                  <p className="text-xs text-gray-800 dark:text-gray-100"><b>주당이익 연 {r.cagr.toFixed(1)}% → 10년 뒤 약 {r.e10.toFixed(0)}{m.cur}</b>, PER {m.pe[sc]}배</p>
-                  <p className="text-sm font-semibold text-gray-900 dark:text-white">연 약 {r.ret.toFixed(0)}%{m.div > 0 ? ' (배당 포함)' : ''}</p>
-                </div>
-              )
-            }) : d.scen!.map(s => (
+            {d.scen!.map(s => (
               <div key={s.name} className="rounded-lg border border-gray-200 dark:border-gray-800 p-3 space-y-1">
                 <div className="flex gap-2"><Dot l={s.l} /><p className="text-sm font-semibold text-gray-900 dark:text-white">{s.name}</p></div>
                 <p className={small}>{s.story}</p>
@@ -266,9 +261,8 @@ export default function BigReport({ d }: { d: BigReportData }) {
                 <p className="text-sm font-semibold text-gray-900 dark:text-white">{s.ret}</p>
               </div>
             ))}
-          </div>
+          </div>)}
           <p className={small}><B t={d.scenNote} /></p>
-          {d.model && <p className="text-[11px] text-gray-400">위 미래 이익 모델에서 사업부별 가정을 그대로 계산한 값이다.</p>}
         </section>}
 
         <section id={id('warn')} className={sec}>
@@ -353,5 +347,43 @@ function ModelSection({ m, sid, title }: { m: Model; sid: string; title: string 
       </div>
       <p className="text-[11px] text-gray-400"><B t={m.note} /> 세율 {m.tax}%, 주식 수 연 {m.shc > 0 ? '+' : ''}{m.shc}%{m.shc < 0 ? '(자사주 매입)' : '(주식 보상으로 늘어남)'}. 이익률은 10년에 걸쳐 고르게 바뀐다고 가정. 단위: 억 {m.cur}(1조 = 1만 억).</p>
     </section>
+  )
+}
+
+const SC_DOT: Record<Sc, Light> = { good: 'g', base: 'y', bad: 'r' }
+function OddsBlock({ items, why }: { items: (Odds & { sc: Sc; ret: number })[]; why: string }) {
+  const tot = items.reduce((a, x) => a + x.p, 0)
+  const ev = items.reduce((a, x) => a + x.p * x.ret, 0) / tot
+  const loss = items.filter(x => x.ret < 0).reduce((a, x) => a + x.p, 0)
+  const low = items.filter(x => x.ret < 6).reduce((a, x) => a + x.p, 0)
+  const lo = Math.min(...items.map(x => x.ret)), hi = Math.max(...items.map(x => x.ret))
+  const bar: Record<Sc, string> = { good: 'bg-emerald-500', base: 'bg-amber-400', bad: 'bg-red-500' }
+  return (
+    <div className="space-y-3">
+      <div className="rounded-xl border border-blue-200 dark:border-blue-900/60 bg-blue-50/60 dark:bg-blue-950/30 p-3 space-y-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {[['가능성을 반영한 기대수익률', `연 약 ${ev.toFixed(1)}%`], ['결과 범위', `연 ${lo.toFixed(0)}% ~ ${hi.toFixed(0)}%`], ['10년 뒤 원금 손실 가능성', `약 ${Math.round(loss / tot * 100)}%`], ['연 6% 못 미칠 가능성', `약 ${Math.round(low / tot * 100)}%`]].map(([k, v]) => (
+            <div key={k}><p className="text-[11px] text-gray-500 dark:text-gray-400">{k}</p><p className="text-sm font-semibold text-gray-900 dark:text-white">{v}</p></div>
+          ))}
+        </div>
+        <div className="flex h-2.5 rounded-full overflow-hidden">{items.map(x => <div key={x.sc} className={bar[x.sc]} style={{ width: `${x.p / tot * 100}%` }} title={`${x.name} ${x.p}%`} />)}</div>
+        <p className={small}><B t={why} /></p>
+      </div>
+      <div className="grid sm:grid-cols-3 gap-2">
+        {items.map(x => (
+          <div key={x.sc} className="rounded-lg border border-gray-200 dark:border-gray-800 p-3 space-y-1.5">
+            <div className="flex gap-2 items-baseline"><Dot l={SC_DOT[x.sc]} /><p className="text-sm font-semibold text-gray-900 dark:text-white">{x.name}</p><span className="ml-auto text-sm font-bold text-gray-900 dark:text-white">{x.p}%</span></div>
+            <p className={small}><B t={x.story} /></p>
+            <p className="text-[11px] font-semibold text-gray-500 dark:text-gray-400">그 세계의 모습</p>
+            <ul className="list-disc pl-4 space-y-0.5 text-xs leading-relaxed text-gray-700 dark:text-gray-200">{x.world.map((t, i) => <li key={i}><B t={t} /></li>)}</ul>
+            <p className="text-[11px] font-semibold text-gray-500 dark:text-gray-400">이 그림이 맞아 간다는 신호</p>
+            <ul className="list-disc pl-4 space-y-0.5 text-xs leading-relaxed text-gray-700 dark:text-gray-200">{x.signs.map((t, i) => <li key={i}><B t={t} /></li>)}</ul>
+            {x.eps && <p className="text-xs text-gray-800 dark:text-gray-100 pt-1"><b>{x.eps}</b></p>}
+            <p className="text-sm font-semibold text-gray-900 dark:text-white">연 약 {x.ret.toFixed(0)}%</p>
+          </div>
+        ))}
+      </div>
+      <p className="text-[11px] text-gray-400">가능성(%)은 지금까지의 숫자와 회사·산업 상황을 보고 매긴 판단이다. 신호가 나올 때마다 다시 매긴다. 매수·매도 추천이 아니다.</p>
+    </div>
   )
 }
