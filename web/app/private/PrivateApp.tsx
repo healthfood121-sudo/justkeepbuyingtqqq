@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, type ReactNode } from 'react'
 import CocoReport from './reports/CocoReport'
 import BigReport from './reports/BigReport'
 import { AMZN_REPORT, GOOGL_REPORT, MSFT_REPORT } from './reports/bigData'
+import { RMS_REPORT } from './reports/rmsData'
 import Link from 'next/link'
 import { UNIV } from './universe'
 import { PICK_GROUPS, PICKS_AS_OF } from './picks'
@@ -10499,6 +10500,7 @@ export default function PrivateApp({ u = 'picks' }: { u?: Universe }) {
         </div>
 
         {/* 리셀 웃돈·할인 추이 (에르메스·나이키) */}
+        {current.key === 'RMS' && <a href="#rms-report" className="inline-block text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">심층 리포트(역사·위기·경쟁사 비교)로 ↓</a>}
         {current.key === 'RMS' && <HermesResaleCard />}
         {current.key === 'NKE' && <NikeMarkdownCard />}
 
@@ -10511,6 +10513,7 @@ export default function PrivateApp({ u = 'picks' }: { u?: Universe }) {
         {/* 에르메스 전용 인사이트 */}
         {current.key === 'RMS' && <QualityCard stockKey="RMS" />}
         {current.key === 'RMS' && <RmsInsight data={current.data} />}
+        {current.key === 'RMS' && <BigReport d={RMS_REPORT} />}
         {current.key === 'NKE' && <QualityCard stockKey="NKE" />}
         {current.key === 'NKE' && <NkeInsight data={current.data} />}
         {current.key !== 'RMS' && current.key !== 'NKE' && (current.data as any).type !== 'etf' && (
