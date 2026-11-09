@@ -179,4 +179,5 @@ export const FUTURES: Record<string, FutureData> = {
     },
   },
 
+
 }
