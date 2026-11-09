@@ -374,8 +374,8 @@ export function OddsBlock({ items, why }: { items: (Odds & { sc: Sc; ret: number
           <div key={x.sc} className="rounded-lg border border-gray-200 dark:border-gray-800 p-3 space-y-1.5">
             <div className="flex gap-2 items-baseline"><Dot l={SC_DOT[x.sc]} /><p className="text-sm font-semibold text-gray-900 dark:text-white">{x.name}</p><span className="ml-auto text-sm font-bold text-gray-900 dark:text-white">{x.p}%</span></div>
             <p className={small}><B t={x.story} /></p>
-            <p className="text-[11px] font-semibold text-gray-500 dark:text-gray-400">그 세계의 모습</p>
-            <ul className="list-disc pl-4 space-y-0.5 text-xs leading-relaxed text-gray-700 dark:text-gray-200">{x.world.map((t, i) => <li key={i}><B t={t} /></li>)}</ul>
+            {x.world.length > 0 && <><p className="text-[11px] font-semibold text-gray-500 dark:text-gray-400">그 세계의 모습</p>
+            <ul className="list-disc pl-4 space-y-0.5 text-xs leading-relaxed text-gray-700 dark:text-gray-200">{x.world.map((t, i) => <li key={i}><B t={t} /></li>)}</ul></>}
             <p className="text-[11px] font-semibold text-gray-500 dark:text-gray-400">이 그림이 맞아 간다는 신호</p>
             <ul className="list-disc pl-4 space-y-0.5 text-xs leading-relaxed text-gray-700 dark:text-gray-200">{x.signs.map((t, i) => <li key={i}><B t={t} /></li>)}</ul>
             {x.eps && <p className="text-xs text-gray-800 dark:text-gray-100 pt-1"><b>{x.eps}</b></p>}
