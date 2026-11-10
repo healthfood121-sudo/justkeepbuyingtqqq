@@ -16,6 +16,7 @@ type Item = {
   rev?: { perYear: number; label: string }   // 최근 4분기 매출(달러)
   pm?: number                                // 세후 이익률 추정(%) — 매출 중 이익으로 남는 몫
   fun?: (my: number) => string               // 재미있는 환산 한 줄
+  usage2?: { perYear: number; unit: string; label: string; src: string; grade: 'A' | 'B' | 'C' } // 두 번째 사용량(예: 웨이모 이동 거리)
 }
 
 const ITEMS: Item[] = [
@@ -23,7 +24,7 @@ const ITEMS: Item[] = [
     money: '광고주가 클릭·노출마다 낸다. 회사 매출의 약 53%.',
     usage: { perYear: 5e12, unit: '회', label: '검색', src: '구글 공식 "1년 5조 회 이상"(2024년 기준, 지금은 더 많을 것)', grade: 'A' },
     rev: { perYear: 250.1e9, label: '검색 광고 매출' }, pm: 35,
-    fun: my => `검색 1번당 광고 매출 약 5센트 — 내 몫 검색이 하루 ${Math.round(my / 365).toLocaleString()}번 일어나는 셈` },
+    fun: my => `검색 1번당 광고 매출 약 5센트 — 내 몫 검색이 하루 ${Math.round(my / 365).toLocaleString()}번 일어나는 셈. 광고 클릭 수는 회사가 공개하지 않는다(증가율만 발표) — 그래서 검색 횟수로 본다.` },
   { group: '광고', name: '유튜브 광고', what: '영상·쇼츠·TV 화면 유튜브에 붙는 광고. 유튜브는 지금 미국 TV 시청 시간 1위 플랫폼.',
     money: '광고주가 낸다. 회사 매출의 약 9%.',
     usage: { perYear: 1e9 * 365, unit: '시간', label: '시청', src: '유튜브 공식 "하루 10억 시간 이상"을 최소값으로 사용(TV 화면에서만 하루 10억 시간 넘는다는 발표도 있어 실제는 더 많다. 외부 추정 하루 20억 시간 안팎)', grade: 'B' },
@@ -46,13 +47,19 @@ const ITEMS: Item[] = [
   { group: 'AI', name: '검색 AI 모드·AI 개요', what: '검색 결과 맨 위에 AI가 답을 요약해 주는 기능.',
     money: '검색 광고 안에 포함. AI 답변 광고 단가가 일반 검색과 비슷하다는 회사 설명.',
     usage: { perYear: 1e9, unit: '명', label: '월 사용자', src: '회사 발표 "AI 모드 월 10억 명 이상"(2026년)', grade: 'A' } },
+  { group: 'AI', name: 'AI 토큰 처리(구글 전체)', what: '제미나이·검색 AI·유튜브·워크스페이스·클라우드 API가 처리하는 AI 글자 조각(토큰) 전체. AI가 실제로 얼마나 일하는지 보여 준다.',
+    money: '검색·구독·클라우드 매출 안에 나뉘어 들어간다(따로 매출 없음).',
+    usage: { perYear: 3.2e15 * 12, unit: '토큰', label: 'AI 토큰 처리', src: '피차이 CEO "한 달 3.2경(3,200조) 토큰 이상"(2026년 5월 구글 I/O) × 12. 2025년 약 480조 → 1년 새 약 7배', grade: 'B' } },
   { group: '클라우드', name: '구글 클라우드(서버·TPU·워크스페이스·제미나이 기업용)', what: '기업에 서버·AI 칩(TPU)·AI 모델을 빌려주고, 지메일·문서도구(워크스페이스) 기업판을 판다.',
     money: '사용량·좌석 요금. 최근 분기 +103%, 영업이익률 36%. 수주 잔고 5,610억 달러.',
     rev: { perYear: 93.2e9, label: '클라우드 매출' }, pm: 28,
-    fun: my => `내 몫 수주 잔고(앞으로 받을 계약) 약 $${Math.round(561e9 * my / 93.2e9).toLocaleString()}` },
+    fun: my => `클라우드는 사용량 숫자를 공개하지 않아 "돈"으로 본다 — 내 몫 수주 잔고(앞으로 받을 계약) 약 $${Math.round(561e9 * my / 93.2e9).toLocaleString()}, 1년 매출의 약 6배.` },
   { group: '기타 사업(아직 적자)', name: '웨이모(자율주행 택시)', what: '운전자 없는 택시. 미국 여러 도시에서 유료 운행.',
     money: '탑승 요금. 아직 적자지만 회사가 가장 기대하는 새 사업.',
-    usage: { perYear: 500e3 * 52, unit: '회', label: '탑승', src: '회사 발표 주 50만 회 이상(2026년 1분기) × 52주', grade: 'A' } },
+    usage: { perYear: 500e3 * 52, unit: '회', label: '탑승', src: '회사 발표 주 50만 회 이상(2026년 3월) × 52주. 회사 목표는 2026년 말 주 100만 회', grade: 'A' },
+    usage2: { perYear: 4e6 * 1.609 * 52, unit: 'km', label: '무인 주행', src: '"매주 400만 마일 넘게 무인 주행"(2026년 5월, 웨이모 임원 발언을 2차 출처가 전한 숫자 — 회사 공식 자료로 확인 못 함) × 1.609km × 52주', grade: 'C' },
+    rev: { perYear: 500e3 * 52 * 20, label: '웨이모 요금 매출(추정)' },
+    fun: () => `회사는 웨이모 매출을 따로 공개하지 않는다 — 탑승 1회 평균 요금을 약 20달러로 가정한 추정. 아직 적자라 이익은 없다.` },
   { group: '기타 사업(아직 적자)', name: '그 밖의 실험(베릴리·캘리코·윙·아이소모픽 랩스·X)', what: '생명과학(베릴리), 노화 연구(캘리코), 드론 배송(윙), AI 신약 개발(아이소모픽 랩스), 문샷 연구소(X).',
     money: '대부분 매출이 거의 없다. "기타 사업" 매출 최근 1년 약 15억 달러, 손실이 더 크다.', rev: { perYear: 1.5e9, label: '기타 사업 매출' } },
   { group: '투자 지분', name: '스페이스X·앤트로픽 등 지분', what: '스페이스X 약 4.9%, AI 회사 앤트로픽 등에 투자.',
@@ -61,6 +68,11 @@ const ITEMS: Item[] = [
 
 const fmt = (v: number) => v >= 1e6 ? `${(v / 1e6).toFixed(1)}백만` : v >= 1e4 ? `${(v / 1e4).toFixed(1)}만` : v >= 10 ? Math.round(v).toLocaleString() : v.toFixed(2)
 const usd = (v: number) => `$${v >= 100 ? Math.round(v).toLocaleString() : v.toFixed(2)}`
+const SEC_Y = 365 * 86400
+const isStock = (u: { unit: string; label: string }) => u.unit === '명' || u.label.includes('기기') || u.label === '유료 구독'
+// 1초당 돈(센트)
+const perSec = (yearUsd: number) => { const c = yearUsd / SEC_Y * 100; return `${c.toFixed(c < 0.01 ? 4 : c < 1 ? 3 : 1)}센트` }
+const perN = (v: number) => v >= 100 ? Math.round(v).toLocaleString() : v >= 1 ? v.toFixed(1) : v.toFixed(3)
 const G: Record<string, string> = { A: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300', B: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300', C: 'bg-gray-100 text-gray-600' }
 
 // 마우스를 올리면(휴대폰은 누르면) 설명이 뜨는 칸
@@ -116,6 +128,30 @@ export default function GoogleMyShare() {
         <p className={small}><b>이 돈은 내 통장으로 들어오지 않는다.</b> 구글은 이익을 배당으로 거의 나눠 주지 않고(배당 약 0.3%) AI 투자·자사주 매입에 쓴다. 그래서 내 몫 이익은 <b>&ldquo;내 주식 1주의 가치가 커지는 방식&rdquo;</b>으로 돌아온다. 시청 시간은 공식 최소값 기준이라 실제는 더 많을 가능성이 크다. 유튜브 프리미엄 등 구독료는 빠졌다. 칸 이름에 마우스를 올리면(휴대폰은 누르면) 계산 방법이 나온다.</p>
       </div>
 
+      {(() => {
+        const rv = ITEMS.filter(i => i.rev && !i.name.startsWith('웨이모')).reduce((a, i) => a + i.rev!.perYear, 0) * ratio
+        const pf = ITEMS.filter(i => i.rev && i.pm != null).reduce((a, i) => a + i.rev!.perYear * i.pm! / 100, 0) * ratio
+        const rows: [string, string, string][] = [
+          ['매출', perSec(rv), `하루 ${usd(rv / 365)} · 1년 ${usd(rv)}`],
+          ['이익(추정)', perSec(pf), `하루 ${usd(pf / 365)} · 1년 ${usd(pf)}`],
+          ['검색', `${perN(5e12 * ratio / SEC_Y)}번`, `하루 ${Math.round(5e12 * ratio / 365).toLocaleString()}번`],
+          ['유튜브 시청', `${perN(1e9 * 365 * ratio * 3600 / SEC_Y)}초`, `하루 ${(1e9 * ratio).toFixed(1)}시간`],
+          ['AI 토큰', `${perN(3.2e15 * 12 * ratio / SEC_Y)}개`, `하루 ${Math.round(3.2e15 * 12 * ratio / 365).toLocaleString()}개`],
+          ['웨이모 이동', `${perN(4e6 * 1.609 * 52 * ratio / SEC_Y * 1000)}m`, `하루 ${(4e6 * 1.609 * 52 * ratio / 365).toFixed(2)}km(덜 확실)`],
+        ]
+        return (
+          <div className="rounded-lg bg-amber-50/70 dark:bg-amber-950/20 p-3 space-y-2">
+            <p className="text-sm font-semibold text-gray-900 dark:text-white">구글 전체 — 내 1초마다 (내 주식 {shares.toLocaleString()}주)</p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {rows.map(([k, v, d]) => (
+                <div key={k}><p className="text-[11px] text-gray-500 dark:text-gray-400">{k}</p><p className="text-sm font-semibold text-gray-900 dark:text-white tabular-nums">{v}</p><p className="text-[11px] text-gray-400 tabular-nums">{d}</p></div>
+              ))}
+            </div>
+            <p className={small}>매출 = 검색·유튜브·네트워크·구독·클라우드·기타 사업 매출(최근 1년, 회사 공시) × 내 비율 ÷ 1년(3,153만 6천 초). 이익은 사업별 세후 이익률 추정을 곱한 대략값(웨이모·기타 사업 적자는 반영 안 함). 검색 광고 클릭 수는 회사가 공개하지 않아 검색 횟수로 대신 본다. 웨이모 이동 거리는 2차 출처 숫자라 덜 확실하다.</p>
+          </div>
+        )
+      })()}
+
       {groups.map(g => (
         <div key={g} className="space-y-1.5">
           <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">{g}</p>
@@ -132,6 +168,19 @@ export default function GoogleMyShare() {
                     {i.rev && i.pm != null && <span className="text-gray-700 dark:text-gray-200"><Tip text={<>내 몫 매출 × 세후 이익률 약 {i.pm}%(회사가 사업부별 이익을 일부만 공개해 나눠 추정). 현금으로 받는 돈이 아니라 주식 가치로 돌아온다.</>}>내 몫 이익(1년, 추정)</Tip> <b className="tabular-nums">{usd(i.rev.perYear * ratio * i.pm / 100)}</b></span>}
                   </div>
                 )}
+                {((i.usage && !isStock(i.usage)) || i.usage2 || i.rev) && (
+                  <p className="text-xs text-amber-700 dark:text-amber-300 tabular-nums">
+                    <b>내 1초마다:</b>{' '}
+                    {[
+                      i.usage && !isStock(i.usage) ? `${i.usage.label} ${perN(i.usage.perYear * ratio / SEC_Y)}${i.usage.unit}` : null,
+                      i.usage2 ? `${i.usage2.label} ${perN(i.usage2.perYear * ratio / SEC_Y * (i.usage2.unit === 'km' ? 1000 : 1))}${i.usage2.unit === 'km' ? 'm' : i.usage2.unit}` : null,
+                      i.rev ? `매출 ${perSec(i.rev.perYear * ratio)}` : null,
+                      i.rev && i.pm != null ? `이익 ${perSec(i.rev.perYear * ratio * i.pm / 100)}` : null,
+                    ].filter(Boolean).join(' · ')}
+                    {i.rev && <span className="text-gray-400"> (하루 매출 {usd(i.rev.perYear * ratio / 365)})</span>}
+                  </p>
+                )}
+                {i.usage2 && <p className="text-xs text-gray-700 dark:text-gray-200">전체 {i.usage2.label} <b className="tabular-nums">{fmt(i.usage2.perYear)}{i.usage2.unit}</b>/년 → <b className="text-red-600 dark:text-red-400 tabular-nums">내 몫 {fmt(i.usage2.perYear * ratio)}{i.usage2.unit}</b> <span className={`inline-block px-1 rounded text-[10px] font-semibold ${G[i.usage2.grade]}`}>{i.usage2.grade}</span> <span className="text-[11px] text-gray-400">{i.usage2.src}</span></p>}
                 {i.fun && <p className="text-xs text-red-700 dark:text-red-300">{i.fun(myU ?? (i.rev ? i.rev.perYear * ratio : 0))}</p>}
                 {i.usage && <p className="text-[11px] text-gray-400">{i.usage.src}</p>}
               </div>
@@ -139,7 +188,7 @@ export default function GoogleMyShare() {
           })}
         </div>
       ))}
-      <p className="text-[11px] text-gray-400">매출은 최근 4분기(2025년 4분기~2026년 3분기) 회사 공시 기준. 사용량 신뢰 등급: A = 회사 공식 발표, B = 회사 발표지만 오래됐거나 최소값. &ldquo;명&rdquo;(사용자 수)은 1년 누적이 아니라 지금 쓰는 사람 수의 내 몫이다. 크롬·지메일·지도 사용자 수는 회사가 최근 공식 숫자를 내지 않아 뺐다.</p>
+      <p className="text-[11px] text-gray-400">매출은 최근 4분기(2025년 4분기~2026년 3분기) 회사 공시 기준. 사용량 신뢰 등급: A = 회사 공식 발표, B = 회사 발표지만 오래됐거나 최소값, C = 2차 출처라 덜 확실. &ldquo;명&rdquo;(사용자 수)은 1년 누적이 아니라 지금 쓰는 사람 수의 내 몫이다. 크롬·지메일·지도 사용자 수는 회사가 최근 공식 숫자를 내지 않아 뺐다.</p>
     </div>
   )
 }
