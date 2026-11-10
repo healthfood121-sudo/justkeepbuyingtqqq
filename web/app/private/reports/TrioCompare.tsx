@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 
-// 엄선 42종목 비교 — 각 종목 리포트의 미래 모델(시나리오·가능성)을 한곳에 모았다.
+// 엄선 54종목 비교 — 각 종목 리포트의 미래 모델(시나리오·가능성)을 한곳에 모았다.
 type Sc = { p: number; r: number }
 type Co = { key: string; name: string; price: string; pe: string; earn: string; div: number; divNet: number
   good: Sc; base: Sc; bad: Sc; risk: string; next: string; signal: string; color: string; one: string }
@@ -176,11 +176,59 @@ const COS: Co[] = [
     good: { p: 20, r: 10.2 }, base: { p: 60, r: 6.7 }, bad: { p: 20, r: 0.5 },
     risk: '물량 감소(주택·건설 경기), 비싼 값, 인수 실패', next: '2027년 2월 4분기 실적', signal: '핵심 가격 인상 +5% 이상, 물량 플러스', color: 'bg-lime-800',
     one: '매립지라는 대체 불가 자산으로 해마다 값을 올린다. 사업은 완벽, 값이 비싸다.' },
+  { key: 'IPAR', name: '인터퍼퓸', price: '약 136달러', pe: '2026년 목표 EPS 기준 약 28배 (10년 평소 32배)', earn: '쉬어 가는 해 — 2026년 EPS 4.85(감소), 2027년 대형 신제품', div: 2.4, divNet: 2.04,
+    good: { p: 20, r: 12.8 }, base: { p: 55, r: 7.0 }, bad: { p: 25, r: -4.5 },
+    risk: '큰 라이선스 상실(2012년 버버리), 중동 전쟁, 관세', next: '11월 18일 2027년 전망', signal: '2027년 매출 +6%·EPS 5.3달러 이상', color: 'bg-pink-800',
+    one: '남의 명품 이름으로 향수를 만드는 실행력 회사. 이름이 남의 것이라는 게 최대 위험.' },
+  { key: 'MGRC', name: '맥그래스 렌트코프', price: '약 125달러', pe: '약 19배 (10년 평소 17배)', earn: '증가 — 시험장비 임대 +26%, 모듈러 정체', div: 1.6, divNet: 1.36,
+    good: { p: 20, r: 11.4 }, base: { p: 60, r: 6.4 }, bad: { p: 20, r: -3.2 },
+    risk: '건설 경기, 시험장비 경기 순환, 장비 투자 확대 타이밍', next: '2027년 2월 4분기 실적', signal: '모듈러 가동률 72% 이상 회복', color: 'bg-stone-800',
+    one: '조립식 교실·시험장비를 수십 년 빌려주는 임대 회사. 35년 연속 배당 인상.' },
+  { key: 'UFPT', name: 'UFP 테크놀로지스', price: '약 303달러', pe: '공시 약 31배 (10년 평소 24배)', earn: '증가 — 자체 성장 +11%, 인수', div: 0, divNet: 0.0,
+    good: { p: 25, r: 12.7 }, base: { p: 55, r: 6.6 }, bad: { p: 20, r: -6.1 },
+    risk: '최대 고객(인튜이티브 서지컬) 의존, 인수 사고(AJR), 새 CEO', next: '2027년 2월 하순 4분기 실적', signal: '자체 성장 +6% 이상, 도미니카 이전 진척', color: 'bg-cyan-900',
+    one: '로봇 수술 드레이프 등 의료 일회용품 위탁 제조. 사업은 좋은데 값이 평소보다 30% 비싸다.' },
+  { key: 'CVCO', name: '캐브코', price: '약 639달러', pe: '약 28배 (10년 평소 23배)', earn: '최고 출하 — 잔고 +63%, 철강 +150%로 이익률 하락', div: 0, divNet: 0.0,
+    good: { p: 20, r: 12.6 }, base: { p: 60, r: 5.8 }, bad: { p: 20, r: -6.9 },
+    risk: '금리·대출 심사, 자재값, 주택 경기', next: '2027년 1월 말 3분기 실적', signal: '잔고 3억 달러 이상, 주택 매출총이익률 22% 이상', color: 'bg-amber-800',
+    one: '미국에서 가장 싼 새 집(공장 주택). 빚 없이 자사주로 5년간 주식 20% 감소. 금리에 민감.' },
+  { key: 'MEDP', name: '메드페이스', price: '약 653달러', pe: '약 36배 (상장 후 평소 35배)', earn: '증가 — 수주 사상 최고, EPS +25%', div: 0, divNet: 0.0,
+    good: { p: 20, r: 12.0 }, base: { p: 60, r: 6.2 }, bad: { p: 20, r: -3.5 },
+    risk: '바이오 자금 시장, 임상 취소, 고객 집중', next: '2027년 2월 4분기 실적·2027년 전망', signal: '수주/매출 1.15배 이상, 취소율 하락', color: 'bg-violet-700',
+    one: '중소 바이오 임상시험 통째 대행. 이익률 24%·빚 없음. 바닥에서 자사주를 크게 산다.' },
+  { key: 'UI', name: '유비쿼티', price: '약 593달러', pe: '약 33배 (10년 평소 41배)', earn: '급증 — 매출 +40%, 분기 첫 10억 달러', div: 0.7, divNet: 0.59,
+    good: { p: 25, r: 13.9 }, base: { p: 50, r: 7.7 }, bad: { p: 25, r: -6.1 },
+    risk: '부품값·공급(AI 붐), 재고 주기, 창업자 93% 지배', next: '2027년 2월 초 실적', signal: '매출총이익률 45% 이상, 매출 +15% 이상', color: 'bg-sky-900',
+    one: '영업 조직 없이 커뮤니티로 파는 네트워크 장비. 영업이익률 38%, 하드웨어 주기에 반 토막도.' },
+  { key: 'QLYS', name: '퀄리스', price: '약 190달러', pe: '공시 약 32배, 조정 약 24배 (10년 평소 52배)', earn: '증가 — 매출 +11%, 청구액 +14%', div: 0, divNet: 0.0,
+    good: { p: 25, r: 13.0 }, base: { p: 50, r: 7.1 }, bad: { p: 25, r: -3.0 },
+    risk: '대형 보안 플랫폼 묶음 판매, AI 소프트웨어 공포', next: '2027년 2월 4분기 실적', signal: '매출 +10%·청구액 +13% 이상', color: 'bg-indigo-900',
+    one: '해킹 전에 구멍을 막는 보안 구독. 조정 EBITDA 이익률 48%, 성장 10%가 관건.' },
+  { key: 'LMAT', name: '르메트르', price: '약 81달러', pe: '약 29배 (10년 평소 41배)', earn: '증가 — 자체 +12%(가격 +7%)', div: 1.2, divNet: 1.02,
+    good: { p: 25, r: 14.9 }, base: { p: 55, r: 9.7 }, bad: { p: 20, r: -0.8 },
+    risk: 'B. 브라운 통합 품절, FDA 재점검, 개방 수술 감소', next: '2027년 2월 말 4분기 실적', signal: '자체 성장 +10%, 가격 +6% 이상', color: 'bg-rose-900',
+    one: '큰 회사가 버린 혈관 수술 기기를 모아 해마다 값 +7%. 숨은 알짜 중 기본 기대 최고.' },
+  { key: 'EXPO', name: '익스포넌트', price: '약 84달러', pe: '약 36배 (10년 평소 45배)', earn: '재가속 — 순매출 +12%, AI 기기 사용성 연구', div: 1.5, divNet: 1.27,
+    good: { p: 20, r: 12.4 }, base: { p: 60, r: 7.5 }, bad: { p: 20, r: -1.5 },
+    risk: '사람 수에 묶인 성장, 대형 프로젝트 종료, AI 일감 지속성', next: '2027년 2월 초 4분기 실적', signal: '순매출 +8% 이상, 가동률 74% 이상', color: 'bg-teal-800',
+    one: '"왜 고장 났나"를 밝히는 박사 집단. 5년 정체 뒤 AI 기기 검증으로 재가속.' },
+  { key: 'FELE', name: '프랭클린 일렉트릭', price: '약 94달러', pe: '약 21배 (10년 평소 27배)', earn: '재성장 — 매출 +9%, 조정 EPS +15%', div: 1.2, divNet: 1.02,
+    good: { p: 20, r: 14.0 }, base: { p: 60, r: 8.7 }, bad: { p: 20, r: -2.5 },
+    risk: '원자재·운임, 공장 이전 비효율, 주택·농업 경기', next: '2027년 2월 중순 4분기 실적', signal: '매출총이익률 35.5% 이상', color: 'bg-blue-900',
+    one: '우물 속 물 펌프 모터의 표준 + 펌프 유통망. 숨은 알짜 중 가장 싼 꾸준함.' },
+  { key: 'BMI', name: '배저 미터', price: '약 158달러', pe: '약 37배 (10년 평소 49배)', earn: '공백기 — 2026년 매출 감소, 3분기 반등', div: 1.1, divNet: 0.94,
+    good: { p: 20, r: 14.1 }, base: { p: 55, r: 8.3 }, bad: { p: 25, r: -3.1 },
+    risk: '지자체 프로젝트 시점, 전자 부품 원가', next: '2027년 1월 말 4분기 실적', signal: '4분기부터 매출 플러스 복귀', color: 'bg-emerald-800',
+    one: '수도 계량기 디지털 전환 + 소프트웨어 구독. 프로젝트 공백기에 값이 반 토막.' },
+  { key: 'BCPC', name: '발켐', price: '약 174달러', pe: '약 33배 (10년 평소 42배)', earn: '증가 — 모든 사업 최고, 조정 EBITDA 29분기 연속 증가', div: 0.55, divNet: 0.47,
+    good: { p: 20, r: 12.0 }, base: { p: 60, r: 6.9 }, bad: { p: 20, r: -2.6 },
+    risk: '원가 전가 시차, 중국산 저가 콜린', next: '2027년 2월 4분기 실적', signal: '조정 EBITDA 연속 증가 유지', color: 'bg-fuchsia-800',
+    one: '영양 원료를 캡슐에 싸는 기술의 틈새 1등. 가장 꾸준하지만 값이 그만큼 높다.' },
 ]
 const ev = (c: Co) => (c.good.p * c.good.r + c.base.p * c.base.r + c.bad.p * c.bad.r) / 100
 const loss = (c: Co) => [c.good, c.base, c.bad].filter(s => s.r < 0).reduce((a, s) => a + s.p, 0)
 const f1 = (v: number) => `${v.toFixed(1)}%`
-const DEF: Record<string, number> = { RMS: 25, MSFT: 20, GOOGL: 15, AMZN: 15, META: 10, AAPL: 5, NKE: 10, V: 0, MA: 0, SPGI: 0, MCO: 0, MSCI: 0, ADP: 0, SYK: 0, GGG: 0, DCI: 0, FICO: 0, INTU: 0, ADBE: 0, CPRT: 0, ZTS: 0, NFLX: 0, BKNG: 0, IDXX: 0, LII: 0, BR: 0, LVMH: 0, NVDA: 0, AVGO: 0, ISRG: 0, TDG: 0, NOW: 0, MELI: 0, TXRH: 0, PG: 0, KO: 0, PEP: 0, MCD: 0, CL: 0, CME: 0, PGR: 0, RSG: 0 }
+const DEF: Record<string, number> = { RMS: 25, MSFT: 20, GOOGL: 15, AMZN: 15, META: 10, AAPL: 5, NKE: 10, V: 0, MA: 0, SPGI: 0, MCO: 0, MSCI: 0, ADP: 0, SYK: 0, GGG: 0, DCI: 0, FICO: 0, INTU: 0, ADBE: 0, CPRT: 0, ZTS: 0, NFLX: 0, BKNG: 0, IDXX: 0, LII: 0, BR: 0, LVMH: 0, NVDA: 0, AVGO: 0, ISRG: 0, TDG: 0, NOW: 0, MELI: 0, TXRH: 0, PG: 0, KO: 0, PEP: 0, MCD: 0, CL: 0, CME: 0, PGR: 0, RSG: 0, IPAR: 0, MGRC: 0, UFPT: 0, CVCO: 0, MEDP: 0, UI: 0, QLYS: 0, LMAT: 0, EXPO: 0, FELE: 0, BMI: 0, BCPC: 0 }
 
 export default function TrioCompare({ onPick }: { onPick: (key: string) => void }) {
   const [w, setW] = useState<Record<string, number>>(DEF)
@@ -193,8 +241,8 @@ export default function TrioCompare({ onPick }: { onPick: (key: string) => void 
   return (
     <section className="rounded-xl border-2 border-blue-200 dark:border-blue-900/60 p-3 sm:p-4 space-y-3">
       <div>
-        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">엄선 42종목 — 한눈에 비교 (10년, 추정)</h3>
-        <p className={small}>에르메스·빅테크 5개·나이키에 핵심 복리 9종목(비자·마스터카드·S&amp;P 글로벌·무디스·MSCI·ADP·스트라이커·그레이코·도널드슨)과 지금 싼 알짜 11종목(FICO·인튜이트·어도비·코파트·조에티스·넷플릭스·부킹·IDEXX·레녹스·브로드리지·LVMH), 고성장 7종목(엔비디아·브로드컴·인튜이티브 서지컬·트랜스다임·서비스나우·메르카도리브레·텍사스 로드하우스), 방어 8종목(P&amp;G·코카콜라·펩시코·맥도날드·콜게이트·CME·프로그레시브·리퍼블릭 서비스)을 더했다. 각 종목 리포트의 미래 모델(시나리오·가능성)을 모았다. 수익률 = 이익 성장 + PER 변화 + 배당(세전). 종목 이름을 누르면 그 페이지로 간다. 2026-11-10 기준, 투자 추천이 아니다.</p>
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">엄선 54종목 — 한눈에 비교 (10년, 추정)</h3>
+        <p className={small}>에르메스·빅테크 5개·나이키에 핵심 복리 9종목(비자·마스터카드·S&amp;P 글로벌·무디스·MSCI·ADP·스트라이커·그레이코·도널드슨)과 지금 싼 알짜 11종목(FICO·인튜이트·어도비·코파트·조에티스·넷플릭스·부킹·IDEXX·레녹스·브로드리지·LVMH), 고성장 7종목(엔비디아·브로드컴·인튜이티브 서지컬·트랜스다임·서비스나우·메르카도리브레·텍사스 로드하우스), 방어 8종목(P&amp;G·코카콜라·펩시코·맥도날드·콜게이트·CME·프로그레시브·리퍼블릭 서비스), 숨은 알짜 12종목(인터퍼퓸·맥그래스·UFP·캐브코·메드페이스·유비쿼티·퀄리스·르메트르·익스포넌트·프랭클린·배저 미터·발켐)을 더했다. 각 종목 리포트의 미래 모델(시나리오·가능성)을 모았다. 수익률 = 이익 성장 + PER 변화 + 배당(세전). 종목 이름을 누르면 그 페이지로 간다. 2026-11-10 기준, 투자 추천이 아니다.</p>
       </div>
 
       <div className="rounded-lg bg-gray-50 dark:bg-gray-900/40 p-2.5">
@@ -251,6 +299,9 @@ export default function TrioCompare({ onPick }: { onPick: (key: string) => void 
         <div className="rounded-lg bg-blue-50/70 dark:bg-blue-950/20 p-2.5"><b>매일 쓰는 물건(P&amp;G·코카콜라·콜게이트):</b> 기대 연 5.5~6.5%, 나쁜 그림에서도 플러스. 경기와 거의 무관해 하락장의 완충재지만 기대가 낮다. 셋은 같은 위험이라 하나면 충분.</div>
         <div className="rounded-lg bg-amber-50/70 dark:bg-amber-950/20 p-2.5"><b>싸서 기대가 높은 방어(펩시코·맥도날드):</b> 기대 연 9~10%로 방어주 중 가장 높고 나쁜 그림도 연 3~4%. 이익 성장이 아니라 싸진 값과 배당 3~4.4%가 만든다.</div>
         <div className="rounded-lg bg-slate-100 dark:bg-slate-800/60 p-2.5"><b>사이클·값이 걸린 독점(CME·프로그레시브·리퍼블릭):</b> CME는 시장이 흔들릴 때 버는 반대 방향 종목(연 약 7.7%). 프로그레시브는 보험 사이클 꼭대기라 손실 가능성 25%, 리퍼블릭은 사업은 최상이지만 PER 32배라 연 6% 안팎.</div>
+        <div className="rounded-lg bg-rose-50/70 dark:bg-rose-950/20 p-2.5"><b>숨은 알짜 중 기대가 높은 쪽(르메트르·프랭클린 일렉트릭):</b> 기대 연 7.5~9%. 둘 다 PER이 10년 평소보다 20~30% 싸고, 르메트르는 해마다 값 +7%, 프랭클린은 물이라는 필수재. 지금 값에서 나눠 모으기 시작할 만한 쪽.</div>
+        <div className="rounded-lg bg-violet-50/70 dark:bg-violet-950/20 p-2.5"><b>사업은 최상, 값이 기대를 누르는 쪽(메드페이스·발켐·UFP·익스포넌트·캐브코):</b> 기대 연 4.5~6.7%. 이익률·꾸준함은 엄선 최상위권이지만 PER 28~36배. 실망으로 값이 내려올 때 담는 후보.</div>
+        <div className="rounded-lg bg-sky-50/70 dark:bg-sky-950/20 p-2.5"><b>흔들림이 큰 쪽(유비쿼티·배저 미터·퀄리스·인터퍼퓸·맥그래스):</b> 기대 연 5.3~6.6%, 나쁜 그림 확률 20~25%. 하드웨어 재고 주기·지자체 프로젝트·AI 소프트웨어 공포·라이선스·건설 경기 — 각자 다른 이유로 반 토막이 난 적 있다. 다른 이유로 흔들려 서로 섞기엔 좋다.</div>
       </div>
 
       <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-3 space-y-2">
