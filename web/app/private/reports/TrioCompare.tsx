@@ -4,10 +4,10 @@ import { useState } from 'react'
 
 // 엄선 54종목 비교 — 각 종목 리포트의 미래 모델(시나리오·가능성)을 한곳에 모았다.
 type Sc = { p: number; r: number }
-type Co = { key: string; name: string; price: string; pe: string; earn: string; div: number; divNet: number
+export type Co = { key: string; name: string; price: string; pe: string; earn: string; div: number; divNet: number
   good: Sc; base: Sc; bad: Sc; risk: string; next: string; signal: string; color: string; one: string }
 
-const COS: Co[] = [
+export const COS: Co[] = [
   { key: 'RMS', name: '에르메스', price: '약 1,290~1,360유로', pe: '약 31배 (2021~2023년 45~66배)', earn: '보합 — 성장 둔화(2026년 3분기 +4.3%)', div: 1.3, divNet: 1.1,
     good: { p: 20, r: 14.9 }, base: { p: 55, r: 10.4 }, bad: { p: 25, r: 4.0 },
     risk: '성장 속도 — 중국 부자 소비, 공방·장인 증가 속도(가죽 생산 연 5~7% 상한)', next: '2027년 2월 연간 실적', signal: '가죽 성장 +8% 이상, 아시아(일본 제외) 플러스 복귀', color: 'bg-orange-500',
@@ -225,8 +225,8 @@ const COS: Co[] = [
     risk: '원가 전가 시차, 중국산 저가 콜린', next: '2027년 2월 4분기 실적', signal: '조정 EBITDA 연속 증가 유지', color: 'bg-fuchsia-800',
     one: '영양 원료를 캡슐에 싸는 기술의 틈새 1등. 가장 꾸준하지만 값이 그만큼 높다.' },
 ]
-const ev = (c: Co) => (c.good.p * c.good.r + c.base.p * c.base.r + c.bad.p * c.bad.r) / 100
-const loss = (c: Co) => [c.good, c.base, c.bad].filter(s => s.r < 0).reduce((a, s) => a + s.p, 0)
+export const ev = (c: Co) => (c.good.p * c.good.r + c.base.p * c.base.r + c.bad.p * c.bad.r) / 100
+export const loss = (c: Co) => [c.good, c.base, c.bad].filter(s => s.r < 0).reduce((a, s) => a + s.p, 0)
 const f1 = (v: number) => `${v.toFixed(1)}%`
 const DEF: Record<string, number> = { RMS: 25, MSFT: 20, GOOGL: 15, AMZN: 15, META: 10, AAPL: 5, NKE: 10, V: 0, MA: 0, SPGI: 0, MCO: 0, MSCI: 0, ADP: 0, SYK: 0, GGG: 0, DCI: 0, FICO: 0, INTU: 0, ADBE: 0, CPRT: 0, ZTS: 0, NFLX: 0, BKNG: 0, IDXX: 0, LII: 0, BR: 0, LVMH: 0, NVDA: 0, AVGO: 0, ISRG: 0, TDG: 0, NOW: 0, MELI: 0, TXRH: 0, PG: 0, KO: 0, PEP: 0, MCD: 0, CL: 0, CME: 0, PGR: 0, RSG: 0, IPAR: 0, MGRC: 0, UFPT: 0, CVCO: 0, MEDP: 0, UI: 0, QLYS: 0, LMAT: 0, EXPO: 0, FELE: 0, BMI: 0, BCPC: 0 }
 

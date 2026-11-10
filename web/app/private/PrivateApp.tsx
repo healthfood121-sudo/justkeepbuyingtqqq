@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useRef, useEffect, type ReactNode } from 'react'
+import { useState, useRef, useEffect, Suspense, type ReactNode } from 'react'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import CocoReport from './reports/CocoReport'
 import BigReport from './reports/BigReport'
 import { AMZN_REPORT, GOOGL_REPORT, MSFT_REPORT } from './reports/bigData'
@@ -57,7 +58,7 @@ import { RMS_REPORT } from './reports/rmsData'
 import { ModelSection, OddsBlock, modelResult, type Sc } from './reports/BigReport'
 import { FUTURES } from './futures'
 import GoogleMyShare from './reports/GoogleMyShare'
-import TrioCompare from './reports/TrioCompare'
+import TrioCompare, { COS as PICK_COS, ev as pickEv } from './reports/TrioCompare'
 import Link from 'next/link'
 import { UNIV } from './universe'
 import { PICK_GROUPS, PICKS_AS_OF } from './picks'
@@ -10564,7 +10565,7 @@ const REPORTS: Record<string, () => ReactNode> = {
 export type Universe = 'picks' | 'sp500' | 'ndx' | 'mid' | 'r2k' | 'nasdaq' | 'other'
 const PICK_KEYS = new Set(PICK_GROUPS.flatMap(g => g.items.map(it => it.key)))
 const UNIVERSES: { u: Universe; href: string; label: string; title: string; sub: string; test: (k: string) => boolean }[] = [
-  { u: 'picks', href: '/private', label: '엄선', title: '엄선 포트폴리오', sub: '전체 지수에서 고른 종목을 포트폴리오 안의 역할별로 묶었다', test: k => PICK_KEYS.has(k) },
+  { u: 'picks', href: '/private?v=picks', label: '엄선', title: '엄선 포트폴리오', sub: '전체 지수에서 고른 종목을 포트폴리오 안의 역할별로 묶었다', test: k => PICK_KEYS.has(k) },
   { u: 'sp500', href: '/private/sp500', label: 'S&P 500', title: 'S&P 500', sub: '미국 대형주 500 — 지금 S&P 500에 들어 있는 분석 종목', test: k => (UNIV[k] ?? '').includes('S') },
   { u: 'ndx', href: '/private/ndx', label: '나스닥100', title: '나스닥100', sub: '나스닥 상장 대형 비금융 100 — 분석한 종목', test: k => (UNIV[k] ?? '').includes('N') },
   { u: 'mid', href: '/private/mid', label: '중형주', title: '중형주(S&P 미드캡 400)', sub: 'S&P 500보다 작고 러셀2000보다 큰 미국 중형주 400(IJH SEC 보유 종목 보고서 기준) — 분석한 종목', test: k => (UNIV[k] ?? '').includes('M') },
@@ -10622,162 +10623,279 @@ function PicksPanel({ onPick, activeKey }: { onPick: (key: string) => void; acti
   )
 }
 
-export default function PrivateApp({ u = 'picks' }: { u?: Universe }) {
-  const univ = UNIVERSES.find(x => x.u === u) ?? UNIVERSES[0]
-  const only = new Set(STOCKS.filter(s => univ.test(s.key)).map(s => s.key))
-  const counts = Object.fromEntries(UNIVERSES.map(x => [x.u, STOCKS.filter(s => x.test(s.key)).length]))
-  const [activeStock, setActiveStock] = useState(() => {
-    const first = u === 'picks' ? PICK_GROUPS[0].items[0].key : STOCKS.find(s => only.has(s.key))?.key
-    return Math.max(0, STOCKS.findIndex(s => s.key === first))
-  })
-  // 다른 페이지(버핏·멍거 등)에서 ?s=티커 로 들어오면 그 종목을 연다
-  useEffect(() => {
-    const k = new URLSearchParams(window.location.search).get('s')
-    const i = k ? STOCKS.findIndex(s => s.key === k.toUpperCase()) : -1
-    if (i >= 0) setActiveStock(i)
-  }, [])
-  const current = STOCKS[activeStock]
-  const pick = (key: string) => {
-    const i = STOCKS.findIndex(s => s.key === key)
-    if (i >= 0) setActiveStock(i)
-  }
+// ── 화면 흐름: 찾기(첫 화면) → 고르기(목록) → 보기(종목) ──
+// 주소: /private = 첫 화면, /private?v=picks = 엄선 목록, /private?v=all = 조건으로 찾기, ?s=티커 = 종목 화면.
+// 지수 탭(/private/sp500 등)은 바로 목록 화면.
+const RECENT_KEY = 'private_recent'
 
+function readList(k: string): string[] {
+  try { const v = JSON.parse(localStorage.getItem(k) ?? '[]'); return Array.isArray(v) ? v.filter(x => typeof x === 'string') : [] } catch { return [] }
+}
+
+function StockSearch({ onPick, big = false }: { onPick: (key: string) => void; big?: boolean }) {
+  const [q, setQ] = useState('')
+  const t = q.trim().toLowerCase()
+  const hits = !t ? [] : STOCKS
+    .map(s => {
+      const tk = s.data.ticker.toLowerCase(), nm = (s.data.name ?? '').toLowerCase()
+      const score = tk === t ? 0 : tk.startsWith(t) ? 1 : nm.startsWith(t) ? 2 : nm.includes(t) || tk.includes(t) ? 3 : 9
+      return { s, score }
+    })
+    .filter(x => x.score < 9)
+    .sort((a, b) => a.score - b.score)
+    .slice(0, 8)
+  const go = (key: string) => { setQ(''); onPick(key) }
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 space-y-8">
-        <UniverseTabs u={u} counts={counts} />
-
-        {/* ── 사용 방법 ── */}
-        <section className="rounded-xl border-2 border-blue-200 dark:border-blue-900/60 bg-blue-50/60 dark:bg-blue-950/30 p-4 space-y-3">
-          <h2 className="text-base font-bold text-gray-900 dark:text-white">사용 방법 — 종목 하나를 깊게 보는 곳</h2>
-          <ol className="space-y-2.5 text-sm text-gray-700 dark:text-gray-200">
-            <li className="flex gap-2">
-              <span className="shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center">1</span>
-              <div>
-                <b>종목을 고른다.</b>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                  아래 &lsquo;종목 비교 개요&rsquo; 표에서 행을 누르거나 &lsquo;종목 선택&rsquo; 목록에서 고른다. 어떤 종목을 볼지 모르겠다면 표 위 기본 프리셋(①~⑦)을 눌러 보자 — 프리셋마다 해자·이익 추세·값·위험 점수를 매긴 <b>판정표</b>가 함께 나온다.
-                </p>
-              </div>
-            </li>
-            <li className="flex gap-2">
-              <span className="shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center">2</span>
-              <div>
-                <b>차트와 표로 &lsquo;과거에 샀다면&rsquo;을 본다.</b>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                  막대 하나 = 그해 연말에 사서 10년 보유했을 때의 연평균 수익률(배당 포함). 주황 점은 같은 기간 S&amp;P 500. 막대가 낮게 떨어진 해가 &lsquo;최악의 진입 시점&rsquo;이다.
-                </p>
-              </div>
-            </li>
-            <li className="flex gap-2">
-              <span className="shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center">3</span>
-              <div>
-                <b>아래 &lsquo;인사이트&rsquo;에서 지금 사도 되는지 본다.</b>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                  위에서부터 순서대로:
-                  <span className="text-amber-600 dark:text-amber-400"> 노란 박스</span>(Claude가 뉴스로 직접 쓴 분석, 추천 종목만) →
-                  사업성 평가(회사가 얼마나 좋은가, 주가와 무관) →
-                  1. 지금 한눈에(지금 PER이 평소보다 싼가, 이익이 늘고 있나) →
-                  최근 컨퍼런스콜(경영진이 한 말·애널리스트 질문·회사 전망, 접혀 있음) →
-                  1-1·1-2. 부문별 분석·심층 분석(어느 사업이 좋아지고 나빠지나) →
-                  2. 이익 시계(적정가 선, 내 몫 이익·잉여현금, 1달러당 이익·현금·ROE·ROIC) →
-                  3. 과거(수익이 이익·배당·PER 중 어디서 왔나, 매수 PER별 결과) →
-                  4. 앞으로(지금 사면 10년 뒤 예상) → 5. 결론 → 부록(과거 바닥 직후 매수, 접혀 있음).
-                </p>
-              </div>
-            </li>
-          </ol>
-          <div className="text-xs text-gray-500 dark:text-gray-400 border-t border-blue-200 dark:border-blue-900/60 pt-2 space-y-1">
-            <p><b>핵심만 보려면:</b> 노란 박스의 &lsquo;결론&rsquo;과 &lsquo;숫자로 본 결론&rsquo;, 그리고 컨퍼런스콜의 &lsquo;이 콜을 어떻게 읽을까&rsquo;만 읽어도 된다.</p>
-            <p><b>숫자 읽는 법:</b> 지금 PER이 10년 중간 PER보다 낮으면 평소보다 싸다. 이익/10년 고점이 85% 미만이면 이익이 꺾인 상태라 PER이 실제보다 비싸 보일 수 있다. 시나리오 표에서 과거 이익 성장률 줄(회색 배경)을 보면 &lsquo;과거 속도라면 몇 %&rsquo;가 바로 보인다.</p>
-          </div>
-        </section>
-
-        {/* 헤더 */}
-        <div>
-          <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-1">{univ.title}</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">{univ.sub}</p>
-          <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
-            매년 연말 매수 후 10년 보유하는 시나리오 · 최근 15가지 진입 시점 기준
-          </p>
-          <p className="text-xs text-blue-500 dark:text-blue-400 mt-0.5">
-            ★ 모든 수익률은 배당 재투자 포함 총수익률 (Yahoo Finance 수정주가 기준)
-          </p>
+    <div className="relative">
+      <input
+        value={q}
+        onChange={e => setQ(e.target.value)}
+        onKeyDown={e => { if (e.key === 'Enter' && hits[0]) go(hits[0].s.key) }}
+        placeholder={`종목 검색 — 티커나 이름 (전체 ${STOCKS.length}개)`}
+        className={`w-full rounded-xl border-2 border-blue-200 dark:border-blue-900/60 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 ${big ? 'px-4 py-3 text-base' : 'px-3 py-2 text-sm'}`}
+      />
+      {hits.length > 0 && (
+        <div className="absolute z-30 left-0 right-0 mt-1 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-lg overflow-hidden">
+          {hits.map(({ s }) => (
+            <button key={s.key} type="button" onClick={() => go(s.key)}
+              className="w-full text-left px-3 py-2 text-sm hover:bg-blue-50 dark:hover:bg-blue-950/40 flex items-baseline gap-2">
+              <b className="text-gray-900 dark:text-white">{s.data.ticker}</b>
+              <span className="text-gray-500 dark:text-gray-400 truncate">{s.data.name}</span>
+              {PICK_KEYS.has(s.key) && <span className="ml-auto text-[10px] px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 shrink-0">엄선</span>}
+            </button>
+          ))}
         </div>
+      )}
+    </div>
+  )
+}
 
-        {/* 엄선 탭: 역할별 목록 */}
-        {u === 'picks' && <TrioCompare onPick={pick} />}
-        {u === 'picks' && <PicksPanel onPick={pick} activeKey={current.key} />}
+function KeyChips({ keys, onPick }: { keys: string[]; onPick: (key: string) => void }) {
+  const ok = keys.filter(k => STOCKS.some(s => s.key === k))
+  if (!ok.length) return <p className="text-xs text-gray-400">아직 없다.</p>
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      {ok.map(k => {
+        const s = STOCKS.find(x => x.key === k)!
+        return (
+          <button key={k} type="button" onClick={() => onPick(k)}
+            className="px-2.5 py-1 rounded-full text-xs bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-blue-100 dark:hover:bg-blue-900/40">
+            <b>{s.data.ticker}</b> <span className="text-gray-500 dark:text-gray-400">{s.data.name}</span>
+          </button>
+        )
+      })}
+    </div>
+  )
+}
 
-        {/* 종목 비교 개요 */}
-        <OverviewTable activeStock={activeStock} setActiveStock={setActiveStock} only={only} />
-
-        {/* 종목 선택 */}
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-          <label className="text-sm font-medium text-gray-600 dark:text-gray-400 whitespace-nowrap">종목 선택</label>
-          <select
-            value={activeStock}
-            onChange={e => setActiveStock(Number(e.target.value))}
-            className="flex-1 max-w-xs rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            {STOCKS.map((s, i) => only.has(s.key) && (
-              <option key={s.key} value={i}>
-                {s.data.ticker} — {s.data.name}
-              </option>
+function HomeScreen({ onPick, onList, counts }: { onPick: (key: string) => void; onList: (v: string) => void; counts: Record<string, number> }) {
+  const [recent, setRecent] = useState<string[]>([])
+  const [starred, setStarred] = useState<string[]>([])
+  useEffect(() => { setRecent(readList(RECENT_KEY)); setStarred(readList('private_starred')) }, [])
+  const card = 'rounded-xl border border-gray-200 dark:border-gray-800 p-4 space-y-2 text-left'
+  return (
+    <div className="space-y-5">
+      <div className="space-y-1">
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white">개별 종목 분석</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400">종목을 검색하거나, 아래 입구에서 목록을 열어 고른다. 종목을 고르면 그 종목 화면이 열린다.</p>
+      </div>
+      <StockSearch onPick={onPick} big />
+      <div className="grid sm:grid-cols-2 gap-3">
+        <button type="button" onClick={() => onList('picks')} className={`${card} hover:border-blue-400 bg-blue-50/50 dark:bg-blue-950/20`}>
+          <p className="text-base font-semibold text-gray-900 dark:text-white">⭐ 엄선 종목</p>
+          <p className="text-xs text-gray-600 dark:text-gray-300">Claude가 고른 {PICK_COS.length}종목을 한 표에서 비교한다 — 가능성 반영 기대 수익률 순위, 묶음별 요약, 비중 바꿔 보기, 역할별 목록.</p>
+        </button>
+        <button type="button" onClick={() => onList('all')} className={`${card} hover:border-blue-400`}>
+          <p className="text-base font-semibold text-gray-900 dark:text-white">🔎 조건으로 찾기</p>
+          <p className="text-xs text-gray-600 dark:text-gray-300">전체 {STOCKS.length}개 종목을 기본 프리셋(①~⑦)과 필터(PER·이익 성장·10년 보유 성적 등)로 걸러 본다.</p>
+        </button>
+        <div className={card}>
+          <p className="text-base font-semibold text-gray-900 dark:text-white">📊 지수별로 보기</p>
+          <div className="flex flex-wrap gap-1.5">
+            {UNIVERSES.filter(x => x.u !== 'picks').map(x => (
+              <Link key={x.u} href={x.href} className="px-2.5 py-1 rounded-full text-xs bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-blue-100 dark:hover:bg-blue-900/40">
+                {x.label} <span className="text-gray-400">{counts[x.u]}</span>
+              </Link>
             ))}
-          </select>
-          <span className="text-xs text-gray-400 dark:text-gray-500">{only.size}개 종목</span>
-        </div>
-
-        {/* 종목명 */}
-        <div className="space-y-0.5">
-          <div className="flex items-baseline gap-2">
-            <h2 className="text-base font-semibold text-gray-900 dark:text-white">
-              {current.data.name} ({current.data.ticker})
-            </h2>
-            <span className="text-xs text-gray-400">{current.data.currency} · 벤치마크: {current.data.benchmark}</span>
           </div>
-          {(() => {
-            const desc = (spDesc as any)[current.data.ticker]
-            if (!desc) return null
-            return (
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5">
-                {desc.sector && (
-                  <span className="text-xs text-blue-500 dark:text-blue-400 font-medium">{desc.sector}</span>
-                )}
-                {desc.products && (
-                  <span className="text-xs text-gray-400 dark:text-gray-500">{desc.products}</span>
-                )}
-              </div>
-            )
-          })()}
         </div>
-
-        {/* 리셀 웃돈·할인 추이 (에르메스·나이키) */}
-        {current.key === 'RMS' && <a href="#rms-report" className="inline-block text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">심층 리포트(역사·위기·경쟁사 비교)로 ↓</a>}
-        {current.key === 'RMS' && <HermesResaleCard />}
-        {current.key === 'RMS' && <HermesResaleHistory />}
-        {current.key === 'NKE' && <NikeMarkdownCard />}
-
-        {/* 차트 */}
-        <RollingChart key={`chart-${current.key}`} data={current.data} />
-
-        {/* 롤링 테이블 */}
-        <RollingTable data={current.data} />
-
-        {/* 에르메스 전용 인사이트 */}
-        {current.key === 'RMS' && <QualityCard stockKey="RMS" />}
-        {current.key === 'RMS' && <RmsInsight data={current.data} />}
-        {current.key === 'RMS' && <BigReport d={RMS_REPORT} />}
-        {current.key === 'NKE' && <QualityCard stockKey="NKE" />}
-        {current.key === 'NKE' && <NkeInsight data={current.data} />}
-        {current.key === 'NKE' && <FutureBox stockKey="NKE" num="6." />}
-        {current.key !== 'RMS' && current.key !== 'NKE' && (current.data as any).type !== 'etf' && (
-          <AutoInsight key={`insight-${current.key}`} stockKey={current.key} data={current.data} />
-        )}
-
-
+        <div className={card}>
+          <p className="text-base font-semibold text-gray-900 dark:text-white">🕘 최근 본 종목</p>
+          <KeyChips keys={recent} onPick={onPick} />
+          {starred.length > 0 && (<>
+            <p className="text-sm font-semibold text-gray-900 dark:text-white pt-1">★ 즐겨찾기</p>
+            <KeyChips keys={starred} onPick={onPick} />
+          </>)}
+        </div>
       </div>
     </div>
   )
+}
+
+// 종목 화면 맨 위 한눈 요약: 사이트 수집 숫자 + (엄선 종목이면) 미래 모델의 기대 수익률
+function StockSummary({ stockKey }: { stockKey: string }) {
+  const [m, setM] = useState<any>(null)
+  useEffect(() => {
+    let alive = true
+    setM(null)
+    fetch(`/data/fundamentals/${stockKey}.json`).then(r => r.ok ? r.json() : null).then(d => { if (alive) setM(d?.metrics ?? null) }).catch(() => {})
+    return () => { alive = false }
+  }, [stockKey])
+  const co = PICK_COS.find(c => c.key === stockKey)
+  const pct = (v: number) => `${v > 0 ? '+' : ''}${v.toFixed(0)}%`
+  const peGap = m?.pe && m?.peMed10 ? (m.pe / m.peMed10 - 1) * 100 : null
+  if (!m && !co) return null
+  return (
+    <section className="rounded-xl border-2 border-gray-200 dark:border-gray-800 p-3 space-y-2">
+      <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">한눈 요약</p>
+      {m && (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm">
+          <div><p className="text-[11px] text-gray-500">주가</p><p className="font-semibold text-gray-900 dark:text-white tabular-nums">{m.price != null ? `$${Number(m.price).toLocaleString()}` : '—'}</p></div>
+          <div><p className="text-[11px] text-gray-500">{co ? '공시 PER(10년 평소)' : 'PER(최근 1년, 10년 평소)'}</p><p className="font-semibold text-gray-900 dark:text-white tabular-nums">{m.pe != null ? `${m.pe}배` : '—'}{m.peMed10 != null ? ` (${m.peMed10}배)` : ''}</p>
+            {co ? <p className="text-[11px] text-gray-500">일회성·지분 평가손익 포함 — 실제 기준은 아래 파란 박스</p> : peGap != null && <p className={`text-[11px] ${peGap < 0 ? 'text-emerald-600' : 'text-rose-600'}`}>평소보다 {Math.abs(peGap).toFixed(0)}% {peGap < 0 ? '싸다' : '비싸다'}</p>}</div>
+          <div><p className="text-[11px] text-gray-500">1년 주가 / 3년 고점 대비</p><p className="font-semibold text-gray-900 dark:text-white tabular-nums">{m.chg1y != null ? pct(m.chg1y) : '—'} / {m.fromHigh3y != null ? pct(m.fromHigh3y) : '—'}</p></div>
+          <div><p className="text-[11px] text-gray-500">배당</p><p className="font-semibold text-gray-900 dark:text-white tabular-nums">{m.divYield != null ? `${Number(m.divYield).toFixed(1)}%` : '—'}</p></div>
+        </div>
+      )}
+      {co && (
+        <div className="rounded-lg bg-blue-50/70 dark:bg-blue-950/20 p-2.5 space-y-1">
+          <p className="text-sm text-gray-900 dark:text-white"><b>엄선 · 앞으로 10년 기대(추정) 연 {pickEv(co).toFixed(1)}%</b> <span className="text-xs text-gray-500">— 좋은 그림 연 {co.good.r}%({co.good.p}%) · 기본 연 {co.base.r}%({co.base.p}%) · 나쁜 그림 연 {co.bad.r}%({co.bad.p}%)</span></p>
+          <p className="text-xs text-gray-600 dark:text-gray-300">{co.one}</p>
+          <p className="text-[11px] text-gray-500">PER 기준: {co.pe}. 자세한 근거는 아래 심층 리포트·미래 시나리오.</p>
+        </div>
+      )}
+      {m && !co && <p className="text-[11px] text-gray-400">PER은 최근 1년 공시 EPS 기준 — 일회성·지분 평가손익이 섞이면 실제보다 싸거나 비싸 보일 수 있다. 아래 인사이트에서 바로잡는다.</p>}
+    </section>
+  )
+}
+
+function HowToRead() {
+  return (
+    <details className="rounded-xl border border-blue-200 dark:border-blue-900/60 bg-blue-50/40 dark:bg-blue-950/20 p-3">
+      <summary className="text-sm font-semibold text-gray-800 dark:text-gray-100 cursor-pointer">이 화면 읽는 법 (눌러서 펼치기)</summary>
+      <div className="mt-2 space-y-1.5 text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
+        <p><b>차트·표:</b> 막대 하나 = 그해 연말에 사서 10년 보유했을 때의 연평균 수익률(배당 포함). 주황 점은 같은 기간 S&amp;P 500. 막대가 낮게 떨어진 해가 &lsquo;최악의 진입 시점&rsquo;이다.</p>
+        <p><b>인사이트 순서:</b> 노란 박스(Claude가 뉴스로 쓴 분석) → 사업성 평가 → 1. 지금 한눈에 → 최근 컨퍼런스콜 → 1-1·1-2. 부문별·심층 분석 → 2. 이익 시계 → 3. 과거 → 4. 앞으로 → 5. 결론. 엄선 종목은 그 아래 심층 리포트(역사·분기·미래 모델)가 붙는다.</p>
+        <p><b>핵심만:</b> 위 한눈 요약 → 노란 박스의 결론 → 심층 리포트의 &lsquo;결론&rsquo;과 &lsquo;미래 시나리오&rsquo;.</p>
+        <p><b>숫자 읽는 법:</b> 지금 PER이 10년 중간 PER보다 낮으면 평소보다 싸다. 이익/10년 고점이 85% 미만이면 이익이 꺾인 상태라 PER이 실제보다 비싸 보일 수 있다. ★ 모든 수익률은 배당 재투자 포함 총수익률(Yahoo Finance 수정주가).</p>
+      </div>
+    </details>
+  )
+}
+
+export default function PrivateApp(props: { u?: Universe }) {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-white dark:bg-gray-950" />}>
+      <PrivateAppInner {...props} />
+    </Suspense>
+  )
+}
+
+function PrivateAppInner({ u = 'picks' }: { u?: Universe }) {
+  const router = useRouter()
+  const pathname = usePathname()
+  const sp = useSearchParams()
+  const sKey = (sp.get('s') ?? '').toUpperCase()
+  const v = sp.get('v') ?? ''
+  const univ = UNIVERSES.find(x => x.u === u) ?? UNIVERSES[0]
+  const allMode = u === 'picks' && v === 'all'
+  const only = new Set(STOCKS.filter(s => allMode || univ.test(s.key)).map(s => s.key))
+  const counts = Object.fromEntries(UNIVERSES.map(x => [x.u, STOCKS.filter(s => x.test(s.key)).length]))
+  const idx = sKey ? STOCKS.findIndex(s => s.key === sKey) : -1
+  const screen: 'home' | 'list' | 'stock' = idx >= 0 ? 'stock' : u === 'picks' && !v ? 'home' : 'list'
+
+  const url = (q: Record<string, string>) => { const p = new URLSearchParams(q); const t = p.toString(); return pathname + (t ? `?${t}` : '') }
+  const openKey = (key: string) => {
+    const k = key.toUpperCase()
+    try { const r = readList(RECENT_KEY).filter(x => x !== k); localStorage.setItem(RECENT_KEY, JSON.stringify([k, ...r].slice(0, 10))) } catch {}
+    router.push(url(v ? { v, s: k } : { s: k }))
+  }
+  const openList = (nv: string) => router.push(url({ v: nv }))
+  useEffect(() => { window.scrollTo(0, 0) }, [screen, sKey, v])
+
+  const wrap = (children: ReactNode) => (
+    <div className="min-h-screen bg-white dark:bg-gray-950">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-6">{children}</div>
+    </div>
+  )
+
+  if (screen === 'home') return wrap(<HomeScreen onPick={openKey} onList={openList} counts={counts} />)
+
+  if (screen === 'list') {
+    const title = allMode ? '조건으로 찾기' : univ.title
+    const sub = allMode ? `전체 ${STOCKS.length}개 분석 종목 — 위 기본 프리셋(①~⑦)을 누르거나 필터를 바꿔 걸러 본다. 행을 누르면 종목 화면이 열린다.` : univ.sub
+    return wrap(<>
+      <div className="flex items-center justify-between gap-2">
+        <Link href="/private" className="text-sm text-blue-600 dark:text-blue-400 hover:underline">← 처음 화면</Link>
+        <span className="text-xs text-gray-400">{only.size}개 종목</span>
+      </div>
+      <UniverseTabs u={allMode ? ('none' as Universe) : u} counts={counts} />
+      <div className="space-y-1">
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white">{title}</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400">{sub}</p>
+        <p className="text-xs text-gray-400 dark:text-gray-500">매년 연말 매수 후 10년 보유 시나리오 · 수익률은 배당 재투자 포함 총수익률</p>
+      </div>
+      <StockSearch onPick={openKey} />
+      {u === 'picks' && v === 'picks' && <TrioCompare onPick={openKey} />}
+      {u === 'picks' && v === 'picks' && <PicksPanel onPick={openKey} activeKey="" />}
+      <OverviewTable activeStock={-1} setActiveStock={i => openKey(STOCKS[i].key)} only={only} />
+    </>)
+  }
+
+  const current = STOCKS[idx]
+  const back = v === 'picks' || v === 'all' ? url({ v }) : u === 'picks' ? '/private' : pathname
+  return wrap(<>
+    <div className="flex items-center justify-between gap-2">
+      <button type="button" onClick={() => router.push(back)} className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+        ← {v === 'picks' ? '엄선 목록' : v === 'all' ? '조건으로 찾기' : u === 'picks' ? '처음 화면' : `${univ.label} 목록`}
+      </button>
+      {back !== '/private' && <Link href="/private" className="text-xs text-gray-400 hover:underline">처음 화면</Link>}
+    </div>
+    <StockSearch onPick={openKey} />
+
+    {/* 종목명 */}
+    <div className="space-y-0.5">
+      <div className="flex items-baseline gap-2 flex-wrap">
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white">{current.data.name} ({current.data.ticker})</h1>
+        <span className="text-xs text-gray-400">{current.data.currency} · 벤치마크: {current.data.benchmark}</span>
+        {PICK_KEYS.has(current.key) && <span className="text-[11px] px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300">엄선</span>}
+      </div>
+      {(() => {
+        const desc = (spDesc as any)[current.data.ticker]
+        if (!desc) return null
+        return (
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5">
+            {desc.sector && <span className="text-xs text-blue-500 dark:text-blue-400 font-medium">{desc.sector}</span>}
+            {desc.products && <span className="text-xs text-gray-400 dark:text-gray-500">{desc.products}</span>}
+          </div>
+        )
+      })()}
+    </div>
+
+    <StockSummary stockKey={current.key} />
+    <HowToRead />
+
+    {/* 리셀 웃돈·할인 추이 (에르메스·나이키) */}
+    {current.key === 'RMS' && <a href="#rms-report" className="inline-block text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">심층 리포트(역사·위기·경쟁사 비교)로 ↓</a>}
+    {current.key === 'RMS' && <HermesResaleCard />}
+    {current.key === 'RMS' && <HermesResaleHistory />}
+    {current.key === 'NKE' && <NikeMarkdownCard />}
+
+    {/* 차트 */}
+    <RollingChart key={`chart-${current.key}`} data={current.data} />
+
+    {/* 롤링 테이블 */}
+    <RollingTable data={current.data} />
+
+    {/* 에르메스 전용 인사이트 */}
+    {current.key === 'RMS' && <QualityCard stockKey="RMS" />}
+    {current.key === 'RMS' && <RmsInsight data={current.data} />}
+    {current.key === 'RMS' && <BigReport d={RMS_REPORT} />}
+    {current.key === 'NKE' && <QualityCard stockKey="NKE" />}
+    {current.key === 'NKE' && <NkeInsight data={current.data} />}
+    {current.key === 'NKE' && <FutureBox stockKey="NKE" num="6." />}
+    {current.key !== 'RMS' && current.key !== 'NKE' && (current.data as any).type !== 'etf' && (
+      <AutoInsight key={`insight-${current.key}`} stockKey={current.key} data={current.data} />
+    )}
+  </>)
 }
