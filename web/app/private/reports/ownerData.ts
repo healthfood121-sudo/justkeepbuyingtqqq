@@ -18,6 +18,7 @@ export type OwnerFun = {
   per?: 'sec' | 'day'  // 보여 줄 기본 단위(없으면 자동)
 }
 export type OwnerStake = { label: string; v: number; note: string }
+export type OwnerFact = { label: string; value: string; note: string }
 export type OwnerProfile = {
   key: string
   name: string
@@ -29,6 +30,7 @@ export type OwnerProfile = {
   segs: OwnerSeg[]
   fun: OwnerFun[]
   stakes?: OwnerStake[]
+  facts?: OwnerFact[]  // 외워 둘 한 줄 숫자 (예: 검색 1번당 매출, 버킨 하나 팔면 남는 돈)
   dps: number          // 1주 1년 배당(실제로 받는 돈)
   how: string          // 이익을 나눈 방법
   cash: string         // 이 돈이 어디로 가나
@@ -63,6 +65,12 @@ export const GOOGL_OWNER: OwnerProfile = {
     { label: '앤트로픽 등 비상장 지분', v: 124.3e9, note: '2026년 6월 말 장부가 1,243억 달러 — 대부분 앤트로픽으로 보도' },
     { label: '클라우드 수주 잔고', v: 561e9, note: '앞으로 받을 클라우드 계약(2026년 3분기 말). 내 몫으로 들어올 미래 매출' },
   ],
+  facts: [
+    { label: '검색 1번당 매출', value: '약 5.0센트', note: '검색 광고 매출 ÷ 검색 수(회사 발표 연 5조 회). 검색 수는 2024년 기준이라 실제 1번당 값은 이보다 조금 작다.' },
+    { label: '검색 1번당 이익', value: '약 1.7센트', note: '검색 광고 세후 이익(추정) ÷ 같은 검색 수.' },
+    { label: '유튜브 시청 1시간당 광고 매출', value: '약 12센트', note: '유튜브 광고 매출 1년 약 435억 달러 ÷ 시청 1년 3,650억 시간(하루 10억 시간, 최소값).' },
+    { label: '클라우드 영업이익률', value: '36.2%', note: '2026년 3분기. 1년 전 약 24%에서 크게 올랐다(매출 +103%).' },
+  ],
   dps: 0.88,
   how: '이익은 회사가 ‘구글 서비스’·‘클라우드’·‘기타 사업’으로만 공개한다. 구글 서비스 영업이익을 네 사업에 매출 비중대로 나누고 세금 17%를 뺀 추정. 지분 평가손익(스페이스X·앤트로픽 값 변동)은 현금이 아니라 뺐다.',
   cash: '구글은 배당을 아주 조금(분기 0.22달러, 1년 1주 0.88달러)만 준다. 나머지는 AI 데이터센터·자사주 매입에 쓰여 “내 주식 1주의 가치가 커지는 방식”으로 돌아온다.',
@@ -86,6 +94,11 @@ export const RMS_OWNER: OwnerProfile = {
     { label: '까레 스카프 값', perYear: Y(469e6, RQ) / 530, unit: '장 값', grade: 'B', note: '실크 매출 ÷ 까레 90(€530).' },
     { label: '오란 샌들 값', perYear: Y(2198e6, RQ) / 635, unit: '켤레 값', grade: 'B', note: '의류·액세서리 매출 ÷ 오란 샌들(€635).' },
     { label: '향수 값', perYear: Y(233e6, RQ) / 128, unit: '병 값', grade: 'B', note: '향수·뷰티 매출 ÷ 떼르 데르메스 100ml(약 €128).' },
+  ],
+  facts: [
+    { label: '버킨 하나 팔면 남는 돈', value: '약 €3,100', note: '버킨 30 유럽 정가(€10,600) × 세후 영업이익률(약 29.5% = 영업이익률 41% × (1 − 세율 약 28%)). 가죽 이익률이 더 높다면 실제로는 이보다 많다.' },
+    { label: '영업이익률', value: '41.0%', note: '2026년 상반기. 매출 100유로 중 41유로가 영업이익으로 남는다(세계 명품 회사 중 최고 수준).' },
+    { label: '가죽 제품 매출 하루', value: `약 €${(Y(3761e6, RQ) / 365 / 1e6).toFixed(1)}백만`, note: '버킨·켈리가 속한 가죽·마구 매출(상반기 37.6억 유로)을 하루로 나눈 값. 회사 매출의 46%.' },
   ],
   dps: 26.75,
   how: '에르메스는 사업별 이익을 공개하지 않는다. 상반기 영업이익률 41%에서 세금 약 28%를 뺀 이익을 사업별 매출 비중대로 나눈 추정(모든 사업 이익률이 같다고 가정).',

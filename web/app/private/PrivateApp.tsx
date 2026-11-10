@@ -7784,6 +7784,7 @@ function buildOwner(key: string, f: ClockFund | null): OwnerProfile | null {
   return {
     key, name: stockName(key), cur: (seg?.cur as '$' | '€' | undefined) ?? '$', sharesOut: f.shares.count, storageKey: `clock-shares-${key}`,
     period, src, segs, fun: funU, dps, how,
+    facts: seg?.facts?.map(x => ({ label: x.label, value: x.value, note: x.note.replace(/&lsquo;|&rsquo;/g, "'").replace(/&ldquo;|&rdquo;/g, '"') })),
     cash: dps > 0 ? '배당으로 나눠 주고 남은 이익은 자사주 매입·재투자·현금으로 쌓여 주식 가치로 돌아온다.' : '배당이 없다 — 이익은 자사주 매입·재투자로 주식 가치에 쌓인다.',
   }
 }
