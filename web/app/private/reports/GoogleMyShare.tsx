@@ -17,6 +17,7 @@ type Item = {
   pm?: number                                // 세후 이익률 추정(%) — 매출 중 이익으로 남는 몫
   fun?: (my: number) => string               // 재미있는 환산 한 줄
   usage2?: { perYear: number; unit: string; label: string; src: string; grade: 'A' | 'B' | 'C' } // 두 번째 사용량(예: 웨이모 이동 거리)
+  stakes?: { label: string; v: number; note: string }[]   // 지분·기업가치(달러) — 내 몫으로 환산
 }
 
 const ITEMS: Item[] = [
@@ -60,11 +61,25 @@ const ITEMS: Item[] = [
     usage: { perYear: 500e3 * 52, unit: '회', label: '탑승', src: '회사 발표 주 50만 회 이상(2026년 3월) × 52주. 회사 목표는 2026년 말 주 100만 회', grade: 'A' },
     usage2: { perYear: 4e6 * 1.609 * 52, unit: 'km', label: '무인 주행', src: '"매주 400만 마일 넘게 무인 주행"(2026년 5월, 웨이모 임원 발언을 2차 출처가 전한 숫자 — 회사 공식 자료로 확인 못 함) × 1.609km × 52주', grade: 'C' },
     rev: { perYear: 500e3 * 52 * 20, label: '웨이모 요금 매출(추정)' },
-    fun: () => `회사는 웨이모 매출을 따로 공개하지 않는다 — 탑승 1회 평균 요금을 약 20달러로 가정한 추정. 아직 적자라 이익은 없다.` },
+    stakes: [{ label: '웨이모 기업가치', v: 126e9, note: '2026년 2월 160억 달러 투자 유치 때 1,260억 달러. 알파벳 지분율은 비공개(대주주) — 내 몫은 이보다 작다' }],
+    fun: () => `회사는 웨이모 매출을 따로 공개하지 않는다 — 탑승 1회 평균 요금을 약 20달러로 가정한 추정(외부 추정 연 3.5~4억 달러). 아직 적자라 이익은 없다.` },
   { group: '기타 사업(아직 적자)', name: '그 밖의 실험(베릴리·캘리코·윙·아이소모픽 랩스·X)', what: '생명과학(베릴리), 노화 연구(캘리코), 드론 배송(윙), AI 신약 개발(아이소모픽 랩스), 문샷 연구소(X).',
-    money: '대부분 매출이 거의 없다. "기타 사업" 매출 최근 1년 약 15억 달러, 손실이 더 크다.', rev: { perYear: 1.5e9, label: '기타 사업 매출' } },
+    money: '대부분 매출이 거의 없다. "기타 사업" 매출 최근 1년 약 15억 달러, 손실이 더 크다(2026년 1분기 손실 21억 달러). 윙은 월마트 270곳 넘게(2027년까지)로 확대 중.', rev: { perYear: 1.5e9, label: '기타 사업 매출' } },
   { group: '투자 지분', name: '스페이스X·앤트로픽 등 지분', what: '스페이스X 약 4.9%, AI 회사 앤트로픽 등에 투자.',
-    money: '가치가 오르면 순이익에 평가이익으로 잡힌다(현금은 아님). 그래서 공시 PER(약 14배)이 실제(약 26배)보다 낮게 보인다.' },
+    money: '가치가 오르면 순이익에 평가이익으로 잡힌다(현금은 아님). 그래서 공시 PER(약 14배)이 실제(약 26배)보다 낮게 보인다. 2026년 2분기 EPS 9.11달러 중 6.26달러가 이런 평가이익(보도).',
+    stakes: [
+      { label: '스페이스X 지분', v: 94e9, note: '2026년 6월 말 공정가치 약 940억 달러(지분 약 4.9%)' },
+      { label: '비상장 지분(대부분 앤트로픽)', v: 124.3e9, note: '2026년 6월 말 장부가 1,243억 달러 — 대부분 앤트로픽으로 보도. 앤트로픽 상장 신청 보도' },
+    ] },
+  { group: '미래 옵션(아직 매출 거의 없음)', name: 'TPU 외부 판매(자체 AI 칩)', what: '구글이 만든 AI 칩을 다른 회사에 빌려주거나 판다. 앤트로픽 최대 100만 개, 메타 임대(2027년부터 구매 선택권, 보도), 사용 고객 약 100곳.',
+    money: '클라우드 매출 안에 섞여 따로 공개하지 않는다. 블룸버그 인텔리전스 추정 외부 판매 2026년 약 120억 → 2028년 1,350억 달러.',
+    stakes: [{ label: '2028년 TPU 외부 판매(추정)', v: 135e9, note: '블룸버그 인텔리전스 추정 — 회사 발표 아님' }] },
+  { group: '미래 옵션(아직 매출 거의 없음)', name: '아이소모픽 랩스(AI 신약 개발)', what: '딥마인드의 단백질 구조 AI(알파폴드)로 신약을 설계. 일라이 릴리·노바티스·존슨앤드존슨과 협력.',
+    money: '2026년 5월 21억 달러 투자 유치, 약 50억 달러 추가 협의 중(블룸버그). 아직 사람 대상 임상 없음 — 신약 매출은 2030년대.' },
+  { group: '미래 옵션(아직 매출 거의 없음)', name: '로봇(제미나이 로보틱스)', what: '휴머노이드 로봇 몸 전체를 움직이는 AI 모델(2026년 7~8월 2세대). 앱트로닉·보스턴 다이내믹스와 협력, 로봇 소프트웨어 인트린식을 구글 안으로 흡수.',
+    money: '로봇 회사에 AI 모델 사용료 — 2028년 이후(추정).' },
+  { group: '미래 옵션(아직 매출 거의 없음)', name: 'AI 안경·의료 AI·양자·우주', what: '안드로이드 XR 안경(2026년 가을, 와비파커·젠틀몬스터·삼성). 의료 AI(AMIE 진료 상담 검증, MedGemma). 양자칩 윌로(특정 계산 1만 3천 배). 우주 데이터센터 위성 시제품(2027년).',
+    money: '모두 매출이 거의 없다. 안경은 제미나이 사용처, 양자·우주는 2030년대 이야기. 베릴리(생명과학)는 2026년 구글이 대주주에서 빠졌다.' },
 ]
 
 const fmt = (v: number) => v >= 1e6 ? `${(v / 1e6).toFixed(1)}백만` : v >= 1e4 ? `${(v / 1e4).toFixed(1)}만` : v >= 10 ? Math.round(v).toLocaleString() : v.toFixed(2)
@@ -192,6 +207,9 @@ export default function GoogleMyShare() {
                   </p>
                 )}
                 {i.usage2 && <p className="text-xs text-gray-700 dark:text-gray-200">전체 {i.usage2.label} <b className="tabular-nums">{fmt(i.usage2.perYear)}{i.usage2.unit}</b>/년 → <b className="text-red-600 dark:text-red-400 tabular-nums">내 몫 {fmt(i.usage2.perYear * ratio)}{i.usage2.unit}</b> <span className={`inline-block px-1 rounded text-[10px] font-semibold ${G[i.usage2.grade]}`}>{i.usage2.grade}</span> <span className="text-[11px] text-gray-400">{i.usage2.src}</span></p>}
+                {i.stakes && i.stakes.map(st => (
+                  <p key={st.label} className="text-xs text-gray-700 dark:text-gray-200"><Tip text={<>{st.note}. × 내 비율({Math.round(1 / ratio).toLocaleString()}분의 1).</>}>{st.label}</Tip> {Math.round(st.v / 1e8).toLocaleString()}억 달러 → <b className="text-red-600 dark:text-red-400 tabular-nums">내 몫 {usd(st.v * ratio)}</b></p>
+                ))}
                 {i.fun && <p className="text-xs text-red-700 dark:text-red-300">{i.fun(myU ?? (i.rev ? i.rev.perYear * ratio : 0))}</p>}
                 {i.usage && <p className="text-[11px] text-gray-400">{i.usage.src}</p>}
               </div>
