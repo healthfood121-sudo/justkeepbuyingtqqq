@@ -58,6 +58,7 @@ import { RMS_REPORT } from './reports/rmsData'
 import { ModelSection, OddsBlock, modelResult, type Sc } from './reports/BigReport'
 import { FUTURES } from './futures'
 import GoogleMyShare from './reports/GoogleMyShare'
+import AiUsersChart from './reports/AiUsersChart'
 import TrioCompare, { COS as PICK_COS, ev as pickEv, OUT_OF_PICKS } from './reports/TrioCompare'
 import HermesStoreMap from './reports/HermesStoreMap'
 import OwnerCard from './reports/OwnerCard'
@@ -10555,6 +10556,7 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
       <SegmentBox stockKey={stockKey} num={`${nNow}-1.`} />
       <DiveBox stockKey={stockKey} num={`${nNow}-2.`} />
       {stockKey === 'GOOGL' && <GoogleMyShare />}
+      {stockKey === 'GOOGL' && <AiUsersChart />}
       {REPORTS[stockKey]?.()}
 
       {live && <StockValueClock f={f as ClockFund} stockKey={stockKey} rolling={data} title={`${nClock}. 이익 시계 — 적정가 선 vs 주가`} judged={deep?.growth} />}
