@@ -98,11 +98,13 @@ export default function GoogleMyShare() {
       </div>
 
       <div className="rounded-lg bg-red-50/70 dark:bg-red-950/20 p-3 space-y-2">
-        <p className="text-sm font-semibold text-gray-900 dark:text-white">유튜브로 환산하면 — 내 주식 {shares.toLocaleString()}주, <u>모두 1년 기준</u></p>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        <p className="text-sm font-semibold text-gray-900 dark:text-white">유튜브로 환산하면 — 내 주식 {shares.toLocaleString()}주, <u>1년 → 하루 → 1초</u></p>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {([
             ['내 몫 시청 시간 (1년)', `${fmt(yt)}시간`, <>전 세계 유튜브 시청 1년 약 3,650억 시간(하루 10억 시간 × 365일) × 내 비율({shares.toLocaleString()}주 ÷ {(SHARES_OUT / 1e8).toFixed(1)}억 주 = {Math.round(1 / ratio).toLocaleString()}분의 1). 실제로 누가 내 몫을 보는 게 아니라, 전체를 내 지분만큼 잘라 본 크기.</>],
             ['하루로 나누면', `${(yt / 365).toFixed(1)}시간 = ${(yt / 365 / 24).toFixed(1)}명이 24시간 내내`, <>1년 내 몫 시청 시간 ÷ 365일. 한 사람이 하루 24시간 내내 봐도 24시간이니, 그 사람 수로 바꾸면 이만큼.</>],
+            ['내 1초마다', `${(yt * 3600 / 365 / 86400).toFixed(2)}초`, <>하루 내 몫 시청 시간({(yt / 365).toFixed(1)}시간)을 초로 바꿔(× 3,600) 하루 86,400초로 나눈 값. <b>내가 1초를 사는 동안 전 세계 누군가가 내 몫으로 유튜브를 이만큼 본다.</b></>],
+            ['내가 자는 8시간 동안', `${(yt / 365 / 3).toFixed(1)}시간`, <>하루 내 몫 시청 시간 ÷ 3(하루 24시간 중 8시간).</>],
             ['시청 1시간당 광고 매출', '약 12센트', <>유튜브 광고 매출 1년 435억 달러 ÷ 시청 3,650억 시간. 누군가 유튜브를 1시간 볼 때 그 사이 광고로 구글이 평균 버는 돈.</>],
             ['내 몫 광고 매출 (1년)', usd(43.5e9 * ratio), <>유튜브 광고 매출 435억 달러 × 내 비율. = 내 몫 시청 시간 × 12센트. <b>매출이다 — 비용을 빼기 전 금액.</b></>],
             ['내 몫 이익 (1년, 추정)', usd(43.5e9 * ratio * 0.35), <>매출 × 세후 이익률 약 35%(구글 서비스 영업이익률 약 42% × 세금 뺀 0.83). 사업부별 이익은 회사가 공개하지 않아 나눠 추정한 대략값.</>],
