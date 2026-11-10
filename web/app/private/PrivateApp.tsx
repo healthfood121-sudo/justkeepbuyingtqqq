@@ -59,6 +59,7 @@ import { ModelSection, OddsBlock, modelResult, type Sc } from './reports/BigRepo
 import { FUTURES } from './futures'
 import GoogleMyShare from './reports/GoogleMyShare'
 import TrioCompare, { COS as PICK_COS, ev as pickEv, OUT_OF_PICKS } from './reports/TrioCompare'
+import HermesStoreMap from './reports/HermesStoreMap'
 import Link from 'next/link'
 import { UNIV } from './universe'
 import { PICK_GROUPS, PICKS_AS_OF } from './picks'
@@ -10889,6 +10890,7 @@ function PrivateAppInner({ u = 'picks' }: { u?: Universe }) {
     {current.key === 'RMS' && <a href="#rms-report" className="inline-block text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">심층 리포트(역사·위기·경쟁사 비교)로 ↓</a>}
     {current.key === 'RMS' && <HermesResaleCard />}
     {current.key === 'RMS' && <HermesResaleHistory />}
+    {current.key === 'RMS' && <HermesStoreMap />}
     {current.key === 'NKE' && <NikeMarkdownCard />}
 
     {/* 차트 */}
