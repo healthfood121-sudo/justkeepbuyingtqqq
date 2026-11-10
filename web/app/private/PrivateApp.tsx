@@ -60,6 +60,9 @@ import { FUTURES } from './futures'
 import GoogleMyShare from './reports/GoogleMyShare'
 import TrioCompare, { COS as PICK_COS, ev as pickEv, OUT_OF_PICKS } from './reports/TrioCompare'
 import HermesStoreMap from './reports/HermesStoreMap'
+import OwnerCard from './reports/OwnerCard'
+import MyPortfolio from './reports/MyPortfolio'
+import { OWNERS } from './reports/ownerData'
 import Link from 'next/link'
 import { UNIV } from './universe'
 import { PICK_GROUPS, PICKS_AS_OF } from './picks'
@@ -3401,6 +3404,26 @@ type ClockProps = {
   notes: string
   peExclude?: { from: number; to: number; label: string } // 이 기간을 뺀 PER 중간값도 눈금으로 (예: 거품기)
   fcfPs?: number | null                        // 최근 1년 주당 잉여현금흐름 (있으면 '내 몫 잉여현금' 표시)
+  ownerCard?: boolean                          // 위에 주주 카드가 있으면 째깍째깍은 적정가만 (중복 제거)
+}
+
+// 주주 카드가 있는 종목: 째깍째깍에는 적정가만 남기고, 내 몫(1초 이익·사업부별·판매 환산)은 위 주주 카드 한 곳에서 본다
+function OwnerFairLive({ cur, epsAt, fairPe, shares, extraLive }: { cur: string; epsAt: (t: number) => number | null; fairPe: number; shares: number; extraLive?: (now: number, fairNow: number) => ReactNode }) {
+  const [now, setNow] = useState(() => Date.now())
+  useEffect(() => { const id = setInterval(() => setNow(Date.now()), 100); return () => clearInterval(id) }, [])
+  const fairNow = (epsAt(decYear(now)) ?? 0) * fairPe
+  const money = (v: number, d = 0) => `${cur}${v.toLocaleString('ko-KR', { minimumFractionDigits: d, maximumFractionDigits: d })}`
+  const tile = 'rounded bg-white/70 dark:bg-gray-900/60 px-3 py-2.5'
+  return (
+    <>
+      <div className="grid grid-cols-2 gap-2">
+        <div className={tile}><p className="text-[11px] text-gray-500 dark:text-gray-400">적정가 (1주, 계속 오름)</p><p className="text-sm font-semibold tabular-nums text-gray-900 dark:text-white">{money(fairNow, 4)}</p></div>
+        {shares !== 1 && <div className={tile}><p className="text-[11px] text-gray-500 dark:text-gray-400">내 주식의 적정 가치</p><p className="text-sm font-semibold tabular-nums text-gray-900 dark:text-white">{money(fairNow * shares, 2)}</p></div>}
+      </div>
+      <p className="text-xs text-gray-600 dark:text-gray-300">내 몫이 1초·하루·1년에 버는 이익, 사업부별 몫, 판매량 환산은 <a href="#owner-card" className="text-blue-600 dark:text-blue-400 underline">맨 위 주주 카드</a> 한 곳에 모았다.</p>
+      {extraLive?.(now, fairNow)}
+    </>
+  )
 }
 
 // 초마다 바뀌는 숫자만 따로 다시 그림 (그래프는 그대로)
@@ -6566,7 +6589,7 @@ function SegmentPanel({ seg, now, shares, sharesOut }: { seg: SegClock; now: num
   )
 }
 
-function ValueClockCore({ cur, anchors: rawAnchors, monthly, last, g, sharesOut, divYield, storageKey, extraLive, liveTiles, segments, notes, peExclude, fcfPs, growthBar, fcfAnchors, ocfAnchors }: ClockProps) {
+function ValueClockCore({ cur, anchors: rawAnchors, monthly, last, g, sharesOut, divYield, storageKey, extraLive, liveTiles, segments, notes, peExclude, fcfPs, growthBar, fcfAnchors, ocfAnchors, ownerCard }: ClockProps) {
   // 입력칸은 빈 값으로 시작(지우고 새로 입력 가능). 비어 있으면 1주로 계산
   const [sharesTxt, setSharesTxt] = useState('')
   const shares = Number(sharesTxt) > 0 ? Number(sharesTxt) : 1
@@ -6835,7 +6858,7 @@ function ValueClockCore({ cur, anchors: rawAnchors, monthly, last, g, sharesOut,
 
       <div className="rounded bg-blue-50/60 dark:bg-blue-950/20 p-3 space-y-2">
         <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">째깍째깍 — 버핏처럼 초 단위로 보기</p>
-        <ClockLive cur={cur} epsAt={epsAt} profitAt={profitAt} fairPe={fairPe} shares={shares} sharesOut={sharesOut} extraLive={extraLive} liveTiles={liveTiles} segments={segments}
+        {ownerCard ? <OwnerFairLive cur={cur} epsAt={epsAt} fairPe={fairPe} shares={shares} extraLive={extraLive} /> : <ClockLive cur={cur} epsAt={epsAt} profitAt={profitAt} fairPe={fairPe} shares={shares} sharesOut={sharesOut} extraLive={extraLive} liveTiles={liveTiles} segments={segments}
           fcfPs={fcfPs} dps={divYield > 0 ? price * divYield / 100 : null}
           sharesInput={
             <label className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300">
@@ -6844,7 +6867,7 @@ function ValueClockCore({ cur, anchors: rawAnchors, monthly, last, g, sharesOut,
                 className="w-20 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-2 py-0.5 tabular-nums" />
               <span className="text-gray-400">주 (비우면 1주 · 이 기기에만 저장)</span>
             </label>
-          } />
+          } />}
       </div>
 
       <ul className={`${p} list-disc pl-4 space-y-1`}>
@@ -7128,7 +7151,7 @@ function HermesValueClock({ g: gFactors, f }: { g: number; f: Factors }) {
           {' '}과거 N년 = N년 전부터 지금까지 연평균, 5년 구간 = 지난 20년을 5년씩 끊어 본 성장률의 범위.
           {' '}<b>앞으로 예상이 과거보다 낮은 이유</b>는 4번 &lsquo;왜 과거보다 낮게 잡았나&rsquo;에 있다.</>} />}
           cur="€" anchors={RMS_ANCHORS} monthly={monthly} last={px.last} g={g}
-          sharesOut={RMS_SHARES} divYield={1.35} storageKey="rms-shares" extraLive={extraLive} liveTiles={rmsBagTiles} segments={SEGMENTS.RMS}
+          sharesOut={RMS_SHARES} divYield={1.35} storageKey="rms-shares" extraLive={extraLive} liveTiles={rmsBagTiles} segments={SEGMENTS.RMS} ownerCard
           fcfAnchors={RMS_FCF_ANCHORS} ocfAnchors={RMS_OCF_ANCHORS}
           fcfPs={rmsCash(px.last.close, px.rows).fcfPs}
           peExclude={{ from: 2019, to: 2026, label: '거품기(2019~2025) 뺀 중간값' }}
@@ -7395,6 +7418,7 @@ function StockValueClock({ f, stockKey, rolling, title = '이익 시계 — 적�
         })()}
         fcfAnchors={fcfAnchorsOf(f)} ocfAnchors={ocfAnchorsOf(f)}
         fcfPs={m.fcfPs ?? null}
+        ownerCard={!!OWNERS[stockKey]}
         segments={SEGMENTS[stockKey] ?? (SEG_MIX[stockKey] ? segFromMix(SEG_MIX[stockKey], f) : undefined)}
         notes={`EPS는 SEC 공시(10-K) 회계연도 값을 마감일 기준으로 이은 근사치이고(2008년 무렵 이전은 10-K 원문의 5년 요약 표에서 읽고 겹치는 해로 맞춘 값), ${f.ttmAsOf ?? '최근'} 이후는 정한 성장률로 연장했다. 주가는 배당을 반영하지 않은 월말 종가(분할 반영). 일회성 손익이 큰 해는 선이 출렁인다. 회사 전체 숫자는 공시 유통 주식 수${f.shares ? `(${f.shares.asOf})` : ''} × 최근 1년 EPS로 계산한 근사치.`}
       />
@@ -10701,6 +10725,7 @@ function HomeScreen({ onPick, onList, counts }: { onPick: (key: string) => void;
         <p className="text-sm text-gray-500 dark:text-gray-400">종목을 검색하거나, 아래 입구에서 목록을 열어 고른다. 종목을 고르면 그 종목 화면이 열린다.</p>
       </div>
       <StockSearch onPick={onPick} big />
+      <MyPortfolio onPick={onPick} />
       <div className="grid sm:grid-cols-2 gap-3">
         <button type="button" onClick={() => onList('picks')} className={`${card} hover:border-blue-400 bg-blue-50/50 dark:bg-blue-950/20`}>
           <p className="text-base font-semibold text-gray-900 dark:text-white">⭐ 엄선 종목</p>
@@ -10884,6 +10909,7 @@ function PrivateAppInner({ u = 'picks' }: { u?: Universe }) {
     </div>
 
     <StockSummary stockKey={current.key} />
+    {OWNERS[current.key] && <OwnerCard p={OWNERS[current.key]} />}
     <HowToRead />
 
     {/* 리셀 웃돈·할인 추이 (에르메스·나이키) */}
