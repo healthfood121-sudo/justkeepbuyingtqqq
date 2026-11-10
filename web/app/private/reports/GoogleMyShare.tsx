@@ -72,7 +72,17 @@ const SEC_Y = 365 * 86400
 const isStock = (u: { unit: string; label: string }) => u.unit === '명' || u.label.includes('기기') || u.label === '유료 구독'
 // 1초당 돈(센트)
 const perSec = (yearUsd: number) => { const c = yearUsd / SEC_Y * 100; return `${c.toFixed(c < 0.01 ? 4 : c < 1 ? 3 : 1)}센트` }
-const perN = (v: number) => v >= 100 ? Math.round(v).toLocaleString() : v >= 1 ? v.toFixed(1) : v.toFixed(3)
+const perN = (v: number) => v >= 100 ? Math.round(v).toLocaleString() : v >= 1 ? v.toFixed(1) : v.toFixed(2)
+// 1년 양을 읽기 좋은 단위로: 1초에 0.1보다 작으면 1분 → 1시간 → 하루 → 1년으로 늘린다
+const rate = (perYear: number, unit: string) => {
+  const steps: [string, number][] = [['1초', SEC_Y], ['1분', SEC_Y / 60], ['1시간', SEC_Y / 3600], ['하루', 365], ['1년', 1]]
+  for (const [k, d] of steps) {
+    let v = perYear / d, u = unit
+    if (unit === 'km' && v < 1) { v *= 1000; u = 'm' }
+    if (v >= 0.1 || k === '1년') return `${k} ${perN(v)}${u}`
+  }
+  return ''
+}
 const G: Record<string, string> = { A: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300', B: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300', C: 'bg-gray-100 text-gray-600' }
 
 // 마우스를 올리면(휴대폰은 누르면) 설명이 뜨는 칸
@@ -132,16 +142,16 @@ export default function GoogleMyShare() {
         const rv = ITEMS.filter(i => i.rev && !i.name.startsWith('웨이모')).reduce((a, i) => a + i.rev!.perYear, 0) * ratio
         const pf = ITEMS.filter(i => i.rev && i.pm != null).reduce((a, i) => a + i.rev!.perYear * i.pm! / 100, 0) * ratio
         const rows: [string, string, string][] = [
-          ['매출', perSec(rv), `하루 ${usd(rv / 365)} · 1년 ${usd(rv)}`],
-          ['이익(추정)', perSec(pf), `하루 ${usd(pf / 365)} · 1년 ${usd(pf)}`],
-          ['검색', `${perN(5e12 * ratio / SEC_Y)}번`, `하루 ${Math.round(5e12 * ratio / 365).toLocaleString()}번`],
-          ['유튜브 시청', `${perN(1e9 * 365 * ratio * 3600 / SEC_Y)}초`, `하루 ${(1e9 * ratio).toFixed(1)}시간`],
-          ['AI 토큰', `${perN(3.2e15 * 12 * ratio / SEC_Y)}개`, `하루 ${Math.round(3.2e15 * 12 * ratio / 365).toLocaleString()}개`],
-          ['웨이모 이동', `${perN(4e6 * 1.609 * 52 * ratio / SEC_Y * 1000)}m`, `하루 ${(4e6 * 1.609 * 52 * ratio / 365).toFixed(2)}km(덜 확실)`],
+          ['매출', `1초 ${perSec(rv)}`, `1시간 ${usd(rv / 8760)} · 하루 ${usd(rv / 365)} · 1년 ${usd(rv)}`],
+          ['이익(추정)', `1초 ${perSec(pf)}`, `1시간 ${usd(pf / 8760)} · 하루 ${usd(pf / 365)} · 1년 ${usd(pf)}`],
+          ['검색', rate(5e12 * ratio, '번'), `하루 ${Math.round(5e12 * ratio / 365).toLocaleString()}번`],
+          ['유튜브 시청', `1초 ${perN(1e9 * 365 * ratio * 3600 / SEC_Y)}초`, `하루 ${(1e9 * ratio).toFixed(1)}시간`],
+          ['AI 토큰', rate(3.2e15 * 12 * ratio, '개'), `하루 ${Math.round(3.2e15 * 12 * ratio / 365).toLocaleString()}개`],
+          ['웨이모 무인 주행', rate(4e6 * 1.609 * 52 * ratio, 'km'), `1년 ${perN(4e6 * 1.609 * 52 * ratio)}km · 탑승 ${rate(500e3 * 52 * ratio, '회')} (거리는 덜 확실)`],
         ]
         return (
           <div className="rounded-lg bg-amber-50/70 dark:bg-amber-950/20 p-3 space-y-2">
-            <p className="text-sm font-semibold text-gray-900 dark:text-white">구글 전체 — 내 1초마다 (내 주식 {shares.toLocaleString()}주)</p>
+            <p className="text-sm font-semibold text-gray-900 dark:text-white">구글 전체 — 내 1초마다 (너무 작으면 1분·1시간·하루로, 내 주식 {shares.toLocaleString()}주)</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {rows.map(([k, v, d]) => (
                 <div key={k}><p className="text-[11px] text-gray-500 dark:text-gray-400">{k}</p><p className="text-sm font-semibold text-gray-900 dark:text-white tabular-nums">{v}</p><p className="text-[11px] text-gray-400 tabular-nums">{d}</p></div>
@@ -170,12 +180,12 @@ export default function GoogleMyShare() {
                 )}
                 {((i.usage && !isStock(i.usage)) || i.usage2 || i.rev) && (
                   <p className="text-xs text-amber-700 dark:text-amber-300 tabular-nums">
-                    <b>내 1초마다:</b>{' '}
+                    <b>내 몫 속도:</b>{' '}
                     {[
-                      i.usage && !isStock(i.usage) ? `${i.usage.label} ${perN(i.usage.perYear * ratio / SEC_Y)}${i.usage.unit}` : null,
-                      i.usage2 ? `${i.usage2.label} ${perN(i.usage2.perYear * ratio / SEC_Y * (i.usage2.unit === 'km' ? 1000 : 1))}${i.usage2.unit === 'km' ? 'm' : i.usage2.unit}` : null,
-                      i.rev ? `매출 ${perSec(i.rev.perYear * ratio)}` : null,
-                      i.rev && i.pm != null ? `이익 ${perSec(i.rev.perYear * ratio * i.pm / 100)}` : null,
+                      i.usage && !isStock(i.usage) ? `${i.usage.label} ${rate(i.usage.perYear * ratio, i.usage.unit)}` : null,
+                      i.usage2 ? `${i.usage2.label} ${rate(i.usage2.perYear * ratio, i.usage2.unit)}` : null,
+                      i.rev ? `매출 1초 ${perSec(i.rev.perYear * ratio)}` : null,
+                      i.rev && i.pm != null ? `이익 1초 ${perSec(i.rev.perYear * ratio * i.pm / 100)}` : null,
                     ].filter(Boolean).join(' · ')}
                     {i.rev && <span className="text-gray-400"> (하루 매출 {usd(i.rev.perYear * ratio / 365)})</span>}
                   </p>
