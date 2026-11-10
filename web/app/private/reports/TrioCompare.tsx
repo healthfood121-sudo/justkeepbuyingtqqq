@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 
-// 엄선 27종목 비교 — 각 종목 리포트의 미래 모델(시나리오·가능성)을 한곳에 모았다.
+// 엄선 34종목 비교 — 각 종목 리포트의 미래 모델(시나리오·가능성)을 한곳에 모았다.
 type Sc = { p: number; r: number }
 type Co = { key: string; name: string; price: string; pe: string; earn: string; div: number; divNet: number
   good: Sc; base: Sc; bad: Sc; risk: string; next: string; signal: string; color: string; one: string }
@@ -116,11 +116,39 @@ const COS: Co[] = [
     good: { p: 20, r: 16.0 }, base: { p: 50, r: 10.6 }, bad: { p: 30, r: -1.8 },
     risk: '중국·중산층 명품 수요 부진 지속, 루이비통 가격 저항', next: '2027년 1월 말 2026년 연간 실적', signal: '패션·가죽 자체 성장 플러스 전환, 중국 회복', color: 'bg-amber-900',
     one: '명품 경기 회복에 거는 몫. 에르메스와 같이 담으면 명품 위험이 겹친다.' },
+  { key: 'NVDA', name: '엔비디아', price: '약 214달러', pe: '약 31배, 주식 보상 포함 (10년 평소 44배, 2028 전망 기준 약 14배)', earn: '급증 — 매출 +106%, 2028 회계연도 +70% 전망', div: 0.5, divNet: 0.4,
+    good: { p: 25, r: 16.7 }, base: { p: 45, r: 7.9 }, bad: { p: 30, r: -8.8 },
+    risk: 'AI 투자 사이클 꺾임, 고객 자체 칩, 고객에게 돈을 대 주는 구조, 메모리 원가', next: '11월 하순 3분기 실적', signal: '데이터센터 +40% 이상, 매출총이익률 72% 이상', color: 'bg-green-800',
+    one: 'AI 시대 최강 사업, 하지만 정점 이익일 수 있다 — 결과 폭이 가장 넓다.' },
+  { key: 'AVGO', name: '브로드컴', price: '약 345달러', pe: '조정 약 35배 (공시 44배, 2028 전망 기준 약 12배)', earn: '급증 — AI 반도체 +221%, 2028 회계연도 AI 2,300억 전망', div: 0.75, divNet: 0.65,
+    good: { p: 25, r: 15.7 }, base: { p: 45, r: 7.5 }, bad: { p: 30, r: -6.6 },
+    risk: 'AI 고객 6곳 집중, AI 연구소 금융 구조, 빚 600억, 이익률 희석', next: '12월 중순 4분기 실적', signal: '2027 회계연도 AI 1,150억 유지, 조정 영업이익률 65% 이상', color: 'bg-red-900',
+    one: '빅테크 자체 AI 칩의 설계자. 엔비디아와 같은 AI 위험, 소프트웨어가 바닥을 조금 받친다.' },
+  { key: 'ISRG', name: '인튜이티브 서지컬', price: '약 448달러', pe: '약 49배, 합의금 제외 (10년 평소 70배)', earn: '증가 — 매출 +22%, 수술 +15%', div: 0, divNet: 0,
+    good: { p: 25, r: 14.3 }, base: { p: 50, r: 8.1 }, bad: { p: 25, r: -1.6 },
+    risk: '2027년 기구 가격 인하(1건당 −3~5%), 경쟁 로봇·중국, 높은 PER', next: '2027년 1월 하순 4분기 실적', signal: '다빈치 수술 +12% 이상, 가격 인하 뒤 기구 매출 +15%', color: 'bg-sky-700',
+    one: '수술 로봇의 표준. 질은 최상위, 값이 기대를 누른다 — IDEXX와 비슷한 성격.' },
+  { key: 'TDG', name: '트랜스다임', price: '약 1,181달러', pe: '약 32배, 순이익 기준 (10년 평소 44배)', earn: '증가 — 매출 +23%, 자체 성장 +13%', div: 2.0, divNet: 1.7,
+    good: { p: 25, r: 17.7 }, base: { p: 50, r: 11.8 }, bad: { p: 25, r: -2.9 },
+    risk: '빚 337억·금리, 정부 가격 감시·인수 규제, 항공 수요 충격', next: '11월 12일께 4분기 실적', signal: '자체 성장 +8% 이상, 순부채/EBITDA 7배 아래', color: 'bg-zinc-600',
+    one: '인증으로 지켜지는 비행기 부품 독점 + 빚으로 굴리는 기계. AI와 무관.' },
+  { key: 'NOW', name: '서비스나우', price: '약 111달러', pe: '조정 약 29배, 주식 보상 포함 약 52배 (10년 평소 90배)', earn: '증가 — 구독 +21%, AI 계약 17억 달러 목표', div: 0, divNet: 0,
+    good: { p: 20, r: 20.7 }, base: { p: 50, r: 11.6 }, bad: { p: 30, r: -4.4 },
+    risk: 'AI가 사용자 수를 줄이는 위험, 마이크로소프트·오픈AI, 큰 주식 보상', next: '2027년 1월 하순 4분기 실적', signal: 'cRPO +18% 이상, AI 계약 목표 달성', color: 'bg-indigo-700',
+    one: '구독 +21%를 지키는데 −53%. 인튜이트·어도비와 같은 "AI 공포 소프트웨어".' },
+  { key: 'MELI', name: '메르카도리브레', price: '약 1,510달러', pe: '약 40배 (정상 이익률이면 약 25배, 10년 평소 51배)', earn: '이익률 투자 중 — 매출 +45%, 영업이익률 6.3%', div: 0, divNet: 0,
+    good: { p: 25, r: 26.2 }, base: { p: 50, r: 14.4 }, bad: { p: 25, r: -8.7 },
+    risk: '대출 180억 신용 위험, 쇼피·아마존, 환율·아르헨티나 정치', next: '2027년 2월 하순 4분기 실적', signal: '영업이익률 8% 이상 회복, 연체율 7% 안팎', color: 'bg-yellow-600',
+    one: '중남미의 아마존+페이팔. 이익률을 일부러 깎은 상태라 회복 몫이 크다 — 결과 폭도 크다.' },
+  { key: 'TXRH', name: '텍사스 로드하우스', price: '약 184달러', pe: '약 29배 (10년 평소 27배)', earn: '회복 중 — 매출 +9.5%, EPS +8.6%(3분기)', div: 1.6, divNet: 1.4,
+    good: { p: 25, r: 15.8 }, base: { p: 55, r: 10.2 }, bad: { p: 20, r: -3.8 },
+    risk: '소고기 값, 외식 경기, 인건비', next: '2027년 2월 중순 4분기 실적', signal: '매장 이익률 15% 이상, 원재료 물가 4% 아래', color: 'bg-orange-900',
+    one: '외식 불황에도 손님이 느는 가성비 스테이크. 매장 +5%의 꾸준한 복리, AI와 무관.' },
 ]
 const ev = (c: Co) => (c.good.p * c.good.r + c.base.p * c.base.r + c.bad.p * c.bad.r) / 100
 const loss = (c: Co) => [c.good, c.base, c.bad].filter(s => s.r < 0).reduce((a, s) => a + s.p, 0)
 const f1 = (v: number) => `${v.toFixed(1)}%`
-const DEF: Record<string, number> = { RMS: 25, MSFT: 20, GOOGL: 15, AMZN: 15, META: 10, AAPL: 5, NKE: 10, V: 0, MA: 0, SPGI: 0, MCO: 0, MSCI: 0, ADP: 0, SYK: 0, GGG: 0, DCI: 0, FICO: 0, INTU: 0, ADBE: 0, CPRT: 0, ZTS: 0, NFLX: 0, BKNG: 0, IDXX: 0, LII: 0, BR: 0, LVMH: 0 }
+const DEF: Record<string, number> = { RMS: 25, MSFT: 20, GOOGL: 15, AMZN: 15, META: 10, AAPL: 5, NKE: 10, V: 0, MA: 0, SPGI: 0, MCO: 0, MSCI: 0, ADP: 0, SYK: 0, GGG: 0, DCI: 0, FICO: 0, INTU: 0, ADBE: 0, CPRT: 0, ZTS: 0, NFLX: 0, BKNG: 0, IDXX: 0, LII: 0, BR: 0, LVMH: 0, NVDA: 0, AVGO: 0, ISRG: 0, TDG: 0, NOW: 0, MELI: 0, TXRH: 0 }
 
 export default function TrioCompare({ onPick }: { onPick: (key: string) => void }) {
   const [w, setW] = useState<Record<string, number>>(DEF)
@@ -133,8 +161,8 @@ export default function TrioCompare({ onPick }: { onPick: (key: string) => void 
   return (
     <section className="rounded-xl border-2 border-blue-200 dark:border-blue-900/60 p-3 sm:p-4 space-y-3">
       <div>
-        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">엄선 27종목 — 한눈에 비교 (10년, 추정)</h3>
-        <p className={small}>에르메스·빅테크 5개·나이키에 핵심 복리 9종목(비자·마스터카드·S&amp;P 글로벌·무디스·MSCI·ADP·스트라이커·그레이코·도널드슨)과 지금 싼 알짜 11종목(FICO·인튜이트·어도비·코파트·조에티스·넷플릭스·부킹·IDEXX·레녹스·브로드리지·LVMH)을 더했다. 각 종목 리포트의 미래 모델(시나리오·가능성)을 모았다. 수익률 = 이익 성장 + PER 변화 + 배당(세전). 종목 이름을 누르면 그 페이지로 간다. 2026-11-10 기준, 투자 추천이 아니다.</p>
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">엄선 34종목 — 한눈에 비교 (10년, 추정)</h3>
+        <p className={small}>에르메스·빅테크 5개·나이키에 핵심 복리 9종목(비자·마스터카드·S&amp;P 글로벌·무디스·MSCI·ADP·스트라이커·그레이코·도널드슨)과 지금 싼 알짜 11종목(FICO·인튜이트·어도비·코파트·조에티스·넷플릭스·부킹·IDEXX·레녹스·브로드리지·LVMH), 고성장 7종목(엔비디아·브로드컴·인튜이티브 서지컬·트랜스다임·서비스나우·메르카도리브레·텍사스 로드하우스)을 더했다. 각 종목 리포트의 미래 모델(시나리오·가능성)을 모았다. 수익률 = 이익 성장 + PER 변화 + 배당(세전). 종목 이름을 누르면 그 페이지로 간다. 2026-11-10 기준, 투자 추천이 아니다.</p>
       </div>
 
       <div className="rounded-lg bg-gray-50 dark:bg-gray-900/40 p-2.5">
@@ -185,6 +213,9 @@ export default function TrioCompare({ onPick }: { onPick: (key: string) => void 
         <div className="rounded-lg bg-rose-50/70 dark:bg-rose-950/20 p-2.5"><b>나쁜 그림이 무거운 쪽(FICO·어도비·LVMH·레녹스):</b> 손실 가능성 25~30%. FICO는 독점 붕괴, LVMH는 명품 경기, 레녹스는 가격 결정력이 갈림길. 작게 담는 몫.</div>
         <div className="rounded-lg bg-teal-50/70 dark:bg-teal-950/20 p-2.5"><b>바닥이 단단한 싼 쪽(브로드리지·조에티스):</b> 나쁜 그림에서도 플러스, 배당 2.5% 안팎. 브로드리지는 규제 독점, 조에티스는 평소의 3분의 1 값이 받친다.</div>
         <div className="rounded-lg bg-gray-100 dark:bg-gray-800/60 p-2.5"><b>질은 최상, 값은 보통(IDEXX·코파트):</b> 사업은 엄선 최상위권이지만 기대는 연 8% 안팎(IDEXX 8.5%, 코파트 7.7%). 더 빠지면 비중을 늘릴 후보.</div>
+        <div className="rounded-lg bg-green-50/70 dark:bg-green-950/20 p-2.5"><b>AI 투자에 거는 쪽(엔비디아·브로드컴):</b> 지금 가장 강한 사업이지만 기대는 연 5% 안팎 — 이익이 정점일 수 있고 나쁜 그림 확률 30%에 손실이 크다(연 −7~−9%). 같은 고객·같은 돈에 걸려 있어 둘을 합쳐 비중을 본다. 빅테크와도 위험이 겹친다.</div>
+        <div className="rounded-lg bg-yellow-50/70 dark:bg-yellow-950/20 p-2.5"><b>AI와 무관한 고성장(트랜스다임·메르카도리브레·텍사스 로드하우스):</b> 기대 연 9~12%. 비행기 부품·중남미 소비·스테이크 — AI 주식이 흔들릴 때 다른 이유로 움직인다. 트랜스다임은 빚, 메르카도리브레는 환율·신용이 결과 폭을 키운다.</div>
+        <div className="rounded-lg bg-sky-50/70 dark:bg-sky-950/20 p-2.5"><b>질 좋은 성장, 값이 걸림돌(인튜이티브 서지컬·서비스나우):</b> 인튜이티브는 PER 49배라 연 7% 안팎, 서비스나우는 "AI가 사용자 수를 줄이나"라는 질문에 연 9% 안팎. 서비스나우는 인튜이트·어도비와 같은 위험 묶음.</div>
       </div>
 
       <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-3 space-y-2">
