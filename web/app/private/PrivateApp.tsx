@@ -6,6 +6,7 @@ import BigReport from './reports/BigReport'
 import { AMZN_REPORT, GOOGL_REPORT, MSFT_REPORT } from './reports/bigData'
 import { META_REPORT } from './reports/metaData'
 import { AAPL_REPORT } from './reports/aaplData'
+import { KO_REPORT } from './reports/koData'
 import { PG_REPORT } from './reports/pgData'
 import { TXRH_REPORT } from './reports/txrhData'
 import { MELI_REPORT } from './reports/meliData'
@@ -10493,6 +10494,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   MSFT: () => <BigReport d={MSFT_REPORT} />,
   META: () => <BigReport d={META_REPORT} />,
   AAPL: () => <BigReport d={AAPL_REPORT} />,
+  KO: () => <BigReport d={KO_REPORT} />,
   PG: () => <BigReport d={PG_REPORT} />,
   TXRH: () => <BigReport d={TXRH_REPORT} />,
   MELI: () => <BigReport d={MELI_REPORT} />,
