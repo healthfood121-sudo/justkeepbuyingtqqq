@@ -92,6 +92,10 @@ export default function OwnerCard({ p, compact = false, onOpen, children }: { p:
   const [txt, setTxt] = useState('')
   useEffect(() => { setTxt(saved > 0 ? String(saved) : '') }, [saved])
   const now = useNow()
+  const foldKey = `owner-fold-${p.key}`
+  const [open, setOpen] = useState(true)
+  useEffect(() => { try { setOpen(localStorage.getItem(foldKey) !== '1') } catch {} }, [foldKey])
+  const toggle = () => setOpen(o => { const n = !o; try { if (n) localStorage.removeItem(foldKey); else localStorage.setItem(foldKey, '1') } catch {} return n })
   const shares = saved > 0 ? saved : 1
   const { ratio, rev, profit, div } = ownerTotals(p, shares)
   const startOfDay = new Date(new Date(now).setHours(0, 0, 0, 0)).getTime()
@@ -180,15 +184,25 @@ export default function OwnerCard({ p, compact = false, onOpen, children }: { p:
   if (compact) {
     return (
       <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white/60 dark:bg-gray-950/40 p-3 space-y-2.5">
-        <div className="flex items-baseline justify-between gap-2">
-          <p className="text-sm font-semibold text-gray-900 dark:text-white">{p.name} <span className="font-normal text-gray-500 tabular-nums">{shares.toLocaleString()}주{saved ? ` · 회사의 ${Math.round(1 / ratio).toLocaleString()}분의 1` : '(1주로 계산)'}</span></p>
-          {onOpen && <button type="button" onClick={onOpen} className="text-xs text-blue-600 dark:text-blue-400 hover:underline shrink-0">종목 화면 →</button>}
+        <div className="flex items-center justify-between gap-2">
+          <button type="button" onClick={toggle} aria-expanded={open} className="flex items-baseline gap-1.5 text-left min-w-0">
+            <span className="text-gray-400 text-xs w-3 shrink-0">{open ? '▾' : '▸'}</span>
+            <span className="text-sm font-semibold text-gray-900 dark:text-white">{p.name} <span className="font-normal text-gray-500 tabular-nums">{shares.toLocaleString()}주{saved ? ` · 회사의 ${Math.round(1 / ratio).toLocaleString()}분의 1` : '(1주로 계산)'}</span></span>
+          </button>
+          <div className="flex items-center gap-2 shrink-0">
+            <button type="button" onClick={toggle} className="text-xs text-gray-500 hover:underline">{open ? '접기' : '펼치기'}</button>
+            {onOpen && <button type="button" onClick={onOpen} className="text-xs text-blue-600 dark:text-blue-400 hover:underline">종목 화면 →</button>}
+          </div>
         </div>
-        {top}
-        {ticker}
-        {detail}
-        {divLine}
-        <p className="text-[11px] text-gray-400">{p.period} · {p.src}</p>
+        {open ? (<>
+          {top}
+          {ticker}
+          {detail}
+          {divLine}
+          <p className="text-[11px] text-gray-400">{p.period} · {p.src}</p>
+        </>) : (
+          <p className="text-xs tabular-nums text-gray-700 dark:text-gray-200">내 몫 이익 <b>1초 {money(profit / SEC_Y, c)}</b> · 하루 {money(profit / 365, c)} · 1년 {money(profit, c, true)} <span className="text-gray-400">· 오늘 {c}{(profit / SEC_Y * todaySec).toFixed(4)}</span></p>
+        )}
         {children}
       </div>
     )
