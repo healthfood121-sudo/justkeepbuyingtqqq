@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 
-// 엄선 34종목 비교 — 각 종목 리포트의 미래 모델(시나리오·가능성)을 한곳에 모았다.
+// 엄선 42종목 비교 — 각 종목 리포트의 미래 모델(시나리오·가능성)을 한곳에 모았다.
 type Sc = { p: number; r: number }
 type Co = { key: string; name: string; price: string; pe: string; earn: string; div: number; divNet: number
   good: Sc; base: Sc; bad: Sc; risk: string; next: string; signal: string; color: string; one: string }
@@ -144,11 +144,43 @@ const COS: Co[] = [
     good: { p: 25, r: 15.8 }, base: { p: 55, r: 10.2 }, bad: { p: 20, r: -3.8 },
     risk: '소고기 값, 외식 경기, 인건비', next: '2027년 2월 중순 4분기 실적', signal: '매장 이익률 15% 이상, 원재료 물가 4% 아래', color: 'bg-orange-900',
     one: '외식 불황에도 손님이 느는 가성비 스테이크. 매장 +5%의 꾸준한 복리, AI와 무관.' },
+  { key: 'PG', name: 'P&G', price: '약 159달러', pe: '약 23배', earn: '느린 증가 — 자체 성장 +2% 안팎', div: 2.7, divNet: 2.3,
+    good: { p: 20, r: 10.4 }, base: { p: 60, r: 7.0 }, bad: { p: 20, r: 1.4 },
+    risk: '물량 정체, 원가·관세, 신흥국 통화', next: '2027년 1월 하순 2분기 실적', signal: '자체 성장 +3% 이상, 물량 플러스', color: 'bg-blue-950',
+    one: '매일 쓰는 물건을 조금씩 더 비싸게. 나쁜 그림에서도 플러스인 방어의 기준.' },
+  { key: 'KO', name: '코카콜라', price: '약 92달러', pe: '약 28배', earn: '느린 증가 — 판매량 +1~2%', div: 2.3, divNet: 2.0,
+    good: { p: 20, r: 9.0 }, base: { p: 60, r: 5.9 }, bad: { p: 20, r: 1.0 },
+    risk: '설탕·비만약 수요 변화, 국세청 세금 소송, 환율', next: '2027년 2월 4분기 실적', signal: '판매량 +2% 이상, 조정 영업이익률 31% 이상', color: 'bg-red-400',
+    one: '세계 최강 브랜드지만 값이 이미 높다. 손실은 거의 없고 기대도 연 5~6%.' },
+  { key: 'PEP', name: '펩시코', price: '약 133달러', pe: '약 16배 (최근 수년 대비 싸다)', earn: '정체 — 북미 과자 물량 회복이 관건', div: 4.4, divNet: 3.7,
+    good: { p: 20, r: 15.1 }, base: { p: 55, r: 10.7 }, bad: { p: 25, r: 4.1 },
+    risk: '북미 과자 물량 감소, 비만약, 구조 개편 지연', next: '2027년 2월 초 4분기 실적', signal: '북미 과자 물량 증가, 핵심 EPS +4% 이상', color: 'bg-blue-600',
+    one: '이익 성장보다 싼 값과 배당 4.4%로 기대를 만든다. 구조 개편이 되면 회복 몫이 크다.' },
+  { key: 'MCD', name: '맥도날드', price: '약 256달러', pe: '약 20배', earn: '느린 증가 — 회원 매출·신규 매장', div: 3.0, divNet: 2.6,
+    good: { p: 20, r: 12.5 }, base: { p: 60, r: 9.4 }, bad: { p: 20, r: 3.3 },
+    risk: '저소득층 손님 감소, 가격 반감, 가맹점 수익성', next: '2027년 2월 4분기 실적', signal: '미국 같은 매장 매출 +2% 이상, 손님 수 플러스', color: 'bg-amber-300',
+    one: '부동산+로열티 구조라 손님이 줄어도 이익이 버틴다. 방어주 중 기대 상위.' },
+  { key: 'CL', name: '콜게이트', price: '약 92달러', pe: '약 24배', earn: '느린 증가 — 신흥국이 성장 담당', div: 2.3, divNet: 2.0,
+    good: { p: 20, r: 10.2 }, base: { p: 60, r: 6.9 }, bad: { p: 20, r: 0.9 },
+    risk: '북미 부진, 신흥국 통화 위기, 원가', next: '2027년 1월 말 4분기 실적', signal: '자체 매출 +3% 이상, 매출총이익률 60% 이상', color: 'bg-rose-600',
+    one: '치약 세계 1위. P&G와 거의 같은 위험 — 둘 중 하나면 충분.' },
+  { key: 'CME', name: 'CME 그룹', price: '약 295달러', pe: '약 24배', earn: '증가 — 시장이 흔들릴수록 거래 증가', div: 3.6, divNet: 3.1,
+    good: { p: 20, r: 11.2 }, base: { p: 60, r: 8.3 }, bad: { p: 20, r: 2.3 },
+    risk: '조용한 시장(거래 감소), 새 거래소 경쟁, 금리 하락', next: '2026년 12월 변동 배당 / 2027년 2월 실적', signal: '하루 거래 2,500만 계약 이상, 계약당 수수료 유지', color: 'bg-slate-700',
+    one: '나쁜 시장에 오히려 버는 거래소 독점. 다른 종목과 반대로 움직여 섞기 좋다.' },
+  { key: 'PGR', name: '프로그레시브', price: '약 229달러', pe: '약 11.5배', earn: '꼭대기 근처 — 이익률이 내려오는 중', div: 1.5, divNet: 1.3,
+    good: { p: 20, r: 12.6 }, base: { p: 55, r: 7.2 }, bad: { p: 25, r: -1.6 },
+    risk: '보험 이익률 하락(가격 경쟁), 대형 재해, 자동차 사고 비용', next: '매달 실적 발표', signal: '합산비율 92 이하, 보험료 +5% 이상', color: 'bg-cyan-500',
+    one: '최고의 자동차 보험사지만 사이클 꼭대기. 싸 보이는 PER은 이익이 높은 탓.' },
+  { key: 'RSG', name: '리퍼블릭 서비스', price: '약 234달러', pe: '약 32배', earn: '꾸준한 증가 — 가격 +5%, 물량 보합', div: 1.1, divNet: 0.9,
+    good: { p: 20, r: 10.2 }, base: { p: 60, r: 6.7 }, bad: { p: 20, r: 0.5 },
+    risk: '물량 감소(주택·건설 경기), 비싼 값, 인수 실패', next: '2027년 2월 4분기 실적', signal: '핵심 가격 인상 +5% 이상, 물량 플러스', color: 'bg-lime-800',
+    one: '매립지라는 대체 불가 자산으로 해마다 값을 올린다. 사업은 완벽, 값이 비싸다.' },
 ]
 const ev = (c: Co) => (c.good.p * c.good.r + c.base.p * c.base.r + c.bad.p * c.bad.r) / 100
 const loss = (c: Co) => [c.good, c.base, c.bad].filter(s => s.r < 0).reduce((a, s) => a + s.p, 0)
 const f1 = (v: number) => `${v.toFixed(1)}%`
-const DEF: Record<string, number> = { RMS: 25, MSFT: 20, GOOGL: 15, AMZN: 15, META: 10, AAPL: 5, NKE: 10, V: 0, MA: 0, SPGI: 0, MCO: 0, MSCI: 0, ADP: 0, SYK: 0, GGG: 0, DCI: 0, FICO: 0, INTU: 0, ADBE: 0, CPRT: 0, ZTS: 0, NFLX: 0, BKNG: 0, IDXX: 0, LII: 0, BR: 0, LVMH: 0, NVDA: 0, AVGO: 0, ISRG: 0, TDG: 0, NOW: 0, MELI: 0, TXRH: 0 }
+const DEF: Record<string, number> = { RMS: 25, MSFT: 20, GOOGL: 15, AMZN: 15, META: 10, AAPL: 5, NKE: 10, V: 0, MA: 0, SPGI: 0, MCO: 0, MSCI: 0, ADP: 0, SYK: 0, GGG: 0, DCI: 0, FICO: 0, INTU: 0, ADBE: 0, CPRT: 0, ZTS: 0, NFLX: 0, BKNG: 0, IDXX: 0, LII: 0, BR: 0, LVMH: 0, NVDA: 0, AVGO: 0, ISRG: 0, TDG: 0, NOW: 0, MELI: 0, TXRH: 0, PG: 0, KO: 0, PEP: 0, MCD: 0, CL: 0, CME: 0, PGR: 0, RSG: 0 }
 
 export default function TrioCompare({ onPick }: { onPick: (key: string) => void }) {
   const [w, setW] = useState<Record<string, number>>(DEF)
@@ -161,8 +193,8 @@ export default function TrioCompare({ onPick }: { onPick: (key: string) => void 
   return (
     <section className="rounded-xl border-2 border-blue-200 dark:border-blue-900/60 p-3 sm:p-4 space-y-3">
       <div>
-        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">엄선 34종목 — 한눈에 비교 (10년, 추정)</h3>
-        <p className={small}>에르메스·빅테크 5개·나이키에 핵심 복리 9종목(비자·마스터카드·S&amp;P 글로벌·무디스·MSCI·ADP·스트라이커·그레이코·도널드슨)과 지금 싼 알짜 11종목(FICO·인튜이트·어도비·코파트·조에티스·넷플릭스·부킹·IDEXX·레녹스·브로드리지·LVMH), 고성장 7종목(엔비디아·브로드컴·인튜이티브 서지컬·트랜스다임·서비스나우·메르카도리브레·텍사스 로드하우스)을 더했다. 각 종목 리포트의 미래 모델(시나리오·가능성)을 모았다. 수익률 = 이익 성장 + PER 변화 + 배당(세전). 종목 이름을 누르면 그 페이지로 간다. 2026-11-10 기준, 투자 추천이 아니다.</p>
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">엄선 42종목 — 한눈에 비교 (10년, 추정)</h3>
+        <p className={small}>에르메스·빅테크 5개·나이키에 핵심 복리 9종목(비자·마스터카드·S&amp;P 글로벌·무디스·MSCI·ADP·스트라이커·그레이코·도널드슨)과 지금 싼 알짜 11종목(FICO·인튜이트·어도비·코파트·조에티스·넷플릭스·부킹·IDEXX·레녹스·브로드리지·LVMH), 고성장 7종목(엔비디아·브로드컴·인튜이티브 서지컬·트랜스다임·서비스나우·메르카도리브레·텍사스 로드하우스), 방어 8종목(P&amp;G·코카콜라·펩시코·맥도날드·콜게이트·CME·프로그레시브·리퍼블릭 서비스)을 더했다. 각 종목 리포트의 미래 모델(시나리오·가능성)을 모았다. 수익률 = 이익 성장 + PER 변화 + 배당(세전). 종목 이름을 누르면 그 페이지로 간다. 2026-11-10 기준, 투자 추천이 아니다.</p>
       </div>
 
       <div className="rounded-lg bg-gray-50 dark:bg-gray-900/40 p-2.5">
@@ -216,6 +248,9 @@ export default function TrioCompare({ onPick }: { onPick: (key: string) => void 
         <div className="rounded-lg bg-green-50/70 dark:bg-green-950/20 p-2.5"><b>AI 투자에 거는 쪽(엔비디아·브로드컴):</b> 지금 가장 강한 사업이지만 기대는 연 5% 안팎 — 이익이 정점일 수 있고 나쁜 그림 확률 30%에 손실이 크다(연 −7~−9%). 같은 고객·같은 돈에 걸려 있어 둘을 합쳐 비중을 본다. 빅테크와도 위험이 겹친다.</div>
         <div className="rounded-lg bg-yellow-50/70 dark:bg-yellow-950/20 p-2.5"><b>AI와 무관한 고성장(트랜스다임·메르카도리브레·텍사스 로드하우스):</b> 기대 연 9~12%. 비행기 부품·중남미 소비·스테이크 — AI 주식이 흔들릴 때 다른 이유로 움직인다. 트랜스다임은 빚, 메르카도리브레는 환율·신용이 결과 폭을 키운다.</div>
         <div className="rounded-lg bg-sky-50/70 dark:bg-sky-950/20 p-2.5"><b>질 좋은 성장, 값이 걸림돌(인튜이티브 서지컬·서비스나우):</b> 인튜이티브는 PER 49배라 연 7% 안팎, 서비스나우는 "AI가 사용자 수를 줄이나"라는 질문에 연 9% 안팎. 서비스나우는 인튜이트·어도비와 같은 위험 묶음.</div>
+        <div className="rounded-lg bg-blue-50/70 dark:bg-blue-950/20 p-2.5"><b>매일 쓰는 물건(P&amp;G·코카콜라·콜게이트):</b> 기대 연 5.5~6.5%, 나쁜 그림에서도 플러스. 경기와 거의 무관해 하락장의 완충재지만 기대가 낮다. 셋은 같은 위험이라 하나면 충분.</div>
+        <div className="rounded-lg bg-amber-50/70 dark:bg-amber-950/20 p-2.5"><b>싸서 기대가 높은 방어(펩시코·맥도날드):</b> 기대 연 9~10%로 방어주 중 가장 높고 나쁜 그림도 연 3~4%. 이익 성장이 아니라 싸진 값과 배당 3~4.4%가 만든다.</div>
+        <div className="rounded-lg bg-slate-100 dark:bg-slate-800/60 p-2.5"><b>사이클·값이 걸린 독점(CME·프로그레시브·리퍼블릭):</b> CME는 시장이 흔들릴 때 버는 반대 방향 종목(연 약 7.7%). 프로그레시브는 보험 사이클 꼭대기라 손실 가능성 25%, 리퍼블릭은 사업은 최상이지만 PER 32배라 연 6% 안팎.</div>
       </div>
 
       <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-3 space-y-2">
