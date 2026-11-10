@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 
-// 엄선 54종목 비교 — 각 종목 리포트의 미래 모델(시나리오·가능성)을 한곳에 모았다.
+// 엄선 53종목 + 비교용 2 비교 — 각 종목 리포트의 미래 모델(시나리오·가능성)을 한곳에 모았다.
 type Sc = { p: number; r: number }
 export type Co = { key: string; name: string; price: string; pe: string; earn: string; div: number; divNet: number
   good: Sc; base: Sc; bad: Sc; risk: string; next: string; signal: string; color: string; one: string }
@@ -224,11 +224,17 @@ export const COS: Co[] = [
     good: { p: 20, r: 12.0 }, base: { p: 60, r: 6.9 }, bad: { p: 20, r: -2.6 },
     risk: '원가 전가 시차, 중국산 저가 콜린', next: '2027년 2월 4분기 실적', signal: '조정 EBITDA 연속 증가 유지', color: 'bg-fuchsia-800',
     one: '영양 원료를 캡슐에 싸는 기술의 틈새 1등. 가장 꾸준하지만 값이 그만큼 높다.' },
+  { key: 'COCO', name: '바이타 코코', price: '약 62달러', pe: '약 31배 (10년 평소 39배)', earn: '증가 — 브랜드 매출 +15%, 운임으로 이익률 출렁', div: 0, divNet: 0,
+    good: { p: 25, r: 14 }, base: { p: 50, r: 7.5 }, bad: { p: 25, r: -4 },
+    risk: '범주 포화·유통사 자체 브랜드(PB), 운임·코코넛 값, 건강 이미지 사건', next: '2027년 2월 4분기 실적', signal: '브랜드 판매량 +8% 이상, 새 가구가 성장의 절반 이상', color: 'bg-lime-500',
+    one: '코코넛워터 1위(미국 점유율 약 42%). 습관 소비라 꾸준하지만 결과 폭이 넓다 — 나눠 담는 종목.' },
 ]
 export const ev = (c: Co) => (c.good.p * c.good.r + c.base.p * c.base.r + c.bad.p * c.bad.r) / 100
+// 애플·나이키는 처음 7종목 비교에서 이어져 온 비교용 — 엄선(역할별 목록)에는 없다
+export const OUT_OF_PICKS = new Set(['AAPL', 'NKE'])
 export const loss = (c: Co) => [c.good, c.base, c.bad].filter(s => s.r < 0).reduce((a, s) => a + s.p, 0)
 const f1 = (v: number) => `${v.toFixed(1)}%`
-const DEF: Record<string, number> = { RMS: 25, MSFT: 20, GOOGL: 15, AMZN: 15, META: 10, AAPL: 5, NKE: 10, V: 0, MA: 0, SPGI: 0, MCO: 0, MSCI: 0, ADP: 0, SYK: 0, GGG: 0, DCI: 0, FICO: 0, INTU: 0, ADBE: 0, CPRT: 0, ZTS: 0, NFLX: 0, BKNG: 0, IDXX: 0, LII: 0, BR: 0, LVMH: 0, NVDA: 0, AVGO: 0, ISRG: 0, TDG: 0, NOW: 0, MELI: 0, TXRH: 0, PG: 0, KO: 0, PEP: 0, MCD: 0, CL: 0, CME: 0, PGR: 0, RSG: 0, IPAR: 0, MGRC: 0, UFPT: 0, CVCO: 0, MEDP: 0, UI: 0, QLYS: 0, LMAT: 0, EXPO: 0, FELE: 0, BMI: 0, BCPC: 0 }
+const DEF: Record<string, number> = { RMS: 25, MSFT: 20, GOOGL: 15, AMZN: 15, META: 10, AAPL: 5, NKE: 10, V: 0, MA: 0, SPGI: 0, MCO: 0, MSCI: 0, ADP: 0, SYK: 0, GGG: 0, DCI: 0, FICO: 0, INTU: 0, ADBE: 0, CPRT: 0, ZTS: 0, NFLX: 0, BKNG: 0, IDXX: 0, LII: 0, BR: 0, LVMH: 0, NVDA: 0, AVGO: 0, ISRG: 0, TDG: 0, NOW: 0, MELI: 0, TXRH: 0, PG: 0, KO: 0, PEP: 0, MCD: 0, CL: 0, CME: 0, PGR: 0, RSG: 0, COCO: 0, IPAR: 0, MGRC: 0, UFPT: 0, CVCO: 0, MEDP: 0, UI: 0, QLYS: 0, LMAT: 0, EXPO: 0, FELE: 0, BMI: 0, BCPC: 0 }
 
 export default function TrioCompare({ onPick }: { onPick: (key: string) => void }) {
   const [w, setW] = useState<Record<string, number>>(DEF)
@@ -243,9 +249,9 @@ export default function TrioCompare({ onPick }: { onPick: (key: string) => void 
   return (
     <section className="rounded-xl border-2 border-blue-200 dark:border-blue-900/60 p-3 sm:p-4 space-y-3">
       <div>
-        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">엄선 54종목 — 한눈에 비교 (10년, 추정)</h3>
-        <p className={small}>각 종목 리포트의 미래 모델(좋은·기본·나쁜 그림과 가능성)로 앞으로 10년 연 수익률을 추정해 한 줄로 세웠다. 이름을 누르면 그 종목 화면이 열린다. 투자 추천이 아니다.</p>
-        <details className="mt-1"><summary className="text-[11px] text-gray-400 cursor-pointer">어떤 종목이 들어 있나(눌러서 펼치기)</summary><p className={small}>에르메스·빅테크 5개·나이키에 핵심 복리 9종목(비자·마스터카드·S&amp;P 글로벌·무디스·MSCI·ADP·스트라이커·그레이코·도널드슨)과 지금 싼 알짜 11종목(FICO·인튜이트·어도비·코파트·조에티스·넷플릭스·부킹·IDEXX·레녹스·브로드리지·LVMH), 고성장 7종목(엔비디아·브로드컴·인튜이티브 서지컬·트랜스다임·서비스나우·메르카도리브레·텍사스 로드하우스), 방어 8종목(P&amp;G·코카콜라·펩시코·맥도날드·콜게이트·CME·프로그레시브·리퍼블릭 서비스), 숨은 알짜 12종목(인터퍼퓸·맥그래스·UFP·캐브코·메드페이스·유비쿼티·퀄리스·르메트르·익스포넌트·프랭클린·배저 미터·발켐)을 더했다. 각 종목 리포트의 미래 모델(시나리오·가능성)을 모았다. 수익률 = 이익 성장 + PER 변화 + 배당(세전). 종목 이름을 누르면 그 페이지로 간다. 2026-11-10 기준, 투자 추천이 아니다.</p></details>
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">엄선 53종목 + 비교용 2 — 한눈에 비교 (10년, 추정)</h3>
+        <p className={small}>각 종목 리포트의 미래 모델(좋은·기본·나쁜 그림과 가능성)로 앞으로 10년 연 수익률을 추정해 한 줄로 세웠다. 애플·나이키는 엄선이 아니라 비교용(처음 7종목 비교에서 이어짐)이다. 이름을 누르면 그 종목 화면이 열린다. 투자 추천이 아니다.</p>
+        <details className="mt-1"><summary className="text-[11px] text-gray-400 cursor-pointer">어떤 종목이 들어 있나(눌러서 펼치기)</summary><p className={small}>에르메스·빅테크 5개·나이키에 핵심 복리 9종목(비자·마스터카드·S&amp;P 글로벌·무디스·MSCI·ADP·스트라이커·그레이코·도널드슨)과 지금 싼 알짜 11종목(FICO·인튜이트·어도비·코파트·조에티스·넷플릭스·부킹·IDEXX·레녹스·브로드리지·LVMH), 고성장 7종목(엔비디아·브로드컴·인튜이티브 서지컬·트랜스다임·서비스나우·메르카도리브레·텍사스 로드하우스), 방어 8종목(P&amp;G·코카콜라·펩시코·맥도날드·콜게이트·CME·프로그레시브·리퍼블릭 서비스), 숨은 알짜 13종목(인터퍼퓸·맥그래스·UFP·캐브코·메드페이스·유비쿼티·퀄리스·르메트르·익스포넌트·프랭클린·배저 미터·발켐·바이타 코코)을 더했다. 애플·나이키는 엄선이 아니라 비교용. 각 종목 리포트의 미래 모델(시나리오·가능성)을 모았다. 수익률 = 이익 성장 + PER 변화 + 배당(세전). 종목 이름을 누르면 그 페이지로 간다. 2026-11-10 기준, 투자 추천이 아니다.</p></details>
       </div>
 
       <div className="flex flex-wrap gap-1.5">
@@ -261,7 +267,7 @@ export default function TrioCompare({ onPick }: { onPick: (key: string) => void 
             const v = ev(c)
             return (
               <button key={c.key} onClick={() => onPick(c.key)} className="w-full flex items-center gap-2 text-xs text-left hover:bg-white/60 dark:hover:bg-gray-800/60 rounded px-1">
-                <span className="w-24 shrink-0 text-gray-700 dark:text-gray-200">{c.name}</span>
+                <span className="w-24 shrink-0 text-gray-700 dark:text-gray-200">{c.name}{OUT_OF_PICKS.has(c.key) && <span className="block text-[10px] text-gray-400">비교용(엄선 밖)</span>}</span>
                 <span className="flex-1 h-2 rounded-full bg-gray-200 dark:bg-gray-800 overflow-hidden"><span className={`block h-full ${c.color}`} style={{ width: `${Math.min(100, Math.max(0, v) / 14 * 100)}%` }} /></span>
                 <span className="w-14 text-right font-semibold text-gray-900 dark:text-white">연 {v.toFixed(1)}%</span>
                 <span className="w-16 text-right text-gray-400">{loss(c) ? `손실 ${loss(c)}%` : '손실 없음'}</span>

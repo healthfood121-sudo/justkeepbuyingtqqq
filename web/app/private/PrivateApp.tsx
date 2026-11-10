@@ -58,7 +58,7 @@ import { RMS_REPORT } from './reports/rmsData'
 import { ModelSection, OddsBlock, modelResult, type Sc } from './reports/BigReport'
 import { FUTURES } from './futures'
 import GoogleMyShare from './reports/GoogleMyShare'
-import TrioCompare, { COS as PICK_COS, ev as pickEv } from './reports/TrioCompare'
+import TrioCompare, { COS as PICK_COS, ev as pickEv, OUT_OF_PICKS } from './reports/TrioCompare'
 import Link from 'next/link'
 import { UNIV } from './universe'
 import { PICK_GROUPS, PICKS_AS_OF } from './picks'
@@ -10703,7 +10703,7 @@ function HomeScreen({ onPick, onList, counts }: { onPick: (key: string) => void;
       <div className="grid sm:grid-cols-2 gap-3">
         <button type="button" onClick={() => onList('picks')} className={`${card} hover:border-blue-400 bg-blue-50/50 dark:bg-blue-950/20`}>
           <p className="text-base font-semibold text-gray-900 dark:text-white">⭐ 엄선 종목</p>
-          <p className="text-xs text-gray-600 dark:text-gray-300">Claude가 고른 {PICK_COS.length}종목을 한 표에서 비교한다 — 가능성 반영 기대 수익률 순위, 묶음별 요약, 비중 바꿔 보기, 역할별 목록.</p>
+          <p className="text-xs text-gray-600 dark:text-gray-300">Claude가 고른 {counts.picks}종목(+ 비교용 애플·나이키)을 한 표에서 비교한다 — 가능성 반영 기대 수익률 순위, 묶음별 요약, 비중 바꿔 보기, 역할별 목록.</p>
         </button>
         <button type="button" onClick={() => onList('all')} className={`${card} hover:border-blue-400`}>
           <p className="text-base font-semibold text-gray-900 dark:text-white">🔎 조건으로 찾기</p>
@@ -10759,7 +10759,7 @@ function StockSummary({ stockKey }: { stockKey: string }) {
       )}
       {co && (
         <div className="rounded-lg bg-blue-50/70 dark:bg-blue-950/20 p-2.5 space-y-1">
-          <p className="text-sm text-gray-900 dark:text-white"><b>엄선 · 앞으로 10년 기대(추정) 연 {pickEv(co).toFixed(1)}%</b> <span className="text-xs text-gray-500">— 좋은 그림 연 {co.good.r}%({co.good.p}%) · 기본 연 {co.base.r}%({co.base.p}%) · 나쁜 그림 연 {co.bad.r}%({co.bad.p}%)</span></p>
+          <p className="text-sm text-gray-900 dark:text-white"><b>{OUT_OF_PICKS.has(co.key) ? '비교용(엄선 밖)' : '엄선'} · 앞으로 10년 기대(추정) 연 {pickEv(co).toFixed(1)}%</b> <span className="text-xs text-gray-500">— 좋은 그림 연 {co.good.r}%({co.good.p}%) · 기본 연 {co.base.r}%({co.base.p}%) · 나쁜 그림 연 {co.bad.r}%({co.bad.p}%)</span></p>
           <p className="text-xs text-gray-600 dark:text-gray-300">{co.one}</p>
           <p className="text-[11px] text-gray-500">PER 기준: {co.pe}. 자세한 근거는 아래 심층 리포트·미래 시나리오.</p>
         </div>
