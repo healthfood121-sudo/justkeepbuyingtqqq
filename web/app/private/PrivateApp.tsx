@@ -10837,8 +10837,18 @@ function PrivateAppInner({ u = 'picks' }: { u?: Universe }) {
       </div>
       <StockSearch onPick={openKey} />
       {u === 'picks' && v === 'picks' && <TrioCompare onPick={openKey} />}
-      {u === 'picks' && v === 'picks' && <PicksPanel onPick={openKey} activeKey="" />}
-      <OverviewTable activeStock={-1} setActiveStock={i => openKey(STOCKS[i].key)} only={only} />
+      {u === 'picks' && v === 'picks' ? (<>
+        <details className="rounded-xl border border-gray-200 dark:border-gray-800 p-3">
+          <summary className="text-sm font-semibold text-gray-800 dark:text-gray-100 cursor-pointer">역할별 목록 — 포트폴리오 안의 역할로 묶어 보기 (눌러서 펼치기)</summary>
+          <div className="mt-3"><PicksPanel onPick={openKey} activeKey="" /></div>
+        </details>
+        <details className="rounded-xl border border-gray-200 dark:border-gray-800 p-3">
+          <summary className="text-sm font-semibold text-gray-800 dark:text-gray-100 cursor-pointer">숫자 표 — PER·10년 보유 성적·이익 성장으로 정렬해 보기 (눌러서 펼치기)</summary>
+          <div className="mt-3"><OverviewTable activeStock={-1} setActiveStock={i => openKey(STOCKS[i].key)} only={only} /></div>
+        </details>
+      </>) : (
+        <OverviewTable activeStock={-1} setActiveStock={i => openKey(STOCKS[i].key)} only={only} />
+      )}
     </>)
   }
 

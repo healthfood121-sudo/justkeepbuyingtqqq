@@ -238,15 +238,24 @@ export default function TrioCompare({ onPick }: { onPick: (key: string) => void 
   const th = 'py-1.5 px-2 font-medium text-gray-400 text-left whitespace-nowrap'
   const td = 'py-1.5 px-2 text-gray-700 dark:text-gray-200 align-top min-w-[8.5rem]'
   const small = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
+  const [tab, setTab] = useState<'rank' | 'groups' | 'table' | 'mix'>('rank')
+  const TABS: [typeof tab, string][] = [['rank', '기대 순위'], ['groups', '묶음별 해설'], ['table', '자세히 비교(표)'], ['mix', '비중 섞어 보기']]
   return (
     <section className="rounded-xl border-2 border-blue-200 dark:border-blue-900/60 p-3 sm:p-4 space-y-3">
       <div>
         <h3 className="text-sm font-semibold text-gray-900 dark:text-white">엄선 54종목 — 한눈에 비교 (10년, 추정)</h3>
-        <p className={small}>에르메스·빅테크 5개·나이키에 핵심 복리 9종목(비자·마스터카드·S&amp;P 글로벌·무디스·MSCI·ADP·스트라이커·그레이코·도널드슨)과 지금 싼 알짜 11종목(FICO·인튜이트·어도비·코파트·조에티스·넷플릭스·부킹·IDEXX·레녹스·브로드리지·LVMH), 고성장 7종목(엔비디아·브로드컴·인튜이티브 서지컬·트랜스다임·서비스나우·메르카도리브레·텍사스 로드하우스), 방어 8종목(P&amp;G·코카콜라·펩시코·맥도날드·콜게이트·CME·프로그레시브·리퍼블릭 서비스), 숨은 알짜 12종목(인터퍼퓸·맥그래스·UFP·캐브코·메드페이스·유비쿼티·퀄리스·르메트르·익스포넌트·프랭클린·배저 미터·발켐)을 더했다. 각 종목 리포트의 미래 모델(시나리오·가능성)을 모았다. 수익률 = 이익 성장 + PER 변화 + 배당(세전). 종목 이름을 누르면 그 페이지로 간다. 2026-11-10 기준, 투자 추천이 아니다.</p>
+        <p className={small}>각 종목 리포트의 미래 모델(좋은·기본·나쁜 그림과 가능성)로 앞으로 10년 연 수익률을 추정해 한 줄로 세웠다. 이름을 누르면 그 종목 화면이 열린다. 투자 추천이 아니다.</p>
+        <details className="mt-1"><summary className="text-[11px] text-gray-400 cursor-pointer">어떤 종목이 들어 있나(눌러서 펼치기)</summary><p className={small}>에르메스·빅테크 5개·나이키에 핵심 복리 9종목(비자·마스터카드·S&amp;P 글로벌·무디스·MSCI·ADP·스트라이커·그레이코·도널드슨)과 지금 싼 알짜 11종목(FICO·인튜이트·어도비·코파트·조에티스·넷플릭스·부킹·IDEXX·레녹스·브로드리지·LVMH), 고성장 7종목(엔비디아·브로드컴·인튜이티브 서지컬·트랜스다임·서비스나우·메르카도리브레·텍사스 로드하우스), 방어 8종목(P&amp;G·코카콜라·펩시코·맥도날드·콜게이트·CME·프로그레시브·리퍼블릭 서비스), 숨은 알짜 12종목(인터퍼퓸·맥그래스·UFP·캐브코·메드페이스·유비쿼티·퀄리스·르메트르·익스포넌트·프랭클린·배저 미터·발켐)을 더했다. 각 종목 리포트의 미래 모델(시나리오·가능성)을 모았다. 수익률 = 이익 성장 + PER 변화 + 배당(세전). 종목 이름을 누르면 그 페이지로 간다. 2026-11-10 기준, 투자 추천이 아니다.</p></details>
       </div>
 
-      <div className="rounded-lg bg-gray-50 dark:bg-gray-900/40 p-2.5">
-        <p className="text-xs font-semibold text-gray-800 dark:text-gray-100 mb-1.5">가능성 반영 기대 순위</p>
+      <div className="flex flex-wrap gap-1.5">
+        {TABS.map(([k, l]) => (
+          <button key={k} type="button" onClick={() => setTab(k)} className={`px-3 py-1 rounded-full text-xs ${tab === k ? 'bg-blue-600 text-white font-semibold' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'}`}>{l}</button>
+        ))}
+      </div>
+
+      {tab === 'rank' && <div className="rounded-lg bg-gray-50 dark:bg-gray-900/40 p-2.5">
+        <p className="text-xs font-semibold text-gray-800 dark:text-gray-100 mb-1.5">가능성 반영 기대 순위 <span className="font-normal text-gray-400">— 막대 = 앞으로 10년 연 수익률(추정), 오른쪽 = 나쁜 그림에서 손실이 날 가능성</span></p>
         <div className="space-y-1">
           {rank.map(c => {
             const v = ev(c)
@@ -260,9 +269,9 @@ export default function TrioCompare({ onPick }: { onPick: (key: string) => void 
             )
           })}
         </div>
-      </div>
+      </div>}
 
-      <div className="overflow-x-auto"><table className="w-full text-xs">
+      {tab === 'table' && <><div className="overflow-x-auto"><table className="w-full text-xs">
         <thead><tr className="border-b border-gray-200 dark:border-gray-800"><th className={th}></th>{COS.map(c => <th key={c.key} className={th}><button onClick={() => onPick(c.key)} className="hover:underline text-blue-600 dark:text-blue-400">{c.name}</button></th>)}</tr></thead>
         <tbody>
           {([
@@ -280,9 +289,9 @@ export default function TrioCompare({ onPick }: { onPick: (key: string) => void 
           ))}
         </tbody>
       </table></div>
-      <p className="text-[11px] text-gray-400">표는 옆으로 밀어서 본다.</p>
+      <p className="text-[11px] text-gray-400">표는 옆으로 밀어서 본다. 종목 이름을 누르면 그 종목 화면이 열린다.</p></>}
 
-      <div className="grid sm:grid-cols-2 gap-2 text-xs">
+      {tab === 'groups' && <div className="grid sm:grid-cols-2 gap-2 text-xs">
         <div className="rounded-lg bg-orange-50/70 dark:bg-orange-950/20 p-2.5"><b>바닥이 높은 쪽(에르메스·마이크로소프트):</b> 나쁜 그림에서도 손실이 거의 없다. 포트폴리오의 중심.</div>
         <div className="rounded-lg bg-blue-50/70 dark:bg-blue-950/20 p-2.5"><b>기대가 높은 쪽(아마존·구글·메타):</b> 연 10~12%대 기대, 대신 손실 가능성 20~25%. 모두 AI 투자 회수에 걸려 있다 — 셋을 다 많이 담으면 같은 위험을 겹쳐 사는 셈.</div>
         <div className="rounded-lg bg-gray-100 dark:bg-gray-800/60 p-2.5"><b>값이 문제인 쪽(애플):</b> 사업은 가장 확실하지만 PER 40배라 기대가 연 4% 안팎. 약 250달러(PER 28배)면 연 8%대.</div>
@@ -302,9 +311,9 @@ export default function TrioCompare({ onPick }: { onPick: (key: string) => void 
         <div className="rounded-lg bg-rose-50/70 dark:bg-rose-950/20 p-2.5"><b>숨은 알짜 중 기대가 높은 쪽(르메트르·프랭클린 일렉트릭):</b> 기대 연 7.5~9%. 둘 다 PER이 10년 평소보다 20~30% 싸고, 르메트르는 해마다 값 +7%, 프랭클린은 물이라는 필수재. 지금 값에서 나눠 모으기 시작할 만한 쪽.</div>
         <div className="rounded-lg bg-violet-50/70 dark:bg-violet-950/20 p-2.5"><b>사업은 최상, 값이 기대를 누르는 쪽(메드페이스·발켐·UFP·익스포넌트·캐브코):</b> 기대 연 4.5~6.7%. 이익률·꾸준함은 엄선 최상위권이지만 PER 28~36배. 실망으로 값이 내려올 때 담는 후보.</div>
         <div className="rounded-lg bg-sky-50/70 dark:bg-sky-950/20 p-2.5"><b>흔들림이 큰 쪽(유비쿼티·배저 미터·퀄리스·인터퍼퓸·맥그래스):</b> 기대 연 5.3~6.6%, 나쁜 그림 확률 20~25%. 하드웨어 재고 주기·지자체 프로젝트·AI 소프트웨어 공포·라이선스·건설 경기 — 각자 다른 이유로 반 토막이 난 적 있다. 다른 이유로 흔들려 서로 섞기엔 좋다.</div>
-      </div>
+      </div>}
 
-      <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-3 space-y-2">
+      {tab === 'mix' && <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-3 space-y-2">
         <p className="text-xs font-semibold text-gray-800 dark:text-gray-100">섞으면 — 비중을 바꿔 보기</p>
         <div className="flex flex-wrap gap-3">
           {COS.map(c => (
@@ -323,7 +332,7 @@ export default function TrioCompare({ onPick }: { onPick: (key: string) => void 
           ))}
         </div>
         <p className={small}><b>왜 섞으면 좋은가:</b> 흔들리는 이유가 다르다 — 에르메스는 부자들의 소비, 마이크로소프트·구글·아마존·메타는 AI 투자 회수와 광고 경기, 애플은 값과 규제, 나이키는 브랜드 경쟁. 기본 비중(에르메스 25·마이크로소프트 20·구글 15·아마존 15·메타 10·나이키 10·애플 5%, 나머지 9종목은 0%에서 시작 — 직접 넣어 보면 된다)이면 모두 나쁜 그림이어도 손실이 크지 않다. 다만 빅테크 넷은 같은 AI 흐름을 타므로 서로 완전히 다르지 않다는 점을 기억할 것. 비중은 예시이고, 지수(S&amp;P 500 등)와 함께 담는 편이 더 안전하다.</p>
-      </div>
+      </div>}
       <p className="text-[11px] text-gray-400">세후 배당은 미국 배당 15%, 프랑스 배당 약 12.8~15% 원천징수를 뺀 대략값(개인 상황에 따라 다르다). 시나리오 수익률은 각 종목 리포트의 미래 이익 모델 값(본업 이익 기준). 가능성(%)은 판단이며 신호가 나오면 다시 매긴다.</p>
     </section>
   )
