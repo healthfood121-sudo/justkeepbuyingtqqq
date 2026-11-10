@@ -65,6 +65,11 @@ export function dayStr(perDay: number, unit: string): string {
   return `하루 ${num(v)}${u}`
 }
 
+// 사업부 색: '#hex'(직접 넣은 카드) 또는 'bg-…'(째깍째깍 사업부별 시계에서 자동으로 가져온 카드)
+function Dot({ color }: { color: string }) {
+  return color.startsWith('bg-') ? <span className={`inline-block w-2 h-2 rounded-full shrink-0 ${color}`} /> : <span className="inline-block w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
+}
+
 function Tip({ children, text }: { children: ReactNode; text: ReactNode }) {
   const [open, setOpen] = useState(false)
   return (
@@ -132,15 +137,15 @@ export default function OwnerCard({ p, compact = false, onOpen, children }: { p:
         <div className="space-y-0.5">
           {segs.map(s => (
             <p key={s.name} className="text-xs text-gray-600 dark:text-gray-300 tabular-nums flex gap-1.5 items-center">
-              <span className="inline-block w-2 h-2 rounded-full shrink-0" style={{ background: s.color }} />
+              <Dot color={s.color} />
               <span className="truncate">{s.name}</span>
               <span className="ml-auto shrink-0">1초 {money(s.rev * ratio / SEC_Y, c)} · 하루 {money(s.rev * ratio / 365, c)}</span>
             </p>
           ))}
         </div>
-        <p className="text-xs text-amber-700 dark:text-amber-300 tabular-nums">
+        {p.fun.length > 0 && <p className="text-xs text-amber-700 dark:text-amber-300 tabular-nums">
           {p.fun.slice(0, 2).map(f => `${f.label} ${rateStr(f.perYear * ratio, f.unit, f.per === 'day' ? 'day' : 'sec')}`).join(' · ')}
-        </p>
+        </p>}
         {children}
       </div>
     )
@@ -168,27 +173,27 @@ export default function OwnerCard({ p, compact = false, onOpen, children }: { p:
         {p.segs.map(s => (
           <div key={s.name} className="text-xs">
             <div className="flex items-center gap-1.5">
-              <span className="inline-block w-2 h-2 rounded-full shrink-0" style={{ background: s.color }} />
+              <Dot color={s.color} />
               <Tip text={s.note}><span className="text-gray-800 dark:text-gray-100">{s.name}</span></Tip>
               <span className="ml-auto tabular-nums text-gray-700 dark:text-gray-200">{s.rev > 0 ? `${money(s.rev * ratio / SEC_Y, c)} · ${money(s.rev * ratio / 365, c)}` : '—'}</span>
               <span className={`w-20 text-right tabular-nums font-semibold ${s.profit < 0 ? 'text-red-500' : 'text-gray-900 dark:text-white'}`}>{money(s.profit * ratio, c, Math.abs(s.profit * ratio) >= 100)}</span>
             </div>
-            {s.rev > 0 && <div className="ml-3.5 mt-0.5 h-1 rounded-full bg-gray-200 dark:bg-gray-800"><div className="h-1 rounded-full" style={{ width: `${s.rev / segTotalRev * 100}%`, background: s.color }} /></div>}
+            {s.rev > 0 && <div className="ml-3.5 mt-0.5 h-1 rounded-full bg-gray-200 dark:bg-gray-800"><div className={`h-1 rounded-full ${s.color.startsWith('bg-') ? s.color : ''}`} style={{ width: `${s.rev / segTotalRev * 100}%`, ...(s.color.startsWith('bg-') ? {} : { background: s.color }) }} /></div>}
           </div>
         ))}
         <p className="text-[11px] text-gray-400">가운데 = 매출 1초 · 하루, 오른쪽 = 이익 1년(추정). 이름을 누르면 설명.</p>
       </div>
 
-      <div className="rounded-lg bg-amber-50/80 dark:bg-amber-950/20 p-2.5 space-y-1">
+      {p.fun.length > 0 && <div className="rounded-lg bg-amber-50/80 dark:bg-amber-950/20 p-2.5 space-y-1">
         <p className="text-xs font-semibold text-gray-800 dark:text-gray-100">내 몫으로 일어나는 일</p>
         {p.fun.map(f => (
           <p key={f.label} className="text-xs text-gray-700 dark:text-gray-200 tabular-nums">
             <Tip text={<>{f.note} 회사 전체 1년 {num(f.perYear)}{f.unit} × 내 비율. 신뢰도 {f.grade}(A 회사 공식 · B 회사 발표지만 최소값·환산 · C 2차 출처).</>}>{f.label}</Tip>{' '}
             <b className="text-amber-700 dark:text-amber-300">{rateStr(f.perYear * ratio, f.unit, f.per === 'day' ? 'day' : 'sec')}</b>
-            <span className="text-gray-400"> · {dayStr(f.perYear * ratio / 365, f.unit)}</span>
+            {/^1(초|분|시간) /.test(rateStr(f.perYear * ratio, f.unit, f.per === 'day' ? 'day' : 'sec')) && <span className="text-gray-400"> · {dayStr(f.perYear * ratio / 365, f.unit)}</span>}
           </p>
         ))}
-      </div>
+      </div>}
 
       {p.stakes && (
         <div className="space-y-0.5">

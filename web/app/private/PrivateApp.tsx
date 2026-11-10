@@ -62,7 +62,7 @@ import TrioCompare, { COS as PICK_COS, ev as pickEv, OUT_OF_PICKS } from './repo
 import HermesStoreMap from './reports/HermesStoreMap'
 import OwnerCard from './reports/OwnerCard'
 import MyPortfolio from './reports/MyPortfolio'
-import { OWNERS } from './reports/ownerData'
+import { OWNERS, type OwnerProfile, type OwnerSeg, type OwnerFun } from './reports/ownerData'
 import Link from 'next/link'
 import { UNIV } from './universe'
 import { PICK_GROUPS, PICKS_AS_OF } from './picks'
@@ -6753,7 +6753,8 @@ function ValueClockCore({ cur, anchors: rawAnchors, monthly, last, g, sharesOut,
       <div className="space-y-2">
         {toggles}
         <p className={p}>최근 1년 {eL}{isFcf ? '이' : '가'} {isFcf ? '마이너스(설비투자가 영업현금보다 큼)' : '적자'}라 적정가 선을 그릴 수 없다.{isFcf ? ' 이익(EPS) 기준으로 돌아가 본다.' : ''}</p>
-        {(liveTiles || segments) && <SalesLive liveTiles={liveTiles} seg={segments} sharesOut={sharesOut} />}
+        {(liveTiles || segments) && !ownerCard && <SalesLive liveTiles={liveTiles} seg={segments} sharesOut={sharesOut} />}
+        {ownerCard && <p className="text-xs text-gray-600 dark:text-gray-300">내 몫 매출·사업부별 몫·판매 환산은 <a href="#owner-card" className="text-blue-600 dark:text-blue-400 underline">맨 위 주주 카드</a>에 있다.</p>}
       </div>
     )
   }
@@ -7418,7 +7419,7 @@ function StockValueClock({ f, stockKey, rolling, title = '이익 시계 — 적�
         })()}
         fcfAnchors={fcfAnchorsOf(f)} ocfAnchors={ocfAnchorsOf(f)}
         fcfPs={m.fcfPs ?? null}
-        ownerCard={!!OWNERS[stockKey]}
+        ownerCard={!!buildOwner(stockKey, f)}
         segments={SEGMENTS[stockKey] ?? (SEG_MIX[stockKey] ? segFromMix(SEG_MIX[stockKey], f) : undefined)}
         notes={`EPS는 SEC 공시(10-K) 회계연도 값을 마감일 기준으로 이은 근사치이고(2008년 무렵 이전은 10-K 원문의 5년 요약 표에서 읽고 겹치는 해로 맞춘 값), ${f.ttmAsOf ?? '최근'} 이후는 정한 성장률로 연장했다. 주가는 배당을 반영하지 않은 월말 종가(분할 반영). 일회성 손익이 큰 해는 선이 출렁인다. 회사 전체 숫자는 공시 유통 주식 수${f.shares ? `(${f.shares.asOf})` : ''} × 최근 1년 EPS로 계산한 근사치.`}
       />
@@ -7738,6 +7739,66 @@ function StockValueClockByKey({ stockKey, rolling, title }: { stockKey: string; 
   }, [stockKey])
   return f ? <StockValueClock f={f} stockKey={stockKey} rolling={rolling} title={title} /> : null
 }
+
+
+// ── 주주 카드 자동 생성: 이익 시계(째깍째깍)의 사업부별 숫자·판매 시계를 그대로 가져와 1년 값으로 바꾼다 ──
+// 구글·에르메스는 직접 조사한 카드(ownerData.ts)를 쓰고, 나머지는 여기서 만든다. 숫자가 없으면 null(카드 없음 → 째깍째깍 그대로).
+const stockName = (k: string) => (spDesc as any)[k]?.name ?? STOCKS.find(s => s.key === k)?.data.name ?? k
+function buildOwner(key: string, f: ClockFund | null): OwnerProfile | null {
+  if (OWNERS[key]) return OWNERS[key]
+  if (!f || !f.shares?.count) return null
+  const seg = SEGMENTS[key] ?? (SEG_MIX[key] ? segFromMix(SEG_MIX[key], f) : undefined)
+  const toY = (v: number, days: number) => v * 365 / days
+  let segs: OwnerSeg[] = []
+  let period = '', src = '', how = ''
+  const fun: OwnerFun[] = []
+  if (seg) {
+    segs = seg.rows.map(r => ({ name: r.name, rev: toY(r.rev, seg.days), profit: toY(r.profit, seg.days), color: r.color, note: r.note }))
+    period = `${seg.period}를 1년으로 늘림`; src = seg.src; how = seg.how.replace(/&lsquo;|&rsquo;/g, "'").replace(/&ldquo;|&rdquo;/g, '"')
+    for (const r of seg.rows) if (r.units && r.units.n > 0) fun.push({ label: r.units.what, perYear: toY(r.units.n, seg.days), unit: r.units.value ? `${r.units.unit} 값` : r.units.unit, grade: r.units.value ? 'B' : 'A', note: `${r.name} ${r.units.value ? '매출 ÷ 대표 가격 = 몇 개 값(실제 판매 개수 아님)' : '판매량'}. ${seg.period} 숫자를 1년으로 늘림.` })
+  } else {
+    const q = f.cash?.revQ
+    const ni = f.cash?.ttm?.ni ?? (f.cash?.years ? Object.entries(f.cash.years).sort((a, b) => +b[0] - +a[0])[0]?.[1]?.ni : null)
+    const rc = revQClock(q, ni)
+    if (!rc || !q || ni == null) return null
+    segs = [{ name: '회사 전체', rev: toY(q.rev * 1e6, rc.days), profit: ni * 1e6, color: 'bg-gray-500', note: '사업부별 숫자를 아직 넣지 않은 종목이라 회사 전체만 보여 준다.' }]
+    period = `${rc.period} 매출을 1년으로 늘림 · 이익은 최근 1년 순이익`; src = 'SEC 분기·연간 보고서(자동 수집)'
+    how = '매출은 가장 최근 분기, 이익은 최근 1년 순이익(SEC 자동 수집).'
+  }
+  // 판매 시계(직접 조사한 건수·대표 상품 값)
+  const sc = SALES_CLOCK[key]
+  for (const c of sc ? [sc, ...(sc.more ?? [])] : []) {
+    if (c.count) fun.push({ label: c.count.label, perYear: (c.count.perDay ?? c.count.n / c.days) * 365, unit: c.count.unit, grade: 'A', note: `${c.count.note} (${c.period}, ${c.src})` })
+    if (c.rev && c.equiv) fun.push({ label: c.equiv.item, perYear: c.rev.amount / c.days * 365 / c.equiv.price, unit: `${c.equiv.unit} 값`, grade: 'B', note: `${c.rev.label}을 ${c.equiv.priceNote}로 나눈 값. ${c.equiv.caveat}` })
+  }
+  if (key === 'NKE') fun.unshift({ label: '에어포스 1', perYear: NKE_FW_Q / NKE_FW_Q_DAYS * 365 / AF1_USD, unit: '켤레 값', grade: 'B', note: `나이키 브랜드 신발 매출 ÷ 에어포스 1 '07 미국 정가($${AF1_USD}). 실제 판매 켤레 수 아님.` })
+  // 같은 것을 두 번 세지 않게: 이름(괄호 앞)이 같거나 1년 양이 5% 안으로 같으면 앞의 것만
+  const funU: OwnerFun[] = []
+  for (const x of fun) {
+    const nm = x.label.replace(/\(.*$/, '').trim()
+    if (funU.some(y => y.label.replace(/\(.*$/, '').trim() === nm || (y.unit === x.unit && Math.abs(y.perYear / x.perYear - 1) < 0.05))) continue
+    funU.push(x)
+  }
+  const price = f.lastPrice?.close ?? (f.metrics as any).price ?? 0
+  const dps = price * ((f.metrics as any).divYield ?? 0) / 100
+  return {
+    key, name: stockName(key), cur: (seg?.cur as '$' | '€' | undefined) ?? '$', sharesOut: f.shares.count, storageKey: `clock-shares-${key}`,
+    period, src, segs, fun: funU, dps, how,
+    cash: dps > 0 ? '배당으로 나눠 주고 남은 이익은 자사주 매입·재투자·현금으로 쌓여 주식 가치로 돌아온다.' : '배당이 없다 — 이익은 자사주 매입·재투자로 주식 가치에 쌓인다.',
+  }
+}
+const ownerCache = new Map<string, Promise<OwnerProfile | null>>()
+function loadOwner(key: string): Promise<OwnerProfile | null> {
+  if (OWNERS[key]) return Promise.resolve(OWNERS[key])
+  if (!ownerCache.has(key)) ownerCache.set(key, fetch(`/data/fundamentals/${key}.json`).then(r => (r.ok ? r.json() : null)).then(f => buildOwner(key, f)).catch(() => null))
+  return ownerCache.get(key)!
+}
+function AutoOwnerCard({ stockKey }: { stockKey: string }) {
+  const [p, setP] = useState<OwnerProfile | null>(null)
+  useEffect(() => { let alive = true; setP(null); loadOwner(stockKey).then(x => { if (alive) setP(x) }); return () => { alive = false } }, [stockKey])
+  return p ? <OwnerCard p={p} /> : null
+}
+const PORTFOLIO_OPTIONS = STOCKS.filter(s => !['QLD', 'QQQ', 'TQQQ'].includes(s.key)).map(s => ({ key: s.key, name: stockName(s.key) }))
 
 // ── 연말 PER 흐름 차트 (에르메스 3-1) ─────────────────────────
 function PeTimelineChart({ timeline, peNow }: { timeline: Array<[number, number]>; peNow: number }) {
@@ -10725,7 +10786,7 @@ function HomeScreen({ onPick, onList, counts }: { onPick: (key: string) => void;
         <p className="text-sm text-gray-500 dark:text-gray-400">종목을 검색하거나, 아래 입구에서 목록을 열어 고른다. 종목을 고르면 그 종목 화면이 열린다.</p>
       </div>
       <StockSearch onPick={onPick} big />
-      <MyPortfolio onPick={onPick} />
+      <MyPortfolio onPick={onPick} resolve={loadOwner} options={PORTFOLIO_OPTIONS} />
       <div className="grid sm:grid-cols-2 gap-3">
         <button type="button" onClick={() => onList('picks')} className={`${card} hover:border-blue-400 bg-blue-50/50 dark:bg-blue-950/20`}>
           <p className="text-base font-semibold text-gray-900 dark:text-white">⭐ 엄선 종목</p>
@@ -10909,7 +10970,7 @@ function PrivateAppInner({ u = 'picks' }: { u?: Universe }) {
     </div>
 
     <StockSummary stockKey={current.key} />
-    {OWNERS[current.key] && <OwnerCard p={OWNERS[current.key]} />}
+    <AutoOwnerCard stockKey={current.key} />
     <HowToRead />
 
     {/* 리셀 웃돈·할인 추이 (에르메스·나이키) */}
