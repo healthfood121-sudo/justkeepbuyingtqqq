@@ -49,7 +49,8 @@ const ITEMS: Item[] = [
     usage: { perYear: 1e9, unit: '명', label: '월 사용자', src: '회사 발표 "AI 모드 월 10억 명 이상"(2026년)', grade: 'A' } },
   { group: 'AI', name: 'AI 토큰 처리(구글 전체)', what: '제미나이·검색 AI·유튜브·워크스페이스·클라우드 API가 처리하는 AI 글자 조각(토큰) 전체. AI가 실제로 얼마나 일하는지 보여 준다.',
     money: '검색·구독·클라우드 매출 안에 나뉘어 들어간다(따로 매출 없음).',
-    usage: { perYear: 3.2e15 * 12, unit: '토큰', label: 'AI 토큰 처리', src: '피차이 CEO "한 달 3.2경(3,200조) 토큰 이상"(2026년 5월 구글 I/O) × 12. 2025년 약 480조 → 1년 새 약 7배', grade: 'B' } },
+    usage: { perYear: 3.2e15 * 12, unit: '토큰', label: 'AI 토큰 처리', src: '피차이 CEO "한 달 3.2경(3,200조) 토큰 이상"(2026년 5월 구글 I/O) × 12. 2025년 약 480조 → 1년 새 약 7배', grade: 'B' },
+    fun: my => `토큰 = AI가 읽고 쓰는 글자 조각(한국어 1~2글자, 영어 단어 약 0.75개). 질문 하나에 질문+답 약 1,000토큰으로 치면, 내 몫으로 하루 약 ${Math.round(my / 365 / 1000).toLocaleString()}번의 AI 질문·답이 처리되는 셈(1초 약 ${(my / SEC_Y).toFixed(0)}토큰 ≈ 한국어 짧은 문장 2~3개). 긴 문서를 읽거나 "생각하는" AI는 한 번에 1만 토큰 넘게 쓰기도 하고, 유튜브 영상 분석·기업 AI 작업도 포함된 숫자라 감을 잡기 위한 환산이다.` },
   { group: '클라우드', name: '구글 클라우드(서버·TPU·워크스페이스·제미나이 기업용)', what: '기업에 서버·AI 칩(TPU)·AI 모델을 빌려주고, 지메일·문서도구(워크스페이스) 기업판을 판다.',
     money: '사용량·좌석 요금. 최근 분기 +103%, 영업이익률 36%. 수주 잔고 5,610억 달러.',
     rev: { perYear: 93.2e9, label: '클라우드 매출' }, pm: 28,
@@ -146,7 +147,7 @@ export default function GoogleMyShare() {
           ['이익(추정)', `1초 ${perSec(pf)}`, `1시간 ${usd(pf / 8760)} · 하루 ${usd(pf / 365)} · 1년 ${usd(pf)}`],
           ['검색', rate(5e12 * ratio, '번'), `하루 ${Math.round(5e12 * ratio / 365).toLocaleString()}번`],
           ['유튜브 시청', `1초 ${perN(1e9 * 365 * ratio * 3600 / SEC_Y)}초`, `하루 ${(1e9 * ratio).toFixed(1)}시간`],
-          ['AI 토큰', rate(3.2e15 * 12 * ratio, '개'), `하루 ${Math.round(3.2e15 * 12 * ratio / 365).toLocaleString()}개`],
+          ['AI 토큰', rate(3.2e15 * 12 * ratio, '개'), `하루 ${Math.round(3.2e15 * 12 * ratio / 365).toLocaleString()}개 ≈ AI 질문 ${Math.round(3.2e15 * 12 * ratio / 365 / 1000).toLocaleString()}번(1회 1,000토큰 가정)`],
           ['웨이모 무인 주행', rate(4e6 * 1.609 * 52 * ratio, 'km'), `1년 ${perN(4e6 * 1.609 * 52 * ratio)}km · 탑승 ${rate(500e3 * 52 * ratio, '회')} (거리는 덜 확실)`],
         ]
         return (
