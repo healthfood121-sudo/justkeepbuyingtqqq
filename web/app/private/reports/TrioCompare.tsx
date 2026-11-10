@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 
-// 엄선 16종목 비교 — 각 종목 리포트의 미래 모델(시나리오·가능성)을 한곳에 모았다.
+// 엄선 27종목 비교 — 각 종목 리포트의 미래 모델(시나리오·가능성)을 한곳에 모았다.
 type Sc = { p: number; r: number }
 type Co = { key: string; name: string; price: string; pe: string; earn: string; div: number; divNet: number
   good: Sc; base: Sc; bad: Sc; risk: string; next: string; signal: string; color: string; one: string }
@@ -72,11 +72,55 @@ const COS: Co[] = [
     good: { p: 20, r: 13.8 }, base: { p: 60, r: 9.1 }, bad: { p: 20, r: -0.5 },
     risk: '트럭·건설 장비 경기, 전기차(엔진 필터 감소), 퍼싯 인수 실행', next: '12월 초 2027 회계연도 1분기 실적', signal: '교체 필터 +5% 이상, 조정 영업이익률 16% 이상', color: 'bg-cyan-700',
     one: '교체 필터 반복 매출, 70년 배당. 망가지기도 빨리 크기도 어려운 사업.' },
+  { key: 'FICO', name: 'FICO', price: '약 688달러', pe: '조정 약 16배 (10년 평소 공시 약 53배)', earn: '흔들림 — 2027 회계연도 전망 미제시, 주택담보 점수 가격 압박', div: 0, divNet: 0,
+    good: { p: 20, r: 23.1 }, base: { p: 50, r: 13.3 }, bad: { p: 30, r: -0.8 },
+    risk: '정부가 미는 경쟁 점수(밴티지스코어)로 주택담보 점수 독점·가격이 무너짐', next: '2027년 1월 말 1분기 실적', signal: '주택담보 점수 단가·물량 유지, 자사주 재개', color: 'bg-fuchsia-600',
+    one: '대출 심사의 공용어. 가격 인상 반납까진 반영, 독점 붕괴까진 아님 — 작게 담는 옵션.' },
+  { key: 'INTU', name: '인튜이트', price: '약 329달러', pe: '조정 약 14배 (10년 평소 공시 약 51배)', earn: '둔화 — 전망 하향, 터보택스 +2~3%, 퀵북스는 +20%', div: 1.6, divNet: 1.35,
+    good: { p: 20, r: 22.0 }, base: { p: 55, r: 15.3 }, bad: { p: 25, r: 0.9 },
+    risk: 'AI가 세금 신고·장부 정리를 대신해 터보택스 고객 이탈', next: '11월 말 1분기, 진짜 시험은 2027년 5월 세금 시즌', signal: '터보택스 고객 수 유지, 퀵북스 +15% 이상', color: 'bg-emerald-600',
+    one: '퀵북스는 아직 +20%. 터보택스 공포가 값을 10년 평소의 절반 아래로 눌렀다.' },
+  { key: 'ADBE', name: '어도비', price: '약 247달러', pe: '조정 약 10배 (10년 평소 공시 약 45배)', earn: '증가 — 매출 +10%대 초반, 그러나 신규 반복 매출 둔화', div: 0, divNet: 0,
+    good: { p: 20, r: 22.9 }, base: { p: 50, r: 15.2 }, bad: { p: 30, r: -0.8 },
+    risk: 'AI 이미지·영상 도구가 포토샵·프리미어를 대체, CEO 교체', next: '12월 중순 4분기 실적', signal: '2027년 반복 매출 목표, 무료 → 유료 전환 숫자', color: 'bg-red-700',
+    one: '이익은 꺾이지 않았는데 값은 3분의 1. "AI에 지지 않는다"에 거는 몫.' },
+  { key: 'CPRT', name: '코파트', price: '약 29달러', pe: '약 19배 (10년 평소 약 32배)', earn: '정체 — 미국 보험 사고차 물량 감소, 자사주 재개', div: 0, divNet: 0,
+    good: { p: 25, r: 13.3 }, base: { p: 55, r: 8.1 }, bad: { p: 20, r: -0.5 },
+    risk: '보험 물량 감소 지속, 이자 수익 감소, ACV 인수(약 19억 달러) 실행', next: '11월 말~12월 초 1분기 실적', signal: '미국 보험 물량 반등, 대당 비용 안정', color: 'bg-stone-600',
+    one: '빚 없는 사고차 경매 독점. 과거 10년 보유 22번 모두 이겼다 — 복리 기계가 다시 도는지 확인하며 산다.' },
+  { key: 'ZTS', name: '조에티스', price: '약 78달러', pe: '조정 약 12배 (10년 평소 약 36배)', earn: '감소 — 반려동물 약 역성장, 가축용은 +7~12%', div: 2.6, divNet: 2.2,
+    good: { p: 20, r: 19.7 }, base: { p: 50, r: 12.0 }, bad: { p: 30, r: 1.3 },
+    risk: '피부병 약 경쟁 심화, 관절 주사(리브렐라) 안전성 논란, 동물병원 방문 감소', next: '2027년 2월 4분기 실적', signal: '2027년 매출 전망 플러스, 피부약 하락 멈춤', color: 'bg-purple-700',
+    one: '세계 1위 동물 약. 이익보다 값이 받치는 구조 — PER이 평소의 3분의 1.' },
+  { key: 'NFLX', name: '넷플릭스', price: '약 62달러', pe: '약 21배, 위약금 제외 (10년 평소 약 54배)', earn: '증가 — 매출 +12%, 이익 +20~30%', div: 0, divNet: 0,
+    good: { p: 20, r: 21.4 }, base: { p: 55, r: 14.1 }, bad: { p: 25, r: 0.4 },
+    risk: '시청 시간 감소, 가격 인상 한계, 광고 목표 지연', next: '2027년 1월 4분기 서한', signal: '2027년 이익률 전망 상향, 광고 매출 목표 달성', color: 'bg-red-600',
+    one: '성장 대비 싼 값. 대신 한 해 −75%도 가능한 종목 — "흔들리며 가는 12%".' },
+  { key: 'BKNG', name: '부킹', price: '약 149달러', pe: '조정 약 14.5배 (10년 평소 약 30배)', earn: '증가 — 이익 사상 최고, 4분기 매출 전망 0~2%로 둔화', div: 1.1, divNet: 0.95,
+    good: { p: 25, r: 21.6 }, base: { p: 50, r: 14.9 }, bad: { p: 25, r: 1.8 },
+    risk: 'AI 여행 비서가 부킹을 건너뜀, 전쟁·고유가 여행 둔화', next: '2027년 2월 4분기 실적', signal: '객실 예약 +5% 이상 회복, AI 제휴 숫자', color: 'bg-blue-800',
+    one: '싼 값 + 해마다 주식 4~7% 줄이는 자사주. 이익이 7%만 늘어도 주당이익은 11%.' },
+  { key: 'IDXX', name: 'IDEXX', price: '약 574달러', pe: '약 39배 (10년 평소 약 53배)', earn: '증가 — 2026년 매출 +10% 안팎, 전망 상향', div: 0, divNet: 0,
+    good: { p: 25, r: 13.9 }, base: { p: 55, r: 9.0 }, bad: { p: 20, r: 0.5 },
+    risk: '동물병원 방문 감소, 높은 PER이 내려오는 몫', next: '2027년 2월 4분기 실적', signal: '2027년 자체 성장 +8% 이상, 인뷰 Dx 설치 증가', color: 'bg-pink-600',
+    one: '동물 진단의 표준, 사업의 질은 최상위. 값이 높아 기대는 에르메스와 비슷.' },
+  { key: 'LII', name: '레녹스', price: '약 340달러', pe: '조정 약 15배 (10년 평소 약 26배)', earn: '정체 — 이익 2년째 제자리, 2027년 상반기 더 어렵다(회사)', div: 1.5, divNet: 1.3,
+    good: { p: 20, r: 18.1 }, base: { p: 55, r: 11.3 }, bad: { p: 25, r: -2.2 },
+    risk: '가격 결정력 상실(해외 저가 경쟁), 주택 경기, 관세', next: '2027년 1월 말 4분기 실적·전망', signal: '2027년 가격 인상이 먹힘, 가정용 물량 반등', color: 'bg-orange-700',
+    one: '설치 업체 직판망을 가진 냉난방. 싼 값이 "싼 이유"일 수 있다 — 가격 결정력 회복이 열쇠.' },
+  { key: 'BR', name: '브로드리지', price: '약 177달러', pe: '조정 약 18배 (10년 평소 약 33배)', earn: '증가 — 조정 이익 매년 사상 최고(디지털 자산 손익은 별도)', div: 2.5, divNet: 2.1,
+    good: { p: 20, r: 17.2 }, base: { p: 60, r: 12.3 }, bad: { p: 20, r: 3.4 },
+    risk: '전자 발송 규칙 변경으로 반복 매출 성장 소폭 역풍, 금융 뒤편 업무 AI 공포', next: '2027년 2월 2분기 실적', signal: '반복 매출 +5% 이상, 토큰화 거래량 증가', color: 'bg-slate-600',
+    one: '규제로 보호된 주주총회 발송 독점. 나쁜 그림에서도 플러스 — 이번 묶음에서 에르메스와 가장 닮았다.' },
+  { key: 'LVMH', name: 'LVMH', price: '약 409유로', pe: '약 19배 (10년 평소 약 25배)', earn: '감소 — 2023년 정점 뒤 2년 연속 이익 감소', div: 3.2, divNet: 2.7,
+    good: { p: 20, r: 16.0 }, base: { p: 50, r: 10.6 }, bad: { p: 30, r: -1.8 },
+    risk: '중국·중산층 명품 수요 부진 지속, 루이비통 가격 저항', next: '2027년 1월 말 2026년 연간 실적', signal: '패션·가죽 자체 성장 플러스 전환, 중국 회복', color: 'bg-amber-900',
+    one: '명품 경기 회복에 거는 몫. 에르메스와 같이 담으면 명품 위험이 겹친다.' },
 ]
 const ev = (c: Co) => (c.good.p * c.good.r + c.base.p * c.base.r + c.bad.p * c.bad.r) / 100
 const loss = (c: Co) => [c.good, c.base, c.bad].filter(s => s.r < 0).reduce((a, s) => a + s.p, 0)
 const f1 = (v: number) => `${v.toFixed(1)}%`
-const DEF: Record<string, number> = { RMS: 25, MSFT: 20, GOOGL: 15, AMZN: 15, META: 10, AAPL: 5, NKE: 10, V: 0, MA: 0, SPGI: 0, MCO: 0, MSCI: 0, ADP: 0, SYK: 0, GGG: 0, DCI: 0 }
+const DEF: Record<string, number> = { RMS: 25, MSFT: 20, GOOGL: 15, AMZN: 15, META: 10, AAPL: 5, NKE: 10, V: 0, MA: 0, SPGI: 0, MCO: 0, MSCI: 0, ADP: 0, SYK: 0, GGG: 0, DCI: 0, FICO: 0, INTU: 0, ADBE: 0, CPRT: 0, ZTS: 0, NFLX: 0, BKNG: 0, IDXX: 0, LII: 0, BR: 0, LVMH: 0 }
 
 export default function TrioCompare({ onPick }: { onPick: (key: string) => void }) {
   const [w, setW] = useState<Record<string, number>>(DEF)
@@ -89,8 +133,8 @@ export default function TrioCompare({ onPick }: { onPick: (key: string) => void 
   return (
     <section className="rounded-xl border-2 border-blue-200 dark:border-blue-900/60 p-3 sm:p-4 space-y-3">
       <div>
-        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">엄선 16종목 — 한눈에 비교 (10년, 추정)</h3>
-        <p className={small}>에르메스·빅테크 5개·나이키에 핵심 복리 9종목(비자·마스터카드·S&amp;P 글로벌·무디스·MSCI·ADP·스트라이커·그레이코·도널드슨)을 더했다. 각 종목 리포트의 미래 모델(시나리오·가능성)을 모았다. 수익률 = 이익 성장 + PER 변화 + 배당(세전). 종목 이름을 누르면 그 페이지로 간다. 2026-11-10 기준, 투자 추천이 아니다.</p>
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">엄선 27종목 — 한눈에 비교 (10년, 추정)</h3>
+        <p className={small}>에르메스·빅테크 5개·나이키에 핵심 복리 9종목(비자·마스터카드·S&amp;P 글로벌·무디스·MSCI·ADP·스트라이커·그레이코·도널드슨)과 지금 싼 알짜 11종목(FICO·인튜이트·어도비·코파트·조에티스·넷플릭스·부킹·IDEXX·레녹스·브로드리지·LVMH)을 더했다. 각 종목 리포트의 미래 모델(시나리오·가능성)을 모았다. 수익률 = 이익 성장 + PER 변화 + 배당(세전). 종목 이름을 누르면 그 페이지로 간다. 2026-11-10 기준, 투자 추천이 아니다.</p>
       </div>
 
       <div className="rounded-lg bg-gray-50 dark:bg-gray-900/40 p-2.5">
@@ -101,7 +145,7 @@ export default function TrioCompare({ onPick }: { onPick: (key: string) => void 
             return (
               <button key={c.key} onClick={() => onPick(c.key)} className="w-full flex items-center gap-2 text-xs text-left hover:bg-white/60 dark:hover:bg-gray-800/60 rounded px-1">
                 <span className="w-24 shrink-0 text-gray-700 dark:text-gray-200">{c.name}</span>
-                <span className="flex-1 h-2 rounded-full bg-gray-200 dark:bg-gray-800 overflow-hidden"><span className={`block h-full ${c.color}`} style={{ width: `${Math.max(0, v) / 13 * 100}%` }} /></span>
+                <span className="flex-1 h-2 rounded-full bg-gray-200 dark:bg-gray-800 overflow-hidden"><span className={`block h-full ${c.color}`} style={{ width: `${Math.min(100, Math.max(0, v) / 14 * 100)}%` }} /></span>
                 <span className="w-14 text-right font-semibold text-gray-900 dark:text-white">연 {v.toFixed(1)}%</span>
                 <span className="w-16 text-right text-gray-400">{loss(c) ? `손실 ${loss(c)}%` : '손실 없음'}</span>
               </button>
@@ -137,6 +181,10 @@ export default function TrioCompare({ onPick }: { onPick: (key: string) => void 
         <div className="rounded-lg bg-gray-100 dark:bg-gray-800/60 p-2.5"><b>회복 베팅(나이키):</b> 배당 4.3%가 받치는 반등 몫. 투자자의 날·분기 매출 신호를 보며 나눠 산다.</div>
         <div className="rounded-lg bg-yellow-50/70 dark:bg-yellow-950/20 p-2.5"><b>통행료형(비자·마스터카드·S&amp;P 글로벌·MSCI):</b> 기대 연 10~12%, 나쁜 그림에서도 대체로 플러스. 빅테크와 흔들리는 이유(규제·금융 경기)가 달라 섞기 좋다. 비자·마스터카드는 거의 같은 위험이라 하나면 충분.</div>
         <div className="rounded-lg bg-green-50/70 dark:bg-green-950/20 p-2.5"><b>싸진 복리형(ADP·스트라이커·그레이코·도널드슨):</b> 모두 평소보다 20~30% 싸고 기대 연 8~9.5%. 각자 걱정(AI·관절 둔화·주택·전기차)이 있어 값이 눌렸다 — 걱정이 숫자로 안 나타나면 다시 오를 몫. 무디스는 경기를 크게 타서 기대가 연 8% 안팎.</div>
+        <div className="rounded-lg bg-purple-50/70 dark:bg-purple-950/20 p-2.5"><b>공포로 반값 된 쪽(인튜이트·어도비·넷플릭스·부킹):</b> PER이 10년 평소의 3분의 1~절반이라 기대가 연 12~13%로 가장 높다. 대신 넷 다 "AI가 우리를 건너뛰나"라는 같은 질문에 걸려 있다 — 함께 담으면 같은 위험을 겹쳐 사는 셈.</div>
+        <div className="rounded-lg bg-rose-50/70 dark:bg-rose-950/20 p-2.5"><b>나쁜 그림이 무거운 쪽(FICO·어도비·LVMH·레녹스):</b> 손실 가능성 25~30%. FICO는 독점 붕괴, LVMH는 명품 경기, 레녹스는 가격 결정력이 갈림길. 작게 담는 몫.</div>
+        <div className="rounded-lg bg-teal-50/70 dark:bg-teal-950/20 p-2.5"><b>바닥이 단단한 싼 쪽(브로드리지·조에티스):</b> 나쁜 그림에서도 플러스, 배당 2.5% 안팎. 브로드리지는 규제 독점, 조에티스는 평소의 3분의 1 값이 받친다.</div>
+        <div className="rounded-lg bg-gray-100 dark:bg-gray-800/60 p-2.5"><b>질은 최상, 값은 보통(IDEXX·코파트):</b> 사업은 엄선 최상위권이지만 기대는 연 8% 안팎(IDEXX 8.5%, 코파트 7.7%). 더 빠지면 비중을 늘릴 후보.</div>
       </div>
 
       <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-3 space-y-2">
