@@ -2,10 +2,10 @@
 
 import { useEffect, useRef, useState } from 'react'
 import 'leaflet/dist/leaflet.css'
-import { NOW } from './hermesNow'
+import { NOW, NOW_CHECKED } from './hermesNow'
 
 // 에르메스 매장 지도 — 회사 연간·반기 실적 발표에 나온 "새로 연 매장"과 "리뉴얼·확장·이전 재개장"을 연도별로 모았다.
-// 지금 있는 매장 전체는 hermesNow.ts(도시별 대략 위치·매장 수, 추정)로 따로 깔아 둔다.
+// 지금 있는 매장 전체는 hermesNow.ts(hermes.com 공식 매장 목록을 도시별로 묶은 것)로 따로 깔아 둔다.
 type Kind = 'new' | 'reno' | 'plan' | 'close'
 type Store = { y: number; city: string; country: string; place?: string; lat: number; lng: number; k: Kind }
 
@@ -209,7 +209,7 @@ export default function HermesStoreMap() {
     for (const c of NOW) {
       lf.circleMarker([c.lat, c.lng], {
         radius: 2.5 + Math.sqrt(c.n) * 1.6, color: COL.now, fillColor: COL.now, fillOpacity: 0.35, weight: 1,
-      }).bindTooltip(`지금 있는 매장 · ${c.city}, ${c.country} — 약 ${c.n}곳`).addTo(base.current)
+      }).bindTooltip(`<b>${c.city}, ${c.country} — ${c.n}곳${c.air ? ` (공항·면세 ${c.air})` : ''}</b><br/>${c.s.slice(0, 8).join('<br/>')}${c.s.length > 8 ? `<br/>외 ${c.s.length - 8}곳` : ''}`).addTo(base.current)
     }
   }, [ready, showNow])
 
@@ -278,7 +278,7 @@ export default function HermesStoreMap() {
       </div>
 
       <p className={small}><b>읽는 법:</b> 10년 동안 매장 수는 307곳 → 294곳으로 오히려 줄었는데, 매장 1곳당 매출은 약 1.6억 → 5.4억 유로로 <b>3배 넘게</b> 늘었다. 에르메스는 매장을 늘려서 크지 않는다 — <b>같은 도시의 매장을 넓히거나 더 좋은 자리로 옮기고(파랑), 값을 올리고, 새 도시는 조금씩(빨강, 해마다 2~9곳)</b> 연다. 희소성 전략이 지도에 그대로 보인다. 새 매장은 미국(소도시 부촌)·중국 2~3선 도시·일본에 몰려 있다.</p>
-      <p className="text-[11px] text-gray-400">· 매장별 매출은 회사가 공개하지 않는다(지역별 매출만 공개). &lsquo;매장 1곳당 매출&rsquo;은 전체 매출 ÷ 연말 매장 수라 도매·온라인·향수 판매도 섞인 대략값이다.<br />· 빨강·파랑·검정 점은 2016년 이후 회사 실적 발표·연차 보고서에 이름이 나온 매장이다. 청록 &lsquo;지금 있는 매장&rsquo;은 공개 정보로 모은 도시별 추정값(약 {NOW.length}개 도시, {NOW.reduce((a, c) => a + c.n, 0)}곳)으로, 회사 공식 매장 목록과 하나하나 맞춰 보지 못했다 — 회사 발표 약 300곳과의 차이는 주로 백화점 안 작은 매장처럼 위치를 특정하지 못한 곳이다. 러시아(2022년 영업 중단)는 뺐다. 위치는 모두 도시 단위 대략 좌표. 문을 닫은 매장(주로 프랑스 중소도시·공항)은 이름이 공개되지 않아 빠져 있다.<br />· 2016년 매장 수는 외부 통계 사이트 숫자. 2023년 294곳은 2023년 실적 발표 기준.</p>
+      <p className="text-[11px] text-gray-400">· 매장별 매출은 회사가 공개하지 않는다(지역별 매출만 공개). &lsquo;매장 1곳당 매출&rsquo;은 전체 매출 ÷ 연말 매장 수라 도매·온라인·향수 판매도 섞인 대략값이다.<br />· 빨강·파랑·검정 점은 2016년 이후 회사 실적 발표·연차 보고서에 이름이 나온 매장이다. 청록 &lsquo;지금 있는 매장&rsquo;은 hermes.com 공식 매장 찾기 목록({NOW_CHECKED} 확인)의 {NOW.reduce((a, c) => a + c.n, 0)}곳(수리 전용 창구 3곳 제외)을 15km 안의 매장끼리 묶어 {NOW.length}개 점으로 보였다. 점에 매장 이름이 뜬다. 공식 목록엔 러시아 매장이 없다. 문을 닫은 매장(주로 프랑스 중소도시·공항)은 이름이 공개되지 않아 빠져 있다.<br />· 2016년 매장 수는 외부 통계 사이트 숫자. 2023년 294곳은 2023년 실적 발표 기준.</p>
     </section>
   )
 }
@@ -338,13 +338,13 @@ function NowByRegion() {
   const max = rows[0]?.[1].n ?? 1
   return (
     <div className="rounded-lg bg-teal-50/60 dark:bg-teal-950/20 p-2.5 space-y-1">
-      <p className="text-xs font-semibold text-gray-900 dark:text-white">지금 있는 매장, 지역별 (추정 {total}곳 · {NOW.length}개 도시)</p>
+      <p className="text-xs font-semibold text-gray-900 dark:text-white">지금 있는 매장, 지역별 (공식 목록 {total}곳 · 그중 공항·면세점 {NOW.reduce((a, c) => a + c.air, 0)}곳)</p>
       {rows.map(([r, v]) => (
         <div key={r} className="flex items-center gap-2 text-xs">
           <span className="w-28 shrink-0 text-gray-700 dark:text-gray-200">{r}</span>
           <span className="h-2.5 rounded-full" style={{ width: `${(v.n / max) * 45}%`, background: COL.now }} />
           <span className="tabular-nums text-gray-700 dark:text-gray-200">{v.n}곳</span>
-          <span className="text-[11px] text-gray-400">{Math.round((v.n / total) * 100)}% · {v.cities}개 도시</span>
+          <span className="text-[11px] text-gray-400">{Math.round((v.n / total) * 100)}% · {v.cities}개 지점 묶음</span>
         </div>
       ))}
       <p className="text-[11px] text-gray-500 dark:text-gray-400">유럽은 도시 수가 많지만 도시마다 1곳씩 흩어져 있고, 아시아(일본·중국·한국·홍콩)는 큰 도시에 여러 곳이 몰려 있다. 매출은 아시아(일본 제외)가 가장 크다 — 매장 수보다 매장 1곳의 크기가 다르다.</p>
