@@ -96,6 +96,16 @@ export default function BuffettPage() {
                       <p className="text-[11px] text-gray-400 mt-0.5">{it.when}</p>
                       <p className="text-xs text-gray-700 dark:text-gray-200 mt-1 leading-relaxed"><b>왜 위대한가:</b> {it.why}</p>
                       <p className="text-xs text-gray-600 dark:text-gray-300 mt-1 leading-relaxed"><b>교훈:</b> {it.lesson}</p>
+                      {it.talk && (
+                        <details className="mt-2 rounded-md bg-amber-50/70 dark:bg-amber-950/20 px-2.5 py-2">
+                          <summary className="text-xs font-semibold text-amber-800 dark:text-amber-300 cursor-pointer">{it.talk.title} (눌러서 펼치기)</summary>
+                          <ul className="mt-1.5 space-y-1 list-disc pl-4">
+                            {it.talk.points.map(t => <li key={t} className="text-xs text-gray-700 dark:text-gray-200 leading-relaxed" dangerouslySetInnerHTML={{ __html: t.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>') }} />)}
+                          </ul>
+                          <p className="text-xs text-gray-700 dark:text-gray-200 mt-1.5 leading-relaxed"><b>우리가 쓸 점:</b> {it.talk.read}</p>
+                          <p className="text-[11px] text-gray-400 mt-1">{it.talk.src}</p>
+                        </details>
+                      )}
                       {s && (
                         <div className="flex flex-wrap gap-x-4 gap-y-0.5 mt-2 text-[11px] text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-gray-800 pt-1.5">
                           {s.pe != null && <span>PER {s.pe.toFixed(1)}배{s.peMed10 != null && <> (10년 평소 {s.peMed10.toFixed(1)}배{rel != null && <b className={rel < 0.85 ? ' text-emerald-600 dark:text-emerald-400' : rel > 1.15 ? ' text-red-500' : ''}> · {rel < 0.85 ? '싸다' : rel > 1.15 ? '비싸다' : '평소 수준'}</b>})</>}</span>}
