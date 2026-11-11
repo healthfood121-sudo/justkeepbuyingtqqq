@@ -3100,7 +3100,7 @@ function HermesEpsQP() {
       <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">EPS 증가율을 쪼개 보기 — 막대 하나 = 가격 몫 + 판매량 몫 + 이익률·환율·기타 몫 (연도별)</p>
       <div className="rounded bg-gray-50 dark:bg-gray-800/50 p-3">
         <p className="text-xs leading-relaxed text-gray-600 dark:text-gray-300">
-          위 3번 차트는 <b>주가 수익률 = EPS 몫 + 배당 몫 + PER 몫</b>이었다. 여기서는 그중 <b>EPS 몫을 한 번 더</b> 쪼갠다:
+          위 ‘연도별 수익률 분해’ 차트는 <b>주가 수익률 = EPS 몫 + 배당 몫 + PER 몫</b>이었다. 여기서는 그중 <b>EPS 몫을 한 번 더</b> 쪼갠다:
           EPS 증가율 ≈ <b className="text-purple-600 dark:text-purple-400">가격 인상(P)</b> × <b className="text-emerald-600 dark:text-emerald-400">판매량 증가(Q)</b> × 이익률·환율·기타.
           <b className="text-orange-600"> 주황 점선</b>은 자산가 인구 증가율 — 초록 칸(판매량)이 주황 선을 따라가면 &lsquo;고객층이 느는 만큼 판다&rsquo;는 뜻이다.
           <b> 검은 마름모</b>가 그해 실제 EPS 증가율(세 칸의 합)이다.
@@ -3197,7 +3197,7 @@ function HermesForecast({ f, setF, peNow, peFair, past10 }: {
   return (
     <>
       <div className={box}>
-        <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">4-1. 앞으로 이익 성장 — 4가지 요인</h4>
+        <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">앞으로 이익 성장 — 4가지 요인(직접 바꿔 보기)</h4>
         <p className={p}>
           <b>EPS 성장 = ① 판매량 × ② 가격 × ③ 이익률 × ④ 기타.</b> 회계상 이 넷 말고는 없다.
           어떤 사건(중국 경기, 관세, 코로나)이든 결국 이 넷 중 하나를 거쳐 이익에 들어온다.
@@ -3282,7 +3282,7 @@ function HermesForecast({ f, setF, peNow, peFair, past10 }: {
           {retFair != null && <StatCard label={`PER ${peFair}배(거품기 뺀 중간값)로 돌아갈 때`} value={`연 ${retFair.toFixed(1)}%`} />}
         </div>
         <p className="text-[11px] text-gray-400 dark:text-gray-500">
-          PER 그대로 = EPS 성장 + 배당 1.35%. 오른쪽 칸은 10년 뒤 PER이 2번 이익 시계의 기본 적정 PER({peFair ?? '—'}배)로 돌아간다고 본 값으로, 2번의 &lsquo;10년 뒤 적정가 선에 있으면&rsquo;과 같은 숫자다. 다른 PER은 2번 바나 4-2 표에서 본다.
+          PER 그대로 = EPS 성장 + 배당 1.35%. 오른쪽 칸은 10년 뒤 PER이 이익 시계의 기본 적정 PER({peFair ?? '—'}배)로 돌아간다고 본 값으로, 2번의 &lsquo;10년 뒤 적정가 선에 있으면&rsquo;과 같은 숫자다. 다른 PER은 2번 바나 4-2 표에서 본다.
         </p>
 
         <details className="rounded bg-gray-50 dark:bg-gray-800/50 p-3">
@@ -7134,7 +7134,7 @@ function HermesValueClock({ g: gFactors, f }: { g: number; f: Factors }) {
         <p className={p}>
           <b>자산가 시계:</b> 금융자산 100만 달러 이상 자산가는 지금 약 {(hnwiNow / 1e6).toFixed(1)}백만 명. 직전 5년 속도(연 4%, 물가 포함)로 늘면 <b>하루 약 {Math.round(hnwiPerDay).toLocaleString()}명</b>,
           {' '}약 {(86400 / hnwiPerDay).toFixed(0)}초에 1명이다. 오늘 0시 이후 <b>{Math.floor(hnwiToday).toLocaleString()}명</b> 늘었다.
-          4번 기본값은 이 증가율을 ① 판매량으로 쓴다.
+          ‘앞으로 이익 성장’ 계산의 기본값은 이 증가율을 ① 판매량으로 쓴다.
         </p>
       </div>
     )
@@ -7142,23 +7142,23 @@ function HermesValueClock({ g: gFactors, f }: { g: number; f: Factors }) {
 
   return (
     <div className={box}>
-      <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">2. 이익 시계 — 적정가 선 vs 주가</h4>
+      <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">이익 시계 — 적정가 선 vs 주가</h4>
       {px ? (<>
         <ValueClockCore
           growthBar={<GrowthBar g={g} setG={setGUser}
         marks={growthMarks(RMS_ANCHORS, [
           ...HERMES_SCENARIOS.map(sc => ({ k: `앞으로 ${sc.label}`, short: sc.label === '지금 상태 지속' ? '지속' : sc.label, v: epsGrowthOf(sc.f), c: 'bg-teal-500 text-teal-600 dark:text-teal-400' })),
         ])}
-        note={<>청록색 눈금 = 앞으로 예상(아래 4번의 세 경우), 나머지 눈금 = 과거 실제 성장률. 시작 값은 4번에서 고른 경우({HERMES_SCENARIOS.find(sc => (Object.keys(sc.f) as (keyof Factors)[]).every(k => sc.f[k] === f[k]))?.label ?? '직접 조절'} {gFactors.toFixed(1)}%).
+        note={<>청록색 눈금 = 앞으로 예상(‘앞으로 이익 성장’의 세 경우), 나머지 눈금 = 과거 실제 성장률. 시작 값은 ‘앞으로 이익 성장’에서 고른 경우({HERMES_SCENARIOS.find(sc => (Object.keys(sc.f) as (keyof Factors)[]).every(k => sc.f[k] === f[k]))?.label ?? '직접 조절'} {gFactors.toFixed(1)}%).
           {gUser != null && <> <button type="button" onClick={() => setGUser(null)} className="underline text-blue-600 dark:text-blue-400">처음 값으로 되돌리기</button></>}
           {' '}과거 N년 = N년 전부터 지금까지 연평균, 5년 구간 = 지난 20년을 5년씩 끊어 본 성장률의 범위.
-          {' '}<b>앞으로 예상이 과거보다 낮은 이유</b>는 4번 &lsquo;왜 과거보다 낮게 잡았나&rsquo;에 있다.</>} />}
+          {' '}<b>앞으로 예상이 과거보다 낮은 이유</b>는 ‘앞으로 이익 성장’의 &lsquo;왜 과거보다 낮게 잡았나&rsquo;에 있다.</>} />}
           cur="€" anchors={RMS_ANCHORS} monthly={monthly} last={px.last} g={g}
           sharesOut={RMS_SHARES} divYield={1.35} storageKey="rms-shares" extraLive={extraLive} liveTiles={rmsBagTiles} segments={SEGMENTS.RMS} ownerCard
           fcfAnchors={RMS_FCF_ANCHORS} ocfAnchors={RMS_OCF_ANCHORS}
           fcfPs={rmsCash(px.last.close, px.rows).fcfPs}
           peExclude={{ from: 2019, to: 2026, label: '거품기(2019~2025) 뺀 중간값' }}
-          notes="주가는 배당을 반영하지 않은 실제 월말 종가(분할 반영). 1993년 12월~1999년은 트레이딩뷰 월말 종가. 1년 EPS는 연말 실적 사이를 매끄럽게 이은 근사치이고, 2026년 6월 이후는 4번의 성장률로 연장했다. 초 단위 숫자는 연간 이익을 시간으로 나눈 것이며 실제 회계 처리와 다르다. 유통 주식 수 약 1억 450만 주(근사). 내 몫 잉여현금은 2025년 조정 잉여현금흐름(38.8억 유로) ÷ 유통 주식 수."
+          notes="주가는 배당을 반영하지 않은 실제 월말 종가(분할 반영). 1993년 12월~1999년은 트레이딩뷰 월말 종가. 1년 EPS는 연말 실적 사이를 매끄럽게 이은 근사치이고, 2026년 6월 이후는 ‘앞으로 이익 성장’의 성장률로 연장했다. 초 단위 숫자는 연간 이익을 시간으로 나눈 것이며 실제 회계 처리와 다르다. 유통 주식 수 약 1억 450만 주(근사). 내 몫 잉여현금은 2025년 조정 잉여현금흐름(38.8억 유로) ÷ 유통 주식 수."
         />
         {(() => {
           const r = rmsCash(px.last.close, px.rows)
@@ -7407,7 +7407,7 @@ function StockValueClock({ f, stockKey, rolling, title = '이익 시계 — 적�
       <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">{title}</h4>
       <ValueClockCore
         growthBar={<GrowthBar g={g} setG={setG} marks={marks}
-          note={<>{judged && <>기본값은 4번 개별 분석의 판단(연 {judged.base}%, 범위 {judged.lo}~{judged.hi}%). </>}보수적 = 과거 5년·10년 성장률 중 낮은 값(0~15%로 제한). 과거 N년 = N년 전부터 지금까지 연평균. 5년 구간 = 지난 20년을 5년씩 끊어 본 성장률의 범위. 최근 몇 년이 부진했던 기업은 값 차이가 크다 — 어느 쪽이 앞으로에 가까운지는 직접 판단한다.</>} />}
+          note={<>{judged && <>기본값은 개별 분석의 판단(연 {judged.base}%, 범위 {judged.lo}~{judged.hi}%). </>}보수적 = 과거 5년·10년 성장률 중 낮은 값(0~15%로 제한). 과거 N년 = N년 전부터 지금까지 연평균. 5년 구간 = 지난 20년을 5년씩 끊어 본 성장률의 범위. 최근 몇 년이 부진했던 기업은 값 차이가 크다 — 어느 쪽이 앞으로에 가까운지는 직접 판단한다.</>} />}
         cur="$" anchors={anchors} monthly={monthly} last={f.lastPrice} g={g}
         sharesOut={f.shares?.count ?? null} divYield={m.divYield ?? 0} storageKey={`clock-shares-${stockKey}`}
         liveTiles={stockKey === 'NKE' ? nkeShoeTiles : (() => {
@@ -8314,13 +8314,15 @@ function NikeMarkdownCard() {
   )
 }
 
-function RmsInsight({ data }: { data: StockData }) {
+function RmsInsight({ data, part, fs }: { data: StockData; part?: string[]; fs?: [Factors, (f: Factors) => void] }) {
   // 숫자는 한 곳에서: 주가는 월말 주가 파일의 최신 종가(자동 갱신), EPS는 회사 발표 최근 1년 값
   const [px, setPx] = useState<MonthlyPrice | null>(null)
   useEffect(() => {
     fetch('/data/rolling/RMS_monthly_price.json').then(r => (r.ok ? r.json() : null)).then(setPx).catch(() => {})
   }, [])
-  const [f, setF] = useState<Factors>(HERMES_SCENARIOS[0].f)
+  const [fLocal, setFLocal] = useState<Factors>(HERMES_SCENARIOS[0].f)
+  const [f, setF] = fs ?? [fLocal, setFLocal]
+  const show = (k: string) => !part || part.includes(k)
   const price = px?.last.close ?? (data as any).current?.price ?? 1356.5
   const priceDate = px?.last.date ?? '2026-10-21'
   const peNow = price / RMS_TTM_EPS
@@ -8384,13 +8386,16 @@ function RmsInsight({ data }: { data: StockData }) {
 
   return (
     <div className="space-y-4">
+      {!part && <>
       <div>
         <h3 className="text-base font-semibold text-gray-900 dark:text-white">인사이트</h3>
         <p className="text-xs text-gray-400 dark:text-gray-500">1 지금 → 2 싼지 비싼지 → 3 과거 → 4 앞으로 이익 → 5 결론 · 숫자는 자동 갱신</p>
       </div>
 
+      </>}
+      {show('now') && <>
       <div className={box}>
-        <h4 className={h4}>1. 지금 한눈에 — 주가 하락은 이익이 아니라 PER 하락 때문</h4>
+        <h4 className={h4}>지금 한눈에 — 주가 하락은 이익이 아니라 PER 하락 때문</h4>
         <div className="overflow-x-auto">
           <table className="text-xs">
             <thead><tr><th className={`${th} text-left`}></th><th className={`${th} text-right`}>2024년 말</th><th className={`${th} text-right`}>지금 ({priceDate})</th><th className={`${th} text-right`}>변화</th></tr></thead>
@@ -8403,24 +8408,30 @@ function RmsInsight({ data }: { data: StockData }) {
         </div>
         <ul className={`${p} list-disc pl-4 space-y-1`}>
           <li><b>이익은 멈췄지만 무너지지 않았다.</b> 2024년 €43.93 → 2025년 €43.15(−1.8%, 프랑스 대기업 특별 법인세. 제외하면 순이익 +5.5%) → 2026년 상반기도 1년 전과 거의 같다(€21.36 vs €21.43).</li>
-          <li><b>앞으로 이익:</b> 4번 계산 기준 연 {gNow.toFixed(1)}%(±3%p). 예상 수익률은 4번, 판단은 5번에서 본다.</li>
-          <li><b>지금 가격이 싼지 비싼지</b>는 바로 아래 2번 이익 시계에서 본다.</li>
+          <li><b>앞으로 이익:</b> 아래 ⑥ ‘앞으로’ 계산 기준 연 {gNow.toFixed(1)}%(±3%p). 예상 수익률과 판단도 ⑥에 있다.</li>
+          <li><b>지금 가격이 싼지 비싼지</b>는 ⑥의 이익 시계에서 본다.</li>
         </ul>
         <p className="text-[11px] text-gray-400 dark:text-gray-500">주가는 자동 갱신(실제 종가), EPS는 회사 발표 최근 1년 값(2025년 연간 43.15 − 2025년 상반기 21.43 + 2026년 상반기 21.36). 해설 문장은 2026년 10월 21일 기준.</p>
       </div>
 
+      </>}
+      {show('calls') && <>
       <CallBox stockKey="RMS" />
       <RmsRegions />
 
+      </>}
+      {show('clock') && <>
       <HermesValueClock g={gNow} f={f} />
 
+      </>}
+      {show('past') && <>
       <div>
-        <h3 className="text-sm font-semibold text-gray-900 dark:text-white pt-2">3. 과거에는 왜 수익이 컸나</h3>
-        <p className="text-xs text-gray-400 dark:text-gray-500">3-1 매수 시점 PER별 결과 → 3-2 해마다 쪼개 보기 → 3-3 정리</p>
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white pt-2">과거에는 왜 수익이 컸나</h3>
+        <p className="text-xs text-gray-400 dark:text-gray-500">매수 시점 PER별 결과 → 해마다 쪼개 보기 → 정리</p>
       </div>
 
       <div className={box}>
-        <h4 className={h4}>3-1. 과거 매수 시점 PER별 10년 연평균 수익률 (23개 경우)</h4>
+        <h4 className={h4}>과거 매수 시점 PER별 10년 연평균 수익률 (23개 경우)</h4>
         <div className="overflow-x-auto">
           <table className="text-xs">
             <thead>
@@ -8467,13 +8478,13 @@ function RmsInsight({ data }: { data: StockData }) {
         {similar.length > 0 && (
           <p className={p}>
             지금과 비슷한 PER(±4배)에서 산 경우: {similar.map(d => `${d.buyYear}년(${d.peBuy.toFixed(0)}배) ${d.totalCagr.toFixed(1)}%`).join(' · ')}.
-            다만 그 시기는 이익률이 24% → 41%로 오르고 PER도 올랐던 때라, 같은 결과를 기대하긴 어렵다(4번 참고).
+            다만 그 시기는 이익률이 24% → 41%로 오르고 PER도 올랐던 때라, 같은 결과를 기대하긴 어렵다(아래 ‘앞으로’ 참고).
           </p>
         )}
       </div>
 
       <DecompSection
-        title="3-2. 연도별 수익률 분해 — 막대 하나 = EPS 몫 + 배당 몫 + PER 몫"
+        title="연도별 수익률 분해 — 막대 하나 = EPS 몫 + 배당 몫 + PER 몫"
         decomp={buildDecomp(data)}
         divRows={(rmsDiv as any).rows}
         exampleYear={2012}
@@ -8481,31 +8492,35 @@ function RmsInsight({ data }: { data: StockData }) {
       />
 
       <div className={box}>
-        <h4 className={h4}>3-3. 정리: 과거 성과를 만든 두 가지 순풍</h4>
+        <h4 className={h4}>정리: 과거 성과를 만든 두 가지 순풍</h4>
         <ul className={`${p} list-disc pl-4 space-y-1`}>
           <li><b>EPS가 10년 동안 매년 {epsMin.toFixed(0)}~{epsMax.toFixed(0)}% 성장</b>했다({decomp.length}개 경우 중 최저 {epsMin.toFixed(0)}%). 하지만 2023년 이후는 연 1~2% 수준이다(2025년은 프랑스 특별 법인세로 감소).</li>
           <li><b>팔 때 PER이 대체로 올라 있었다.</b> {decomp.length}개 중 {peUp.length}개가 매수 때보다 높았고(예외: {peDownYears.join('·')}년 매수), 2010~2015년 매수는 팔 때 45~66배였다. PER 효과는 연 중간값 {sgn(peEffMed)}%p(배당 제외). 위 3-2 참고.</li>
         </ul>
       </div>
 
+      </>}
+      {show('future') && <>
       <div>
-        <h3 className="text-sm font-semibold text-gray-900 dark:text-white pt-2">4. 앞으로</h3>
-        <p className="text-xs text-gray-400 dark:text-gray-500">4-1 이익이 얼마나 늘지 → 4-2 그 성장률과 10년 뒤 PER에 따른 예상 수익률</p>
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white pt-2">앞으로 — 이익이 얼마나 늘고, 몇 % 벌 수 있나</h3>
+        <p className="text-xs text-gray-400 dark:text-gray-500">이익이 얼마나 늘지(4가지 요인) → 그 성장률과 10년 뒤 PER에 따른 예상 수익률</p>
       </div>
 
       <HermesForecast f={f} setF={setF} peNow={peNow} peFair={peFair} past10={past10} />
 
       <div className={box}>
-        <ScenarioTable data={data} pe0={peNow} title="4-2. 지금 사서 10년 보유 시 예상 수익률 — EPS 성장률 × 10년 뒤 PER" />
+        <ScenarioTable data={data} pe0={peNow} title="지금 사서 10년 보유 시 예상 수익률 — EPS 성장률 × 10년 뒤 PER" />
       </div>
 
+      </>}
+      {show('concl') && <>
       <div className={box}>
-        <h4 className={h4}>5. 결론</h4>
+        <h4 className={h4}>숫자로 본 결론</h4>
         <ul className={`${p} list-disc pl-4 space-y-1`}>
-          <li><b>앞으로 EPS는 연 {gNow.toFixed(1)}% 안팎(±3%p)</b>이 중심이다(4번). 과거 18.8%는 이익률이 24% → 41%로 오른 덕이 커서 그대로 반복되긴 어렵다(3번).</li>
+          <li><b>앞으로 EPS는 연 {gNow.toFixed(1)}% 안팎(±3%p)</b>이 중심이다(위 ‘앞으로’ 계산). 과거 18.8%는 이익률이 24% → 41%로 오른 덕이 커서 그대로 반복되긴 어렵다(3번).</li>
           <li>PER {peNow.toFixed(1)}배가 그대로면 10년 연 약 {ret10.toFixed(1)}%{retFair10 != null && <>, 거품기 뺀 중간값({peFair}배)으로 돌아가면 연 약 {retFair10.toFixed(1)}%</>}. 연 17~20%는 판매량 회복(낙관)과 PER 재평가가 함께 와야 나온다. EPS 성장률·10년 뒤 PER별 결과는 4-2 표.</li>
-          <li><b>필요한 성장:</b> PER 지금 수준 유지·배당 1.35% 가정에서 연 17%가 나오려면 이익이 연 약 15%, 연 20%가 나오려면 연 약 18% 늘어야 한다. 과거 10년 이익 성장률({past10 ? <>연 {past10.min.toFixed(0)}~{past10.max.toFixed(0)}%, 중간값 {past10.med.toFixed(1)}%</> : '—'})로는 가능한 범위지만, 4번 중심값({gNow.toFixed(1)}%)보다 높다.</li>
-          <li><b>매일 볼 것:</b> 2번 이익 시계 — 주가가 적정가 띠 아래면 싼 구간, 위면 비싼 구간.</li>
+          <li><b>필요한 성장:</b> PER 지금 수준 유지·배당 1.35% 가정에서 연 17%가 나오려면 이익이 연 약 15%, 연 20%가 나오려면 연 약 18% 늘어야 한다. 과거 10년 이익 성장률({past10 ? <>연 {past10.min.toFixed(0)}~{past10.max.toFixed(0)}%, 중간값 {past10.med.toFixed(1)}%</> : '—'})로는 가능한 범위지만, ‘앞으로 이익 성장’ 중심값({gNow.toFixed(1)}%)보다 높다.</li>
+          <li><b>매일 볼 것:</b> 이익 시계 — 주가가 적정가 띠 아래면 싼 구간, 위면 비싼 구간.</li>
           <li><b>반기마다 볼 것:</b> 판매량(매출 성장 − 가격 인상)이 다시 늘어나는지, 영업이익률 41%가 유지되는지, 환율 영향을 뺀 매출 성장이 다시 두 자릿수로 오는지.</li>
         </ul>
       </div>
@@ -8573,6 +8588,65 @@ function RmsInsight({ data }: { data: StockData }) {
         EPS는 2001년 이후 회사 발표 기준(주당이익 또는 순이익÷주식 수)이고, 1996~2000년은 회사 순이익(2005 연차보고서), 1993~1994년은 당시 보도된 순이익을 2001년 주식 수로 나눠 환산했고, 1995년은 1994·1996년 사이 값으로 추정했다.
         참고용 분석이며 미래를 보장하지 않는다.
       </p>
+      </>}
+    </div>
+  )
+}
+
+// 에르메스 화면 — 심층 리포트 칸과 에르메스 전용 분석(리셀 웃돈·매장 지도·지역별 매출·성장 계산기·이익 시계)을 주제별 ①~⑦로 묶는다
+function RmsFlow({ data }: { data: StockData }) {
+  const fs = useState<Factors>(HERMES_SCENARIOS[0].f)
+  const d = RMS_REPORT
+  const R = (keys: string[]) => <BigReport d={d} keys={keys} />
+  const known = new Set(['demand', 'supply', 'workshops', 'price', 'cost', 'why', 'know'])
+  const otherExtras = (d.extra ?? []).map(x => x.id).filter(x => !known.has(x))
+  const I = (part: string[]) => <RmsInsight data={data} part={part} fs={fs} />
+  const Ch = ({ n, t, sub }: { n: string; t: string; sub?: string }) => (
+    <div className="pt-6 mt-2 border-t-2 border-gray-200 dark:border-gray-800">
+      <h2 className="text-lg font-bold text-gray-900 dark:text-white">{n} {t}</h2>
+      {sub && <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{sub}</p>}
+    </div>
+  )
+  return (
+    <div className="space-y-5">
+      <Ch n="①" t="결론과 사업성" sub="심층 리포트의 결론, 지금 주가가 빠진 이유, 사업의 질, 판단할 질문" />
+      {R(['head', 'conclusion', 'fix'])}
+      {I(['now'])}
+      <QualityCard stockKey="RMS" />
+      {R(['plan'])}
+
+      <Ch n="②" t="지금 실적 — 최근 분기" sub="가장 최근 실적 발표, 지역별 매출, 지난 실적 발표 기록" />
+      {I(['calls'])}
+      {R(['calls'])}
+
+      <Ch n="③" t="사업 — 수요·공급·가격·매장" sub="돈을 버는 곳, 누가 사나(리셀 웃돈), 왜 덜 만드나(공방·장인), 가격, 매장, 경쟁사" />
+      {R(['units', 'demand'])}
+      <HermesResaleCard />
+      <HermesResaleHistory />
+      {R(['supply', 'workshops', 'price'])}
+      <HermesStoreMap />
+      {R(['peers', 'worry', 'ai', ...otherExtras])}
+
+      <Ch n="④" t="숫자와 현금" sub="연도별 숫자, 원가와 이익률" />
+      {R(['nums', 'cost'])}
+
+      <Ch n="⑤" t="역사와 꼭 알아야 할 사건" sub="190년 동안 위기를 어떻게 넘었나, 경영권·지분·승계·논란" />
+      {R(['history', 'know'])}
+
+      <Ch n="⑥" t="미래와 값" sub="이익 성장률 근거와 계산기, 시나리오와 가능성, 이익 시계, 과거 10년 보유 성적" />
+      {R(['why'])}
+      {I(['future'])}
+      {R(['model', 'scen', 'rms'])}
+      {I(['clock'])}
+      <div className="space-y-3">
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white">과거 10년 보유 성적 — 언제 샀어도 어땠나</h3>
+        <RollingChart key="chart-RMS" data={data} />
+        <RollingTable data={data} />
+      </div>
+      {I(['past', 'concl'])}
+
+      <Ch n="⑦" t="확인할 신호와 정리" sub="반기마다 볼 숫자, 어떻게 들고 갈까" />
+      {R(['warn', 'final'])}
     </div>
   )
 }
@@ -8703,11 +8777,11 @@ function RmsRegions() {
   return (
     <>
       <div>
-        <h3 className="text-sm font-semibold text-gray-900 dark:text-white pt-2">1-1 ~ 1-7. 지역별 매출 — 성장이 어디서 느려지고, 어디서 나오나 (2026년 10월 28일 정리)</h3>
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white pt-2"> 지역별 매출 — 성장이 어디서 느려지고, 어디서 나오나 (2026년 10월 28일 정리)</h3>
         <p className="text-xs text-gray-400 dark:text-gray-500">매출 비중 큰 순서 → 마지막에 한 표로 정리. 비중은 2025년 연간 매출(160억 유로) 기준.</p>
       </div>
 
-      <RmsRegionBox r="APAC" title="1-1. 아시아(일본 제외) — 매출의 42%, 성장이 거의 멈췄다"
+      <RmsRegionBox r="APAC" title="아시아(일본 제외) — 매출의 42%, 성장이 거의 멈췄다"
         intro={<>중국·홍콩·대만·한국·싱가포르 등으로, 매출의 약 42%(2025년 67.0억 유로)를 차지하는 가장 큰 지역이다. 환율 영향을 뺀 성장률이
           2023년 평균 +19.7% → 2024년 +7.3% → 2025년 +5.2% → 2026년(1~3분기) +1.6%로 매년 낮아졌고, 최근 분기는 <b>0.0%</b>로 코로나 때(2020년 2분기) 이후 가장 낮다.</>}>
         <RmsTwoCol title="분석 — 줄지는 않지만, 3년째 유로 기준 매출이 제자리"
@@ -8732,7 +8806,7 @@ function RmsRegions() {
         </p>
       </RmsRegionBox>
 
-      <RmsRegionBox r="AM" title="1-2. 미주 — 지금 에르메스 성장의 엔진, 다만 3분기에 처음 한 자릿수"
+      <RmsRegionBox r="AM" title="미주 — 지금 에르메스 성장의 엔진, 다만 3분기에 처음 한 자릿수"
         intro={<>미국·캐나다·중남미로 매출의 약 19%(2025년 30.8억 유로)다. 환율 영향을 뺀 성장률이 2023년 +20.4% → 2024년 +15.2% → 2025년 +12.4% → 2026년(1~3분기) +13.1%로,
           다른 지역이 다 느려지는 동안 홀로 10%대 중반을 지켰다.</>}>
         <RmsTwoCol title="분석 — 가장 강하지만, 최근 분기에 속도가 떨어졌다"
@@ -8755,7 +8829,7 @@ function RmsRegions() {
         </p>
       </RmsRegionBox>
 
-      <RmsRegionBox r="EU" title="1-3. 유럽(프랑스 제외) — 20%대에서 9~10%대로 내려와 자리 잡았다"
+      <RmsRegionBox r="EU" title="유럽(프랑스 제외) — 20%대에서 9~10%대로 내려와 자리 잡았다"
         intro={<>영국·이탈리아·스페인·독일 등으로 매출의 약 15%(2025년 23.6억 유로)다. 환율 영향을 뺀 성장률이 2024년 +19.0% → 2025년 +11.5% → 2026년(1~3분기) +9.2%.</>}>
         <RmsTwoCol title="분석 — 둔화는 2025년에 끝났고, 이후 5분기째 9~10%"
           good={<>
@@ -8773,7 +8847,7 @@ function RmsRegions() {
         <p className={DEEP_P}><b>다음에 볼 숫자 — 2026년 4분기(1년 전 +10.6%):</b> <b>+8% 이상</b>이면 안정 유지, +6% 아래면 다시 둔화로 본다.</p>
       </RmsRegionBox>
 
-      <RmsRegionBox r="JP" title="1-4. 일본 — 성장률은 25% → 10%로 꾸준히 내려오는 중, 유로로는 거의 제자리"
+      <RmsRegionBox r="JP" title="일본 — 성장률은 25% → 10%로 꾸준히 내려오는 중, 유로로는 거의 제자리"
         intro={<>매출의 약 10%(2025년 15.9억 유로)다. 환율 영향을 뺀 성장률이 2023년 +25.6% → 2024년 +22.5% → 2025년 +14.2% → 2026년(1~3분기) +10.5%로 매년 낮아졌다.</>}>
         <RmsTwoCol title="분석 — 현지 고객이 받쳐 주지만, 엔화 약세가 유로 매출을 깎는다"
           good={<>
@@ -8788,7 +8862,7 @@ function RmsRegions() {
         <p className={DEEP_P}><b>다음에 볼 숫자 — 2026년 4분기(1년 전 +11.2%):</b> <b>+8% 이상</b>이면 두 자릿수 근처 유지, +5% 아래면 둔화가 빨라진다는 신호.</p>
       </RmsRegionBox>
 
-      <RmsRegionBox r="FR" title="1-5. 프랑스 — 관광객 따라 출렁, 2026년에 크게 느려졌다"
+      <RmsRegionBox r="FR" title="프랑스 — 관광객 따라 출렁, 2026년에 크게 느려졌다"
         intro={<>매출의 약 10%(2025년 15.8억 유로)다. 파리 매장은 해외 관광객 비중이 높다. 환율 영향을 뺀 성장률 2024년 +13.6% → 2025년 +9.1% → 2026년(1~3분기) +2.4%.</>}>
         <RmsTwoCol title="분석 — 1분기 감소 뒤 회복했지만, 속도는 한참 낮다"
           good={<>
@@ -8803,7 +8877,7 @@ function RmsRegions() {
         <p className={DEEP_P}><b>다음에 볼 숫자 — 2026년 4분기(1년 전 +7.8%):</b> <b>+5% 이상</b>이면 회복, 0% 아래면 다시 감소.</p>
       </RmsRegionBox>
 
-      <RmsRegionBox r="OTH" title="1-6. 기타(중동) — 2024년 두 배는 회계 효과, 2026년은 정세 불안으로 감소"
+      <RmsRegionBox r="OTH" title="기타(중동) — 2024년 두 배는 회계 효과, 2026년은 정세 불안으로 감소"
         intro={<>주로 중동(아랍에미리트·쿠웨이트·카타르 등)으로 매출의 약 4%(2025년 7.0억 유로)다. 작은 지역이라 전체 숫자에 주는 영향은 작다.</>}>
         <RmsTwoCol title="분석 — 숫자가 크게 튄 이유" goodLab="숫자 읽는 법" badLab="최근 흐름"
           good={<>
@@ -8845,7 +8919,7 @@ function RmsRegionSummary() {
   const pct = (v: number | null) => v == null ? '—' : `${v > 0 ? '+' : ''}${v.toFixed(1)}%`
   return (
     <div className={box}>
-      <h4 className={h4}>1-7. 한 표로 보기 — 아시아가 멈추고, 미주·유럽·일본이 성장을 만든다</h4>
+      <h4 className={h4}>한 표로 보기 — 아시아가 멈추고, 미주·유럽·일본이 성장을 만든다</h4>
       <p className={p}>최신 분기(2026년 3분기) 기준, 성장률은 모두 환율 영향을 뺀 값. "4분기 평균"은 분기 출렁임을 없애려고 최근 4분기 성장률을 평균한 값이다. 강한 순서대로 놓았다.</p>
       <div className="overflow-x-auto">
         <table className="text-xs">
@@ -9031,7 +9105,7 @@ function NkeTwoCol({ title, good, bad, goodLab = '돌아서는 신호', badLab =
 
 function NkeChinaBox() {
   return (
-    <NkeRegionBox r="GC" y2={[50, 115]} title="1-1. 중화권 매출 — 감소가 둔화되고 있나 (2026년 10월 28일 정리)"
+    <NkeRegionBox r="GC" y2={[50, 115]} title="중화권 매출 — 감소가 둔화되고 있나 (2026년 10월 28일 정리)"
       intro={<>중화권은 나이키 매출의 약 14%(2025 회계연도 65.9억 ÷ 463억 달러)이고, 코로나 직전까지 22분기 연속 두 자릿수 성장하던 시장이다. 분기 최고점은 2020년 11월 분기 23.0억 달러,
         최근(2026년 8월 분기) 11.8억 달러는 그 절반(−49%)으로 2018년 이후 가장 낮다. 9분기 연속 감소 중이다.</>}
       src={<>{NKE_SRC} 최신 분기와 회사 전망은 2026년 10월 1일 실적 발표·컨퍼런스콜 기준.</>}>
@@ -9071,7 +9145,7 @@ function NkeChinaBox() {
 
 function NkeNaBox() {
   return (
-    <NkeRegionBox r="NA" y2={[70, 115]} title="1-2. 북미 매출 — 매출은 돌아섰다, 다만 도매가 끌어올린 회복"
+    <NkeRegionBox r="NA" y2={[70, 115]} title="북미 매출 — 매출은 돌아섰다, 다만 도매가 끌어올린 회복"
       intro={<>북미는 나이키 매출의 약 44%(2026 회계연도 205.1억 ÷ 464억 달러)로 가장 큰 지역이다. 2025 회계연도에 −8.5%(213.96억 → 195.72억 달러) 줄었다가
         2026 회계연도에 +4.8%(205.11억)로 돌아섰고, 최근 5분기 연속 1년 전보다 늘었다. 지역 중 유일하게 다시 성장하고 있다.</>}
       src={NKE_SRC}>
@@ -9105,7 +9179,7 @@ function NkeNaBox() {
 
 function NkeEmeaBox() {
   return (
-    <NkeRegionBox r="EMEA" y2={[70, 115]} title="1-3. 유럽·중동·아프리카 매출 — 반짝 회복 뒤 다시 약해지는 중"
+    <NkeRegionBox r="EMEA" y2={[70, 115]} title="유럽·중동·아프리카 매출 — 반짝 회복 뒤 다시 약해지는 중"
       intro={<>유럽·중동·아프리카는 매출의 약 27%(2026 회계연도 125.7억 달러)로 두 번째로 큰 지역이다. 2025 회계연도 −9.9%(136.07억 → 122.57억 달러) 뒤
         2026 회계연도 +2.6%(125.72억)로 소폭 늘었지만, 최근 2분기 연속 다시 줄었다.</>}
       src={NKE_SRC}>
@@ -9137,7 +9211,7 @@ function NkeEmeaBox() {
 
 function NkeAplaBox() {
   return (
-    <NkeRegionBox r="APLA" y2={[70, 115]} title="1-4. 아시아태평양·중남미 매출 — 감소는 멈췄지만 오르지도 않는다"
+    <NkeRegionBox r="APLA" y2={[70, 115]} title="아시아태평양·중남미 매출 — 감소는 멈췄지만 오르지도 않는다"
       intro={<>일본·한국·동남아·호주·중남미를 묶은 지역으로 매출의 약 13%(2026 회계연도 62.4억 달러)다. 2025 회계연도 −7.1%(67.29억 → 62.51억 달러) 뒤
         2026 회계연도는 −0.1%(62.43억)로 제자리였다.</>}
       src={NKE_SRC}>
@@ -9166,7 +9240,7 @@ function NkeAplaBox() {
 
 function NkeConvBox() {
   return (
-    <NkeRegionBox r="CONV" y2={[30, 115]} title="1-5. 컨버스 매출 — 가장 나쁘다, 아직 바닥 신호 없음"
+    <NkeRegionBox r="CONV" y2={[30, 115]} title="컨버스 매출 — 가장 나쁘다, 아직 바닥 신호 없음"
       intro={<>나이키가 가진 별도 브랜드 컨버스(척테일러 운동화)다. 매출 비중은 2.5%(2026 회계연도 11.7억 달러)로 작지만, 감소 속도는 가장 빠르다.
         2024 회계연도 20.8억 → 2025 회계연도 16.9억(−18.7%) → 2026 회계연도 11.7억 달러(−30.6%). 14분기 연속 1년 전보다 줄었고, 분기 최고점(2022년 8월 분기 6.4억 달러)의 41% 수준이다.</>}
       src={NKE_SRC}>
@@ -9618,7 +9692,7 @@ function DeepFuture({ d, num }: { d: DeepInsight; num: string }) {
         <p className={DEEP_P}>
           <b>판단: 앞으로 10년 EPS 연 {d.growth.base}%</b> (범위 {d.growth.lo}~{d.growth.hi}%). {d.growth.why}
         </p>
-        <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">이 값이 2번 이익 시계 성장률 바의 기본값(&lsquo;개별 분석 판단&rsquo; 눈금)이다.</p>
+        <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">이 값이 이익 시계 성장률 바의 기본값(&lsquo;개별 분석 판단&rsquo; 눈금)이다.</p>
       </div>
     </div>
   )
@@ -11108,22 +11182,16 @@ function PrivateAppInner({ u = 'picks' }: { u?: Universe }) {
     <HowToRead />
 
     {/* 리셀 웃돈·할인 추이 (에르메스·나이키) */}
-    {current.key === 'RMS' && <a href="#rms-report" className="inline-block text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">심층 리포트(역사·위기·경쟁사 비교)로 ↓</a>}
-    {current.key === 'RMS' && <HermesResaleCard />}
-    {current.key === 'RMS' && <HermesResaleHistory />}
-    {current.key === 'RMS' && <HermesStoreMap />}
     {current.key === 'NKE' && <NikeMarkdownCard />}
 
     {/* 차트·롤링 테이블 — 심층 리포트 종목은 ⑥ 미래와 값(과거 10년 보유 성적) 안에 넣는다 */}
-    {!(BIG_REPORTS[current.key] && current.key !== 'RMS' && current.key !== 'NKE') && <>
+    {!((BIG_REPORTS[current.key] && current.key !== 'NKE') || current.key === 'RMS') && <>
       <RollingChart key={`chart-${current.key}`} data={current.data} />
       <RollingTable data={current.data} />
     </>}
 
     {/* 에르메스 전용 인사이트 */}
-    {current.key === 'RMS' && <QualityCard stockKey="RMS" />}
-    {current.key === 'RMS' && <RmsInsight data={current.data} />}
-    {current.key === 'RMS' && <BigReport d={RMS_REPORT} />}
+    {current.key === 'RMS' && <RmsFlow data={current.data} />}
     {current.key === 'NKE' && <QualityCard stockKey="NKE" />}
     {current.key === 'NKE' && <NkeInsight data={current.data} />}
     {current.key === 'NKE' && <FutureBox stockKey="NKE" num="6." />}
