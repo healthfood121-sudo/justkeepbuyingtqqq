@@ -61,6 +61,7 @@ import GoogleMyShare from './reports/GoogleMyShare'
 import AiUsersChart from './reports/AiUsersChart'
 import TrioCompare, { COS as PICK_COS, ev as pickEv, OUT_OF_PICKS } from './reports/TrioCompare'
 import HermesStoreMap from './reports/HermesStoreMap'
+import PageToc from './reports/PageToc'
 import OwnerCard from './reports/OwnerCard'
 import MyPortfolio from './reports/MyPortfolio'
 import { OWNERS, type OwnerProfile, type OwnerSeg, type OwnerFun } from './reports/ownerData'
@@ -10906,7 +10907,7 @@ function PrivateAppInner({ u = 'picks' }: { u?: Universe }) {
 
   const wrap = (children: ReactNode) => (
     <div className="min-h-screen bg-white dark:bg-gray-950">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-6">{children}</div>
+      <div id="private-main" className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-6">{children}</div>
     </div>
   )
 
@@ -10946,6 +10947,7 @@ function PrivateAppInner({ u = 'picks' }: { u?: Universe }) {
   const current = STOCKS[idx]
   const back = v === 'picks' || v === 'all' ? url({ v }) : u === 'picks' ? '/private' : pathname
   return wrap(<>
+    <PageToc rootId="private-main" resetKey={current.key} />
     <div className="flex items-center justify-between gap-2">
       <button type="button" onClick={() => router.push(back)} className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
         ← {v === 'picks' ? '엄선 목록' : v === 'all' ? '조건으로 찾기' : u === 'picks' ? '처음 화면' : `${univ.label} 목록`}
