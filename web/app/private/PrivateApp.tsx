@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, Suspense, type ReactNode } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import CocoReport from './reports/CocoReport'
-import BigReport from './reports/BigReport'
+import BigReport, { type BigReportData } from './reports/BigReport'
 import { AMZN_REPORT, GOOGL_REPORT, MSFT_REPORT } from './reports/bigData'
 import { META_REPORT } from './reports/metaData'
 import { AAPL_REPORT } from './reports/aaplData'
@@ -10360,7 +10360,7 @@ function DiveBox({ stockKey, num }: { stockKey: string; num: string }) {
         return (
           <div key={u.name} className={box}>
             <div className="flex flex-wrap items-center gap-2">
-              <h4 className={h4}>{num.replace(/\.$/, '')}-{k + 1}. {u.name} — {u.title}</h4>
+              <h4 className={h4}>{num ? `${num.replace(/\.$/, '')}-${k + 1}. ` : ''}{u.name} — {u.title}</h4>
               <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${DIVE_STATE[u.state].cls}`}>{DIVE_STATE[u.state].label}</span>
             </div>
             <p className={DEEP_P}>{segBold(u.role)}</p>
@@ -10391,7 +10391,7 @@ function DiveBox({ stockKey, num }: { stockKey: string; num: string }) {
       })}
 
       <div className={box}>
-        <h4 className={h4}>{num.replace(/\.$/, '')}-{dv.units.length + 1}. 어떻게 판단할까 — 해자가 그대로인지 가르는 숫자</h4>
+        <h4 className={h4}>{num ? `${num.replace(/\.$/, '')}-${dv.units.length + 1}. ` : ''}어떻게 판단할까 — 해자가 그대로인지 가르는 숫자</h4>
         <div className="overflow-x-auto">
           <table className="text-xs">
             <thead><tr>
@@ -10420,7 +10420,7 @@ function DiveBox({ stockKey, num }: { stockKey: string; num: string }) {
   )
 }
 
-function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) {
+function AutoInsight({ stockKey, data, past }: { stockKey: string; data: StockData; past?: ReactNode }) {
   const [f, setF] = useState<Fundamentals | null | undefined>(undefined)
   const [q, setQ] = useState<Quality | undefined>(undefined)
   useEffect(() => {
@@ -10520,6 +10520,78 @@ function AutoInsight({ stockKey, data }: { stockKey: string; data: StockData }) 
   const nDecomp = decomp.length > 0 ? `${nPast}-${sub++}.` : ''
   const nPastPe = `${nPast}-${sub++}.`
   const h3 = 'text-sm font-semibold text-gray-900 dark:text-white pt-2'
+
+  // ── 심층 리포트가 있는 종목: 같은 주제를 한곳에 모아 ①~⑦ 순서로 ──
+  const big = BIG_REPORTS[stockKey]
+  if (big) {
+    const R = (keys: string[]) => <BigReport d={big} keys={keys} />
+    const known = new Set(['demand', 'future', 'cost', 'capex', 'know', 'why', 'agent'])
+    const otherExtras = (big.extra ?? []).map(x => x.id).filter(x => !known.has(x))
+    const Ch = ({ n, t, sub }: { n: string; t: string; sub?: string }) => (
+      <div className="pt-6 mt-2 border-t-2 border-gray-200 dark:border-gray-800">
+        <h2 className="text-lg font-bold text-gray-900 dark:text-white">{n} {t}</h2>
+        {sub && <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{sub}</p>}
+      </div>
+    )
+    return (
+      <div className="space-y-5">
+        <Ch n="①" t="결론과 사업성" sub="심층 리포트의 결론, 진짜 PER, 사업의 질, 판단할 질문" />
+        {R(['head', 'conclusion', 'fix'])}
+        <QualityCard stockKey={stockKey} fund={f} />
+        {R(['plan'])}
+
+        <Ch n="②" t="지금 실적 — 최근 분기" sub="가장 최근 컨퍼런스콜, 사업부별 매출, 부문별 판정, 지난 분기들" />
+        <CallBox stockKey={stockKey} />
+        <SegmentBox stockKey={stockKey} num="" />
+        <DiveBox stockKey={stockKey} num="" />
+        {R(['calls'])}
+
+        <Ch n="③" t="사업과 경쟁" sub="돈을 버는 곳, 누가 얼마나 쓰나, 경쟁사, AI, 아직 숫자에 안 보이는 사업" />
+        {R(['units', 'demand'])}
+        {stockKey === 'GOOGL' && <AiUsersChart />}
+        {R(['peers', 'ai', 'worry', ...otherExtras, 'future'])}
+        {stockKey === 'GOOGL' && <GoogleMyShare />}
+
+        <Ch n="④" t="숫자와 현금" sub="연도별 숫자, 돈의 흐름, 설비투자" />
+        {R(['nums', 'cost', 'capex'])}
+
+        <Ch n="⑤" t="역사와 꼭 알아야 할 사건" sub="위기를 어떻게 넘었나, 경영권·소송·주가·자본 환원" />
+        {R(['history', 'know'])}
+
+        <Ch n="⑥" t="미래와 값" sub="사업부별 미래 이익 모델, 시나리오와 가능성, 이익 시계, 과거 10년 보유 성적" />
+        {R(['model', 'why', 'scen', 'agent', 'rms'])}
+        {live && <StockValueClock f={f as ClockFund} stockKey={stockKey} rolling={data} title="이익 시계 — 적정가 선 vs 주가" judged={deep?.growth} />}
+        {live && big.epsFix && <p className="text-xs leading-relaxed text-amber-700 dark:text-amber-400 -mt-2">⚠ 이익 시계와 아래 자동 계산은 공시 EPS(일회성·지분 평가손익 포함)를 그대로 쓴다. 이 회사는 공시 숫자가 실제와 달라 적정가·&lsquo;싼 구간&rsquo; 판정이 부풀려 보일 수 있다 — 본업 기준은 ①의 &lsquo;먼저 바로잡기&rsquo;.</p>}
+        {past}
+        {decomp.length > 0 && (
+          <DecompSection
+            title="10년 보유 수익률 분해 — 막대 하나 = EPS 몫 + 배당 몫 + PER 몫"
+            decomp={decomp}
+            divRows={divRows}
+            exampleYear={exampleYear}
+          />
+        )}
+        {live && <AutoDeep f={f} data={data} part="pastPe" num="" />}
+        {live && (
+          <details className="rounded-lg border border-gray-200 dark:border-gray-800 p-3">
+            <summary className="text-sm font-semibold text-gray-800 dark:text-gray-100 cursor-pointer">자동 계산 — 공시 숫자 그대로 본 PER·예상 수익률 (눌러서 펼치기)</summary>
+            <div className="mt-3 space-y-3">
+              <ul className={`${p} list-disc pl-4 space-y-1`}>
+                {lines.map((l, i) => <li key={i}>{l}</li>)}
+                {group && <li><b>{GROUPS[group].label}:</b> {GROUPS[group].desc}</li>}
+              </ul>
+              <AutoDeep f={f} data={data} part="future" num="" />
+              <AutoDeep f={f} data={data} part="conclusion" num="" />
+              <AutoDeep f={f} data={data} part="appendix" />
+            </div>
+          </details>
+        )}
+
+        <Ch n="⑦" t="확인할 신호와 정리" sub="분기마다 볼 숫자, 어떻게 들고 갈까" />
+        {R(['warn', 'final'])}
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-4">
@@ -10651,6 +10723,62 @@ const REPORTS: Record<string, () => ReactNode> = {
   SPGI: () => <BigReport d={SPGI_REPORT} />,
   MA: () => <BigReport d={MA_REPORT} />,
   V: () => <BigReport d={V_REPORT} />,
+}
+
+// 심층 리포트(BigReport) 종목 — 종목 화면에서 리포트 칸과 자동 분석 칸을 한 흐름(①~⑦)으로 섞어 배치한다
+const BIG_REPORTS: Record<string, BigReportData> = {
+  AMZN: AMZN_REPORT,
+  GOOGL: GOOGL_REPORT,
+  MSFT: MSFT_REPORT,
+  META: META_REPORT,
+  AAPL: AAPL_REPORT,
+  BCPC: BCPC_REPORT,
+  BMI: BMI_REPORT,
+  FELE: FELE_REPORT,
+  EXPO: EXPO_REPORT,
+  LMAT: LMAT_REPORT,
+  QLYS: QLYS_REPORT,
+  UI: UI_REPORT,
+  MEDP: MEDP_REPORT,
+  CVCO: CVCO_REPORT,
+  UFPT: UFPT_REPORT,
+  MGRC: MGRC_REPORT,
+  IPAR: IPAR_REPORT,
+  RSG: RSG_REPORT,
+  PGR: PGR_REPORT,
+  CME: CME_REPORT,
+  CL: CL_REPORT,
+  MCD: MCD_REPORT,
+  PEP: PEP_REPORT,
+  KO: KO_REPORT,
+  PG: PG_REPORT,
+  TXRH: TXRH_REPORT,
+  MELI: MELI_REPORT,
+  NOW: NOW_REPORT,
+  TDG: TDG_REPORT,
+  ISRG: ISRG_REPORT,
+  AVGO: AVGO_REPORT,
+  NVDA: NVDA_REPORT,
+  LVMH: LVMH_REPORT,
+  BR: BR_REPORT,
+  LII: LII_REPORT,
+  IDXX: IDXX_REPORT,
+  BKNG: BKNG_REPORT,
+  NFLX: NFLX_REPORT,
+  ZTS: ZTS_REPORT,
+  CPRT: CPRT_REPORT,
+  ADBE: ADBE_REPORT,
+  INTU: INTU_REPORT,
+  FICO: FICO_REPORT,
+  DCI: DCI_REPORT,
+  GGG: GGG_REPORT,
+  SYK: SYK_REPORT,
+  ADP: ADP_REPORT,
+  MSCI: MSCI_REPORT,
+  MCO: MCO_REPORT,
+  SPGI: SPGI_REPORT,
+  MA: MA_REPORT,
+  V: V_REPORT,
 }
 
 export type Universe = 'picks' | 'sp500' | 'ndx' | 'mid' | 'r2k' | 'nasdaq' | 'other'
@@ -10867,8 +10995,8 @@ function HowToRead() {
       <summary className="text-sm font-semibold text-gray-800 dark:text-gray-100 cursor-pointer">이 화면 읽는 법 (눌러서 펼치기)</summary>
       <div className="mt-2 space-y-1.5 text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
         <p><b>차트·표:</b> 막대 하나 = 그해 연말에 사서 10년 보유했을 때의 연평균 수익률(배당 포함). 주황 점은 같은 기간 S&amp;P 500. 막대가 낮게 떨어진 해가 &lsquo;최악의 진입 시점&rsquo;이다.</p>
-        <p><b>인사이트 순서:</b> 노란 박스(Claude가 뉴스로 쓴 분석) → 사업성 평가 → 1. 지금 한눈에 → 최근 컨퍼런스콜 → 1-1·1-2. 부문별·심층 분석 → 2. 이익 시계 → 3. 과거 → 4. 앞으로 → 5. 결론. 엄선 종목은 그 아래 심층 리포트(역사·분기·미래 모델)가 붙는다.</p>
-        <p><b>핵심만:</b> 위 한눈 요약 → 노란 박스의 결론 → 심층 리포트의 &lsquo;결론&rsquo;과 &lsquo;미래 시나리오&rsquo;.</p>
+        <p><b>순서:</b> 심층 리포트가 있는 종목(엄선)은 <b>① 결론과 사업성 → ② 지금 실적 → ③ 사업과 경쟁 → ④ 숫자와 현금 → ⑤ 역사와 사건 → ⑥ 미래와 값(미래 모델·시나리오·이익 시계·과거 10년 보유 성적) → ⑦ 확인할 신호와 정리</b>. 그 밖의 종목은 사업성 평가 → 1. 지금 한눈에 → 최근 콜·사업부 → 2. 이익 시계 → 3. 과거 → 4. 앞으로 → 5. 결론. 화면 오른쪽(휴대폰은 오른쪽 아래 버튼) 목차로 바로 이동할 수 있다.</p>
+        <p><b>핵심만:</b> 위 한눈 요약 → ① 결론 먼저 → ⑥ 미래 시나리오와 가능성 → ⑦ 정리.</p>
         <p><b>숫자 읽는 법:</b> 지금 PER이 10년 중간 PER보다 낮으면 평소보다 싸다. 이익/10년 고점이 85% 미만이면 이익이 꺾인 상태라 PER이 실제보다 비싸 보일 수 있다. ★ 모든 수익률은 배당 재투자 포함 총수익률(Yahoo Finance 수정주가).</p>
       </div>
     </details>
@@ -10986,11 +11114,11 @@ function PrivateAppInner({ u = 'picks' }: { u?: Universe }) {
     {current.key === 'RMS' && <HermesStoreMap />}
     {current.key === 'NKE' && <NikeMarkdownCard />}
 
-    {/* 차트 */}
-    <RollingChart key={`chart-${current.key}`} data={current.data} />
-
-    {/* 롤링 테이블 */}
-    <RollingTable data={current.data} />
+    {/* 차트·롤링 테이블 — 심층 리포트 종목은 ⑥ 미래와 값(과거 10년 보유 성적) 안에 넣는다 */}
+    {!(BIG_REPORTS[current.key] && current.key !== 'RMS' && current.key !== 'NKE') && <>
+      <RollingChart key={`chart-${current.key}`} data={current.data} />
+      <RollingTable data={current.data} />
+    </>}
 
     {/* 에르메스 전용 인사이트 */}
     {current.key === 'RMS' && <QualityCard stockKey="RMS" />}
@@ -11000,7 +11128,8 @@ function PrivateAppInner({ u = 'picks' }: { u?: Universe }) {
     {current.key === 'NKE' && <NkeInsight data={current.data} />}
     {current.key === 'NKE' && <FutureBox stockKey="NKE" num="6." />}
     {current.key !== 'RMS' && current.key !== 'NKE' && (current.data as any).type !== 'etf' && (
-      <AutoInsight key={`insight-${current.key}`} stockKey={current.key} data={current.data} />
+      <AutoInsight key={`insight-${current.key}`} stockKey={current.key} data={current.data}
+        past={BIG_REPORTS[current.key] ? <div className="space-y-3"><h3 className="text-base font-semibold text-gray-900 dark:text-white">과거 10년 보유 성적 — 언제 샀어도 어땠나</h3><RollingChart key={`chart-${current.key}`} data={current.data} /><RollingTable data={current.data} /></div> : undefined} />
     )}
   </>)
 }

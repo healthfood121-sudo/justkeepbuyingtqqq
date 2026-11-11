@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { Fragment, useState, type ReactNode } from 'react'
 
 // 심층 리포트(아마존·알파벳·마이크로소프트·에르메스 공용) — 종목 분석 화면 안에 함께 보여 준다.
 export type Light = 'g' | 'y' | 'r'
@@ -81,40 +81,39 @@ const small = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
 const th = 'text-left py-1.5 px-2 font-medium'
 const td = 'py-1.5 px-2'
 
-export default function BigReport({ d }: { d: BigReportData }) {
+// keys 를 주면 그 칸들만 그 순서대로(번호·바깥 테두리 없이) 그린다 — 종목 화면이 리포트 칸과 자동 분석 칸을 한 흐름으로 섞어 배치할 때 쓴다.
+// 칸 이름: head, conclusion, fix, plan, units, model, history, nums, peers, (extra id), ai, worry, calls, rms, scen, warn, final
+export const REPORT_SECTION_KEYS = (d: BigReportData) => ['head', 'conclusion', 'fix', 'plan', 'units', 'model', 'history', 'nums', 'peers', ...(d.extra ?? []).map(x => x.id), 'ai', 'worry', 'calls', 'rms', 'scen', 'warn', 'final']
+
+export default function BigReport({ d, keys }: { d: BigReportData; keys?: string[] }) {
   const [openQ, setOpenQ] = useState<string | null>(d.calls[0]?.q ?? null)
   const [allCalls, setAllCalls] = useState(false)
   const id = (s: string) => `${d.key.toLowerCase()}-${s}`
   const toc = ([['fix', 'PER 바로잡기', !!d.epsFix], ['plan', '분석 질문', true], ['units', '사업부', !!d.units], ['model', '미래 이익 모델', !!d.model], ['history', '역사·위기', true], ['nums', '연도별 숫자', !!d.numbers], ['peers', '경쟁사와 비교', !!d.peers], ...(d.extra ?? []).map(x => [x.id, x.toc, true]), ['ai', 'AI', !!d.ai], ['worry', '걱정 vs 숫자', !!d.worries], ['calls', d.callsTitle ? '실적 발표' : '최근 콜', true], ['rms', '에르메스와 비교', !!d.hermes], ['scen', '미래 시나리오·가능성', !!(d.scen || d.model || d.odds)], ['warn', '경고 신호', true]] as [string, string, boolean][]).filter(t => t[2])
   let n = 0
-  const N = () => `${++n}. `
-  return (
-    <div id={`${d.key.toLowerCase()}-report`} className="rounded-xl border-2 border-blue-200 dark:border-blue-900/60 scroll-mt-20">
-      <article className="px-3 sm:px-5 py-6 space-y-9">
-        <header className="space-y-2">
+  const N = () => (keys ? '' : `${++n}. `)
+  const S: Record<string, ReactNode> = {}
+  S['head'] = (<><header className="space-y-2">
           <p className="text-xs text-gray-400">심층 리포트 · {d.asOf} 기준</p>
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">{d.title}</h2>
+          {keys ? <h3 className="text-base font-bold text-gray-900 dark:text-white">{d.title}</h3> : <h2 className="text-xl font-bold text-gray-900 dark:text-white">{d.title}</h2>}
           <p className="text-sm leading-relaxed text-gray-700 dark:text-gray-200"><B t={d.intro} /></p>
-          <nav className="flex flex-wrap gap-1.5 text-xs pt-1">
+          {!keys && <nav className="flex flex-wrap gap-1.5 text-xs pt-1">
             {toc.map(([h, t]) => <a key={h} href={`#${id(h)}`} className="px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">{t}</a>)}
-          </nav>
-        </header>
-
-        <section className="rounded-xl border border-blue-200 dark:border-blue-900/60 bg-blue-50/60 dark:bg-blue-950/30 p-4 space-y-2">
+          </nav>}
+        </header></>)
+  S['conclusion'] = (<><section className="rounded-xl border border-blue-200 dark:border-blue-900/60 bg-blue-50/60 dark:bg-blue-950/30 p-4 space-y-2">
           <h3 className={h2}>결론 먼저</h3>
           <ul className="list-disc pl-5 space-y-1.5 text-sm leading-relaxed text-gray-700 dark:text-gray-200">{d.conclusion.map((t, i) => <li key={i}><B t={t} /></li>)}</ul>
-        </section>
-
-        {d.epsFix && <section id={id('fix')} className="rounded-xl border border-amber-200 dark:border-amber-900/60 bg-amber-50/60 dark:bg-amber-950/20 p-4 space-y-2 scroll-mt-20">
+        </section></>)
+  S['fix'] = (<>{d.epsFix && <section id={id('fix')} className="rounded-xl border border-amber-200 dark:border-amber-900/60 bg-amber-50/60 dark:bg-amber-950/20 p-4 space-y-2 scroll-mt-20">
           <h3 className={h2}>먼저 바로잡기 — 이 회사의 진짜 PER</h3>
           <p className={small}><B t={d.epsFix.note} /></p>
           <div className="overflow-x-auto"><table className="w-full text-xs"><tbody className="text-gray-700 dark:text-gray-200">
             {d.epsFix.rows.map(r => <tr key={r.k} className="border-b border-amber-100 dark:border-amber-900/40"><td className={`${td} font-medium`}>{r.k}</td><td className={td}><B t={r.v} /></td></tr>)}
           </tbody></table></div>
           <p className="text-sm text-gray-800 dark:text-gray-100"><B t={d.epsFix.per} /></p>
-        </section>}
-
-        <section id={id('plan')} className={sec}>
+        </section>}</>)
+  S['plan'] = (<><section id={id('plan')} className={sec}>
           <h3 className={h2}>{N()}이 회사를 판단할 질문들</h3>
           <div className="space-y-1.5">
             {d.plan.map(x => (
@@ -124,20 +123,17 @@ export default function BigReport({ d }: { d: BigReportData }) {
               </div>
             ))}
           </div>
-        </section>
-
-        {d.units && <section id={id('units')} className={sec}>
+        </section></>)
+  S['units'] = (<>{d.units && <section id={id('units')} className={sec}>
           <h3 className={h2}>{N()}돈을 버는 곳 — 사업부 한눈에</h3>
           <div className="overflow-x-auto"><table className="w-full text-xs">
             <thead><tr className="text-gray-400 border-b border-gray-200 dark:border-gray-800"><th className={th}>사업</th><th className={th}>비중</th><th className={th}>성장</th><th className={th}>회사 안의 역할</th><th className={th}>판단</th></tr></thead>
             <tbody className="text-gray-700 dark:text-gray-200">{d.units.map(u => <tr key={u.name} className="border-b border-gray-100 dark:border-gray-900 align-top"><td className={`${td} font-medium whitespace-nowrap`}>{u.name}</td><td className={`${td} whitespace-nowrap`}>{u.share}</td><td className={`${td} whitespace-nowrap`}>{u.growth}</td><td className={td}>{u.role}</td><td className={td}><B t={u.view} /></td></tr>)}</tbody>
           </table></div>
           <p className="text-[11px] text-gray-400">분기별 자세한 숫자는 위 &ldquo;사업부·지역별 매출&rdquo;과 사업부 심층 분석에 있다.</p>
-        </section>}
-
-        {d.model && <ModelSection m={d.model} sid={id('model')} title={`${N()}미래 이익 모델 — 사업부별로 10년 뒤를 쌓아 보기`} />}
-
-        <section id={id('history')} className={sec}>
+        </section>}</>)
+  S['model'] = (<>{d.model && <ModelSection m={d.model} sid={id('model')} title={`${N()}미래 이익 모델 — 사업부별로 10년 뒤를 쌓아 보기`} />}</>)
+  S['history'] = (<><section id={id('history')} className={sec}>
           <h3 className={h2}>{N()}역사 — 위기를 어떻게 넘었나</h3>
           <div className="space-y-2.5">
             {d.history.map(c => (
@@ -153,28 +149,25 @@ export default function BigReport({ d }: { d: BigReportData }) {
               </div>
             ))}
           </div>
-        </section>
-
-        {d.numbers && <section id={id('nums')} className={sec}>
+        </section></>)
+  S['nums'] = (<>{d.numbers && <section id={id('nums')} className={sec}>
           <h3 className={h2}>{N()}{d.numbers.title}</h3>
           <div className="overflow-x-auto"><table className="w-full text-xs">
             <thead><tr className="text-gray-400 border-b border-gray-200 dark:border-gray-800">{d.numbers.cols.map(c => <th key={c} className={`${th} whitespace-nowrap`}>{c}</th>)}</tr></thead>
             <tbody className="text-gray-700 dark:text-gray-200">{d.numbers.rows.map(r => <tr key={r[0]} className="border-b border-gray-100 dark:border-gray-900 align-top">{r.map((v, i) => <td key={i} className={`${td} ${i < r.length - 1 ? 'whitespace-nowrap tabular-nums' : ''} ${i === 0 ? 'font-medium' : ''}`}><B t={v} /></td>)}</tr>)}</tbody>
           </table></div>
           <p className="text-[11px] text-gray-400"><B t={d.numbers.note} /></p>
-        </section>}
-
-        {d.peers && <section id={id('peers')} className={sec}>
+        </section>}</>)
+  S['peers'] = (<>{d.peers && <section id={id('peers')} className={sec}>
           <h3 className={h2}>{N()}{d.peers.title}</h3>
           <div className="overflow-x-auto"><table className="w-full text-xs">
             <thead><tr className="text-gray-400 border-b border-gray-200 dark:border-gray-800"><th className={th}></th>{d.peers.cols.map(c => <th key={c} className={th}>{c}</th>)}</tr></thead>
             <tbody className="text-gray-700 dark:text-gray-200">{d.peers.rows.map(r => <tr key={r.k} className="border-b border-gray-100 dark:border-gray-900 align-top"><td className={`${td} font-medium whitespace-nowrap`}>{r.k}</td>{r.v.map((v, i) => <td key={i} className={td}><B t={v} /></td>)}</tr>)}</tbody>
           </table></div>
           <p className={small}><B t={d.peers.verdict} /></p>
-        </section>}
-
-        {(d.extra ?? []).map(x => (
-          <section key={x.id} id={id(x.id)} className={sec}>
+        </section>}</>)
+  for (const x of d.extra ?? []) S[x.id] = (
+<section key={x.id} id={id(x.id)} className={sec}>
             <h3 className={h2}>{N()}{x.title}</h3>
             {x.intro && <p className={small}><B t={x.intro} /></p>}
             {x.parts.map((pt, i) => (
@@ -189,18 +182,16 @@ export default function BigReport({ d }: { d: BigReportData }) {
               </div>
             ))}
           </section>
-        ))}
-
-        {d.ai && <section id={id('ai')} className={sec}>
+  )
+  S['ai'] = (<>{d.ai && <section id={id('ai')} className={sec}>
           <h3 className={h2}>{N()}AI — 기회인가 위협인가</h3>
           <div className="grid sm:grid-cols-2 gap-2">
             <div className="rounded-lg border border-emerald-200 dark:border-emerald-900/60 bg-emerald-50/40 dark:bg-emerald-950/20 p-3"><p className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 mb-1">기회</p><ul className="list-disc pl-4 space-y-1 text-xs leading-relaxed text-gray-700 dark:text-gray-200">{d.ai.opp.map((t, i) => <li key={i}><B t={t} /></li>)}</ul></div>
             <div className="rounded-lg border border-red-200 dark:border-red-900/60 bg-red-50/40 dark:bg-red-950/20 p-3"><p className="text-xs font-semibold text-red-700 dark:text-red-300 mb-1">위협·부담</p><ul className="list-disc pl-4 space-y-1 text-xs leading-relaxed text-gray-700 dark:text-gray-200">{d.ai.threat.map((t, i) => <li key={i}><B t={t} /></li>)}</ul></div>
           </div>
           <p className={small}><B t={d.ai.verdict} /></p>
-        </section>}
-
-        {d.worries && <section id={id('worry')} className={sec}>
+        </section>}</>)
+  S['worry'] = (<>{d.worries && <section id={id('worry')} className={sec}>
           <h3 className={h2}>{N()}시장의 걱정 vs 숫자가 말하는 것</h3>
           <div className="space-y-1.5">
             {d.worries.map(x => (
@@ -210,9 +201,8 @@ export default function BigReport({ d }: { d: BigReportData }) {
               </div>
             ))}
           </div>
-        </section>}
-
-        <section id={id('calls')} className={sec}>
+        </section>}</>)
+  S['calls'] = (<><section id={id('calls')} className={sec}>
           <h3 className={h2}>{N()}{d.callsTitle ?? `최근 컨퍼런스콜 (${d.calls.length}개 분기)`}</h3>
           <p className={small}>{d.callsNote ?? '녹취록 전문을 읽고 요약했다. 제목을 누르면 펼쳐진다.'}</p>
           <div className="space-y-1.5">
@@ -238,18 +228,16 @@ export default function BigReport({ d }: { d: BigReportData }) {
             })}
           </div>
           {d.calls.length > 8 && <button onClick={() => setAllCalls(!allCalls)} className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">{allCalls ? '최근 8개만 보기' : `나머지 ${d.calls.length - 8}개 더 보기 ↓`}</button>}
-        </section>
-
-        {d.hermes && <section id={id('rms')} className={sec}>
+        </section></>)
+  S['rms'] = (<>{d.hermes && <section id={id('rms')} className={sec}>
           <h3 className={h2}>{N()}에르메스와 비교하면</h3>
           <div className="overflow-x-auto"><table className="w-full text-xs">
             <thead><tr className="text-gray-400 border-b border-gray-200 dark:border-gray-800"><th className={th}></th><th className={th}>이 회사</th><th className={th}>에르메스</th></tr></thead>
             <tbody className="text-gray-700 dark:text-gray-200">{d.hermes.map(r => <tr key={r.k} className="border-b border-gray-100 dark:border-gray-900 align-top"><td className={`${td} font-medium whitespace-nowrap`}>{r.k}</td><td className={td}><B t={r.it} /></td><td className={td}>{r.rms}</td></tr>)}</tbody>
           </table></div>
           <p className={small}><B t={d.hermesVerdict ?? ''} /></p>
-        </section>}
-
-        {(d.scen || d.model || d.odds) && <section id={id('scen')} className={sec}>
+        </section>}</>)
+  S['scen'] = (<>{(d.scen || d.model || d.odds) && <section id={id('scen')} className={sec}>
           <h3 className={h2}>{N()}{d.model || d.odds ? '미래 시나리오와 가능성 — 10년 뒤 어떤 세계일까' : '10년 시나리오(추정)'}</h3>
           {(d.model || d.odds) ? <OddsBlock items={d.model ? (['good', 'base', 'bad'] as Sc[]).map(sc => { const r = modelResult(d.model!, sc); return { ...d.model!.scen[sc], sc, ret: r.ret, eps: `주당이익 연 ${r.cagr.toFixed(1)}% → 10년 뒤 약 ${r.e10.toFixed(0)}${d.model!.cur}, PER ${d.model!.pe[sc]}배` } }) : d.odds!.items} why={d.oddsWhy ?? d.odds?.why ?? ''} /> : (
           <div className="grid sm:grid-cols-3 gap-2">
@@ -263,21 +251,25 @@ export default function BigReport({ d }: { d: BigReportData }) {
             ))}
           </div>)}
           <p className={small}><B t={d.scenNote} /></p>
-        </section>}
-
-        <section id={id('warn')} className={sec}>
+        </section>}</>)
+  S['warn'] = (<><section id={id('warn')} className={sec}>
           <h3 className={h2}>{N()}분기마다 확인할 신호</h3>
           <div className="overflow-x-auto"><table className="w-full text-xs">
             <thead><tr className="text-gray-400 border-b border-gray-200 dark:border-gray-800"><th className={th}>숫자</th><th className={th}>괜찮은 범위</th><th className={th}>경고</th></tr></thead>
             <tbody className="text-gray-700 dark:text-gray-200">{d.warn.map(w => <tr key={w.k} className="border-b border-gray-100 dark:border-gray-900"><td className={`${td} font-medium`}>{w.k}</td><td className={`${td} text-emerald-700 dark:text-emerald-400`}>{w.ok}</td><td className={`${td} text-red-600 dark:text-red-400`}>{w.bad}</td></tr>)}</tbody>
           </table></div>
-        </section>
-
-        <section className="rounded-xl border border-gray-200 dark:border-gray-800 p-4 space-y-2">
+        </section></>)
+  S['final'] = (<><section className="rounded-xl border border-gray-200 dark:border-gray-800 p-4 space-y-2">
           <h3 className={h2}>{N()}정리 — 어떻게 들고 갈까</h3>
           <ul className="list-disc pl-5 space-y-1 text-sm leading-relaxed text-gray-700 dark:text-gray-200">{d.final.map((t, i) => <li key={i}><B t={t} /></li>)}</ul>
           <p className="text-[11px] text-gray-400">매수·매도 추천이 아니다. 시나리오는 추정이고, 일회성 이익 조정은 회사 발표·보도 숫자를 바탕으로 한 대략값이다.</p>
-        </section>
+        </section></>)
+
+  if (keys) return <>{keys.filter(k => S[k] != null).map(k => <Fragment key={k}>{S[k]}</Fragment>)}</>
+  return (
+    <div id={`${d.key.toLowerCase()}-report`} className="rounded-xl border-2 border-blue-200 dark:border-blue-900/60 scroll-mt-20">
+      <article className="px-3 sm:px-5 py-6 space-y-9">
+        {REPORT_SECTION_KEYS(d).map(k => <Fragment key={k}>{S[k]}</Fragment>)}
       </article>
     </div>
   )
@@ -319,7 +311,7 @@ export function ModelSection({ m, sid, title }: { m: Model; sid: string; title: 
                 <td className={`${td} tabular-nums whitespace-nowrap font-semibold`}>{fmtAmt(z.rev)} {m.cur} <span className="font-normal text-gray-400">(×{(z.rev / s.rev).toFixed(1)})</span></td>
                 <td className={`${td} tabular-nums whitespace-nowrap`}>{s.m0}% → {s.mEnd[sc]}%</td>
                 <td className={`${td} tabular-nums whitespace-nowrap`}>{fmtAmt(z.oi)} {m.cur}</td>
-                <td className={`${td} tabular-nums whitespace-nowrap`}>{Math.round(s.rev * s.m0 / oi0 * 100)}% → {Math.round(z.oi / y10.oi * 100)}%</td>
+                <td className={`${td} tabular-nums whitespace-nowrap`}>{Math.round(s.rev * s.m0 / 100 / oi0 * 100)}% → {Math.round(z.oi / y10.oi * 100)}%</td>
               </tr>
             )
           })}

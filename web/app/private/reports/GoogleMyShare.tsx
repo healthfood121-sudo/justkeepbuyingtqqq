@@ -68,18 +68,9 @@ const ITEMS: Item[] = [
       { label: '스페이스X 지분', v: 94e9, note: '2026년 6월 말 공정가치 약 940억 달러(지분 약 4.9%)' },
       { label: '비상장 지분(대부분 앤트로픽)', v: 124.3e9, note: '2026년 6월 말 장부가 1,243억 달러 — 대부분 앤트로픽으로 보도. 앤트로픽 상장 신청 보도' },
     ] },
-  { group: '미래 옵션(아직 매출 거의 없음)', name: 'TPU 외부 판매(자체 AI 칩)', what: '구글이 만든 AI 칩을 다른 회사에 빌려주거나 판다. 앤트로픽 최대 100만 개, 메타 임대(2027년부터 구매 선택권, 보도), 사용 고객 약 100곳.',
-    money: '클라우드 매출 안에 섞여 따로 공개하지 않는다. 블룸버그 인텔리전스 추정 외부 판매 2026년 약 120억 → 2028년 1,350억 달러.',
-    stakes: [{ label: '2028년 TPU 외부 판매(추정)', v: 135e9, note: '블룸버그 인텔리전스 추정 — 회사 발표 아님' }] },
-  { group: '미래 옵션(아직 매출 거의 없음)', name: '아이소모픽 랩스(AI 신약 개발)', what: '딥마인드의 단백질 구조 AI(알파폴드)로 신약을 설계. 일라이 릴리·노바티스·존슨앤드존슨과 협력.',
-    money: '2026년 5월 21억 달러 투자 유치, 약 50억 달러 추가 협의 중(블룸버그). 아직 사람 대상 임상 없음 — 신약 매출은 2030년대.' },
-  { group: '미래 옵션(아직 매출 거의 없음)', name: '로봇(제미나이 로보틱스)', what: '휴머노이드 로봇 몸 전체를 움직이는 AI 모델(2026년 7~8월 2세대). 앱트로닉·보스턴 다이내믹스와 협력, 로봇 소프트웨어 인트린식을 구글 안으로 흡수.',
-    money: '로봇 회사에 AI 모델 사용료 — 2028년 이후(추정).' },
-  { group: '미래 옵션(아직 매출 거의 없음)', name: 'AI 안경·의료 AI·양자·우주', what: '안드로이드 XR 안경(2026년 가을, 와비파커·젠틀몬스터·삼성). 의료 AI(AMIE 진료 상담 검증, MedGemma). 양자칩 윌로(특정 계산 1만 3천 배). 우주 데이터센터 위성 시제품(2027년).',
-    money: '모두 매출이 거의 없다. 안경은 제미나이 사용처, 양자·우주는 2030년대 이야기. 베릴리(생명과학)는 2026년 구글이 대주주에서 빠졌다.' },
 ]
 
-const fmt = (v: number) => v >= 1e6 ? `${(v / 1e6).toFixed(1)}백만` : v >= 1e4 ? `${(v / 1e4).toFixed(1)}만` : v >= 10 ? Math.round(v).toLocaleString() : v.toFixed(2)
+const fmt = (v: number) => v >= 1e12 ? `${(v / 1e12).toFixed(v >= 1e14 ? 0 : 1)}조` : v >= 1e8 ? `${(v / 1e8).toFixed(v >= 1e10 ? 0 : 1)}억` : v >= 1e4 ? `${(v / 1e4).toFixed(v >= 1e6 ? 0 : 1)}만` : v >= 10 ? Math.round(v).toLocaleString() : v.toFixed(2)
 const SEC_Y = 365 * 86400
 const isStock = (u: { unit: string; label: string }) => u.unit === '명' || u.label.includes('기기') || u.label === '유료 구독'
 const G: Record<string, string> = { A: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300', B: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300', C: 'bg-gray-100 text-gray-600' }
@@ -102,7 +93,7 @@ export default function GoogleMyShare() {
     <details className="rounded-xl border border-gray-200 dark:border-gray-800 p-3">
       <summary className="text-sm font-semibold text-gray-900 dark:text-white cursor-pointer">구글이 하는 모든 사업 — 무엇을 하고 어떻게 버나 (눌러서 펼치기)</summary>
       <div className="mt-3 space-y-4">
-      <p className={small}>회사 전체 숫자와 출처. 내 주식 몫(1초·하루·1년, 사업부별, 검색·유튜브·AI·웨이모 환산)은 <a href="#owner-card" className="text-blue-600 dark:text-blue-400 underline">맨 위 주주 카드</a>에 있다.</p>
+      <p className={small}>회사 전체 숫자와 출처. 내 주식 몫(1초·하루·1년, 사업부별, 검색·유튜브·AI·웨이모 환산)은 <a href="#owner-card" className="text-blue-600 dark:text-blue-400 underline">맨 위 주주 카드</a>에, 아직 매출이 거의 없는 사업(TPU 외부 판매·아이소모픽·로봇·안경·양자)은 바로 위 &lsquo;미래 옵션&rsquo;에 있다.</p>
       {groups.map(g => (
         <div key={g} className="space-y-1.5">
           <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">{g}</p>
