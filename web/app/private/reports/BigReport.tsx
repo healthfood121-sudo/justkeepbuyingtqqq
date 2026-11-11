@@ -48,6 +48,8 @@ export type BigReportData = {
   epsFix?: { note: string; rows: { k: string; v: string }[]; per: string }
   plan: { q: string; now: string; l: Light }[]
   units?: { name: string; share: string; growth: string; role: string; view: string }[]
+  historyIntro?: string
+  historyTable?: { cols: string[]; rows: string[][] }
   history: { years: string; kind: 'start' | 'crisis' | 'win' | 'now'; title: string; story: string[]; lesson: string }[]
   ai?: { opp: string[]; threat: string[]; verdict: string }
   worries?: { w: string; fact: string; l: Light }[]
@@ -135,6 +137,11 @@ export default function BigReport({ d, keys }: { d: BigReportData; keys?: string
   S['model'] = (<>{d.model && <ModelSection m={d.model} sid={id('model')} title={`${N()}미래 이익 모델 — 사업부별로 10년 뒤를 쌓아 보기`} />}</>)
   S['history'] = (<><section id={id('history')} className={sec}>
           <h3 className={h2}>{N()}역사 — 위기를 어떻게 넘었나</h3>
+          {d.historyIntro && <p className={small}><B t={d.historyIntro} /></p>}
+          {d.historyTable && <div className="overflow-x-auto"><table className="w-full text-xs">
+            <thead><tr className="text-gray-400 border-b border-gray-200 dark:border-gray-800">{d.historyTable.cols.map(c => <th key={c} className={`${th} whitespace-nowrap`}>{c}</th>)}</tr></thead>
+            <tbody className="text-gray-700 dark:text-gray-200">{d.historyTable.rows.map(r => <tr key={r[0]} className="border-b border-gray-100 dark:border-gray-900 align-top">{r.map((v, i) => <td key={i} className={`${td} ${i === 0 ? 'font-medium' : ''}`}><B t={v} /></td>)}</tr>)}</tbody>
+          </table></div>}
           <div className="space-y-2.5">
             {d.history.map(c => (
               <div key={c.years} className="rounded-lg border border-gray-200 dark:border-gray-800 p-3 space-y-1.5">
