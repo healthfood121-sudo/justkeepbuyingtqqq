@@ -70,13 +70,21 @@ export default function PageToc({ rootId, resetKey }: { rootId: string; resetKey
     return () => { window.removeEventListener('scroll', onScroll); cancelAnimationFrame(raf) }
   }, [items])
 
-  // 목록 안에서 지금 위치가 보이게
-  useEffect(() => {
+  // 목록 안에서 지금 위치가 보이게 — 단, 사용자가 목록을 직접 움직였으면 4초 동안은 그대로 두고,
+  // 지금 위치가 목록 화면 밖으로 나갔을 때만 필요한 만큼만 움직인다(페이지 스크롤에 목록이 끌려가지 않게)
+  // 한 번이라도 목록을 직접 움직이면 그 뒤로는 목록이 저절로 움직이지 않는다('지금 위치로' 버튼으로만)
+  const [pinned, setPinned] = useState(false)
+  const markTouched = () => setPinned(true)
+  const follow = useCallback(() => {
     for (const box of [listRef.current, open ? sheetRef.current : null]) {
       const el = box?.querySelector<HTMLElement>(`[data-id="${active}"]`)
-      if (box && el) box.scrollTop = el.offsetTop - box.clientHeight / 2
+      if (!box || !el) continue
+      const b = box.getBoundingClientRect(), r = el.getBoundingClientRect()
+      if (r.top < b.top) box.scrollTop -= b.top - r.top + 24
+      else if (r.bottom > b.bottom) box.scrollTop += r.bottom - b.bottom + 24
     }
   }, [active, open])
+  useEffect(() => { if (!pinned) follow() }, [pinned, follow])
 
   const go = (id: string) => {
     const el = document.getElementById(id)
@@ -86,8 +94,18 @@ export default function PageToc({ rootId, resetKey }: { rootId: string; resetKey
   }
 
   if (items.length < 3) return null
+  // 지금 위치가 속한 큰 제목(바로 앞의 level 0)
+  const ai = items.findIndex(i => i.id === active)
+  let parent = -1
+  for (let k = ai; k >= 0; k--) if (items[k].level === 0) { parent = k; break }
+  const shown = items.filter((it, k) => {
+    if (it.level === 0) return true
+    let pk = -1
+    for (let j = k; j >= 0; j--) if (items[j].level === 0) { pk = j; break }
+    return pk === parent
+  })
   const list = (
-    items.map(it => (
+    shown.map(it => (
       <button key={it.id} type="button" data-id={it.id} onClick={() => go(it.id)}
         className={`block w-full text-left rounded px-2 py-1 leading-snug ${it.level ? 'pl-5 text-[11px]' : 'text-xs font-medium'} ${active === it.id
           ? 'bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300'
@@ -102,9 +120,12 @@ export default function PageToc({ rootId, resetKey }: { rootId: string; resetKey
     <>
       {/* 넓은 화면: 오른쪽 고정 목차 (본문 폭 56rem 바깥 여백에 맞춤) */}
       <nav data-toc-skip aria-label="목차" className="hidden xl:block fixed top-24 right-4 z-30" style={{ width: 'min(260px, calc((100vw - 56rem) / 2 - 24px))' }}>
-        <p className="text-[11px] font-semibold text-gray-400 px-2 mb-1">목차</p>
-        <div ref={listRef} className="max-h-[calc(100vh-8rem)] overflow-y-auto pr-1 space-y-0.5">{list}</div>
-        <button type="button" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="mt-2 px-2 text-[11px] text-gray-400 hover:underline">↑ 맨 위로</button>
+        <p className="text-[11px] font-semibold text-gray-400 px-2 mb-1">목차 <span className="font-normal">· 작은 제목은 지금 읽는 구간만</span></p>
+        <div ref={listRef} onWheel={markTouched} onTouchMove={markTouched} onMouseDown={markTouched} className="max-h-[calc(100vh-8rem)] overflow-y-auto overscroll-contain pr-1 space-y-0.5">{list}</div>
+        <div className="mt-2 px-2 flex gap-3 text-[11px] text-gray-400">
+          <button type="button" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="hover:underline">↑ 맨 위로</button>
+          {pinned && <button type="button" onClick={() => { setPinned(false); follow() }} className="hover:underline text-blue-500">지금 위치로</button>}
+        </div>
       </nav>
 
       {/* 휴대폰·좁은 화면: 오른쪽 아래 버튼 + 아래에서 올라오는 목록 */}
@@ -123,7 +144,7 @@ export default function PageToc({ rootId, resetKey }: { rootId: string; resetKey
                 <button type="button" onClick={() => setOpen(false)} className="text-lg leading-none text-gray-500" aria-label="닫기">×</button>
               </div>
             </div>
-            <div ref={sheetRef} className="overflow-y-auto px-2 py-2 space-y-0.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">{list}</div>
+            <div ref={sheetRef} onWheel={markTouched} onTouchMove={markTouched} className="overflow-y-auto overscroll-contain px-2 py-2 space-y-0.5 pb-[max(0.5rem,env(safe-area-inset-bottom))]">{list}</div>
           </div>
         </div>
       )}
