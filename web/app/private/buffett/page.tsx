@@ -48,6 +48,11 @@ export default function BuffettPage() {
           <p className="text-sm text-gray-500 dark:text-gray-400">워런 버핏과 찰리 멍거가 사거나 직접 언급한 회사, 왜 위대하다고 봤는지, 그리고 두 사람이 인정한 실수까지. 회사 이름을 누르면 사이트의 상세 분석으로 간다.</p>
         </div>
 
+        <Link href="/private/buffett/notes" className="block rounded-xl border-2 border-amber-300 dark:border-amber-800 bg-amber-50/70 dark:bg-amber-950/30 p-4 hover:border-amber-500">
+          <p className="text-sm font-semibold text-gray-900 dark:text-white">📒 주주총회 — 중요한 질문과 버핏·멍거의 답 →</p>
+          <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">1986~2018년 주주총회 질문과 답을 주제(인플레이션·사이클·해자·경영자·실수…)와 연도로 찾아본다.</p>
+        </Link>
+
         <section className="rounded-xl border border-blue-200 dark:border-blue-900/60 bg-blue-50/60 dark:bg-blue-950/30 p-4 space-y-2">
           <h2 className="text-sm font-semibold text-gray-900 dark:text-white">두 사람이 회사를 고르는 기준</h2>
           <ul className="grid sm:grid-cols-2 gap-2">

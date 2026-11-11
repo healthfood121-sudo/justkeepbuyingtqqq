@@ -62,6 +62,7 @@ import AiUsersChart from './reports/AiUsersChart'
 import TrioCompare, { COS as PICK_COS, ev as pickEv, OUT_OF_PICKS } from './reports/TrioCompare'
 import HermesStoreMap from './reports/HermesStoreMap'
 import PageToc from './reports/PageToc'
+import { NoteCard, type NoteEntry } from './buffett/notes/NotesClient'
 import OwnerCard from './reports/OwnerCard'
 import MyPortfolio from './reports/MyPortfolio'
 import { OWNERS, type OwnerProfile, type OwnerSeg, type OwnerFun } from './reports/ownerData'
@@ -8593,6 +8594,26 @@ function RmsInsight({ data, part, fs }: { data: StockData; part?: string[]; fs?:
   )
 }
 
+// 종목 화면: 이 회사가 나온 버핏·멍거 주주총회 노트(로그인 상태에서 서버가 골라 준다 — 화면 코드에는 노트 내용이 없다)
+function BuffettNotesBox({ stockKey }: { stockKey: string }) {
+  const [list, setList] = useState<NoteEntry[] | null>(null)
+  useEffect(() => {
+    let alive = true
+    fetch(`/private/buffett/notes/data?k=${encodeURIComponent(stockKey)}`).then(r => (r.ok ? r.json() : { entries: [] })).then(d => { if (alive) setList(d.entries ?? []) }).catch(() => { if (alive) setList([]) })
+    return () => { alive = false }
+  }, [stockKey])
+  if (!list || list.length === 0) return null
+  return (
+    <details className="rounded-xl border-2 border-amber-200 dark:border-amber-900/60 p-3">
+      <summary className="text-sm font-semibold text-gray-900 dark:text-white cursor-pointer">버핏·멍거가 이 회사에 대해 한 말 ({list.length}개) — 눌러서 펼치기</summary>
+      <div className="mt-3 space-y-2">
+        {list.map(e => <NoteCard key={e.id} e={e} />)}
+        <Link href="/private/buffett/notes" className="block text-xs text-blue-600 dark:text-blue-400 hover:underline">주주총회 질문과 답 전체 보기 →</Link>
+      </div>
+    </details>
+  )
+}
+
 // 에르메스 화면 — 심층 리포트 칸과 에르메스 전용 분석(리셀 웃돈·매장 지도·지역별 매출·성장 계산기·이익 시계)을 주제별 ①~⑦로 묶는다
 function RmsFlow({ data }: { data: StockData }) {
   const fs = useState<Factors>(HERMES_SCENARIOS[0].f)
@@ -8632,6 +8653,7 @@ function RmsFlow({ data }: { data: StockData }) {
 
       <Ch n="⑤" t="역사와 꼭 알아야 할 사건" sub="190년 동안 위기를 어떻게 넘었나, 경영권·지분·승계·논란" />
       {R(['history', 'know'])}
+      <BuffettNotesBox stockKey="RMS" />
 
       <Ch n="⑥" t="미래와 값" sub="이익 성장률 근거와 계산기, 시나리오와 가능성, 이익 시계, 과거 10년 보유 성적" />
       {R(['why'])}
@@ -10631,6 +10653,7 @@ function AutoInsight({ stockKey, data, past }: { stockKey: string; data: StockDa
 
         <Ch n="⑤" t="역사와 꼭 알아야 할 사건" sub="위기를 어떻게 넘었나, 경영권·소송·주가·자본 환원" />
         {R(['history', 'know'])}
+        <BuffettNotesBox stockKey={stockKey} />
 
         <Ch n="⑥" t="미래와 값" sub="사업부별 미래 이익 모델, 시나리오와 가능성, 이익 시계, 과거 10년 보유 성적" />
         {R(['model', 'why', 'scen', 'agent', 'rms'])}
