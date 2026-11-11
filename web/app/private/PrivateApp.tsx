@@ -8110,8 +8110,8 @@ function HermesResaleCard() {
       { label: '평균 웃돈', data: ss.map(s => s?.avg ?? null), color: 'rgba(234,88,12,0.95)' },
       { label: '최고', data: ss.map(s => s?.hi.v ?? null), color: 'rgba(220,38,38,0.55)', dash: true },
       { label: '최저', data: ss.map(s => s?.lo.v ?? null), color: 'rgba(234,88,12,0.4)', dash: true },
-      { label: '새 가방 매물(오른쪽)', data: days.map(d => d.listed.new), color: 'rgba(37,99,235,0.8)', axis: 'y2' },
-      { label: '중고 매물(오른쪽)', data: days.map(d => d.listed.pre), color: 'rgba(107,114,128,0.7)', axis: 'y2' },
+      { label: '리셀 새 가방(미사용) 매물(오른쪽)', data: days.map(d => d.listed.new), color: 'rgba(37,99,235,0.8)', axis: 'y2' },
+      { label: '리셀 중고(사용한 가방) 매물(오른쪽)', data: days.map(d => d.listed.pre), color: 'rgba(107,114,128,0.7)', axis: 'y2' },
     ])} />
   } else {
     const b = basket[sel]
@@ -8202,6 +8202,7 @@ function HermesResaleCard() {
       </div>
       <div className="rounded-md bg-amber-50 dark:bg-amber-950/30 p-3 space-y-1">
         <p className="text-xs font-semibold text-amber-800 dark:text-amber-300">읽는 법</p>
+        <p className={p}>· <b>새 가방·중고는 둘 다 리셀(되팔기) 시장이다</b> — 에르메스 매장 재고가 아니다. <b>새 가방</b> = 매장에서 사서 한 번도 안 들고 바로 되파는 미사용 가방(주로 Privé Porter·Madison Avenue Couture), <b>중고</b> = 누군가 들고 다니다 파는 사용한 가방(주로 Rebag·Fashionphile). 새 가방 웃돈은 &lsquo;매장에서 못 사서 웃돈 주고라도 사려는 수요&rsquo;, 중고 값은 &lsquo;들던 가방도 정가 근처에 팔리는지(가치 보존)&rsquo;를 보여 준다.</p>
         <p className={p}>· <b>웃돈</b> = 매장에서 새로 산 가방을 되파는 가격 ÷ 매장 정가. 1.5배면 정가보다 50% 비싸게 내놓는다는 뜻. 매장에서 못 사서 웃돈을 주고라도 사려는 수요가 얼마나 남았는지 보여준다.</p>
         <p className={p}>· <b>종합은 평균을 주로 본다.</b> 중간값은 그날 가운데 있는 모델 하나의 값이라 기준 모델이 바뀌면 선이 튈 수 있다. 평균은 5종이 모두 반영돼 흐름이 매끄럽다. 최고·최저는 인기 모델(보통 미니 켈리·버킨 25)과 덜 인기 모델의 차이 — 이 간격이 벌어지면 수요가 일부 모델에만 몰리는 것.</p>
         <p className={p}>· <b>가격이 주인공, 매물 수는 보조</b>: 에르메스는 공방을 매년 조금씩만 늘려 생산량이 천천히 늘어난다(회사 발표 자료 참고). 그래서 생산이 늘어 매물이 느는 효과는 1년에 걸쳐 완만하게 나타나고, 몇 주~몇 달 사이 매물이 크게 움직이면 생산보다 <b>되팔려는 사람·사려는 사람의 변화</b>로 보는 게 맞다.</p>
