@@ -107,7 +107,7 @@ export default function PageToc({ rootId, resetKey }: { rootId: string; resetKey
   const list = (
     shown.map(it => (
       <button key={it.id} type="button" data-id={it.id} onClick={() => go(it.id)}
-        className={`block w-full text-left rounded px-2 py-1 leading-snug ${it.level ? 'pl-5 text-[11px]' : 'text-xs font-medium'} ${active === it.id
+        className={`block w-full text-left rounded px-1.5 py-0.5 leading-snug ${it.level ? 'pl-4 text-[10px]' : 'text-[11px] font-medium'} ${active === it.id
           ? 'bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300'
           : it.level ? 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800' : 'text-gray-800 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800'}`}>
         {it.text}
@@ -119,8 +119,8 @@ export default function PageToc({ rootId, resetKey }: { rootId: string; resetKey
   return (
     <>
       {/* 넓은 화면: 오른쪽 고정 목차 (본문 폭 56rem 바깥 여백에 맞춤) */}
-      <nav data-toc-skip aria-label="목차" className="hidden xl:block fixed top-24 right-4 z-30" style={{ width: 'min(260px, calc((100vw - 56rem) / 2 - 24px))' }}>
-        <p className="text-[11px] font-semibold text-gray-400 px-2 mb-1">목차 <span className="font-normal">· 작은 제목은 지금 읽는 구간만</span></p>
+      <nav data-toc-skip aria-label="목차" className="hidden xl:block fixed top-24 right-4 z-30" style={{ width: 'min(210px, calc((100vw - 56rem) / 2 - 24px))' }}>
+        <p className="text-[10px] font-semibold text-gray-400 px-1.5 mb-1">목차</p>
         <div ref={listRef} onWheel={markTouched} onTouchMove={markTouched} onMouseDown={markTouched} className="max-h-[calc(100vh-8rem)] overflow-y-auto overscroll-contain pr-1 space-y-0.5">{list}</div>
         <div className="mt-2 px-2 flex gap-3 text-[11px] text-gray-400">
           <button type="button" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="hover:underline">↑ 맨 위로</button>
@@ -130,7 +130,7 @@ export default function PageToc({ rootId, resetKey }: { rootId: string; resetKey
 
       {/* 휴대폰·좁은 화면: 오른쪽 아래 버튼 + 아래에서 올라오는 목록 */}
       <button type="button" data-toc-skip onClick={() => setOpen(true)} aria-label="목차 열기"
-        className="xl:hidden fixed bottom-5 right-4 z-40 rounded-full bg-gray-900/90 dark:bg-white/90 text-white dark:text-gray-900 shadow-lg px-4 py-2.5 text-sm font-semibold max-w-[70vw] truncate">
+        className="xl:hidden fixed bottom-5 right-4 z-40 rounded-full bg-gray-900/90 dark:bg-white/90 text-white dark:text-gray-900 shadow-lg px-3 py-1.5 text-xs font-semibold max-w-[60vw] truncate">
         ☰ 목차{activeText ? <span className="font-normal opacity-70"> · {activeText.length > 14 ? activeText.slice(0, 13) + '…' : activeText}</span> : null}
       </button>
       {open && (
