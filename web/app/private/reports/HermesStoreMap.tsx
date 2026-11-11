@@ -165,8 +165,10 @@ export default function HermesStoreMap() {
       L.current = lf
       const dark = document.documentElement.classList.contains('dark')
       const m = lf.map(box.current, { worldCopyJump: true, scrollWheelZoom: false, zoomSnap: 0.25 }).fitBounds(lf.latLngBounds(S.map(s => [s.lat, s.lng] as [number, number])), { padding: [12, 12] })
-      lf.tileLayer(`https://{s}.basemaps.cartocdn.com/${dark ? 'dark_all' : 'light_all'}/{z}/{x}/{y}{r}.png`, {
-        attribution: '&copy; OpenStreetMap &copy; CARTO', subdomains: 'abcd', maxZoom: 12,
+      // 바탕 지도: 키가 필요 없는 OpenStreetMap 기본 타일(CARTO는 2025년부터 API 키 필요). 다크 모드는 색을 뒤집어 어둡게
+      lf.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors', maxZoom: 12,
+        className: dark ? 'osm-dark' : '',
       }).addTo(m)
       map.current = m
       layer.current = lf.layerGroup().addTo(m)
@@ -220,6 +222,7 @@ export default function HermesStoreMap() {
       </div>
       <input type="range" min={2016} max={2026} value={y} onChange={e => setY(Number(e.target.value))} className="w-full accent-orange-600" aria-label="연도" />
 
+      <style>{'.osm-dark{filter:invert(1) hue-rotate(180deg) brightness(.85) contrast(.9)}'}</style>
       <div ref={box} className="w-full rounded-lg overflow-hidden border border-gray-200 dark:border-gray-800" style={{ height: 360 }} />
 
       <div className="rounded-lg bg-gray-50 dark:bg-gray-900/40 p-2.5 space-y-1 text-xs text-gray-700 dark:text-gray-200">
