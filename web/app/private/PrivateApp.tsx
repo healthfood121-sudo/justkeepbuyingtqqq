@@ -8850,10 +8850,97 @@ function RmsRegionMemo() {
       </div>
       <ul className="text-xs leading-relaxed text-gray-600 dark:text-gray-300 list-disc pl-4 space-y-0.5">
         <li><b>한 줄로 외우기: 아시아 4 · 미주 2 · 유럽 1.5 · 일본 1 · 프랑스 1 · 중동 0.4</b> (10 기준). 아시아(일본 제외)만으로 거의 절반에 가깝다.</li>
-        <li><b>나라별 매출은 회사가 공개하지 않는다.</b> 미국은 따로 숫자가 없고 &lsquo;미주&rsquo;의 대부분을 차지한다(매장 기준 미주 {stores.AM ?? 0}곳 중 미국 {HERMES_NOW.filter(c => c.country === '미국').reduce((a, c) => a + c.n, 0)}곳). 중국 본토·홍콩·마카오도 &lsquo;아시아(일본 제외)&rsquo; 안에 묶여 있다 — 중국만의 비중은 공식 숫자가 없다.</li>
+        <li><b>나라별로는 바로 아래 표</b> — 회사는 지역 6개만 발표하지만, 일본·프랑스는 지역이 곧 나라이고, 한국은 한국 법인 감사보고서가 있고, 미국·중화권은 추정할 수 있다.</li>
         <li><b>매장 1곳당으로 보면:</b> 아시아는 매장 비중보다 매출 비중이 크고(큰 매장·높은 객단가), 유럽(프랑스 제외)은 매장은 많지만 1곳당 매출이 작다. 프랑스는 매장 9% 남짓에 매출 10% — 파리 본점에 전 세계 관광객이 몰리기 때문.</li>
       </ul>
       <p className="text-[11px] text-gray-400 dark:text-gray-500">매출: 에르메스 2025년 연간 실적(지역 6개). 매장 수: hermes.com 공식 매장 목록(수리 창구 제외, 공항·면세점 포함), 튀르키예·카자흐스탄은 유럽으로, 인도는 아시아로 대략 분류했다.</p>
+      <RmsCountryDeep />
+    </div>
+  )
+}
+
+// 나라별로 들여다보기 — 공시(일본·프랑스), 한국 법인 감사보고서(한국), 추정(미국·중화권)을 등급을 붙여 보여 준다.
+// 지역별 이익은 2025년 연차 보고서(URD) 연결 재무제표 주석 4(부문 정보). 매장 수는 연차 보고서 매장 지도(전용 매장 기준).
+const RMS_COUNTRY: { n: string; rev: string; share: string; lo: number; hi: number; grade: '공시' | '법인 공시' | '추정'; stores: string; how: string }[] = [
+  { n: '중화권 (중국 본토·홍콩·마카오·대만)', rev: '약 47~52', share: '약 30%', lo: 28, hi: 33, grade: '추정', stores: '53곳 (본토 35·대만 8·홍콩 6·마카오 4)',
+    how: '아시아(일본 제외) 67.0억 − 한국 7.0억 − 나머지 아시아(호주·싱가포르·태국·인도 등 전용 매장 28곳 × 1곳당 0.3~0.45억) ≈ 47~52억. 회사가 따로 밝힌 숫자는 없다.' },
+  { n: '미국', rev: '약 24~27', share: '약 16%', lo: 15, hi: 17, grade: '추정', stores: '43곳',
+    how: '미주 30.8억 중 미국 매장이 43/61곳(70%), 미국 매장이 더 크다고 보면 미주의 80~88%. 미국 법인(Hermès of Paris)이 2025년 본사에 보낸 배당 5.1억 유로로 일본 법인(2.5억)의 두 배 — 미국이 일본보다 훨씬 크다는 것과 맞는다.' },
+  { n: '일본', rev: '15.9', share: '10%', lo: 10, hi: 10, grade: '공시', stores: '30곳', how: '회사 발표 지역 숫자 = 나라 숫자. 2025년 환율 제외 +14%. 2025년 처음으로 프랑스보다 커졌다.' },
+  { n: '프랑스', rev: '15.8', share: '10%', lo: 10, hi: 10, grade: '공시', stores: '26곳', how: '회사 발표. 파리 본점 매출의 상당 부분이 해외 관광객(중국·미국·중동 등) — 나라 숫자지만 손님은 세계 사람이다.' },
+  { n: '한국', rev: '약 7.0', share: '약 4.4%', lo: 4.4, hi: 4.4, grade: '법인 공시', stores: '18곳',
+    how: '에르메스코리아 감사보고서(전자공시): 2025년 매출 1조 1,251억 원(+16.7%), 영업이익 3,055억 원, 순이익 2,408억 원. 2025년 평균 환율 약 1,605원/유로로 나눴다. 면세점 매출이 모두 들어 있는지는 불확실.' },
+  { n: '유럽 나머지 (영국·이탈리아·독일·스위스 등)', rev: '23.6', share: '15%', lo: 15, hi: 15, grade: '공시', stores: '이탈리아 12·독일 10·스위스 9·영국 8 등', how: '지역 숫자만 공개. 나라별로 나눌 근거가 부족해 묶어 둔다.' },
+  { n: '중동 (아랍에미리트·카타르 등)', rev: '7.0', share: '4%', lo: 4, hi: 4, grade: '공시', stores: '약 10곳', how: '회사 발표 "기타(중동)". 2026년엔 지역 정세로 감소.' },
+]
+// 2025년 지역별 매출·영업이익(백만 유로) — URD 2025 주석 4
+const RMS_PROFIT: { r: string; rev: number; oi: number; capex: number; capex24: number }[] = [
+  { r: '아시아(일본 제외)', rev: 6702, oi: 2761, capex: 124, capex24: 110 },
+  { r: '미주', rev: 3075, oi: 1099, capex: 449, capex24: 85 },
+  { r: '유럽(프랑스 제외)', rev: 2362, oi: 813, capex: 119, capex24: 78 },
+  { r: '프랑스', rev: 1575, oi: 715, capex: 359, capex24: 711 },
+  { r: '일본', rev: 1591, oi: 625, capex: 63, capex24: 24 },
+  { r: '기타(중동)', rev: 697, oi: 268, capex: 20, capex24: 8 },
+]
+function RmsCountryDeep() {
+  const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500 text-left break-keep'
+  const td = 'py-1.5 px-2 text-gray-700 dark:text-gray-200 break-keep align-top'
+  const G: Record<string, string> = { 공시: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300', '법인 공시': 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300', 추정: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300' }
+  const oiTot = 6569
+  return (
+    <div className="space-y-3 pt-2 border-t border-orange-200 dark:border-orange-900/60">
+      <p className="text-sm font-semibold text-gray-900 dark:text-white">나라별로 들여다보기 (2025년, 총매출 160억 유로)</p>
+      <p className="text-xs text-gray-500 dark:text-gray-400">에르메스는 나라별 매출을 발표하지 않는다. 그래서 숫자마다 근거를 붙였다 — <span className={`px-1 rounded ${G['공시']}`}>공시</span> 회사 발표, <span className={`px-1 rounded ${G['법인 공시']}`}>법인 공시</span> 그 나라 자회사의 감사보고서, <span className={`px-1 rounded ${G['추정']}`}>추정</span> 공개 숫자로 계산한 범위.</p>
+      <div className="overflow-x-auto">
+        <table className="w-full text-xs">
+          <thead><tr className="border-b border-gray-200 dark:border-gray-800"><th className={th}>나라</th><th className={`${th} text-right`}>비중</th><th className={`${th} text-right`}>억 유로</th></tr></thead>
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+            {RMS_COUNTRY.map(c => (
+              <tr key={c.n}>
+                <td className={td}>
+                  <span className="font-medium">{c.n}</span> <span className={`text-[10px] px-1 rounded whitespace-nowrap ${G[c.grade]}`}>{c.grade}</span>
+                  <span className="block text-[11px] text-gray-400 dark:text-gray-500">전용 매장 {c.stores}</span>
+                  <span className="block text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">{c.how}</span>
+                </td>
+                <td className={`${td} text-right tabular-nums font-bold text-sm whitespace-nowrap`}>{c.share}</td>
+                <td className={`${td} text-right tabular-nums whitespace-nowrap`}>{c.rev}</td>
+              </tr>
+            ))}
+            <tr><td className={`${td} text-gray-500`}>나머지 (동남아·호주·인도, 미국 외 미주 등)</td><td className={`${td} text-right tabular-nums`}>약 10%</td><td className={`${td} text-right tabular-nums`}>약 15</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul className="text-xs leading-relaxed text-gray-600 dark:text-gray-300 list-disc pl-4 space-y-0.5">
+        <li><b>나라로 외우기: 중화권 3 · 미국 1.6 · 유럽 나머지 1.5 · 일본 1 · 프랑스 1 · 한국 0.4 · 중동 0.4 · 기타 1</b> (10 기준). 중화권 하나가 미국의 두 배 가까이 된다.</li>
+        <li><b>한 사람당으로 보면 한국이 1등급:</b> 한국 약 7.0억 유로 ÷ 5,200만 명 ≈ <b>1인당 약 13.5유로</b>. 일본(15.9억 ÷ 1.24억 명 ≈ 12.8유로)보다 많고, 미국(약 25억 ÷ 3.4억 명 ≈ 7.5유로), 중화권(약 50억 ÷ 14억여 명 ≈ 3.5유로)보다 훨씬 많다. 인구 대비로는 한국이 에르메스를 가장 많이 사는 큰 나라 중 하나다.</li>
+        <li><b>한국 법인은 번 돈을 거의 다 올려 보낸다:</b> 2025년 순이익 2,408억 원 중 2,350억 원(97.6%)을 배당으로 싱가포르의 아시아 지주회사에 보냈다(보도). 한국 법인 영업이익률은 약 27%로 그룹(41%)보다 낮은데, 본사에서 물건을 사 오는 값(내부 거래 가격)에 이익 일부가 이미 본사로 넘어가 있기 때문이다.</li>
+        <li><b>중국은 &lsquo;중국 안&rsquo;보다 크다:</b> 중국 손님은 파리·홍콩·마카오·서울·도쿄에서도 산다. 그래서 중화권 매출(약 30%)보다 &lsquo;중국 사람이 산 금액&rsquo;은 더 클 가능성이 높다 — 2026년 중화권이 보합인데 프랑스·일본 성장도 같이 느려진 이유 중 하나.</li>
+      </ul>
+
+      <p className="text-sm font-semibold text-gray-900 dark:text-white pt-1">CEO의 눈으로 — 어디서 이익이 나고, 어디에 돈을 넣나 (2025년)</p>
+      <div className="overflow-x-auto">
+        <table className="w-full text-xs">
+          <thead><tr className="border-b border-gray-200 dark:border-gray-800"><th className={th}>지역</th><th className={`${th} text-right`}>영업이익률</th><th className={`${th} text-right`}>이익 비중</th><th className={`${th} text-right`}>투자(억 유로) 2024 → 2025</th></tr></thead>
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+            {[...RMS_PROFIT].sort((a, b) => b.oi / b.rev - a.oi / a.rev).map(x => (
+              <tr key={x.r}>
+                <td className={`${td} font-medium whitespace-nowrap`}>{x.r}</td>
+                <td className={`${td} text-right tabular-nums font-bold`}>{(x.oi / x.rev * 100).toFixed(0)}%</td>
+                <td className={`${td} text-right tabular-nums`}>{(x.oi / oiTot * 100).toFixed(0)}%</td>
+                <td className={`${td} text-right tabular-nums whitespace-nowrap ${x.capex > x.capex24 * 2 ? 'text-blue-600 dark:text-blue-400 font-semibold' : ''}`}>{(x.capex24 / 100).toFixed(1)} → {(x.capex / 100).toFixed(1)}</td>
+              </tr>
+            ))}
+            <tr className="font-semibold"><td className={td}>회사 전체</td><td className={`${td} text-right`}>41%</td><td className={`${td} text-right`}>100%<span className="block text-[10px] font-normal text-gray-400">본사 몫 4% 포함</span></td><td className={`${td} text-right tabular-nums`}>10.7 → 11.6</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul className="text-xs leading-relaxed text-gray-600 dark:text-gray-300 list-disc pl-4 space-y-0.5">
+        <li><b>프랑스가 이익률 1위(45%):</b> 파리 본점 같은 대형 매장에 전 세계 관광객이 몰린다. 그다음 아시아 41% — 중화권이 멈췄어도 <b>이익의 42%</b>가 여전히 아시아에서 나온다.</li>
+        <li><b>미주는 이익률이 가장 낮은 편(36%)인데 투자는 5배로 늘렸다:</b> 2024년 0.85억 → 2025년 4.49억 유로. 프랑스(공방 건설)보다도 많이 넣었다. 회사가 다음 10년 성장을 미국에 걸고 있다는 뜻 — 매장 확장(스코츠데일·내슈빌·뉴욕 윌리엄스버그 등)과 건물 투자.</li>
+        <li><b>유럽 나머지가 가장 낮다(34%):</b> 작은 도시에 매장이 흩어져 있어 1곳당 매출이 작다(위 매장 수 비교).</li>
+        <li><b>CEO라면 볼 숫자 세 개:</b> ① 중화권이 다시 늘어나는지(이익의 큰 덩어리) ② 미국에 넣은 돈만큼 미주 성장이 10% 이상 유지되는지 ③ 한국·일본처럼 1인당 매출이 높은 나라에서 성장이 계속되는지.</li>
+      </ul>
+      <p className="text-[11px] text-gray-400 dark:text-gray-500">출처: 에르메스 2025년 연차 보고서(URD) — 지역별 매출(1.7), 연결 재무제표 주석 4 부문 정보(영업이익·투자), 모회사 재무제표 주석 15 자회사 배당, 매장 지도. 한국: 에르메스코리아 2025년 감사보고서 보도(2026년 4월). 환율·인구는 대략값. &lsquo;추정&rsquo; 칸은 회사가 확인한 숫자가 아니다.</p>
     </div>
   )
 }
