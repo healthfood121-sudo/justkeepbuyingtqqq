@@ -42,12 +42,11 @@ export default async function LoginPage({
             <div aria-hidden className="absolute -right-16 -top-16 w-48 h-48 rounded-full bg-amber-400/10 blur-2xl" />
             <div aria-hidden className="absolute inset-0 bg-[linear-gradient(115deg,transparent_40%,rgba(255,255,255,0.06)_50%,transparent_60%)]" />
 
-            <div className="relative flex items-center justify-between">
+            <div className="relative flex items-center">
               <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-300/40 bg-amber-300/10 px-2.5 py-1 text-[10px] font-semibold tracking-[0.2em] text-amber-200">
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><rect x="4" y="11" width="16" height="10" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" /></svg>
                 MEMBERS ONLY
               </span>
-              <span className="text-[10px] font-bold tracking-[0.25em] text-white/30">JKB</span>
             </div>
 
             <h1 className="relative mt-6 text-2xl font-bold tracking-tight text-white">멤버십 전용</h1>

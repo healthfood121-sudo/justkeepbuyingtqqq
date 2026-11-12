@@ -167,12 +167,16 @@ export default function HermesStoreMap() {
       const lf = (mod as any).default ?? mod
       L.current = lf
       const dark = document.documentElement.classList.contains('dark')
-      const m = lf.map(box.current, { worldCopyJump: true, scrollWheelZoom: false, zoomSnap: 0.25 }).fitBounds(lf.latLngBounds(S.map(s => [s.lat, s.lng] as [number, number])), { padding: [12, 12] })
+      const m = lf.map(box.current, { worldCopyJump: true, scrollWheelZoom: false, touchZoom: true, doubleClickZoom: true, dragging: true, zoomSnap: 0.25, wheelPxPerZoomLevel: 90 }).fitBounds(lf.latLngBounds(S.map(s => [s.lat, s.lng] as [number, number])), { padding: [12, 12] })
       // 바탕 지도: 키가 필요 없는 OpenStreetMap 기본 타일(CARTO는 2025년부터 API 키 필요). 다크 모드는 색을 뒤집어 어둡게
       lf.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors', maxZoom: 12,
         className: dark ? 'osm-dark' : '',
       }).addTo(m)
+      // 컴퓨터: 지도를 한 번 누르면 마우스 휠로 확대·축소, 지도 밖으로 나가면 다시 끈다(페이지 스크롤이 지도에 걸리지 않게)
+      // (매장 점의 mouseout이 지도까지 올라오므로 지도 상자 자체의 mouseleave로 끈다)
+      m.on('click focus', () => m.scrollWheelZoom.enable())
+      box.current.addEventListener('mouseleave', () => m.scrollWheelZoom.disable())
       map.current = m
       base.current = lf.layerGroup().addTo(m)
       layer.current = lf.layerGroup().addTo(m)
@@ -245,6 +249,7 @@ export default function HermesStoreMap() {
 
       <style>{'.osm-dark{filter:invert(1) hue-rotate(180deg) brightness(.85) contrast(.9)}'}</style>
       <div ref={box} className="w-full rounded-lg overflow-hidden border border-gray-200 dark:border-gray-800" style={{ height: 360 }} />
+      <p className="text-[11px] text-gray-400 dark:text-gray-500 text-right -mt-1">휴대폰: 두 손가락으로 확대·축소 · 컴퓨터: 지도를 한 번 누른 뒤 마우스 휠 · 끌어서 이동</p>
 
       <div className="rounded-lg bg-gray-50 dark:bg-gray-900/40 p-2.5 space-y-1 text-xs text-gray-700 dark:text-gray-200">
         <p className="font-semibold">{y}년{y === 2026 ? ' 계획' : ''} {COUNT.find(c => c.y === y)?.n ? `· 연말 매장 ${COUNT.find(c => c.y === y)!.n}곳` : ''}</p>
