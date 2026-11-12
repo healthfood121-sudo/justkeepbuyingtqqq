@@ -49,14 +49,23 @@ if len(sys.argv) > 2 and sys.argv[2].upper() == '13F':
         c = next((ck for tt, ck in titles.items() if tt.replace('.', '').replace(',', '').startswith(key[:18])), None)
         out = ''
         if c:
-            facts = get(f'https://data.sec.gov/api/xbrl/companyconcept/CIK{c:010d}/dei/EntityCommonStockSharesOutstanding.json')
-            if facts:
-                pts = [x for u in facts.json().get('units', {}).values() for x in u]
-                if pts:
-                    last = sorted(pts, key=lambda x: x.get('end', ''))[-1]
-                    tot = sum(x['val'] for x in pts if x.get('end') == last['end'] and x.get('accn') == last['accn'])
-                    out = f"발행주식 {tot} ({last['end']}) 지분율 {int(sh) / tot * 100:.2f}%"
-            time.sleep(0.3)
+            cands = []  # (기준일, 주식 수, 출처) — 여러 SEC 숫자 중 가장 최근 것을 쓴다
+            for tax, con in [('dei', 'EntityCommonStockSharesOutstanding'), ('us-gaap', 'CommonStockSharesOutstanding'), ('us-gaap', 'WeightedAverageNumberOfSharesOutstandingBasic')]:
+                r = requests.get(f'https://data.sec.gov/api/xbrl/companyconcept/CIK{c:010d}/{tax}/{con}.json', headers=UA, timeout=60)
+                time.sleep(0.2)
+                if r.status_code != 200:
+                    continue
+                pts = [x for u in r.json().get('units', {}).values() for x in u if x.get('form') in ('10-Q', '10-K', '20-F', '6-K', '10-K/A', '10-Q/A', 'S-1', 'S-1/A', '424B4')]
+                if not pts:
+                    continue
+                end = max(x['end'] for x in pts)
+                same = [x for x in pts if x['end'] == end]
+                accn = same[-1]['accn']
+                tot = sum(x['val'] for x in same if x['accn'] == accn) if tax == 'dei' else max(x['val'] for x in same)
+                cands.append((end, tot, con))
+            if cands:
+                end, tot, con = sorted(cands)[-1]
+                out = f"발행주식 {tot} ({end}, {con}) 지분율 {int(sh) / tot * 100:.2f}%"
         print(f'ROW|{name}|{cls}|{cusip}|{tick_of.get(c, "")}|{val}|{sh}|{out}', flush=True)
     sys.exit(0)
 
