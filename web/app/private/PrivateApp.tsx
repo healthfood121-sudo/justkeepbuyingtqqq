@@ -10819,7 +10819,7 @@ function AutoInsight({ stockKey, data, past }: { stockKey: string; data: StockDa
   const big = BIG_REPORTS[stockKey]
   if (big) {
     const R = (keys: string[]) => <BigReport d={big} keys={keys} />
-    const known = new Set(['demand', 'future', 'cost', 'capex', 'funding', 'know', 'why', 'agent', 'win', 'stakes'])
+    const known = new Set(['demand', 'future', 'cost', 'capex', 'funding', 'know', 'why', 'agent', 'win', 'stakes', 'advertisers'])
     const otherExtras = (big.extra ?? []).map(x => x.id).filter(x => !known.has(x))
     const Ch = ({ n, t, sub }: { n: string; t: string; sub?: string }) => (
       <div className="pt-6 mt-2 border-t-2 border-gray-200 dark:border-gray-800">
@@ -10843,7 +10843,7 @@ function AutoInsight({ stockKey, data, past }: { stockKey: string; data: StockDa
         <Ch n="③" t="사업과 경쟁" sub="돈을 버는 곳, 누가 얼마나 쓰나, 경쟁사, AI, 아직 숫자에 안 보이는 사업" />
         {R(['units', 'demand'])}
         {stockKey === 'GOOGL' && <AiUsersChart />}
-        {R(['peers', 'ai', 'win', 'worry', ...otherExtras, 'future', 'stakes'])}
+        {R(['peers', 'ai', 'win', 'advertisers', 'worry', ...otherExtras, 'future', 'stakes'])}
         {stockKey === 'GOOGL' && <GoogleMyShare />}
 
         <Ch n="④" t="숫자와 현금" sub="연도별 숫자, 돈의 흐름, 설비투자, 돈을 어떻게 마련하나(채권·주식)" />
