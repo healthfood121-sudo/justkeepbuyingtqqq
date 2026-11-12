@@ -48,8 +48,8 @@ const S: Store[] = [
   { y: 2020, city: '스톡홀름', country: '스웨덴', lat: 59.33, lng: 18.07, k: 'reno' },
   { y: 2020, city: '덴버', country: '미국', place: '이전', lat: 39.74, lng: -104.99, k: 'reno' },
   // 2021
-  { y: 2021, city: '트로이(디트로이트)', country: '미국', lat: 42.56, lng: -83.16, k: 'new' },
-  { y: 2021, city: '애번투라(마이애미)', country: '미국', lat: 25.96, lng: -80.14, k: 'new' },
+  { y: 2021, city: '트로이(디트로이트 근교)', country: '미국', lat: 42.56, lng: -83.16, k: 'new' },
+  { y: 2021, city: '애번투라(마이애미 근교)', country: '미국', lat: 25.96, lng: -80.14, k: 'new' },
   { y: 2021, city: '마카오', country: '마카오', lat: 22.15, lng: 113.56, k: 'new' },
   { y: 2021, city: '선전', country: '중국', lat: 22.54, lng: 114.06, k: 'new' },
   { y: 2021, city: '상하이', country: '중국', place: '플라자 66', lat: 31.23, lng: 121.45, k: 'reno' },
@@ -305,7 +305,10 @@ function EnterExit() {
             <span className="w-20 shrink-0 text-gray-700 dark:text-gray-200">{r}</span>
             <span className="h-2.5 rounded-full" style={{ width: `${(cities.length / max) * 45}%`, background: COL.new }} />
             <span className="tabular-nums text-gray-700 dark:text-gray-200">{cities.length}</span>
-            <span className="text-[11px] text-gray-400 truncate">{[...new Set(cities)].join('·')}</span>
+            <span tabIndex={0} className="group relative min-w-0 flex-1 cursor-help outline-none">
+              <span className="block text-[11px] text-gray-400 truncate">{[...new Set(cities)].join('·')}</span>
+              <span role="tooltip" className="pointer-events-none absolute right-0 top-full z-20 mt-1 hidden w-max max-w-[min(18rem,80vw)] rounded-md bg-gray-900 px-2.5 py-1.5 text-[11px] leading-relaxed text-white shadow-lg group-hover:block group-focus:block dark:bg-gray-700">{r}: {[...new Set(cities)].join(' · ')}</span>
+            </span>
           </div>
         ))}
       </div>
@@ -313,8 +316,8 @@ function EnterExit() {
         <div className="rounded-lg bg-white/70 dark:bg-gray-900/40 p-2">
           <p className="text-xs font-semibold" style={{ color: COL.new }}>들어가는 곳</p>
           <ul className={`${small} list-disc pl-4`}>
-            <li><b>미국의 부자 소도시</b> — 팰로앨토·트로이·애번투라·오스틴·네이플스·애스펀·프린스턴·스코츠데일·내슈빌. 대도시가 아니라 &lsquo;부자가 사는 곳&rsquo;에 직접 간다. 2023~2025년 새 매장 13곳 중 6곳, 2025년엔 2곳 모두 미국.</li>
-            <li><b>중국 내륙 2~3선 도시</b> — 충칭·창사·시안·정저우·톈진·청두. 2018~2023년에 집중, 2024년 이후엔 새 도시보다 기존 매장 확장(베이징·창사)으로 바뀜. 중국 경기 둔화와 맞물린 속도 조절.</li>
+            <li><b>미국의 부자 소도시</b> — 미국 새 매장 11곳 중 <b>9곳이 대도시가 아닌 부자 동네</b>: 팰로앨토·트로이(디트로이트 근교)·애번투라(마이애미 근교)·오스틴·네이플스·애스펀·프린스턴·스코츠데일·내슈빌. 대도시는 뉴욕(미트패킹)·로스앤젤레스(토팽가) 2곳뿐. &lsquo;부자가 사는 곳&rsquo;에 직접 간다. 2023~2025년 새 매장 13곳 중 6곳, 2025년엔 2곳 모두 미국.</li>
+            <li><b>중국 내륙 2~3선 도시</b> — 중국 새 매장 9곳 중 6곳이 충칭·창사·시안·정저우·톈진·청두(나머지 3곳은 이미 매장이 있던 상하이·선전에 추가). 2018~2023년에 집중, 2024년 이후엔 새 도시보다 기존 매장 확장(베이징·창사)으로 바뀜. 중국 경기 둔화와 맞물린 속도 조절.</li>
             <li><b>일본 도쿄</b> — 2024년 한 해에 2곳(아자부다이 힐스·긴자). 엔화 약세로 관광객 수요가 몰린 곳.</li>
             <li><b>새 나라는 드물다</b> — 회사가 새 나라라고 밝힌 건 폴란드(2019) 정도. 카타르 도하(2022)처럼 중동도 조금씩. 인도는 3번째 매장(2024)으로 아주 천천히.</li>
           </ul>
