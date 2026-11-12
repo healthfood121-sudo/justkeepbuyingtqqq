@@ -12,8 +12,9 @@ interface HeaderProps {
 export default function Header({ maxWidth = 'max-w-6xl', activePage }: HeaderProps) {
   const { theme, toggle } = useTheme()
   const pathname = usePathname() ?? ''
-  // /private 아래에서는 메뉴가 프라이빗 전용 탭으로 바뀐다 (로고는 그대로 메인 페이지로)
-  const isPrivate = pathname.startsWith('/private')
+  // /private 아래에서는 메뉴가 프라이빗 전용 탭으로 바뀐다 (로고는 그대로 메인 페이지로).
+  // 비밀번호 화면(/private/login)에서는 안에 무엇이 있는지 보이지 않게 공개 사이트 메뉴를 보여 준다.
+  const isPrivate = pathname.startsWith('/private') && !pathname.startsWith('/private/login')
   const privTabs: Array<[string, string, string]> = [
     ['/private', '종목 분석', '종목 분석(엄선·S&P 500·나스닥100·러셀2000)'],
     ['/private/screen', '전체 선별표', '미국 상장 전 종목 숫자 선별표'],
