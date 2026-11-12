@@ -62,6 +62,7 @@ import AiUsersChart from './reports/AiUsersChart'
 import TrioCompare, { COS as PICK_COS, ev as pickEv, OUT_OF_PICKS } from './reports/TrioCompare'
 import HermesStoreMap from './reports/HermesStoreMap'
 import PageToc from './reports/PageToc'
+import { NOW as HERMES_NOW } from './reports/hermesNow'
 import { NoteCard, type NoteEntry } from './buffett/notes/NotesClient'
 import OwnerCard from './reports/OwnerCard'
 import MyPortfolio from './reports/MyPortfolio'
@@ -8795,6 +8796,68 @@ function RmsTwoCol({ title, good, bad, goodLab = '버티는 근거', badLab = '�
   )
 }
 
+// 외우기 표: 지역별 매출 비중(2025년) + 공식 매장 목록의 매장 수 비중. 에르메스는 나라별 매출을 공개하지 않는다(지역 6개만).
+const RMS_REG_COUNTRIES: Record<RmsRegion, string> = {
+  APAC: '중국·홍콩·마카오·대만·한국·싱가포르·태국·호주·인도 등',
+  AM: '대부분 미국 + 캐나다·멕시코·브라질 등',
+  EU: '영국·이탈리아·독일·스위스·스페인 등',
+  JP: '일본',
+  FR: '프랑스(파리 본점 — 해외 관광객 비중 큼)',
+  OTH: '아랍에미리트·카타르·사우디 등 중동',
+}
+function rmsStoreRegion(country: string, r: string): RmsRegion {
+  if (country === '프랑스' || country === '모나코') return 'FR'
+  if (country === '일본') return 'JP'
+  if (r === '유럽' || country === '튀르키예' || country === '카자흐스탄') return 'EU'
+  if (r === '미국' || r === '캐나다·중남미') return 'AM'
+  if (['아랍에미리트', '카타르', '사우디아라비아', '쿠웨이트', '바레인', '레바논'].includes(country)) return 'OTH'
+  return 'APAC'
+}
+function RmsRegionMemo() {
+  const y25 = (v: (number | null)[]) => v.slice(24, 28).reduce((a: number, b) => a + (b ?? 0), 0)
+  const tot = y25(RMS_SEG.TOT.rev)
+  const stores: Record<string, number> = {}
+  for (const c of HERMES_NOW) { const k = rmsStoreRegion(c.country, c.r); stores[k] = (stores[k] ?? 0) + c.n }
+  const allStores = HERMES_NOW.reduce((a, c) => a + c.n, 0)
+  const order: RmsRegion[] = ['APAC', 'AM', 'EU', 'JP', 'FR', 'OTH']
+  const rows = order.map(r => ({ r, rev: y25(RMS_SEG[r].rev), share: y25(RMS_SEG[r].rev) / tot * 100, st: stores[r] ?? 0 }))
+  const COLR: Record<RmsRegion, string> = { APAC: '#dc2626', AM: '#2563eb', EU: '#16a34a', JP: '#9333ea', FR: '#ea580c', OTH: '#a16207' }
+  const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500 text-left break-keep'
+  const td = 'py-1.5 px-2 text-gray-700 dark:text-gray-200 break-keep align-top'
+  return (
+    <div className="rounded-lg border-2 border-orange-200 dark:border-orange-900/60 p-3 space-y-2">
+      <p className="text-sm font-semibold text-gray-900 dark:text-white">외우기 — 에르메스 매출은 어디서 나오나 (2025년)</p>
+      <div className="flex h-5 w-full overflow-hidden rounded">
+        {rows.map(x => <div key={x.r} style={{ width: `${x.share}%`, background: COLR[x.r] }} className="text-[10px] text-white font-semibold flex items-center justify-center overflow-hidden" title={RMS_REG_NAME[x.r]}>{x.share >= 8 ? `${x.share.toFixed(0)}%` : ''}</div>)}
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full text-xs">
+          <thead><tr className="border-b border-gray-200 dark:border-gray-800">
+            <th className={th}>지역</th><th className={`${th} text-right`}>매출 비중</th><th className={`${th} text-right`}>억 유로</th><th className={`${th} text-right`}>매장 수</th>
+          </tr></thead>
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+            {rows.map(x => (
+              <tr key={x.r}>
+                <td className={td}><span className="font-medium whitespace-nowrap"><span className="inline-block w-2.5 h-2.5 rounded-full mr-1 align-middle" style={{ background: COLR[x.r] }} />{RMS_REG_NAME[x.r]}</span><span className="block text-[11px] text-gray-400 dark:text-gray-500">{RMS_REG_COUNTRIES[x.r]}</span></td>
+                <td className={`${td} text-right tabular-nums font-bold text-sm`}>{x.share.toFixed(0)}%</td>
+                <td className={`${td} text-right tabular-nums`}>{(x.rev / 100).toFixed(1)}</td>
+                <td className={`${td} text-right tabular-nums whitespace-nowrap`}>{x.st}곳 <span className="text-gray-400">({(x.st / allStores * 100).toFixed(0)}%)</span></td>
+              </tr>
+            ))}
+            <tr className="font-semibold"><td className={td}>합계</td><td className={`${td} text-right`}>100%</td><td className={`${td} text-right tabular-nums`}>{(tot / 100).toFixed(1)}</td><td className={`${td} text-right tabular-nums`}>{allStores}곳</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul className="text-xs leading-relaxed text-gray-600 dark:text-gray-300 list-disc pl-4 space-y-0.5">
+        <li><b>한 줄로 외우기: 아시아 4 · 미주 2 · 유럽 1.5 · 일본 1 · 프랑스 1 · 중동 0.4</b> (10 기준). 아시아(일본 제외)만으로 거의 절반에 가깝다.</li>
+        <li><b>나라별 매출은 회사가 공개하지 않는다.</b> 미국은 따로 숫자가 없고 &lsquo;미주&rsquo;의 대부분을 차지한다(매장 기준 미주 {stores.AM ?? 0}곳 중 미국 {HERMES_NOW.filter(c => c.country === '미국').reduce((a, c) => a + c.n, 0)}곳). 중국 본토·홍콩·마카오도 &lsquo;아시아(일본 제외)&rsquo; 안에 묶여 있다 — 중국만의 비중은 공식 숫자가 없다.</li>
+        <li><b>매장 1곳당으로 보면:</b> 아시아는 매장 비중보다 매출 비중이 크고(큰 매장·높은 객단가), 유럽(프랑스 제외)은 매장은 많지만 1곳당 매출이 작다. 프랑스는 매장 9% 남짓에 매출 10% — 파리 본점에 전 세계 관광객이 몰리기 때문.</li>
+      </ul>
+      <p className="text-[11px] text-gray-400 dark:text-gray-500">매출: 에르메스 2025년 연간 실적(지역 6개). 매장 수: hermes.com 공식 매장 목록(수리 창구 제외, 공항·면세점 포함), 튀르키예·카자흐스탄은 유럽으로, 인도는 아시아로 대략 분류했다.</p>
+    </div>
+  )
+}
+
 function RmsRegions() {
   return (
     <>
@@ -8802,6 +8865,7 @@ function RmsRegions() {
         <h3 className="text-sm font-semibold text-gray-900 dark:text-white pt-2"> 지역별 매출 — 성장이 어디서 느려지고, 어디서 나오나 (2026년 10월 28일 정리)</h3>
         <p className="text-xs text-gray-400 dark:text-gray-500">매출 비중 큰 순서 → 마지막에 한 표로 정리. 비중은 2025년 연간 매출(160억 유로) 기준.</p>
       </div>
+      <RmsRegionMemo />
 
       <RmsRegionBox r="APAC" title="아시아(일본 제외) — 매출의 42%, 성장이 거의 멈췄다"
         intro={<>중국·홍콩·대만·한국·싱가포르 등으로, 매출의 약 42%(2025년 67.0억 유로)를 차지하는 가장 큰 지역이다. 환율 영향을 뺀 성장률이
