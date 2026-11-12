@@ -10791,7 +10791,13 @@ function AutoInsight({ stockKey, data, past }: { stockKey: string; data: StockDa
   const m = f.metrics
   const group = classify(m, q)
   const years = Object.keys(f.pe).map(Number).sort((a, b) => a - b).slice(-6)
-  const decomp = f.decomp.filter(d => !d.inProgress || (d.years ?? 0) >= 9)
+  // SEC 자동 수집 EPS는 회사·CIK가 바뀐 해(예: 구글 2015년 알파벳 재편) 이전이 빠질 수 있다 —
+  // 롤링 데이터의 수작업 검증 EPS 분해(분할 조정 완료)로 빠진 완결 연도를 채운다
+  const have = new Set(f.decomp.map(d => d.buyYear))
+  const fill = (((data as any).epsDecomp ?? []) as Decomp[])
+    .filter(d => !have.has(d.buyYear) && d.peBuy > 0 && d.peSell > 0)
+    .map(d => ({ ...d, inProgress: false, years: 10, divCagr: null as number | null, priceCagr: null as number | null }))
+  const decomp = [...fill, ...f.decomp.filter(d => !d.inProgress || (d.years ?? 0) >= 9)].sort((a, b) => a.buyYear - b.buyYear)
   const divRows = decomp.filter(d => d.divCagr != null).map(d => ({
     buyYear: d.buyYear, priceCagr: d.priceCagr ?? 0, totalCagr: d.totalCagr, divCagr: d.divCagr as number,
   }))
