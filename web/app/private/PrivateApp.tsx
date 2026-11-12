@@ -8862,14 +8862,14 @@ function RmsRegionMemo() {
 // 나라별로 들여다보기 — 공시(일본·프랑스), 한국 법인 감사보고서(한국), 추정(미국·중화권)을 등급을 붙여 보여 준다.
 // 지역별 이익은 2025년 연차 보고서(URD) 연결 재무제표 주석 4(부문 정보). 매장 수는 연차 보고서 매장 지도(전용 매장 기준).
 const RMS_COUNTRY: { n: string; rev: string; share: string; lo: number; hi: number; grade: '공시' | '법인 공시' | '추정'; stores: string; how: string }[] = [
-  { n: '중화권 (중국 본토·홍콩·마카오·대만)', rev: '약 47~52', share: '약 30%', lo: 28, hi: 33, grade: '추정', stores: '53곳 (본토 35·대만 8·홍콩 6·마카오 4)',
+  { n: '중화권 (중국 본토·홍콩·마카오·대만)', rev: '약 47~52', share: '약 30%', lo: 28, hi: 33, grade: '추정', stores: '53곳 (본토 35·대만 8·홍콩 6·마카오 4) — 홍콩만의 매출은 어디에도 공개된 숫자가 없다',
     how: '아시아(일본 제외) 67.0억 − 한국 7.0억 − 나머지 아시아(호주·싱가포르·태국·인도 등 전용 매장 28곳 × 1곳당 0.3~0.45억) ≈ 47~52억. 회사가 따로 밝힌 숫자는 없다.' },
   { n: '미국', rev: '약 24~27', share: '약 16%', lo: 15, hi: 17, grade: '추정', stores: '43곳',
     how: '미주 30.8억 중 미국 매장이 43/61곳(70%), 미국 매장이 더 크다고 보면 미주의 80~88%. 미국 법인(Hermès of Paris)이 2025년 본사에 보낸 배당 5.1억 유로로 일본 법인(2.5억)의 두 배 — 미국이 일본보다 훨씬 크다는 것과 맞는다.' },
   { n: '일본', rev: '15.9', share: '10%', lo: 10, hi: 10, grade: '공시', stores: '30곳', how: '회사 발표 지역 숫자 = 나라 숫자. 2025년 환율 제외 +14%. 2025년 처음으로 프랑스보다 커졌다.' },
   { n: '프랑스', rev: '15.8', share: '10%', lo: 10, hi: 10, grade: '공시', stores: '26곳', how: '회사 발표. 파리 본점 매출의 상당 부분이 해외 관광객(중국·미국·중동 등) — 나라 숫자지만 손님은 세계 사람이다.' },
   { n: '한국', rev: '약 7.0', share: '약 4.4%', lo: 4.4, hi: 4.4, grade: '법인 공시', stores: '18곳',
-    how: '에르메스코리아 감사보고서(전자공시): 2025년 매출 1조 1,251억 원(+16.7%), 영업이익 3,055억 원, 순이익 2,408억 원. 2025년 평균 환율 약 1,605원/유로로 나눴다. 면세점 매출이 모두 들어 있는지는 불확실.' },
+    how: '에르메스코리아 감사보고서(전자공시): 2025년 매출 1조 1,251억 원(+16.7%), 영업이익 3,055억 원, 순이익 2,408억 원. 2025년 평균 환율 약 1,605원/유로로 나눴다. 2024년은 9,643억 원 → 약 4.3%(다른 매체 추산 4.31%와 같음). 면세점 매출이 모두 들어 있는지는 불확실.' },
   { n: '유럽 나머지 (영국·이탈리아·독일·스위스 등)', rev: '23.6', share: '15%', lo: 15, hi: 15, grade: '공시', stores: '이탈리아 12·독일 10·스위스 9·영국 8 등', how: '지역 숫자만 공개. 나라별로 나눌 근거가 부족해 묶어 둔다.' },
   { n: '중동 (아랍에미리트·카타르 등)', rev: '7.0', share: '4%', lo: 4, hi: 4, grade: '공시', stores: '약 10곳', how: '회사 발표 "기타(중동)". 2026년엔 지역 정세로 감소.' },
 ]
@@ -8893,7 +8893,7 @@ function RmsCountryDeep() {
       <p className="text-xs text-gray-500 dark:text-gray-400">에르메스는 나라별 매출을 발표하지 않는다. 그래서 숫자마다 근거를 붙였다 — <span className={`px-1 rounded ${G['공시']}`}>공시</span> 회사 발표, <span className={`px-1 rounded ${G['법인 공시']}`}>법인 공시</span> 그 나라 자회사의 감사보고서, <span className={`px-1 rounded ${G['추정']}`}>추정</span> 공개 숫자로 계산한 범위.</p>
       <div className="overflow-x-auto">
         <table className="w-full text-xs">
-          <thead><tr className="border-b border-gray-200 dark:border-gray-800"><th className={th}>나라</th><th className={`${th} text-right`}>비중</th><th className={`${th} text-right`}>억 유로</th></tr></thead>
+          <thead><tr className="border-b border-gray-200 dark:border-gray-800"><th className={th}>나라</th><th className={`${th} text-right`}>매출 비중</th><th className={`${th} text-right`}>매출액(억 유로)</th></tr></thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
             {RMS_COUNTRY.map(c => (
               <tr key={c.n}>
