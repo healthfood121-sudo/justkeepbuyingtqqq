@@ -8861,18 +8861,19 @@ function RmsRegionMemo() {
 
 // 나라별로 들여다보기 — 공시(일본·프랑스), 한국 법인 감사보고서(한국), 추정(미국·중화권)을 등급을 붙여 보여 준다.
 // 지역별 이익은 2025년 연차 보고서(URD) 연결 재무제표 주석 4(부문 정보). 매장 수는 연차 보고서 매장 지도(전용 매장 기준).
-const RMS_COUNTRY: { n: string; rev: string; share: string; lo: number; hi: number; grade: '공시' | '법인 공시' | '추정'; stores: string; how: string }[] = [
-  { n: '중화권 (중국 본토·홍콩·마카오·대만)', rev: '약 47~52', share: '약 30%', lo: 28, hi: 33, grade: '추정', stores: '53곳 (본토 35·대만 8·홍콩 6·마카오 4) — 홍콩만의 매출은 어디에도 공개된 숫자가 없다',
+const RMS_COUNTRY: { n: string; rev: string; m: number; grade: '공시' | '법인 공시' | '추정'; stores: string; how: string }[] = [
+  { n: '중화권 (중국 본토·홍콩·마카오·대만)', rev: '약 47~52', m: 49.5, grade: '추정', stores: '53곳 (본토 35·대만 8·홍콩 6·마카오 4) — 홍콩만의 매출은 어디에도 공개된 숫자가 없다',
     how: '아시아(일본 제외) 67.0억 − 한국 7.0억 − 나머지 아시아(호주·싱가포르·태국·인도 등 전용 매장 28곳 × 1곳당 0.3~0.45억) ≈ 47~52억. 회사가 따로 밝힌 숫자는 없다.' },
-  { n: '미국', rev: '약 24~27', share: '약 16%', lo: 15, hi: 17, grade: '추정', stores: '43곳',
+  { n: '미국', rev: '약 24~27', m: 25.5, grade: '추정', stores: '43곳',
     how: '미주 30.8억 중 미국 매장이 43/61곳(70%), 미국 매장이 더 크다고 보면 미주의 80~88%. 미국 법인(Hermès of Paris)이 2025년 본사에 보낸 배당 5.1억 유로로 일본 법인(2.5억)의 두 배 — 미국이 일본보다 훨씬 크다는 것과 맞는다.' },
-  { n: '일본', rev: '15.9', share: '10%', lo: 10, hi: 10, grade: '공시', stores: '30곳', how: '회사 발표 지역 숫자 = 나라 숫자. 2025년 환율 제외 +14%. 2025년 처음으로 프랑스보다 커졌다.' },
-  { n: '프랑스', rev: '15.8', share: '10%', lo: 10, hi: 10, grade: '공시', stores: '26곳', how: '회사 발표. 파리 본점 매출의 상당 부분이 해외 관광객(중국·미국·중동 등) — 나라 숫자지만 손님은 세계 사람이다.' },
-  { n: '한국', rev: '약 7.0', share: '약 4.4%', lo: 4.4, hi: 4.4, grade: '법인 공시', stores: '18곳',
+  { n: '일본', rev: '15.9', m: 15.91, grade: '공시', stores: '30곳', how: '회사 발표 지역 숫자 = 나라 숫자. 2025년 환율 제외 +14%. 2025년 처음으로 프랑스보다 커졌다.' },
+  { n: '프랑스', rev: '15.8', m: 15.75, grade: '공시', stores: '26곳', how: '회사 발표. 파리 본점 매출의 상당 부분이 해외 관광객(중국·미국·중동 등) — 나라 숫자지만 손님은 세계 사람이다.' },
+  { n: '한국', rev: '약 7.0', m: 7.01, grade: '법인 공시', stores: '18곳',
     how: '에르메스코리아 감사보고서(전자공시): 2025년 매출 1조 1,251억 원(+16.7%), 영업이익 3,055억 원, 순이익 2,408억 원. 2025년 평균 환율 약 1,605원/유로로 나눴다. 2024년은 9,643억 원 → 약 4.3%(다른 매체 추산 4.31%와 같음). 면세점 매출이 모두 들어 있는지는 불확실.' },
-  { n: '유럽 나머지 (영국·이탈리아·독일·스위스 등)', rev: '23.6', share: '15%', lo: 15, hi: 15, grade: '공시', stores: '이탈리아 12·독일 10·스위스 9·영국 8 등', how: '지역 숫자만 공개. 나라별로 나눌 근거가 부족해 묶어 둔다.' },
-  { n: '중동 (아랍에미리트·카타르 등)', rev: '7.0', share: '4%', lo: 4, hi: 4, grade: '공시', stores: '약 10곳', how: '회사 발표 "기타(중동)". 2026년엔 지역 정세로 감소.' },
+  { n: '유럽 나머지 (영국·이탈리아·독일·스위스 등)', rev: '23.6', m: 23.62, grade: '공시', stores: '이탈리아 12·독일 10·스위스 9·영국 8 등', how: '지역 숫자만 공개. 나라별로 나눌 근거가 부족해 묶어 둔다.' },
+  { n: '중동 (아랍에미리트·카타르 등)', rev: '7.0', m: 6.97, grade: '공시', stores: '약 10곳', how: '회사 발표 "기타(중동)". 2026년엔 지역 정세로 감소.' },
 ]
+const RMS_TOT25 = 160.02 // 2025년 총매출(억 유로)
 // 2025년 지역별 매출·영업이익(백만 유로) — URD 2025 주석 4
 const RMS_PROFIT: { r: string; rev: number; oi: number; capex: number; capex24: number }[] = [
   { r: '아시아(일본 제외)', rev: 6702, oi: 2761, capex: 124, capex24: 110 },
@@ -8887,6 +8888,7 @@ function RmsCountryDeep() {
   const td = 'py-1.5 px-2 text-gray-700 dark:text-gray-200 break-keep align-top'
   const G: Record<string, string> = { 공시: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300', '법인 공시': 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300', 추정: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300' }
   const oiTot = 6569
+  const rest = RMS_TOT25 - RMS_COUNTRY.reduce((x, c) => x + c.m, 0)
   return (
     <div className="space-y-3 pt-2 border-t border-orange-200 dark:border-orange-900/60">
       <p className="text-sm font-semibold text-gray-900 dark:text-white">나라별로 들여다보기 (2025년, 총매출 160억 유로)</p>
@@ -8902,16 +8904,17 @@ function RmsCountryDeep() {
                   <span className="block text-[11px] text-gray-400 dark:text-gray-500">전용 매장 {c.stores}</span>
                   <span className="block text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">{c.how}</span>
                 </td>
-                <td className={`${td} text-right tabular-nums font-bold text-sm whitespace-nowrap`}>{c.share}</td>
+                <td className={`${td} text-right tabular-nums font-bold text-sm whitespace-nowrap`}>{c.grade === '추정' ? '약 ' : ''}{(c.m / RMS_TOT25 * 100).toFixed(1)}%</td>
                 <td className={`${td} text-right tabular-nums whitespace-nowrap`}>{c.rev}</td>
               </tr>
             ))}
-            <tr><td className={`${td} text-gray-500`}>나머지 (동남아·호주·인도, 미국 외 미주 등)</td><td className={`${td} text-right tabular-nums`}>약 10%</td><td className={`${td} text-right tabular-nums`}>약 15</td></tr>
+            <tr><td className={`${td} text-gray-500`}>나머지 (동남아·호주·인도, 미국 외 미주 등) <span className="block text-[11px] text-gray-400">160억에서 위 나라들을 뺀 나머지</span></td><td className={`${td} text-right tabular-nums font-bold text-sm`}>약 {(100 - RMS_COUNTRY.reduce((x, c) => x + Number((c.m / RMS_TOT25 * 100).toFixed(1)), 0)).toFixed(1)}%</td><td className={`${td} text-right tabular-nums`}>약 {rest.toFixed(1)}</td></tr>
+            <tr className="font-semibold"><td className={td}>합계</td><td className={`${td} text-right tabular-nums`}>100%</td><td className={`${td} text-right tabular-nums`}>{RMS_TOT25.toFixed(1)}</td></tr>
           </tbody>
         </table>
       </div>
       <ul className="text-xs leading-relaxed text-gray-600 dark:text-gray-300 list-disc pl-4 space-y-0.5">
-        <li><b>나라로 외우기: 중화권 3 · 미국 1.6 · 유럽 나머지 1.5 · 일본 1 · 프랑스 1 · 한국 0.4 · 중동 0.4 · 기타 1</b> (10 기준). 중화권 하나가 미국의 두 배 가까이 된다.</li>
+        <li><b>나라로 외우기: 중화권 3 · 미국 1.6 · 유럽 나머지 1.5 · 일본 1 · 프랑스 1 · 한국 0.4 · 중동 0.4 · 나머지 1 = 10</b>. 추정 칸(중화권·미국)은 범위의 가운데 값으로 계산했다. 중화권 하나가 미국의 두 배 가까이 된다.</li>
         <li><b>한 사람당으로 보면 한국이 1등급:</b> 한국 약 7.0억 유로 ÷ 5,200만 명 ≈ <b>1인당 약 13.5유로</b>. 일본(15.9억 ÷ 1.24억 명 ≈ 12.8유로)보다 많고, 미국(약 25억 ÷ 3.4억 명 ≈ 7.5유로), 중화권(약 50억 ÷ 14억여 명 ≈ 3.5유로)보다 훨씬 많다. 인구 대비로는 한국이 에르메스를 가장 많이 사는 큰 나라 중 하나다.</li>
         <li><b>한국 법인은 번 돈을 거의 다 올려 보낸다:</b> 2025년 순이익 2,408억 원 중 2,350억 원(97.6%)을 배당으로 싱가포르의 아시아 지주회사에 보냈다(보도). 한국 법인 영업이익률은 약 27%로 그룹(41%)보다 낮은데, 본사에서 물건을 사 오는 값(내부 거래 가격)에 이익 일부가 이미 본사로 넘어가 있기 때문이다.</li>
         <li><b>중국은 &lsquo;중국 안&rsquo;보다 크다:</b> 중국 손님은 파리·홍콩·마카오·서울·도쿄에서도 산다. 그래서 중화권 매출(약 30%)보다 &lsquo;중국 사람이 산 금액&rsquo;은 더 클 가능성이 높다 — 2026년 중화권이 보합인데 프랑스·일본 성장도 같이 느려진 이유 중 하나.</li>
