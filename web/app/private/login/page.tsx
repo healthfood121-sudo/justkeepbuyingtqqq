@@ -33,9 +33,18 @@ export default async function LoginPage({
   return (
     <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-950">
       <div className="w-full max-w-xs px-6">
-        <p className="text-center text-sm font-medium text-gray-500 dark:text-gray-400 mb-6 tracking-widest uppercase">
-          Private
+        <h1 className="text-center text-lg font-semibold text-gray-900 dark:text-white mb-2">멤버십 전용</h1>
+        <p className="text-center text-sm text-gray-600 dark:text-gray-300 mb-4">
+          비밀번호는 유튜브 멤버십 게시글에 있어요.
         </p>
+        <a
+          href="https://www.youtube.com/channel/UCnP5dDlqZJGOt84f7qwYnyg/join"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block w-full mb-6 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 text-center text-sm font-medium text-gray-800 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors"
+        >
+          멤버십 안내 →
+        </a>
         <form action={login} className="flex flex-col gap-3">
           <input type="hidden" name="redirect" value={redirectTo} />
           <input
@@ -48,7 +57,7 @@ export default async function LoginPage({
           />
           {error && (
             <p className="text-xs text-red-500 dark:text-red-400 text-center">
-              비밀번호가 틀렸습니다.
+              비밀번호가 맞지 않아요. 멤버십 게시글의 최신 비밀번호를 확인해 주세요.
             </p>
           )}
           <button
@@ -58,6 +67,7 @@ export default async function LoginPage({
             입장
           </button>
         </form>
+        <a href="/" className="block mt-6 text-center text-xs text-gray-400 dark:text-gray-500 hover:underline">← 공개 사이트로</a>
       </div>
     </div>
   )
