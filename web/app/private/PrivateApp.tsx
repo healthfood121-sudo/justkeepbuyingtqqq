@@ -2686,7 +2686,7 @@ function barParts(t: number, sh: Shares) {
   return { eps, div: Math.max(0, Math.min(div, t - eps)), pe: 0, cut: -sh.pe }
 }
 
-function DecompChart({ decomp, divMap }: { decomp: Decomp[]; divMap: Map<number, number> }) {
+function DecompChart({ decomp, divMap, bench }: { decomp: Decomp[]; divMap: Map<number, number>; bench?: Map<number, number> }) {
   const chartRef = useRef<ChartJS | null>(null)
   const [pluginLoaded, setPluginLoaded] = useState(false)
   useEffect(() => {
@@ -2716,6 +2716,18 @@ function DecompChart({ decomp, divMap }: { decomp: Decomp[]; divMap: Map<number,
         pointRadius: 5,
         pointStyle: 'rectRot' as const,
       }] : []),
+      ...(bench && bench.size > 0 ? [{
+        type: 'line' as const,
+        label: 'S&P 500 (같은 기간, 배당 포함)',
+        data: decomp.map(d => bench.get(d.buyYear) ?? null),
+        borderColor: 'rgba(100,116,139,0.85)',
+        backgroundColor: 'rgba(100,116,139,0.85)',
+        borderWidth: 2,
+        borderDash: [5, 4],
+        pointRadius: 2.5,
+        spanGaps: true,
+        order: -1,
+      }] : []),
       {
         label: 'PER 하락으로 깎인 몫',
         data: parts.map(p => p.cut),
@@ -2736,7 +2748,7 @@ function DecompChart({ decomp, divMap }: { decomp: Decomp[]; divMap: Map<number,
       y: { stacked: true, ticks: { font: { size: 11 }, callback: (v: number) => `${v}%` }, grid: { color: 'rgba(128,128,128,0.1)' } },
     },
     plugins: {
-      legend: { position: 'top' as const, labels: { font: { size: 11 }, boxWidth: 12 } },
+      legend: { position: 'bottom' as const, labels: { font: { size: 11 }, boxWidth: 12 } },
       tooltip: {
         mode: 'index' as const,
         intersect: false,
@@ -2755,6 +2767,7 @@ function DecompChart({ decomp, divMap }: { decomp: Decomp[]; divMap: Map<number,
             if (name === 'EPS 몫') return `EPS 몫 ${sgnPct(sh.eps)}%p (EPS 연 ${sgnPct(d.epsGrowthCagr)}% 성장)`
             if (name === '배당 몫') return `배당 몫 ${sgnPct(sh.div ?? 0)}%p`
             if (name.startsWith('연평균 수익률')) return `연평균 수익률 ${sgnPct(d.totalCagr)}%`
+            if (name.startsWith('S&P')) return `S&P 500 같은 기간 연 ${sgnPct(ctx.parsed.y)}% (차이 ${sgnPct(d.totalCagr - ctx.parsed.y)}%p)`
             if (name.startsWith('PER 몫')) return `${name} ${sgnPct(sh.pe)}%p (PER ${d.peBuy.toFixed(0)}배 → ${d.peSell.toFixed(0)}배)`
             return `PER 하락 ${sgnPct(sh.pe)}%p (PER ${d.peBuy.toFixed(0)}배 → ${d.peSell.toFixed(0)}배)`
           },
@@ -2782,7 +2795,7 @@ function DecompChart({ decomp, divMap }: { decomp: Decomp[]; divMap: Map<number,
       >
         줌 초기화
       </button>
-      <div style={{ height: 300 }}>
+      <div style={{ height: 340 }}>
         <Chart ref={chartRef as any} type="bar" data={chartData} options={options} />
       </div>
       <p className="text-xs text-gray-400 dark:text-gray-600 text-right mt-1">
@@ -2794,14 +2807,16 @@ function DecompChart({ decomp, divMap }: { decomp: Decomp[]; divMap: Map<number,
 
 // 차트 읽는 법 + 차트 + 표 + 계산 설명 묶음
 function DecompSection({
-  title, decomp, divRows, exampleYear, noDivNote,
+  title, decomp, divRows, exampleYear, noDivNote, rolling,
 }: {
   title: string
   decomp: Decomp[]
   divRows?: DivRow[]
   exampleYear: number
   noDivNote?: string   // 배당 데이터가 없는 구간 설명
+  rolling?: StockData  // 있으면 S&P 500 비교선 + "과거 10년 보유 성적" 요약·표를 접어서 함께 보여 준다(옛 롤링 차트를 대신함)
 }) {
+  const bench = new Map(((rolling?.rows10y ?? []) as any[]).filter(r => r.benchCagr != null).map(r => [r.buyYear as number, r.benchCagr as number]))
   const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
   const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500'
   const td = 'py-1.5 px-2 tabular-nums text-gray-700 dark:text-gray-200'
@@ -2841,10 +2856,17 @@ function DecompSection({
             <li><b>옅은 막대 = 진행 중 구간.</b> 아직 10년이 안 된 매수({sorted.filter(d => d.inProgress).map(d => `${d.buyYear}년`).join('·')})를
               지금 주가·최근 1년 EPS 기준으로 계산했다. 경과 기간 기준 연평균이라 앞으로 바뀔 수 있다.</li>
           )}
+          {bench.size > 0 && <li><b className="text-slate-500">회색 점선 = 같은 기간 S&P 500</b>(배당 포함). 막대가 점선보다 높으면 그 해에 사서 시장을 이긴 것.</li>}
           <li>막대를 누르거나 마우스를 올리면 나누기 전 원래 EPS 성장률과 PER 변화(예: {ex.peBuy.toFixed(0)}배 → {ex.peSell.toFixed(0)}배)도 함께 보인다.</li>
         </ul>
       </div>
-      <DecompChart decomp={sorted} divMap={divMap} />
+      <DecompChart decomp={sorted} divMap={divMap} bench={bench} />
+      {rolling && (
+        <details className="rounded-lg border border-gray-200 dark:border-gray-800 p-3">
+          <summary className="text-sm font-semibold text-gray-800 dark:text-gray-100 cursor-pointer">요약 숫자·매수 해별 표 — 언제 샀어도 어땠나 (S&P 500 비교, 눌러서 펼치기)</summary>
+          <div className="mt-3"><RollingTable data={rolling} /></div>
+        </details>
+      )}
       <div className="overflow-x-auto">
         <table className="text-xs">
           <thead>
@@ -8488,6 +8510,7 @@ function RmsInsight({ data, part, fs }: { data: StockData; part?: string[]; fs?:
       <DecompSection
         title="연도별 수익률 분해 — 막대 하나 = EPS 몫 + 배당 몫 + PER 몫"
         decomp={buildDecomp(data)}
+        rolling={data}
         divRows={(rmsDiv as any).rows}
         exampleYear={2012}
         noDivNote="1993~1999년 매수는 주가 출처(TradingView)가 달라 배당을 분리하지 못했다. 이 구간의 PER 몫에는 배당이 포함돼 있다(수익률 − EPS 몫)."
@@ -8656,16 +8679,11 @@ function RmsFlow({ data }: { data: StockData }) {
       {R(['history', 'know'])}
       <BuffettNotesBox stockKey="RMS" />
 
-      <Ch n="⑥" t="미래와 값" sub="이익 성장률 근거와 계산기, 시나리오와 가능성, 이익 시계, 과거 10년 보유 성적" />
+      <Ch n="⑥" t="미래와 값" sub="이익 성장률 근거와 계산기, 시나리오와 가능성, 이익 시계, 10년 보유 수익률 분해" />
       {R(['why'])}
       {I(['future'])}
       {R(['model', 'scen', 'rms'])}
       {I(['clock'])}
-      <div className="space-y-3">
-        <h3 className="text-base font-semibold text-gray-900 dark:text-white">과거 10년 보유 성적 — 언제 샀어도 어땠나</h3>
-        <RollingChart key="chart-RMS" data={data} />
-        <RollingTable data={data} />
-      </div>
       {I(['past', 'concl'])}
 
       <Ch n="⑦" t="확인할 신호와 정리" sub="반기마다 볼 숫자, 어떻게 들고 갈까" />
@@ -9704,6 +9722,7 @@ function NkeInsight({ data }: { data: StockData }) {
       <DecompSection
         title="3-2. 연도별 수익률 분해 — 막대 하나 = EPS 몫 + 배당 몫 + PER 몫"
         decomp={buildDecomp(data)}
+        rolling={data}
         divRows={(nkeDiv as any).rows}
         exampleYear={2011}
       />
@@ -10754,6 +10773,8 @@ function AutoInsight({ stockKey, data, past }: { stockKey: string; data: StockDa
         {header}
         <QualityCard stockKey={stockKey} />
         <p className="text-xs text-gray-400">이 종목은 연도별 EPS 공시 데이터를 찾지 못해 숫자 분석을 생략했다.</p>
+        <RollingChart key={`chart-${stockKey}`} data={data} />
+        <RollingTable data={data} />
         <CallBox stockKey={stockKey} />
         <SegmentBox stockKey={stockKey} />
         <DiveBox stockKey={stockKey} num="1-2." />
@@ -10853,19 +10874,19 @@ function AutoInsight({ stockKey, data, past }: { stockKey: string; data: StockDa
         {R(['history', 'know'])}
         <BuffettNotesBox stockKey={stockKey} />
 
-        <Ch n="⑥" t="미래와 값" sub="사업부별 미래 이익 모델, 시나리오와 가능성, 이익 시계, 과거 10년 보유 성적" />
+        <Ch n="⑥" t="미래와 값" sub="사업부별 미래 이익 모델, 시나리오와 가능성, 이익 시계, 10년 보유 수익률 분해" />
         {R(['model', 'why', 'scen', 'agent', 'rms'])}
         {live && <StockValueClock f={f as ClockFund} stockKey={stockKey} rolling={data} title="이익 시계 — 적정가 선 vs 주가" judged={deep?.growth} />}
         {live && big.epsFix && <p className="text-xs leading-relaxed text-amber-700 dark:text-amber-400 -mt-2">⚠ 이익 시계와 아래 자동 계산은 공시 EPS(일회성·지분 평가손익 포함)를 그대로 쓴다. 이 회사는 공시 숫자가 실제와 달라 적정가·&lsquo;싼 구간&rsquo; 판정이 부풀려 보일 수 있다 — 본업 기준은 ①의 &lsquo;먼저 바로잡기&rsquo;.</p>}
-        {past}
-        {decomp.length > 0 && (
+        {decomp.length > 0 ? (
           <DecompSection
             title="10년 보유 수익률 분해 — 막대 하나 = EPS 몫 + 배당 몫 + PER 몫"
             decomp={decomp}
             divRows={divRows}
             exampleYear={exampleYear}
+            rolling={data}
           />
-        )}
+        ) : past}
         {live && <AutoDeep f={f} data={data} part="pastPe" num="" />}
         {live && (
           <details className="rounded-lg border border-gray-200 dark:border-gray-800 p-3">
@@ -10936,14 +10957,15 @@ function AutoInsight({ stockKey, data, past }: { stockKey: string; data: StockDa
       </div>
 
 
-      {decomp.length > 0 && (
+      {decomp.length > 0 ? (
         <DecompSection
           title={`${nDecomp} 연도별 수익률 분해 — 막대 하나 = EPS 몫 + 배당 몫 + PER 몫`}
           decomp={decomp}
           divRows={divRows}
           exampleYear={exampleYear}
+          rolling={data}
         />
-      )}
+      ) : <><RollingChart key={`chart-${stockKey}`} data={data} /><RollingTable data={data} /></>}
 
       {live && <AutoDeep f={f} data={data} part="pastPe" num={nPastPe} />}
       {(deep || FUTURES[stockKey]) && (
@@ -11289,8 +11311,8 @@ function HowToRead() {
     <details className="rounded-xl border border-blue-200 dark:border-blue-900/60 bg-blue-50/40 dark:bg-blue-950/20 p-3">
       <summary className="text-sm font-semibold text-gray-800 dark:text-gray-100 cursor-pointer">이 화면 읽는 법 (눌러서 펼치기)</summary>
       <div className="mt-2 space-y-1.5 text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
-        <p><b>차트·표:</b> 막대 하나 = 그해 연말에 사서 10년 보유했을 때의 연평균 수익률(배당 포함). 주황 점은 같은 기간 S&amp;P 500. 막대가 낮게 떨어진 해가 &lsquo;최악의 진입 시점&rsquo;이다.</p>
-        <p><b>순서:</b> 심층 리포트가 있는 종목(엄선)은 <b>① 결론과 사업성 → ② 지금 실적 → ③ 사업과 경쟁 → ④ 숫자와 현금 → ⑤ 역사와 사건 → ⑥ 미래와 값(미래 모델·시나리오·이익 시계·과거 10년 보유 성적) → ⑦ 확인할 신호와 정리</b>. 그 밖의 종목은 사업성 평가 → 1. 지금 한눈에 → 최근 콜·사업부 → 2. 이익 시계 → 3. 과거 → 4. 앞으로 → 5. 결론. 화면 오른쪽(휴대폰은 오른쪽 아래 버튼) 목차로 바로 이동할 수 있다.</p>
+        <p><b>수익률 분해 차트:</b> 막대 하나 = 그해 연말에 사서 10년 보유했을 때의 연평균 수익률(배당 포함)을 EPS·배당·PER 몫으로 나눈 것. 회색 점선은 같은 기간 S&amp;P 500. 막대가 낮게 떨어진 해가 &lsquo;최악의 진입 시점&rsquo;이고, 보라 칸(PER 몫)이 줄거나 빨간 칸이 생기면 &lsquo;비싸게 산&rsquo; 해다. 요약 숫자와 매수 해별 표는 차트 아래에 접혀 있다.</p>
+        <p><b>순서:</b> 심층 리포트가 있는 종목(엄선)은 <b>① 결론과 사업성 → ② 지금 실적 → ③ 사업과 경쟁 → ④ 숫자와 현금 → ⑤ 역사와 사건 → ⑥ 미래와 값(미래 모델·시나리오·이익 시계·10년 보유 수익률 분해) → ⑦ 확인할 신호와 정리</b>. 그 밖의 종목은 사업성 평가 → 1. 지금 한눈에 → 최근 콜·사업부 → 2. 이익 시계 → 3. 과거 → 4. 앞으로 → 5. 결론. 화면 오른쪽(휴대폰은 오른쪽 아래 버튼) 목차로 바로 이동할 수 있다.</p>
         <p><b>핵심만:</b> 위 한눈 요약 → ① 결론 먼저 → ⑥ 미래 시나리오와 가능성 → ⑦ 정리.</p>
         <p><b>숫자 읽는 법:</b> 지금 PER이 10년 중간 PER보다 낮으면 평소보다 싸다. 이익/10년 고점이 85% 미만이면 이익이 꺾인 상태라 PER이 실제보다 비싸 보일 수 있다. ★ 모든 수익률은 배당 재투자 포함 총수익률(Yahoo Finance 수정주가).</p>
       </div>
@@ -11405,8 +11427,9 @@ function PrivateAppInner({ u = 'picks' }: { u?: Universe }) {
     {/* 리셀 웃돈·할인 추이 (에르메스·나이키) */}
     {current.key === 'NKE' && <NikeMarkdownCard />}
 
-    {/* 차트·롤링 테이블 — 심층 리포트 종목은 ⑥ 미래와 값(과거 10년 보유 성적) 안에 넣는다 */}
-    {!((BIG_REPORTS[current.key] && current.key !== 'NKE') || current.key === 'RMS') && <>
+    {/* 롤링 차트·표 — 개별 종목은 인사이트의 "수익률 분해" 안에 합쳤다(S&P 비교선·요약 표 포함). 여기서는 ETF만 */}
+    {/* 개별 종목은 아래 인사이트의 '수익률 분해' 안에 S&P 비교·요약 표를 합쳤다 — 여기서는 ETF만 */}
+    {(current.data as any).type === 'etf' && <>
       <RollingChart key={`chart-${current.key}`} data={current.data} />
       <RollingTable data={current.data} />
     </>}
@@ -11418,7 +11441,7 @@ function PrivateAppInner({ u = 'picks' }: { u?: Universe }) {
     {current.key === 'NKE' && <FutureBox stockKey="NKE" num="6." />}
     {current.key !== 'RMS' && current.key !== 'NKE' && (current.data as any).type !== 'etf' && (
       <AutoInsight key={`insight-${current.key}`} stockKey={current.key} data={current.data}
-        past={BIG_REPORTS[current.key] ? <div className="space-y-3"><h3 className="text-base font-semibold text-gray-900 dark:text-white">과거 10년 보유 성적 — 언제 샀어도 어땠나</h3><RollingChart key={`chart-${current.key}`} data={current.data} /><RollingTable data={current.data} /></div> : undefined} />
+        past={<div className="space-y-3"><h3 className="text-base font-semibold text-gray-900 dark:text-white">과거 10년 보유 성적 — 언제 샀어도 어땠나</h3><RollingChart key={`chart-${current.key}`} data={current.data} /><RollingTable data={current.data} /></div>} />
     )}
   </>)
 }
