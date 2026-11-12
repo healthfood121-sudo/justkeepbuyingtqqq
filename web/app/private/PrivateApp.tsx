@@ -1437,7 +1437,7 @@ function RollingTable({ data }: { data: StockData }) {
                     {eps?.note && <span title={eps.note} className="ml-1 text-amber-500 cursor-help text-xs">⚠</span>}
                   </td>
                   <td className="py-1.5 pr-3 text-gray-600 dark:text-gray-300 tabular-nums">
-                    {inProg ? <span className="italic text-gray-400 dark:text-gray-500">진행 중</span> : r.sellYear}
+                    {inProg ? <span className="italic text-gray-400 dark:text-gray-500" title="아직 10년이 안 됐다 — 매주 일요일 최신 가격으로 다시 계산">진행 중{(r as any).sellDate ? ` · ${Number((r as any).sellDate.slice(5, 7))}/${Number((r as any).sellDate.slice(8, 10))} 가격` : ''}</span> : r.sellYear}
                   </td>
                   <td className={`py-1.5 pr-3 text-right font-semibold tabular-nums ${cagrTextColor(r.cagr, !inProg)}`}>
                     {r.cagr.toFixed(1)}%
