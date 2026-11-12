@@ -1,5 +1,6 @@
 """SEC EDGAR에서 실적 발표문(8-K, 항목 2.02의 보도자료 첨부)을 모두 받아 텍스트로 로그에 출력한다(조사용, 커밋 없음).
 사용: python scripts/fetch_sec_releases.py COCO [최대 개수]
+     python scripts/fetch_sec_releases.py GOOGL 13F   ← 최신 13F 보유 종목과 지분율
 컨퍼런스콜 녹취록을 구할 수 없는 옛 분기를 회사 공식 숫자·경영진 발언으로 채울 때 쓴다."""
 import html, re, sys, time
 import requests
@@ -25,9 +26,41 @@ def text(h):
     return re.sub(r'\n\s*\n+', '\n', h).strip()
 
 t = sys.argv[1].upper()
-limit = int(sys.argv[2]) if len(sys.argv) > 2 else 40
 tick = get('https://www.sec.gov/files/company_tickers.json').json()
 cik = next(int(v['cik_str']) for v in tick.values() if v['ticker'].upper() == t)
+
+# 두 번째 값이 13F면: 그 회사가 낸 최신 13F 보유 종목 표 + 각 종목의 발행 주식 수(지분율 계산용)를 출력하고 끝낸다
+if len(sys.argv) > 2 and sys.argv[2].upper() == '13F':
+    sub = get(f'https://data.sec.gov/submissions/CIK{cik:010d}.json').json()
+    rec = sub['filings']['recent']
+    fil = [(rec['filingDate'][i], rec['accessionNumber'][i], rec['reportDate'][i]) for i in range(len(rec['form'])) if rec['form'][i] == '13F-HR']
+    date, acc, period = sorted(fil)[-1]
+    base = f'https://www.sec.gov/Archives/edgar/data/{cik}/{acc.replace("-", "")}/'
+    names = [it['name'] for it in get(base + 'index.json').json()['directory']['item']]
+    xmlname = next(n for n in names if n.lower().endswith('.xml') and 'primary' not in n.lower())
+    xml = get(base + xmlname).text
+    print(t, '13F', date, '기준일', period, base + xmlname, flush=True)
+    titles = {v['title'].upper(): int(v['cik_str']) for v in tick.values()}
+    tick_of = {int(v['cik_str']): v['ticker'] for v in tick.values()}
+    for blk in re.findall(r'<(?:\w+:)?infoTable>(.*?)</(?:\w+:)?infoTable>', xml, re.S):
+        f = lambda k: (re.search(rf'<(?:\w+:)?{k}>(.*?)</(?:\w+:)?{k}>', blk, re.S) or [None, ''])[1].strip()
+        name, cls, cusip, val, sh = f('nameOfIssuer'), f('titleOfClass'), f('cusip'), f('value'), f('sshPrnamt')
+        key = name.upper().replace('.', '').replace(',', '')
+        c = next((ck for tt, ck in titles.items() if tt.replace('.', '').replace(',', '').startswith(key[:18])), None)
+        out = ''
+        if c:
+            facts = get(f'https://data.sec.gov/api/xbrl/companyconcept/CIK{c:010d}/dei/EntityCommonStockSharesOutstanding.json')
+            if facts:
+                pts = [x for u in facts.json().get('units', {}).values() for x in u]
+                if pts:
+                    last = sorted(pts, key=lambda x: x.get('end', ''))[-1]
+                    tot = sum(x['val'] for x in pts if x.get('end') == last['end'] and x.get('accn') == last['accn'])
+                    out = f"발행주식 {tot} ({last['end']}) 지분율 {int(sh) / tot * 100:.2f}%"
+            time.sleep(0.3)
+        print(f'ROW|{name}|{cls}|{cusip}|{tick_of.get(c, "")}|{val}|{sh}|{out}', flush=True)
+    sys.exit(0)
+
+limit = int(sys.argv[2]) if len(sys.argv) > 2 else 40
 sub = get(f'https://data.sec.gov/submissions/CIK{cik:010d}.json').json()
 rec = sub['filings']['recent']
 rows = [(rec['filingDate'][i], rec['accessionNumber'][i]) for i in range(len(rec['form']))
