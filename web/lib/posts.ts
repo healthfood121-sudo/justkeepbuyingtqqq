@@ -13,6 +13,15 @@ export type PostMeta = {
 
 export const posts: PostMeta[] = [
   {
+    slug: 'nasdaq-cycle',
+    title: '나스닥 사이클 — 지금은 어디쯤인가',
+    date: '2026-11-12',
+    tags: ['사이클', '나스닥100', 'TQQQ', '횡보장', '지난 10년'],
+    summary:
+      '지난 10년 연평균 수익률이 높았던 때 다음 10년은 낮았다. 1985년 이후 매달 시작한 경우를 모아 지난 10년 구간별로 다음 10년 나스닥100·TQQQ 결과를 비교하고, 지금 위치를 매주 자동으로 보여 준다.',
+    category: '적립식',
+  },
+  {
     slug: 'why-market-rises',
     title: '시장지수는 왜 장기적으로 우상향하는가',
     date: '2026-10-12',

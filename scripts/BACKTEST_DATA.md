@@ -1129,3 +1129,21 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 - 파리 상장(MC.PA, 유로)이라 SEC 공시가 없다. `generate_all_sp500.py`에 `YF_TICKER["LVMH"]="MC.PA"`, `CURRENCY["LVMH"]="EUR"` → 'update-rolling-annual'(only=LVMH)로 `LVMH_rolling.json`(2000년부터, 10년 완결 16개).
 - `export_fundamentals.py`: `TICKER_NOW["LVMH"]="MC.PA"`, `NO_SEC={"LVMH"}`, `MANUAL_EPS["LVMH"]`(회사 발표 희석 EPS 2014~2025, 2017만 재작성 순이익 ÷ 주식 수 추정), 해외 거래소 접미사(.PA 등)를 유지하는 `yft()` 추가. 2014년 EPS는 에르메스 지분 분배 이익 포함(그해 PER이 낮게 보임).
 - 현금흐름·사업부 원자료(SEC)는 없음 → `export_segments.py` SKIP에 추가. 사업부 분석은 `dives.ts`에 회사 발표 숫자를 직접(`cur`) 넣었다. 컨퍼런스콜은 원문 사이트가 막혀 언론 보도 요약으로 정리.
+
+---
+
+## 나스닥 사이클 · 횡보장 공부방 (2026-11-12)
+
+### 공개 글 `/posts/nasdaq-cycle` — 새 JSON 없음
+- 브라우저에서 `synthetic_daily.json`(나스닥100·TQQQ 합성가격, 배당 제외)으로 매월 첫 거래일마다 "지난 10년 연평균 → 다음 10년 연평균"을 계산 (`web/app/posts/nasdaq-cycle/cycle.ts`)
+- 지금 위치: `rolling/QQQ_rolling.json`의 진행 중 구간(9년 이상 경과) — 주간 롤링 업데이트로 자동 갱신
+- 데이터 뷰어: `/posts/nasdaq-cycle/data?b=18-22` (지난 10년 구간별 시작 시점 전체)
+- 결과(1985~): 지난 10년 18~22% → 다음 10년 나스닥100 중간 +4.2%(19번, 손실 0), TQQQ 중간 −23.5%(19번 모두 손실)
+
+### 멤버십 `/private/cycles` — `web/app/private/cycles/study.json` (약 60 KB, 비공개 폴더)
+| 파일 | 스크립트 | 입력 | 사용처 |
+|---|---|---|---|
+| `app/private/cycles/study.json` | `web/scripts/build-cycle-study.mjs` (package.json `prebuild` — **빌드마다 자동 재생성**) | `public/data/rolling/*_rolling.json`, `public/data/fundamentals/*.json` | 횡보장 공부방 |
+- 내용: 매수 해별(1990·1995·1999·2000·2003·2005·2008·2010·2013·2015) 직전 10년 5분위 → 다음 10년 중간값, 1972·1973 승자·패자, 같은 종목 안 비교(1972/1980/1990~2015 매수 완결 종목 42/172/252개), 지금 하위 40% 중 품질 통과 종목, 대형 기술주 지난 10년 이익·PER 분해
+- 핵심 결과: 1999·2000년 매수 — 직전 10년 하위 20% 다음 10년 +13~14%, 상위 20% +0~2%(절반 손실). 평범한 해엔 차이 없음. 같은 종목은 자기 직전 10년 하위 1/3 해에 사면 +13~14% vs 상위 1/3 +9~10% (70~84% 종목에서)
+- 생존 편향(지금 지수 종목 위주) 있음 — 탐색용, 매수 추천 아님
