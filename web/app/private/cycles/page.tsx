@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { UNIV } from '../universe'
 import study from './study.json'
 import { MOAT } from './moat'
+import MoatBoard, { type Ep } from './MoatBoard'
 
 export const metadata = { robots: 'noindex', title: '횡보장 공부방' }
 
@@ -18,7 +19,7 @@ type NowRow = { k: string; nm: string; pos: number | null; prior: number; pe: nu
 type Same = { from: number; n: number; byYear: { y: number; best: number; worst: number; med: number }[]; perStock: { k: string; nm: string; best: number; bestR: number; bestPrior: number | null; worst: number; worstR: number; worstPrior: number | null; lo: number | null; hi: number | null }[]; ownN: number; ownLo: number; ownHi: number; ownLoWins: number; spreadMed: number }
 type OwnSum = { n: number; med: number; loss: number }
 type OwnYear = { year: number; n: number; all: OwnSum; lo: OwnSum; hi: OwnSum }
-type OwnB = { k: string; nm: string; pos: number; prior: number; pe: number | null; peMed: number | null; roic5: number | null; epsVsPeak: number | null; div: number | null }
+type OwnB = { k: string; nm: string; pos: number; prior: number; pe: number | null; peMed: number | null; roic5: number | null; epsVsPeak: number | null; div: number | null; eps: Ep[] }
 type Study = {
   ownSum: { years: number; loWins: number; lo: OwnSum; hi: OwnSum }
   ownYears: OwnYear[]
@@ -52,45 +53,6 @@ function Names({ rows, tone }: { rows: Row[]; tone: 'good' | 'bad' }) {
           {r.nm} <span className="opacity-70 tabular-nums">{pct(r.prior)} → {pct(r.next)}</span>
         </Link>
       ))}
-    </div>
-  )
-}
-
-const TAG = {
-  temp: { label: '일시적', cls: 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300' },
-  mixed: { label: '섞임', cls: 'bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300' },
-  risk: { label: '구조적 위험', cls: 'bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300' },
-} as const
-const TORD = { temp: 0, mixed: 1, risk: 2 } as const
-
-function MoatCard({ r }: { r: OwnB }) {
-  const m = MOAT[r.k]!
-  const broken = r.epsVsPeak != null && r.epsVsPeak < 75
-  const pricey = r.pe != null && r.peMed != null && r.pe > r.peMed
-  return (
-    <div id={`m-${r.k}`} className="scroll-mt-20 rounded-lg border border-gray-200 dark:border-gray-800 p-3 space-y-1">
-      <div className="flex items-baseline justify-between gap-2">
-        <span className="min-w-0">
-          <span className={`text-[11px] font-semibold px-1.5 py-0.5 rounded mr-1.5 whitespace-nowrap ${TAG[m.t].cls}`}>{TAG[m.t].label}</span>
-          <Link href={href(r.k)} className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">{r.nm} <span className="text-xs font-normal text-gray-400">{r.k}</span></Link>
-        </span>
-        <span className="text-xs tabular-nums px-1.5 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 whitespace-nowrap">자기 역사 하위 {r.pos}%</span>
-      </div>
-      <p className="text-[11px] tabular-nums text-gray-500 dark:text-gray-400">
-        지난 약 10년 연 {pct(r.prior)}
-        {r.pe != null && r.peMed != null && <> · PER {r.pe.toFixed(1)} <span className="text-gray-400">(10년 중간 {r.peMed.toFixed(1)})</span></>}
-        {r.epsVsPeak != null && <> · 이익 10년 고점의 {r.epsVsPeak}%</>}
-        {r.div != null && r.div > 0 && <> · 배당 {r.div.toFixed(1)}%</>}
-      </p>
-      <p className="text-xs text-gray-700 dark:text-gray-200"><b className="text-gray-900 dark:text-white">해자</b> {m.moat}</p>
-      <p className="text-xs text-gray-600 dark:text-gray-300"><b className="text-amber-700 dark:text-amber-400">싼 이유</b> {m.worry}</p>
-      <p className="text-xs text-gray-600 dark:text-gray-300"><b className="text-gray-900 dark:text-white">{TAG[m.t].label}로 본 이유</b> {m.tw}</p>
-      {(broken || pricey) && (
-        <p className="text-[11px] text-red-600 dark:text-red-400">
-          {broken && '⚠ 이익이 고점보다 많이 줄었다 — 회사가 망가져서 바닥일 수 있다. '}
-          {pricey && '⚠ PER은 자기 10년 중간보다 아직 비싸다.'}
-        </p>
-      )}
     </div>
   )
 }
@@ -415,34 +377,17 @@ export default async function CyclesPage() {
         {/* 7-3. 지금 자기 역사 바닥 + 해자 */}
         {d.now && (() => {
           const ob = d.now.ownBottom
-          const byT = (a: OwnB, b: OwnB) => TORD[MOAT[a.k]!.t] - TORD[MOAT[b.k]!.t] || a.pos - b.pos
-          const deep = ob.filter(r => MOAT[r.k]?.g === 'deep').sort(byT), some = ob.filter(r => MOAT[r.k]?.g === 'some').sort(byT), rest = ob.filter(r => !MOAT[r.k])
-          const rated = [...deep, ...some]
+          const rated = ob.filter(r => MOAT[r.k]).map(r => ({ ...r, h: href(r.k) }))
+          const deepN = rated.filter(r => MOAT[r.k]!.g === 'deep').length, rest = ob.filter(r => !MOAT[r.k])
           return (
             <section id="moat" className={box}>
               <h2 className={h2}>7-3. 지금 자기 역사 바닥인 종목 중 해자가 깊은 곳</h2>
               <p className={p}>
                 7-2와 같은 기준이다. 지난 약 10년 수익률이 <b>그 종목의 과거 10년 수익률들 중 하위 15% 이하</b>인 종목 {ob.length}개를 고른 뒤(다른 종목과 비교하지 않으므로 6번과 달리 에르메스·LVMH 같은 해외 종목도 들어간다),
-                해자가 깊은 곳 {deep.length}개와 해자는 있지만 좁거나 흔들리는 곳 {some.length}개로 나눴다.
+                해자가 깊은 곳 {deepN}개와 해자는 있지만 좁거나 흔들리는 곳 {rated.length - deepN}개를 골랐다. 각 종목에는 지금 부진이 일시적인지 구조적인지 딱지를 붙이고, 과거에 같은 바닥에서 산 경우 그 뒤 10년 성적을 같이 붙였다.
               </p>
-              <div className="rounded-lg bg-gray-50 dark:bg-gray-900/40 p-3 space-y-2">
-                <p className="text-xs font-semibold text-gray-800 dark:text-gray-100">딱지 — 지금 부진이 일시적인가, 구조적인가</p>
-                {(['temp', 'mixed', 'risk'] as const).map(t => {
-                  const g = rated.filter(r => MOAT[r.k]!.t === t)
-                  return (
-                    <div key={t} className="flex flex-wrap items-center gap-1.5">
-                      <span className={`text-[11px] font-semibold px-1.5 py-0.5 rounded ${TAG[t].cls}`}>{TAG[t].label} {g.length}</span>
-                      {g.map(r => <a key={r.k} href={`#m-${r.k}`} className="text-xs text-gray-700 dark:text-gray-200 hover:underline">{r.nm}{MOAT[r.k]!.g === 'deep' ? '' : '°'}</a>)}
-                    </div>
-                  )
-                })}
-                <p className={small}><b>일시적</b> = 이익이 대체로 그대로이거나, 줄어든 이유가 경기·금리·일회성 비용처럼 지나가는 것. <b>섞임</b> = 지나갈 요인과 오래갈 요인이 같이 있다. <b>구조적 위험</b> = 사업 방식 자체가 바뀔 수 있다(대부분 AI). 이름 뒤 ° = 해자 &lsquo;있음&rsquo; 무리. 눌러서 카드로 이동.</p>
-              </div>
-              <p className={small}>자기 역사 위치·수익률·PER은 배포할 때마다 최신 가격으로 다시 계산된다. 해자·싼 이유는 사람이 사업 구조를 보고 적은 판단이고 숫자가 아니다. 해외 종목은 미국 공시 데이터가 없어 PER 등이 비어 있을 수 있다.</p>
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-white pt-1">해자 깊음 ({deep.length})</h3>
-              <div className="grid sm:grid-cols-2 gap-2">{deep.map(r => <MoatCard key={r.k} r={r} />)}</div>
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-white pt-2">해자 있음 — 좁거나 흔들리는 중 ({some.length})</h3>
-              <div className="grid sm:grid-cols-2 gap-2">{some.map(r => <MoatCard key={r.k} r={r} />)}</div>
+              <p className={small}><b>일시적</b> = 이익이 대체로 그대로이거나, 줄어든 이유가 경기·금리·일회성 비용처럼 지나가는 것. <b>섞임</b> = 지나갈 요인과 오래갈 요인이 같이 있다. <b>구조적 위험</b> = 사업 방식 자체가 바뀔 수 있다(대부분 AI). 자기 역사 위치·수익률·PER은 배포할 때마다 최신 가격으로 다시 계산된다. 해자·딱지는 사람이 사업 구조를 보고 적은 판단이다. 해외 종목은 미국 공시 데이터가 없어 PER 등이 비어 있을 수 있다.</p>
+              <MoatBoard rows={rated} />
               {rest.length > 0 && (
                 <details className="rounded-lg border border-gray-200 dark:border-gray-800 p-3">
                   <summary className="text-sm font-semibold text-gray-800 dark:text-gray-100 cursor-pointer">나머지 {rest.length}개 — 해자가 얕거나 아직 평가 안 한 종목 (눌러서 펼치기)</summary>
@@ -456,7 +401,7 @@ export default async function CyclesPage() {
                 <b>읽는 법:</b> 7-2에서 자기 역사 바닥은 시장이 비쌀 때 특히 강했다. 다만 1999년 바닥 종목은 &lsquo;기술주가 아니라서&rsquo; 소외된 멀쩡한 사업이었고,
                 지금 바닥인 해자 종목 상당수(팩트셋·어도비·세일즈포스·로퍼·부킹)는 <b>&lsquo;AI가 해자를 무너뜨릴 것&rsquo;이라는 걱정</b> 때문에 싸졌다. 그 걱정이 지나치면 기회, 맞으면 나이키처럼 망가진 바닥이다.
                 AI 걱정이 덜한 해자는 에르메스·LVMH·주류·식품 브랜드·도미노·트랜스다임·그레이코 쪽이다.
-                1999년 바닥 종목이 이긴 이유는 사업이 멀쩡했기 때문이다 — 그와 성격이 가장 비슷한 건 <b>초록 &lsquo;일시적&rsquo; 딱지</b>(이익은 그대로인데 주가 배수만 내려왔거나, 경기·일회성 요인으로 잠깐 줄어든 경우)다. 딱지별 실제 성적은 과거 데이터로 검증하지 않은 판단이다.
+                1999년 바닥 종목이 이긴 이유는 사업이 멀쩡했기 때문이다 — 그와 성격이 가장 비슷한 건 <b>초록 &lsquo;일시적&rsquo; 딱지</b>(이익은 그대로인데 주가 배수만 내려왔거나, 경기·일회성 요인으로 잠깐 줄어든 경우)다. 다만 딱지는 지금 사정을 보고 붙인 것이고, 위 과거 검증은 &lsquo;그 종목이 예전 바닥에서 회복했나&rsquo;를 보여 줄 뿐 이번에도 그렇다는 보장은 아니다.
               </p>
             </section>
           )

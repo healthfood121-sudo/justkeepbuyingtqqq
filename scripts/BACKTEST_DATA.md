@@ -1146,6 +1146,7 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 | `app/private/cycles/study.json` | `web/scripts/build-cycle-study.mjs` (package.json `prebuild` — **빌드마다 자동 재생성**) | `public/data/rolling/*_rolling.json`, `public/data/fundamentals/*.json` | 횡보장 공부방 |
 | `app/private/cycles/own/own.json` (~250KB) | 같은 스크립트(빌드마다 자동 재생성) | `public/data/rolling/*_rolling.json` | `/private/cycles/own?y=` — 같은 해 매수 종목끼리 자기 역사 바닥(직전 10년이 그때까지 자기 10년 수익률 중 하위 15% 이하) vs 고점(85% 이상), 과거 완결 10년 8개 이상, 1989~2015년 매수. 요약은 study.json `ownSum`·`ownYears`(7-2 섹션) |
 | (study.json `now.ownBottom`) | 같은 스크립트 | 롤링·펀더멘털 | 7-3 — 지금 자기 역사 하위 15% 이하 종목. 해자 판정은 `web/app/private/cycles/moat.ts`(수기) |
+| (study.json `now.ownBottom[].eps`) | 같은 스크립트 | 롤링 | 7-3 과거 검증 — 그 종목이 과거 자기 역사 바닥(같은 기준)이던 매수 해와 다음 10년·같은 기간 S&P500 |
 - 내용: 매수 해별(1990·1995·1999·2000·2003·2005·2008·2010·2013·2015) 직전 10년 5분위 → 다음 10년 중간값, 1972·1973 승자·패자, 같은 종목 안 비교(1972/1980/1990~2015 매수 완결 종목 42/172/252개), 지금 하위 40% 중 품질 통과 종목, 대형 기술주 지난 10년 이익·PER 분해
 - 핵심 결과: 1999·2000년 매수 — 직전 10년 하위 20% 다음 10년 +13~14%, 상위 20% +0~2%(절반 손실). 평범한 해엔 차이 없음. 같은 종목은 자기 직전 10년 하위 1/3 해에 사면 +13~14% vs 상위 1/3 +9~10% (70~84% 종목에서)
 - 생존 편향(지금 지수 종목 위주) 있음 — 탐색용, 매수 추천 아님

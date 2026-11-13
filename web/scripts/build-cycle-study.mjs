@@ -108,6 +108,20 @@ function ownPos(k) {
   return Math.round(100 * past.filter(v => v < r.cagr).length / past.length)
 }
 
+// 과거에 "자기 역사 바닥"(그때까지의 자기 10년 수익률 중 하위 15% 이하, 7-2와 같은 기준)이었던 매수 해와 그 뒤 10년 성적(같은 기간 S&P500)
+function ownEps(k) {
+  const s = stocks.find(x => x.key === k); if (!s) return []
+  const out = []
+  for (const [B, n] of s.rows) {
+    const c = s.rows.get(B - 10)
+    if (!n.isComplete || !c?.isComplete) continue
+    const past = [...s.rows.values()].filter(r => r.isComplete && r.buyYear <= B - 10).map(r => r.cagr)
+    if (past.length < 8) continue
+    if (past.filter(v => v < c.cagr).length / (past.length - 1) <= 0.15) out.push({ y: B, prior: r1(c.cagr), next: r1(n.cagr), sp: r1(n.benchCagr ?? null) })
+  }
+  return out.sort((a, b) => a.y - b.y)
+}
+
 // 나스닥100(QQQ) 지난 약 10년 — 매주 자동 갱신되는 롤링 데이터의 진행 중 구간
 let ndx = null
 try {
@@ -162,7 +176,7 @@ const study = {
     bottom: nowQ[0].concat(nowQ[1]).map(x => ({ ...x, q: nowQ[0].includes(x) ? 1 : 2 })),
     top: [...nowQ[4]].sort((x, y) => y.prior - x.prior).slice(0, 30),
     // 지금 자기 역사 바닥(하위 15% 이하) — 7-3에서 해자 판정과 묶어 보여 준다
-    ownBottom: now.filter(x => x.pos != null && x.pos <= 15).sort((a, b) => a.pos - b.pos).map(({ k, nm, pos, prior, pe, peMed, roic5, epsVsPeak, div }) => ({ k, nm, pos, prior, pe, peMed, roic5, epsVsPeak, div })),
+    ownBottom: now.filter(x => x.pos != null && x.pos <= 15).sort((a, b) => a.pos - b.pos).map(({ k, nm, pos, prior, pe, peMed, roic5, epsVsPeak, div }) => ({ k, nm, pos, prior, pe, peMed, roic5, epsVsPeak, div, eps: ownEps(k) })),
     watch: ['GOOGL', 'MSFT', 'AAPL', 'AMZN', 'META', 'NVDA', 'RMS', 'COST', 'KO', 'NKE'].map(k => { const x = now.find(z => z.k === k); return x ? { k, nm: x.nm, prior: x.prior, pos: x.pos } : null }).filter(Boolean),
   },
 }
