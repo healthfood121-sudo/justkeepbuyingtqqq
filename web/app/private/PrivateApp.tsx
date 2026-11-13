@@ -48,6 +48,7 @@ import { FICO_REPORT } from './reports/ficoData'
 import { DCI_REPORT } from './reports/dciData'
 import { GGG_REPORT } from './reports/gggData'
 import { JKHY_REPORT } from './reports/jkhyData'
+import { AOS_REPORT } from './reports/aosData'
 import { SYK_REPORT } from './reports/sykData'
 import { ADP_REPORT } from './reports/adpData'
 import { MSCI_REPORT } from './reports/msciData'
@@ -11041,6 +11042,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   DCI: () => <BigReport d={DCI_REPORT} />,
   GGG: () => <BigReport d={GGG_REPORT} />,
   JKHY: () => <BigReport d={JKHY_REPORT} />,
+  AOS: () => <BigReport d={AOS_REPORT} />,
   SYK: () => <BigReport d={SYK_REPORT} />,
   ADP: () => <BigReport d={ADP_REPORT} />,
   MSCI: () => <BigReport d={MSCI_REPORT} />,
@@ -11098,6 +11100,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   DCI: DCI_REPORT,
   GGG: GGG_REPORT,
   JKHY: JKHY_REPORT,
+  AOS: AOS_REPORT,
   SYK: SYK_REPORT,
   ADP: ADP_REPORT,
   MSCI: MSCI_REPORT,
