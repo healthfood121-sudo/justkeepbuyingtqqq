@@ -161,6 +161,8 @@ const study = {
     q: nowQ.map(g => ({ lo: g[0]?.prior, hi: g[g.length - 1]?.prior, size: g.length })),
     bottom: nowQ[0].concat(nowQ[1]).map(x => ({ ...x, q: nowQ[0].includes(x) ? 1 : 2 })),
     top: [...nowQ[4]].sort((x, y) => y.prior - x.prior).slice(0, 30),
+    // 지금 자기 역사 바닥(하위 15% 이하) — 7-3에서 해자 판정과 묶어 보여 준다
+    ownBottom: now.filter(x => x.pos != null && x.pos <= 15).sort((a, b) => a.pos - b.pos).map(({ k, nm, pos, prior, pe, peMed, roic5, epsVsPeak, div }) => ({ k, nm, pos, prior, pe, peMed, roic5, epsVsPeak, div })),
     watch: ['GOOGL', 'MSFT', 'AAPL', 'AMZN', 'META', 'NVDA', 'RMS', 'COST', 'KO', 'NKE'].map(k => { const x = now.find(z => z.k === k); return x ? { k, nm: x.nm, prior: x.prior, pos: x.pos } : null }).filter(Boolean),
   },
 }

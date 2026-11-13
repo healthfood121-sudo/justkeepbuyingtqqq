@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { UNIV } from '../universe'
 import study from './study.json'
+import { MOAT } from './moat'
 
 export const metadata = { robots: 'noindex', title: '횡보장 공부방' }
 
@@ -17,6 +18,7 @@ type NowRow = { k: string; nm: string; pos: number | null; prior: number; pe: nu
 type Same = { from: number; n: number; byYear: { y: number; best: number; worst: number; med: number }[]; perStock: { k: string; nm: string; best: number; bestR: number; bestPrior: number | null; worst: number; worstR: number; worstPrior: number | null; lo: number | null; hi: number | null }[]; ownN: number; ownLo: number; ownHi: number; ownLoWins: number; spreadMed: number }
 type OwnSum = { n: number; med: number; loss: number }
 type OwnYear = { year: number; n: number; all: OwnSum; lo: OwnSum; hi: OwnSum }
+type OwnB = { k: string; nm: string; pos: number; prior: number; pe: number | null; peMed: number | null; roic5: number | null; epsVsPeak: number | null; div: number | null }
 type Study = {
   ownSum: { years: number; loWins: number; lo: OwnSum; hi: OwnSum }
   ownYears: OwnYear[]
@@ -25,7 +27,7 @@ type Study = {
   techSrc: { k: string; nm: string; total: number; eps: number; pe: number; peBuy: number; peSell: number }[]
   ndx: { buyYear: number; cagr: number; asOf: string; years: number } | null
   years: Year[]; seventies: Dec[]
-  now: { buyYear: number; asOf: string; n: number; q: { lo: number; hi: number; size: number }[]; bottom: NowRow[]; top: { k: string; nm: string; prior: number; pe: number | null }[]; watch: { k: string; nm: string; prior: number; pos: number | null }[] } | null
+  now: { buyYear: number; asOf: string; n: number; q: { lo: number; hi: number; size: number }[]; bottom: NowRow[]; top: { k: string; nm: string; prior: number; pe: number | null }[]; watch: { k: string; nm: string; prior: number; pos: number | null }[]; ownBottom: OwnB[] } | null
 }
 
 function href(key: string) {
@@ -50,6 +52,34 @@ function Names({ rows, tone }: { rows: Row[]; tone: 'good' | 'bad' }) {
           {r.nm} <span className="opacity-70 tabular-nums">{pct(r.prior)} → {pct(r.next)}</span>
         </Link>
       ))}
+    </div>
+  )
+}
+
+function MoatCard({ r }: { r: OwnB }) {
+  const m = MOAT[r.k]!
+  const broken = r.epsVsPeak != null && r.epsVsPeak < 75
+  const pricey = r.pe != null && r.peMed != null && r.pe > r.peMed
+  return (
+    <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-3 space-y-1">
+      <div className="flex items-baseline justify-between gap-2">
+        <Link href={href(r.k)} className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">{r.nm} <span className="text-xs font-normal text-gray-400">{r.k}</span></Link>
+        <span className="text-xs tabular-nums px-1.5 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 whitespace-nowrap">자기 역사 하위 {r.pos}%</span>
+      </div>
+      <p className="text-[11px] tabular-nums text-gray-500 dark:text-gray-400">
+        지난 약 10년 연 {pct(r.prior)}
+        {r.pe != null && r.peMed != null && <> · PER {r.pe.toFixed(1)} <span className="text-gray-400">(10년 중간 {r.peMed.toFixed(1)})</span></>}
+        {r.epsVsPeak != null && <> · 이익 10년 고점의 {r.epsVsPeak}%</>}
+        {r.div != null && r.div > 0 && <> · 배당 {r.div.toFixed(1)}%</>}
+      </p>
+      <p className="text-xs text-gray-700 dark:text-gray-200"><b className="text-gray-900 dark:text-white">해자</b> {m.moat}</p>
+      <p className="text-xs text-gray-600 dark:text-gray-300"><b className="text-amber-700 dark:text-amber-400">싼 이유</b> {m.worry}</p>
+      {(broken || pricey) && (
+        <p className="text-[11px] text-red-600 dark:text-red-400">
+          {broken && '⚠ 이익이 고점보다 많이 줄었다 — 회사가 망가져서 바닥일 수 있다. '}
+          {pricey && '⚠ PER은 자기 10년 중간보다 아직 비싸다.'}
+        </p>
+      )}
     </div>
   )
 }
@@ -370,6 +400,40 @@ export default async function CyclesPage() {
           </p>
           <p className={small}>&lsquo;종목 →&rsquo;을 누르면 그해 두 무리에 든 종목 전체(이름·직전 10년·자기 역사 위치·다음 10년)를 볼 수 있다. 종목 이름을 누르면 그 종목 페이지로 간다.</p>
         </section>
+
+        {/* 7-3. 지금 자기 역사 바닥 + 해자 */}
+        {d.now && (() => {
+          const ob = d.now.ownBottom
+          const deep = ob.filter(r => MOAT[r.k]?.g === 'deep'), some = ob.filter(r => MOAT[r.k]?.g === 'some'), rest = ob.filter(r => !MOAT[r.k])
+          return (
+            <section id="moat" className={box}>
+              <h2 className={h2}>7-3. 지금 자기 역사 바닥인 종목 중 해자가 깊은 곳</h2>
+              <p className={p}>
+                7-2와 같은 기준이다. 지난 약 10년 수익률이 <b>그 종목의 과거 10년 수익률들 중 하위 15% 이하</b>인 종목 {ob.length}개를 고른 뒤(다른 종목과 비교하지 않으므로 6번과 달리 에르메스·LVMH 같은 해외 종목도 들어간다),
+                해자가 깊은 곳 {deep.length}개와 해자는 있지만 좁거나 흔들리는 곳 {some.length}개로 나눴다.
+              </p>
+              <p className={small}>자기 역사 위치·수익률·PER은 배포할 때마다 최신 가격으로 다시 계산된다. 해자·싼 이유는 사람이 사업 구조를 보고 적은 판단이고 숫자가 아니다. 해외 종목은 미국 공시 데이터가 없어 PER 등이 비어 있을 수 있다.</p>
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white pt-1">해자 깊음 ({deep.length})</h3>
+              <div className="grid sm:grid-cols-2 gap-2">{deep.map(r => <MoatCard key={r.k} r={r} />)}</div>
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white pt-2">해자 있음 — 좁거나 흔들리는 중 ({some.length})</h3>
+              <div className="grid sm:grid-cols-2 gap-2">{some.map(r => <MoatCard key={r.k} r={r} />)}</div>
+              {rest.length > 0 && (
+                <details className="rounded-lg border border-gray-200 dark:border-gray-800 p-3">
+                  <summary className="text-sm font-semibold text-gray-800 dark:text-gray-100 cursor-pointer">나머지 {rest.length}개 — 해자가 얕거나 아직 평가 안 한 종목 (눌러서 펼치기)</summary>
+                  <div className="flex flex-wrap gap-1.5 mt-3">
+                    {rest.map(r => <Link key={r.k} href={href(r.k)} className="text-xs px-2 py-1 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:underline">{r.nm} <span className="opacity-70 tabular-nums">하위 {r.pos}% · {pct(r.prior)}</span></Link>)}
+                  </div>
+                  <p className={`${small} mt-2`}>항공·호텔·부동산 리츠·전력회사·식품 일부·특허 만료 제약 등. 전력회사는 규제로 지역 독점이지만 이익이 규제로 묶여 있어 해자로 치지 않았다.</p>
+                </details>
+              )}
+              <p className={p}>
+                <b>읽는 법:</b> 7-2에서 자기 역사 바닥은 시장이 비쌀 때 특히 강했다. 다만 1999년 바닥 종목은 &lsquo;기술주가 아니라서&rsquo; 소외된 멀쩡한 사업이었고,
+                지금 바닥인 해자 종목 상당수(팩트셋·어도비·세일즈포스·로퍼·부킹)는 <b>&lsquo;AI가 해자를 무너뜨릴 것&rsquo;이라는 걱정</b> 때문에 싸졌다. 그 걱정이 지나치면 기회, 맞으면 나이키처럼 망가진 바닥이다.
+                AI 걱정이 덜한 해자는 에르메스·LVMH·주류·식품 브랜드·도미노·트랜스다임·그레이코 쪽이다.
+              </p>
+            </section>
+          )
+        })()}
 
         {/* 8. 지금은 1999년과 다른가 */}
         <section className={box}>
