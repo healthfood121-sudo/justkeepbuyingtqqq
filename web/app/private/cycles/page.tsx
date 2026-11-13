@@ -15,7 +15,11 @@ type Year = { year: number; n: number; q: Q[]; bottomWin: Row[]; bottomLose: Row
 type Dec = { year: number; n: number; med: number; loss: number; top: { k: string; nm: string; next: number }[]; bottom: { k: string; nm: string; next: number }[] }
 type NowRow = { k: string; nm: string; pos: number | null; prior: number; pe: number | null; peMed: number | null; roic5: number | null; epsVsPeak: number | null; div: number | null; pass: boolean; q: number }
 type Same = { from: number; n: number; byYear: { y: number; best: number; worst: number; med: number }[]; perStock: { k: string; nm: string; best: number; bestR: number; bestPrior: number | null; worst: number; worstR: number; worstPrior: number | null; lo: number | null; hi: number | null }[]; ownN: number; ownLo: number; ownHi: number; ownLoWins: number; spreadMed: number }
+type OwnSum = { n: number; med: number; loss: number }
+type OwnYear = { year: number; n: number; all: OwnSum; lo: OwnSum; hi: OwnSum }
 type Study = {
+  ownSum: { years: number; loWins: number; lo: OwnSum; hi: OwnSum }
+  ownYears: OwnYear[]
   generated: string; note: string
   sameStocks: Same[]
   techSrc: { k: string; nm: string; total: number; eps: number; pe: number; peBuy: number; peSell: number }[]
@@ -315,6 +319,56 @@ export default async function CyclesPage() {
               <p className={small}>초록 = 자기 역사에서 나빴던 쪽(하위 3분의 1, 과거엔 다음 10년이 좋았던 자리), 빨강 = 좋았던 쪽(상위 3분의 1). 에르메스·나이키는 지금 자기 역사의 바닥 쪽, 구글·코스트코·애플·엔비디아는 꼭대기 쪽이다. 회사가 망가져서 바닥인지(나이키)도 같이 봐야 한다.</p>
             </div>
           )}
+        </section>
+
+        {/* 7-2. 같은 해 비교 */}
+        <section id="own" className={box}>
+          <h2 className={h2}>7-2. 시장 타이밍을 빼면? — 같은 해에 산 &lsquo;자기 역사 바닥&rsquo; 종목 vs &lsquo;자기 역사 고점&rsquo; 종목</h2>
+          <p className={p}>
+            7번의 약점: 종목들의 &lsquo;나빴던 해&rsquo;는 대개 1990·2008년처럼 시장 전체가 바닥이던 해라, 종목 덕인지 시장 덕인지 구분이 안 된다.
+            그래서 <b>같은 해에 산 종목끼리</b> 비교했다. 매수 해마다 각 종목의 직전 10년 수익률이 <b>그때까지의 자기 10년 수익률들</b> 중 아래에서 몇 %인지 계산해(그때 알 수 있던 정보만),
+            하위 15% 이하(자기 역사 바닥)와 상위 15% 이상(자기 역사 고점)을 나눴다.
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="rounded-lg bg-emerald-50 dark:bg-emerald-950/30 p-3">
+              <p className="text-xs text-emerald-800 dark:text-emerald-300">자기 역사 바닥에서 산 경우 {d.ownSum.lo.n.toLocaleString()}건</p>
+              <p className="text-lg font-bold tabular-nums text-emerald-700 dark:text-emerald-400">{pct(d.ownSum.lo.med)}</p>
+              <p className="text-xs text-emerald-800 dark:text-emerald-300">10년 뒤 손실 {Math.round(100 * d.ownSum.lo.loss / d.ownSum.lo.n)}%</p>
+            </div>
+            <div className="rounded-lg bg-red-50 dark:bg-red-950/30 p-3">
+              <p className="text-xs text-red-700 dark:text-red-300">자기 역사 고점에서 산 경우 {d.ownSum.hi.n.toLocaleString()}건</p>
+              <p className="text-lg font-bold tabular-nums text-red-600 dark:text-red-400">{pct(d.ownSum.hi.med)}</p>
+              <p className="text-xs text-red-700 dark:text-red-300">10년 뒤 손실 {Math.round(100 * d.ownSum.hi.loss / d.ownSum.hi.n)}%</p>
+            </div>
+          </div>
+          <p className={small}>다음 10년 연평균 수익률 중간값. 바닥 쪽이 이긴 해: {d.ownSum.years}년 중 {d.ownSum.loWins}년.</p>
+          <div className="overflow-x-auto">
+            <table className="w-full text-[11px]">
+              <thead><tr className="border-b border-gray-200 dark:border-gray-800">
+                <th className={`${th} text-left`}>매수 해</th><th className={th}>전체</th><th className={th}>자기 바닥 (손실)</th><th className={th}>자기 고점 (손실)</th><th className={th}></th>
+              </tr></thead>
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                {d.ownYears.map(x => {
+                  const big = x.lo.med - x.hi.med >= 5
+                  return (
+                    <tr key={x.year} className={big ? 'bg-amber-50/70 dark:bg-amber-950/20' : ''}>
+                      <td className={`${td} text-left whitespace-nowrap`}>{x.year}<div className="text-[10px] text-gray-400">{x.n}종목</div></td>
+                      <td className={td}>{pct(x.all.med)}</td>
+                      <td className={`${td} ${x.lo.med > x.hi.med ? 'font-bold text-emerald-600 dark:text-emerald-400' : ''}`}>{pct(x.lo.med)} <span className="text-gray-400 font-normal">({x.lo.loss}/{x.lo.n})</span></td>
+                      <td className={`${td} ${x.hi.med > x.lo.med ? 'font-bold text-emerald-600 dark:text-emerald-400' : ''}`}>{pct(x.hi.med)} <span className="text-gray-400 font-normal">({x.hi.loss}/{x.hi.n})</span></td>
+                      <td className={`${td} whitespace-nowrap`}><Link href={`/private/cycles/own?y=${x.year}`} className="text-blue-600 dark:text-blue-400 hover:underline whitespace-nowrap">종목 →</Link></td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+          <p className={p}>
+            <b>읽는 법:</b> 시장 타이밍을 똑같이 맞춰도 <b>자기 역사 바닥에서 산 쪽이 대체로 나았고, 특히 손실이 훨씬 적었다.</b>
+            차이는 <b>시장이 과열됐던 1997~2001년에 압도적</b>이었다(노란 줄) — 1999년에 자기 고점이던 종목은 다음 10년 중간값이 마이너스, 절반 이상이 손실이었는데 같은 해 자기 바닥 종목은 연 11%대.
+            반대로 2008~2015년처럼 시장 전체가 쌌던 해에는 차이가 거의 없거나 잘나가던 종목이 계속 잘나갔다. <b>&lsquo;자기 역사 바닥을 사라&rsquo;는 규칙은 시장이 비쌀 때 가장 값어치가 크다.</b>
+          </p>
+          <p className={small}>&lsquo;종목 →&rsquo;을 누르면 그해 두 무리에 든 종목 전체(이름·직전 10년·자기 역사 위치·다음 10년)를 볼 수 있다. 종목 이름을 누르면 그 종목 페이지로 간다.</p>
         </section>
 
         {/* 8. 지금은 1999년과 다른가 */}

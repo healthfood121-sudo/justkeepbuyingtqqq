@@ -123,11 +123,39 @@ const techSrc = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'NVDA'].map(k => {
     return r ? { k, nm: f.name ?? k, total: r1(r.totalCagr), eps: r1(r.epsGrowthCagr), pe: r1(r.peCagr), peBuy: r1(r.peBuy), peSell: r1(r.peSell) } : null
   } catch { return null }
 }).filter(Boolean)
+
+// 같은 해에 산 종목끼리: 자기 역사 바닥 vs 자기 역사 고점 (시장 타이밍 효과를 뺀 비교)
+// 매수 해 B에 알 수 있던 것만 사용: 직전 10년(B-10 매수, B에 끝남)이 그때까지 끝난 자기 10년 수익률들 중 몇 % 위치인지
+function ownYear(B) {
+  const g = []
+  for (const s of stocks) {
+    const n = s.rows.get(B), c = s.rows.get(B - 10)
+    if (!n?.isComplete || !c?.isComplete) continue
+    const past = [...s.rows.values()].filter(r => r.isComplete && r.buyYear <= B - 10).map(r => r.cagr)
+    if (past.length < 8) continue
+    const pos = past.filter(v => v < c.cagr).length / (past.length - 1)
+    g.push({ k: s.key, nm: s.name, p: Math.round(pos * 100), prior: r1(c.cagr), next: r1(n.cagr), lo: r1(Math.min(...past)), hi: r1(Math.max(...past)), m: past.length })
+  }
+  if (g.length < 30) return null
+  const lo = g.filter(x => x.p <= 15).sort((a, b) => b.next - a.next), hi = g.filter(x => x.p >= 85).sort((a, b) => b.next - a.next)
+  if (lo.length < 5 || hi.length < 5) return null
+  const sum = a => ({ n: a.length, med: r1(med(a.map(x => x.next))), loss: a.filter(x => x.next < 0).length })
+  return { year: B, n: g.length, all: sum(g), lo: sum(lo), hi: sum(hi), loList: lo, hiList: hi }
+}
+const ownYears = []
+for (let B = 1985; B <= 2020; B++) { const r = ownYear(B); if (r) ownYears.push(r) }
+const pool = k => ownYears.flatMap(y => y[k + 'List'].map(x => x.next))
+const ownSum = { years: ownYears.length, loWins: ownYears.filter(y => y.lo.med > y.hi.med).length,
+  lo: { n: pool('lo').length, med: r1(med(pool('lo'))), loss: pool('lo').filter(v => v < 0).length },
+  hi: { n: pool('hi').length, med: r1(med(pool('hi'))), loss: pool('hi').filter(v => v < 0).length } }
+fs.mkdirSync(path.join(root, 'app/private/cycles/own'), { recursive: true })
+fs.writeFileSync(path.join(root, 'app/private/cycles/own/own.json'), JSON.stringify({ sum: ownSum, years: ownYears }))
 const study = {
   ndx, techSrc,
   generated: new Date().toISOString().slice(0, 10),
   note: '사이트 종목(지금 지수에 들어 있는 회사 중심)의 배당 포함 10년 보유 수익률. 망하거나 사라진 회사는 빠져 있어(생존 편향) 실제보다 좋아 보인다.',
   years, seventies, sameStocks,
+  ownSum, ownYears: ownYears.map(({ loList, hiList, ...r }) => r),
   now: curBuy == null ? null : {
     buyYear: curBuy, asOf: now[0]?.sellDate ?? null, n: nN,
     q: nowQ.map(g => ({ lo: g[0]?.prior, hi: g[g.length - 1]?.prior, size: g.length })),
@@ -137,4 +165,5 @@ const study = {
   },
 }
 fs.writeFileSync(out, JSON.stringify(study))
+console.log('own-history years:', ownYears.length, ownSum)
 console.log('cycle study:', years.length, 'years,', nN, 'stocks now, bottom', nowQ[0].length)
