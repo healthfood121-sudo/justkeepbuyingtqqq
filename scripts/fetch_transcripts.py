@@ -63,7 +63,7 @@ def text_of(page):
     return re.sub(r'\n\s*\n+', '\n', body).strip()
 
 BRIEF = os.environ.get('FULL') != '1'   # 기본은 경영진 발언 위주로 줄인다. FULL=1이면 전문
-def brief(t, budget=36000):
+def brief(t, budget=int(os.environ.get('BUDGET') or 36000)):
     lines = [l.strip() for l in t.split('\n') if l.strip()]
     # 발언자 줄: "이름: 내용"
     turns = []
