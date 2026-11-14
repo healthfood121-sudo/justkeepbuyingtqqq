@@ -66,6 +66,7 @@ export type BigReportData = {
   model?: Model
   odds?: { items: (Odds & { sc: Sc; ret: number })[]; why: string }
   oddsWhy?: string
+  oddsData?: string[]                  // 가능성의 근거가 된 과거 데이터(기준선)
   warn: { k: string; ok: string; bad: string }[]
   final: string[]
 }
@@ -246,7 +247,7 @@ export default function BigReport({ d, keys }: { d: BigReportData; keys?: string
         </section>}</>)
   S['scen'] = (<>{(d.scen || d.model || d.odds) && <section id={id('scen')} className={sec}>
           <h3 className={h2}>{N()}{d.model || d.odds ? '미래 시나리오와 가능성 — 10년 뒤 어떤 세계일까' : '10년 시나리오(추정)'}</h3>
-          {(d.model || d.odds) ? <OddsBlock items={d.model ? (['good', 'base', 'bad'] as Sc[]).map(sc => { const r = modelResult(d.model!, sc); return { ...d.model!.scen[sc], sc, ret: r.ret, eps: `주당이익 연 ${r.cagr.toFixed(1)}% → 10년 뒤 약 ${r.e10.toFixed(0)}${d.model!.cur}, PER ${d.model!.pe[sc]}배` } }) : d.odds!.items} why={d.oddsWhy ?? d.odds?.why ?? ''} /> : (
+          {(d.model || d.odds) ? <OddsBlock items={d.model ? (['good', 'base', 'bad'] as Sc[]).map(sc => { const r = modelResult(d.model!, sc); return { ...d.model!.scen[sc], sc, ret: r.ret, eps: `주당이익 연 ${r.cagr.toFixed(1)}% → 10년 뒤 약 ${r.e10.toFixed(0)}${d.model!.cur}, PER ${d.model!.pe[sc]}배` } }) : d.odds!.items} why={d.oddsWhy ?? d.odds?.why ?? ''} data={d.oddsData} /> : (
           <div className="grid sm:grid-cols-3 gap-2">
             {d.scen!.map(s => (
               <div key={s.name} className="rounded-lg border border-gray-200 dark:border-gray-800 p-3 space-y-1">
@@ -350,7 +351,7 @@ export function ModelSection({ m, sid, title }: { m: Model; sid: string; title: 
 }
 
 const SC_DOT: Record<Sc, Light> = { good: 'g', base: 'y', bad: 'r' }
-export function OddsBlock({ items, why }: { items: (Odds & { sc: Sc; ret: number })[]; why: string }) {
+export function OddsBlock({ items, why, data }: { items: (Odds & { sc: Sc; ret: number })[]; why: string; data?: string[] }) {
   const tot = items.reduce((a, x) => a + x.p, 0)
   const ev = items.reduce((a, x) => a + x.p * x.ret, 0) / tot
   const loss = items.filter(x => x.ret < 0).reduce((a, x) => a + x.p, 0)
@@ -367,6 +368,10 @@ export function OddsBlock({ items, why }: { items: (Odds & { sc: Sc; ret: number
         </div>
         <div className="flex h-2.5 rounded-full overflow-hidden">{items.map(x => <div key={x.sc} className={bar[x.sc]} style={{ width: `${x.p / tot * 100}%` }} title={`${x.name} ${x.p}%`} />)}</div>
         <p className={small}><B t={why} /></p>
+        {data && data.length > 0 && <div className="border-t border-blue-200 dark:border-blue-900/60 pt-2 space-y-1">
+          <p className="text-[11px] font-semibold text-gray-600 dark:text-gray-300">데이터로 본 기준선 — 가능성을 매길 때 함께 본 과거 숫자</p>
+          <ul className="list-disc pl-4 space-y-1 text-xs leading-relaxed text-gray-700 dark:text-gray-200">{data.map((t, i) => <li key={i}><B t={t} /></li>)}</ul>
+        </div>}
       </div>
       <div className="grid sm:grid-cols-3 gap-2">
         {items.map(x => (
