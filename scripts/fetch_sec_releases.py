@@ -29,6 +29,37 @@ t = sys.argv[1].upper()
 tick = get('https://www.sec.gov/files/company_tickers.json').json()
 cik = next(int(v['cik_str']) for v in tick.values() if v['ticker'].upper() == t)
 
+# 두 번째 값이 FACTS면: XBRL 연간 숫자(주당이익·순이익·매출·영업현금·설비투자·자사주·배당·빚)를 표로 출력하고 끝낸다
+if len(sys.argv) > 2 and sys.argv[2].upper() == 'FACTS':
+    facts = get(f'https://data.sec.gov/api/xbrl/companyfacts/CIK{cik:010d}.json').json()['facts']
+    want = {
+        'eps': ['EarningsPerShareDiluted', 'DilutedEarningsLossPerShare', 'EarningsPerShareBasicAndDiluted'],
+        'rev': ['Revenues', 'RevenueFromContractWithCustomerExcludingAssessedTax', 'SalesRevenueNet', 'Revenue', 'SalesRevenueGoodsNet'],
+        'ni': ['NetIncomeLoss', 'ProfitLossAttributableToOwnersOfParent', 'ProfitLoss'],
+        'ocf': ['NetCashProvidedByUsedInOperatingActivities', 'CashFlowsFromUsedInOperatingActivities'],
+        'capex': ['PaymentsToAcquirePropertyPlantAndEquipment', 'PurchaseOfPropertyPlantAndEquipmentClassifiedAsInvestingActivities'],
+        'buyback': ['PaymentsForRepurchaseOfCommonStock', 'PaymentsToAcquireOrRedeemEntitysShares'],
+        'div': ['PaymentsOfDividends', 'PaymentsOfDividendsCommonStock', 'DividendsPaidClassifiedAsFinancingActivities', 'DividendsPaid'],
+        'debt': ['LongTermDebt', 'LongTermDebtNoncurrent', 'Borrowings', 'NoncurrentPortionOfNoncurrentBorrowings'],
+    }
+    out = {}
+    for k, names in want.items():
+        for tax in ('us-gaap', 'ifrs-full'):
+            for nm in names:
+                u = facts.get(tax, {}).get(nm, {}).get('units', {})
+                for unit, items in u.items():
+                    for it in items:
+                        if it.get('form') not in ('10-K', '20-F', '10-K/A', '20-F/A'): continue
+                        st, en = it.get('start'), it['end']
+                        if st and not (330 <= (time.mktime(time.strptime(en, '%Y-%m-%d')) - time.mktime(time.strptime(st, '%Y-%m-%d'))) / 86400 <= 380): continue
+                        row = out.setdefault(en, {})
+                        if k not in row: row[k] = (it['val'], unit)
+    for en in sorted(out):
+        r = out[en]
+        if 'eps' not in r and 'ni' not in r: continue
+        print(en, ' '.join(f"{k}={v[0] if k == 'eps' else round(v[0] / 1e6, 1)}{'' if v[1] in ('USD', 'USD/shares') else v[1]}" for k, v in r.items()), flush=True)
+    sys.exit(0)
+
 # 두 번째 값이 13F면: 그 회사가 낸 최신 13F 보유 종목 표 + 각 종목의 발행 주식 수(지분율 계산용)를 출력하고 끝낸다
 if len(sys.argv) > 2 and sys.argv[2].upper() == '13F':
     sub = get(f'https://data.sec.gov/submissions/CIK{cik:010d}.json').json()
