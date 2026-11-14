@@ -10,6 +10,10 @@ on:
         description: '전문 받기(1이면 줄이지 않음)'
         required: false
         default: '0'
+      budget:
+        description: '녹취록당 글자 수(기본 36000)'
+        required: false
+        default: ''
 
 jobs:
   fetch:
@@ -25,3 +29,4 @@ jobs:
         env:
           PYTHONUNBUFFERED: "1"
           FULL: ${{ inputs.full }}
+          BUDGET: ${{ inputs.budget }}

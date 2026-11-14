@@ -69,11 +69,18 @@ if len(sys.argv) > 2 and sys.argv[2].upper() == '13F':
         print(f'ROW|{name}|{cls}|{cusip}|{tick_of.get(c, "")}|{val}|{sh}|{out}', flush=True)
     sys.exit(0)
 
+import os
 limit = int(sys.argv[2]) if len(sys.argv) > 2 else 40
+# 요약 모드(로그를 작게): BRIEF=글자 수 → 발표문 앞부분만, ANNUAL=1 → 연간(통년) 숫자가 들어간 발표문만,
+# FORM=6-K → 해외 회사 보고서(6-K)에서 PATTERN(정규식)이 들어간 문서만, 찾은 위치부터 BRIEF 글자.
+BRIEF = int(os.environ.get('BRIEF') or 0)
+ANNUAL = os.environ.get('ANNUAL') == '1'
+FORM = os.environ.get('FORM') or '8-K'
+PATTERN = os.environ.get('PATTERN') or ''
 sub = get(f'https://data.sec.gov/submissions/CIK{cik:010d}.json').json()
 rec = sub['filings']['recent']
 rows = [(rec['filingDate'][i], rec['accessionNumber'][i]) for i in range(len(rec['form']))
-        if rec['form'][i] == '8-K' and '2.02' in (rec.get('items') or [''] * 9999)[i]]
+        if rec['form'][i] == FORM and (FORM != '8-K' or '2.02' in (rec.get('items') or [''] * 9999)[i])]
 rows = sorted(rows)[-limit:]
 print(t, cik, '실적 8-K', len(rows), flush=True)
 for date, acc in rows:
@@ -83,6 +90,8 @@ for date, acc in rows:
         continue
     names = [it['name'] for it in idx.json()['directory']['item']]
     pick = [n for n in names if n.lower().endswith(('.htm', '.html')) and re.search(r'ex.?99|99\.?1|press|release', n, re.I)]
+    if FORM != '8-K' and not pick:
+        pick = [n for n in names if n.lower().endswith(('.htm', '.html')) and 'index' not in n.lower()]
     if not pick:
         # 보도자료를 별도 첨부로 두지 않는 회사(ADP 등): 공시 원문 전체(.txt)에서 EX-99 부분을 읽는다
         full = [n for n in names if n.endswith('.txt') and n.startswith(acc)]
@@ -97,5 +106,14 @@ for date, acc in rows:
         m = re.search(r'<TYPE>EX-99.*?</DOCUMENT>', raw, re.S)
         raw = m.group(0) if m else raw
     tx = text(raw)
-    print(f'\n######## {t}_{date}\n  URL {base + pick[0]}\n<<<BEGIN {t}_{date}>>>\n{tx[:14000]}\n<<<END {t}_{date}>>>', flush=True)
+    if ANNUAL and not re.search(r'full[- ]year|fiscal year|fiscal 20\d\d|twelve months|year ended|year-end', tx[:6000], re.I):
+        continue
+    start = 0
+    if PATTERN:
+        m = re.search(PATTERN, tx, re.I)
+        if not m:
+            continue
+        start = max(0, m.start() - 200)
+    body = tx[start:start + BRIEF] if BRIEF else tx[:14000]
+    print(f'\n######## {t}_{date}\n  URL {base + pick[0]}\n<<<BEGIN {t}_{date}>>>\n{body}\n<<<END {t}_{date}>>>', flush=True)
     time.sleep(0.5)

@@ -10,6 +10,22 @@ on:
         description: '최근 몇 개까지'
         required: false
         default: '40'
+      brief:
+        description: '발표문당 글자 수(비우면 전체 14000자)'
+        required: false
+        default: ''
+      annual:
+        description: '1이면 연간 숫자가 든 발표문만'
+        required: false
+        default: ''
+      form:
+        description: '서류 종류(8-K 또는 해외 회사 6-K)'
+        required: false
+        default: '8-K'
+      pattern:
+        description: '이 정규식이 든 문서만, 찾은 위치부터'
+        required: false
+        default: ''
 
 jobs:
   fetch:
@@ -23,3 +39,7 @@ jobs:
       - run: python scripts/fetch_sec_releases.py "${{ inputs.ticker }}" "${{ inputs.limit }}"
         env:
           PYTHONUNBUFFERED: "1"
+          BRIEF: ${{ inputs.brief }}
+          ANNUAL: ${{ inputs.annual }}
+          FORM: ${{ inputs.form }}
+          PATTERN: ${{ inputs.pattern }}
