@@ -6,19 +6,19 @@
   "type": "etf",
   "note": "합성가격: NDX 일별수익률 기반, 스왑금리(SOFR+0.50%/년)·운용보수 차감. 1985-10-01 이전은 스플라이스 전 구간 (NDX 공식 출범 전). 실제 ETF 상장일과 무관하게 NDX 역사 전체 시뮬레이션. | QLD 운용보수: 0.95%/년, 스왑비용: SOFR+0.50%×1",
   "current": {
-    "price": 74.11,
-    "pe": 25.5,
+    "price": 79.3,
+    "pe": 27.3,
     "divYield": 0.15,
     "eps": null
   },
   "fullPeriod": {
     "start_date": "1971-02-05",
-    "end_date": "2026-11-07",
+    "end_date": "2026-11-14",
     "start_price": 100.0,
-    "end_price": 74.11,
+    "end_price": 79.3,
     "years": 55.8,
-    "cagr": -0.54,
-    "multiple": 0.7411
+    "cagr": -0.41,
+    "multiple": 0.793
   },
   "stats": {
     "n": 45,
@@ -534,101 +534,101 @@
     {
       "buyYear": 2016,
       "sellYear": 2026,
-      "sellDate": "2026-11-07",
+      "sellDate": "2026-11-14",
       "yearsActual": 9.9,
-      "cagr": 30.7,
-      "multiple": 13.9796,
+      "cagr": 31.53,
+      "multiple": 14.9586,
       "isComplete": false,
-      "benchCagr": 14.73,
-      "diff": 15.97
+      "benchCagr": 14.99,
+      "diff": 16.54
     },
     {
       "buyYear": 2017,
       "sellYear": 2026,
-      "sellDate": "2026-11-07",
+      "sellDate": "2026-11-14",
       "yearsActual": 8.9,
-      "cagr": 26.85,
-      "multiple": 8.207,
+      "cagr": 27.75,
+      "multiple": 8.7817,
       "isComplete": false,
-      "benchCagr": 13.95,
-      "diff": 12.9
+      "benchCagr": 14.24,
+      "diff": 13.51
     },
     {
       "buyYear": 2018,
       "sellYear": 2026,
-      "sellDate": "2026-11-07",
+      "sellDate": "2026-11-14",
       "yearsActual": 7.9,
-      "cagr": 32.2,
-      "multiple": 8.9508,
+      "cagr": 33.25,
+      "multiple": 9.5776,
       "isComplete": false,
-      "benchCagr": 16.52,
-      "diff": 15.68
+      "benchCagr": 16.85,
+      "diff": 16.4
     },
     {
       "buyYear": 2019,
       "sellYear": 2026,
-      "sellDate": "2026-11-07",
+      "sellDate": "2026-11-14",
       "yearsActual": 6.9,
-      "cagr": 26.2,
-      "multiple": 4.9264,
+      "cagr": 27.37,
+      "multiple": 5.2714,
       "isComplete": false,
-      "benchCagr": 14.48,
-      "diff": 11.72
+      "benchCagr": 14.86,
+      "diff": 12.51
     },
     {
       "buyYear": 2020,
       "sellYear": 2026,
-      "sellDate": "2026-11-07",
+      "sellDate": "2026-11-14",
       "yearsActual": 5.9,
-      "cagr": 17.8,
-      "multiple": 2.608,
+      "cagr": 19.11,
+      "multiple": 2.7907,
       "isComplete": false,
-      "benchCagr": 13.83,
-      "diff": 3.97
+      "benchCagr": 14.27,
+      "diff": 4.84
     },
     {
       "buyYear": 2021,
       "sellYear": 2026,
-      "sellDate": "2026-11-07",
+      "sellDate": "2026-11-14",
       "yearsActual": 4.9,
-      "cagr": 11.37,
-      "multiple": 1.6862,
+      "cagr": 12.88,
+      "multiple": 1.8043,
       "isComplete": false,
-      "benchCagr": 10.98,
-      "diff": 0.39
+      "benchCagr": 11.51,
+      "diff": 1.37
     },
     {
       "buyYear": 2022,
       "sellYear": 2026,
-      "sellDate": "2026-11-07",
+      "sellDate": "2026-11-14",
       "yearsActual": 3.9,
-      "cagr": 45.78,
-      "multiple": 4.2712,
+      "cagr": 48.07,
+      "multiple": 4.5704,
       "isComplete": false,
-      "benchCagr": 20.1,
-      "diff": 25.68
+      "benchCagr": 20.77,
+      "diff": 27.3
     },
     {
       "buyYear": 2023,
       "sellYear": 2026,
-      "sellDate": "2026-11-07",
+      "sellDate": "2026-11-14",
       "yearsActual": 2.9,
-      "cagr": 26.64,
-      "multiple": 1.9618,
+      "cagr": 29.46,
+      "multiple": 2.0992,
       "isComplete": false,
-      "benchCagr": 17.99,
-      "diff": 8.65
+      "benchCagr": 18.89,
+      "diff": 10.57
     },
     {
       "buyYear": 2024,
       "sellYear": 2026,
-      "sellDate": "2026-11-07",
+      "sellDate": "2026-11-14",
       "yearsActual": 1.9,
-      "cagr": 18.71,
-      "multiple": 1.3737,
+      "cagr": 22.87,
+      "multiple": 1.4699,
       "isComplete": false,
-      "benchCagr": 14.38,
-      "diff": 4.33
+      "benchCagr": 15.77,
+      "diff": 7.1
     }
   ],
   "loss5y": [
