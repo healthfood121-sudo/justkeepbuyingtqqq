@@ -169,24 +169,7 @@ export default function OwnerCard({ p, compact = false, onOpen, children }: { p:
       )}
     </>
   )
-  // 회사 카드 — 회사 전체 기준 숫자(내 몫이 아님). 주주 카드와 섞이지 않게 따로 그린다
-  const companyCard = p.facts && p.facts.length > 0 ? (
-    <section className="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50/70 dark:bg-gray-900/40 p-3 space-y-2">
-      <div>
-        <p className="text-sm font-semibold text-gray-900 dark:text-white">회사 카드 — {p.name} 회사 전체 숫자</p>
-        <p className="text-[11px] text-gray-500 dark:text-gray-400">내 주식 수와 상관없는 회사 기준 숫자다(내 몫 아님). 이름을 누르면 계산 방법.</p>
-      </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
-        {p.facts.map(x => (
-          <div key={x.label} className="rounded-lg bg-white dark:bg-gray-950/60 px-2 py-1.5">
-            <p className="text-[11px] text-gray-500 dark:text-gray-400"><Tip text={x.note}>{x.label}</Tip></p>
-            <p className="text-sm font-semibold tabular-nums text-gray-900 dark:text-white">{x.value}</p>
-          </div>
-        ))}
-      </div>
-      <p className="text-[11px] text-gray-400">{p.period} · {p.src}</p>
-    </section>
-  ) : null
+  const companyCard = <CompanyCard p={p} compact={compact} />
   const divLine = <p className={small}><b>실제로 통장에 들어오는 돈:</b> 배당 1년 {money(div, c, div >= 100)}(이익의 약 {profit > 0 ? Math.round(div / profit * 100) : 0}%). {p.cash}</p>
 
   if (compact) {
@@ -241,4 +224,109 @@ export default function OwnerCard({ p, compact = false, onOpen, children }: { p:
     </section>
     {companyCard}
   </>)
+}
+
+// 회사 카드 — 주주 카드와 같은 모양으로, 내 몫이 아니라 회사 전체 숫자를 보여 준다(1초·하루·1년, 사업부, 환산, 규모, 배당)
+// 큰 돈: 억·조 단위로
+function bigMoney(v: number, cur: string): string {
+  const a = Math.abs(v), s = v < 0 ? '−' : ''
+  if (a >= 1e12) return `${s}${cur}${(a / 1e12).toFixed(a >= 1e13 ? 0 : 1)}조`
+  if (a >= 1e8) return `${s}${cur}${(a / 1e8).toLocaleString('ko-KR', { maximumFractionDigits: a >= 1e10 ? 0 : 1 })}억`
+  if (a >= 1e4) return `${s}${cur}${(a / 1e4).toLocaleString('ko-KR', { maximumFractionDigits: a >= 1e6 ? 0 : 1 })}만`
+  return `${s}${cur}${a.toLocaleString('ko-KR', { maximumFractionDigits: 0 })}`
+}
+
+function CompanyCard({ p, compact = false }: { p: OwnerProfile; compact?: boolean }) {
+  const now = useNow(250)
+  const [open, setOpen] = useState(!compact)
+  const c = p.cur
+  const rev = p.segs.reduce((a, s) => a + s.rev, 0)
+  const profit = p.segs.reduce((a, s) => a + s.profit, 0)
+  const segTotalRev = p.segs.reduce((a, s) => a + Math.max(0, s.rev), 0)
+  const todaySec = (now - new Date(new Date(now).setHours(0, 0, 0, 0)).getTime()) / 1000
+  const divTotal = p.dps * p.sharesOut
+  const lab = 'text-[11px] text-gray-500 dark:text-gray-400'
+  const big = 'text-base font-bold tabular-nums text-gray-900 dark:text-white'
+  const small = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
+  const tile = 'rounded-lg bg-white dark:bg-gray-950/60 px-2 py-2'
+
+  const top = (
+    <div className="grid grid-cols-3 gap-1.5">
+      {([['1초', profit / SEC_Y, rev / SEC_Y], ['하루', profit / 365, rev / 365], ['1년', profit, rev]] as [string, number, number][]).map(([k, pf, rv]) => (
+        <div key={k} className={tile}>
+          <p className={lab}>회사 이익 · {k}</p>
+          <p className={big}>{bigMoney(pf, c)}</p>
+          <p className="text-[11px] text-gray-400 tabular-nums">매출 {bigMoney(rv, c)}</p>
+        </div>
+      ))}
+    </div>
+  )
+  const ticker = (
+    <p className="text-xs text-gray-700 dark:text-gray-200 tabular-nums">
+      오늘 0시부터 회사가 번 이익 <b className="text-blue-600 dark:text-blue-400">{c}{Math.round(profit / SEC_Y * todaySec).toLocaleString('ko-KR')}</b>
+      <span className="text-gray-400"> · 매출 {c}{Math.round(rev / SEC_Y * todaySec).toLocaleString('ko-KR')}</span>
+    </p>
+  )
+  const facts = [...(p.facts ?? []), ...(p.co ?? []),
+    ...(p.people ? [{ label: '직원 1명당 1년', value: `이익 ${bigMoney(profit / p.people, c)} · 매출 ${bigMoney(rev / p.people, c)}`, note: `회사 1년 이익·매출(위 숫자) ÷ 직원 ${p.people.toLocaleString()}명.` }] : [])]
+
+  return (
+    <section className="rounded-xl border-2 border-blue-200 dark:border-blue-900/60 bg-blue-50/40 dark:bg-blue-950/10 p-3 sm:p-4 space-y-3">
+      <div className="flex items-start justify-between gap-2">
+        <div>
+          <h3 className="text-base font-semibold text-gray-900 dark:text-white">회사 카드 — {p.name} 회사 전체는 1초에 얼마를 버나</h3>
+          <p className={lab}>내 주식 수와 상관없는 회사 전체 숫자다(내 몫 아님). 위 주주 카드 = 이 숫자 × 내 비율. 이름을 누르면 설명.</p>
+        </div>
+        {compact && <button type="button" onClick={() => setOpen(o => !o)} className="text-xs text-gray-500 hover:underline shrink-0">{open ? '접기' : '펼치기'}</button>}
+      </div>
+      {top}
+      {ticker}
+      {open && <>
+        <div className="space-y-1">
+          <p className="text-xs font-semibold text-gray-800 dark:text-gray-100">사업부별 회사 전체</p>
+          {p.segs.map(s => (
+            <div key={s.name} className="text-xs">
+              <div className="flex items-center gap-1.5">
+                <Dot color={s.color} />
+                <Tip text={s.note}><span className="text-gray-800 dark:text-gray-100">{s.name}</span></Tip>
+                {s.rev > 0 && <span className="text-gray-400 tabular-nums">{Math.round(s.rev / segTotalRev * 100)}%</span>}
+                <span className={`ml-auto tabular-nums font-semibold whitespace-nowrap ${s.profit < 0 ? 'text-red-500' : 'text-gray-900 dark:text-white'}`}>이익 {bigMoney(s.profit, c)}<span className="font-normal text-gray-400">/년</span></span>
+              </div>
+              {s.rev > 0 && <p className="ml-3.5 text-[11px] tabular-nums text-gray-500 dark:text-gray-400">매출 1초 {bigMoney(s.rev / SEC_Y, c)} · 하루 {bigMoney(s.rev / 365, c)} · 1년 {bigMoney(s.rev, c)}</p>}
+              {s.rev > 0 && <div className="ml-3.5 mt-0.5 h-1 rounded-full bg-gray-200 dark:bg-gray-800"><div className={`h-1 rounded-full ${s.color.startsWith('bg-') ? s.color : ''}`} style={{ width: `${s.rev / segTotalRev * 100}%`, ...(s.color.startsWith('bg-') ? {} : { background: s.color }) }} /></div>}
+            </div>
+          ))}
+          <p className="text-[11px] text-gray-400">이익은 추정(사업부별 이익을 회사가 다 공개하지 않음).</p>
+        </div>
+
+        {p.fun.length > 0 && <div className="rounded-lg bg-white/80 dark:bg-gray-900/60 p-2.5 space-y-1">
+          <p className="text-xs font-semibold text-gray-800 dark:text-gray-100">회사 전체로 일어나는 일</p>
+          {p.fun.map(f => (
+            <p key={f.label} className="text-xs text-gray-700 dark:text-gray-200 tabular-nums">
+              <Tip text={<>{f.note} 신뢰도 {f.grade}(A 회사 공식 · B 회사 발표지만 최소값·환산 · C 2차 출처).</>}>{f.label}</Tip>{' '}
+              <b className="text-blue-700 dark:text-blue-300">{rateStr(f.perYear, f.unit, 'sec')}</b>
+              <span className="text-gray-400"> · {dayStr(f.perYear / 365, f.unit)} · 1년 {num(f.perYear)}{f.unit}</span>
+            </p>
+          ))}
+        </div>}
+
+        {facts.length > 0 && <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+          {facts.map(x => (
+            <div key={x.label} className="rounded-lg bg-white dark:bg-gray-950/60 px-2 py-1.5">
+              <p className={lab}><Tip text={x.note}>{x.label}</Tip></p>
+              <p className="text-sm font-semibold tabular-nums text-gray-900 dark:text-white">{x.value}</p>
+            </div>
+          ))}
+        </div>}
+
+        {p.stakes && <div className="space-y-0.5">
+          <p className="text-xs font-semibold text-gray-800 dark:text-gray-100">이익에 안 잡히는 회사 자산</p>
+          {p.stakes.map(st => <p key={st.label} className="text-xs text-gray-700 dark:text-gray-200 tabular-nums"><Tip text={st.note}>{st.label}</Tip> <b>{bigMoney(st.v, c)}</b></p>)}
+        </div>}
+
+        <p className={small}><b>주주에게 돌려주는 돈:</b> 배당 1년 약 {bigMoney(divTotal, c)}(1주 {c}{p.dps} × {(p.sharesOut / 1e6).toLocaleString('ko-KR', { maximumFractionDigits: 1 })}백만 주, 이익의 약 {profit > 0 ? Math.round(divTotal / profit * 100) : 0}%). {p.cash}</p>
+        <p className="text-[11px] text-gray-400">{p.period} · {p.src}. {p.how}</p>
+      </>}
+    </section>
+  )
 }
