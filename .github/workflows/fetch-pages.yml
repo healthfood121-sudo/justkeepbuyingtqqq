@@ -18,6 +18,14 @@ on:
         description: '1이면 표만'
         required: false
         default: ''
+      raw:
+        description: '원본 HTML에서 이 정규식 주변만(차트 데이터 찾기)'
+        required: false
+        default: ''
+      span:
+        description: 'raw 앞뒤 글자 수'
+        required: false
+        default: '300'
 
 jobs:
   fetch:
@@ -35,3 +43,5 @@ jobs:
           GREP: ${{ inputs.grep }}
           MAX: ${{ inputs.max }}
           TABLES: ${{ inputs.tables }}
+          RAW: ${{ inputs.raw }}
+          SPAN: ${{ inputs.span }}

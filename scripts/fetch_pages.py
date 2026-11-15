@@ -42,6 +42,14 @@ for u in sys.argv[1:]:
     print(f'  {r.status_code} {len(r.text)}', flush=True)
     if r.status_code != 200:
         continue
+    raw = os.environ.get('RAW') or ''  # 원본 HTML에서 이 정규식 주변(앞뒤 SPAN자)을 출력 — 차트 데이터 찾기용
+    if raw:
+        span = int(os.environ.get('SPAN') or 300)
+        ms = list(re.finditer(raw, r.text))
+        print(f'  RAW 일치 {len(ms)}개', flush=True)
+        out = '\n---\n'.join(r.text[max(0, m.start() - span):m.end() + span] for m in ms[:20])
+        print(out[:MAX], flush=True)
+        continue
     t = tables(r.text) if TABLES else clean(r.text)
     if GREP:
         t = '\n'.join(l for l in t.split('\n') if re.search(GREP, l, re.I))
