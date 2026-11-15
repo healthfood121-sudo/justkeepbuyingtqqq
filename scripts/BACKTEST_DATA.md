@@ -757,6 +757,8 @@
 | `withdrawal_buffer_sweep.py` | 없음 | 초기 탐색용 |
 | `fetch_sec_releases.py` (워크플로 '실적 발표문 받기') | 없음 (로그 출력) | 조사용 — SEC 실적 발표문. 입력 `brief`(글자 수)·`annual`·`form`(6-K)·`pattern`. 두 번째 값 `FACTS`면 XBRL 연간 숫자(주당이익·순이익·매출·영업현금·설비투자·자사주·배당·빚) 표. 컨스텔레이션·디아지오 리포트 연도별 숫자표의 출처 |
 | `fetch_transcripts.py` (워크플로 '녹취록 받기') | 없음 (로그 출력) | 조사용 — 컨퍼런스콜 녹취록. 입력 `budget`(녹취록당 글자 수) |
+| `fetch_pages.py` (워크플로 '웹 페이지 받기') | 없음 (로그 출력) | 조사용 — 웹 페이지 텍스트·표(`tables`), 원본 HTML 정규식 주변(`raw`), 페이지 안 차트 배열(`series`) |
+| `export_france_pe.py` (워크플로 '프랑스 시장 PER 받기', 실행한 브랜치에 커밋) | `web/public/data/france_pe.json` (~25KB) | worldperatio.com — 프랑스 ETF(EWQ) 최근 12개월 이익 기준 월별 PER 1995~, 비교용 전 세계(VT)·EFA. 사용처: `/private` 에르메스 ⑥ `FrancePeChart`(에르메스 연말 PER은 RMS 롤링 epsDecomp) |
 | `withdrawal_overfit_check.py` | `withdrawal_overfit_check.json` (미생성) | 과적합 검증용 |
 | `update_nasdaq100_holdings.py` | `web/app/nasdaq100-holdings/descriptions.json` | 나스닥100 종목 설명 업데이트 |
 

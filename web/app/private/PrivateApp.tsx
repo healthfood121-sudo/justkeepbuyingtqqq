@@ -74,6 +74,7 @@ import { ModelSection, OddsBlock, modelResult, type Sc } from './reports/BigRepo
 import { FUTURES } from './futures'
 import GoogleMyShare from './reports/GoogleMyShare'
 import AiUsersChart from './reports/AiUsersChart'
+import FrancePeChart from './reports/FrancePeChart'
 import TrioCompare, { COS as PICK_COS, ev as pickEv, OUT_OF_PICKS } from './reports/TrioCompare'
 import HermesStoreMap from './reports/HermesStoreMap'
 import PageToc from './reports/PageToc'
@@ -8697,6 +8698,7 @@ function RmsFlow({ data }: { data: StockData }) {
       <Ch n="⑥" t="미래와 값" sub="이익 성장률 근거와 계산기, 시나리오와 가능성, 이익 시계, 10년 보유 수익률 분해" />
       {R(['why'])}
       {I(['future'])}
+      <FrancePeChart />
       {R(['model', 'scen', 'rms'])}
       {I(['clock'])}
       {I(['past', 'concl'])}
