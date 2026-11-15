@@ -1,0 +1,37 @@
+name: 웹 페이지 받기 (조사용)
+
+on:
+  workflow_dispatch:  # 결과는 로그로만 확인 (커밋 없음)
+    inputs:
+      urls:
+        description: '주소(공백 구분)'
+        required: true
+      grep:
+        description: '이 정규식이 든 줄만'
+        required: false
+        default: ''
+      max:
+        description: '페이지당 글자 수'
+        required: false
+        default: '6000'
+      tables:
+        description: '1이면 표만'
+        required: false
+        default: ''
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install requests
+      - run: python scripts/fetch_pages.py ${{ inputs.urls }}
+        env:
+          PYTHONUNBUFFERED: "1"
+          GREP: ${{ inputs.grep }}
+          MAX: ${{ inputs.max }}
+          TABLES: ${{ inputs.tables }}
