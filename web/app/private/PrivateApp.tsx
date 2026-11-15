@@ -7850,8 +7850,14 @@ function PeTimelineChart({ timeline, peNow }: { timeline: Array<[number, number]
   useEffect(() => {
     import('chartjs-plugin-zoom').then(({ default: z }) => { ChartJS.register(z); setPluginLoaded(true) })
   }, [])
+  // 차트 플러그인은 처음 한 번만 등록되므로, 주가가 늦게 들어와도 가로선이 최신 PER을 쓰도록 ref로 읽는다
+  const peRef = useRef(peNow)
+  peRef.current = peNow
   if (!timeline.length) return null
-  const x0 = timeline[0][0], x1 = timeline[timeline.length - 1][0] + 1
+  // 연말 점들 뒤에 "지금"(최근 1년 EPS 기준) 점을 하나 더 잇는다
+  const nowD = new Date(), nowX = nowD.getFullYear() + nowD.getMonth() / 12
+  const pts: Array<[number, number, boolean]> = [...timeline.map(([t, pe]) => [t, pe, false] as [number, number, boolean]), ...(peNow && nowX > timeline[timeline.length - 1][0] ? [[nowX, peNow, true] as [number, number, boolean]] : [])]
+  const x0 = timeline[0][0], x1 = Math.ceil(pts[pts.length - 1][0] + 0.5)
   const ptColor = (pe: number) => pe >= 40 ? 'rgba(239,68,68,0.95)' : pe >= 30 ? 'rgba(249,115,22,0.95)' : pe >= 20 ? 'rgba(107,114,128,0.95)' : 'rgba(16,185,129,0.95)'
   // 배경 띠: 20배 미만 / 20~30 / 30~40 / 40배 이상
   const bands = {
@@ -7865,20 +7871,23 @@ function PeTimelineChart({ timeline, peNow }: { timeline: Array<[number, number]
       ctx.save()
       fill(0, 20, 'rgba(16,185,129,0.07)'); fill(30, 40, 'rgba(249,115,22,0.06)'); fill(40, 200, 'rgba(239,68,68,0.06)')
       // 지금 PER 가로선
-      const yNow = y.getPixelForValue(peNow)
+      const pn = peRef.current
+      const yNow = y.getPixelForValue(pn)
       if (yNow >= top && yNow <= bottom) {
         ctx.strokeStyle = 'rgba(37,99,235,0.9)'; ctx.setLineDash([5, 4]); ctx.lineWidth = 1.5
         ctx.beginPath(); ctx.moveTo(left, yNow); ctx.lineTo(right, yNow); ctx.stroke()
         ctx.setLineDash([]); ctx.fillStyle = 'rgba(37,99,235,0.95)'; ctx.font = '11px sans-serif'
-        ctx.fillText(`지금 ${peNow.toFixed(1)}배`, left + 4, yNow - 4)
+        ctx.fillText(`지금 ${pn.toFixed(1)}배`, left + 4, yNow - 4)
       }
       ctx.restore()
     },
   }
   const data: any = {
     datasets: [
-      { label: '연말 PER', data: timeline.map(([t, pe]) => ({ x: t, y: pe })), borderColor: 'rgba(75,85,99,0.8)', borderWidth: 1.5,
-        pointRadius: 3, pointHoverRadius: 5, pointBackgroundColor: timeline.map(([, pe]) => ptColor(pe)), pointBorderWidth: 0, tension: 0 },
+      { label: '연말 PER', data: pts.map(([t, pe]) => ({ x: t, y: pe })), borderColor: 'rgba(75,85,99,0.8)', borderWidth: 1.5,
+        segment: { borderDash: (ctx: any) => pts[ctx.p1DataIndex]?.[2] ? [4, 3] : undefined },
+        pointRadius: pts.map(([, , n]) => n ? 6 : 3), pointHoverRadius: 7, pointBackgroundColor: pts.map(([, pe, n]) => n ? 'rgba(37,99,235,1)' : ptColor(pe)),
+        pointBorderWidth: pts.map(([, , n]) => n ? 2 : 0), pointBorderColor: '#fff', tension: 0 },
     ],
   }
   const options: any = {
@@ -7890,7 +7899,7 @@ function PeTimelineChart({ timeline, peNow }: { timeline: Array<[number, number]
     },
     plugins: {
       legend: { display: false },
-      tooltip: { callbacks: { title: (it: any[]) => `${it[0].parsed.x}년 말`, label: (c: any) => `PER ${c.parsed.y.toFixed(1)}배` } },
+      tooltip: { callbacks: { title: (it: any[]) => pts[it[0].dataIndex]?.[2] ? `지금(${nowD.getFullYear()}년 ${nowD.getMonth() + 1}월)` : `${it[0].parsed.x}년 말`, label: (c: any) => `PER ${c.parsed.y.toFixed(1)}배` } },
       zoom: pluginLoaded ? { pan: { enabled: true, mode: 'x' }, zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' } } : {},
     },
   }
@@ -7903,7 +7912,7 @@ function PeTimelineChart({ timeline, peNow }: { timeline: Array<[number, number]
       </div>
       <p className="text-xs text-gray-400 dark:text-gray-600 text-right mt-1">휠: 확대/축소 &nbsp;|&nbsp; 드래그: 이동</p>
       <p className="text-[11px] text-gray-400 dark:text-gray-500">
-        점 색: 초록 20배 미만 · 회색 20~30배 · 주황 30~40배 · 빨강 40배 이상. 파란 점선 = 지금 PER(최근 1년 EPS 기준).
+        점 색: 초록 20배 미만 · 회색 20~30배 · 주황 30~40배 · 빨강 40배 이상. 맨 끝 큰 파란 점과 파란 점선 = 지금 PER(지금 주가 ÷ 최근 1년 EPS).
       </p>
     </div>
   )
@@ -8363,8 +8372,11 @@ function RmsInsight({ data, part, fs }: { data: StockData; part?: string[]; fs?:
   const [fLocal, setFLocal] = useState<Factors>(HERMES_SCENARIOS[0].f)
   const [f, setF] = fs ?? [fLocal, setFLocal]
   const show = (k: string) => !part || part.includes(k)
-  const price = px?.last.close ?? (data as any).current?.price ?? 1356.5
-  const priceDate = px?.last.date ?? '2026-10-21'
+  // 두 값 중 더 최근 것: 롤링 현재가(주간 갱신, fullPeriod.end_date) vs 월말 주가 파일의 최신 종가
+  const rollPx = (data as any).current?.price as number | undefined, rollDate = (data as any).fullPeriod?.end_date as string | undefined
+  const useRoll = rollPx != null && rollDate != null && (!px || rollDate > px.last.date)
+  const price = useRoll ? rollPx! : px?.last.close ?? rollPx ?? 1356.5
+  const priceDate = useRoll ? rollDate! : px?.last.date ?? '2026-10-21'
   const peNow = price / RMS_TTM_EPS
   const gNow = epsGrowthOf(f)
   const ret10 = ((1 + gNow / 100) * 1.0135 - 1) * 100
@@ -8508,7 +8520,7 @@ function RmsInsight({ data, part, fs }: { data: StockData; part?: string[]; fs?:
         </p>
         <p className="text-[11px] text-gray-400 dark:text-gray-500">PER = 실제 종가 ÷ EPS(1993~1999년 종가는 트레이딩뷰, 2000년 이후는 Yahoo 월말 종가). 평균 수익률 ≈ EPS 효과 + PER 효과 + 배당(연 약 1.4%p).</p>
 
-        <p className={`${p} pt-2 font-semibold`}>연말 PER 흐름 (1993~2025)</p>
+        <p className={`${p} pt-2 font-semibold`}>연말 PER 흐름 (1993~지금)</p>
         <PeTimelineChart timeline={peTimeline} peNow={peNow} />
         <p className={p}>
           1993~2007년에는 대체로 22~38배였다(1999년 46배는 예외, 2002년 22배가 가장 낮음). 2008~2018년에는 32~41배,
