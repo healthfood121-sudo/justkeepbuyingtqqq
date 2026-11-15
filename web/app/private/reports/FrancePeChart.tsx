@@ -13,15 +13,30 @@ ChartJS.register(LinearScale, LineElement, PointElement, Tooltip, Legend)
 type Fr = { generated: string; fr: [string, number][]; world: [string, number][]; efa: [string, number][]; us?: [string, number][] }
 type Roll = { current: { pe: number }; epsDecomp: { buyYear: number; sellYear: number; peBuy: number; peSell: number }[] }
 
+// 미국(S&P500)이 크게 빠진 구간 — 시작(고점 무렵 월말) ~ 끝(바닥 무렵 월말)
+const CRASHES: [string, string, string, string?][] = [
+  ['2000-08', '2002-09', '닷컴 붕괴'],
+  ['2007-10', '2009-02', '금융위기'],
+  ['2011-04', '2011-09', '유럽 재정위기', '이때 에르메스는 실적 호조와 LVMH와의 지분 다툼 속에 올랐다'],
+  ['2015-05', '2016-02', '중국 위안화 충격'],
+  ['2018-09', '2018-12', '금리 인상 공포'],
+  ['2020-01', '2020-03', '코로나'],
+  ['2021-12', '2022-09', '금리 급등'],
+  ['2025-01', '2025-04', '관세 충격'],
+]
 const tx = (ym: string) => { const [y, m] = ym.split('-').map(Number); return y + (m - 1) / 12 }
 const med = (a: number[]) => { const s = [...a].sort((x, y) => x - y); const n = s.length; return n ? (n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2) : NaN }
 
 function FrancePeChart() {
   const [fr, setFr] = useState<Fr | null>(null)
   const [rms, setRms] = useState<Roll | null>(null)
+  const [px, setPx] = useState<{ sp: Map<string, number>; rm: Map<string, number> } | null>(null)
   useEffect(() => {
     fetch('/data/france_pe.json').then(r => r.ok ? r.json() : null).then(setFr).catch(() => {})
     fetch('/data/rolling/RMS_rolling.json').then(r => r.ok ? r.json() : null).then(setRms).catch(() => {})
+    Promise.all([fetch('/data/sp500_monthly.json').then(r => r.json()), fetch('/data/rolling/RMS_monthly_price.json').then(r => r.json())])
+      .then(([sp, rm]) => setPx({ sp: new Map((sp as { d: string; p: number }[]).map(x => [x.d, x.p])), rm: new Map((rm.rows as { d: string; c: number }[]).map(x => [x.d.slice(0, 7), x.c])) }))
+      .catch(() => {})
   }, [])
   const chartRef = useRef<ChartJS<'line'> | null>(null)
   const [pluginLoaded, setPluginLoaded] = useState(false)
@@ -81,6 +96,17 @@ function FrancePeChart() {
     }
     return { med: med(vals), last, lo, hi, rows, rMed: med(ratios), rNow, since, hMed: med(herm.filter(h => !h.now).map(h => h.pe)), corr, same, yrs, diff, usNow, usMed, usFr, usFrMed }
   }, [fr, herm])
+
+  const crash = useMemo(() => {
+    if (!px) return []
+    return CRASHES.filter(([a, b]) => px.sp.has(a) && px.sp.has(b) && px.rm.has(a) && px.rm.has(b)).map(([a, b, n, note]) => {
+      const ks = [...px.rm.keys()].filter(k => k >= a && k <= b)
+      const sp = (px.sp.get(b)! / px.sp.get(a)! - 1) * 100
+      const rm = (px.rm.get(b)! / px.rm.get(a)! - 1) * 100
+      const worst = (Math.min(...ks.map(k => px.rm.get(k)!)) / px.rm.get(a)! - 1) * 100
+      return { a, b, n, note, sp, rm, worst }
+    })
+  }, [px])
 
   const grid = dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'
   const tick = dark ? '#9ca3af' : '#6b7280'
@@ -154,6 +180,31 @@ function FrancePeChart() {
           {!isNaN(stats.corr) && <li><b>미국과 프랑스는 같은 방향으로 움직였다.</b> 같은 달끼리 비교한 상관계수 {stats.corr.toFixed(2)}(1이면 완전히 같이 움직임), 해마다 PER이 오르내린 방향이 {stats.yrs}년 중 <b>{stats.same}년</b> 같았다{stats.diff.length ? `(다른 해: ${stats.diff.join('·')}년)` : ''}. 거품(2000년)·금융위기(2008년)·유럽 재정위기(2011년)·금리 급등(2022년) 모두 함께 내려갔다. 차이는 <b>높이</b>다 — 미국은 보통 프랑스의 약 {stats.usFrMed.toFixed(1)}배(중간값), 지금은 {stats.usFr.toFixed(2)}배(미국 {stats.usNow.toFixed(1)}배 vs 프랑스 {stats.last[1].toFixed(1)}배)로 평소보다 미국이 더 비싸다.</li>}
           {stats.since && <li><b>지금 시장 대비 웃돈은 {stats.since}년 이후 가장 작다</b>(에르메스 ÷ 프랑스 {stats.rNow.toFixed(1)}배). 프랑스 시장은 평소보다 조금 비싸고, 에르메스는 자기 평소 수준(30배 안팎)으로 내려왔기 때문이다.</li>}
         </ul>
+        {crash.length > 0 && <div className="space-y-2 pt-1">
+          <p className="text-sm font-semibold text-gray-900 dark:text-white">미국이 빠질 때 에르메스는? — 과거 {crash.length}번</p>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs tabular-nums">
+              <thead><tr className="text-gray-400 border-b border-gray-200 dark:border-gray-800"><th className="text-left py-1 font-medium">미국이 빠진 구간</th><th className="text-right py-1 font-medium">S&amp;P500</th><th className="text-right py-1 font-medium">에르메스</th><th className="text-right py-1 font-medium">에르메스 최대 하락</th></tr></thead>
+              <tbody>
+                {crash.map(c => (
+                  <tr key={c.a} className="border-b border-gray-100 dark:border-gray-900">
+                    <td className="py-1 pr-2"><span className="text-gray-900 dark:text-white">{c.n}</span> <span className="text-gray-400 whitespace-nowrap">{c.a.replace('-', '.')}~{c.b.replace('-', '.')}</span>{c.note && <span className="block text-[11px] text-gray-400">{c.note}</span>}</td>
+                    <td className={`py-1 text-right font-semibold ${c.sp < 0 ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'}`}>{c.sp > 0 ? '+' : ''}{c.sp.toFixed(0)}%</td>
+                    <td className={`py-1 text-right font-semibold ${c.rm < 0 ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'}`}>{c.rm > 0 ? '+' : ''}{c.rm.toFixed(0)}%</td>
+                    <td className="py-1 text-right text-gray-600 dark:text-gray-300">{c.worst.toFixed(0)}%</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <ul className="list-disc pl-4 space-y-1 text-xs leading-relaxed text-gray-700 dark:text-gray-200">
+            <li><b>같이 빠진 적이 대부분이다</b> — {crash.length}번 중 {crash.filter(c => c.rm < 0).length}번. 시장 전체가 공포에 빠지면 좋은 회사도 함께 팔린다.</li>
+            <li><b>큰 폭락일수록 덜 빠졌다.</b> 미국이 30% 넘게 빠진 {crash.filter(c => c.sp <= -30).length}번(닷컴·금융위기)엔 에르메스가 미국의 절반쯤만 빠졌고, 코로나 때도 훨씬 덜 빠졌다 — 할인하지 않고, 빚이 없고, 손님이 부자라 이익이 거의 안 꺾였기 때문.</li>
+            <li><b>작은 충격엔 비슷하거나 더 빠지기도 했다</b>(2015·2018·2022·2025년) — 중국 손님과 비싼 PER에 민감할 때. 2022년엔 에르메스 PER이 60배대로 비쌌던 탓에 한때 −30% 넘게 빠졌다.</li>
+            <li><b>가장 큰 하락은 자기 사정에서 왔다.</b> 2024~2026년 하락 때 미국 시장은 오히려 올랐다 — 명품 불황·중국 둔화·PER 정상화. 지금은 PER이 평소(30배 안팎)로 내려와 2022년보다 빠질 거품이 적다.</li>
+          </ul>
+          <p className="text-[11px] text-gray-400 dark:text-gray-500">월말 가격 기준(달 중간 최저점은 빠짐). 에르메스는 유로·배당 미반영, S&amp;P500은 달러·배당 미반영. 구간은 미국 고점·바닥 무렵 월말로 잡았다. 표본이 {crash.length}번뿐이라 앞으로도 같다는 보장은 없다.</p>
+        </div>}
         <details className="text-xs">
           <summary className="cursor-pointer text-gray-500">연말 숫자 표 (눌러서 펼치기)</summary>
           <table className="w-full mt-2 tabular-nums">
