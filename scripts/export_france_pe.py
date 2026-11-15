@@ -35,14 +35,26 @@ def main():
     vt = series(r.text, r'compare_isin_chart_data\["VT"\]')
     efa = series(r.text, r'compare_isin_chart_data\["EFA"\]')
     assert len(fr) > 300, f'프랑스 PER 자료가 너무 적다: {len(fr)}'
+    # 비교용 미국 시장 — 같은 사이트·같은 방식(ETF 최근 12개월 이익 기준)
+    us, us_url = [], ''
+    for u in ('https://worldperatio.com/area/united-states/', 'https://worldperatio.com/area/usa/', 'https://worldperatio.com/index/sp-500/'):
+        try:
+            ru = requests.get(u, headers=UA, timeout=60)
+        except Exception as e:
+            print('  미국 실패', u, e); continue
+        print('  미국 시도', u, ru.status_code)
+        if ru.status_code == 200:
+            us = series(ru.text, r'detailPE_data')
+            if len(us) > 300:
+                us_url = u; break
     data = {
         'generated': date.today().isoformat(),
         'source': 'worldperatio.com — 프랑스 시장 ETF(EWQ, MSCI France) 최근 12개월 이익 기준 PER, 월별',
-        'note': '1996년 EWQ 상장 전 값은 출처 사이트의 추정. 비교용: VT(전 세계), EFA(미국 제외 선진국)',
-        'fr': fr, 'world': vt, 'efa': efa,
+        'note': '1996년 EWQ 상장 전 값은 출처 사이트의 추정. 비교용: VT(전 세계), EFA(미국 제외 선진국), us(미국 시장, 같은 사이트)',
+        'fr': fr, 'world': vt, 'efa': efa, 'us': us, 'usSource': us_url,
     }
     OUT.write_text(json.dumps(data, ensure_ascii=False, separators=(',', ':')))
-    print(f'저장 {OUT} 프랑스 {len(fr)}개({fr[0][0]}~{fr[-1][0]}, 지금 {fr[-1][1]}) 전 세계 {len(vt)} EFA {len(efa)}')
+    print(f'저장 {OUT} 프랑스 {len(fr)}개({fr[0][0]}~{fr[-1][0]}, 지금 {fr[-1][1]}) 전 세계 {len(vt)} EFA {len(efa)} 미국 {len(us)}({us_url})')
 
 
 if __name__ == '__main__':
