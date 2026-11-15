@@ -27,6 +27,8 @@ export function useShares(key: string): [number, (v: number) => void] {
   return [n, v => { writeShares(key, v); setN(v) }]
 }
 
+// 0.2초마다 마지막 자리가 바뀌어 보이도록 소수 자릿수를 정한다(보유량이 작으면 자리를 늘림)
+const tickDigits = (perSec: number, ms = 200) => perSec > 0 ? Math.min(9, Math.max(2, Math.ceil(-Math.log10(perSec * ms / 1000)))) : 2
 function useNow(ms = 200) {
   const [now, setNow] = useState(() => Date.now())
   useEffect(() => { const id = setInterval(() => setNow(Date.now()), ms); return () => clearInterval(id) }, [ms])
@@ -123,8 +125,8 @@ export default function OwnerCard({ p, compact = false, onOpen, children }: { p:
   )
   const ticker = (
     <p className="text-xs text-gray-700 dark:text-gray-200 tabular-nums">
-      오늘 0시부터 내 몫으로 번 이익 <b className="text-emerald-600 dark:text-emerald-400">{c}{(profit / SEC_Y * todaySec).toFixed(4)}</b>
-      <span className="text-gray-400"> · 매출 {c}{(rev / SEC_Y * todaySec).toFixed(3)}</span>
+      오늘 0시부터 내 몫으로 번 이익 <b className="text-emerald-600 dark:text-emerald-400">{c}{(profit / SEC_Y * todaySec).toFixed(tickDigits(profit / SEC_Y))}</b>
+      <span className="text-gray-400"> · 매출 {c}{(rev / SEC_Y * todaySec).toFixed(tickDigits(rev / SEC_Y))}</span>
     </p>
   )
 
@@ -193,7 +195,7 @@ export default function OwnerCard({ p, compact = false, onOpen, children }: { p:
           <p className="text-[11px] text-gray-400">{p.period} · {p.src}</p>
           {companyCard}
         </>) : (
-          <p className="text-xs tabular-nums text-gray-700 dark:text-gray-200">내 몫 이익 <b>1초 {money(profit / SEC_Y, c)}</b> · 하루 {money(profit / 365, c)} · 1년 {money(profit, c, true)} <span className="text-gray-400">· 오늘 {c}{(profit / SEC_Y * todaySec).toFixed(4)}</span></p>
+          <p className="text-xs tabular-nums text-gray-700 dark:text-gray-200">내 몫 이익 <b>1초 {money(profit / SEC_Y, c)}</b> · 하루 {money(profit / 365, c)} · 1년 {money(profit, c, true)} <span className="text-gray-400">· 오늘 {c}{(profit / SEC_Y * todaySec).toFixed(tickDigits(profit / SEC_Y))}</span></p>
         )}
         {children}
       </div>
