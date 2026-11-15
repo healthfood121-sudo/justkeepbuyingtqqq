@@ -1,0 +1,26 @@
+name: 프랑스 시장 PER 받기
+
+on:
+  workflow_dispatch:  # 실행한 브랜치에 france_pe.json을 커밋한다(master에서 돌리면 배포가 일어난다)
+
+permissions:
+  contents: write
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install requests
+      - run: python scripts/export_france_pe.py
+      - name: 커밋
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add web/public/data/france_pe.json
+          git diff --cached --quiet || git commit -m "auto: 프랑스 시장 PER $(date -u +%F)"
+          git push origin HEAD:${GITHUB_REF_NAME}
