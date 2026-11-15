@@ -158,16 +158,6 @@ export default function OwnerCard({ p, compact = false, onOpen, children }: { p:
         ))}
       </div>}
 
-      {p.facts && p.facts.length > 0 && (
-        <div className="grid grid-cols-2 gap-1.5">
-          {p.facts.map(x => (
-            <div key={x.label} className="rounded-lg bg-white/80 dark:bg-gray-900/60 px-2 py-1.5">
-              <p className="text-[11px] text-gray-500 dark:text-gray-400"><Tip text={x.note}>{x.label}</Tip></p>
-              <p className="text-sm font-semibold tabular-nums text-gray-900 dark:text-white">{x.value}</p>
-            </div>
-          ))}
-        </div>
-      )}
 
       {p.stakes && (
         <div className="space-y-0.5">
@@ -179,6 +169,24 @@ export default function OwnerCard({ p, compact = false, onOpen, children }: { p:
       )}
     </>
   )
+  // 회사 카드 — 회사 전체 기준 숫자(내 몫이 아님). 주주 카드와 섞이지 않게 따로 그린다
+  const companyCard = p.facts && p.facts.length > 0 ? (
+    <section className="rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50/70 dark:bg-gray-900/40 p-3 space-y-2">
+      <div>
+        <p className="text-sm font-semibold text-gray-900 dark:text-white">회사 카드 — {p.name} 회사 전체 숫자</p>
+        <p className="text-[11px] text-gray-500 dark:text-gray-400">내 주식 수와 상관없는 회사 기준 숫자다(내 몫 아님). 이름을 누르면 계산 방법.</p>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+        {p.facts.map(x => (
+          <div key={x.label} className="rounded-lg bg-white dark:bg-gray-950/60 px-2 py-1.5">
+            <p className="text-[11px] text-gray-500 dark:text-gray-400"><Tip text={x.note}>{x.label}</Tip></p>
+            <p className="text-sm font-semibold tabular-nums text-gray-900 dark:text-white">{x.value}</p>
+          </div>
+        ))}
+      </div>
+      <p className="text-[11px] text-gray-400">{p.period} · {p.src}</p>
+    </section>
+  ) : null
   const divLine = <p className={small}><b>실제로 통장에 들어오는 돈:</b> 배당 1년 {money(div, c, div >= 100)}(이익의 약 {profit > 0 ? Math.round(div / profit * 100) : 0}%). {p.cash}</p>
 
   if (compact) {
@@ -200,6 +208,7 @@ export default function OwnerCard({ p, compact = false, onOpen, children }: { p:
           {detail}
           {divLine}
           <p className="text-[11px] text-gray-400">{p.period} · {p.src}</p>
+          {companyCard}
         </>) : (
           <p className="text-xs tabular-nums text-gray-700 dark:text-gray-200">내 몫 이익 <b>1초 {money(profit / SEC_Y, c)}</b> · 하루 {money(profit / 365, c)} · 1년 {money(profit, c, true)} <span className="text-gray-400">· 오늘 {c}{(profit / SEC_Y * todaySec).toFixed(4)}</span></p>
         )}
@@ -208,7 +217,7 @@ export default function OwnerCard({ p, compact = false, onOpen, children }: { p:
     )
   }
 
-  return (
+  return (<>
     <section id="owner-card" className="rounded-xl border-2 border-emerald-200 dark:border-emerald-900/60 bg-emerald-50/40 dark:bg-emerald-950/10 p-3 sm:p-4 space-y-3">
       <div className="space-y-1.5">
         <h3 className="text-base font-semibold text-gray-900 dark:text-white">주주 카드 — 내 {p.name} 몫은 1초에 얼마를 버나</h3>
@@ -230,5 +239,6 @@ export default function OwnerCard({ p, compact = false, onOpen, children }: { p:
       {divLine}
       <p className="text-[11px] text-gray-400">{p.period} · {p.src}. {p.how} 매출·이익은 비용·세금을 빼기 전·후 회사 숫자 × 내 비율이라 실제 주가 움직임과는 다르다.</p>
     </section>
-  )
+    {companyCard}
+  </>)
 }

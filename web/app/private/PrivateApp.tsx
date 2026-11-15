@@ -6616,6 +6616,7 @@ function SegmentPanel({ seg, now, shares, sharesOut }: { seg: SegClock; now: num
           </div>
         )
       })()}
+      <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">회사 전체 숫자 <span className="font-normal text-gray-400">(내 몫 아님)</span></p>
       <div className="grid grid-cols-2 gap-2">
         {seg.facts.map(f => (
           <div key={f.label} className="rounded bg-gray-50 dark:bg-gray-800/60 px-3 py-2">
