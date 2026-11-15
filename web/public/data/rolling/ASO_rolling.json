@@ -12,11 +12,11 @@
   },
   "fullPeriod": {
     "start_date": "2020-10-02",
-    "end_date": "2026-11-14",
+    "end_date": "2026-11-15",
     "start_price": 12.4716,
     "end_price": 67.59,
     "years": 6.1,
-    "cagr": 31.83,
+    "cagr": 31.81,
     "multiple": 5.4195
   },
   "stats": {
@@ -38,57 +38,57 @@
     {
       "buyYear": 2020,
       "sellYear": 2026,
-      "sellDate": "2026-11-14",
+      "sellDate": "2026-11-15",
       "yearsActual": 5.9,
-      "cagr": 23.16,
+      "cagr": 23.14,
       "multiple": 3.396,
       "isComplete": false,
-      "benchCagr": 14.27,
-      "diff": 8.89
+      "benchCagr": 14.26,
+      "diff": 8.88
     },
     {
       "buyYear": 2021,
       "sellYear": 2026,
-      "sellDate": "2026-11-14",
+      "sellDate": "2026-11-15",
       "yearsActual": 4.9,
       "cagr": 10.18,
       "multiple": 1.6036,
       "isComplete": false,
-      "benchCagr": 11.51,
-      "diff": -1.33
+      "benchCagr": 11.5,
+      "diff": -1.32
     },
     {
       "buyYear": 2022,
       "sellYear": 2026,
-      "sellDate": "2026-11-14",
+      "sellDate": "2026-11-15",
       "yearsActual": 3.9,
-      "cagr": 7.65,
+      "cagr": 7.64,
       "multiple": 1.3302,
       "isComplete": false,
-      "benchCagr": 20.77,
-      "diff": -13.12
+      "benchCagr": 20.75,
+      "diff": -13.11
     },
     {
       "buyYear": 2023,
       "sellYear": 2026,
-      "sellDate": "2026-11-14",
+      "sellDate": "2026-11-15",
       "yearsActual": 2.9,
       "cagr": 1.78,
       "multiple": 1.052,
       "isComplete": false,
-      "benchCagr": 18.89,
-      "diff": -17.11
+      "benchCagr": 18.88,
+      "diff": -17.1
     },
     {
       "buyYear": 2024,
       "sellYear": 2026,
-      "sellDate": "2026-11-14",
+      "sellDate": "2026-11-15",
       "yearsActual": 1.9,
-      "cagr": 10.14,
+      "cagr": 10.12,
       "multiple": 1.1979,
       "isComplete": false,
-      "benchCagr": 15.77,
-      "diff": -5.63
+      "benchCagr": 15.74,
+      "diff": -5.62
     }
   ],
   "loss5y": [],
