@@ -48,6 +48,7 @@ import { FICO_REPORT } from './reports/ficoData'
 import { DCI_REPORT } from './reports/dciData'
 import { GGG_REPORT } from './reports/gggData'
 import { JKHY_REPORT } from './reports/jkhyData'
+import { COST_REPORT } from './reports/costData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
 import { MO_REPORT } from './reports/moData'
@@ -6037,6 +6038,14 @@ const SEGMENTS: Record<string, SegClock> = {
     facts: [
       { label: '이익 중 연회비 몫', value: '약 46%', note: '매출의 2%인 연회비가 순이익의 절반 가까이를 만든다(세금 25% 가정 추정). 물건은 싸게 팔고 회비로 번다.' },
       { label: '회원 1명당 1년 순이익', value: '약 $110', note: '연간 순이익 92.3억 ÷ 회원 8,410만 명.' },
+      { label: '회원 1명당 연회비', value: '약 $71', note: '2026 회계연도 회원비 약 59.5억 달러(총수입 − 순매출) ÷ 유료 회원 8,410만 명. 골드스타 65달러·이그제큐티브 130달러.' },
+      { label: '갱신율', value: '미국·캐나다 92.3%', note: '2026 회계연도 4분기. 전 세계 89.8%. 회원 10명 중 9명이 해마다 다시 돈을 낸다.' },
+      { label: '매장', value: '939곳', note: '2026 회계연도 말, 14개국. 2027 회계연도 33곳 개점 계획(매년 순증 30곳 목표).' },
+      { label: '매장 1곳당 1년 매출', value: '약 $3.2억', note: '2026 회계연도 순매출 2,972억 달러 ÷ 939곳.' },
+      { label: '직원', value: '약 35.5만 명', note: '2026년 9월 CEO 발표. 1년 넘게 다닌 직원 유지율 90% 이상(회사, 위키백과).' },
+      { label: '직원 1명당 1년', value: '순이익 약 $2.6만 · 매출 약 $85만', note: '순이익 92.3억·총수입 3,032억 달러 ÷ 직원 35.5만 명.' },
+      { label: '커클랜드 시그니처', value: '연 약 $860억', note: '자체 브랜드 매출(2024년, 위키백과). 전체 매출의 약 3분의 1.' },
+      { label: '물건값에 붙이는 이윤 상한', value: '14%(자체 브랜드 15%)', note: '회사 규칙(위키백과). 그래서 순이익률이 약 3%다.' },
     ],
     how: '코스트코는 연회비 이익을 따로 공개하지 않는다. 연회비는 비용이 거의 없다고 보고 세금 25%만 뺀 금액을 연회비 이익으로, 나머지 순이익을 물건 판매 이익으로 봤다(추정).',
   },
@@ -11071,6 +11080,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   DCI: () => <BigReport d={DCI_REPORT} />,
   GGG: () => <BigReport d={GGG_REPORT} />,
   JKHY: () => <BigReport d={JKHY_REPORT} />,
+  COST: () => <BigReport d={COST_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
   MO: () => <BigReport d={MO_REPORT} />,
@@ -11142,6 +11152,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   DCI: DCI_REPORT,
   GGG: GGG_REPORT,
   JKHY: JKHY_REPORT,
+  COST: COST_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
   MO: MO_REPORT,
