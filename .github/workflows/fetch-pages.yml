@@ -26,6 +26,10 @@ on:
         description: 'raw 앞뒤 글자 수'
         required: false
         default: '300'
+      series:
+        description: '1이면 페이지 안 차트 배열(Date.UTC)을 월별 값으로'
+        required: false
+        default: ''
 
 jobs:
   fetch:
@@ -45,3 +49,4 @@ jobs:
           TABLES: ${{ inputs.tables }}
           RAW: ${{ inputs.raw }}
           SPAN: ${{ inputs.span }}
+          SERIES: ${{ inputs.series }}

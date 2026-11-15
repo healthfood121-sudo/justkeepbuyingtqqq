@@ -42,6 +42,14 @@ for u in sys.argv[1:]:
     print(f'  {r.status_code} {len(r.text)}', flush=True)
     if r.status_code != 200:
         continue
+    if os.environ.get('SERIES') == '1':  # 페이지 안 차트 배열 [[Date.UTC(y, m, d), v], ...] 을 "이름: YYYY-MM=값 ..."으로
+        for m in re.finditer(r'([\w$.]+(?:\[["\'][\w.^-]+["\']\])?)\s*=\s*\[\s*\[\s*Date\.UTC', r.text):
+            body = r.text[m.end() - 20:m.end() + 200000]
+            body = body[:body.find('];') + 1] if '];' in body else body
+            pts = re.findall(r'Date\.UTC\((\d+),\s*(\d+)(?:,\s*\d+)?\)\s*,\s*(-?[\d.]+)', body)
+            print(f'SERIES {m.group(1)} n={len(pts)}', flush=True)
+            print(' '.join(f'{y}-{int(mo) + 1:02d}={v}' for y, mo, v in pts), flush=True)
+        continue
     raw = os.environ.get('RAW') or ''  # 원본 HTML에서 이 정규식 주변(앞뒤 SPAN자)을 출력 — 차트 데이터 찾기용
     if raw:
         span = int(os.environ.get('SPAN') or 300)
