@@ -75,6 +75,7 @@ import { FUTURES } from './futures'
 import GoogleMyShare from './reports/GoogleMyShare'
 import AiUsersChart from './reports/AiUsersChart'
 import FrancePeChart from './reports/FrancePeChart'
+import RMS_EPS_FILE from './reports/hermesEps.json'
 import TrioCompare, { COS as PICK_COS, ev as pickEv, OUT_OF_PICKS } from './reports/TrioCompare'
 import HermesStoreMap from './reports/HermesStoreMap'
 import PageToc from './reports/PageToc'
@@ -7918,8 +7919,8 @@ function PeTimelineChart({ timeline, peNow }: { timeline: Array<[number, number]
   )
 }
 
-// 에르메스 최근 1년 EPS (회사 발표: 2025년 연간 43.15 − 2025년 상반기 21.43 + 2026년 상반기 21.36)
-const RMS_TTM_EPS = 43.08
+// 에르메스 최근 1년 EPS — 실적 보도자료에서 자동 계산(scripts/update_hermes_eps.py, 주간 업데이트 때 2월·7월 발표 반영)
+const RMS_TTM_EPS: number = RMS_EPS_FILE.ttm
 
 // ── 리셀가·할인율 추이 (에르메스 웃돈 / 나이키 할인) ─────────────────
 type TrendSeries = { label: string; data: Array<number | null>; color: string; axis?: 'y' | 'y2'; dash?: boolean }
@@ -8453,7 +8454,7 @@ function RmsInsight({ data, part, fs }: { data: StockData; part?: string[]; fs?:
             <thead><tr><th className={`${th} text-left`}></th><th className={`${th} text-right`}>2024년 말</th><th className={`${th} text-right`}>지금 ({priceDate})</th><th className={`${th} text-right`}>변화</th></tr></thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
               <tr><td className={td}>주가</td><td className={`${td} text-right`}>€2,322</td><td className={`${td} text-right`}>€{price.toLocaleString('ko-KR', { maximumFractionDigits: 1 })}</td><td className={`${td} text-right text-red-500`}>{sgn((price / 2322 - 1) * 100)}%</td></tr>
-              <tr><td className={td}>최근 1년 EPS</td><td className={`${td} text-right`}>€43.93</td><td className={`${td} text-right`}>€{RMS_TTM_EPS}</td><td className={`${td} text-right font-semibold`}>{sgn((RMS_TTM_EPS / 43.93 - 1) * 100)}%</td></tr>
+              <tr><td className={td}>최근 1년 EPS<span className="block text-[10px] text-gray-400">{RMS_EPS_FILE.basis}</span></td><td className={`${td} text-right`}>€43.93</td><td className={`${td} text-right`}>€{RMS_TTM_EPS}</td><td className={`${td} text-right font-semibold`}>{sgn((RMS_TTM_EPS / 43.93 - 1) * 100)}%</td></tr>
               <tr><td className={td}>PER</td><td className={`${td} text-right`}>52.9배</td><td className={`${td} text-right font-semibold`}>{peNow.toFixed(1)}배</td><td className={`${td} text-right text-red-500 font-semibold`}>{sgn((peNow / 52.9 - 1) * 100)}%</td></tr>
             </tbody>
           </table>

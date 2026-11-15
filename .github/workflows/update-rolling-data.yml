@@ -5,12 +5,22 @@ on:
     # 매주 일요일 KST 03:00 (UTC 토요일 18:00)
     - cron: '0 18 * * 6'
   workflow_dispatch:  # 수동 실행 가능
+    inputs:
+      eps_today:
+        description: '시험용 — 에르메스 주당이익 받기를 이 날짜(YYYY-MM-DD)인 것처럼'
+        required: false
+        default: ''
+      eps_refetch:
+        description: '시험용 — 1이면 이미 있는 보도자료도 다시 찾기'
+        required: false
+        default: ''
 
 jobs:
   update:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      issues: write
     timeout-minutes: 60
 
     steps:
@@ -23,26 +33,61 @@ jobs:
           python-version: '3.12'
 
       - name: 의존성 설치
-        run: pip install -r scripts/requirements.txt
+        run: |
+          pip install -r scripts/requirements.txt
+          sudo apt-get install -y -qq poppler-utils > /dev/null
 
       - name: 진행 중 구간 현재가 업데이트
         run: python scripts/update_rolling_current.py
         env:
           PYTHONUNBUFFERED: "1"
 
+      # 아래 둘은 실패해도 현재가 업데이트는 커밋한다(같은 커밋에 실어 배포 횟수를 늘리지 않음)
+      - name: 프랑스·미국 시장 PER
+        continue-on-error: true
+        run: python scripts/export_france_pe.py
+        env:
+          PYTHONUNBUFFERED: "1"
+
+      - name: 에르메스 최근 1년 주당이익 (2월·7월 실적 발표 반영)
+        id: eps
+        continue-on-error: true
+        run: |
+          python scripts/update_hermes_eps.py
+          if [ -f scripts/data/hermes_eps_alert.txt ]; then echo "alert=1" >> "$GITHUB_OUTPUT"; fi
+        env:
+          PYTHONUNBUFFERED: "1"
+          FETCH: "1"
+          TODAY: ${{ inputs.eps_today }}
+          REFETCH: ${{ inputs.eps_refetch }}
+
+      - name: 주당이익 자동 갱신 문제 알림 (GitHub 이슈)
+        if: steps.eps.outputs.alert == '1'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TITLE="에르메스 주당이익 자동 갱신 확인 필요"
+          BODY="$(cat scripts/data/hermes_eps_alert.txt)
+
+          값을 바꾸지 않았다. scripts/update_hermes_eps.py 로그와 scripts/data/hermes_releases/ 를 확인할 것."
+          if ! gh issue list --state open --search "$TITLE in:title" --json number --jq '.[0].number' | grep -q .; then
+            gh issue create --title "$TITLE" --body "$BODY"
+          fi
+
       - name: 변경사항 커밋 & 푸시
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add web/public/data/rolling/
+          git add web/public/data/rolling/ web/public/data/france_pe.json web/app/private/reports/hermesEps.json scripts/data/hermes_releases/ || true
 
           if git diff --cached --quiet; then
             echo "변경사항 없음 — 스킵"
           else
             DATE=$(date +'%Y-%m-%d')
-            git commit -m "auto: 롤링 현재가 업데이트 ${DATE}"
-            git pull --rebase origin master
-            git push origin HEAD:master
+            git commit -m "auto: 롤링 현재가·시장 PER·에르메스 주당이익 업데이트 ${DATE}"
+            git pull --rebase origin ${GITHUB_REF_NAME}
+            git push origin HEAD:${GITHUB_REF_NAME}
             echo "✅ 커밋 & 푸시 완료"
           fi
