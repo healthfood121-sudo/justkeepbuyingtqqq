@@ -46,12 +46,15 @@ function pad(n: number, digits = 2) {
 }
 
 export default function LifeCountdown() {
-  const [age, setAge] = useState(() => {
-    try { const v = localStorage.getItem('lcd_age'); return v ? Math.max(1, Math.min(110, Number(v))) : 35 } catch { return 35 }
-  })
-  const [gender, setGender] = useState<'M' | 'F'>(() => {
-    try { const v = localStorage.getItem('lcd_gender'); return v === 'F' ? 'F' : 'M' } catch { return 'M' }
-  })
+  // 서버 화면과 맞추려고 기본값으로 시작하고, 저장된 값은 브라우저에서 불러온다
+  const [age, setAge] = useState(35)
+  const [gender, setGender] = useState<'M' | 'F'>('M')
+  useEffect(() => {
+    try {
+      const a = localStorage.getItem('lcd_age'); if (a) setAge(Math.max(1, Math.min(110, Number(a))))
+      if (localStorage.getItem('lcd_gender') === 'F') setGender('F')
+    } catch {}
+  }, [])
   const [ms, setMs] = useState(() => getRemainingYears(age, gender) * 365.25 * 24 * 3600 * 1000)
 
   const startRef = useRef<number>(Date.now())

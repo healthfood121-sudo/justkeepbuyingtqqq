@@ -11,16 +11,13 @@ const GROWTH_PER_SEC = 550_000
 const BASE_DATE = new Date('2026-01-01T00:00:00Z').getTime()
 
 export default function GlobalDebtCounter() {
-  const [debt, setDebt] = useState(() => {
-    const elapsed = (Date.now() - BASE_DATE) / 1000
-    return Math.round(BASE_DEBT + elapsed * GROWTH_PER_SEC)
-  })
+  // 서버 화면과 첫 브라우저 화면이 같도록 처음엔 비워 두고, 브라우저에서 현재 시각으로 채운다
+  const [debt, setDebt] = useState<number | null>(null)
 
   useEffect(() => {
-    const id = setInterval(() => {
-      const elapsed = (Date.now() - BASE_DATE) / 1000
-      setDebt(Math.round(BASE_DEBT + elapsed * GROWTH_PER_SEC))
-    }, 450)
+    const tick = () => setDebt(Math.round(BASE_DEBT + (Date.now() - BASE_DATE) / 1000 * GROWTH_PER_SEC))
+    tick()
+    const id = setInterval(tick, 450)
     return () => clearInterval(id)
   }, [])
 
@@ -29,7 +26,7 @@ export default function GlobalDebtCounter() {
       <div className="flex items-center gap-3 flex-wrap">
         <span className="text-xs text-orange-200/50 whitespace-nowrap">전 세계 부채</span>
         <span className="font-mono text-sm font-bold text-orange-300 tabular-nums select-none">
-          ${debt.toLocaleString()}
+          {debt === null ? '$—' : `$${debt.toLocaleString('en-US')}`}
         </span>
         <span className="text-[11px] text-orange-200/30 whitespace-nowrap">
           연 +5% · 연 +$17.4조 · IIF 2024 추정치

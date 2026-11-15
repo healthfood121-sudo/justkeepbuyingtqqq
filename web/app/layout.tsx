@@ -45,14 +45,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col overflow-x-clip bg-white dark:bg-gray-950 text-gray-900 dark:text-white">
-        <Script
+      <head>
+        {/* 다크 모드 깜빡임 방지 — 화면을 그리기 전에 실행되도록 head에 직접 넣는다 */}
+        <script
           id="theme-init"
-          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark')}}catch(e){}})()`,
           }}
         />
+      </head>
+      <body className="min-h-full flex flex-col overflow-x-clip bg-white dark:bg-gray-950 text-gray-900 dark:text-white">
         <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
         <Script id="ga4-init" strategy="afterInteractive">{`
           window.dataLayer = window.dataLayer || [];
