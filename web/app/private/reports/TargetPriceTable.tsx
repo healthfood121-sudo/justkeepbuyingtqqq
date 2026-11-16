@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // 목표 PER을 정하면 "그 PER이 되는 주가"를 지금과 앞으로(예상 주당이익)로 보여 준다.
 // 주가가 그 값 아래로 오면 "목표 PER 이하로 살 수 있는 날"이라는 뜻.
@@ -10,7 +10,7 @@ const fmt = (v: number) => `€${Math.round(v).toLocaleString('ko-KR')}`
 const sgn = (v: number) => `${v > 0 ? '+' : ''}${v.toFixed(0)}%`
 
 export default function TargetPriceTable({
-  price, priceDate, eps, epsEnd, g, marks, years = 5, payout,
+  price, priceDate, eps, epsEnd, g, marks, years = 5, payout, myPrices = [], storeKey,
 }: {
   price: number
   priceDate: string
@@ -20,7 +20,15 @@ export default function TargetPriceTable({
   marks: PeMark[]
   years?: number
   payout?: number  // 배당성향(이익 중 배당 비율, 0~1) — 있으면 '살 때 PER별 10년 수익률' 표를 보여 준다
+  myPrices?: number[] // '내 목표가' 기본값
+  storeKey?: string   // 있으면 내 목표가를 이 브라우저에 기억
 }) {
+  const [mine, setMine] = useState<string[]>(myPrices.map(String))
+  useEffect(() => {
+    if (!storeKey) return
+    try { const v = JSON.parse(localStorage.getItem(storeKey) ?? 'null'); if (Array.isArray(v) && v.every(x => typeof x === 'string')) setMine(v) } catch {}
+  }, [storeKey])
+  const saveMine = (v: string[]) => { setMine(v); if (storeKey) try { localStorage.setItem(storeKey, JSON.stringify(v)) } catch {} }
   const [pe, setPe] = useState(marks[0]?.pe ?? 20)
   const [custom, setCustom] = useState('')
   const peNow = price / eps
@@ -104,6 +112,53 @@ export default function TargetPriceTable({
         </li>
         <li>표의 초록 줄 = 지금 주가로 이미 그 PER 이하인 시점. 예상 주당이익은 추정이다 — 실적 발표마다 최근 1년 값이 바뀌면(자동 갱신) 표도 따라 바뀐다.</li>
       </ul>
+
+      <div className="rounded bg-amber-50/60 dark:bg-amber-900/10 border border-amber-200/70 dark:border-amber-800/50 p-3 space-y-2">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <p className="text-xs font-semibold text-gray-700 dark:text-gray-200 mr-1">내 목표가 — 그 가격이면 PER 몇 배? 언제 오면 얼마나 싼가?</p>
+          {mine.map((v, i) => (
+            <span key={i} className="inline-flex items-center gap-0.5">
+              <span className="text-xs text-gray-500">€</span>
+              <input type="number" min={1} step={10} value={v} onChange={e => saveMine(mine.map((x, j) => (j === i ? e.target.value : x)))}
+                className="w-20 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-1.5 py-0.5 text-xs tabular-nums" />
+              <button onClick={() => saveMine(mine.filter((_, j) => j !== i))} className="text-xs text-gray-400 hover:text-red-500 px-0.5" aria-label="지우기">×</button>
+            </span>
+          ))}
+          {mine.length < 5 && <button onClick={() => saveMine([...mine, String(Math.round(price * 0.8 / 10) * 10)])} className="text-xs px-2 py-0.5 rounded border border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">+ 추가</button>}
+          {storeKey && <span className="text-[10px] text-gray-400">이 브라우저에 저장됨</span>}
+        </div>
+        {mine.map(Number).filter(v => v > 0).length > 0 && (
+          <div className="overflow-x-auto">
+            <table className="text-xs">
+              <thead><tr>
+                <th className={`${th} text-left`}>목표가</th>
+                <th className={`${th} text-right`}>지금 주가 대비</th>
+                {rows.map(r => <th key={r.k} className={`${th} text-right`}>{r.k}에 오면</th>)}
+                {payout != null && <th className={`${th} text-right`}>지금 사면 10년 연평균<br /><span className="font-normal">(10년 뒤 25·30·35배)</span></th>}
+              </tr></thead>
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                {mine.map(Number).filter(v => v > 0).sort((a, b) => b - a).map((v, i) => {
+                  const e0 = v / eps
+                  const ret = (x: number) => ((1 + g / 100) * Math.pow(x / e0, 0.1) - 1 + (payout ?? 0) / e0) * 100
+                  return (
+                    <tr key={`${v}-${i}`}>
+                      <td className={`${td} font-semibold`}>{fmt(v)}</td>
+                      <td className={`${td} text-right`}>{v >= price ? '이미 그 아래' : `주가 ${sgn((v / price - 1) * 100)}`}</td>
+                      {rows.map(r => {
+                        const x = v / epsAt(r.t, g)
+                        const c = x <= 20 ? 'text-emerald-600 dark:text-emerald-400 font-semibold' : x <= 25 ? 'text-emerald-600 dark:text-emerald-400' : x <= 30 ? '' : 'text-gray-400'
+                        return <td key={r.k} className={`${td} text-right ${c}`}>{x.toFixed(1)}배</td>
+                      })}
+                      {payout != null && <td className={`${td} text-right`}>연 {ret(25).toFixed(1)} · {ret(30).toFixed(1)} · {ret(35).toFixed(1)}%</td>}
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+            <p className="text-[11px] text-gray-500 dark:text-gray-400 pt-1">같은 가격이라도 늦게 올수록 이익이 자라 PER이 더 낮다. 초록 굵게 = 20배 이하(멍거 기준), 초록 = 25배 이하(역사적 바닥 수준), 회색 = 30배 넘음. 이익은 연 {g.toFixed(1)}% 성장 가정(추정).</p>
+          </div>
+        )}
+      </div>
 
       <div className="overflow-x-auto">
         <p className="text-xs font-semibold text-gray-700 dark:text-gray-200 pb-1">한눈에 — PER별 가격 (기본 성장률)</p>

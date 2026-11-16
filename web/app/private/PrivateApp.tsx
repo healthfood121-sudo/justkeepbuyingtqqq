@@ -8494,7 +8494,7 @@ function RmsInsight({ data, part, fs }: { data: StockData; part?: string[]; fs?:
       </>}
       {show('clock') && <>
       <HermesValueClock g={gNow} f={f} />
-      <TargetPriceTable price={price} priceDate={priceDate} eps={RMS_TTM_EPS} epsEnd={RMS_EPS_END} g={gNow} marks={RMS_PE_MARKS} payout={0.4} />
+      <TargetPriceTable price={price} priceDate={priceDate} eps={RMS_TTM_EPS} epsEnd={RMS_EPS_END} g={gNow} marks={RMS_PE_MARKS} payout={0.4} myPrices={[1200, 950]} storeKey="rms-my-target-prices" />
 
       </>}
       {show('past') && <>
