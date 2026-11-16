@@ -221,7 +221,7 @@ export const COST_REPORT: BigReportData = {
     },
     {
       id: 'munger', toc: '멍거가 본 코스트코', title: '찰리 멍거가 본 코스트코 — 2023년 어콰이어드(Acquired) 인터뷰',
-      intro: '멍거는 1997년부터 세상을 떠날 때(2023년 11월)까지 코스트코 이사였고 개인적으로 끝까지 주식을 들고 있었다. 세상을 떠나기 약 한 달 전 팟캐스트 어콰이어드와 한 긴 인터뷰(2023년 10월 30일 공개)에서 코스트코 이야기를 가장 많이 했다. 아래는 그 녹취에서 옮긴 것이다(원문 → 우리말).',
+      intro: '[인터뷰 전체 우리말 정리 보기 →](/private/buffett/munger-2023) · 멍거는 1997년부터 세상을 떠날 때(2023년 11월)까지 코스트코 이사였고 개인적으로 끝까지 주식을 들고 있었다. 세상을 떠나기 약 한 달 전 팟캐스트 어콰이어드와 한 긴 인터뷰(2023년 10월 30일 공개)에서 코스트코 이야기를 가장 많이 했다. 아래는 그 녹취에서 옮긴 것이다(원문 → 우리말).',
       parts: [
         { table: { cols: ['주제', '멍거의 말 (원문)', '우리말'], rows: [
           ['평생 몇 번 없는 기회', "There aren't many times in a lifetime when you know you're right and you know you have one that's really going to work wonderfully. Maybe five or six times in a lifetime", '확실히 맞고 정말 잘될 걸 아는 때는 평생 많지 않다. 평생 대여섯 번쯤.'],

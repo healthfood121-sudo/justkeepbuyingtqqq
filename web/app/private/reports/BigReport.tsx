@@ -76,7 +76,14 @@ const LIGHT: Record<Light, { dot: string; txt: string }> = {
 }
 const CH: Record<string, string> = { start: 'bg-gray-400', crisis: 'bg-red-500', win: 'bg-emerald-500', now: 'bg-blue-500' }
 const CHL: Record<string, string> = { start: '시작', crisis: '난관', win: '돌파', now: '지금' }
-const B = ({ t }: { t: string }) => <>{t.split(/\*\*(.+?)\*\*/g).map((x, i) => i % 2 ? <b key={i}>{x}</b> : x)}</>
+// **굵게**, [글자](주소) 링크
+const Bold = ({ t }: { t: string }) => <>{t.split(/\*\*(.+?)\*\*/g).map((x, i) => i % 2 ? <b key={i}>{x}</b> : x)}</>
+const B = ({ t }: { t: string }) => <>{t.split(/(\[[^\]]+\]\([^)\s]+\))/g).map((seg, j) => {
+  const m = seg.match(/^\[([^\]]+)\]\(([^)\s]+)\)$/)
+  if (!m) return <Fragment key={j}><Bold t={seg} /></Fragment>
+  const ext = m[2].startsWith('http')
+  return <a key={j} href={m[2]} {...(ext ? { target: '_blank', rel: 'noopener noreferrer' } : {})} className="text-blue-600 dark:text-blue-400 hover:underline font-medium">{m[1]}</a>
+})}</>
 const Dot = ({ l }: { l: Light }) => <span className={`inline-block w-2.5 h-2.5 rounded-full ${LIGHT[l].dot} shrink-0 mt-1`} title={LIGHT[l].txt} />
 const sec = 'space-y-2 scroll-mt-20'
 const h2 = 'text-base font-semibold text-gray-900 dark:text-white'

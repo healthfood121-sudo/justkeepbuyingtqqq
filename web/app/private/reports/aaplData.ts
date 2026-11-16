@@ -288,7 +288,7 @@ export const AAPL_REPORT: BigReportData = {
     },
     {
       id: 'munger', toc: '멍거가 본 애플', title: '찰리 멍거가 본 애플 — 2023년 어콰이어드(Acquired) 인터뷰',
-      intro: '버크셔가 애플을 왜, 얼마에 샀는지 멍거가 직접 설명한 대목(2023년 10월 30일 공개 녹취).',
+      intro: '[인터뷰 전체 우리말 정리 보기 →](/private/buffett/munger-2023) · 버크셔가 애플을 왜, 얼마에 샀는지 멍거가 직접 설명한 대목(2023년 10월 30일 공개 녹취).',
       parts: [
         { table: { cols: ['질문', '멍거의 답 (원문)', '우리말'], rows: [
           ['왜 그렇게 크게 샀나', 'everybody needs some significant participation in the 12 companies that do better than everybody else. You need two or three of them, at least. If you have that mindset, Apple was the logical candidate', '누구나 다른 모든 회사보다 잘하는 열두 개쯤의 회사에 상당한 몫을 가져야 한다. 적어도 두세 개는. 그렇게 생각하면 애플은 당연한 후보였다.'],
