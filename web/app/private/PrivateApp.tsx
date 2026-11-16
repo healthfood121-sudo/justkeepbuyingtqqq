@@ -77,6 +77,7 @@ import GoogleMyShare from './reports/GoogleMyShare'
 import AiUsersChart from './reports/AiUsersChart'
 import FrancePeChart from './reports/FrancePeChart'
 import RMS_EPS_FILE from './reports/hermesEps.json'
+import TargetPriceTable, { type PeMark } from './reports/TargetPriceTable'
 import TrioCompare, { COS as PICK_COS, ev as pickEv, OUT_OF_PICKS } from './reports/TrioCompare'
 import HermesStoreMap from './reports/HermesStoreMap'
 import PageToc from './reports/PageToc'
@@ -7931,6 +7932,14 @@ function PeTimelineChart({ timeline, peNow }: { timeline: Array<[number, number]
 
 // 에르메스 최근 1년 EPS — 실적 보도자료에서 자동 계산(scripts/update_hermes_eps.py, 주간 업데이트 때 2월·7월 발표 반영)
 const RMS_TTM_EPS: number = RMS_EPS_FILE.ttm
+// 최근 1년 주당이익이 끝난 시점(소수 연도): 2~4월 발표 = 전년 12월 말, 7~9월 발표 = 그해 6월 말
+const RMS_EPS_END: number = (() => { const [y, m] = RMS_EPS_FILE.asOf.split('-').map(Number); return m <= 4 ? y : y + 0.5 })()
+const RMS_PE_MARKS: PeMark[] = [
+  { pe: 20, label: '멍거 기준', note: '멍거가 좋은 브랜드 회사를 실제로 산 값은 대략 10~20배였다(시즈캔디·코카콜라·애플 등, 약). 에르메스 연말 PER이 20배 아래였던 적은 1993년 이후 없다 — 가장 가까웠던 달은 2003년 3월(약 21배, 직전 해 이익 기준).' },
+  { pe: 25, label: '역사적 바닥', note: '에르메스가 가장 쌌던 때: 2002년 말 22배, 2003·2004년 말 25~26배, 2009년 2월 약 25배(직전 해 이익 기준). 2002~2004년 말에 산 사람의 10년 수익률은 연 19.6~21.4%.' },
+  { pe: 30, label: '지금 근처', note: '지금 PER 근처. 2009년 이후 가장 낮은 구간이다.' },
+  { pe: 35, label: '평소', note: '호황 전 2003~2018년 연말 PER의 중간값(약 35배). 2005·2007·2009·2012~2015년(31~36배)에 산 사람의 10년 수익률은 연 18.0~24.2%였다.' },
+]
 
 // ── 리셀가·할인율 추이 (에르메스 웃돈 / 나이키 할인) ─────────────────
 type TrendSeries = { label: string; data: Array<number | null>; color: string; axis?: 'y' | 'y2'; dash?: boolean }
@@ -8485,6 +8494,7 @@ function RmsInsight({ data, part, fs }: { data: StockData; part?: string[]; fs?:
       </>}
       {show('clock') && <>
       <HermesValueClock g={gNow} f={f} />
+      <TargetPriceTable price={price} priceDate={priceDate} eps={RMS_TTM_EPS} epsEnd={RMS_EPS_END} g={gNow} marks={RMS_PE_MARKS} />
 
       </>}
       {show('past') && <>

@@ -175,10 +175,10 @@ function FrancePeChart() {
         </div>
         <ul className="list-disc pl-4 space-y-1 text-xs leading-relaxed text-gray-700 dark:text-gray-200">
           <li><b>프랑스 시장은 30년 동안 대체로 10~20배</b> 사이를 오갔다. 거품 꼭대기({stats.hi[0].slice(0, 4)}년) 약 {stats.hi[1].toFixed(0)}배, 금융위기·유럽 재정위기 바닥(2008·2011년) 약 7~8배. 지금({stats.last[1].toFixed(1)}배)은 중간값({stats.med.toFixed(1)}배)보다 조금 높다.</li>
-          <li><b>에르메스는 시장의 약 {stats.rMed.toFixed(1)}배</b>(30년 중간값)에 거래돼 왔다. 지금은 {stats.rNow.toFixed(1)}배 — {stats.rNow < stats.rMed ? '평소보다 시장 대비 덜 비싼 쪽' : '평소보다 시장 대비 더 비싼 쪽'}이다. 2008·2011년과 2020~2022년엔 시장의 3.5~4배까지 벌어졌었다.</li>
-          <li><b>시장이 폭락해도 에르메스는 별로 싸지지 않았다.</b> 2008년 말 프랑스 시장은 7.7배까지 내려갔지만 에르메스는 31배를 지켰다(시장의 약 4배). 2011년도 같다. 그래서 &ldquo;시장 폭락 때 에르메스를 아주 싸게 산다&rdquo;는 기대는 과거에 맞지 않았다 — 그래도 그때(2008~2011년) 산 사람의 10년 수익률은 연 19~23%였다. 비싸 보여도 이익이 빠르게 크면 결과가 좋았다.</li>
+          <li><b>에르메스는 시장의 약 {stats.rMed.toFixed(1)}배</b>(30년 중간값)에 거래돼 왔다. 지금은 {stats.rNow.toFixed(1)}배 — {stats.rNow < stats.rMed ? '평소보다 시장 대비 덜 비싼 쪽' : '평소보다 시장 대비 더 비싼 쪽'}이다. 2008·2010·2011년과 2020~2022년엔 시장의 4~4.8배까지 벌어졌었다.</li>
+          <li><b>시장이 폭락해도 에르메스는 별로 싸지지 않았다.</b> 2008년 말 프랑스 시장은 7.7배까지 내려갔지만 에르메스는 36배를 지켰다(시장의 약 4.8배). 2011년도 같다. 그래서 &ldquo;시장 폭락 때 에르메스를 아주 싸게 산다&rdquo;는 기대는 과거에 맞지 않았다 — 그래도 그때(2008~2011년) 산 사람의 10년 수익률은 연 19~23%였다. 비싸 보여도 이익이 빠르게 크면 결과가 좋았다.</li>
           {!isNaN(stats.corr) && <li><b>미국과 프랑스는 같은 방향으로 움직였다.</b> 같은 달끼리 비교한 상관계수 {stats.corr.toFixed(2)}(1이면 완전히 같이 움직임), 해마다 PER이 오르내린 방향이 {stats.yrs}년 중 <b>{stats.same}년</b> 같았다{stats.diff.length ? `(다른 해: ${stats.diff.join('·')}년)` : ''}. 거품(2000년)·금융위기(2008년)·유럽 재정위기(2011년)·금리 급등(2022년) 모두 함께 내려갔다. 차이는 <b>높이</b>다 — 미국은 보통 프랑스의 약 {stats.usFrMed.toFixed(1)}배(중간값), 지금은 {stats.usFr.toFixed(2)}배(미국 {stats.usNow.toFixed(1)}배 vs 프랑스 {stats.last[1].toFixed(1)}배)로 평소보다 미국이 더 비싸다.</li>}
-          {stats.since && <li><b>지금 시장 대비 웃돈은 {stats.since}년 이후 가장 작다</b>(에르메스 ÷ 프랑스 {stats.rNow.toFixed(1)}배). 프랑스 시장은 평소보다 조금 비싸고, 에르메스는 자기 평소 수준(30배 안팎)으로 내려왔기 때문이다.</li>}
+          {stats.since && <li><b>지금 시장 대비 웃돈은 {stats.since}년 이후 가장 작다</b>(에르메스 ÷ 프랑스 {stats.rNow.toFixed(1)}배). 프랑스 시장은 평소보다 조금 비싸고, 에르메스는 자기 평소 수준(35배 안팎)보다도 낮은 30배 안팎으로 내려왔기 때문이다.</li>}
         </ul>
         {crash.length > 0 && <div className="space-y-2 pt-1">
           <p className="text-sm font-semibold text-gray-900 dark:text-white">미국이 빠질 때 에르메스는? — 과거 {crash.length}번</p>

@@ -1010,6 +1010,11 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 - 정정: 2002 2.30→1.96, 2003 1.88→1.97, 2005 2.16→2.27, 2006 2.77→2.51, 2008 2.64→2.75 (2002·2003·2008은 순이익 비율로 환산). 2001년(1.81)은 미확인.
 - `_RMS_EUR_EPS`(export_rolling_json.py), `RMS_EPS_HIST`(page.tsx), RMS_rolling.json의 epsDecomp·rows10y PER을 함께 갱신.
 
+#### RMS_rolling.json 실제 PER·정정 EPS 복원 (2026-11-16)
+- 2026-10-29 병합(13c7473e, 다른 곳에서 다시 만든 9a583db6 쪽)으로 RMS_rolling.json의 `epsDecomp`·`epsNote`·`peNote`·`rows10y.peBuy/peBuyActual`이 배당 조정 주가 기준·정정 전 EPS로 되돌아가 있었다(2002년 14.1배·EPS 2.30 등). 연말 PER 차트가 옛날일수록 실제보다 낮게 그려짐.
+- 4af2df68 버전에서 위 필드만 되살림(현재가·`current`·`fullPeriod`·진행 중 구간 수익률은 최신 그대로). 결과: 2002 22.4 / 2003 26.0 / 2008 36.4 / 1999 46.2배.
+- **주의:** RMS_rolling.json을 다시 만들 때는 반드시 이 저장소의 `export_rolling_json.py`(apply_actual_pe 포함)로. 다른 복사본 스크립트로 만든 파일을 병합하면 또 되돌아간다.
+
 #### 에르메스 2001·2007·2008년 EPS 확인 (2026-10-23)
 - 2005 연차보고서(분할 전 주당이익: 2001 5.51 / 2002 5.88 / 2003 5.92 / 2004 5.83 / 2005 6.80 유로, ÷3)와 2009 연차보고서(주당이익 2007 2.71 / 2008 2.76 / 2009 2.75)로 대조. 문서는 `fetch-doc-text.yml`(Actions)로 PDF에서 추출.
 - 정정: 2001 1.81→1.84, 2007 2.70→2.71, 2008 2.75→2.76. 2002~2005는 기존 값과 일치.
