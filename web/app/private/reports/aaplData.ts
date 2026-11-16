@@ -286,6 +286,22 @@ export const AAPL_REPORT: BigReportData = {
         ] },
       ],
     },
+    {
+      id: 'munger', toc: '멍거가 본 애플', title: '찰리 멍거가 본 애플 — 2023년 어콰이어드(Acquired) 인터뷰',
+      intro: '버크셔가 애플을 왜, 얼마에 샀는지 멍거가 직접 설명한 대목(2023년 10월 30일 공개 녹취).',
+      parts: [
+        { table: { cols: ['질문', '멍거의 답 (원문)', '우리말'], rows: [
+          ['왜 그렇게 크게 샀나', 'everybody needs some significant participation in the 12 companies that do better than everybody else. You need two or three of them, at least. If you have that mindset, Apple was the logical candidate', '누구나 다른 모든 회사보다 잘하는 열두 개쯤의 회사에 상당한 몫을 가져야 한다. 적어도 두세 개는. 그렇게 생각하면 애플은 당연한 후보였다.'],
+          ['값 때문이었나', 'Yeah, it got cheap. It got to about 10 times earnings when Warren bought in.', '그렇다, 싸졌다. 워런이 살 때 이익의 약 10배까지 내려갔다. (버크셔는 2016년 초부터 사기 시작)'],
+          ['TSMC는?', "Well I don't like that as well as I like something with a real consumer brand of its own like Apple.", '애플처럼 자기만의 진짜 소비자 브랜드가 있는 회사만큼 좋아하진 않는다.'],
+          ['큰 기술 회사에 돈이 몰리는 건', "Yeah, it was natural. … Human nature and competition, that's what causes it.", '자연스러운 결과다. 사람의 본성과 경쟁이 그렇게 만든다.'],
+        ] } },
+        { list: [
+          '**멍거·버핏이 애플을 산 값은 약 10배였다.** 위대한 회사라도 "정말 싸질 때" 크게 산 것 — 지금 애플 PER과 비교해 볼 기준점이다.',
+          '같은 인터뷰에서 멍거는 "훌륭한 브랜드 회사는 좋다. 요령의 전부는 정말 싸지는 드문 기회에 사는 것"이라고 했다.',
+        ] },
+      ],
+    },
   ],
   oddsWhy: '**가능성을 이렇게 매긴 이유:** 사업 확실성은 빅테크 최고 수준이라 기본 그림이 50%다. 다만 값이 평소보다 40% 비싸 PER이 내려갈 위험이 커서 나쁜 그림을 25%로 봤다. 좋은 그림(25%)은 시리 AI·아이폰 듀오로 교체 수요가 이어지고 서비스가 규제를 견딜 때.',
   model: {
