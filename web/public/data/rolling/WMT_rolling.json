@@ -430,7 +430,8 @@
       "isComplete": true,
       "benchCagr": 8.5,
       "diff": 1.74,
-      "peBuy": 10.4
+      "peBuy": 10.4,
+      "peBuyActual": 15.2
     },
     {
       "buyYear": 2008,
@@ -442,7 +443,8 @@
       "isComplete": true,
       "benchCagr": 13.12,
       "diff": -5.25,
-      "peBuy": 11.5
+      "peBuy": 11.5,
+      "peBuyActual": 16.5
     },
     {
       "buyYear": 2009,
@@ -454,7 +456,8 @@
       "isComplete": true,
       "benchCagr": 13.56,
       "diff": -2.52,
-      "peBuy": 10.3
+      "peBuy": 10.3,
+      "peBuyActual": 14.5
     },
     {
       "buyYear": 2010,
@@ -466,7 +469,8 @@
       "isComplete": true,
       "benchCagr": 13.88,
       "diff": -0.85,
-      "peBuy": 8.8
+      "peBuy": 8.8,
+      "peBuyActual": 12.1
     },
     {
       "buyYear": 2011,
@@ -478,7 +482,8 @@
       "isComplete": true,
       "benchCagr": 16.55,
       "diff": -4.75,
-      "peBuy": 9.9
+      "peBuy": 9.9,
+      "peBuyActual": 13.2
     },
     {
       "buyYear": 2012,
@@ -490,7 +495,8 @@
       "isComplete": true,
       "benchCagr": 12.56,
       "diff": -2.56,
-      "peBuy": 10.4
+      "peBuy": 10.4,
+      "peBuyActual": 13.6
     },
     {
       "buyYear": 2013,
@@ -502,7 +508,8 @@
       "isComplete": true,
       "benchCagr": 12.03,
       "diff": -2.53,
-      "peBuy": 12.7
+      "peBuy": 12.7,
+      "peBuyActual": 16.2
     },
     {
       "buyYear": 2014,
@@ -514,7 +521,8 @@
       "isComplete": true,
       "benchCagr": 13.1,
       "diff": 1.34,
-      "peBuy": 13.7
+      "peBuy": 13.7,
+      "peBuyActual": 17.0
     },
     {
       "buyYear": 2015,
@@ -526,7 +534,8 @@
       "isComplete": true,
       "benchCagr": 14.82,
       "diff": 5.84,
-      "peBuy": 11.1
+      "peBuy": 11.1,
+      "peBuyActual": 13.4
     },
     {
       "buyYear": 2016,
@@ -538,7 +547,8 @@
       "isComplete": false,
       "benchCagr": 14.99,
       "diff": 5.94,
-      "peBuy": 13.4
+      "peBuy": 13.4,
+      "peBuyActual": 15.7
     },
     {
       "buyYear": 2017,
@@ -550,7 +560,8 @@
       "isComplete": false,
       "benchCagr": 14.24,
       "diff": 4.09,
-      "peBuy": 26.3
+      "peBuy": 26.3,
+      "peBuyActual": 30.1
     },
     {
       "buyYear": 2018,
@@ -562,7 +573,8 @@
       "isComplete": false,
       "benchCagr": 16.85,
       "diff": 4.58,
-      "peBuy": 36.9
+      "peBuy": 36.9,
+      "peBuyActual": 41.2
     },
     {
       "buyYear": 2019,
@@ -574,7 +586,8 @@
       "isComplete": false,
       "benchCagr": 14.86,
       "diff": 5.34,
-      "peBuy": 20.9
+      "peBuy": 20.9,
+      "peBuyActual": 22.9
     },
     {
       "buyYear": 2020,
@@ -586,7 +599,8 @@
       "isComplete": false,
       "benchCagr": 14.27,
       "diff": 5.42,
-      "peBuy": 28.2
+      "peBuy": 28.2,
+      "peBuyActual": 30.4
     },
     {
       "buyYear": 2021,
@@ -598,7 +612,8 @@
       "isComplete": false,
       "benchCagr": 11.51,
       "diff": 12.17,
-      "peBuy": 84.2
+      "peBuy": 84.2,
+      "peBuyActual": 89.3
     },
     {
       "buyYear": 2022,
@@ -610,7 +625,8 @@
       "isComplete": false,
       "benchCagr": 20.77,
       "diff": 10.05,
-      "peBuy": 95.7
+      "peBuy": 95.7,
+      "peBuyActual": 99.9
     },
     {
       "buyYear": 2023,
@@ -622,7 +638,8 @@
       "isComplete": false,
       "benchCagr": 18.89,
       "diff": 18.81,
-      "peBuy": 80.3
+      "peBuy": 80.3,
+      "peBuyActual": 82.6
     },
     {
       "buyYear": 2024,
@@ -634,7 +651,8 @@
       "isComplete": false,
       "benchCagr": 15.77,
       "diff": 5.78,
-      "peBuy": 36.9
+      "peBuy": 36.9,
+      "peBuyActual": 37.5
     }
   ],
   "loss5y": [
@@ -666,11 +684,11 @@
       "epsBuy": 1.043,
       "epsSell": 1.093,
       "epsMultiple": 1.05,
-      "peBuy": 10.4,
-      "peSell": 26.3,
-      "peMultiple": 2.53,
+      "peBuy": 15.2,
+      "peSell": 30.1,
+      "peMultiple": 1.98,
       "epsGrowthCagr": 0.47,
-      "peCagr": 9.72,
+      "peCagr": 7.08,
       "totalCagr": 10.24,
       "note": "매도연도 EPS: TCJA 세금개혁 일회성 전환세(EPS 급감)"
     },
@@ -680,11 +698,11 @@
       "epsBuy": 1.13,
       "epsSell": 0.753,
       "epsMultiple": 0.67,
-      "peBuy": 11.5,
-      "peSell": 36.9,
-      "peMultiple": 3.2,
+      "peBuy": 16.5,
+      "peSell": 41.2,
+      "peMultiple": 2.49,
       "epsGrowthCagr": -3.97,
-      "peCagr": 12.33,
+      "peCagr": 9.57,
       "totalCagr": 7.87,
       "note": "매도연도 EPS: Flipkart 인수 관련 비용 및 기타 항목"
     },
@@ -694,11 +712,11 @@
       "epsBuy": 1.237,
       "epsSell": 1.73,
       "epsMultiple": 1.4,
-      "peBuy": 10.3,
-      "peSell": 20.9,
-      "peMultiple": 2.04,
+      "peBuy": 14.4,
+      "peSell": 22.9,
+      "peMultiple": 1.59,
       "epsGrowthCagr": 3.41,
-      "peCagr": 7.38,
+      "peCagr": 4.75,
       "totalCagr": 11.04,
       "note": null
     },
@@ -708,11 +726,11 @@
       "epsBuy": 1.49,
       "epsSell": 1.583,
       "epsMultiple": 1.06,
-      "peBuy": 8.8,
-      "peSell": 28.2,
-      "peMultiple": 3.2,
+      "peBuy": 12.1,
+      "peSell": 30.4,
+      "peMultiple": 2.52,
       "epsGrowthCagr": 0.61,
-      "peCagr": 12.35,
+      "peCagr": 9.67,
       "totalCagr": 13.03,
       "note": null
     },
@@ -722,11 +740,11 @@
       "epsBuy": 1.507,
       "epsSell": 0.54,
       "epsMultiple": 0.36,
-      "peBuy": 9.9,
-      "peSell": 84.2,
-      "peMultiple": 8.51,
+      "peBuy": 13.2,
+      "peSell": 89.3,
+      "peMultiple": 6.76,
       "epsGrowthCagr": -9.75,
-      "peCagr": 23.88,
+      "peCagr": 21.05,
       "totalCagr": 11.79,
       "note": "매도연도 EPS: Asda(영국) 매각 손실 + COVID-19"
     },
@@ -736,11 +754,11 @@
       "epsBuy": 1.673,
       "epsSell": 0.473,
       "epsMultiple": 0.28,
-      "peBuy": 10.4,
-      "peSell": 95.7,
-      "peMultiple": 9.17,
+      "peBuy": 13.6,
+      "peSell": 99.9,
+      "peMultiple": 7.35,
       "epsGrowthCagr": -11.86,
-      "peCagr": 24.81,
+      "peCagr": 22.08,
       "totalCagr": 10.01,
       "note": "매도연도 EPS: 오피오이드 합의 비용($3.1B) + 기타 일회성 비용"
     },
@@ -750,11 +768,11 @@
       "epsBuy": 1.627,
       "epsSell": 0.637,
       "epsMultiple": 0.39,
-      "peBuy": 12.7,
-      "peSell": 80.3,
-      "peMultiple": 6.33,
+      "peBuy": 16.1,
+      "peSell": 82.5,
+      "peMultiple": 5.12,
       "epsGrowthCagr": -8.95,
-      "peCagr": 20.27,
+      "peCagr": 17.73,
       "totalCagr": 9.5,
       "note": "매도연도 EPS: 투자 관련 평가 손실(JD.com 등)"
     },
@@ -764,11 +782,11 @@
       "epsBuy": 1.683,
       "epsSell": 2.41,
       "epsMultiple": 1.43,
-      "peBuy": 13.7,
-      "peSell": 36.9,
-      "peMultiple": 2.69,
+      "peBuy": 17.0,
+      "peSell": 37.5,
+      "peMultiple": 2.2,
       "epsGrowthCagr": 3.65,
-      "peCagr": 10.41,
+      "peCagr": 8.22,
       "totalCagr": 14.44,
       "note": null
     },
@@ -778,14 +796,16 @@
       "epsBuy": 1.523,
       "epsSell": 2.73,
       "epsMultiple": 1.79,
-      "peBuy": 11.1,
-      "peSell": 40.6,
-      "peMultiple": 3.65,
+      "peBuy": 13.4,
+      "peSell": 40.8,
+      "peMultiple": 3.04,
       "epsGrowthCagr": 6.01,
-      "peCagr": 13.82,
+      "peCagr": 11.77,
       "totalCagr": 20.66,
       "note": null
     }
   ],
-  "epsNote": "EPS 출처: SEC EDGAR XBRL (FY2008~FY2026, USD/shares, 달력연도 기준). 2024-02-26 3:1 분할 반영: 달력연도 2023 이하 EPS ÷3 조정. 2021~2023년 EPS는 일회성 항목으로 왜곡됨 (주석 참고). PER은 Yahoo Finance 배당조정 종가 기준."
+  "epsNote": "EPS 출처: SEC EDGAR XBRL (FY2008~FY2026, USD/shares, 달력연도 기준). 2024-02-26 3:1 분할 반영: 달력연도 2023 이하 EPS ÷3 조정. 2021~2023년 EPS는 일회성 항목으로 왜곡됨 (주석 참고). PER은 실제 연말 종가(배당 미반영) 기준(peNote 참고).",
+  "peBasis": "actual",
+  "peNote": "PER은 실제 연말 종가(배당 미반영) ÷ EPS. PER 효과는 배당을 뺀 순수 PER 변화."
 }

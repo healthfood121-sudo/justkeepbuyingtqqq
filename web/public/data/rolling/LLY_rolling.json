@@ -452,7 +452,8 @@
       "isComplete": true,
       "benchCagr": 13.56,
       "diff": 4.41,
-      "peBuy": 5.9
+      "peBuy": 5.9,
+      "peBuyActual": 9.1
     },
     {
       "buyYear": 2010,
@@ -464,7 +465,8 @@
       "isComplete": true,
       "benchCagr": 13.88,
       "diff": 6.88,
-      "peBuy": 5.3
+      "peBuy": 5.3,
+      "peBuyActual": 7.7
     },
     {
       "buyYear": 2011,
@@ -476,7 +478,8 @@
       "isComplete": true,
       "benchCagr": 16.55,
       "diff": 7.68,
-      "peBuy": 7.8
+      "peBuy": 7.8,
+      "peBuyActual": 10.7
     },
     {
       "buyYear": 2012,
@@ -488,7 +491,8 @@
       "isComplete": true,
       "benchCagr": 12.56,
       "diff": 12.64,
-      "peBuy": 10.3
+      "peBuy": 10.3,
+      "peBuyActual": 13.5
     },
     {
       "buyYear": 2013,
@@ -500,7 +504,8 @@
       "isComplete": true,
       "benchCagr": 12.03,
       "diff": 18.35,
-      "peBuy": 9.3
+      "peBuy": 9.3,
+      "peBuyActual": 11.8
     },
     {
       "buyYear": 2014,
@@ -512,7 +517,8 @@
       "isComplete": true,
       "benchCagr": 13.1,
       "diff": 16.66,
-      "peBuy": 25.3
+      "peBuy": 25.3,
+      "peBuyActual": 31.0
     },
     {
       "buyYear": 2015,
@@ -524,7 +530,8 @@
       "isComplete": true,
       "benchCagr": 14.82,
       "diff": 16.4,
-      "peBuy": 31.3
+      "peBuy": 31.3,
+      "peBuyActual": 37.4
     },
     {
       "buyYear": 2016,
@@ -536,7 +543,8 @@
       "isComplete": false,
       "benchCagr": 14.99,
       "diff": 22.3,
-      "peBuy": 24.5
+      "peBuy": 24.5,
+      "peBuyActual": 28.5
     },
     {
       "buyYear": 2017,
@@ -559,7 +567,8 @@
       "isComplete": false,
       "benchCagr": 16.85,
       "diff": 22.72,
-      "peBuy": 33.5
+      "peBuy": 33.5,
+      "peBuyActual": 37.0
     },
     {
       "buyYear": 2019,
@@ -571,7 +580,8 @@
       "isComplete": false,
       "benchCagr": 14.86,
       "diff": 28.49,
-      "peBuy": 13.7
+      "peBuy": 13.7,
+      "peBuyActual": 14.8
     },
     {
       "buyYear": 2020,
@@ -583,7 +593,8 @@
       "isComplete": false,
       "benchCagr": 14.27,
       "diff": 31.3,
-      "peBuy": 23.5
+      "peBuy": 23.5,
+      "peBuyActual": 24.9
     },
     {
       "buyYear": 2021,
@@ -595,7 +606,8 @@
       "isComplete": false,
       "benchCagr": 11.51,
       "diff": 30.17,
-      "peBuy": 43.3
+      "peBuy": 43.3,
+      "peBuyActual": 45.2
     },
     {
       "buyYear": 2022,
@@ -607,7 +619,8 @@
       "isComplete": false,
       "benchCagr": 20.77,
       "diff": 22.89,
-      "peBuy": 51.5
+      "peBuy": 51.5,
+      "peBuyActual": 53.1
     },
     {
       "buyYear": 2023,
@@ -619,7 +632,8 @@
       "isComplete": false,
       "benchCagr": 18.89,
       "diff": 19.19,
-      "peBuy": 98.6
+      "peBuy": 98.6,
+      "peBuyActual": 100.6
     },
     {
       "buyYear": 2024,
@@ -631,7 +645,8 @@
       "isComplete": false,
       "benchCagr": 15.77,
       "diff": 24.99,
-      "peBuy": 65.1
+      "peBuy": 65.1,
+      "peBuyActual": 66.0
     }
   ],
   "loss5y": [
@@ -698,11 +713,11 @@
       "epsBuy": 3.94,
       "epsSell": 8.89,
       "epsMultiple": 2.26,
-      "peBuy": 5.9,
-      "peSell": 13.7,
-      "peMultiple": 2.31,
+      "peBuy": 9.1,
+      "peSell": 14.8,
+      "peMultiple": 1.63,
       "epsGrowthCagr": 8.48,
-      "peCagr": 8.75,
+      "peCagr": 5.01,
       "totalCagr": 17.98,
       "note": "매도연도 EPS: Elanco Animal Health 분사 관련 일회성 이익 가능성(EPS 대폭 증가)"
     },
@@ -712,11 +727,11 @@
       "epsBuy": 4.58,
       "epsSell": 6.79,
       "epsMultiple": 1.48,
-      "peBuy": 5.3,
-      "peSell": 23.5,
-      "peMultiple": 4.45,
+      "peBuy": 7.7,
+      "peSell": 24.9,
+      "peMultiple": 3.25,
       "epsGrowthCagr": 4.02,
-      "peCagr": 16.11,
+      "peCagr": 12.51,
       "totalCagr": 20.77,
       "note": null
     },
@@ -726,11 +741,11 @@
       "epsBuy": 3.9,
       "epsSell": 6.12,
       "epsMultiple": 1.57,
-      "peBuy": 7.8,
-      "peSell": 43.3,
-      "peMultiple": 5.58,
+      "peBuy": 10.7,
+      "peSell": 45.1,
+      "peMultiple": 4.24,
       "epsGrowthCagr": 4.61,
-      "peCagr": 18.76,
+      "peCagr": 15.53,
       "totalCagr": 24.23,
       "note": null
     },
@@ -740,11 +755,11 @@
       "epsBuy": 3.66,
       "epsSell": 6.9,
       "epsMultiple": 1.89,
-      "peBuy": 10.3,
-      "peSell": 51.5,
-      "peMultiple": 5.02,
+      "peBuy": 13.5,
+      "peSell": 53.0,
+      "peMultiple": 3.93,
       "epsGrowthCagr": 6.55,
-      "peCagr": 17.51,
+      "peCagr": 14.68,
       "totalCagr": 25.2,
       "note": null
     },
@@ -754,11 +769,11 @@
       "epsBuy": 4.32,
       "epsSell": 5.8,
       "epsMultiple": 1.34,
-      "peBuy": 9.3,
-      "peSell": 98.6,
-      "peMultiple": 10.57,
+      "peBuy": 11.8,
+      "peSell": 100.5,
+      "peMultiple": 8.51,
       "epsGrowthCagr": 2.99,
-      "peCagr": 26.6,
+      "peCagr": 23.88,
       "totalCagr": 30.38,
       "note": null
     },
@@ -768,11 +783,11 @@
       "epsBuy": 2.23,
       "epsSell": 11.71,
       "epsMultiple": 5.25,
-      "peBuy": 25.3,
-      "peSell": 65.1,
-      "peMultiple": 2.58,
+      "peBuy": 30.9,
+      "peSell": 65.9,
+      "peMultiple": 2.13,
       "epsGrowthCagr": 18.04,
-      "peCagr": 9.93,
+      "peCagr": 7.86,
       "totalCagr": 29.76,
       "note": null
     },
@@ -782,14 +797,16 @@
       "epsBuy": 2.26,
       "epsSell": 22.95,
       "epsMultiple": 10.15,
-      "peBuy": 31.3,
-      "peSell": 46.6,
-      "peMultiple": 1.49,
+      "peBuy": 37.3,
+      "peSell": 46.8,
+      "peMultiple": 1.26,
       "epsGrowthCagr": 26.09,
-      "peCagr": 4.08,
+      "peCagr": 2.31,
       "totalCagr": 31.22,
       "note": null
     }
   ],
-  "epsNote": "EPS 출처: SEC EDGAR XBRL CIK 0000059478 (달력연도 10-K, 2008~2025). 분할 이력(누적 16:1) 이미 반영 → 추가 조정 없음. 2008년·2017년 EPS 음수/왜곡 구간은 주석 표시. PER은 Yahoo Finance 배당조정 종가 기준."
+  "epsNote": "EPS 출처: SEC EDGAR XBRL CIK 0000059478 (달력연도 10-K, 2008~2025). 분할 이력(누적 16:1) 이미 반영 → 추가 조정 없음. 2008년·2017년 EPS 음수/왜곡 구간은 주석 표시. PER은 실제 연말 종가(배당 미반영) 기준(peNote 참고).",
+  "peBasis": "actual",
+  "peNote": "PER은 실제 연말 종가(배당 미반영) ÷ EPS. PER 효과는 배당을 뺀 순수 PER 변화."
 }

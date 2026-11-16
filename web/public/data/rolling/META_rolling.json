@@ -45,7 +45,8 @@
       "isComplete": true,
       "benchCagr": 12.56,
       "diff": 3.72,
-      "peBuy": 2636.8
+      "peBuy": 2636.8,
+      "peBuyActual": 2662.1
     },
     {
       "buyYear": 2013,
@@ -57,7 +58,8 @@
       "isComplete": true,
       "benchCagr": 12.03,
       "diff": 8.51,
-      "peBuy": 90.2
+      "peBuy": 90.2,
+      "peBuyActual": 91.1
     },
     {
       "buyYear": 2014,
@@ -69,7 +71,8 @@
       "isComplete": true,
       "benchCagr": 13.1,
       "diff": 9.27,
-      "peBuy": 70.3
+      "peBuy": 70.3,
+      "peBuyActual": 71.0
     },
     {
       "buyYear": 2015,
@@ -81,7 +84,8 @@
       "isComplete": true,
       "benchCagr": 14.82,
       "diff": 5.48,
-      "peBuy": 80.4
+      "peBuy": 80.4,
+      "peBuyActual": 81.2
     },
     {
       "buyYear": 2016,
@@ -93,7 +97,8 @@
       "isComplete": false,
       "benchCagr": 14.99,
       "diff": 4.15,
-      "peBuy": 32.7
+      "peBuy": 32.7,
+      "peBuyActual": 33.0
     },
     {
       "buyYear": 2017,
@@ -105,7 +110,8 @@
       "isComplete": false,
       "benchCagr": 14.24,
       "diff": 1.55,
-      "peBuy": 32.4
+      "peBuy": 32.4,
+      "peBuyActual": 32.7
     },
     {
       "buyYear": 2018,
@@ -117,7 +123,8 @@
       "isComplete": false,
       "benchCagr": 16.85,
       "diff": 5.66,
-      "peBuy": 17.2
+      "peBuy": 17.2,
+      "peBuyActual": 17.4
     },
     {
       "buyYear": 2019,
@@ -129,7 +136,8 @@
       "isComplete": false,
       "benchCagr": 14.86,
       "diff": 3.35,
-      "peBuy": 31.6
+      "peBuy": 31.6,
+      "peBuyActual": 31.9
     },
     {
       "buyYear": 2020,
@@ -141,7 +149,8 @@
       "isComplete": false,
       "benchCagr": 14.27,
       "diff": 1.58,
-      "peBuy": 26.8
+      "peBuy": 26.8,
+      "peBuyActual": 27.1
     },
     {
       "buyYear": 2021,
@@ -153,7 +162,8 @@
       "isComplete": false,
       "benchCagr": 11.51,
       "diff": 2.9,
-      "peBuy": 24.2
+      "peBuy": 24.2,
+      "peBuyActual": 24.4
     },
     {
       "buyYear": 2022,
@@ -165,7 +175,8 @@
       "isComplete": false,
       "benchCagr": 20.77,
       "diff": 33.7,
-      "peBuy": 13.9
+      "peBuy": 13.9,
+      "peBuyActual": 14.0
     },
     {
       "buyYear": 2023,
@@ -177,7 +188,8 @@
       "isComplete": false,
       "benchCagr": 18.89,
       "diff": 4.54,
-      "peBuy": 23.6
+      "peBuy": 23.6,
+      "peBuyActual": 23.8
     },
     {
       "buyYear": 2024,
@@ -189,7 +201,8 @@
       "isComplete": false,
       "benchCagr": 15.77,
       "diff": -10.43,
-      "peBuy": 24.4
+      "peBuy": 24.4,
+      "peBuyActual": 24.5
     }
   ],
   "loss5y": [
@@ -206,8 +219,8 @@
       "epsBuy": 0.01,
       "epsSell": 8.59,
       "epsMultiple": 859.0,
-      "peBuy": 2636.8,
-      "peSell": 13.9,
+      "peBuy": 2662.0,
+      "peSell": 14.0,
       "peMultiple": 0.01,
       "epsGrowthCagr": 96.52,
       "peCagr": -40.83,
@@ -220,8 +233,8 @@
       "epsBuy": 0.6,
       "epsSell": 14.87,
       "epsMultiple": 24.78,
-      "peBuy": 90.2,
-      "peSell": 23.6,
+      "peBuy": 91.1,
+      "peSell": 23.8,
       "peMultiple": 0.26,
       "epsGrowthCagr": 37.85,
       "peCagr": -12.56,
@@ -234,11 +247,11 @@
       "epsBuy": 1.1,
       "epsSell": 23.86,
       "epsMultiple": 21.69,
-      "peBuy": 70.3,
-      "peSell": 24.4,
+      "peBuy": 70.9,
+      "peSell": 24.5,
       "peMultiple": 0.35,
       "epsGrowthCagr": 36.03,
-      "peCagr": -10.04,
+      "peCagr": -10.07,
       "totalCagr": 22.37,
       "note": null
     },
@@ -248,14 +261,16 @@
       "epsBuy": 1.29,
       "epsSell": 23.49,
       "epsMultiple": 18.21,
-      "peBuy": 80.4,
-      "peSell": 28.0,
+      "peBuy": 81.1,
+      "peSell": 28.1,
       "peMultiple": 0.35,
       "epsGrowthCagr": 33.67,
-      "peCagr": -10.0,
+      "peCagr": -10.06,
       "totalCagr": 20.3,
       "note": null
     }
   ],
-  "epsNote": "EPS 출처: SEC EDGAR XBRL CIK 0001326801 (달력연도 10-K, 2012~2025). 주식 분할 없어 조정 불필요. PER은 Yahoo Finance 주가(배당 없음) 기준."
+  "epsNote": "EPS 출처: SEC EDGAR XBRL CIK 0001326801 (달력연도 10-K, 2012~2025). 주식 분할 없어 조정 불필요. PER은 Yahoo Finance 주가(배당 없음) 기준.",
+  "peBasis": "actual",
+  "peNote": "PER은 실제 연말 종가(배당 미반영) ÷ EPS. PER 효과는 배당을 뺀 순수 PER 변화."
 }

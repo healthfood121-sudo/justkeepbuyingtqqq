@@ -298,7 +298,8 @@
       "isComplete": true,
       "benchCagr": 13.56,
       "diff": 6.84,
-      "peBuy": 16.9
+      "peBuy": 16.9,
+      "peBuyActual": 24.0
     },
     {
       "buyYear": 2010,
@@ -310,7 +311,8 @@
       "isComplete": true,
       "benchCagr": 13.88,
       "diff": 7.36,
-      "peBuy": 17.7
+      "peBuy": 17.7,
+      "peBuyActual": 24.8
     },
     {
       "buyYear": 2011,
@@ -322,7 +324,8 @@
       "isComplete": true,
       "benchCagr": 16.55,
       "diff": 7.92,
-      "peBuy": 18.3
+      "peBuy": 18.3,
+      "peBuyActual": 25.3
     },
     {
       "buyYear": 2012,
@@ -334,7 +337,8 @@
       "isComplete": true,
       "benchCagr": 12.56,
       "diff": 6.3,
-      "peBuy": 19.9
+      "peBuy": 19.9,
+      "peBuyActual": 25.4
     },
     {
       "buyYear": 2013,
@@ -346,7 +350,8 @@
       "isComplete": true,
       "benchCagr": 12.03,
       "diff": 9.25,
-      "peBuy": 20.4
+      "peBuy": 20.4,
+      "peBuyActual": 25.8
     },
     {
       "buyYear": 2014,
@@ -358,7 +363,8 @@
       "isComplete": true,
       "benchCagr": 13.1,
       "diff": 9.98,
-      "peBuy": 24.5
+      "peBuy": 24.5,
+      "peBuyActual": 30.6
     },
     {
       "buyYear": 2015,
@@ -370,7 +376,8 @@
       "isComplete": true,
       "benchCagr": 14.82,
       "diff": 5.47,
-      "peBuy": 25.2
+      "peBuy": 25.2,
+      "peBuyActual": 30.1
     },
     {
       "buyYear": 2016,
@@ -382,7 +389,8 @@
       "isComplete": false,
       "benchCagr": 14.99,
       "diff": 8.72,
-      "peBuy": 25.5
+      "peBuy": 25.5,
+      "peBuyActual": 30.1
     },
     {
       "buyYear": 2017,
@@ -394,7 +402,8 @@
       "isComplete": false,
       "benchCagr": 14.24,
       "diff": 9.62,
-      "peBuy": 27.3
+      "peBuy": 27.3,
+      "peBuyActual": 30.6
     },
     {
       "buyYear": 2018,
@@ -406,7 +415,8 @@
       "isComplete": false,
       "benchCagr": 16.85,
       "diff": 8.8,
-      "peBuy": 25.9
+      "peBuy": 25.9,
+      "peBuyActual": 28.8
     },
     {
       "buyYear": 2019,
@@ -418,7 +428,8 @@
       "isComplete": false,
       "benchCagr": 14.86,
       "diff": 8.11,
-      "peBuy": 32.4
+      "peBuy": 32.4,
+      "peBuyActual": 35.6
     },
     {
       "buyYear": 2020,
@@ -430,7 +441,8 @@
       "isComplete": false,
       "benchCagr": 14.27,
       "diff": 7.13,
-      "peBuy": 39.3
+      "peBuy": 39.3,
+      "peBuyActual": 41.8
     },
     {
       "buyYear": 2021,
@@ -442,7 +454,8 @@
       "isComplete": false,
       "benchCagr": 11.51,
       "diff": 4.44,
-      "peBuy": 47.8
+      "peBuy": 47.8,
+      "peBuyActual": 50.4
     },
     {
       "buyYear": 2022,
@@ -454,7 +467,8 @@
       "isComplete": false,
       "benchCagr": 20.77,
       "diff": 6.45,
-      "peBuy": 33.2
+      "peBuy": 33.2,
+      "peBuyActual": 34.8
     },
     {
       "buyYear": 2023,
@@ -466,7 +480,8 @@
       "isComplete": false,
       "benchCagr": 18.89,
       "diff": 1.51,
-      "peBuy": 45.9
+      "peBuy": 45.9,
+      "peBuyActual": 46.7
     },
     {
       "buyYear": 2024,
@@ -478,7 +493,8 @@
       "isComplete": false,
       "benchCagr": 15.77,
       "diff": -4.51,
-      "peBuy": 54.8
+      "peBuy": 54.8,
+      "peBuyActual": 55.4
     }
   ],
   "loss5y": [
@@ -500,11 +516,11 @@
       "epsBuy": 2.47,
       "epsSell": 8.26,
       "epsMultiple": 3.34,
-      "peBuy": 16.9,
-      "peSell": 32.4,
-      "peMultiple": 1.91,
+      "peBuy": 24.0,
+      "peSell": 35.6,
+      "peMultiple": 1.49,
       "epsGrowthCagr": 12.83,
-      "peCagr": 6.71,
+      "peCagr": 4.04,
       "totalCagr": 20.4,
       "note": null
     },
@@ -514,11 +530,11 @@
       "epsBuy": 2.92,
       "epsSell": 9.02,
       "epsMultiple": 3.09,
-      "peBuy": 17.7,
-      "peSell": 39.3,
-      "peMultiple": 2.22,
+      "peBuy": 24.7,
+      "peSell": 41.8,
+      "peMultiple": 1.69,
       "epsGrowthCagr": 11.94,
-      "peCagr": 8.31,
+      "peCagr": 5.38,
       "totalCagr": 21.24,
       "note": "매도연도 EPS: COVID-19 영향 + 특별 배당 $10/주"
     },
@@ -528,11 +544,11 @@
       "epsBuy": 3.3,
       "epsSell": 11.27,
       "epsMultiple": 3.42,
-      "peBuy": 18.3,
-      "peSell": 47.8,
-      "peMultiple": 2.61,
+      "peBuy": 25.2,
+      "peSell": 50.4,
+      "peMultiple": 2.0,
       "epsGrowthCagr": 13.07,
-      "peCagr": 10.09,
+      "peCagr": 7.15,
       "totalCagr": 24.47,
       "note": null
     },
@@ -542,11 +558,11 @@
       "epsBuy": 3.89,
       "epsSell": 13.14,
       "epsMultiple": 3.38,
-      "peBuy": 19.9,
-      "peSell": 33.2,
-      "peMultiple": 1.67,
+      "peBuy": 25.4,
+      "peSell": 34.7,
+      "peMultiple": 1.37,
       "epsGrowthCagr": 12.94,
-      "peCagr": 5.24,
+      "peCagr": 3.19,
       "totalCagr": 18.86,
       "note": null
     },
@@ -556,11 +572,11 @@
       "epsBuy": 4.63,
       "epsSell": 14.16,
       "epsMultiple": 3.06,
-      "peBuy": 20.4,
-      "peSell": 45.9,
-      "peMultiple": 2.25,
+      "peBuy": 25.7,
+      "peSell": 46.6,
+      "peMultiple": 1.81,
       "epsGrowthCagr": 11.83,
-      "peCagr": 8.45,
+      "peCagr": 6.13,
       "totalCagr": 21.28,
       "note": null
     },
@@ -570,11 +586,11 @@
       "epsBuy": 4.65,
       "epsSell": 16.56,
       "epsMultiple": 3.56,
-      "peBuy": 24.5,
-      "peSell": 54.8,
-      "peMultiple": 2.24,
+      "peBuy": 30.5,
+      "peSell": 55.3,
+      "peMultiple": 1.82,
       "epsGrowthCagr": 13.54,
-      "peCagr": 8.4,
+      "peCagr": 6.14,
       "totalCagr": 23.08,
       "note": null
     },
@@ -584,14 +600,16 @@
       "epsBuy": 5.37,
       "epsSell": 18.21,
       "epsMultiple": 3.39,
-      "peBuy": 25.2,
-      "peSell": 47.1,
-      "peMultiple": 1.87,
+      "peBuy": 30.1,
+      "peSell": 47.4,
+      "peMultiple": 1.57,
       "epsGrowthCagr": 12.99,
-      "peCagr": 6.47,
+      "peCagr": 4.64,
       "totalCagr": 20.29,
       "note": null
     }
   ],
-  "epsNote": "EPS 출처: SEC EDGAR XBRL (FY2009~FY2026, USD/shares). 코스트코 회계연도는 8월 말 종료. 분할 이력 없음. Yahoo Finance 배당조정 주가 기준 PER → 특별 배당 반영으로 PER 절대값이 실제보다 소폭 낮을 수 있음."
+  "epsNote": "EPS 출처: SEC EDGAR XBRL (FY2009~FY2026, USD/shares). 코스트코 회계연도는 8월 말 종료. 분할 이력 없음. Yahoo Finance 배당조정 주가 기준 PER → 특별 배당 반영으로 PER 절대값이 실제보다 소폭 낮을 수 있음.",
+  "peBasis": "actual",
+  "peNote": "PER은 실제 연말 종가(배당 미반영) ÷ EPS. PER 효과는 배당을 뺀 순수 PER 변화."
 }

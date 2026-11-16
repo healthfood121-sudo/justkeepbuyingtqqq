@@ -9706,14 +9706,14 @@ function NkeInsight({ data }: { data: StockData }) {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-              <tr><td className={td}>주가</td><td className={`${td} text-right`}>약 152</td><td className={`${td} text-right`}>약 72</td><td className={`${td} text-right`}>37.5</td><td className={`${td} text-right text-red-500 font-semibold`}>-48%</td></tr>
+              <tr><td className={td}>주가</td><td className={`${td} text-right`}>약 167</td><td className={`${td} text-right`}>약 76</td><td className={`${td} text-right`}>37.5</td><td className={`${td} text-right text-red-500 font-semibold`}>-50%</td></tr>
               <tr><td className={td}>EPS</td><td className={`${td} text-right`}>3.56</td><td className={`${td} text-right`}>3.73</td><td className={`${td} text-right`}>2.08</td><td className={`${td} text-right text-red-500 font-semibold`}>-44%</td></tr>
-              <tr><td className={td}>PER</td><td className={`${td} text-right`}>42.8배</td><td className={`${td} text-right`}>19.3배</td><td className={`${td} text-right`}>18.0배</td><td className={`${td} text-right`}>-7%</td></tr>
+              <tr><td className={td}>PER</td><td className={`${td} text-right`}>46.8배</td><td className={`${td} text-right`}>20.3배</td><td className={`${td} text-right`}>18.0배</td><td className={`${td} text-right`}>-11%</td></tr>
             </tbody>
           </table>
         </div>
         <ul className={`${p} list-disc pl-4 space-y-1`}>
-          <li>2021년 말 → 2024년 말 하락은 PER(43배 → 19배) 때문이었고, 2024년 말 이후 하락은 이익 감소 때문이다.</li>
+          <li>2021년 말 → 2024년 말 하락은 PER(47배 → 20배) 때문이었고, 2024년 말 이후 하락은 이익 감소 때문이다.</li>
           <li><b>이익이 더 줄어들 전망이다.</b> 2026년 10월 발표에서 회사는 2027 회계연도 조정 EPS를 1.15~1.35달러로 제시했다(매출은 한 자릿수 후반 감소).
             이 기준이면 지금 주가는 <b>내년 이익 대비 PER 28~33배</b>로, 결코 싸지 않다.</li>
           <li>배당수익률 4.3%(주당 약 1.6달러)는 높지만, 내년 예상 이익(1.15~1.35달러)보다 배당이 더 많다. 이익이 회복되지 않으면 배당이 유지될지 지켜봐야 한다.</li>
@@ -9764,8 +9764,8 @@ function NkeInsight({ data }: { data: StockData }) {
           </table>
         </div>
         <p className={p}>
-          지금과 같은 15~20배 구간에서 산 경우({peBuckets.find(b => b.hl)?.years.join('·')}년)는 평균 연 17% 안팎이었다.
-          다만 그때는 이후 10년 동안 이익이 매년 5~15% 늘었다. PER 20배 이상에서 산 경우는 PER이 내려오면서 수익률이 크게 낮았다.
+          지금과 같은 15~20배 구간에서 산 경우({peBuckets.find(b => b.hl)?.years.join('·')}년)는 평균 연 16% 안팎이었다.
+          다만 그때는 이후 10년 동안 이익이 매년 9~14% 늘었다. PER 25배 이상에서 산 경우(평균 연 13%)는 PER이 내려오면서 수익률이 낮았다. 20~25배 구간이 높은 건(평균 연 22%) 2009~2012년 매수가 몰려 있어서다 — 그 뒤 PER이 크게 올랐다.
         </p>
       </div>
 
@@ -9782,7 +9782,7 @@ function NkeInsight({ data }: { data: StockData }) {
         <ul className={`${p} list-disc pl-4 space-y-1`}>
           <li><b>10년 EPS 성장률이 줄고 있다.</b> 2000~2012년 매수 구간은 일회성 요인이 낀 해(2008·2010년)를 빼면 대부분 연 12~15%였지만, 2013·2014년 매수는 연 9~10%, 2015년 매수는 연 1.6%로 떨어졌다.</li>
           <li>그 결과 2015년에 사서 10년 보유하면 연 1.5%에 그쳤다(배당 포함). 2016~2024년 매수는 아직 10년이 안 됐지만 지금 기준으로 모두 손실이다.</li>
-          <li>과거 높은 수익을 낸 1984~1990년 매수(연 19~46%)는 대부분 PER 5~14배의 싼 값에 사서 이익이 폭발적으로 늘었던 시기다. 지금과는 출발점이 다르다.</li>
+          <li>과거 높은 수익을 낸 1984~1990년 매수(연 19~46%)는 대부분 PER 7~13배의 싼 값에 사서(1985년 55배·1987년 20배는 예외) 이익이 폭발적으로 늘었던 시기다. 지금과는 출발점이 다르다.</li>
           <li>표의 ⚠ 표시는 세금 개혁(2017년), 코로나(2020년), 사업부 손상 등 일회성 요인으로 EPS가 크게 흔들린 해다. 이런 구간은 PER 몫이 부풀거나 줄어 보일 수 있다.</li>
         </ul>
       </div>
@@ -9848,7 +9848,7 @@ function NkeInsight({ data }: { data: StockData }) {
                 <td className={`${td} break-keep`}>1992 → 2002</td>
                 <td className={`${td} text-right`}>8.3%</td>
                 <td className={`${td} text-right break-keep`}>PER 하락 (이익은 연 +8.7%)</td>
-                <td className={`${td} text-right break-keep`}>2002년 말 (13배)</td>
+                <td className={`${td} text-right break-keep`}>2002년 말 (18배)</td>
                 <td className={`${td} text-right font-semibold text-emerald-600 dark:text-emerald-400`}>17.9%</td>
                 <td className={`${td} text-right`}>연 +14.4%</td>
               </tr>
@@ -9856,7 +9856,7 @@ function NkeInsight({ data }: { data: StockData }) {
                 <td className={`${td} break-keep`}>1996 → 2006</td>
                 <td className={`${td} text-right`}>5.7%</td>
                 <td className={`${td} text-right break-keep`}>PER 하락 (이익은 연 +10.9%)</td>
-                <td className={`${td} text-right break-keep`}>2006년 말 (14배) · 2007년 말 (17배)</td>
+                <td className={`${td} text-right break-keep`}>2006년 말 (19배) · 2007년 말 (22배)</td>
                 <td className={`${td} text-right font-semibold text-emerald-600 dark:text-emerald-400`}>16.8% · 16.2%</td>
                 <td className={`${td} text-right`}>연 +12.6% · +13.1%</td>
               </tr>

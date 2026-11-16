@@ -56,7 +56,8 @@
       "isComplete": true,
       "benchCagr": 13.56,
       "diff": 11.34,
-      "peBuy": 25.0
+      "peBuy": 25.0,
+      "peBuyActual": 28.3
     },
     {
       "buyYear": 2010,
@@ -68,7 +69,8 @@
       "isComplete": true,
       "benchCagr": 13.88,
       "diff": 15.7,
-      "peBuy": 15.7
+      "peBuy": 15.7,
+      "peBuyActual": 17.6
     },
     {
       "buyYear": 2011,
@@ -80,7 +82,8 @@
       "isComplete": true,
       "benchCagr": 16.55,
       "diff": 8.24,
-      "peBuy": 17.7
+      "peBuy": 17.7,
+      "peBuyActual": 19.7
     },
     {
       "buyYear": 2012,
@@ -92,7 +95,8 @@
       "isComplete": true,
       "benchCagr": 12.56,
       "diff": 6.82,
-      "peBuy": 43.5
+      "peBuy": 43.5,
+      "peBuyActual": 48.1
     },
     {
       "buyYear": 2013,
@@ -104,7 +108,8 @@
       "isComplete": true,
       "benchCagr": 12.03,
       "diff": 5.47,
-      "peBuy": 26.8
+      "peBuy": 26.8,
+      "peBuyActual": 29.4
     },
     {
       "buyYear": 2014,
@@ -116,7 +121,8 @@
       "isComplete": true,
       "benchCagr": 13.1,
       "diff": 4.75,
-      "peBuy": 28.0
+      "peBuy": 28.0,
+      "peBuyActual": 30.5
     },
     {
       "buyYear": 2015,
@@ -128,7 +134,8 @@
       "isComplete": true,
       "benchCagr": 14.82,
       "diff": 2.29,
-      "peBuy": 27.9
+      "peBuy": 27.9,
+      "peBuyActual": 30.2
     },
     {
       "buyYear": 2016,
@@ -140,7 +147,8 @@
       "isComplete": false,
       "benchCagr": 14.99,
       "diff": 4.62,
-      "peBuy": 29.4
+      "peBuy": 29.4,
+      "peBuyActual": 31.5
     },
     {
       "buyYear": 2017,
@@ -152,7 +160,8 @@
       "isComplete": false,
       "benchCagr": 14.24,
       "diff": 2.6,
-      "peBuy": 38.3
+      "peBuy": 38.3,
+      "peBuyActual": 40.8
     },
     {
       "buyYear": 2018,
@@ -164,7 +173,8 @@
       "isComplete": false,
       "benchCagr": 16.85,
       "diff": 0.04,
-      "peBuy": 28.3
+      "peBuy": 28.3,
+      "peBuyActual": 29.9
     },
     {
       "buyYear": 2019,
@@ -176,7 +186,8 @@
       "isComplete": false,
       "benchCagr": 14.86,
       "diff": -1.39,
-      "peBuy": 33.7
+      "peBuy": 33.7,
+      "peBuyActual": 35.4
     },
     {
       "buyYear": 2020,
@@ -188,7 +199,8 @@
       "isComplete": false,
       "benchCagr": 14.27,
       "diff": -1.41,
-      "peBuy": 42.9
+      "peBuy": 42.9,
+      "peBuyActual": 44.8
     },
     {
       "buyYear": 2021,
@@ -200,7 +212,8 @@
       "isComplete": false,
       "benchCagr": 11.51,
       "diff": 4.26,
-      "peBuy": 37.1
+      "peBuy": 37.1,
+      "peBuyActual": 38.5
     },
     {
       "buyYear": 2022,
@@ -212,7 +225,8 @@
       "isComplete": false,
       "benchCagr": 20.77,
       "diff": 0.54,
-      "peBuy": 28.8
+      "peBuy": 28.8,
+      "peBuyActual": 29.7
     },
     {
       "buyYear": 2023,
@@ -224,7 +238,8 @@
       "isComplete": false,
       "benchCagr": 18.89,
       "diff": 0.72,
-      "peBuy": 30.8
+      "peBuy": 30.8,
+      "peBuyActual": 31.5
     },
     {
       "buyYear": 2024,
@@ -236,7 +251,8 @@
       "isComplete": false,
       "benchCagr": 15.77,
       "diff": 2.45,
-      "peBuy": 32.1
+      "peBuy": 32.1,
+      "peBuyActual": 32.6
     }
   ],
   "loss5y": [],
@@ -247,11 +263,11 @@
       "epsBuy": 0.775,
       "epsSell": 5.32,
       "epsMultiple": 6.86,
-      "peBuy": 25.0,
-      "peSell": 33.7,
-      "peMultiple": 1.35,
+      "peBuy": 28.2,
+      "peSell": 35.3,
+      "peMultiple": 1.25,
       "epsGrowthCagr": 21.24,
-      "peCagr": 3.01,
+      "peCagr": 2.27,
       "totalCagr": 24.9,
       "note": null
     },
@@ -261,11 +277,11 @@
       "epsBuy": 1.002,
       "epsSell": 4.89,
       "epsMultiple": 4.88,
-      "peBuy": 15.7,
-      "peSell": 42.9,
-      "peMultiple": 2.74,
+      "peBuy": 17.6,
+      "peSell": 44.7,
+      "peMultiple": 2.55,
       "epsGrowthCagr": 17.17,
-      "peCagr": 10.6,
+      "peCagr": 9.8,
       "totalCagr": 29.59,
       "note": "매도연도 EPS: COVID-19 여행·결제 감소 → EPS 감소(FY20 end Sep-2020)"
     },
@@ -275,11 +291,11 @@
       "epsBuy": 1.29,
       "epsSell": 5.63,
       "epsMultiple": 4.36,
-      "peBuy": 17.7,
-      "peSell": 37.1,
-      "peMultiple": 2.1,
+      "peBuy": 19.7,
+      "peSell": 38.5,
+      "peMultiple": 1.96,
       "epsGrowthCagr": 15.88,
-      "peCagr": 7.69,
+      "peCagr": 6.94,
       "totalCagr": 24.79,
       "note": null
     },
@@ -289,11 +305,11 @@
       "epsBuy": 0.79,
       "epsSell": 7.0,
       "epsMultiple": 8.86,
-      "peBuy": 43.5,
-      "peSell": 28.8,
-      "peMultiple": 0.66,
+      "peBuy": 48.0,
+      "peSell": 29.7,
+      "peMultiple": 0.62,
       "epsGrowthCagr": 24.38,
-      "peCagr": -4.02,
+      "peCagr": -4.69,
       "totalCagr": 19.38,
       "note": "매수연도 EPS: 미국 소송 충당금 $4.1B 설정 → EPS 급락(FY12 end Sep-2012)"
     },
@@ -303,11 +319,11 @@
       "epsBuy": 1.897,
       "epsSell": 8.28,
       "epsMultiple": 4.36,
-      "peBuy": 26.8,
-      "peSell": 30.8,
-      "peMultiple": 1.15,
+      "peBuy": 29.3,
+      "peSell": 31.4,
+      "peMultiple": 1.07,
       "epsGrowthCagr": 15.87,
-      "peCagr": 1.4,
+      "peCagr": 0.69,
       "totalCagr": 17.5,
       "note": null
     },
@@ -317,11 +333,11 @@
       "epsBuy": 2.155,
       "epsSell": 9.73,
       "epsMultiple": 4.52,
-      "peBuy": 28.0,
-      "peSell": 32.1,
-      "peMultiple": 1.15,
+      "peBuy": 30.4,
+      "peSell": 32.5,
+      "peMultiple": 1.07,
       "epsGrowthCagr": 16.27,
-      "peCagr": 1.37,
+      "peCagr": 0.66,
       "totalCagr": 17.85,
       "note": null
     },
@@ -331,14 +347,16 @@
       "epsBuy": 2.58,
       "epsSell": 10.2,
       "epsMultiple": 3.95,
-      "peBuy": 27.9,
-      "peSell": 34.2,
-      "peMultiple": 1.23,
+      "peBuy": 30.1,
+      "peSell": 34.4,
+      "peMultiple": 1.14,
       "epsGrowthCagr": 14.74,
-      "peCagr": 2.07,
+      "peCagr": 1.35,
       "totalCagr": 17.1,
       "note": null
     }
   ],
-  "epsNote": "EPS 출처: SEC EDGAR 10-K (FY2009~FY2014 분할 전 Class A diluted EPS ÷4; FY2015~FY2025 분할 후). 분할: 2015-03-19 4:1. FY2008(IPO 연도) EPS 제외. PER은 Yahoo Finance 배당조정 종가 기준."
+  "epsNote": "EPS 출처: SEC EDGAR 10-K (FY2009~FY2014 분할 전 Class A diluted EPS ÷4; FY2015~FY2025 분할 후). 분할: 2015-03-19 4:1. FY2008(IPO 연도) EPS 제외. PER은 실제 연말 종가(배당 미반영) 기준(peNote 참고).",
+  "peBasis": "actual",
+  "peNote": "PER은 실제 연말 종가(배당 미반영) ÷ EPS. PER 효과는 배당을 뺀 순수 PER 변화."
 }

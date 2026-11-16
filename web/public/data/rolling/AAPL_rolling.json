@@ -342,7 +342,8 @@
       "isComplete": true,
       "benchCagr": 8.5,
       "diff": 12.4,
-      "peBuy": 42.2
+      "peBuy": 42.2,
+      "peBuyActual": 50.4
     },
     {
       "buyYear": 2008,
@@ -354,7 +355,8 @@
       "isComplete": true,
       "benchCagr": 13.12,
       "diff": 17.68,
-      "peBuy": 10.5
+      "peBuy": 10.5,
+      "peBuyActual": 12.5
     },
     {
       "buyYear": 2009,
@@ -366,7 +368,8 @@
       "isComplete": true,
       "benchCagr": 13.56,
       "diff": 13.78,
-      "peBuy": 19.4
+      "peBuy": 19.4,
+      "peBuyActual": 23.2
     },
     {
       "buyYear": 2010,
@@ -378,7 +381,8 @@
       "isComplete": true,
       "benchCagr": 13.88,
       "diff": 15.7,
-      "peBuy": 17.8
+      "peBuy": 17.8,
+      "peBuyActual": 21.3
     },
     {
       "buyYear": 2011,
@@ -390,7 +394,8 @@
       "isComplete": true,
       "benchCagr": 16.55,
       "diff": 13.94,
-      "peBuy": 12.3
+      "peBuy": 12.3,
+      "peBuyActual": 14.7
     },
     {
       "buyYear": 2012,
@@ -402,7 +407,8 @@
       "isComplete": true,
       "benchCagr": 12.56,
       "diff": 10.48,
-      "peBuy": 10.2
+      "peBuy": 10.2,
+      "peBuyActual": 12.1
     },
     {
       "buyYear": 2013,
@@ -414,7 +420,8 @@
       "isComplete": true,
       "benchCagr": 12.03,
       "diff": 15.02,
-      "peBuy": 12.2
+      "peBuy": 12.2,
+      "peBuyActual": 14.1
     },
     {
       "buyYear": 2014,
@@ -426,7 +433,8 @@
       "isComplete": true,
       "benchCagr": 13.1,
       "diff": 13.02,
-      "peBuy": 15.1
+      "peBuy": 15.1,
+      "peBuyActual": 17.1
     },
     {
       "buyYear": 2015,
@@ -438,7 +446,8 @@
       "isComplete": true,
       "benchCagr": 14.82,
       "diff": 12.79,
-      "peBuy": 10.3
+      "peBuy": 10.3,
+      "peBuyActual": 11.5
     },
     {
       "buyYear": 2016,
@@ -450,7 +459,8 @@
       "isComplete": false,
       "benchCagr": 14.99,
       "diff": 15.08,
-      "peBuy": 12.8
+      "peBuy": 12.8,
+      "peBuyActual": 13.9
     },
     {
       "buyYear": 2017,
@@ -462,7 +472,8 @@
       "isComplete": false,
       "benchCagr": 14.24,
       "diff": 13.9,
-      "peBuy": 17.2
+      "peBuy": 17.2,
+      "peBuyActual": 18.4
     },
     {
       "buyYear": 2018,
@@ -474,7 +485,8 @@
       "isComplete": false,
       "benchCagr": 16.85,
       "diff": 16.32,
-      "peBuy": 12.5
+      "peBuy": 12.5,
+      "peBuyActual": 13.2
     },
     {
       "buyYear": 2019,
@@ -486,7 +498,8 @@
       "isComplete": false,
       "benchCagr": 14.86,
       "diff": 11.7,
-      "peBuy": 23.8
+      "peBuy": 23.8,
+      "peBuyActual": 24.7
     },
     {
       "buyYear": 2020,
@@ -498,7 +511,8 @@
       "isComplete": false,
       "benchCagr": 14.27,
       "diff": 4.67,
-      "peBuy": 39.3
+      "peBuy": 39.3,
+      "peBuyActual": 40.5
     },
     {
       "buyYear": 2021,
@@ -510,7 +524,8 @@
       "isComplete": false,
       "benchCagr": 11.51,
       "diff": 4.43,
-      "peBuy": 30.9
+      "peBuy": 30.9,
+      "peBuyActual": 31.7
     },
     {
       "buyYear": 2022,
@@ -522,7 +537,8 @@
       "isComplete": false,
       "benchCagr": 20.77,
       "diff": 9.61,
-      "peBuy": 20.9
+      "peBuy": 20.9,
+      "peBuyActual": 21.3
     },
     {
       "buyYear": 2023,
@@ -534,7 +550,8 @@
       "isComplete": false,
       "benchCagr": 18.89,
       "diff": 5.56,
-      "peBuy": 31.0
+      "peBuy": 31.0,
+      "peBuyActual": 31.4
     },
     {
       "buyYear": 2024,
@@ -546,7 +563,8 @@
       "isComplete": false,
       "benchCagr": 15.77,
       "diff": 5.49,
-      "peBuy": 40.9
+      "peBuy": 40.9,
+      "peBuyActual": 41.2
     }
   ],
   "loss5y": [
@@ -588,11 +606,11 @@
       "epsBuy": 0.14,
       "epsSell": 2.303,
       "epsMultiple": 16.4,
-      "peBuy": 42.2,
-      "peSell": 17.2,
-      "peMultiple": 0.41,
+      "peBuy": 50.5,
+      "peSell": 18.4,
+      "peMultiple": 0.36,
       "epsGrowthCagr": 32.28,
-      "peCagr": -8.6,
+      "peCagr": -9.62,
       "totalCagr": 20.9,
       "note": null
     },
@@ -602,11 +620,11 @@
       "epsBuy": 0.242,
       "epsSell": 2.98,
       "epsMultiple": 12.31,
-      "peBuy": 10.5,
-      "peSell": 12.5,
-      "peMultiple": 1.19,
+      "peBuy": 12.6,
+      "peSell": 13.2,
+      "peMultiple": 1.05,
       "epsGrowthCagr": 28.54,
-      "peCagr": 1.76,
+      "peCagr": 0.49,
       "totalCagr": 30.8,
       "note": null
     },
@@ -616,11 +634,11 @@
       "epsBuy": 0.324,
       "epsSell": 2.97,
       "epsMultiple": 9.16,
-      "peBuy": 19.4,
-      "peSell": 23.8,
-      "peMultiple": 1.22,
+      "peBuy": 23.2,
+      "peSell": 24.7,
+      "peMultiple": 1.06,
       "epsGrowthCagr": 24.79,
-      "peCagr": 2.04,
+      "peCagr": 0.62,
       "totalCagr": 27.34,
       "note": null
     },
@@ -630,11 +648,11 @@
       "epsBuy": 0.541,
       "epsSell": 3.28,
       "epsMultiple": 6.06,
-      "peBuy": 17.8,
-      "peSell": 39.3,
-      "peMultiple": 2.2,
+      "peBuy": 21.3,
+      "peSell": 40.5,
+      "peMultiple": 1.9,
       "epsGrowthCagr": 19.75,
-      "peCagr": 8.22,
+      "peCagr": 6.63,
       "totalCagr": 29.58,
       "note": null
     },
@@ -644,11 +662,11 @@
       "epsBuy": 0.989,
       "epsSell": 5.61,
       "epsMultiple": 5.67,
-      "peBuy": 12.3,
-      "peSell": 30.9,
-      "peMultiple": 2.52,
+      "peBuy": 14.6,
+      "peSell": 31.7,
+      "peMultiple": 2.16,
       "epsGrowthCagr": 18.96,
-      "peCagr": 9.7,
+      "peCagr": 8.03,
       "totalCagr": 30.49,
       "note": null
     },
@@ -658,11 +676,11 @@
       "epsBuy": 1.577,
       "epsSell": 6.11,
       "epsMultiple": 3.87,
-      "peBuy": 10.2,
-      "peSell": 20.9,
-      "peMultiple": 2.05,
+      "peBuy": 12.1,
+      "peSell": 21.3,
+      "peMultiple": 1.76,
       "epsGrowthCagr": 14.5,
-      "peCagr": 7.45,
+      "peCagr": 5.84,
       "totalCagr": 23.04,
       "note": null
     },
@@ -672,11 +690,11 @@
       "epsBuy": 1.42,
       "epsSell": 6.13,
       "epsMultiple": 4.32,
-      "peBuy": 12.2,
-      "peSell": 31.0,
-      "peMultiple": 2.54,
+      "peBuy": 14.1,
+      "peSell": 31.4,
+      "peMultiple": 2.23,
       "epsGrowthCagr": 15.75,
-      "peCagr": 9.77,
+      "peCagr": 8.33,
       "totalCagr": 27.06,
       "note": null
     },
@@ -686,11 +704,11 @@
       "epsBuy": 1.613,
       "epsSell": 6.08,
       "epsMultiple": 3.77,
-      "peBuy": 15.1,
-      "peSell": 40.9,
-      "peMultiple": 2.7,
+      "peBuy": 17.1,
+      "peSell": 41.2,
+      "peMultiple": 2.41,
       "epsGrowthCagr": 14.19,
-      "peCagr": 10.45,
+      "peCagr": 9.18,
       "totalCagr": 26.12,
       "note": null
     },
@@ -700,14 +718,16 @@
       "epsBuy": 2.305,
       "epsSell": 7.46,
       "epsMultiple": 3.24,
-      "peBuy": 10.3,
-      "peSell": 36.3,
-      "peMultiple": 3.54,
+      "peBuy": 11.4,
+      "peSell": 36.4,
+      "peMultiple": 3.19,
       "epsGrowthCagr": 12.46,
-      "peCagr": 13.47,
+      "peCagr": 12.31,
       "totalCagr": 27.61,
       "note": null
     }
   ],
-  "epsNote": "EPS 출처: SEC EDGAR XBRL (FY2007~2025). 분할조정: FY2007~2011÷28(7:1·4:1 누적), FY2012~2017÷4(4:1). PER은 Yahoo Finance 배당조정 종가 기준."
+  "epsNote": "EPS 출처: SEC EDGAR XBRL (FY2007~2025). 분할조정: FY2007~2011÷28(7:1·4:1 누적), FY2012~2017÷4(4:1). PER은 실제 연말 종가(배당 미반영) 기준(peNote 참고).",
+  "peBasis": "actual",
+  "peNote": "PER은 실제 연말 종가(배당 미반영) ÷ EPS. PER 효과는 배당을 뺀 순수 PER 변화."
 }

@@ -1999,4 +1999,9 @@ out_path_orcl = DST / "ORCL_rolling.json"
 out_path_orcl.write_text(json.dumps(orcl_out, ensure_ascii=False, indent=2), encoding="utf-8")
 print(f"  저장 → {out_path_orcl}")
 
+
+# PER을 실제 연말 종가(배당 미반영) 기준으로 (에르메스 외, scripts/rolling_actual_pe.py · scripts/data/year_end_close.json)
+from rolling_actual_pe import apply_all
+apply_all()
+
 print("\n[완료]")

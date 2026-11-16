@@ -1015,6 +1015,14 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 - 4af2df68 버전에서 위 필드만 되살림(현재가·`current`·`fullPeriod`·진행 중 구간 수익률은 최신 그대로). 결과: 2002 22.4 / 2003 26.0 / 2008 36.4 / 1999 46.2배.
 - **주의:** RMS_rolling.json을 다시 만들 때는 반드시 이 저장소의 `export_rolling_json.py`(apply_actual_pe 포함)로. 다른 복사본 스크립트로 만든 파일을 병합하면 또 되돌아간다.
 
+#### 롤링 JSON 15종목 PER 실제 종가 기준 전환 (2026-11-16)
+| 스크립트 | 파일 | 내용 |
+|---|---|---|
+| `fetch_year_end_close.py` (워크플로 '연말 실제 종가 받기 (로그 출력만)', 커밋 안 함) | 로그의 `YEC_JSON` 줄 → `scripts/data/year_end_close.json` (~20KB) | 야후 연말 Close(배당 미반영, 분할 반영)·Adj Close, 1970~. AAPL AMZN COST GOOGL JNJ JPM KO LLY META MSFT NKE NVDA ORCL V WMT |
+| `rolling_actual_pe.py` (데이터 수정, `export_rolling_json.py` 끝에서도 자동 실행) | 위 15종목 `web/public/data/rolling/{KEY}_rolling.json` | `epsDecomp` peBuy·peSell = 실제 연말 종가 ÷ EPS, peMultiple·peCagr 재계산(수익률·EPS 그대로), `rows10y.peBuyActual` 추가, `peBasis: actual`·`peNote`. 기존 PER×EPS가 받은 조정 종가와 15% 넘게 다르면 그 해는 건드리지 않음(이번엔 없음) |
+- 예: KO 1988 6.3→15.5배, JNJ 2007 10.6→18.4배, JPM 2002 15.5→30.0배, COST 2009 16.9→24.0배, NKE 2002 13.3→18.1배. 배당이 없는 AMZN·배당이 작은 GOOGL·META·NVDA는 거의 그대로.
+- 화면 문장도 고침: 코스트코 리포트(2009~2015년 매수 PER 17~25 → 24~31배), 나이키 인사이트(2021년 말 PER 42.8 → 46.8배 등).
+
 #### 에르메스 2001·2007·2008년 EPS 확인 (2026-10-23)
 - 2005 연차보고서(분할 전 주당이익: 2001 5.51 / 2002 5.88 / 2003 5.92 / 2004 5.83 / 2005 6.80 유로, ÷3)와 2009 연차보고서(주당이익 2007 2.71 / 2008 2.76 / 2009 2.75)로 대조. 문서는 `fetch-doc-text.yml`(Actions)로 PDF에서 추출.
 - 정정: 2001 1.81→1.84, 2007 2.70→2.71, 2008 2.75→2.76. 2002~2005는 기존 값과 일치.

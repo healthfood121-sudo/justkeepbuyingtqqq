@@ -144,7 +144,8 @@
       "isComplete": true,
       "benchCagr": 13.12,
       "diff": 20.32,
-      "peBuy": 5.6
+      "peBuy": 5.6,
+      "peBuyActual": 6.1
     },
     {
       "buyYear": 2009,
@@ -178,7 +179,8 @@
       "isComplete": true,
       "benchCagr": 16.55,
       "diff": 40.68,
-      "peBuy": 29.6
+      "peBuy": 29.6,
+      "peBuyActual": 32.4
     },
     {
       "buyYear": 2012,
@@ -190,7 +192,8 @@
       "isComplete": true,
       "benchCagr": 12.56,
       "diff": 35.79,
-      "peBuy": 12.0
+      "peBuy": 12.0,
+      "peBuyActual": 13.0
     },
     {
       "buyYear": 2013,
@@ -202,7 +205,8 @@
       "isComplete": true,
       "benchCagr": 12.03,
       "diff": 50.81,
-      "peBuy": 16.7
+      "peBuy": 16.7,
+      "peBuyActual": 17.8
     },
     {
       "buyYear": 2014,
@@ -214,7 +218,8 @@
       "isComplete": true,
       "benchCagr": 13.1,
       "diff": 62.5,
-      "peBuy": 25.9
+      "peBuy": 25.9,
+      "peBuyActual": 27.0
     },
     {
       "buyYear": 2015,
@@ -226,7 +231,8 @@
       "isComplete": true,
       "benchCagr": 14.82,
       "diff": 57.57,
-      "peBuy": 28.6
+      "peBuy": 28.6,
+      "peBuyActual": 29.4
     },
     {
       "buyYear": 2016,
@@ -238,7 +244,8 @@
       "isComplete": false,
       "benchCagr": 14.99,
       "diff": 36.95,
-      "peBuy": 97.1
+      "peBuy": 97.1,
+      "peBuyActual": 98.8
     },
     {
       "buyYear": 2017,
@@ -250,7 +257,8 @@
       "isComplete": false,
       "benchCagr": 14.24,
       "diff": 34.63,
-      "peBuy": 74.2
+      "peBuy": 74.2,
+      "peBuyActual": 75.2
     },
     {
       "buyYear": 2018,
@@ -262,7 +270,8 @@
       "isComplete": false,
       "benchCagr": 16.85,
       "diff": 47.24,
-      "peBuy": 27.4
+      "peBuy": 27.4,
+      "peBuyActual": 27.7
     },
     {
       "buyYear": 2019,
@@ -274,7 +283,8 @@
       "isComplete": false,
       "benchCagr": 14.86,
       "diff": 47.43,
-      "peBuy": 35.2
+      "peBuy": 35.2,
+      "peBuyActual": 35.4
     },
     {
       "buyYear": 2020,
@@ -286,7 +296,8 @@
       "isComplete": false,
       "benchCagr": 14.27,
       "diff": 39.58,
-      "peBuy": 114.9
+      "peBuy": 114.9,
+      "peBuyActual": 115.5
     },
     {
       "buyYear": 2021,
@@ -298,7 +309,8 @@
       "isComplete": false,
       "benchCagr": 11.51,
       "diff": 30.72,
-      "peBuy": 169.3
+      "peBuy": 169.3,
+      "peBuyActual": 170.0
     },
     {
       "buyYear": 2022,
@@ -310,7 +322,8 @@
       "isComplete": false,
       "benchCagr": 20.77,
       "diff": 65.79,
-      "peBuy": 37.8
+      "peBuy": 37.8,
+      "peBuyActual": 37.9
     },
     {
       "buyYear": 2023,
@@ -322,7 +335,8 @@
       "isComplete": false,
       "benchCagr": 18.89,
       "diff": 32.62,
-      "peBuy": 290.5
+      "peBuy": 290.5,
+      "peBuyActual": 291.3
     },
     {
       "buyYear": 2024,
@@ -334,7 +348,8 @@
       "isComplete": false,
       "benchCagr": 15.77,
       "diff": -4.75,
-      "peBuy": 112.6
+      "peBuy": 112.6,
+      "peBuyActual": 112.9
     }
   ],
   "loss5y": [
@@ -356,11 +371,11 @@
       "epsBuy": 0.033,
       "epsSell": 0.12,
       "epsMultiple": 3.67,
-      "peBuy": 5.6,
-      "peSell": 27.4,
-      "peMultiple": 4.87,
+      "peBuy": 6.1,
+      "peSell": 27.8,
+      "peMultiple": 4.55,
       "epsGrowthCagr": 13.9,
-      "peCagr": 17.16,
+      "peCagr": 16.36,
       "totalCagr": 33.44,
       "note": null
     },
@@ -370,11 +385,11 @@
       "epsBuy": 0.011,
       "epsSell": 0.173,
       "epsMultiple": 16.17,
-      "peBuy": 29.6,
-      "peSell": 169.3,
-      "peMultiple": 5.72,
+      "peBuy": 31.5,
+      "peSell": 170.0,
+      "peMultiple": 5.4,
       "epsGrowthCagr": 32.09,
-      "peCagr": 19.04,
+      "peCagr": 18.36,
       "totalCagr": 57.23,
       "note": null
     },
@@ -384,11 +399,11 @@
       "epsBuy": 0.024,
       "epsSell": 0.385,
       "epsMultiple": 16.38,
-      "peBuy": 12.0,
-      "peSell": 37.8,
-      "peMultiple": 3.15,
+      "peBuy": 12.8,
+      "peSell": 38.0,
+      "peMultiple": 2.97,
       "epsGrowthCagr": 32.26,
-      "peCagr": 12.16,
+      "peCagr": 11.51,
       "totalCagr": 48.36,
       "note": "매도연도 EPS: 중국 수출규제 + PC 시장 침체(FY2023 EPS 전년 대비 -96%)"
     },
@@ -398,11 +413,11 @@
       "epsBuy": 0.022,
       "epsSell": 0.17,
       "epsMultiple": 7.56,
-      "peBuy": 16.7,
-      "peSell": 290.5,
-      "peMultiple": 17.34,
+      "peBuy": 18.2,
+      "peSell": 291.3,
+      "peMultiple": 16.0,
       "epsGrowthCagr": 22.41,
-      "peCagr": 33.02,
+      "peCagr": 31.95,
       "totalCagr": 62.85,
       "note": null
     },
@@ -412,11 +427,11 @@
       "epsBuy": 0.018,
       "epsSell": 1.19,
       "epsMultiple": 64.32,
-      "peBuy": 25.9,
-      "peSell": 112.6,
-      "peMultiple": 4.34,
+      "peBuy": 27.9,
+      "peSell": 112.8,
+      "peMultiple": 4.05,
       "epsGrowthCagr": 51.65,
-      "peCagr": 15.81,
+      "peCagr": 15.02,
       "totalCagr": 75.6,
       "note": null
     },
@@ -426,14 +441,16 @@
       "epsBuy": 0.028,
       "epsSell": 2.94,
       "epsMultiple": 105.0,
-      "peBuy": 28.6,
-      "peSell": 63.3,
-      "peMultiple": 2.21,
+      "peBuy": 29.4,
+      "peSell": 63.4,
+      "peMultiple": 2.16,
       "epsGrowthCagr": 59.26,
-      "peCagr": 8.25,
+      "peCagr": 7.98,
       "totalCagr": 72.39,
       "note": null
     }
   ],
-  "epsNote": "EPS 출처: SEC EDGAR XBRL CIK 0001045810 (FY2008~FY2026). NVDA 회계연도(FY)는 1월 말 종료, 달력 연도 Y말 매수 시 FY(Y) EPS 기준. 분할 조정: FY2008~FY2019÷40, FY2020~FY2022÷10. PER은 Yahoo Finance 배당조정 종가 기준."
+  "epsNote": "EPS 출처: SEC EDGAR XBRL CIK 0001045810 (FY2008~FY2026). NVDA 회계연도(FY)는 1월 말 종료, 달력 연도 Y말 매수 시 FY(Y) EPS 기준. 분할 조정: FY2008~FY2019÷40, FY2020~FY2022÷10. PER은 실제 연말 종가(배당 미반영) 기준(peNote 참고).",
+  "peBasis": "actual",
+  "peNote": "PER은 실제 연말 종가(배당 미반영) ÷ EPS. PER 효과는 배당을 뺀 순수 PER 변화."
 }

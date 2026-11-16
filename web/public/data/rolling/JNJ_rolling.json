@@ -452,7 +452,8 @@
       "isComplete": true,
       "benchCagr": 8.5,
       "diff": 2.55,
-      "peBuy": 10.6
+      "peBuy": 10.6,
+      "peBuyActual": 18.3
     },
     {
       "buyYear": 2008,
@@ -464,7 +465,8 @@
       "isComplete": true,
       "benchCagr": 13.12,
       "diff": -1.77,
-      "peBuy": 7.8
+      "peBuy": 7.8,
+      "peBuyActual": 13.1
     },
     {
       "buyYear": 2009,
@@ -476,7 +478,8 @@
       "isComplete": true,
       "benchCagr": 13.56,
       "diff": -1.72,
-      "peBuy": 9.0
+      "peBuy": 9.0,
+      "peBuyActual": 14.6
     },
     {
       "buyYear": 2010,
@@ -488,7 +491,8 @@
       "isComplete": true,
       "benchCagr": 13.88,
       "diff": -0.83,
-      "peBuy": 8.2
+      "peBuy": 8.2,
+      "peBuyActual": 12.9
     },
     {
       "buyYear": 2011,
@@ -500,7 +504,8 @@
       "isComplete": true,
       "benchCagr": 16.55,
       "diff": -3.33,
-      "peBuy": 12.4
+      "peBuy": 12.4,
+      "peBuyActual": 18.8
     },
     {
       "buyYear": 2012,
@@ -512,7 +517,8 @@
       "isComplete": true,
       "benchCagr": 12.56,
       "diff": 0.15,
-      "peBuy": 12.4
+      "peBuy": 12.4,
+      "peBuyActual": 18.1
     },
     {
       "buyYear": 2013,
@@ -524,7 +530,8 @@
       "isComplete": true,
       "benchCagr": 12.03,
       "diff": -3.6,
-      "peBuy": 13.4
+      "peBuy": 13.4,
+      "peBuyActual": 19.0
     },
     {
       "buyYear": 2014,
@@ -536,7 +543,8 @@
       "isComplete": true,
       "benchCagr": 13.1,
       "diff": -6.91,
-      "peBuy": 13.3
+      "peBuy": 13.3,
+      "peBuyActual": 18.4
     },
     {
       "buyYear": 2015,
@@ -548,7 +556,8 @@
       "isComplete": true,
       "benchCagr": 14.82,
       "diff": -4.55,
-      "peBuy": 14.0
+      "peBuy": 14.0,
+      "peBuyActual": 18.8
     },
     {
       "buyYear": 2016,
@@ -560,7 +569,8 @@
       "isComplete": false,
       "benchCagr": 14.99,
       "diff": -2.37,
-      "peBuy": 14.9
+      "peBuy": 14.9,
+      "peBuyActual": 19.4
     },
     {
       "buyYear": 2017,
@@ -572,7 +582,8 @@
       "isComplete": false,
       "benchCagr": 14.24,
       "diff": -2.88,
-      "peBuy": 234.0
+      "peBuy": 234.0,
+      "peBuyActual": 297.3
     },
     {
       "buyYear": 2018,
@@ -584,7 +595,8 @@
       "isComplete": false,
       "benchCagr": 16.85,
       "diff": -3.19,
-      "peBuy": 18.6
+      "peBuy": 18.6,
+      "peBuyActual": 23.0
     },
     {
       "buyYear": 2019,
@@ -596,7 +608,8 @@
       "isComplete": false,
       "benchCagr": 14.86,
       "diff": -1.57,
-      "peBuy": 21.5
+      "peBuy": 21.5,
+      "peBuyActual": 25.9
     },
     {
       "buyYear": 2020,
@@ -608,7 +621,8 @@
       "isComplete": false,
       "benchCagr": 14.27,
       "diff": -0.55,
-      "peBuy": 24.4
+      "peBuy": 24.4,
+      "peBuyActual": 28.6
     },
     {
       "buyYear": 2021,
@@ -620,7 +634,8 @@
       "isComplete": false,
       "benchCagr": 11.51,
       "diff": 2.68,
-      "peBuy": 19.2
+      "peBuy": 19.2,
+      "peBuyActual": 21.9
     },
     {
       "buyYear": 2022,
@@ -632,7 +647,8 @@
       "isComplete": false,
       "benchCagr": 20.77,
       "diff": -4.36,
-      "peBuy": 23.6
+      "peBuy": 23.6,
+      "peBuyActual": 26.3
     },
     {
       "buyYear": 2023,
@@ -644,7 +660,8 @@
       "isComplete": false,
       "benchCagr": 18.89,
       "diff": 7.73,
-      "peBuy": 10.6
+      "peBuy": 10.6,
+      "peBuyActual": 11.5
     },
     {
       "buyYear": 2024,
@@ -656,7 +673,8 @@
       "isComplete": false,
       "benchCagr": 15.77,
       "diff": 31.76,
-      "peBuy": 23.9
+      "peBuy": 23.9,
+      "peBuyActual": 25.0
     }
   ],
   "loss5y": [
@@ -683,11 +701,11 @@
       "epsBuy": 3.63,
       "epsSell": 0.47,
       "epsMultiple": 0.13,
-      "peBuy": 10.6,
-      "peSell": 234.0,
-      "peMultiple": 22.02,
+      "peBuy": 18.4,
+      "peSell": 297.3,
+      "peMultiple": 16.18,
       "epsGrowthCagr": -18.49,
-      "peCagr": 36.23,
+      "peCagr": 32.1,
       "totalCagr": 11.04,
       "note": "매도연도 EPS: TCJA 세금개혁 일회성 전환세(EPS $0.47, 정상 기준 ~$6)"
     },
@@ -697,11 +715,11 @@
       "epsBuy": 4.57,
       "epsSell": 5.61,
       "epsMultiple": 1.23,
-      "peBuy": 7.8,
-      "peSell": 18.6,
-      "peMultiple": 2.39,
+      "peBuy": 13.1,
+      "peSell": 23.0,
+      "peMultiple": 1.76,
       "epsGrowthCagr": 2.07,
-      "peCagr": 9.09,
+      "peCagr": 5.8,
       "totalCagr": 11.35,
       "note": null
     },
@@ -711,11 +729,11 @@
       "epsBuy": 4.4,
       "epsSell": 5.63,
       "epsMultiple": 1.28,
-      "peBuy": 9.0,
-      "peSell": 21.5,
-      "peMultiple": 2.39,
+      "peBuy": 14.6,
+      "peSell": 25.9,
+      "peMultiple": 1.77,
       "epsGrowthCagr": 2.5,
-      "peCagr": 9.11,
+      "peCagr": 5.88,
       "totalCagr": 11.84,
       "note": null
     },
@@ -725,11 +743,11 @@
       "epsBuy": 4.78,
       "epsSell": 5.51,
       "epsMultiple": 1.15,
-      "peBuy": 8.2,
-      "peSell": 24.4,
-      "peMultiple": 2.96,
+      "peBuy": 12.9,
+      "peSell": 28.6,
+      "peMultiple": 2.21,
       "epsGrowthCagr": 1.43,
-      "peCagr": 11.46,
+      "peCagr": 8.24,
       "totalCagr": 13.06,
       "note": "매도연도 EPS: COVID-19 팬데믹"
     },
@@ -739,11 +757,11 @@
       "epsBuy": 3.49,
       "epsSell": 7.81,
       "epsMultiple": 2.24,
-      "peBuy": 12.4,
-      "peSell": 19.2,
-      "peMultiple": 1.55,
+      "peBuy": 18.8,
+      "peSell": 21.9,
+      "peMultiple": 1.17,
       "epsGrowthCagr": 8.39,
-      "peCagr": 4.46,
+      "peCagr": 1.54,
       "totalCagr": 13.22,
       "note": "매수연도 EPS: 대규모 리콜(타이레놀·DePuy ASR 임플란트) + 법적 비용(EPS $3.49)"
     },
@@ -753,11 +771,11 @@
       "epsBuy": 3.86,
       "epsSell": 6.73,
       "epsMultiple": 1.74,
-      "peBuy": 12.4,
-      "peSell": 23.6,
-      "peMultiple": 1.9,
+      "peBuy": 18.2,
+      "peSell": 26.2,
+      "peMultiple": 1.45,
       "epsGrowthCagr": 5.72,
-      "peCagr": 6.62,
+      "peCagr": 3.75,
       "totalCagr": 12.71,
       "note": null
     },
@@ -767,11 +785,11 @@
       "epsBuy": 4.81,
       "epsSell": 13.72,
       "epsMultiple": 2.85,
-      "peBuy": 13.4,
-      "peSell": 10.6,
-      "peMultiple": 0.79,
+      "peBuy": 19.0,
+      "peSell": 11.4,
+      "peMultiple": 0.6,
       "epsGrowthCagr": 11.05,
-      "peCagr": -2.36,
+      "peCagr": -4.98,
       "totalCagr": 8.43,
       "note": "매도연도 EPS: Kenvue(소비자 헬스케어) 분사 일회성 이익(EPS $13.72, 정상 운영 ~$5.8)"
     },
@@ -781,11 +799,11 @@
       "epsBuy": 5.7,
       "epsSell": 5.79,
       "epsMultiple": 1.02,
-      "peBuy": 13.3,
-      "peSell": 23.9,
-      "peMultiple": 1.79,
+      "peBuy": 18.3,
+      "peSell": 25.0,
+      "peMultiple": 1.36,
       "epsGrowthCagr": 0.16,
-      "peCagr": 6.02,
+      "peCagr": 3.13,
       "totalCagr": 6.19,
       "note": null
     },
@@ -795,14 +813,16 @@
       "epsBuy": 5.48,
       "epsSell": 11.03,
       "epsMultiple": 2.01,
-      "peBuy": 14.0,
-      "peSell": 18.5,
-      "peMultiple": 1.32,
+      "peBuy": 18.7,
+      "peSell": 18.8,
+      "peMultiple": 1.0,
       "epsGrowthCagr": 7.25,
-      "peCagr": 2.82,
+      "peCagr": 0.01,
       "totalCagr": 10.27,
       "note": "매도연도 EPS: 특별 항목 포함 가능성(EPS $11.03, 정상 운영 대비 높음)"
     }
   ],
-  "epsNote": "EPS 출처: SEC EDGAR XBRL CIK 0000200406 (달력연도 10-K, FY2007~FY2025). 분할 이력(2001년까지 누적 128:1) 이미 반영 → 추가 조정 없음. 2023년 Kenvue 분사 일회성 이익으로 EPS 급등. PER은 Yahoo Finance 배당조정 종가 기준."
+  "epsNote": "EPS 출처: SEC EDGAR XBRL CIK 0000200406 (달력연도 10-K, FY2007~FY2025). 분할 이력(2001년까지 누적 128:1) 이미 반영 → 추가 조정 없음. 2023년 Kenvue 분사 일회성 이익으로 EPS 급등. PER은 실제 연말 종가(배당 미반영) 기준(peNote 참고).",
+  "peBasis": "actual",
+  "peNote": "PER은 실제 연말 종가(배당 미반영) ÷ EPS. PER 효과는 배당을 뺀 순수 PER 변화."
 }
