@@ -8480,8 +8480,8 @@ function RmsInsight({ data, part, fs }: { data: StockData; part?: string[]; fs?:
         </div>
         <ul className={`${p} list-disc pl-4 space-y-1`}>
           <li><b>이익은 멈췄지만 무너지지 않았다.</b> 2024년 €43.93 → 2025년 €43.15(−1.8%, 프랑스 대기업 특별 법인세. 제외하면 순이익 +5.5%) → 2026년 상반기도 1년 전과 거의 같다(€21.36 vs €21.43).</li>
-          <li><b>앞으로 이익:</b> 아래 ⑥ ‘앞으로’ 계산 기준 연 {gNow.toFixed(1)}%(±3%p). 예상 수익률과 판단도 ⑥에 있다.</li>
-          <li><b>지금 가격이 싼지 비싼지</b>는 ⑥의 이익 시계에서 본다.</li>
+          <li><b>앞으로 이익:</b> 아래 ⑦ ‘앞으로’ 계산 기준 연 {gNow.toFixed(1)}%(±3%p). 예상 수익률과 판단도 ⑦에 있다.</li>
+          <li><b>지금 가격이 싼지 비싼지</b>는 ⑦의 이익 시계에서 본다.</li>
         </ul>
         <p className="text-[11px] text-gray-400 dark:text-gray-500">주가는 자동 갱신(실제 종가), EPS는 회사 발표 최근 1년 값(2025년 연간 43.15 − 2025년 상반기 21.43 + 2026년 상반기 21.36). 해설 문장은 2026년 10월 21일 기준.</p>
       </div>
@@ -8692,43 +8692,47 @@ function RmsFlow({ data }: { data: StockData }) {
   const fs = useState<Factors>(HERMES_SCENARIOS[0].f)
   const d = RMS_REPORT
   const R = (keys: string[]) => <BigReport d={d} keys={keys} />
-  const known = new Set(['demand', 'supply', 'workshops', 'price', 'cost', 'why', 'know'])
+  const known = new Set(['demand', 'supply', 'workshops', 'price', 'cost', 'why', 'know', 'stakes', 'mgmt', 'munger', 'investors', 'rules'])
   const otherExtras = (d.extra ?? []).map(x => x.id).filter(x => !known.has(x))
   const I = (part: string[]) => <RmsInsight data={data} part={part} fs={fs} />
   const Ch = ({ n, t, sub }: { n: string; t: string; sub?: string }) => (
     <div className="pt-6 mt-2 border-t-2 border-gray-200 dark:border-gray-800">
-      <h2 className="text-lg font-bold text-gray-900 dark:text-white">{n} {t}</h2>
+      <h2 data-toc-chapter="" data-toc-desc={sub} className="text-lg font-bold text-gray-900 dark:text-white">{n} {t}</h2>
       {sub && <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{sub}</p>}
     </div>
   )
   return (
     <div className="space-y-5">
-      <Ch n="①" t="결론과 사업성" sub="심층 리포트의 결론, 지금 주가가 빠진 이유, 사업의 질, 판단할 질문" />
+      <Ch n="①" t="한눈에 결론" sub="사도 되나? 지금 주가가 빠진 이유, 사업의 질, 판단할 질문" />
       {R(['head', 'conclusion', 'fix'])}
       {I(['now'])}
       <QualityCard stockKey="RMS" />
       {R(['plan'])}
 
-      <Ch n="②" t="지금 실적 — 최근 분기" sub="가장 최근 실적 발표, 지역별 매출, 지난 실적 발표 기록" />
+      <Ch n="②" t="최근 실적" sub="가장 최근 실적 발표, 지역별 매출, 지난 실적 발표 기록" />
       {I(['calls'])}
       {R(['calls'])}
 
-      <Ch n="③" t="사업 — 수요·공급·가격·매장" sub="돈을 버는 곳, 누가 사나(리셀 웃돈), 왜 덜 만드나(공방·장인), 가격, 매장, 경쟁사" />
+      <Ch n="③" t="사업 — 어떻게 돈을 버나" sub="누가 사나(리셀 웃돈), 왜 덜 만드나(공방·장인), 가격 인상, 매장 지도, 가진 회사들, 경쟁사" />
       {R(['units', 'demand'])}
       <HermesResaleCard />
       <HermesResaleHistory />
       {R(['supply', 'workshops', 'price'])}
       <HermesStoreMap />
-      {R(['peers', 'worry', 'ai', ...otherExtras])}
+      {R(['stakes', 'peers', 'worry', 'ai', ...otherExtras])}
 
-      <Ch n="④" t="숫자와 현금" sub="연도별 숫자, 원가와 이익률" />
+      <Ch n="④" t="숫자와 현금" sub="연도별 매출·이익, 원가와 이익률" />
       {R(['nums', 'cost'])}
 
-      <Ch n="⑤" t="역사와 꼭 알아야 할 사건" sub="190년 동안 위기를 어떻게 넘었나, 경영권·지분·승계·논란" />
-      {R(['history', 'know'])}
-      <BuffettNotesBox stockKey="RMS" />
+      <Ch n="⑤" t="경영진과 역사" sub="경영진은 믿을 만한가(정직성·주주·성적표), 190년의 위기 극복, 경영권·승계·논란" />
+      {R(['mgmt', 'history', 'know'])}
 
-      <Ch n="⑥" t="미래와 값" sub="이익 성장률 근거와 계산기, 시나리오와 가능성, 이익 시계, 10년 보유 수익률 분해" />
+      <Ch n="⑥" t="투자 대가들은 어떻게 봤나" sub="찰리 멍거 인터뷰(원문·번역), 테리 스미스·베일리 기퍼드, 버핏·멍거 노트, 투자 원칙 10가지" />
+      {R(['munger', 'investors'])}
+      <BuffettNotesBox stockKey="RMS" />
+      {R(['rules'])}
+
+      <Ch n="⑦" t="값 — 지금 싼가, 얼마면 사나" sub="이익 성장률·시나리오, 프랑스·미국 PER 비교, 이익 시계, 목표 PER 가격표·내 목표가, 과거 PER별 수익률" />
       {R(['why'])}
       {I(['future'])}
       <FrancePeChart />
@@ -8736,7 +8740,7 @@ function RmsFlow({ data }: { data: StockData }) {
       {I(['clock'])}
       {I(['past', 'concl'])}
 
-      <Ch n="⑦" t="확인할 신호와 정리" sub="반기마다 볼 숫자, 어떻게 들고 갈까" />
+      <Ch n="⑧" t="확인할 신호와 정리" sub="반기마다 볼 숫자, 어떻게 들고 갈까" />
       {R(['warn', 'final'])}
     </div>
   )
@@ -10900,7 +10904,7 @@ function AutoInsight({ stockKey, data, past }: { stockKey: string; data: StockDa
     const otherExtras = (big.extra ?? []).map(x => x.id).filter(x => !known.has(x))
     const Ch = ({ n, t, sub }: { n: string; t: string; sub?: string }) => (
       <div className="pt-6 mt-2 border-t-2 border-gray-200 dark:border-gray-800">
-        <h2 className="text-lg font-bold text-gray-900 dark:text-white">{n} {t}</h2>
+        <h2 data-toc-chapter="" data-toc-desc={sub} className="text-lg font-bold text-gray-900 dark:text-white">{n} {t}</h2>
         {sub && <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{sub}</p>}
       </div>
     )
