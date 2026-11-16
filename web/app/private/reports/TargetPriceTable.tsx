@@ -10,7 +10,7 @@ const fmt = (v: number) => `€${Math.round(v).toLocaleString('ko-KR')}`
 const sgn = (v: number) => `${v > 0 ? '+' : ''}${v.toFixed(0)}%`
 
 export default function TargetPriceTable({
-  price, priceDate, eps, epsEnd, g, marks, years = 5,
+  price, priceDate, eps, epsEnd, g, marks, years = 5, payout,
 }: {
   price: number
   priceDate: string
@@ -19,6 +19,7 @@ export default function TargetPriceTable({
   g: number        // 기본 이익 성장률(연 %)
   marks: PeMark[]
   years?: number
+  payout?: number  // 배당성향(이익 중 배당 비율, 0~1) — 있으면 '살 때 PER별 10년 수익률' 표를 보여 준다
 }) {
   const [pe, setPe] = useState(marks[0]?.pe ?? 20)
   const [custom, setCustom] = useState('')
@@ -124,6 +125,34 @@ export default function TargetPriceTable({
           </tbody>
         </table>
       </div>
+
+      {payout != null && (() => {
+        const entries = Array.from(new Set([...matrixPes, Math.round(peNow)])).sort((a, b) => a - b)
+        const ret = (e: number, x: number) => ((1 + g / 100) * Math.pow(x / e, 0.1) - 1 + payout / e) * 100
+        return (
+          <div className="overflow-x-auto">
+            <p className="text-xs font-semibold text-gray-700 dark:text-gray-200 pb-1">그 PER에 사면 10년 동안 연 몇 %? (살 때 PER × 10년 뒤 PER)</p>
+            <table className="text-xs">
+              <thead><tr>
+                <th className={`${th} text-left`}>살 때 PER (지금 이익 기준 가격)</th>
+                {matrixPes.map(x => <th key={x} className={`${th} text-right`}>10년 뒤 {x}배</th>)}
+              </tr></thead>
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                {entries.map(e => (
+                  <tr key={e} className={e === pe ? 'bg-blue-50 dark:bg-blue-900/20' : ''}>
+                    <td className={`${td} break-keep`}>{e}배 ({fmt(e * eps)}){e === Math.round(peNow) && <span className="text-[10px] text-gray-400"> 지금</span>}</td>
+                    {matrixPes.map(x => {
+                      const r = ret(e, x)
+                      return <td key={x} className={`${td} text-right ${r >= 15 ? 'text-emerald-600 dark:text-emerald-400 font-semibold' : r < 8 ? 'text-red-500' : ''}`}>연 {r.toFixed(1)}%</td>
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <p className="text-[11px] text-gray-400 dark:text-gray-500 pt-1">이익 연 {g.toFixed(1)}% 성장(위 기본 성장률), 배당은 이익의 약 {Math.round(payout * 100)}%를 준다고 가정한 대략 계산(배당 포함). 초록 = 연 15% 이상, 빨강 = 연 8% 미만. 추정이며 보장이 아니다.</p>
+          </div>
+        )
+      })()}
     </div>
   )
 }
