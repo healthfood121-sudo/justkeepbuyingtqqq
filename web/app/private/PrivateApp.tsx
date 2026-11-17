@@ -9693,7 +9693,7 @@ function NkeInsight({ data }: { data: StockData }) {
     <div className="space-y-4">
       <div>
         <h3 className="text-base font-semibold text-gray-900 dark:text-white">인사이트</h3>
-        <p className="text-xs text-gray-400 dark:text-gray-500">2026년 10월 21일 기준 분석</p>
+        <p className="text-xs text-gray-400 dark:text-gray-500">2026년 10월 21일 기준 분석 · 11월 17일 투자자의 날(2031년 목표) 반영</p>
       </div>
 
       <div className={box}>
@@ -9795,6 +9795,42 @@ function NkeInsight({ data }: { data: StockData }) {
         </ul>
       </div>
 
+      <div className="rounded-lg border-2 border-orange-300 dark:border-orange-800 bg-orange-50/50 dark:bg-orange-950/20 p-4 space-y-2">
+        <h4 className={h4}>투자자의 날(2026년 11월 17일) — 9년 만의 첫 발표, 2031년 목표 &ldquo;Full Stride Ahead&rdquo;</h4>
+        <p className={p}>엘리엇 힐 CEO가 2017년 이후 처음 연 투자자의 날. 지난 2년 &ldquo;Win Now&rdquo;로 기반을 다졌고, 이제 5년 계획으로 &ldquo;지속 가능한 이익 성장&rdquo;으로 돌아가겠다는 발표. 발표 당일 주가 약 +4%(보도).</p>
+        <div className="overflow-x-auto">
+          <table className="text-xs">
+            <thead><tr><th className={`${th} text-left`}>항목</th><th className={`${th} text-left`}>회사 목표</th><th className={`${th} text-left`}>읽는 법</th></tr></thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+              <tr><td className={`${td} break-keep`}>2027 회계연도(올해, ~2027년 5월)</td><td className={td}>매출 한 자릿수 후반 감소, 영업이익률 약 6%, 조정 EPS <b>1.15~1.35달러</b>(기존 전망 그대로)</td><td className={td}>올해가 이익 바닥. 최근 1년 EPS 2.08달러에서 한 번 더 약 40% 줄어든다.</td></tr>
+              <tr><td className={`${td} break-keep`}>매출 경로</td><td className={td}>2028년 감소 폭 축소 → 2029년 시장만큼 성장 → 2030~2031년 시장보다 빠르게</td><td className={td}>회복은 2029년부터. 2년은 &ldquo;성장을 위한 투자 기간&rdquo;.</td></tr>
+              <tr><td className={`${td} break-keep`}>2031년 매출</td><td className={td}>2027년 대비 <b>약 50억 달러 증가</b>(퍼포먼스 스포츠 약 40억, 스포츠웨어 약 10억)</td><td className={td}>4년 동안 연 약 3% 성장(추정) — 2031년 매출은 약 470~480억 달러로 2024 회계연도(514억 달러)보다 여전히 낮다(대략).</td></tr>
+              <tr><td className={`${td} break-keep`}>2031년 영업이익률</td><td className={td}><b>12~14%</b></td><td className={td}>올해 약 6%의 두 배. 할인 축소·매출총이익률 회복·비용 절감이 열쇠.</td></tr>
+              <tr><td className={`${td} break-keep`}>2031년 조정 EPS</td><td className={td}><b>3.00~3.50달러</b></td><td className={td}>올해 중간값(1.25달러)의 약 2.6배 — 4년 동안 연 약 27%. 그래도 최고치(2024년 3.73달러)보다 낮다.</td></tr>
+              <tr><td className={`${td} break-keep`}>비용 절감(Pace)</td><td className={td}>2031년까지 연 <b>약 25억 달러</b> 절감, 구조조정 비용 약 13억 달러(2026·2027년에 각 약 3억)</td><td className={td}>이익 회복의 큰 몫이 매출보다 비용에서 나온다.</td></tr>
+              <tr><td className={`${td} break-keep`}>배당</td><td className={td}>2027~2031년 누적 <b>약 120억 달러</b>(올해 약 24억)</td><td className={td}>연 약 24억 달러 — 주가 약 39달러 기준 수익률 약 4.2%가 유지된다는 약속.</td></tr>
+              <tr><td className={`${td} break-keep`}>집중</td><td className={td}>5개 스포츠(러닝·트레이닝·축구·농구·아웃도어) + 스포츠웨어(나이키·조던·컨버스), 23개 핵심 국가가 성장의 90% 이상</td><td className={td}>조던 &ldquo;프리미엄 회복&rdquo;, 중국은 &ldquo;리셋 계속&rdquo;.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p className={`${p} font-semibold pt-1`}>회사 목표대로 되면 수익률은? (주가 약 39달러에서 2031 회계연도 말까지 약 4.5년, 배당 연 약 4.2% 포함, 추정)</p>
+        <div className="overflow-x-auto">
+          <table className="text-xs">
+            <thead><tr><th className={`${th} text-left`}>2031년 EPS</th><th className={`${th} text-right`}>PER 15배</th><th className={`${th} text-right`}>PER 20배</th><th className={`${th} text-right`}>PER 25배</th></tr></thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+              <tr><td className={td}>목표 중간 3.25달러</td><td className={`${td} text-right`}>주가 약 49달러 · 연 약 9%</td><td className={`${td} text-right font-semibold`}>약 65달러 · 연 약 16%</td><td className={`${td} text-right`}>약 81달러 · 연 약 22%</td></tr>
+              <tr><td className={td}>목표 미달 2.50달러</td><td className={`${td} text-right`}>약 38달러 · 연 약 3%</td><td className={`${td} text-right`}>약 50달러 · 연 약 10%</td><td className={`${td} text-right`}>약 63달러 · 연 약 15%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <ul className={`${p} list-disc pl-4 space-y-1`}>
+          <li><b>좋은 점:</b> 처음으로 구체적인 숫자(이익률 12~14%, EPS 3.00~3.50달러)와 시간표가 나왔다. 배당 약속(5년 120억 달러)이 하락의 바닥을 받친다. 목표대로 되고 PER이 20배 안팎이면 연 15% 안팎도 가능하다.</li>
+          <li><b>걱정:</b> 매출 성장은 4년 동안 연 약 3%로 느리고, 이익 회복의 큰 몫이 비용 절감이다. 2031년에도 EPS가 2024년 최고치보다 낮다 — &ldquo;예전 나이키로 완전히 돌아가는&rdquo; 계획은 아니다. 회복이 2029년부터라 그 전 2년은 숫자로 확인할 게 적다.</li>
+          <li><b>확인할 순서:</b> ① 2027 회계연도 EPS가 1.15~1.35달러 안에 드는지(2027년 6월) ② 2028년 매출 감소 폭이 실제로 줄어드는지 ③ 매출총이익률이 다시 오르는지(할인 축소) ④ 중국 리셋이 멈추는지.</li>
+        </ul>
+        <p className="text-[11px] text-gray-400 dark:text-gray-500">출처: 나이키 보도자료 &ldquo;NIKE, Inc. Announces Full Stride Ahead Strategy and 2031 Financial Framework at Investor Day&rdquo;(2026-11-17, SEC 8-K). 2031년 매출·수익률은 이 사이트의 대략 계산.</p>
+      </div>
+
       <div className={box}>
         <h4 className={h4}>4. 앞으로 — 지금(PER 18배) 사서 10년 보유 시 예상 연평균 수익률</h4>
         <p className={p}>최근 1년 EPS 2.08달러, 배당수익률 4.3%가 유지된다고 가정. 행 = 연 EPS 성장률, 열 = 10년 뒤 PER.</p>
@@ -9829,6 +9865,7 @@ function NkeInsight({ data }: { data: StockData }) {
           <li><b>싸 보이는 건 착시다</b>(1번). 판단의 기준은 PER이 아니라 이익이 언제 다시 늘어나느냐다.</li>
           <li>이익이 2024년 수준으로만 회복돼도(연 6%) PER 유지 시 연 10~11% 정도. 배당 4.3%가 하단을 받쳐준다.</li>
           <li><b>필요한 성장:</b> 연 17%가 나오려면 PER 18배 유지·배당 4.3% 가정에서 이익이 10년간 연 약 12%씩 늘어야 한다(2.08 → 약 6.5달러). EPS 최고치는 3.73달러(2024년)였고, 2016년(2.16달러)부터 10년간 제자리였다.</li>
+          <li><b>투자자의 날(11월 17일) 반영:</b> 회사 목표는 2031 회계연도 EPS 3.00~3.50달러, 영업이익률 12~14%. 목표대로 되고 PER 20배면 지금부터 연 약 16%(배당 포함), 목표 미달(EPS 2.5달러)에 PER 15배면 연 약 3%. 결과는 결국 <b>이 목표를 지키느냐</b>에 달렸다 — 위 주황색 칸 참고.</li>
           <li>이익 회복이 늦어지면 연 4~8% 수준에 머물 수 있다. 앞으로 볼 것은 <b>매출 감소가 멈추고 EPS가 다시 늘어나는지</b>, 그리고 <b>배당이 유지되는지</b>다(분기 매출이 플러스로 돌아서는지, 2027 회계연도 이후 EPS가 다시 늘어나는지).</li>
         </ul>
       </div>
