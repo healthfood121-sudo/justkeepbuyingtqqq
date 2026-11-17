@@ -574,7 +574,10 @@ YF_TICKER = {
     "LVMH": "MC.PA",  # 파리 상장 (모엣 헤네시 루이비통)
     "ITX": "ITX.MC",  # 마드리드 상장 (인디텍스, 자라)
 }
-CURRENCY = {"LVMH": "EUR", "ITX": "EUR"}  # 미국 달러가 아닌 종목
+CURRENCY = {"LVMH": "EUR", "ITX": "EUR"}
+# 야후 배당 조정 주가가 초기 구간에서 깨진 종목: 이 날짜부터만 쓴다
+# ITX(인디텍스): 2001~2007년 조정 주가 ÷ 실제 종가 비율이 −0.12~0.47로 튀고(2001년은 음수), 2008년부터 0.61 → 0.97로 매끄럽다(scripts/fetch_year_end_close.py로 확인, 2026-11-17)
+PRICE_START = {"ITX": "2008-12-01"}  # 미국 달러가 아닌 종목
 
 # ── 헬퍼 함수 ─────────────────────────────────────────────────
 
@@ -655,7 +658,7 @@ def main():
                 print(f"  CSV 이미 존재, 스킵")
             else:
                 try:
-                    az = RollingAnalyzer(YF_TICKER.get(ticker, ticker), benchmark="^SP500TR")
+                    az = RollingAnalyzer(YF_TICKER.get(ticker, ticker), benchmark="^SP500TR", start=PRICE_START.get(ticker, "1970-01-01"))
                     df10a = az.rolling(years=10, freq="annual")
                     df5a  = az.rolling(years=5,  freq="annual")
                     az.save_csv(df10a, csv_10y)
@@ -682,7 +685,7 @@ def main():
             df10a = pd.read_csv(csv_10y, parse_dates=["buy_date","sell_date"])
             df5a  = pd.read_csv(csv_5y,  parse_dates=["buy_date","sell_date"]) if csv_5y.exists() else df10a.iloc[:0].copy()
 
-            az  = RollingAnalyzer(YF_TICKER.get(ticker, ticker), benchmark="^SP500TR")
+            az  = RollingAnalyzer(YF_TICKER.get(ticker, ticker), benchmark="^SP500TR", start=PRICE_START.get(ticker, "1970-01-01"))
             fp  = az.full_period()
             st  = summary_stats(df10a, label=ticker)
 
