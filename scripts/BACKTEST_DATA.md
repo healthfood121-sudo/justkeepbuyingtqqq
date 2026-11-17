@@ -1173,3 +1173,9 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 - 절차: SP500_INFO(순위 999) → 롤링(`update-rolling-annual` only=CRCL) → 월별 주가(`export-monthly-price` CRCL:CRCL) → 펀더멘털(`export-fundamentals` CRCL) → 현금흐름(`export-cashflow` CRCL) → 3분기 보도자료(SEC 8-K)·컨퍼런스콜(Motley Fool) → `quality.tsv`(C) → `calls.ts`·`deep.ts` 해설.
 - 2025년 6월 5일 상장이라 `rows10y`가 비어 있다(10년 보유 기록·PER 역사 없음). 2025년 연간 EPS −0.44(상장 관련 비용), 최근 1년 EPS 1.66(Arc 토큰 사전 판매 1.82억 달러 포함 — 반복 이익 기준은 약 1.1달러 추정).
 - 소속 지수 없음 → '기타' 탭.
+
+#### ITX(인디텍스·자라) 종목 추가 (2026-11-17, 사용자 요청)
+- 마드리드 상장(ITX.MC, 유로), SEC 공시 없음 → LVMH와 같은 방식: `generate_all_sp500.py`에 `YF_TICKER["ITX"]="ITX.MC"`, `CURRENCY["ITX"]="EUR"`, `export_fundamentals.py`에 `TICKER_NOW`·`NO_SEC`·`MANUAL_EPS["ITX"]`(회계연도 1월 31일 끝, 2018~2025), `yft()`에 `.MC` 추가, `export_segments.py` SKIP.
+- **야후 조정 주가 오류:** 2001~2007년 조정 종가 ÷ 실제 종가가 −0.12~0.47로 튐(2001년 음수) → 2003년 매수 10년 31배 같은 잘못된 값. `PRICE_START["ITX"]="2008-12-01"`(generate_all_sp500.py)로 2008년 이후만 사용(조정 비율 0.61 → 0.97로 매끄러움). 롤링 10년 완결 8개(2008~2015년 매수).
+- 연말 PER(fundamentals): 2018 20.1 / 2019 26.9 / 2020 72.3(코로나) / 2021 27.4 / 2022 18.7 / 2023 22.8 / 2024 26.4 / 2025 28.2배, 중간값 26.6배.
+- 롤링 `current.divYield`가 1.08%로 실제(약 2.9%, 주당 1.75유로)보다 낮게 나옴(야후 값) — 해설에는 실제 값을 씀.
