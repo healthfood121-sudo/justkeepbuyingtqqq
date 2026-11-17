@@ -59,7 +59,7 @@ LAST_FULL = TODAY.year - 1
 
 def yft(t: str) -> str:
     """야후 티커: 미국 종목은 BRK.B → BRK-B, 해외 거래소 접미사(.PA 등)는 그대로."""
-    return t if t.endswith((".PA", ".L", ".DE", ".AS", ".SW", ".MI")) else t.replace(".", "-")
+    return t if t.endswith((".PA", ".L", ".DE", ".AS", ".SW", ".MI", ".MC")) else t.replace(".", "-")
 
 
 def r2(x, n=2):
