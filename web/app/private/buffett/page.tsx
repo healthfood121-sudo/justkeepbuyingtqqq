@@ -53,6 +53,11 @@ export default function BuffettPage() {
           <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">1986~2018년 주주총회 질문과 답을 주제(인플레이션·사이클·해자·경영자·실수…)와 연도로 찾아본다.</p>
         </Link>
 
+        <Link href="/private/baillie-gifford" className="block rounded-xl border-2 border-sky-300 dark:border-sky-800 bg-sky-50/70 dark:bg-sky-950/30 p-4 hover:border-sky-500">
+          <p className="text-sm font-semibold text-gray-900 dark:text-white">🔭 반대편의 대가 — 베일리 기퍼드 심층 분석 →</p>
+          <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">아마존·테슬라·엔비디아·스페이스X·에르메스를 일찍 사서 끝까지. 버핏·멍거와 무엇이 같고 다른지.</p>
+        </Link>
+
         <Link href="/private/buffett/munger-2023" className="block rounded-xl border-2 border-emerald-300 dark:border-emerald-800 bg-emerald-50/70 dark:bg-emerald-950/30 p-4 hover:border-emerald-500">
           <p className="text-sm font-semibold text-gray-900 dark:text-white">🎙️ 찰리 멍거 마지막 장편 인터뷰 (2023년 10월) — 우리말 정리 →</p>
           <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">코스트코·에르메스·애플·BYD·중국·벤처캐피털·도박까지 18개 주제. 핵심 문장은 원문과 함께.</p>
