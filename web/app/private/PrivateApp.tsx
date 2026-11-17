@@ -448,6 +448,7 @@ import fizzData  from '@/public/data/rolling/FIZZ_rolling.json'
 import uslmData  from '@/public/data/rolling/USLM_rolling.json'
 import smplData  from '@/public/data/rolling/SMPL_rolling.json'
 import gctData   from '@/public/data/rolling/GCT_rolling.json'
+import crclData  from '@/public/data/rolling/CRCL_rolling.json'
 import bcpcData  from '@/public/data/rolling/BCPC_rolling.json'
 import nmihData  from '@/public/data/rolling/NMIH_rolling.json'
 import plmrData  from '@/public/data/rolling/PLMR_rolling.json'
@@ -1000,6 +1001,7 @@ const STOCKS: Array<{ key: string; data: StockData }> = [
   { key: 'USLM',  data: uslmData   as unknown as StockData },
   { key: 'SMPL',  data: smplData   as unknown as StockData },
   { key: 'GCT',   data: gctData    as unknown as StockData },
+  { key: 'CRCL',  data: crclData   as unknown as StockData },
   { key: 'BCPC',  data: bcpcData   as unknown as StockData },
   { key: 'NMIH',  data: nmihData   as unknown as StockData },
   { key: 'PLMR',  data: plmrData   as unknown as StockData },

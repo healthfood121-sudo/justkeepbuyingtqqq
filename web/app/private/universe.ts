@@ -345,6 +345,7 @@ export const UNIV: Record<string, string> = {
   "USLM": "RQ",
   "SMPL": "RQ",
   "GCT": "RQ",
+  "CRCL": "",
   "BCPC": "RQ",
   "NMIH": "RQ",
   "PLMR": "RQ",
