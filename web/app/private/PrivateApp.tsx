@@ -49,6 +49,7 @@ import { DCI_REPORT } from './reports/dciData'
 import { GGG_REPORT } from './reports/gggData'
 import { JKHY_REPORT } from './reports/jkhyData'
 import { COST_REPORT } from './reports/costData'
+import { UNH_REPORT } from './reports/unhData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
 import { MO_REPORT } from './reports/moData'
@@ -11136,6 +11137,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   GGG: () => <BigReport d={GGG_REPORT} />,
   JKHY: () => <BigReport d={JKHY_REPORT} />,
   COST: () => <BigReport d={COST_REPORT} />,
+  UNH: () => <BigReport d={UNH_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
   MO: () => <BigReport d={MO_REPORT} />,
@@ -11208,6 +11210,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   GGG: GGG_REPORT,
   JKHY: JKHY_REPORT,
   COST: COST_REPORT,
+  UNH: UNH_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
   MO: MO_REPORT,
