@@ -50,6 +50,7 @@ import { GGG_REPORT } from './reports/gggData'
 import { JKHY_REPORT } from './reports/jkhyData'
 import { COST_REPORT } from './reports/costData'
 import { UNH_REPORT } from './reports/unhData'
+import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
 import { MO_REPORT } from './reports/moData'
@@ -450,6 +451,7 @@ import uslmData  from '@/public/data/rolling/USLM_rolling.json'
 import smplData  from '@/public/data/rolling/SMPL_rolling.json'
 import gctData   from '@/public/data/rolling/GCT_rolling.json'
 import crclData  from '@/public/data/rolling/CRCL_rolling.json'
+import antData   from '@/public/data/rolling/ANT_rolling.json'
 import itxData   from '@/public/data/rolling/ITX_rolling.json'
 import bcpcData  from '@/public/data/rolling/BCPC_rolling.json'
 import nmihData  from '@/public/data/rolling/NMIH_rolling.json'
@@ -1004,6 +1006,7 @@ const STOCKS: Array<{ key: string; data: StockData }> = [
   { key: 'SMPL',  data: smplData   as unknown as StockData },
   { key: 'GCT',   data: gctData    as unknown as StockData },
   { key: 'CRCL',  data: crclData   as unknown as StockData },
+  { key: 'ANT',   data: antData    as unknown as StockData },
   { key: 'ITX',   data: itxData    as unknown as StockData },
   { key: 'BCPC',  data: bcpcData   as unknown as StockData },
   { key: 'NMIH',  data: nmihData   as unknown as StockData },
@@ -11138,6 +11141,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   JKHY: () => <BigReport d={JKHY_REPORT} />,
   COST: () => <BigReport d={COST_REPORT} />,
   UNH: () => <BigReport d={UNH_REPORT} />,
+  ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
   MO: () => <BigReport d={MO_REPORT} />,
@@ -11211,6 +11215,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   JKHY: JKHY_REPORT,
   COST: COST_REPORT,
   UNH: UNH_REPORT,
+  ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
   MO: MO_REPORT,

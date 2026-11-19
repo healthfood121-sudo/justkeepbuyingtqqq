@@ -1174,6 +1174,11 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 - 2025년 6월 5일 상장이라 `rows10y`가 비어 있다(10년 보유 기록·PER 역사 없음). 2025년 연간 EPS −0.44(상장 관련 비용), 최근 1년 EPS 1.66(Arc 토큰 사전 판매 1.82억 달러 포함 — 반복 이익 기준은 약 1.1달러 추정).
 - 소속 지수 없음 → '기타' 탭.
 
+#### ANT(앤트로픽) 종목 추가 (2026-11-19, 사용자 요청 — 상장 첫날)
+- 2026-11-19 나스닥 상장이라 주가 데이터가 없어 `web/public/data/rolling/ANT_rolling.json`을 **손으로 만든 임시 파일**로 넣었다(첫 거래가 111.50달러, rows10y 빈 배열, PER 없음, fullPeriod.cagr 0). 주가가 쌓이면 `update-rolling-annual` only=ANT로 교체.
+- SP500_INFO(순위 999), `quality.tsv`(B: 3·3·2·5·3), `descriptions.json`, `universe.ts`, 리포트 `web/app/private/reports/antData.ts`(상장 공시 S-1 보도 요약 — SEC 원문은 fetch-pages가 403으로 못 받음).
+- 펀더멘털·현금흐름·월별 주가는 아직 없음(첫 10-Q 뒤 `export-fundamentals` ANT).
+
 #### ITX(인디텍스·자라) 종목 추가 (2026-11-17, 사용자 요청)
 - 마드리드 상장(ITX.MC, 유로), SEC 공시 없음 → LVMH와 같은 방식: `generate_all_sp500.py`에 `YF_TICKER["ITX"]="ITX.MC"`, `CURRENCY["ITX"]="EUR"`, `export_fundamentals.py`에 `TICKER_NOW`·`NO_SEC`·`MANUAL_EPS["ITX"]`(회계연도 1월 31일 끝, 2018~2025), `yft()`에 `.MC` 추가, `export_segments.py` SKIP.
 - **야후 조정 주가 오류:** 2001~2007년 조정 종가 ÷ 실제 종가가 −0.12~0.47로 튐(2001년 음수) → 2003년 매수 10년 31배 같은 잘못된 값. `PRICE_START["ITX"]="2008-12-01"`(generate_all_sp500.py)로 2008년 이후만 사용(조정 비율 0.61 → 0.97로 매끄러움). 롤링 10년 완결 8개(2008~2015년 매수).

@@ -1,0 +1,41 @@
+{
+  "ticker": "ANT",
+  "name": "앤트로픽",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "2026-11-19 상장 첫날 — 주가 기록 없음(첫 거래가 111.50달러, 보도). 이익이 없어 PER 없음.",
+  "current": {
+    "price": 111.5,
+    "pe": null,
+    "divYield": 0,
+    "eps": null
+  },
+  "fullPeriod": {
+    "start_date": "2026-11-19",
+    "end_date": "2026-11-19",
+    "start_price": 111.5,
+    "end_price": 111.5,
+    "years": 0,
+    "cagr": 0,
+    "multiple": 1
+  },
+  "stats": {
+    "n": 0,
+    "min": null,
+    "minBuy": "",
+    "median": null,
+    "mean": null,
+    "max": null,
+    "maxBuy": "",
+    "over10": null,
+    "over15": null,
+    "over20": null,
+    "losses": 0,
+    "beatBench": null,
+    "beatTotal": null
+  },
+  "rows10y": [],
+  "loss5y": [],
+  "epsDecomp": [],
+  "epsNote": "EPS 데이터 미수집"
+}
