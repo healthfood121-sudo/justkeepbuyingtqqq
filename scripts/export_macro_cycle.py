@@ -103,6 +103,24 @@ def fred(sid):
         except ValueError: pass
     return monthly(pts)
 
+def fred_raw(sid, since):
+    """일·주 단위 원래 값 그대로 [[YYYY-MM-DD, 값], ...] — 주간 신호용(하이일드 스프레드, 실업수당 청구)."""
+    txt = fred_text(sid)
+    if not txt: return None
+    out = []
+    for row in csv.reader(io.StringIO(txt)):
+        if len(row) < 2 or not row[0][:4].isdigit() or row[0] < since: continue
+        try: out.append([row[0][:10], float(row[1])])
+        except ValueError: pass
+    return out or None
+
+WEEKLY = {  # 키: (FRED 아이디, 시작일, 이름)
+    "HY": ("BAMLH0A0HYM2", "2018-01-01", "하이일드 스프레드(일간)"),
+    "BAA10Y": ("BAA10Y", "2018-01-01", "BAA 회사채 − 10년 국채(일간)"),
+    "ICSA": ("ICSA", "1967-01-01", "실업수당 신규 청구(주간)"),
+    "CCSA": ("CCSA", "2018-01-01", "실업수당 계속 청구(주간)"),
+}
+
 def bls(sid):
     """FRED가 막혔을 때 실업률 등은 미국 노동통계국 공개 API(v1, 키 없음, 한 번에 10년)로."""
     out = {}
@@ -178,7 +196,12 @@ def main():
         else: errors.append("Shiller CAPE")
     except Exception as e:
         print("  shiller", e, flush=True); errors.append("Shiller CAPE")
-    OUT.write_text(json.dumps({"generated": time.strftime("%Y-%m-%d"), "errors": errors, "series": series},
+    weekly = {}
+    for k, (sid, since, nm) in WEEKLY.items():
+        pts = fred_raw(sid, since)
+        if pts: weekly[k] = {"name": nm, "id": sid, "pts": pts}; print(f"WEEKLY {k} {pts[0][0]}~{pts[-1][0]} n={len(pts)}", flush=True)
+        else: errors.append(f"FRED 주간 {sid}")
+    OUT.write_text(json.dumps({"generated": time.strftime("%Y-%m-%d"), "errors": errors, "series": series, "weekly": weekly},
                               ensure_ascii=False, separators=(",", ":")))
     print("errors:", errors)
 
