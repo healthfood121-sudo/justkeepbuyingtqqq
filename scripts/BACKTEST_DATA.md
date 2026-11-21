@@ -1174,6 +1174,17 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 - 2025년 6월 5일 상장이라 `rows10y`가 비어 있다(10년 보유 기록·PER 역사 없음). 2025년 연간 EPS −0.44(상장 관련 비용), 최근 1년 EPS 1.66(Arc 토큰 사전 판매 1.82억 달러 포함 — 반복 이익 기준은 약 1.1달러 추정).
 - 소속 지수 없음 → '기타' 탭.
 
+#### CRWD·ZS·NET·PLTR·TEM·DOCS 종목 추가 (2026-11-21, 사용자 요청 — 드러켄밀러가 말한 AI 활용·보안·헬스케어 후보)
+- 절차: SP500_INFO(순위 999) → `update-rolling-annual` only → `export-monthly-price` → `export-fundamentals` → `quality.tsv`(CRWD B·ZS C·NET B·PLTR B·TEM C·DOCS B) → `descriptions.json`(ZS·NET·TEM·DOCS 새로, CRWD·PLTR은 이미 있음) → STOCKS 등록 → `build_private_universe.py`.
+- 모두 2018년 이후 상장이라 10년 보유 기록 없음(rows10y 비어 있음).
+
+#### 경기 둔화 판단 페이지 데이터 (2026-11-21, 사용자 요청)
+| 파일 | 스크립트 | 내용 | 사용처 |
+|---|---|---|---|
+| `web/public/data/macro_cycle.json` | `scripts/export_macro_cycle.py` (워크플로 `export-macro-cycle.yml`, 매주 토요일 자동) | FRED 18개(침체 기간·기준금리·국채 금리·BAA·하이일드·실업률·삼 규칙·실업수당·물가·산업생산·심리·침체 확률·구리·금융여건·주택 허가·금리차), 야후 월말 종가 14개(나스닥100·S&P 500·VIX·업종 ETF·RSP·SPY·HYG·IEF), 쉴러 CAPE — 1950년~ 월별 | `build_slowdown.py` 입력 |
+| `web/public/data/slowdown.json` | `scripts/build_slowdown.py` (같은 워크플로) | 나스닥100 −15% 이상 하락장 21개(1971~, 합성 일간) 유형 분류(둔화만·금리 인상·단기 폭락·침체·거품 붕괴)와 고점·바닥 때 지표, 유형별 중간값, 지금 지표, 그래프용 월별 시계열 | `/private/slowdown` |
+- 유형은 사람이 붙인 분류(`LABEL`, 원인 메모 포함). 2000~2002년 하락 안의 2007~2009년 하락은 따로 뗐다.
+
 #### ANT(앤트로픽) 종목 추가 (2026-11-19, 사용자 요청 — 상장 첫날)
 - 2026-11-19 나스닥 상장이라 주가 데이터가 없어 `web/public/data/rolling/ANT_rolling.json`을 **손으로 만든 임시 파일**로 넣었다(첫 거래가 111.50달러, rows10y 빈 배열, PER 없음, fullPeriod.cagr 0). 주가가 쌓이면 `update-rolling-annual` only=ANT로 교체.
 - SP500_INFO(순위 999), `quality.tsv`(B: 3·3·2·5·3), `descriptions.json`, `universe.ts`, 리포트 `web/app/private/reports/antData.ts`(상장 공시 S-1 보도 요약 — SEC 원문은 fetch-pages가 403으로 못 받음).

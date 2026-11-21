@@ -3568,5 +3568,29 @@
     "sector": "AI 모델/소프트웨어",
     "products": "AI 모델 클로드(API·엔터프라이즈·개인 구독), 코딩 에이전트 클로드 코드",
     "type": "stock"
+  },
+  "ZS": {
+    "name": "Zscaler, Inc.",
+    "sector": "사이버 보안",
+    "products": "제로 트러스트 클라우드 보안 접속(ZIA·ZPA)",
+    "type": "stock"
+  },
+  "NET": {
+    "name": "Cloudflare, Inc.",
+    "sector": "인터넷 인프라/보안",
+    "products": "콘텐츠 전송·보안·개발자 플랫폼(Workers)·AI 추론 네트워크",
+    "type": "stock"
+  },
+  "TEM": {
+    "name": "Tempus AI, Inc.",
+    "sector": "헬스케어 AI",
+    "products": "유전체 검사, AI 진단 보조, 임상 데이터 판매",
+    "type": "stock"
+  },
+  "DOCS": {
+    "name": "Doximity, Inc.",
+    "sector": "헬스케어 소프트웨어",
+    "products": "의사 전용 네트워크, 제약사 마케팅, 원격 진료·AI 문서 도구",
+    "type": "stock"
   }
 }

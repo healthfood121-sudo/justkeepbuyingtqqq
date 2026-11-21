@@ -452,6 +452,12 @@ import smplData  from '@/public/data/rolling/SMPL_rolling.json'
 import gctData   from '@/public/data/rolling/GCT_rolling.json'
 import crclData  from '@/public/data/rolling/CRCL_rolling.json'
 import antData   from '@/public/data/rolling/ANT_rolling.json'
+import crwdData from '@/public/data/rolling/CRWD_rolling.json'
+import zsData from '@/public/data/rolling/ZS_rolling.json'
+import netData from '@/public/data/rolling/NET_rolling.json'
+import pltrData from '@/public/data/rolling/PLTR_rolling.json'
+import temData from '@/public/data/rolling/TEM_rolling.json'
+import docsData from '@/public/data/rolling/DOCS_rolling.json'
 import itxData   from '@/public/data/rolling/ITX_rolling.json'
 import bcpcData  from '@/public/data/rolling/BCPC_rolling.json'
 import nmihData  from '@/public/data/rolling/NMIH_rolling.json'
@@ -1007,6 +1013,12 @@ const STOCKS: Array<{ key: string; data: StockData }> = [
   { key: 'GCT',   data: gctData    as unknown as StockData },
   { key: 'CRCL',  data: crclData   as unknown as StockData },
   { key: 'ANT',   data: antData    as unknown as StockData },
+  { key: 'CRWD', data: crwdData as unknown as StockData },
+  { key: 'ZS', data: zsData as unknown as StockData },
+  { key: 'NET', data: netData as unknown as StockData },
+  { key: 'PLTR', data: pltrData as unknown as StockData },
+  { key: 'TEM', data: temData as unknown as StockData },
+  { key: 'DOCS', data: docsData as unknown as StockData },
   { key: 'ITX',   data: itxData    as unknown as StockData },
   { key: 'BCPC',  data: bcpcData   as unknown as StockData },
   { key: 'NMIH',  data: nmihData   as unknown as StockData },
