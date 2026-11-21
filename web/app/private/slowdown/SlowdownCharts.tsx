@@ -46,6 +46,7 @@ export default function SlowdownCharts({ chart }: { chart: Record<string, Ser> }
   const r1 = useRef<ChartJS<'line'> | null>(null)
   const r2 = useRef<ChartJS<'line'> | null>(null)
   const r3 = useRef<ChartJS<'line'> | null>(null)
+  const r4 = useRef<ChartJS<'line'> | null>(null)
   const [from, setFrom] = useState('1970')
 
   const { labels, get, rec } = useMemo(() => {
@@ -108,6 +109,20 @@ export default function SlowdownCharts({ chart }: { chart: Record<string, Ser> }
           ] }} options={base('%')} />
         </div>
         {hint}
+      </div>
+
+      <div className="relative">
+        <button onClick={() => r4.current?.resetZoom()} className={btn}>줌 초기화</button>
+        <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-1">④ 신용(1973년~): 연준 GZ 회사채 스프레드 · 초과 채권 프리미엄(EBP) · 12개월 침체 확률</p>
+        <div style={{ height: 300 }}>
+          <Line ref={r4} plugins={[shade]} data={{ labels, datasets: [
+            { label: 'GZ 회사채 스프레드(%p)', data: get('GZ'), borderColor: 'rgb(168,85,247)' },
+            { label: '초과 채권 프리미엄 EBP(%p)', data: get('EBP'), borderColor: 'rgb(245,158,11)' },
+            { label: '12개월 침체 확률(×10, 0.5 = 5%)', data: get('EBPPROB').map(v => v == null ? null : Math.round(v * 1000) / 100), borderColor: 'rgb(220,38,38)', borderDash: [4, 3], borderWidth: 1 },
+          ] }} options={base('%p')} />
+        </div>
+        {hint}
+        <p className="text-xs text-gray-400 dark:text-gray-600">하이일드 스프레드의 옛 기록 대신 — 회사채 전체(우량~투기)의 부도 위험 웃돈. 바닥에서 눌려 있다가 침체 때 튀는 모양이 하이일드와 같다. 침체 확률 선은 ×10(예: 5 = 50%).</p>
       </div>
 
       <div className="relative">

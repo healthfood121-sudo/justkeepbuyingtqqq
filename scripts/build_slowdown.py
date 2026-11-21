@@ -138,6 +138,9 @@ for p, t in eps:
         "creditPk": r1(cr_pk, 2), "creditMax": r1(cr_max, 2),
         "creditUp": r1(cr_max - cr_pk, 2) if cr_max is not None and cr_pk is not None else None,
         "creditPeakVsTrough": (lambda a, b: (int(a[:4]) - int(b[:4])) * 12 + int(a[5:]) - int(b[5:]))(cr_peak_mo, tm) if cr_peak_mo else None,
+        "gzPk": r1(at("GZ", pm), 2),
+        "gzUp": r1(max(window("GZ", pm, shift(tm, 3)) or [0]) - at("GZ", pm), 2) if at("GZ", pm) is not None and window("GZ", pm, shift(tm, 3)) else None,
+        "ebpMax": r1(max(window("EBP", shift(pm, -3), shift(tm, 3)) or [0]), 2) if window("EBP", pm, tm) else None,
         "unrUp": r1(unr_hi - unr_lo) if unr_hi is not None and unr_lo is not None else None,
         "cape": r1(at("CAPE", pm)), "infl": r1(at("INFL", pm)),
         "tq3": fwd(T, t, 3), "tq5": fwd(T, t, 5), "ndx3": fwd(N, t, 3),
@@ -152,7 +155,7 @@ types = {}
 for typ in TYPE_NOTE:
     rs = [r for r in rows if r["type"] == typ]
     types[typ] = {"note": TYPE_NOTE[typ], "n": len(rs),
-                  **{k: med([r[k] for r in rs]) for k in ("ndx", "tqqq", "months", "recoverMonths", "fed12", "fedUpDuring", "curveMin24", "creditUp", "unrUp", "cape", "tq3", "tq5")},
+                  **{k: med([r[k] for r in rs]) for k in ("ndx", "tqqq", "months", "recoverMonths", "fed12", "fedUpDuring", "curveMin24", "creditUp", "gzUp", "ebpMax", "unrUp", "cape", "tq3", "tq5")},
                   "ndxRange": [min(r["ndx"] for r in rs), max(r["ndx"] for r in rs)] if rs else None}
 
 # ── 지금 ──
@@ -169,12 +172,17 @@ def pct(k, m):
     if mo is None: return None
     p = S[k].get(shift(mo, -m)); return None if not p else (v / p - 1) * 100
 now = {}
-for k in ("FEDFUNDS", "GS10", "TB3MS", "CURVE", "CREDIT", "BAMLH0A0HYM2", "UNRATE", "SAHMREALTIME", "ICSA", "INFL", "IPYOY", "UMCSENT", "RECPROUSM156N", "COPYOY", "PCOPPUSDM", "NFCI", "CAPE", "DEFCYC", "BREADTH", "VIX", "NDX", "SPX", "PERMIT"):
+for k in ("GZ", "EBP", "EBPPROB", "FEDFUNDS", "GS10", "TB3MS", "CURVE", "CREDIT", "BAMLH0A0HYM2", "UNRATE", "SAHMREALTIME", "ICSA", "INFL", "IPYOY", "UMCSENT", "RECPROUSM156N", "COPYOY", "PCOPPUSDM", "NFCI", "CAPE", "DEFCYC", "BREADTH", "VIX", "NDX", "SPX", "PERMIT"):
     mo, v = last(k)
     now[k] = {"month": mo, "v": r1(v, 2)}
 now["FEDFUNDS"]["chg12"] = r1(chg("FEDFUNDS", 12), 2)
 now["CURVE"]["min24"] = r1(min(window("CURVE", shift(now["CURVE"]["month"] or "2000-01", -24), "9999") or [0]), 2) if now["CURVE"]["month"] else None
 now["CREDIT"]["chg6"] = r1(chg("CREDIT", 6), 2)
+if now.get("GZ", {}).get("month"):
+    now["GZ"]["low12"] = r1(min(window("GZ", shift(now["GZ"]["month"], -12), "9999")), 2)
+    now["GZ"]["chg6"] = r1(chg("GZ", 6), 2)
+    gzv = sorted(S["GZ"].values()); now["GZ"]["pctile"] = r1(sum(1 for x in gzv if x <= now["GZ"]["v"]) / len(gzv) * 100, 0)
+    now["GZ"]["lowSince"] = next((m for m in sorted(S["GZ"], reverse=True) if m < shift(now["GZ"]["month"], -24) and S["GZ"][m] <= now["GZ"]["low12"]), None)
 now["BAMLH0A0HYM2"]["chg6"] = r1(chg("BAMLH0A0HYM2", 6), 2)
 now["BAMLH0A0HYM2"]["min12"] = r1(min(window("BAMLH0A0HYM2", shift(now["BAMLH0A0HYM2"]["month"] or "2000-01", -12), "9999") or [0]), 2) if now["BAMLH0A0HYM2"]["month"] else None
 now["UNRATE"]["low12"] = r1(min(window("UNRATE", shift(now["UNRATE"]["month"] or "2000-01", -12), "9999") or [0]), 2) if now["UNRATE"]["month"] else None
@@ -191,7 +199,7 @@ for k in ("NDX", "SPX"):
 
 # 그래프용 월별 시계열(1970년~): 금리차, 신용 스프레드, 실업률, 기준금리, 침체 기간, 나스닥100(로그용), 하이일드, 방어/경기민감
 chart = {}
-for k in ("CURVE", "CREDIT", "BAMLH0A0HYM2", "UNRATE", "FEDFUNDS", "USREC", "NDX", "SPX", "CAPE", "SAHMREALTIME", "DEFCYC", "BREADTH", "INFL", "RECPROUSM156N"):
+for k in ("GZ", "EBP", "EBPPROB", "CURVE", "CREDIT", "BAMLH0A0HYM2", "UNRATE", "FEDFUNDS", "USREC", "NDX", "SPX", "CAPE", "SAHMREALTIME", "DEFCYC", "BREADTH", "INFL", "RECPROUSM156N"):
     s = S.get(k, {})
     ks = [m for m in sorted(s) if m >= "1970-01"]
     if ks: chart[k] = {"start": ks[0], "v": [r1(s.get(m), 3) for m in (lambda a, b: [a] + [shift(a, i) for i in range(1, (int(b[:4]) - int(a[:4])) * 12 + int(b[5:]) - int(a[5:]) + 1)])(ks[0], ks[-1])]}

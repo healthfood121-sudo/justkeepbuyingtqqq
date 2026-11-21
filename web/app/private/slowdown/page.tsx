@@ -9,10 +9,10 @@ import SlowdownCharts, { WeeklyCharts, ClaimsChart } from './SlowdownCharts'
 type Row = {
   key: string; type: string; cause: string; peak: string; trough: string; months: number; ndx: number; tqqq: number
   recoverMonths: number | null; recession: boolean; fedUpDuring: number | null; curveMin24: number | null
-  creditUp: number | null; creditPeakVsTrough: number | null; unrUp: number | null; unrPeakLag: number | null
+  creditUp: number | null; gzUp: number | null; ebpMax: number | null; creditPeakVsTrough: number | null; unrUp: number | null; unrPeakLag: number | null
   cape: number | null; infl: number | null; tq3: number | null; tq5: number | null
 }
-type TypeSum = { note: string; n: number; ndx: number; tqqq: number; months: number; recoverMonths: number; fedUpDuring: number; curveMin24: number; creditUp: number; unrUp: number; cape: number; tq3: number; tq5: number; ndxRange: [number, number] }
+type TypeSum = { note: string; n: number; ndx: number; tqqq: number; months: number; recoverMonths: number; fedUpDuring: number; curveMin24: number; creditUp: number; gzUp: number; ebpMax: number; unrUp: number; cape: number; tq3: number; tq5: number; ndxRange: [number, number] }
 type NowV = { month: string | null; v: number | null; [k: string]: number | string | null }
 const D = data as unknown as {
   generated: string; rows: Row[]; types: Record<string, TypeSum>; now: Record<string, NowV>
@@ -81,6 +81,8 @@ export default async function SlowdownPage() {
       : { group: '일자리', k: '실업수당 신규 청구 — 6개월 변화', now: `${N.ICSA?.v != null ? Math.round((N.ICSA.v as number) / 1000) + '천 건' : '—'} (${f(claims6, 1, '%')})`, l: lvl(claims6, 10, 20), rule: '+10% 주의 · +20% 경고', why: '매주 나오는 가장 빠른 일자리 지표. 해고가 늘면 먼저 오른다.' },
     ...(W.CCSA ? [{ group: '일자리', k: `실업수당 계속 청구 — 6개월 변화 (주간, ${W.CCSA.date})`, now: `${(W.CCSA.v / 10000).toFixed(0)}만 명 (${f(W.CCSA.chg26wPct, 1, '%')})`, l: lvl(W.CCSA.chg26wPct, 10, 20) as L, rule: '+10% 주의 · +20% 경고', why: '실업 상태가 계속되는 사람 수 — 일자리를 다시 찾기 어려워지는지.' }] : []),
     { group: '신용', k: '회사채 신용 스프레드(BAA − 10년 국채) — 6개월 변화', now: W.BAA10Y ? `${f(W.BAA10Y.v, 2, '%p')} (${f(W.BAA10Y.chg26w, 2, '%p')}, 일간 ${W.BAA10Y.date})` : `${f(N.CREDIT?.v, 2, '%p')} (${f(credit6, 2, '%p')})`, l: lvl(W.BAA10Y?.chg26w ?? credit6, 0.3, 0.8), rule: '+0.3%p 주의 · +0.8%p 경고', why: '침체 유형은 하락장 동안 중간값 +1.6%p, 둔화·금리 인상 유형은 +0.03~0.2%p. 돈 빌리기 어려워지는지 보는 지표.' },
+    ...(N.GZ?.v != null ? [{ group: '신용', k: `연준 GZ 회사채 스프레드 — 1년 최저 대비 (${ym(N.GZ.month)})`, now: `${f(N.GZ.v, 2, '%p')} (1년 최저 ${f(N.GZ.low12 as number, 2)}, ${f((N.GZ.v as number) - (N.GZ.low12 as number), 2, '%p')}) · 1973년 이후 하위 ${N.GZ.pctile}%`, l: lvl((N.GZ.v as number) - (N.GZ.low12 as number), 0.3, 0.8) as L, rule: '+0.3%p 주의 · +0.8%p 경고', why: `하이일드 옛 기록(FRED는 최근 3년만) 대신 보는 1973년~ 긴 신용 지표(연준 길크리스트·자크라이섹). 하락장 동안 침체형은 중간값 +${T.rec.gzUp}%p, 거품 붕괴형 +${T.bubble.gzUp}%p, 금리 인상형 +${T.hike.gzUp}%p.${N.GZ.lowSince ? ` 올해 바닥(${f(N.GZ.low12 as number, 2)})은 ${ym(N.GZ.lowSince as string)} 이후 가장 낮았다.` : ''}` }] : []),
+    ...(N.EBP?.v != null ? [{ group: '신용', k: `초과 채권 프리미엄(EBP) · 연준 12개월 침체 확률 (${ym(N.EBP.month)})`, now: `${f(N.EBP.v, 2)} · 확률 ${f((N.EBPPROB?.v ?? 0) * 100, 0, '%')}`, l: (((N.EBPPROB?.v ?? 0) >= 0.5 || (N.EBP.v as number) >= 0.5) ? 'r' : ((N.EBPPROB?.v ?? 0) >= 0.3 || (N.EBP.v as number) >= 0) ? 'y' : 'g') as L, rule: 'EBP 0 이상 또는 확률 30% 주의 · EBP 0.5 또는 확률 50% 경고', why: '회사 부도 위험으로 설명되지 않는 "겁"의 크기. 0보다 낮으면 투자자들이 위험을 잘 받아 준다는 뜻. 2001·2008·2020년 침체 시작 때 0.75~1.19.' }] : []),
     { group: '신용', k: `하이일드(위험한 회사채) 스프레드 — 수준과 1년 최저 대비${W.HY ? ` (일간, ${W.HY.date})` : ''}`, now: `${f(hyV, 2, '%')} · ${W.HY?.band ?? ''} (1년 최저 ${f(W.HY?.low52 ?? (N.BAMLH0A0HYM2?.min12 as number), 2)}, ${f(hyUp, 2, '%p')})`, l: hyL, rule: '수준 5% 또는 +0.5%p 주의 · 6% 또는 +1.5%p 경고', why: '드러켄밀러가 말한 "신용 스프레드 확대". 2018·2022년(침체 없음)은 5~6%에서 멈췄고, 침체 때는 8~20%까지 갔다(아래 주간 체크).' },
     { group: '금리', k: '10년 국채 금리', now: f(N.GS10?.v, 2, '%'), l: lvl(N.GS10?.v ?? null, 4.5, 5), rule: '4.5% 주의 · 5% 경고', why: '높은 장기 금리는 주식 값(PER)을 누른다. 2022년 금리 인상 하락장이 −36%였다.' },
     { group: '금리', k: '기준금리 — 1년 변화', now: `${f(N.FEDFUNDS?.v, 2, '%')} (${f(N.FEDFUNDS?.chg12 as number, 2, '%p')})`, l: lvl(N.FEDFUNDS?.chg12 as number, 0.5, 1.5), rule: '+0.5%p 주의 · +1.5%p 경고', why: '금리 인상 유형의 하락장 전후 인상폭 중간값 4%p. 월평균 자료라 최근 인상이 늦게 잡힌다.' },
@@ -181,7 +183,7 @@ export default async function SlowdownPage() {
                   ].map(r => <tr key={r[0]} className="border-b border-gray-100 dark:border-gray-900">{r.map((c, i) => <td key={i} className={`${td} whitespace-normal`}>{c}</td>)}</tr>)}
                 </tbody>
               </table>
-              <p className={small}>ICE BofA 미국 하이일드 스프레드. 2023년 11월 이후는 FRED 일간 자료, 그 전은 트레이딩뷰 월봉 차트(사용자 제공)에서 읽은 값이다(FRED는 최근 3년치만 공개).</p>
+              <p className={small}>ICE BofA 미국 하이일드 스프레드. 2023년 11월 이후는 FRED 일간 자료, 그 전은 트레이딩뷰 월봉 차트(사용자 제공)에서 읽은 값이다(FRED는 최근 3년치만 공개하고, 옛 버전 보관소 ALFRED도 막혀 있다). 그래서 1973년~ 긴 기록은 연준 GZ 회사채 스프레드로 대신 본다 — 아래 그래프 ④.</p>
             </div>
             <div>
               <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-1">실업수당 청구 +20% 신호의 성적(1967년~)</p>
@@ -245,7 +247,7 @@ export default async function SlowdownPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead><tr className="border-b border-gray-200 dark:border-gray-800">
-                {['유형', '횟수', '나스닥100', '범위', 'TQ', '하락 기간', '회복까지', '실업률 상승', '신용 스프레드 상승', '금리 인상폭', '고점 때 CAPE', '바닥 뒤 TQ 3년'].map(h => <th key={h} className={th}>{h}</th>)}
+                {['유형', '횟수', '나스닥100', '범위', 'TQ', '하락 기간', '회복까지', '실업률 상승', '신용 스프레드 상승', 'GZ 스프레드 상승', '금리 인상폭', '고점 때 CAPE', '바닥 뒤 TQ 3년'].map(h => <th key={h} className={th}>{h}</th>)}
               </tr></thead>
               <tbody>
                 {TYPES.map(([k, name, dot]) => { const s = T[k]; return (
@@ -259,6 +261,7 @@ export default async function SlowdownPage() {
                     <td className={td}>{s.recoverMonths}개월</td>
                     <td className={td}>{f(s.unrUp, 1, '%p')}</td>
                     <td className={td}>{f(s.creditUp, 2, '%p')}</td>
+                    <td className={td}>{f(s.gzUp, 2, '%p')}</td>
                     <td className={td}>{f(s.fedUpDuring, 1, '%p')}</td>
                     <td className={td}>{f(s.cape, 0)}배</td>
                     <td className={td}>{f(s.tq3, 1)}배</td>
@@ -436,7 +439,7 @@ export default async function SlowdownPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead><tr className="border-b border-gray-200 dark:border-gray-800">
-                {['고점', '바닥', '유형', '원인', '나스닥100', 'TQ', '기간', '회복', '침체', '실업률', '신용', '금리 인상', 'CAPE', '바닥 뒤 TQ 3년·5년'].map(h => <th key={h} className={th}>{h}</th>)}
+                {['고점', '바닥', '유형', '원인', '나스닥100', 'TQ', '기간', '회복', '침체', '실업률', '신용', 'GZ', '금리 인상', 'CAPE', '바닥 뒤 TQ 3년·5년'].map(h => <th key={h} className={th}>{h}</th>)}
               </tr></thead>
               <tbody>
                 {D.rows.map(r => (
@@ -452,6 +455,7 @@ export default async function SlowdownPage() {
                     <td className={td}>{r.recession ? '○' : ''}</td>
                     <td className={td}>{f(r.unrUp, 1, '%p')}</td>
                     <td className={td}>{f(r.creditUp, 2, '%p')}</td>
+                    <td className={td}>{f(r.gzUp, 2, '%p')}</td>
                     <td className={td}>{f(r.fedUpDuring, 1, '%p')}</td>
                     <td className={td}>{f(r.cape, 0)}</td>
                     <td className={td}>{f(r.tq3, 1)} · {f(r.tq5, 1)}배</td>
@@ -472,6 +476,7 @@ export default async function SlowdownPage() {
           <h2 className={h2}>데이터·출처</h2>
           <ul className={`${small} list-disc pl-5 space-y-0.5 break-all`}>
             <li>미국 세인트루이스 연준 FRED: 경기침체 기간(USREC), 기준금리(FEDFUNDS), 국채 금리(GS10·TB3MS·GS2), BAA 회사채(BAA), 하이일드 스프레드(BAMLH0A0HYM2, 최근 3년만 공개), 실업률(UNRATE), 삼 규칙(SAHMREALTIME), 실업수당 청구(ICSA), 물가(CPIAUCSL), 산업생산, 소비자심리, 침체 확률, 구리, 금융여건지수, 주택 허가 — <a className="text-blue-600 dark:text-blue-400 hover:underline" href="https://fred.stlouisfed.org" target="_blank" rel="noopener noreferrer">fred.stlouisfed.org</a></li>
+            <li>연준 GZ 회사채 스프레드·초과 채권 프리미엄(EBP)·12개월 침체 확률(1973년~): <a className="text-blue-600 dark:text-blue-400 hover:underline" href="https://www.federalreserve.gov/econres/notes/feds-notes/ebp_csv.csv" target="_blank" rel="noopener noreferrer">federalreserve.gov ebp_csv.csv</a> (Gilchrist·Zakrajšek)</li>
             <li>야후 파이낸스: 나스닥100·S&amp;P 500·VIX·업종 ETF(XLP·XLU·XLV·XLY·XLI·XLB)·RSP·SPY 월말 종가</li>
             <li>로버트 쉴러 경기조정 PER(CAPE): <a className="text-blue-600 dark:text-blue-400 hover:underline" href="http://www.econ.yale.edu/~shiller/data.htm" target="_blank" rel="noopener noreferrer">예일대 자료</a> — 2023년 9월 이후 갱신이 멈춰 있다</li>
             <li>IMF 연구: An, Jalles, Loungani, &quot;How Well Do Economists Forecast Recessions?&quot;(2018)</li>

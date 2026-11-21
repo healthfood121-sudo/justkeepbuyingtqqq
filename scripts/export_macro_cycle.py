@@ -261,7 +261,7 @@ def main():
             if p: series[k] = {"name": nm, "src": "Fed", **p}; print("EBP", k, p["start"], len(p["v"]), flush=True)
     else:
         errors.append("연준 GZ·EBP")
-    if not HY_HIST.exists():
+    if False and not HY_HIST.exists():  # ALFRED도 옛 버전 없이 최근 3년만 줘서 끔(2026-11-21 확인). 대신 연준 GZ 스프레드를 쓴다
         hist = alfred_hist("BAMLH0A0HYM2")
         if hist:
             HY_HIST.write_text(json.dumps({"src": "ALFRED(FRED 기록 보관소) BAMLH0A0HYM2 옛 버전", "generated": time.strftime("%Y-%m-%d"), "pts": hist}, separators=(",", ":")))
