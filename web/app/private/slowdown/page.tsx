@@ -19,6 +19,7 @@ const D = data as unknown as {
   chart: Record<string, { start: string; v: (number | null)[] }>
   given: { dd: number; n: number; rows: [string, string, number, number][]; within5: number; deeper15: number; median: number } | null
   inversions: [string, boolean, string | null][]; sahm: [string, string | null][]
+  analog: { month: string; now: Record<string, number>; top: [number, string, Record<string, number>, number | null, number | null, number | null, number | null, number | null, number | null, number | null, string | null][]; summary: { n: number; up12: number; med12: number | null; deep: number; rec2y: number } } | null
   weekly: {
     HY?: { date: string; v: number; low52: number; lowDate: string; up52: number; chg13w: number; max52: number; band: string }
     BAA10Y?: { date: string; v: number; chg26w: number | null }
@@ -102,7 +103,7 @@ export default async function SlowdownPage() {
         ? { t: 'hike', s: '일자리·신용은 아직 버티고, 금리·물가가 문제 → ② 금리 인상 둔화형에 가장 가까움' }
         : { t: 'soft', s: '일자리·신용·금리 모두 큰 문제 없음 → ① 둔화만 또는 ③ 사건형에 가까움' }
 
-  const toc: [string, string][] = [['answer', '먼저 답부터'], ['weekly', '매주 볼 두 줄'], ['types', '하락장 다섯 유형'], ['how', '유형을 가르는 법'], ['now', '지금 신호등'], ['given', '지금 낙폭에서 보면'], ['bottom', '바닥은 언제였나'], ['future', '미래를 알 수 있나'], ['all', '하락장 21개 전체'], ['charts', '그래프'], ['src', '데이터·출처']]
+  const toc: [string, string][] = [['answer', '먼저 답부터'], ['weekly', '매주 볼 두 줄'], ['types', '하락장 다섯 유형'], ['how', '유형을 가르는 법'], ['now', '지금 신호등'], ['given', '지금 낙폭에서 보면'], ['analog', '닮은 시기'], ['bottom', '바닥은 언제였나'], ['future', '미래를 알 수 있나'], ['all', '하락장 21개 전체'], ['charts', '그래프'], ['src', '데이터·출처']]
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
@@ -303,6 +304,58 @@ export default async function SlowdownPage() {
             ))}
           </div>
           <p className={small}>얕게 멈춘 쪽은 대부분 둔화·사건형, 깊게 간 쪽은 침체·거품형과 2021년(금리 인상 + 비싼 값)이다. 결국 앞의 세 질문으로 돌아간다.</p>
+        </section>}
+
+
+        {D.analog && <section id="analog" className={box}>
+          <h2 className={h2}>지금과 가장 닮은 과거 — 그 뒤 어떻게 됐나</h2>
+          <p className={small}>지표 10개(나스닥100 1년 고점 대비, 10년−3개월 금리차와 최근 2년 최저, BAA 회사채 스프레드와 6개월 변화, 실업률 1년 최저 대비, 물가, 기준금리 1년 변화, 10년 금리, CAPE)를 표준화해 {ym(D.analog.month)} 값과 가장 가까운 달을 1972~2024년에서 찾았다(서로 18개월 넘게 떨어진 달만). 매주 자동으로 다시 계산된다.</p>
+          <p className={p}><b>닮은 {D.analog.summary.n}개 중 {D.analog.summary.up12}개는 1년 뒤 나스닥100이 올라 있었다(중간값 {f(D.analog.summary.med12, 0, '%')}). 하지만 {D.analog.summary.deep}개는 2년 안에 25% 넘게 더 빠졌고, {D.analog.summary.rec2y}개는 2년 안에 침체가 왔다.</b> 같은 숫자에서 결과가 크게 갈렸다 — 갈래를 정한 건 그 뒤의 물가·일자리였다.</p>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead><tr className="border-b border-gray-200 dark:border-gray-800">
+                {['닮은 달', '거리', '나스닥100 낙폭', '10년 금리', '물가', 'BAA 스프레드', '실업률 변화', 'CAPE', '나스닥100 6·12·24개월 뒤', 'TQ 12·24개월 뒤', '2년 안 최저(나스닥100·TQ)', '2년 안 침체'].map(h => <th key={h} className={th}>{h}</th>)}
+              </tr></thead>
+              <tbody>
+                <tr className="border-b border-gray-200 dark:border-gray-800 bg-blue-50/60 dark:bg-blue-950/30">
+                  <td className={`${td} font-semibold`}>지금</td><td className={td}>—</td>
+                  <td className={td}>{f(D.analog.now.dd, 0, '%')}</td><td className={td}>{f(D.analog.now.g10, 1, '%')}</td><td className={td}>{f(D.analog.now.infl, 1, '%')}</td>
+                  <td className={td}>{f(D.analog.now.cr, 2)}</td><td className={td}>{f(D.analog.now.unr, 1, '%p')}</td><td className={td}>{f(D.analog.now.cape, 0)}</td>
+                  <td className={td} colSpan={4}>?</td>
+                </tr>
+                {D.analog.top.map(([dist, m, x, n6, n12, n24, t12, t24, low, tlow, rec]) => (
+                  <tr key={m} className="border-b border-gray-100 dark:border-gray-900">
+                    <td className={`${td} font-semibold`}>{ym(m)}</td><td className={td}>{dist.toFixed(2)}</td>
+                    <td className={td}>{f(x.dd, 0, '%')}</td><td className={td}>{f(x.g10, 1, '%')}</td><td className={td}>{f(x.infl, 1, '%')}</td>
+                    <td className={td}>{f(x.cr, 2)}</td><td className={td}>{f(x.unr, 1, '%p')}</td><td className={td}>{f(x.cape, 0)}</td>
+                    <td className={td}>{[n6, n12, n24].map(v => v == null ? '—' : `${v > 0 ? '+' : ''}${v}%`).join(' · ')}</td>
+                    <td className={td}>{[t12, t24].map(v => v == null ? '—' : `${v > 0 ? '+' : ''}${v}%`).join(' · ')}</td>
+                    <td className={`${td} ${(low ?? 0) <= -25 ? 'text-red-600 dark:text-red-400 font-semibold' : ''}`}>{f(low, 0, '%')} · {f(tlow, 0, '%')}</td>
+                    <td className={td}>{rec ? ym(rec) : '없음'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className={small}>거리가 작을수록 닮았다. 10개뿐이라 운이 크게 작용한다 — &quot;지금이 무엇이다&quot;를 정해 주는 표가 아니라 &quot;어떤 갈래가 가능한지&quot;를 보여 주는 표다.</p>
+          <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">숫자뿐 아니라 사정까지 보면 (2026년 11월 정리)</p>
+          <ul className={`${p} list-disc pl-5 space-y-1.5`}>
+            <li><b>가장 닮은 곳: 2018년 4분기 ~ 2022년 사이.</b> 일자리는 멀쩡한데 금리 때문에 값이 내려가고, 하이일드는 3%대 바닥에서 고개를 든다. 2018년은 하이일드 5.3%에서 멈췄고 연준이 인상을 멈추자 바로 반등. 2022년은 물가 때문에 연준이 못 멈춰 하이일드 6%, 나스닥100 −36%.</li>
+            <li><b>조심할 갈래: 1973년형.</b> 비싼 값 + 물가 + 긴축이 겹친 뒤 침체로 −48%(TQ −91%). 위 표에서 크게 빠진 1973·2000·2021년의 공통점은 값이 비쌌고(당시 기준), 물가나 금리 때문에 연준이 몰렸다는 것 — 지금도 CAPE 30배대, 10년 금리 5%대, 물가 4% 안팎이라 이 조건에 걸린다.</li>
+          </ul>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead><tr className="border-b border-gray-200 dark:border-gray-800">{['그 뒤 벌어진 일', '결과', '통했던 접근'].map(h => <th key={h} className={th}>{h}</th>)}</tr></thead>
+              <tbody>
+                {[
+                  ['물가가 잡혀 연준이 멈춤(2018년, 1990년 뒤)', '−20%대에서 바닥, 1~2년 뒤 크게 반등', '−20~−25%부터 나눠 사기'],
+                  ['물가 때문에 계속 긴축, 일자리는 버팀(2022년)', '−36%, 고점 회복 약 2년', '서두르면 TQ −80%. 하이일드 꼭대기(약 6%) 근처에서 넣은 쪽이 좋았다'],
+                  ['긴축 끝에 일자리까지 깨짐(1973년, 2000년)', '−48~−83%, 회복에 수년', 'TQ는 작게, 실업수당 청구가 오르면 더 기다림'],
+                ].map(r => <tr key={r[0]} className="border-b border-gray-100 dark:border-gray-900">{r.map((c, i) => <td key={i} className={`${td} whitespace-normal`}>{c}</td>)}</tr>)}
+              </tbody>
+            </table>
+          </div>
+          <p className={p}><b>지금 기준 실전:</b> 일자리·우량 회사채가 조용한 동안은 1·2번 갈래 — −20~−25%부터 나눠 사되 한 번에 다 넣지 않는다. 하이일드 5~6% 돌파, BAA 스프레드 6개월 +0.5%p 이상, 실업수당 4주 평균 +20% 중 하나라도 켜지면 남은 몫을 −35~−50%로 미룬다.</p>
         </section>}
 
         <section id="bottom" className={box}>

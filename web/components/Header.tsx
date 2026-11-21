@@ -15,19 +15,26 @@ export default function Header({ maxWidth = 'max-w-6xl', activePage }: HeaderPro
   // /private 아래에서는 메뉴가 프라이빗 전용 탭으로 바뀐다 (로고는 그대로 메인 페이지로).
   // 비밀번호 화면(/private/login)에서는 안에 무엇이 있는지 보이지 않게 공개 사이트 메뉴를 보여 준다.
   const isPrivate = pathname.startsWith('/private') && !pathname.startsWith('/private/login')
-  const privTabs: Array<[string, string, string]> = [
-    ['/private', '종목 분석', '종목 분석(엄선·S&P 500·나스닥100·러셀2000)'],
-    ['/private/screen', '전체 선별표', '미국 상장 전 종목 숫자 선별표'],
-    ['/private/buffett', '버핏·멍거', '버핏·멍거의 회사들'],
-    ['/private/failures', '실패 공부방', '기업 실패 사례 공부방'],
-    ['/private/cycles', '횡보장 공부방', '횡보장 공부방'],
-    ['/private/kostolany', '코스톨라니', '코스톨라니 달걀'],
-    ['/private/howard-marks', '하워드 막스', '하워드 막스'],
-    ['/private/baillie-gifford', '베일리 기퍼드', '베일리 기퍼드 — 큰 승자를 일찍 찾아 끝까지'],
-    ['/private/slowdown', '둔화 판단', '경기 둔화는 얼마나 클까 — 하락장 유형과 지금 신호'],
+  // 메뉴는 짧게 4묶음. 묶음 안 페이지는 헤더 아래 작은 줄로 보여 준다(투자 대가·시장 공부).
+  const privGroups: { label: string; href: string; title: string; items?: [string, string, string][] }[] = [
+    { label: '종목 분석', href: '/private', title: '종목 분석(엄선·S&P 500·나스닥100·러셀2000)' },
+    { label: '전체 선별표', href: '/private/screen', title: '미국 상장 전 종목 숫자 선별표' },
+    { label: '투자 대가', href: '/private/buffett', title: '버핏·멍거, 하워드 막스, 베일리 기퍼드, 코스톨라니', items: [
+      ['/private/buffett', '버핏·멍거', '버핏·멍거의 회사들'],
+      ['/private/howard-marks', '하워드 막스', '하워드 막스'],
+      ['/private/baillie-gifford', '베일리 기퍼드', '베일리 기퍼드 — 큰 승자를 일찍 찾아 끝까지'],
+      ['/private/kostolany', '코스톨라니', '코스톨라니 달걀'],
+    ] },
+    { label: '시장 공부', href: '/private/slowdown', title: '둔화 판단, 횡보장, 실패 사례', items: [
+      ['/private/slowdown', '둔화 판단', '경기 둔화는 얼마나 클까 — 하락장 유형과 지금 신호'],
+      ['/private/cycles', '횡보장 공부방', '횡보장 공부방'],
+      ['/private/failures', '실패 공부방', '기업 실패 사례 공부방'],
+    ] },
   ]
   const UNIV_PATHS = ['/private/sp500', '/private/ndx', '/private/mid', '/private/r2k', '/private/nasdaq', '/private/other']
   const privOn = (href: string) => href === '/private' ? (pathname === '/private' || UNIV_PATHS.some(p => pathname.startsWith(p))) : pathname.startsWith(href)
+  const groupOn = (g: (typeof privGroups)[number]) => g.items ? g.items.some(([h]) => privOn(h)) : privOn(g.href)
+  const subGroup = isPrivate ? privGroups.find(g => g.items && groupOn(g)) : undefined
 
   return (
     <header className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 sticky top-0 z-50">
@@ -42,15 +49,16 @@ export default function Header({ maxWidth = 'max-w-6xl', activePage }: HeaderPro
           {/* 휴대폰: 로고·테마 버튼 아래 한 줄로 메뉴 (줄바꿈 없이) */}
           <nav className="order-3 w-full sm:order-none sm:w-auto flex items-center gap-5 sm:gap-4 text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap overflow-x-auto">
             {isPrivate ? (<>
-            {privTabs.map(([href, short, long]) => (
+            {privGroups.map(g => (
               <Link
-                key={href}
-                href={href}
+                key={g.href}
+                href={g.href}
+                title={g.title}
                 className={`transition-colors hover:text-gray-900 dark:hover:text-white ${
-                  privOn(href) ? 'text-gray-900 dark:text-white font-semibold' : ''
+                  groupOn(g) ? 'text-gray-900 dark:text-white font-semibold' : ''
                 }`}
               >
-                <span className="sm:hidden">{short}</span><span className="hidden sm:inline">{long}</span>
+                {g.label}{g.items && <span className="text-[10px] text-gray-400 ml-0.5">({g.items.length})</span>}
               </Link>
             ))}
           </>) : (<>
@@ -129,6 +137,19 @@ export default function Header({ maxWidth = 'max-w-6xl', activePage }: HeaderPro
           </button>
         </div>
       </div>
+      {subGroup && (
+        <div className="border-t border-gray-100 dark:border-gray-900">
+          <nav className={`${maxWidth} mx-auto px-4 sm:px-6 py-1.5 flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap overflow-x-auto`}>
+            <span className="text-gray-400 dark:text-gray-600">{subGroup.label}</span>
+            {subGroup.items!.map(([href, short, long]) => (
+              <Link key={href} href={href} title={long}
+                className={`transition-colors hover:text-gray-900 dark:hover:text-white ${privOn(href) ? 'text-gray-900 dark:text-white font-semibold' : ''}`}>
+                {short}
+              </Link>
+            ))}
+          </nav>
+        </div>
+      )}
     </header>
   )
 }

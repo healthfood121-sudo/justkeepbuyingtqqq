@@ -283,13 +283,76 @@ for k in ("HY", "BAA10Y"):
     if W.get(k): weekly[f"{k}_chart"] = [[d, v] for d, v in weekly_last(W[k]["pts"])]
 weekly["claimsHist"] = claims_hist
 
+# ── 닮은 시기 찾기: 지금 지표 10개와 가장 가까운 과거 달(1972~, 2년 뒤 결과가 있는 달만) ──
+def analogs():
+    G, TB, BAA, U, C, F, R, CA = (S.get(k, {}) for k in ("GS10", "TB3MS", "BAA", "UNRATE", "CPIAUCSL", "FEDFUNDS", "USREC", "CAPE"))
+    nd, tq = {}, {}
+    for d0, a0, b0 in zip(D, N, T): nd[d0[:7]] = a0; tq[d0[:7]] = b0
+    yx = S.get("NDX", {}); lastm = max(nd)
+    for m in sorted(yx):
+        if m > lastm and lastm in yx: nd[m] = nd[lastm] * yx[m] / yx[lastm]
+    cr = {m: BAA[m] - G[m] for m in BAA if m in G}
+    capelast = CA[max(CA)] if CA else None
+    def fill(s):  # 빠진 달(예: 2025년 10월 미국 정부 셧다운으로 실업률 미발표)은 직전 달 값으로
+        out = dict(s)
+        if not s: return out
+        m = min(s)
+        while m < max(s):
+            m2 = shift(m, 1)
+            if m2 not in out: out[m2] = out[m]
+            m = m2
+        return out
+    G, TB, BAA, U, C, F = (fill(x) for x in (G, TB, BAA, U, C, F))
+    cr = {m: BAA[m] - G[m] for m in BAA if m in G}
+    def feat(mo, dd=None, cape=None, infl_mo=None):
+        try:
+            hi = max(nd[shift(mo, -k)] for k in range(12))
+            im = infl_mo or mo
+            return {"dd": dd if dd is not None else (nd[mo] / hi - 1) * 100, "curve": G[mo] - TB[mo],
+                    "curvemin": min(G[shift(mo, -k)] - TB[shift(mo, -k)] for k in range(24)),
+                    "cr": cr[mo], "cr6": cr[mo] - cr[shift(mo, -6)], "unr": U[mo] - min(U[shift(mo, -k)] for k in range(12)),
+                    "infl": (C[im] / C[shift(im, -12)] - 1) * 100, "fed12": F[mo] - F[shift(mo, -12)], "g10": G[mo],
+                    "cape": cape if cape is not None else CA[mo]}
+        except KeyError as e:
+            if mo_dbg[0]: print("feat 실패", mo, e)
+            return None
+    mo_dbg = [True]
+    mo = min(max(G), max(TB), max(BAA), max(U), max(F))
+    nowf = feat(mo, dd=now["NDX"].get("fromHigh12"), cape=capelast, infl_mo=max(C))
+    mo_dbg[0] = False
+    if not nowf or nowf["dd"] is None: print('지금 지표 없음', nowf); return None
+    last_ok = shift(max(nd), -24)
+    F_ = [(m, feat(m)) for m in sorted(nd) if "1972-01" <= m <= last_ok]
+    F_ = [(m, x) for m, x in F_ if x]
+    keys = list(nowf)
+    mean = {k: sum(x[k] for _, x in F_) / len(F_) for k in keys}
+    sd = {k: (sum((x[k] - mean[k]) ** 2 for _, x in F_) / len(F_)) ** 0.5 for k in keys}
+    w = {"dd": 1.5, "curve": 1, "curvemin": 0.7, "cr": 1, "cr6": 1, "unr": 1.5, "infl": 1, "fed12": 0.7, "g10": 0.7, "cape": 1}
+    dist = sorted(((sum(w[k] * ((x[k] - nowf[k]) / sd[k]) ** 2 for k in keys)) ** 0.5, m, x) for m, x in F_)
+    top = []
+    idx = lambda m: int(m[:4]) * 12 + int(m[5:])
+    for dval, m, x in dist:
+        if any(abs(idx(m) - idx(s[1])) < 18 for s in top): continue
+        fw = lambda arr, n: r1((arr[shift(m, n)] / arr[m] - 1) * 100, 0) if shift(m, n) in arr else None
+        low2 = min(nd[shift(m, k)] for k in range(25) if shift(m, k) in nd) / nd[m] - 1
+        tlow2 = min(tq[shift(m, k)] for k in range(25) if shift(m, k) in tq) / tq[m] - 1
+        recm = next((shift(m, k) for k in range(25) if R.get(shift(m, k), 0)), None)
+        top.append([round(dval, 2), m, {k: r1(v, 2) for k, v in x.items()}, fw(nd, 6), fw(nd, 12), fw(nd, 24), fw(tq, 12), fw(tq, 24), r1(low2 * 100, 0), r1(tlow2 * 100, 0), recm])
+        if len(top) == 10: break
+    up12 = [a[4] for a in top if a[4] is not None]
+    return {"month": mo, "now": {k: r1(v, 2) for k, v in nowf.items()}, "top": top,
+            "summary": {"n": len(top), "up12": sum(1 for v in up12 if v > 0), "med12": med(up12),
+                        "deep": sum(1 for a in top if a[8] is not None and a[8] <= -25), "rec2y": sum(1 for a in top if a[10])}}
+ANALOG = analogs()
+
 for r in rows: r.pop("spx", None)
-out = {"generated": json.loads((DATA / "macro_cycle.json").read_text())["generated"], "rows": rows, "types": types, "now": now, "chart": chart, "given": given, "inversions": inv, "sahm": sahm, "weekly": weekly,
+out = {"generated": json.loads((DATA / "macro_cycle.json").read_text())["generated"], "rows": rows, "types": types, "now": now, "chart": chart, "given": given, "inversions": inv, "sahm": sahm, "weekly": weekly, "analog": ANALOG,
        "errors": json.loads((DATA / "macro_cycle.json").read_text()).get("errors", [])}
 (DATA / "slowdown.json").write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")))
 print("하락장", len(rows), "유형", {k: v["n"] for k, v in types.items()})
 for r in rows: print(r["key"], r["type"], r["ndx"], r["tqqq"], r["months"], r["recoverMonths"], "침체" if r["recession"] else "", "금리인상폭", r["fedUpDuring"], "금리차최저", r["curveMin24"], "신용↑", r["creditUp"], "실업↑", r["unrUp"], "CAPE", r["cape"], "신용고점-바닥", r["creditPeakVsTrough"], "실업고점-바닥", r["unrPeakLag"], "tq3", r["tq3"], "tq5", r["tq5"])
 for k, v in types.items(): print(k, v)
 print("weekly", {k: v for k, v in weekly.items() if not k.endswith("_chart")});
+print("analog", json.dumps(ANALOG, ensure_ascii=False)[:1800]);
 print("given", given); print("inv", inv); print("sahm", sahm)
 print(json.dumps(now, ensure_ascii=False)[:2500])
