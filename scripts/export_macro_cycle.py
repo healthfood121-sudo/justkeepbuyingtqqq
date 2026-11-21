@@ -114,6 +114,35 @@ def fred_raw(sid, since):
         except ValueError: pass
     return out or None
 
+HY_HIST = ROOT / "web" / "public" / "data" / "hy_history.json"
+
+def alfred_hist(sid):
+    """FRED는 ICE 지표를 최근 3년만 공개한다. 기록 보관소 ALFRED의 옛 버전(잘리기 전)에서 1996년~ 전체를 받는다.
+    한 번 받으면 hy_history.json에 저장해 두고 다음부터는 그 파일을 쓴다."""
+    vintages = ["2022-12-30", "2022-06-30", "2021-12-31", "2020-12-31", "2023-03-31", "2023-06-30"]
+    for vd in vintages:
+        for url in (f"https://alfred.stlouisfed.org/graph/alfredgraph.csv?id={sid}&vintage_date={vd}",
+                    f"https://alfred.stlouisfed.org/graph/alfredgraph.csv?id={sid}_{vd.replace('-', '')}",
+                    f"https://alfred.stlouisfed.org/series/downloaddata?seid={sid}&vintage_date={vd}"):
+            for h in UAS:
+                try:
+                    r = requests.get(url, headers=h, timeout=30)
+                except requests.RequestException as e:
+                    print("  ALFRED ERR", vd, str(e)[:80], flush=True); continue
+                head = r.text[:200].replace("\n", " ")
+                print(f"  ALFRED {r.status_code} {vd} {url[:80]} | {head[:100]}", flush=True)
+                if r.status_code != 200: continue
+                pts = []
+                for row in csv.reader(io.StringIO(r.text)):
+                    if len(row) < 2 or not row[0][:4].isdigit(): continue
+                    try: pts.append([row[0][:10], float(row[-1])])
+                    except ValueError: pass
+                if pts and pts[0][0] < "2000-01-01":
+                    print(f"  ALFRED 성공 {vd} {pts[0][0]}~{pts[-1][0]} n={len(pts)}", flush=True)
+                    return pts
+                break
+    return None
+
 WEEKLY = {  # 키: (FRED 아이디, 시작일, 이름)
     "HY": ("BAMLH0A0HYM2", "2018-01-01", "하이일드 스프레드(일간)"),
     "BAA10Y": ("BAA10Y", "2018-01-01", "BAA 회사채 − 10년 국채(일간)"),
@@ -196,9 +225,18 @@ def main():
         else: errors.append("Shiller CAPE")
     except Exception as e:
         print("  shiller", e, flush=True); errors.append("Shiller CAPE")
+    if not HY_HIST.exists():
+        hist = alfred_hist("BAMLH0A0HYM2")
+        if hist:
+            HY_HIST.write_text(json.dumps({"src": "ALFRED(FRED 기록 보관소) BAMLH0A0HYM2 옛 버전", "generated": time.strftime("%Y-%m-%d"), "pts": hist}, separators=(",", ":")))
+        else:
+            errors.append("ALFRED 하이일드 옛 기록")
     weekly = {}
     for k, (sid, since, nm) in WEEKLY.items():
         pts = fred_raw(sid, since)
+        if pts and k == "HY" and HY_HIST.exists():  # 옛 기록 + 최근 3년(겹치면 최근 값)
+            old = [x for x in json.loads(HY_HIST.read_text())["pts"] if x[0] < pts[0][0]]
+            pts = old + pts
         if pts: weekly[k] = {"name": nm, "id": sid, "pts": pts}; print(f"WEEKLY {k} {pts[0][0]}~{pts[-1][0]} n={len(pts)}", flush=True)
         else: errors.append(f"FRED 주간 {sid}")
     OUT.write_text(json.dumps({"generated": time.strftime("%Y-%m-%d"), "errors": errors, "series": series, "weekly": weekly},
