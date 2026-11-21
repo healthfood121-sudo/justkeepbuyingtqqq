@@ -12,11 +12,11 @@
   },
   "fullPeriod": {
     "start_date": "2024-06-14",
-    "end_date": "2026-11-20",
+    "end_date": "2026-11-21",
     "start_price": 40.25,
     "end_price": 54.04,
     "years": 2.4,
-    "cagr": 12.87,
+    "cagr": 12.85,
     "multiple": 1.3426
   },
   "stats": {
@@ -38,13 +38,13 @@
     {
       "buyYear": 2024,
       "sellYear": 2026,
-      "sellDate": "2026-11-20",
+      "sellDate": "2026-11-21",
       "yearsActual": 1.9,
-      "cagr": 28.32,
-      "multiple": 1.6,
+      "cagr": 28.28,
+      "multiple": 1.6007,
       "isComplete": false,
-      "benchCagr": 10.25,
-      "diff": 18.07
+      "benchCagr": 10.24,
+      "diff": 18.04
     }
   ],
   "loss5y": [],

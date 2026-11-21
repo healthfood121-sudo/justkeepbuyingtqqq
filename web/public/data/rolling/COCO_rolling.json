@@ -5,19 +5,19 @@
   "benchmark": "S&P 500",
   "note": "",
   "current": {
-    "price": 63.12,
-    "pe": 31.9,
+    "price": 64.37,
+    "pe": 32.5,
     "divYield": 0,
     "eps": 1.98
   },
   "fullPeriod": {
     "start_date": "2021-10-21",
-    "end_date": "2026-11-14",
+    "end_date": "2026-11-21",
     "start_price": 13.52,
-    "end_price": 63.12,
+    "end_price": 64.37,
     "years": 5.1,
-    "cagr": 35.56,
-    "multiple": 4.6686
+    "cagr": 35.92,
+    "multiple": 4.7611
   },
   "stats": {
     "n": 0,
@@ -38,46 +38,46 @@
     {
       "buyYear": 2021,
       "sellYear": 2026,
-      "sellDate": "2026-11-14",
+      "sellDate": "2026-11-21",
       "yearsActual": 4.9,
-      "cagr": 42.7,
-      "multiple": 5.6509,
+      "cagr": 43.07,
+      "multiple": 5.7628,
       "isComplete": false,
-      "benchCagr": 11.51,
-      "diff": 31.19
+      "benchCagr": 9.44,
+      "diff": 33.63
     },
     {
       "buyYear": 2022,
       "sellYear": 2026,
-      "sellDate": "2026-11-14",
+      "sellDate": "2026-11-21",
       "yearsActual": 3.9,
-      "cagr": 48.05,
-      "multiple": 4.5673,
+      "cagr": 48.51,
+      "multiple": 4.6577,
       "isComplete": false,
-      "benchCagr": 20.77,
-      "diff": 27.28
+      "benchCagr": 17.91,
+      "diff": 30.6
     },
     {
       "buyYear": 2023,
       "sellYear": 2026,
-      "sellDate": "2026-11-14",
+      "sellDate": "2026-11-21",
       "yearsActual": 2.9,
-      "cagr": 36.83,
-      "multiple": 2.4608,
+      "cagr": 37.47,
+      "multiple": 2.5096,
       "isComplete": false,
-      "benchCagr": 18.89,
-      "diff": 17.94
+      "benchCagr": 15.13,
+      "diff": 22.34
     },
     {
       "buyYear": 2024,
       "sellYear": 2026,
-      "sellDate": "2026-11-14",
+      "sellDate": "2026-11-21",
       "yearsActual": 1.9,
-      "cagr": 33.23,
-      "multiple": 1.7101,
+      "cagr": 34.23,
+      "multiple": 1.744,
       "isComplete": false,
-      "benchCagr": 15.77,
-      "diff": 17.46
+      "benchCagr": 10.24,
+      "diff": 23.99
     }
   ],
   "loss5y": [],

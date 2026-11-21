@@ -6,19 +6,19 @@
   "type": "etf",
   "note": "합성가격: NDX 일별수익률 기반, 스왑금리(SOFR+0.50%/년)·운용보수 차감. 1985-10-01 이전은 스플라이스 전 구간 (NDX 공식 출범 전). 실제 ETF 상장일과 무관하게 NDX 역사 전체 시뮬레이션. | QQQ 운용보수: 0.20%/년",
   "current": {
-    "price": 679.89,
-    "pe": 28.0,
+    "price": 608.45,
+    "pe": 25.1,
     "divYield": 0.45,
     "eps": null
   },
   "fullPeriod": {
     "start_date": "1971-02-05",
-    "end_date": "2026-11-14",
+    "end_date": "2026-11-21",
     "start_price": 100.0,
-    "end_price": 679.89,
+    "end_price": 608.45,
     "years": 55.8,
-    "cagr": 3.5,
-    "multiple": 6.7989
+    "cagr": 3.29,
+    "multiple": 6.0845
   },
   "stats": {
     "n": 45,
@@ -534,101 +534,101 @@
     {
       "buyYear": 2016,
       "sellYear": 2026,
-      "sellDate": "2026-11-14",
+      "sellDate": "2026-11-21",
       "yearsActual": 9.9,
-      "cagr": 20.15,
-      "multiple": 6.1225,
+      "cagr": 18.77,
+      "multiple": 5.4792,
       "isComplete": false,
-      "benchCagr": 14.99,
-      "diff": 5.16
+      "benchCagr": 13.92,
+      "diff": 4.85
     },
     {
       "buyYear": 2017,
       "sellYear": 2026,
-      "sellDate": "2026-11-14",
+      "sellDate": "2026-11-21",
       "yearsActual": 8.9,
-      "cagr": 18.82,
-      "multiple": 4.6151,
+      "cagr": 17.3,
+      "multiple": 4.1302,
       "isComplete": false,
-      "benchCagr": 14.24,
-      "diff": 4.58
+      "benchCagr": 13.06,
+      "diff": 4.24
     },
     {
       "buyYear": 2018,
       "sellYear": 2026,
-      "sellDate": "2026-11-14",
+      "sellDate": "2026-11-21",
       "yearsActual": 7.9,
-      "cagr": 21.46,
-      "multiple": 4.6209,
+      "cagr": 19.71,
+      "multiple": 4.1354,
       "isComplete": false,
-      "benchCagr": 16.85,
-      "diff": 4.61
+      "benchCagr": 15.48,
+      "diff": 4.23
     },
     {
       "buyYear": 2019,
       "sellYear": 2026,
-      "sellDate": "2026-11-14",
+      "sellDate": "2026-11-21",
       "yearsActual": 6.9,
-      "cagr": 19.11,
-      "multiple": 3.3253,
+      "cagr": 17.15,
+      "multiple": 2.9759,
       "isComplete": false,
-      "benchCagr": 14.86,
-      "diff": 4.25
+      "benchCagr": 13.33,
+      "diff": 3.82
     },
     {
       "buyYear": 2020,
       "sellYear": 2026,
-      "sellDate": "2026-11-14",
+      "sellDate": "2026-11-21",
       "yearsActual": 5.9,
-      "cagr": 14.73,
-      "multiple": 2.2407,
+      "cagr": 12.54,
+      "multiple": 2.0052,
       "isComplete": false,
-      "benchCagr": 14.27,
-      "diff": 0.46
+      "benchCagr": 12.49,
+      "diff": 0.05
     },
     {
       "buyYear": 2021,
       "sellYear": 2026,
-      "sellDate": "2026-11-14",
+      "sellDate": "2026-11-21",
       "yearsActual": 4.9,
-      "cagr": 12.29,
-      "multiple": 1.7585,
+      "cagr": 9.72,
+      "multiple": 1.5737,
       "isComplete": false,
-      "benchCagr": 11.51,
-      "diff": 0.78
+      "benchCagr": 9.44,
+      "diff": 0.28
     },
     {
       "buyYear": 2022,
       "sellYear": 2026,
-      "sellDate": "2026-11-14",
+      "sellDate": "2026-11-21",
       "yearsActual": 3.9,
-      "cagr": 28.1,
-      "multiple": 2.6082,
+      "cagr": 24.34,
+      "multiple": 2.3341,
       "isComplete": false,
-      "benchCagr": 20.77,
-      "diff": 7.33
+      "benchCagr": 17.91,
+      "diff": 6.43
     },
     {
       "buyYear": 2023,
       "sellYear": 2026,
-      "sellDate": "2026-11-14",
+      "sellDate": "2026-11-21",
       "yearsActual": 2.9,
-      "cagr": 19.9,
-      "multiple": 1.6843,
+      "cagr": 15.25,
+      "multiple": 1.5073,
       "isComplete": false,
-      "benchCagr": 18.89,
-      "diff": 1.01
+      "benchCagr": 15.13,
+      "diff": 0.12
     },
     {
       "buyYear": 2024,
       "sellYear": 2026,
-      "sellDate": "2026-11-14",
+      "sellDate": "2026-11-21",
       "yearsActual": 1.9,
-      "cagr": 17.0,
-      "multiple": 1.3412,
+      "cagr": 10.15,
+      "multiple": 1.2003,
       "isComplete": false,
-      "benchCagr": 15.77,
-      "diff": 1.23
+      "benchCagr": 10.24,
+      "diff": -0.09
     }
   ],
   "loss5y": [
