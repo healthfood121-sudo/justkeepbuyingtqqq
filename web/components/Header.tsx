@@ -24,6 +24,7 @@ export default function Header({ maxWidth = 'max-w-6xl', activePage }: HeaderPro
     ['/private/kostolany', '코스톨라니', '코스톨라니 달걀'],
     ['/private/howard-marks', '하워드 막스', '하워드 막스'],
     ['/private/baillie-gifford', '베일리 기퍼드', '베일리 기퍼드 — 큰 승자를 일찍 찾아 끝까지'],
+    ['/private/slowdown', '둔화 판단', '경기 둔화는 얼마나 클까 — 하락장 유형과 지금 신호'],
   ]
   const UNIV_PATHS = ['/private/sp500', '/private/ndx', '/private/mid', '/private/r2k', '/private/nasdaq', '/private/other']
   const privOn = (href: string) => href === '/private' ? (pathname === '/private' || UNIV_PATHS.some(p => pathname.startsWith(p))) : pathname.startsWith(href)
