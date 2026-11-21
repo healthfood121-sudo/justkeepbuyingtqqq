@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import data from '@/public/data/slowdown.json'
-import SlowdownCharts, { WeeklyCharts } from './SlowdownCharts'
+import SlowdownCharts, { WeeklyCharts, ClaimsChart } from './SlowdownCharts'
 
 // 경기 둔화는 얼마나 클까 — 1971년 이후 나스닥100 하락장 21개를 다섯 유형으로 나누고, 유형마다 경기 지표가 어땠는지, 지금은 어느 쪽을 닮았는지.
 // 데이터: scripts/export_macro_cycle.py(FRED·야후·쉴러, 매주 토요일 자동) → scripts/build_slowdown.py → slowdown.json. 서버에서 로그인 확인 뒤에만 그린다.
@@ -25,7 +25,7 @@ const D = data as unknown as {
     BAA10Y?: { date: string; v: number; chg26w: number | null }
     ICSA?: { date: string; v: number; ma4: number; low52: number; upPct: number }
     CCSA?: { date: string; v: number; chg26wPct: number | null }
-    HY_chart?: [string, number][]; BAA10Y_chart?: [string, number][]; ICSA_chart?: [string, number][]
+    HY_chart?: [string, number][]; BAA10Y_chart?: [string, number][]; ICSA_chart?: [string, number][]; ICSA_long?: [string, number, number][]; CCSA_long?: [string, number][]
     claimsHist?: [string, number, boolean, number][] | null
     wedge?: { anchorA: [string, number]; anchorB: [string, number]; slopeYr: number; lineNow: number; now: number; nowDate: string; status: string; aboveDone: number; levels: [number, string][]; peak6m: [string, number]; dropFromPeak: number; turned: boolean; hist: [string, string, number, number, boolean][] } | null
   }
@@ -231,7 +231,12 @@ export default async function SlowdownPage() {
               <li><b>돌파 실패:</b> 월말 종가가 다시 추세선 아래로 내려오면 하락도 얕을 가능성이 크다.</li>
             </ul>
           </div>}
-          {(W.HY_chart || W.ICSA_chart) && <WeeklyCharts hy={W.HY_chart ?? []} baa={W.BAA10Y_chart ?? []} claims={W.ICSA_chart ?? []} wedge={W.wedge ? { anchorA: W.wedge.anchorA, anchorB: W.wedge.anchorB } : null} />}
+          {W.HY_chart && <WeeklyCharts hy={W.HY_chart ?? []} baa={W.BAA10Y_chart ?? []} wedge={W.wedge ? { anchorA: W.wedge.anchorA, anchorB: W.wedge.anchorB } : null} />}
+          {W.ICSA_long && <div className="rounded-lg border border-blue-200 dark:border-blue-900/60 p-3 space-y-2">
+            <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">실업수당 청구 차트 — 바닥선과 돌파선</p>
+            <p className={small}>하이일드 추세선처럼 보는 법: 초록 선(1년 최저)이 바닥, 빨간 점선(바닥 +20%)이 돌파선이다. 파란 4주 평균이 바닥에 붙어 있으면 해고가 적은 것이고, 빨간 점선 위로 올라가 몇 주 머물면 일자리가 깨지기 시작한 것이다. 점은 1967년 이후 처음 +20%를 넘은 주 — 빨강은 침체와 겹친 경우, 회색은 거짓 경보(허리케인 등).</p>
+            <ClaimsChart long={W.ICSA_long} ccsa={W.CCSA_long ?? []} rec={D.chart.USREC} signals={W.claimsHist ?? []} />
+          </div>}
         </section>
 
         <section id="types" className={box}>

@@ -274,11 +274,13 @@ if W.get("ICSA"):
         if up < 0.10: on = False
     claims_hist = sig
     # 그래프: 최근 3년 4주 평균
-    weekly["ICSA_chart"] = [[days[k], round(ma[k])] for k in range(len(ma)) if days[k] >= "2019-01-01"]
+    # 긴 그래프(1967년~): 날짜, 4주 평균, 그때까지 52주 최저(4주 평균 기준) — 최저 +20% 선이 '돌파선'
+    weekly["ICSA_long"] = [[days[k], round(ma[k]), round(min(ma[max(0, k - 51):k + 1]))] for k in range(len(ma))]
 if W.get("CCSA"):
     pts = W["CCSA"]["pts"]; last_d, last_v = pts[-1]
     old = [v for d, v in pts if dd(d) <= dd(last_d) - timedelta(days=182)]
     weekly["CCSA"] = {"date": last_d, "v": last_v, "chg26wPct": round((last_v / old[-1] - 1) * 100, 1) if old else None}
+    weekly["CCSA_long"] = [[d0, round(v0)] for d0, v0 in pts]
 for k in ("HY", "BAA10Y"):
     if W.get(k): weekly[f"{k}_chart"] = [[d, v] for d, v in weekly_last(W[k]["pts"])]
 weekly["claimsHist"] = claims_hist

@@ -145,10 +145,9 @@ const hLines = (ys: [number, string][]) => ({
   },
 })
 
-export function WeeklyCharts({ hy, baa, claims, wedge }: { hy: [string, number][]; baa: [string, number][]; claims: [string, number][]; wedge?: { anchorA: [string, number]; anchorB: [string, number] } | null }) {
+export function WeeklyCharts({ hy, baa, wedge }: { hy: [string, number][]; baa: [string, number][]; wedge?: { anchorA: [string, number]; anchorB: [string, number] } | null }) {
   const pluginLoaded = useZoom()
   const a = useRef<ChartJS<'line'> | null>(null)
-  const b = useRef<ChartJS<'line'> | null>(null)
   const spread = useMemo(() => {
     const m1 = new Map(hy), m2 = new Map(baa)
     const labels = [...new Set([...hy.map(x => x[0]), ...baa.map(x => x[0])])].sort()
@@ -166,7 +165,6 @@ export function WeeklyCharts({ hy, baa, claims, wedge }: { hy: [string, number][
     plugins: { legend: { labels: { boxWidth: 10, font: { size: 11 } } }, ...(zoom ? { zoom } : {}) },
   })
   const btn = 'absolute top-0 right-0 z-10 text-[10px] px-2 py-0.5 rounded border border-gray-300 dark:border-gray-700 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800'
-  const lo = claims.length ? Math.min(...claims.slice(-52).map(x => x[1])) : 0
   return (
     <div className="space-y-6">
       <div className="relative">
@@ -181,16 +179,76 @@ export function WeeklyCharts({ hy, baa, claims, wedge }: { hy: [string, number][
         </div>
         <p className="text-xs text-gray-400 dark:text-gray-600 text-right mt-1">휠: 확대/축소 &nbsp;|&nbsp; 드래그: 이동 &nbsp;|&nbsp; 하이일드는 FRED 공개분(최근 3년)만</p>
       </div>
-      <div className="relative">
-        <button onClick={() => b.current?.resetZoom()} className={btn}>줌 초기화</button>
-        <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-1">실업수당 신규 청구 4주 평균 (2019년~)</p>
-        <div style={{ height: 260 }}>
-          <Line ref={b} plugins={[hLines([[lo * 1.1, '최근 1년 최저 +10%'], [lo * 1.2, '+20% 경고']])]} data={{ labels: claims.map(x => x[0]), datasets: [
-            { label: '4주 평균(건)', data: claims.map(x => x[1]), borderColor: 'rgb(37,99,235)' },
-          ] }} options={{ ...opt('건'), scales: { ...opt('건').scales, y: { ...opt('건').scales.y, max: 450000 } } }} />
-        </div>
-        <p className="text-xs text-gray-400 dark:text-gray-600 text-right mt-1">휠: 확대/축소 &nbsp;|&nbsp; 드래그: 이동 &nbsp;|&nbsp; 2020년 코로나 때는 600만 건대까지 튀어 45만 건 위를 잘랐다</p>
+    </div>
+  )
+}
+
+
+// 실업수당 신규 청구 — 1967년~ 4주 평균(로그 가능), 1년 최저선, 최저 +10%·+20% 돌파선, 침체 기간, 과거 +20% 신호 표시
+export function ClaimsChart({ long, ccsa, rec, signals }: {
+  long: [string, number, number][]; ccsa: [string, number][]; rec: { start: string; v: (number | null)[] } | undefined
+  signals: [string, number, boolean, number][]
+}) {
+  const pluginLoaded = useZoom()
+  const ref = useRef<ChartJS<'line'> | null>(null)
+  const [from, setFrom] = useState('2019')
+  const [log, setLog] = useState(true)
+  const [showC, setShowC] = useState(false)
+  const recSet = useMemo(() => {
+    const s: Record<string, number> = {}
+    if (rec) { const ms = months(rec); ms.forEach((m, i) => { s[m] = (rec.v[i] ?? 0) as number }) }
+    return s
+  }, [rec])
+  const d = useMemo(() => {
+    const rows = long.filter(r => r[0] >= `${from}-01-01`)
+    const labels = rows.map(r => r[0])
+    const cm = new Map(ccsa)
+    const sig = new Map(signals.map(s => [s[0], s]))
+    return {
+      labels, ma: rows.map(r => r[1]), lo: rows.map(r => r[2]), lo10: rows.map(r => Math.round(r[2] * 1.1)), lo20: rows.map(r => Math.round(r[2] * 1.2)),
+      cc: rows.map(r => cm.get(r[0]) ?? null),
+      sig: rows.map(r => sig.has(r[0]) ? r[1] : null),
+      sigColor: rows.map(r => sig.get(r[0])?.[2] ? 'rgb(220,38,38)' : 'rgb(107,114,128)'),
+      recByLabel: Object.fromEntries(labels.map(l => [l, recSet[l.slice(0, 7)] ?? 0])) as Record<string, number>,
+    }
+  }, [long, ccsa, signals, from, recSet])
+  const zoom = pluginLoaded ? { zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' as const }, pan: { enabled: true, mode: 'x' as const } } : undefined
+  const shade = recessionShade(d.labels, d.recByLabel)
+  const btn = (on: boolean) => `px-2 py-0.5 rounded border ${on ? 'bg-blue-600 text-white border-blue-600' : 'border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-300'}`
+  const last = long[long.length - 1]
+  return (
+    <div className="relative space-y-2">
+      <div className="flex flex-wrap items-center gap-1 text-xs">
+        {[['1967', '1967년~'], ['2000', '2000년~'], ['2015', '2015년~'], ['2019', '2019년~'], ['2024', '최근 3년']].map(([y, l]) => (
+          <button key={y} onClick={() => setFrom(y)} className={btn(from === y)}>{l}</button>
+        ))}
+        <span className="mx-1 text-gray-300">|</span>
+        <button onClick={() => setLog(!log)} className={btn(log)}>로그 눈금</button>
+        <button onClick={() => setShowC(!showC)} className={btn(showC)}>계속 청구 같이 보기</button>
+        <button onClick={() => ref.current?.resetZoom()} className="ml-auto px-2 py-0.5 rounded border border-gray-300 dark:border-gray-700 text-gray-500">줌 초기화</button>
       </div>
+      <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">실업수당 신규 청구 4주 평균 — 지금 {(last[1] / 10000).toFixed(1)}만 건, 1년 최저 {(last[2] / 10000).toFixed(1)}만 건, 경고선 {(last[2] * 1.2 / 10000).toFixed(1)}만 건</p>
+      <div style={{ height: 340 }}>
+        <Line ref={ref} plugins={[shade]} data={{ labels: d.labels, datasets: [
+          { label: '4주 평균', data: d.ma, borderColor: 'rgb(37,99,235)', borderWidth: 1.6, yAxisID: 'y' },
+          { label: '1년 최저(바닥선)', data: d.lo, borderColor: 'rgb(16,185,129)', borderWidth: 1, yAxisID: 'y' },
+          { label: '바닥 +10%(주의선)', data: d.lo10, borderColor: 'rgb(245,158,11)', borderWidth: 1, borderDash: [4, 4], yAxisID: 'y' },
+          { label: '바닥 +20%(돌파선·경고)', data: d.lo20, borderColor: 'rgb(220,38,38)', borderWidth: 1.2, borderDash: [6, 4], yAxisID: 'y' },
+          { label: '과거 +20% 신호(빨강=침체, 회색=거짓 경보)', data: d.sig, borderColor: 'transparent', backgroundColor: d.sigColor, pointBackgroundColor: d.sigColor, pointRadius: 5, showLine: false, yAxisID: 'y' },
+          ...(showC ? [{ label: '계속 청구(오른쪽 눈금)', data: d.cc, borderColor: 'rgb(168,85,247)', borderWidth: 1.2, yAxisID: 'y2' }] : []),
+        ] }} options={{
+          responsive: true, maintainAspectRatio: false, animation: false as const, spanGaps: true,
+          interaction: { mode: 'index' as const, intersect: false },
+          elements: { point: { radius: 0 } },
+          scales: {
+            x: { ticks: { maxTicksLimit: 10, font: { size: 10 } }, grid: { display: false } },
+            y: { type: (log ? 'logarithmic' : 'linear') as 'linear', title: { display: true, text: '건(로그)', font: { size: 10 } }, ticks: { font: { size: 10 }, callback: (v: string | number) => `${Math.round(Number(v) / 1000)}천` }, ...(log ? {} : { max: 600000 }) },
+            ...(showC ? { y2: { position: 'right' as const, grid: { display: false }, ticks: { font: { size: 10 }, callback: (v: string | number) => `${Math.round(Number(v) / 10000)}만` } } } : {}),
+          },
+          plugins: { legend: { labels: { boxWidth: 10, font: { size: 11 } } }, tooltip: { callbacks: { label: (c: { dataset: { label?: string }; parsed: { y: number | null } }) => c.parsed.y == null ? '' : `${c.dataset.label}: ${Math.round(c.parsed.y).toLocaleString()}건` } }, ...(zoom ? { zoom } : {}) },
+        }} />
+      </div>
+      <p className="text-xs text-gray-400 dark:text-gray-600">휠: 확대/축소 | 드래그: 이동 | 회색 띠 = 경기침체 | 파란 선이 빨간 점선(바닥 +20%)을 뚫고 몇 주 머물면 경고. 2020년 코로나 때는 600만 건대까지 튐(로그 눈금으로 보면 한 화면에 보인다).</p>
     </div>
   )
 }
