@@ -116,6 +116,35 @@ def fred_raw(sid, since):
 
 HY_HIST = ROOT / "web" / "public" / "data" / "hy_history.json"
 
+def gz_ebp():
+    """연준(길크리스트·자크라이섹) GZ 회사채 스프레드·초과 채권 프리미엄(EBP)·12개월 침체 확률 — 1973년~ 월별.
+    하이일드 스프레드 옛 기록(FRED는 최근 3년만)을 대신하는 긴 신용 지표."""
+    for url in ("https://www.federalreserve.gov/econres/notes/feds-notes/ebp_csv.csv",
+                "https://www.federalreserve.gov/econresdata/notes/feds-notes/2016/files/ebp_csv.csv"):
+        for h in UAS[::-1]:
+            try:
+                r = requests.get(url, headers=h, timeout=40)
+            except requests.RequestException as e:
+                print("  EBP ERR", str(e)[:80], flush=True); continue
+            print("  EBP", r.status_code, url[-40:], r.text[:120].replace("\n", " | "), flush=True)
+            if r.status_code != 200 or "gz" not in r.text[:200].lower(): continue
+            rows = list(csv.DictReader(io.StringIO(r.text)))
+            out = {"GZ": {}, "EBP": {}, "EBPPROB": {}}
+            for x in rows:
+                d0 = (x.get("date") or x.get("DATE") or "")[:10]
+                if len(d0) < 7: continue
+                mo = d0[:7] if d0[4] == "-" else None
+                if not mo:
+                    try:
+                        from datetime import datetime
+                        mo = datetime.strptime(d0.split(" ")[0], "%m/%d/%Y").strftime("%Y-%m")
+                    except ValueError: continue
+                for k, col in (("GZ", "gz_spread"), ("EBP", "ebp"), ("EBPPROB", "est_prob")):
+                    try: out[k][mo] = float(x[col])
+                    except (KeyError, ValueError, TypeError): pass
+            return out
+    return None
+
 def alfred_hist(sid):
     """FRED는 ICE 지표를 최근 3년만 공개한다. 기록 보관소 ALFRED의 옛 버전(잘리기 전)에서 1996년~ 전체를 받는다.
     한 번 받으면 hy_history.json에 저장해 두고 다음부터는 그 파일을 쓴다."""
@@ -225,6 +254,13 @@ def main():
         else: errors.append("Shiller CAPE")
     except Exception as e:
         print("  shiller", e, flush=True); errors.append("Shiller CAPE")
+    ge = gz_ebp()
+    if ge:
+        for k, nm in (("GZ", "GZ 회사채 스프레드(연준)"), ("EBP", "초과 채권 프리미엄(연준)"), ("EBPPROB", "EBP 기반 12개월 침체 확률(연준)")):
+            p = pack({a: b for a, b in ge[k].items() if a >= SINCE})
+            if p: series[k] = {"name": nm, "src": "Fed", **p}; print("EBP", k, p["start"], len(p["v"]), flush=True)
+    else:
+        errors.append("연준 GZ·EBP")
     if not HY_HIST.exists():
         hist = alfred_hist("BAMLH0A0HYM2")
         if hist:
