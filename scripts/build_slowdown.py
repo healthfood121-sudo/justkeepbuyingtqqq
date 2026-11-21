@@ -228,12 +228,68 @@ for mo in sorted(S.get("SAHMREALTIME", {})):
         recm = next((m for m in sorted(S["USREC"]) if shift(mo, -6) <= m <= shift(mo, 6) and S["USREC"][m] >= 1), None)
         sahm.append([mo, recm])
     prev = on
+# ── 주간 신호(하이일드 스프레드·실업수당 청구) ──
+W = json.loads((DATA / "macro_cycle.json").read_text()).get("weekly", {})
+from datetime import date, timedelta
+def dd(s): return date.fromisoformat(s)
+def weekly_last(pts):  # 일간 → 주말(금요일까지) 마지막 값
+    out = {}
+    for d, v in pts:
+        x = dd(d); fri = x + timedelta(days=(4 - x.weekday()) % 7)
+        out[fri.isoformat()] = v
+    return sorted(out.items())
+weekly = {}
+HY_BANDS = [(4, "평온"), (5, "조정"), (6, "주의 — 약한 회사의 돈줄이 조여짐"), (8, "위험 — 침체 때 수준에 다가감"), (99, "침체급")]
+if W.get("HY"):
+    pts = W["HY"]["pts"]; last_d, last_v = pts[-1]
+    yr = [v for d, v in pts if dd(d) >= dd(last_d) - timedelta(days=365)]
+    q = [v for d, v in pts if dd(d) >= dd(last_d) - timedelta(days=91)]
+    lo = min(yr); lo_d = next(d for d, v in pts if v == lo and dd(d) >= dd(last_d) - timedelta(days=365))
+    weekly["HY"] = {"date": last_d, "v": last_v, "low52": lo, "lowDate": lo_d, "up52": round(last_v - lo, 2),
+                    "chg13w": round(last_v - q[0], 2), "max52": max(yr),
+                    "band": next(nm for th, nm in HY_BANDS if last_v < th)}
+if W.get("BAA10Y"):
+    pts = W["BAA10Y"]["pts"]; last_d, last_v = pts[-1]
+    old = [v for d, v in pts if dd(d) <= dd(last_d) - timedelta(days=182)]
+    weekly["BAA10Y"] = {"date": last_d, "v": last_v, "chg26w": round(last_v - old[-1], 2) if old else None}
+claims_hist = None
+if W.get("ICSA"):
+    pts = W["ICSA"]["pts"]
+    vals = [v for _, v in pts]; days = [d for d, _ in pts]
+    ma = [sum(vals[max(0, i - 3):i + 1]) / len(vals[max(0, i - 3):i + 1]) for i in range(len(vals))]
+    i = len(ma) - 1
+    lo = min(ma[max(0, i - 51):i + 1])
+    weekly["ICSA"] = {"date": days[i], "v": vals[i], "ma4": round(ma[i]), "low52": round(lo), "upPct": round((ma[i] / lo - 1) * 100, 1)}
+    # 과거 성적: 4주 평균이 52주 최저보다 20% 넘게 오른 첫 주 → 그 뒤 12개월 안(또는 이미) 침체였나
+    rec = S.get("USREC", {})
+    sig = []; on = False
+    for j in range(52, len(ma)):
+        lo_j = min(ma[j - 51:j + 1]); up = ma[j] / lo_j - 1
+        if up >= 0.20 and not on:
+            mo = days[j][:7]
+            hit = max([rec.get(shift(mo, k), 0) for k in range(-3, 13)]) >= 1
+            if not sig or days[j] > (dd(sig[-1][0]) + timedelta(days=365)).isoformat():
+                sig.append([days[j], round(up * 100), bool(hit), round(ma[j])])
+            on = True
+        if up < 0.10: on = False
+    claims_hist = sig
+    # 그래프: 최근 3년 4주 평균
+    weekly["ICSA_chart"] = [[days[k], round(ma[k])] for k in range(len(ma)) if days[k] >= "2019-01-01"]
+if W.get("CCSA"):
+    pts = W["CCSA"]["pts"]; last_d, last_v = pts[-1]
+    old = [v for d, v in pts if dd(d) <= dd(last_d) - timedelta(days=182)]
+    weekly["CCSA"] = {"date": last_d, "v": last_v, "chg26wPct": round((last_v / old[-1] - 1) * 100, 1) if old else None}
+for k in ("HY", "BAA10Y"):
+    if W.get(k): weekly[f"{k}_chart"] = [[d, v] for d, v in weekly_last(W[k]["pts"])]
+weekly["claimsHist"] = claims_hist
+
 for r in rows: r.pop("spx", None)
-out = {"generated": json.loads((DATA / "macro_cycle.json").read_text())["generated"], "rows": rows, "types": types, "now": now, "chart": chart, "given": given, "inversions": inv, "sahm": sahm,
+out = {"generated": json.loads((DATA / "macro_cycle.json").read_text())["generated"], "rows": rows, "types": types, "now": now, "chart": chart, "given": given, "inversions": inv, "sahm": sahm, "weekly": weekly,
        "errors": json.loads((DATA / "macro_cycle.json").read_text()).get("errors", [])}
 (DATA / "slowdown.json").write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")))
 print("하락장", len(rows), "유형", {k: v["n"] for k, v in types.items()})
 for r in rows: print(r["key"], r["type"], r["ndx"], r["tqqq"], r["months"], r["recoverMonths"], "침체" if r["recession"] else "", "금리인상폭", r["fedUpDuring"], "금리차최저", r["curveMin24"], "신용↑", r["creditUp"], "실업↑", r["unrUp"], "CAPE", r["cape"], "신용고점-바닥", r["creditPeakVsTrough"], "실업고점-바닥", r["unrPeakLag"], "tq3", r["tq3"], "tq5", r["tq5"])
 for k, v in types.items(): print(k, v)
+print("weekly", {k: v for k, v in weekly.items() if not k.endswith("_chart")});
 print("given", given); print("inv", inv); print("sahm", sahm)
 print(json.dumps(now, ensure_ascii=False)[:2500])

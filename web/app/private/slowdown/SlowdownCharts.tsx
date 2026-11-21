@@ -125,3 +125,68 @@ export default function SlowdownCharts({ chart }: { chart: Record<string, Ser> }
     </div>
   )
 }
+
+// 주간 그래프: 하이일드·BAA 스프레드(기준선 5·6·8%), 실업수당 신규 청구 4주 평균
+const hLines = (ys: [number, string][]) => ({
+  id: 'hLines',
+  afterDraw(chart: ChartJS) {
+    const { ctx, chartArea, scales } = chart
+    const y = scales.y
+    ctx.save()
+    ys.forEach(([v, label]) => {
+      if (v < y.min || v > y.max) return
+      const py = y.getPixelForValue(v)
+      ctx.strokeStyle = 'rgba(220,38,38,0.45)'; ctx.setLineDash([4, 4]); ctx.lineWidth = 1
+      ctx.beginPath(); ctx.moveTo(chartArea.left, py); ctx.lineTo(chartArea.right, py); ctx.stroke()
+      ctx.setLineDash([]); ctx.fillStyle = 'rgba(220,38,38,0.8)'; ctx.font = '10px sans-serif'
+      ctx.fillText(label, chartArea.left + 4, py - 3)
+    })
+    ctx.restore()
+  },
+})
+
+export function WeeklyCharts({ hy, baa, claims }: { hy: [string, number][]; baa: [string, number][]; claims: [string, number][] }) {
+  const pluginLoaded = useZoom()
+  const a = useRef<ChartJS<'line'> | null>(null)
+  const b = useRef<ChartJS<'line'> | null>(null)
+  const spread = useMemo(() => {
+    const m1 = new Map(hy), m2 = new Map(baa)
+    const labels = [...new Set([...hy.map(x => x[0]), ...baa.map(x => x[0])])].sort()
+    return { labels, hy: labels.map(l => m1.get(l) ?? null), baa: labels.map(l => m2.get(l) ?? null) }
+  }, [hy, baa])
+  const zoom = pluginLoaded ? { zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' as const }, pan: { enabled: true, mode: 'x' as const } } : undefined
+  const opt = (yTitle: string, min?: number) => ({
+    responsive: true, maintainAspectRatio: false, animation: false as const, spanGaps: true,
+    interaction: { mode: 'index' as const, intersect: false },
+    elements: { point: { radius: 0 }, line: { borderWidth: 1.5 } },
+    scales: { x: { ticks: { maxTicksLimit: 10, font: { size: 10 } }, grid: { display: false } }, y: { min, title: { display: true, text: yTitle, font: { size: 10 } }, ticks: { font: { size: 10 } } } },
+    plugins: { legend: { labels: { boxWidth: 10, font: { size: 11 } } }, ...(zoom ? { zoom } : {}) },
+  })
+  const btn = 'absolute top-0 right-0 z-10 text-[10px] px-2 py-0.5 rounded border border-gray-300 dark:border-gray-700 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800'
+  const lo = claims.length ? Math.min(...claims.slice(-52).map(x => x[1])) : 0
+  return (
+    <div className="space-y-6">
+      <div className="relative">
+        <button onClick={() => a.current?.resetZoom()} className={btn}>줌 초기화</button>
+        <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-1">하이일드 스프레드 · BAA 회사채 스프레드 (주말 값)</p>
+        <div style={{ height: 260 }}>
+          <Line ref={a} plugins={[hLines([[5, '5% 주의'], [6, '6% 경고'], [8, '8% 침체급']])]} data={{ labels: spread.labels, datasets: [
+            { label: '하이일드 스프레드(%)', data: spread.hy, borderColor: 'rgb(168,85,247)' },
+            { label: 'BAA − 10년 국채(%p)', data: spread.baa, borderColor: 'rgb(245,158,11)' },
+          ] }} options={opt('%', 0)} />
+        </div>
+        <p className="text-xs text-gray-400 dark:text-gray-600 text-right mt-1">휠: 확대/축소 &nbsp;|&nbsp; 드래그: 이동 &nbsp;|&nbsp; 하이일드는 FRED 공개분(최근 3년)만</p>
+      </div>
+      <div className="relative">
+        <button onClick={() => b.current?.resetZoom()} className={btn}>줌 초기화</button>
+        <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-1">실업수당 신규 청구 4주 평균 (2019년~)</p>
+        <div style={{ height: 260 }}>
+          <Line ref={b} plugins={[hLines([[lo * 1.1, '최근 1년 최저 +10%'], [lo * 1.2, '+20% 경고']])]} data={{ labels: claims.map(x => x[0]), datasets: [
+            { label: '4주 평균(건)', data: claims.map(x => x[1]), borderColor: 'rgb(37,99,235)' },
+          ] }} options={{ ...opt('건'), scales: { ...opt('건').scales, y: { ...opt('건').scales.y, max: 450000 } } }} />
+        </div>
+        <p className="text-xs text-gray-400 dark:text-gray-600 text-right mt-1">휠: 확대/축소 &nbsp;|&nbsp; 드래그: 이동 &nbsp;|&nbsp; 2020년 코로나 때는 600만 건대까지 튀어 45만 건 위를 잘랐다</p>
+      </div>
+    </div>
+  )
+}

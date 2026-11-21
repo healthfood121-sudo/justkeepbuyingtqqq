@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import data from '@/public/data/slowdown.json'
-import SlowdownCharts from './SlowdownCharts'
+import SlowdownCharts, { WeeklyCharts } from './SlowdownCharts'
 
 // 경기 둔화는 얼마나 클까 — 1971년 이후 나스닥100 하락장 21개를 다섯 유형으로 나누고, 유형마다 경기 지표가 어땠는지, 지금은 어느 쪽을 닮았는지.
 // 데이터: scripts/export_macro_cycle.py(FRED·야후·쉴러, 매주 토요일 자동) → scripts/build_slowdown.py → slowdown.json. 서버에서 로그인 확인 뒤에만 그린다.
@@ -19,6 +19,14 @@ const D = data as unknown as {
   chart: Record<string, { start: string; v: (number | null)[] }>
   given: { dd: number; n: number; rows: [string, string, number, number][]; within5: number; deeper15: number; median: number } | null
   inversions: [string, boolean, string | null][]; sahm: [string, string | null][]
+  weekly: {
+    HY?: { date: string; v: number; low52: number; lowDate: string; up52: number; chg13w: number; max52: number; band: string }
+    BAA10Y?: { date: string; v: number; chg26w: number | null }
+    ICSA?: { date: string; v: number; ma4: number; low52: number; upPct: number }
+    CCSA?: { date: string; v: number; chg26wPct: number | null }
+    HY_chart?: [string, number][]; BAA10Y_chart?: [string, number][]; ICSA_chart?: [string, number][]
+    claimsHist?: [string, number, boolean, number][] | null
+  }
 }
 
 const TYPES: [string, string, string][] = [
@@ -55,14 +63,23 @@ export default async function SlowdownPage() {
   const sahm = N.SAHMREALTIME?.v ?? null
   const claims6 = N.ICSA?.chg6pct as number | null
   const credit6 = N.CREDIT?.chg6 as number | null
-  const hyUp = N.BAMLH0A0HYM2?.v != null && N.BAMLH0A0HYM2?.min12 != null ? (N.BAMLH0A0HYM2.v as number) - (N.BAMLH0A0HYM2.min12 as number) : null
+  const W = D.weekly ?? {}
+  const hyUp = W.HY ? W.HY.up52 : N.BAMLH0A0HYM2?.v != null && N.BAMLH0A0HYM2?.min12 != null ? (N.BAMLH0A0HYM2.v as number) - (N.BAMLH0A0HYM2.min12 as number) : null
+  const hyV = W.HY ? W.HY.v : (N.BAMLH0A0HYM2?.v ?? null)
+  const hyL: L = hyV == null ? 'n' : (hyV >= 6 || (hyUp ?? 0) >= 1.5) ? 'r' : (hyV >= 5 || (hyUp ?? 0) >= 0.5) ? 'y' : 'g'
+  const clUp = W.ICSA ? W.ICSA.upPct : null
+  const ch = W.claimsHist ?? []
+  const chHit = ch.filter(x => x[2]).length
   const lvl = (v: number | null, y: number, r: number, rev = false): L => v == null ? 'n' : rev ? (v <= r ? 'r' : v <= y ? 'y' : 'g') : (v >= r ? 'r' : v >= y ? 'y' : 'g')
   const signals: { group: string; k: string; now: string; l: L; rule: string; why: string }[] = [
     { group: '일자리', k: '실업률 — 1년 최저 대비', now: `${f(N.UNRATE?.v, 1, '%')} (1년 최저 ${f(N.UNRATE?.low12 as number, 1, '%')}, ${f(unrUp, 1, '%p')})`, l: lvl(unrUp, 0.3, 0.5), rule: '+0.3%p 주의 · +0.5%p 경고', why: '침체 유형은 실업률이 중간값 +2.9%p, 둔화·금리 인상 유형은 +0.1~0.3%p. 가장 확실한 갈림길.' },
     { group: '일자리', k: '삼 규칙 지표', now: f(sahm, 2, '%p'), l: lvl(sahm, 0.3, 0.5), rule: '0.5 넘으면 침체 시작 신호', why: '1960년 이후 14번 켜졌고 대부분 침체 시작 0~4개월 뒤 — 예측이 아니라 "이미 시작됐다"는 확인용. 1976년·2024년 7월은 침체 없이 켜졌다.' },
-    { group: '일자리', k: '실업수당 신규 청구 — 6개월 변화', now: `${N.ICSA?.v != null ? Math.round((N.ICSA.v as number) / 1000) + '천 건' : '—'} (${f(claims6, 1, '%')})`, l: lvl(claims6, 10, 20), rule: '+10% 주의 · +20% 경고', why: '매주 나오는 가장 빠른 일자리 지표. 해고가 늘면 먼저 오른다.' },
-    { group: '신용', k: '회사채 신용 스프레드(BAA − 10년 국채) — 6개월 변화', now: `${f(N.CREDIT?.v, 2, '%p')} (${f(credit6, 2, '%p')})`, l: lvl(credit6, 0.3, 0.8), rule: '+0.3%p 주의 · +0.8%p 경고', why: '침체 유형은 하락장 동안 중간값 +1.6%p, 둔화·금리 인상 유형은 +0.03~0.2%p. 돈 빌리기 어려워지는지 보는 지표.' },
-    { group: '신용', k: '하이일드(위험한 회사채) 스프레드 — 1년 최저 대비', now: `${f(N.BAMLH0A0HYM2?.v, 2, '%p')} (1년 최저 ${f(N.BAMLH0A0HYM2?.min12 as number, 2)}, ${f(hyUp, 2, '%p')})`, l: lvl(hyUp, 0.5, 1.5), rule: '+0.5%p 주의 · +1.5%p 경고', why: '드러켄밀러가 말한 "신용 스프레드 확대". FRED 공개 기록은 최근 3년치만 있다.' },
+    W.ICSA
+      ? { group: '일자리', k: `실업수당 신규 청구 4주 평균 — 1년 최저 대비 (주간, ${W.ICSA.date})`, now: `${(W.ICSA.ma4 / 10000).toFixed(1)}만 건 (최저 ${(W.ICSA.low52 / 10000).toFixed(1)}만, ${f(clUp, 1, '%')})`, l: lvl(clUp, 10, 20), rule: '+10% 주의 · +20% 경고', why: `매주 목요일 발표 — 가장 빠른 일자리 지표. 1967년 이후 +20%를 넘은 ${ch.length}번 중 ${chHit}번이 침체와 겹쳤다(거짓 경보는 허리케인·일시 해고 때).` }
+      : { group: '일자리', k: '실업수당 신규 청구 — 6개월 변화', now: `${N.ICSA?.v != null ? Math.round((N.ICSA.v as number) / 1000) + '천 건' : '—'} (${f(claims6, 1, '%')})`, l: lvl(claims6, 10, 20), rule: '+10% 주의 · +20% 경고', why: '매주 나오는 가장 빠른 일자리 지표. 해고가 늘면 먼저 오른다.' },
+    ...(W.CCSA ? [{ group: '일자리', k: `실업수당 계속 청구 — 6개월 변화 (주간, ${W.CCSA.date})`, now: `${(W.CCSA.v / 10000).toFixed(0)}만 명 (${f(W.CCSA.chg26wPct, 1, '%')})`, l: lvl(W.CCSA.chg26wPct, 10, 20) as L, rule: '+10% 주의 · +20% 경고', why: '실업 상태가 계속되는 사람 수 — 일자리를 다시 찾기 어려워지는지.' }] : []),
+    { group: '신용', k: '회사채 신용 스프레드(BAA − 10년 국채) — 6개월 변화', now: W.BAA10Y ? `${f(W.BAA10Y.v, 2, '%p')} (${f(W.BAA10Y.chg26w, 2, '%p')}, 일간 ${W.BAA10Y.date})` : `${f(N.CREDIT?.v, 2, '%p')} (${f(credit6, 2, '%p')})`, l: lvl(W.BAA10Y?.chg26w ?? credit6, 0.3, 0.8), rule: '+0.3%p 주의 · +0.8%p 경고', why: '침체 유형은 하락장 동안 중간값 +1.6%p, 둔화·금리 인상 유형은 +0.03~0.2%p. 돈 빌리기 어려워지는지 보는 지표.' },
+    { group: '신용', k: `하이일드(위험한 회사채) 스프레드 — 수준과 1년 최저 대비${W.HY ? ` (일간, ${W.HY.date})` : ''}`, now: `${f(hyV, 2, '%')} · ${W.HY?.band ?? ''} (1년 최저 ${f(W.HY?.low52 ?? (N.BAMLH0A0HYM2?.min12 as number), 2)}, ${f(hyUp, 2, '%p')})`, l: hyL, rule: '수준 5% 또는 +0.5%p 주의 · 6% 또는 +1.5%p 경고', why: '드러켄밀러가 말한 "신용 스프레드 확대". 2018·2022년(침체 없음)은 5~6%에서 멈췄고, 침체 때는 8~20%까지 갔다(아래 주간 체크).' },
     { group: '금리', k: '10년 국채 금리', now: f(N.GS10?.v, 2, '%'), l: lvl(N.GS10?.v ?? null, 4.5, 5), rule: '4.5% 주의 · 5% 경고', why: '높은 장기 금리는 주식 값(PER)을 누른다. 2022년 금리 인상 하락장이 −36%였다.' },
     { group: '금리', k: '기준금리 — 1년 변화', now: `${f(N.FEDFUNDS?.v, 2, '%')} (${f(N.FEDFUNDS?.chg12 as number, 2, '%p')})`, l: lvl(N.FEDFUNDS?.chg12 as number, 0.5, 1.5), rule: '+0.5%p 주의 · +1.5%p 경고', why: '금리 인상 유형의 하락장 전후 인상폭 중간값 4%p. 월평균 자료라 최근 인상이 늦게 잡힌다.' },
     { group: '금리', k: '10년 − 3개월 금리차(최근 2년 최저)', now: `${f(N.CURVE?.v, 2, '%p')} (최저 ${f(N.CURVE?.min24 as number, 2)})`, l: (N.CURVE?.min24 as number) < 0 ? 'y' : 'g', rule: '최근 2년 안에 역전(0 아래)이 있었으면 주의', why: '1960년 이후 역전 10번 중 8번이 2년 안에 침체. 2022년 11월 역전은 침체 없이 끝났다 — 지금까지 가장 큰 예외.' },
@@ -85,7 +102,7 @@ export default async function SlowdownPage() {
         ? { t: 'hike', s: '일자리·신용은 아직 버티고, 금리·물가가 문제 → ② 금리 인상 둔화형에 가장 가까움' }
         : { t: 'soft', s: '일자리·신용·금리 모두 큰 문제 없음 → ① 둔화만 또는 ③ 사건형에 가까움' }
 
-  const toc: [string, string][] = [['answer', '먼저 답부터'], ['types', '하락장 다섯 유형'], ['how', '유형을 가르는 법'], ['now', '지금 신호등'], ['given', '지금 낙폭에서 보면'], ['bottom', '바닥은 언제였나'], ['future', '미래를 알 수 있나'], ['all', '하락장 21개 전체'], ['charts', '그래프'], ['src', '데이터·출처']]
+  const toc: [string, string][] = [['answer', '먼저 답부터'], ['weekly', '매주 볼 두 줄'], ['types', '하락장 다섯 유형'], ['how', '유형을 가르는 법'], ['now', '지금 신호등'], ['given', '지금 낙폭에서 보면'], ['bottom', '바닥은 언제였나'], ['future', '미래를 알 수 있나'], ['all', '하락장 21개 전체'], ['charts', '그래프'], ['src', '데이터·출처']]
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
@@ -110,6 +127,78 @@ export default async function SlowdownPage() {
             <li><b>그래서 범위로 보면:</b> 금리 인상 둔화형으로 끝나면 과거 기준 총 −20~−36%(지금보다 조금 더), 2027년 하반기에 일자리가 꺾여 침체형으로 넘어가면 −25~−35%, AI 투자 열기까지 꺼지는 거품 붕괴형이면 −50% 이상. 과거에 지금 낙폭(약 {f(D.given?.dd, 0, '%')})을 지난 하락장 {D.given?.n}번의 최종 깊이 중간값은 <b>{f(D.given?.median, 0, '%')}</b>였다.</li>
             <li><b>미래를 정확히 알 수는 없다</b> — 그러나 &quot;어느 유형으로 가고 있는지&quot;는 일자리·신용 지표로 몇 달 안에 꽤 선명해진다. 예측보다 <b>확인하며 대응</b>하는 쪽이 과거에 더 잘 맞았다(아래 &quot;미래를 알 수 있나&quot;).</li>
           </ul>
+        </section>
+
+
+        <section id="weekly" className={box}>
+          <h2 className={h2}>매주 볼 두 줄 — 하이일드 스프레드와 실업수당 청구</h2>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div className="rounded-lg bg-gray-50 dark:bg-gray-900 p-3 space-y-1">
+              <p className="text-xs text-gray-500">하이일드 스프레드 {W.HY ? `(${W.HY.date})` : ''}</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{f(hyV, 2, '%')} <span className="text-sm font-medium text-gray-500">{W.HY?.band}</span></p>
+              {W.HY && <p className={small}>1년 최저 {W.HY.low52.toFixed(2)}%({W.HY.lowDate})보다 <b>+{W.HY.up52.toFixed(2)}%p</b>, 3개월 {f(W.HY.chg13w, 2, '%p')}. 바닥을 찍고 올라오는 중 — 아직 수준은 낮다.</p>}
+            </div>
+            <div className="rounded-lg bg-gray-50 dark:bg-gray-900 p-3 space-y-1">
+              <p className="text-xs text-gray-500">실업수당 신규 청구 4주 평균 {W.ICSA ? `(${W.ICSA.date})` : ''}</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white">{W.ICSA ? `${(W.ICSA.ma4 / 10000).toFixed(1)}만 건` : '—'} <span className="text-sm font-medium text-gray-500">{W.ICSA ? `1년 최저 대비 ${f(clUp, 1, '%')}` : ''}</span></p>
+              <p className={small}>+10%면 주의, +20%면 경고. 해고가 늘기 시작하면 여기서 가장 먼저 보인다.</p>
+            </div>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead><tr className="border-b border-gray-200 dark:border-gray-800">{['', '하이일드 스프레드', '실업수당 청구(4주 평균, 1년 최저 대비)', '읽는 법'].map(h => <th key={h} className={th}>{h}</th>)}</tr></thead>
+              <tbody>
+                {[
+                  ['g', '5% 아래, 1년 최저 +0.5%p 아래', '+10% 아래', '신용·일자리 모두 괜찮음'],
+                  ['y', '5% 넘거나 1년 최저 +0.5%p 이상', '+10~20%', '약한 회사부터 조여지는 중 — 금리 인상 둔화형(2018·2022년)도 여기까지 왔다'],
+                  ['r', '6% 넘거나 +1.5%p 이상', '+20% 이상', '돈줄이 실제로 막히는 중 — 둘이 함께 오면 침체형 쪽으로'],
+                ].map(([l, a, b, c]) => (
+                  <tr key={l} className="border-b border-gray-100 dark:border-gray-900">
+                    <td className={td}><span className={`inline-block w-2.5 h-2.5 rounded-full ${LC[l as L]}`} /></td>
+                    <td className={`${td} whitespace-normal`}>{a}</td><td className={`${td} whitespace-normal`}>{b}</td><td className={`${td} whitespace-normal`}>{c}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div>
+              <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-1">하이일드 스프레드 — 과거 꼭대기</p>
+              <table className="w-full text-xs">
+                <thead><tr className="border-b border-gray-200 dark:border-gray-800">{['시기', '꼭대기', '결과'].map(h => <th key={h} className={th}>{h}</th>)}</tr></thead>
+                <tbody>
+                  {[
+                    ['2007년 6월(바닥)', '약 2.4%', '여기서 올라가기 시작 → 금융위기'],
+                    ['2008년 12월', '약 20%', '침체 + 거품 붕괴, 나스닥100 −54%'],
+                    ['2001~2002년', '약 10~11%', '침체 + 거품 붕괴, −83%'],
+                    ['2020년 3월', '약 10.9%', '짧은 침체, −28%'],
+                    ['2016년 2월', '약 8.9%', '유가 폭락, 침체 없음, −16%'],
+                    ['2022년 7월', '약 6%', '금리 인상, 침체 없음, −36%'],
+                    ['2018년 12월', '약 5.3%', '금리 인상, 침체 없음, −23%'],
+                    ['2025년 4월', '약 4.5%', '관세 폭락, 침체 없음, −23%'],
+                  ].map(r => <tr key={r[0]} className="border-b border-gray-100 dark:border-gray-900">{r.map((c, i) => <td key={i} className={`${td} whitespace-normal`}>{c}</td>)}</tr>)}
+                </tbody>
+              </table>
+              <p className={small}>ICE BofA 미국 하이일드 스프레드. FRED가 최근 3년치만 공개해 과거 값은 보도·기억 기준의 대략값이다.</p>
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-1">실업수당 청구 +20% 신호의 성적(1967년~)</p>
+              <table className="w-full text-xs">
+                <thead><tr className="border-b border-gray-200 dark:border-gray-800">{['처음 넘은 주', '상승', '4주 평균', '침체?'].map(h => <th key={h} className={th}>{h}</th>)}</tr></thead>
+                <tbody>
+                  {ch.map(([d, up, hit, ma]) => (
+                    <tr key={d} className="border-b border-gray-100 dark:border-gray-900">
+                      <td className={td}>{d}</td><td className={td}>+{up}%</td><td className={td}>{(ma / 10000).toFixed(1)}만</td>
+                      <td className={td}>{hit ? <span className="text-red-600 dark:text-red-400 font-semibold">침체</span> : <span className="text-gray-400">아님</span>}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <p className={small}>{ch.length}번 중 {chHit}번이 침체(신호 전 3개월~뒤 12개월 안)와 겹쳤다. 거짓 경보는 1972·1977·1984년, 2005년(허리케인 카트리나), 2017년(허리케인 하비·어마), 2023년. 주로 일시적인 사건이라 1~2주 튄 뒤 내려왔다 — 몇 주 이어지는지가 중요하다.</p>
+            </div>
+          </div>
+          <p className={p}><b>읽는 법:</b> 하이일드만 오르고 실업수당 청구가 조용하면 2018·2022년처럼 금리 때문에 값이 내려가는 하락(−23~−36%)에 가깝다. <b>하이일드가 6%를 넘고 실업수당 청구 4주 평균이 1년 최저보다 20% 넘게 오른 상태가 몇 주 이어지면</b> 침체형 쪽으로 대비한다 — 지금 값이 비싸서(CAPE 30배대) 그때는 더 깊을 수 있다.</p>
+          {(W.HY_chart || W.ICSA_chart) && <WeeklyCharts hy={W.HY_chart ?? []} baa={W.BAA10Y_chart ?? []} claims={W.ICSA_chart ?? []} />}
         </section>
 
         <section id="types" className={box}>

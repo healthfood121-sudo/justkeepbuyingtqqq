@@ -1184,6 +1184,7 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 | `web/public/data/macro_cycle.json` | `scripts/export_macro_cycle.py` (워크플로 `export-macro-cycle.yml`, 매주 토요일 자동) | FRED 18개(침체 기간·기준금리·국채 금리·BAA·하이일드·실업률·삼 규칙·실업수당·물가·산업생산·심리·침체 확률·구리·금융여건·주택 허가·금리차), 야후 월말 종가 14개(나스닥100·S&P 500·VIX·업종 ETF·RSP·SPY·HYG·IEF), 쉴러 CAPE — 1950년~ 월별 | `build_slowdown.py` 입력 |
 | `web/public/data/slowdown.json` | `scripts/build_slowdown.py` (같은 워크플로) | 나스닥100 −15% 이상 하락장 21개(1971~, 합성 일간) 유형 분류(둔화만·금리 인상·단기 폭락·침체·거품 붕괴)와 고점·바닥 때 지표, 유형별 중간값, 지금 지표, 그래프용 월별 시계열 | `/private/slowdown` |
 - 유형은 사람이 붙인 분류(`LABEL`, 원인 메모 포함). 2000~2002년 하락 안의 2007~2009년 하락은 따로 뗐다.
+- 2026-11-21 추가: `macro_cycle.json`의 `weekly`(FRED 일간 하이일드 BAMLH0A0HYM2·BAA10Y, 주간 실업수당 ICSA·CCSA) → `slowdown.json`의 `weekly`(최신값·1년 최저 대비·4주 평균, 실업수당 4주 평균이 1년 최저보다 +20% 넘은 신호 15번의 침체 적중 9번, 주간 그래프). 워크플로 갱신 요일을 금요일 밤(UTC)으로.
 
 #### ANT(앤트로픽) 종목 추가 (2026-11-19, 사용자 요청 — 상장 첫날)
 - 2026-11-19 나스닥 상장이라 주가 데이터가 없어 `web/public/data/rolling/ANT_rolling.json`을 **손으로 만든 임시 파일**로 넣었다(첫 거래가 111.50달러, rows10y 빈 배열, PER 없음, fullPeriod.cagr 0). 주가가 쌓이면 `update-rolling-annual` only=ANT로 교체.
