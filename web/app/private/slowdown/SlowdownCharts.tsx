@@ -145,15 +145,18 @@ const hLines = (ys: [number, string][]) => ({
   },
 })
 
-export function WeeklyCharts({ hy, baa, claims }: { hy: [string, number][]; baa: [string, number][]; claims: [string, number][] }) {
+export function WeeklyCharts({ hy, baa, claims, wedge }: { hy: [string, number][]; baa: [string, number][]; claims: [string, number][]; wedge?: { anchorA: [string, number]; anchorB: [string, number] } | null }) {
   const pluginLoaded = useZoom()
   const a = useRef<ChartJS<'line'> | null>(null)
   const b = useRef<ChartJS<'line'> | null>(null)
   const spread = useMemo(() => {
     const m1 = new Map(hy), m2 = new Map(baa)
     const labels = [...new Set([...hy.map(x => x[0]), ...baa.map(x => x[0])])].sort()
-    return { labels, hy: labels.map(l => m1.get(l) ?? null), baa: labels.map(l => m2.get(l) ?? null) }
-  }, [hy, baa])
+    // 위쪽 추세선(로그 직선): 두 기준 달의 월말 값을 잇는다
+    const mi = (s: string) => Number(s.slice(0, 4)) * 12 + Number(s.slice(5, 7)) - 1 + (s.length > 7 ? (Number(s.slice(8, 10)) - 15) / 30 : 0)
+    const line = wedge ? (() => { const [am, av] = wedge.anchorA, [bm, bv] = wedge.anchorB; const k = Math.log(bv / av) / (mi(bm) - mi(am)); return (s: string) => av * Math.exp(k * (mi(s) - mi(am))) })() : null
+    return { labels, hy: labels.map(l => m1.get(l) ?? null), baa: labels.map(l => m2.get(l) ?? null), line: line ? labels.map(l => Math.round(line(l) * 100) / 100) : null }
+  }, [hy, baa, wedge])
   const zoom = pluginLoaded ? { zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' as const }, pan: { enabled: true, mode: 'x' as const } } : undefined
   const opt = (yTitle: string, min?: number) => ({
     responsive: true, maintainAspectRatio: false, animation: false as const, spanGaps: true,
@@ -170,9 +173,10 @@ export function WeeklyCharts({ hy, baa, claims }: { hy: [string, number][]; baa:
         <button onClick={() => a.current?.resetZoom()} className={btn}>줌 초기화</button>
         <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-1">하이일드 스프레드 · BAA 회사채 스프레드 (주말 값)</p>
         <div style={{ height: 260 }}>
-          <Line ref={a} plugins={[hLines([[5, '5% 주의'], [6, '6% 경고'], [8, '8% 침체급']])]} data={{ labels: spread.labels, datasets: [
+          <Line ref={a} plugins={[hLines([[2.42, '2.42 2007년 바닥'], [2.62, '2.62 바닥대'], [3.94, '3.94 2025년 꼭대기'], [5.02, '5.02 첫 목표'], [6, '6% 경고']])]} data={{ labels: spread.labels, datasets: [
             { label: '하이일드 스프레드(%)', data: spread.hy, borderColor: 'rgb(168,85,247)' },
             { label: 'BAA − 10년 국채(%p)', data: spread.baa, borderColor: 'rgb(245,158,11)' },
+            ...(spread.line ? [{ label: '위쪽 추세선(2020·2022·2025년 꼭대기)', data: spread.line, borderColor: 'rgb(236,72,153)', borderDash: [6, 4], borderWidth: 1.2 }] : []),
           ] }} options={opt('%', 0)} />
         </div>
         <p className="text-xs text-gray-400 dark:text-gray-600 text-right mt-1">휠: 확대/축소 &nbsp;|&nbsp; 드래그: 이동 &nbsp;|&nbsp; 하이일드는 FRED 공개분(최근 3년)만</p>

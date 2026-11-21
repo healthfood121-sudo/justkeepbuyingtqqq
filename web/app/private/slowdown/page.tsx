@@ -27,6 +27,7 @@ const D = data as unknown as {
     CCSA?: { date: string; v: number; chg26wPct: number | null }
     HY_chart?: [string, number][]; BAA10Y_chart?: [string, number][]; ICSA_chart?: [string, number][]
     claimsHist?: [string, number, boolean, number][] | null
+    wedge?: { anchorA: [string, number]; anchorB: [string, number]; slopeYr: number; lineNow: number; now: number; nowDate: string; status: string; aboveDone: number; levels: [number, string][]; peak6m: [string, number]; dropFromPeak: number; turned: boolean; hist: [string, string, number, number, boolean][] } | null
   }
 }
 
@@ -169,18 +170,18 @@ export default async function SlowdownPage() {
                 <thead><tr className="border-b border-gray-200 dark:border-gray-800">{['시기', '꼭대기', '결과'].map(h => <th key={h} className={th}>{h}</th>)}</tr></thead>
                 <tbody>
                   {[
-                    ['2007년 6월(바닥)', '약 2.4%', '여기서 올라가기 시작 → 금융위기'],
-                    ['2008년 12월', '약 20%', '침체 + 거품 붕괴, 나스닥100 −54%'],
-                    ['2001~2002년', '약 10~11%', '침체 + 거품 붕괴, −83%'],
-                    ['2020년 3월', '약 10.9%', '짧은 침체, −28%'],
-                    ['2016년 2월', '약 8.9%', '유가 폭락, 침체 없음, −16%'],
-                    ['2022년 7월', '약 6%', '금리 인상, 침체 없음, −36%'],
-                    ['2018년 12월', '약 5.3%', '금리 인상, 침체 없음, −23%'],
-                    ['2025년 4월', '약 4.5%', '관세 폭락, 침체 없음, −23%'],
+                    ['2007년 6월(바닥)', '2.42%', '여기서 올라가기 시작 → 금융위기'],
+                    ['2008년 12월', '21.44%(월말 약 20)', '침체 + 거품 붕괴, 나스닥100 −54%'],
+                    ['2002년 10월', '11.14%', '침체 + 거품 붕괴, −83%'],
+                    ['2020년 3월', '월말 8.64%(하루 최고 약 10.9)', '짧은 침체, −28%'],
+                    ['2016년 2월', '월말 약 8%', '유가 폭락, 침체 없음, −16%'],
+                    ['2022년 여름', '월말 약 5.9%', '금리 인상, 침체 없음, −36%'],
+                    ['2018년 12월', '월말 약 5.3%', '금리 인상, 침체 없음, −23%'],
+                    ['2025년 4월', '월말 3.94%(하루 최고 4.61)', '관세 폭락, 침체 없음, −23%'],
                   ].map(r => <tr key={r[0]} className="border-b border-gray-100 dark:border-gray-900">{r.map((c, i) => <td key={i} className={`${td} whitespace-normal`}>{c}</td>)}</tr>)}
                 </tbody>
               </table>
-              <p className={small}>ICE BofA 미국 하이일드 스프레드. FRED가 최근 3년치만 공개해 과거 값은 보도·기억 기준의 대략값이다.</p>
+              <p className={small}>ICE BofA 미국 하이일드 스프레드. 2023년 11월 이후는 FRED 일간 자료, 그 전은 트레이딩뷰 월봉 차트(사용자 제공)에서 읽은 값이다(FRED는 최근 3년치만 공개).</p>
             </div>
             <div>
               <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-1">실업수당 청구 +20% 신호의 성적(1967년~)</p>
@@ -199,7 +200,38 @@ export default async function SlowdownPage() {
             </div>
           </div>
           <p className={p}><b>읽는 법:</b> 하이일드만 오르고 실업수당 청구가 조용하면 2018·2022년처럼 금리 때문에 값이 내려가는 하락(−23~−36%)에 가깝다. <b>하이일드가 6%를 넘고 실업수당 청구 4주 평균이 1년 최저보다 20% 넘게 오른 상태가 몇 주 이어지면</b> 침체형 쪽으로 대비한다 — 지금 값이 비싸서(CAPE 30배대) 그때는 더 깊을 수 있다.</p>
-          {(W.HY_chart || W.ICSA_chart) && <WeeklyCharts hy={W.HY_chart ?? []} baa={W.BAA10Y_chart ?? []} claims={W.ICSA_chart ?? []} />}
+          {W.wedge && <div className="rounded-lg border border-pink-200 dark:border-pink-900/60 p-3 space-y-2">
+            <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">하이일드 월봉 쐐기 — 위쪽 추세선 돌파 확인</p>
+            <p className={small}>월봉 차트에 그은 선을 숫자로 옮겼다. 위쪽 추세선 = 2020년 3월 월말 꼭대기 {W.wedge.anchorA[1]}%와 2025년 4월 월말 꼭대기 {W.wedge.anchorB[1]}%를 잇는 직선(로그 눈금, 해마다 약 {Math.abs(W.wedge.slopeYr)}%씩 낮아짐). 2022년 꼭대기(약 5.9%)도 이 선에 닿는다 — 세 번 닿은 선. 아래쪽은 30년 동안 뚫리지 않은 바닥대 2.42~2.62%.</p>
+            <div className="grid sm:grid-cols-3 gap-2 text-sm">
+              <div className="rounded bg-gray-50 dark:bg-gray-900 p-2"><p className="text-[11px] text-gray-500">지금({W.wedge.nowDate})</p><p className="font-bold text-gray-900 dark:text-white">{W.wedge.now.toFixed(2)}%</p></div>
+              <div className="rounded bg-gray-50 dark:bg-gray-900 p-2"><p className="text-[11px] text-gray-500">이번 달 추세선</p><p className="font-bold text-gray-900 dark:text-white">{W.wedge.lineNow.toFixed(2)}% <span className="text-xs font-medium text-gray-500">({f(W.wedge.now - W.wedge.lineNow, 2, '%p')})</span></p></div>
+              <div className={`rounded p-2 ${W.wedge.aboveDone >= 1 || W.wedge.now > W.wedge.lineNow ? 'bg-pink-50 dark:bg-pink-950/40' : 'bg-gray-50 dark:bg-gray-900'}`}><p className="text-[11px] text-gray-500">판정</p><p className="font-semibold text-gray-900 dark:text-white text-xs">{W.wedge.status}</p></div>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead><tr className="border-b border-gray-200 dark:border-gray-800">{['최근 월말', '종가', '추세선', ''].map(h => <th key={h} className={th}>{h}</th>)}</tr></thead>
+                <tbody>{W.wedge.hist.slice(-8).map(([m, d, v, ln, up]) => (
+                  <tr key={m} className="border-b border-gray-100 dark:border-gray-900"><td className={td}>{m}{d.slice(8) < '28' ? ` (${d.slice(5)} 현재)` : ''}</td><td className={td}>{v.toFixed(2)}%</td><td className={td}>{ln.toFixed(2)}%</td><td className={td}>{up ? <span className="text-pink-600 dark:text-pink-400 font-semibold">선 위</span> : <span className="text-gray-400">선 아래</span>}</td></tr>
+                ))}</tbody>
+              </table>
+            </div>
+            <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">다음 자리(지금과의 거리)</p>
+            <div className="flex flex-wrap gap-1.5">
+              {W.wedge.levels.map(([v, nm]) => (
+                <span key={nm} className={`text-xs px-2 py-1 rounded border ${v > W.wedge!.now ? 'border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-200' : 'border-gray-100 dark:border-gray-900 text-gray-400'}`}>
+                  {v.toFixed(2)}% {nm} <span className="text-gray-400">({f(v - W.wedge!.now, 2, '%p')})</span>
+                </span>
+              ))}
+            </div>
+            <p className={small}><b>꼭대기 후 꺾임 신호:</b> 최근 6개월 꼭대기 {W.wedge.peak6m[1].toFixed(2)}%({W.wedge.peak6m[0]})에서 {W.wedge.dropFromPeak.toFixed(2)}%p 내려옴 — {W.wedge.turned ? <b className="text-emerald-600 dark:text-emerald-400">켜짐(1년 최저보다 1%p 넘게 오른 뒤 0.5%p 넘게 꺾임) — 2018년 12월·2020년 3월·2022년 7월처럼 주가 바닥 근처였던 모양</b> : '아직 아님(1년 최저보다 1%p 넘게 오른 뒤 0.5%p 넘게 꺾여야 켜짐)'}.</p>
+            <ul className={`${small} list-disc pl-4 space-y-0.5`}>
+              <li><b>시나리오 B(가장 흔했음):</b> 5% 안팎까지 → 다시 2.6~3% 근처로 → 몇 년 뒤 큰 위기. 2018년(5.3 → 3.4), 2022년(5.9 → 3)이 이 모양.</li>
+              <li><b>시나리오 A(드묾):</b> 곧장 10~20%. 30년 동안 2002년(11.14)·2008년(21.44) 두 번 — 둘 다 값이 비싼 채 침체가 겹쳤다. 실업수당 청구 +20%가 함께 켜지는지로 가른다.</li>
+              <li><b>돌파 실패:</b> 월말 종가가 다시 추세선 아래로 내려오면 하락도 얕을 가능성이 크다.</li>
+            </ul>
+          </div>}
+          {(W.HY_chart || W.ICSA_chart) && <WeeklyCharts hy={W.HY_chart ?? []} baa={W.BAA10Y_chart ?? []} claims={W.ICSA_chart ?? []} wedge={W.wedge ? { anchorA: W.wedge.anchorA, anchorB: W.wedge.anchorB } : null} />}
         </section>
 
         <section id="types" className={box}>

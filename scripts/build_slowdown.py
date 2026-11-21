@@ -282,6 +282,42 @@ if W.get("CCSA"):
 for k in ("HY", "BAA10Y"):
     if W.get(k): weekly[f"{k}_chart"] = [[d, v] for d, v in weekly_last(W[k]["pts"])]
 weekly["claimsHist"] = claims_hist
+# ── 하이일드 쐐기(사용자가 월봉에 그은 선, 2026-11-21) ──
+# 위쪽 추세선: 2020년 3월 월말 8.64 → 2025년 4월 월말(FRED 값)을 잇는 로그 직선(2022년 꼭대기 약 5.9도 이 선에 닿음).
+# 가로선: 2.42(2007년 바닥)·2.62(30년 바닥대)·5.02(첫 목표)·8.64(2020년 꼭대기).
+WEDGE = None
+if W.get("HY"):
+    import math
+    mclose = {}
+    for d0, v0 in W["HY"]["pts"]: mclose[d0[:7]] = (d0, v0)
+    A_M, A_V = "2020-03", 8.64
+    B_M = "2025-04"; B_V = mclose[B_M][1] if B_M in mclose else 3.94
+    mi = lambda m: int(m[:4]) * 12 + int(m[5:]) - 1
+    slope = math.log(B_V / A_V) / (mi(B_M) - mi(A_M))
+    line = lambda m: A_V * math.exp(slope * (mi(m) - mi(A_M)))
+    hist = [[m, mclose[m][0], round(mclose[m][1], 2), round(line(m), 2), mclose[m][1] > line(m)] for m in sorted(mclose)]
+    cur = hist[-1]; last_done = [h for h in hist if h[1][8:] >= "28" or h[0] < cur[0]]
+    done = [h for h in hist[:-1]]  # 지난 달까지는 월말 종가
+    above_done = 0
+    for h in reversed(done):
+        if h[4]: above_done += 1
+        else: break
+    status = ("확정 — 지난 %d개월 연속 월말 종가가 선 위" % above_done) if above_done >= 2 else \
+             ("돌파 첫 달 — 지난달 월말 종가가 선 위, 이번 달 월말까지 버티면 확정" if above_done == 1 else \
+             ("진행 중 — 이번 달 현재 선 위, 월말 종가로 확인" if cur[4] else "선 아래 — 돌파 아님"))
+    pts = W["HY"]["pts"]; last_d, last_v = pts[-1]
+    rec26 = [(d0, v0) for d0, v0 in pts if dd(d0) >= dd(last_d) - timedelta(days=182)]
+    pk_d, pk_v = max(rec26, key=lambda x: x[1])
+    lo52 = weekly["HY"]["low52"]
+    turned = (pk_v - lo52 >= 1.0) and (pk_v - last_v >= 0.5)
+    WEDGE = {"anchorA": [A_M, A_V], "anchorB": [B_M, round(B_V, 2)], "slopeYr": round((math.exp(slope * 12) - 1) * 100, 1),
+             "lineNow": round(line(cur[0]), 2), "now": last_v, "nowDate": last_d, "status": status, "aboveDone": above_done,
+             "levels": [[2.42, "2007년 바닥"], [2.62, "30년 바닥대"], [line(cur[0]), "위쪽 추세선(이번 달)"], [3.94, "2025년 4월 꼭대기(월말)"], [5.02, "첫 목표"], [5.9, "2022년 꼭대기"], [8.64, "2020년 꼭대기(월말)"], [11.14, "2002년 꼭대기"], [21.44, "2008년 꼭대기(하루 최고)"]],
+             "peak6m": [pk_d, pk_v], "dropFromPeak": round(pk_v - last_v, 2), "turned": turned,
+             "hist": hist[-24:]}
+    WEDGE["levels"] = [[round(a, 2), b] for a, b in WEDGE["levels"]]
+weekly["wedge"] = WEDGE
+
 
 # ── 닮은 시기 찾기: 지금 지표 10개와 가장 가까운 과거 달(1972~, 2년 뒤 결과가 있는 달만) ──
 def analogs():
