@@ -1,0 +1,33 @@
+name: 경기 지표 받기 (둔화 판단 페이지)
+
+on:
+  workflow_dispatch:  # 실행한 브랜치에 macro_cycle.json(과 slowdown.json)을 커밋한다
+  schedule:
+    - cron: '17 22 * * 6'  # 매주 토요일(UTC) — 월별 지표 갱신
+
+permissions:
+  contents: write
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install requests pandas xlrd
+      - run: python scripts/export_macro_cycle.py
+        env:
+          PYTHONUNBUFFERED: "1"
+      - run: python scripts/build_slowdown.py
+        if: hashFiles('scripts/build_slowdown.py') != ''
+      - name: 커밋
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add web/public/data/macro_cycle.json
+          [ -f web/public/data/slowdown.json ] && git add web/public/data/slowdown.json
+          git diff --cached --quiet || git commit -m "auto: 경기 지표 $(date -u +%F)"
+          git pull --rebase origin ${GITHUB_REF_NAME} && git push origin HEAD:${GITHUB_REF_NAME}
