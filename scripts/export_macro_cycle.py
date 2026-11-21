@@ -38,18 +38,40 @@ FRED = {
 YAHOO = {
     "NDX": "^NDX", "SPX": "^GSPC", "VIX": "^VIX",
     "XLY": "XLY", "XLP": "XLP", "XLI": "XLI", "XLU": "XLU", "XLV": "XLV", "XLB": "XLB", "XLF": "XLF",
-    "RSP": "RSP", "SPY": "SPY", "HYG": "HYG", "IEF": "IEF",
+    "RSP": "RSP", "SPY": "SPY", "HYG": "HYG", "IEF": "IEF", "LQD": "LQD",
+    "TNX": "^TNX", "IRX": "^IRX", "FVX": "^FVX", "COPPER": "HG=F", "GOLD": "GC=F",
 }
 
-def get(url, **kw):
-    for a in range(4):
+UAS = [{"User-Agent": "curl/8.5.0", "Accept": "*/*"},
+       {"User-Agent": "python-requests/2.32", "Accept": "text/csv,*/*"},
+       UA]
+
+def get(url, tries=4, timeout=60, **kw):
+    for a in range(tries):
         try:
-            r = requests.get(url, headers=UA, timeout=60, **kw)
+            r = requests.get(url, headers=kw.pop("headers", UA), timeout=timeout, **kw)
             if r.status_code == 200: return r
             print("  HTTP", r.status_code, url, flush=True)
         except requests.RequestException as e:
-            print("  ERR", e, flush=True)
-        time.sleep(3 * (a + 1))
+            print("  ERR", str(e)[:120], flush=True)
+        time.sleep(2 * (a + 1))
+    return None
+
+FRED_DEAD = []  # FRED가 응답하지 않으면 남은 지표는 시간 낭비 없이 건너뛴다(GitHub 서버를 막는 경우가 있음)
+
+def fred_text(sid):
+    if len(FRED_DEAD) >= 3: return None
+    for h in UAS:
+        for url in (f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={sid}",
+                    f"https://fred.stlouisfed.org/series/{sid}/downloaddata/{sid}.csv"):
+            try:
+                r = requests.get(url, headers=h, timeout=25)
+                if r.status_code == 200 and r.text[:20].upper().startswith(("DATE", "OBSERVATION_DATE")):
+                    return r.text
+                print("  FRED", sid, r.status_code, h["User-Agent"][:12], flush=True)
+            except requests.RequestException as e:
+                print("  FRED ERR", sid, h["User-Agent"][:12], str(e)[:80], flush=True)
+    FRED_DEAD.append(sid)
     return None
 
 def monthly(points):
@@ -72,14 +94,35 @@ def pack(m):
     return {"start": ks[0], "v": out}
 
 def fred(sid):
-    r = get(f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={sid}")
-    if not r: return None
+    txt = fred_text(sid)
+    if not txt: return None
     pts = []
-    for row in csv.reader(io.StringIO(r.text)):
+    for row in csv.reader(io.StringIO(txt)):
         if len(row) < 2 or not row[0][:4].isdigit(): continue
         try: pts.append((row[0][:7], float(row[1])))
         except ValueError: pass
     return monthly(pts)
+
+def bls(sid):
+    """FRED가 막혔을 때 실업률 등은 미국 노동통계국 공개 API(v1, 키 없음, 한 번에 10년)로."""
+    out = {}
+    y = int(time.strftime("%Y"))
+    for end in range(y, 1947, -10):
+        r = None
+        try:
+            r = requests.post("https://api.bls.gov/publicAPI/v1/timeseries/data/",
+                              json={"seriesid": [sid], "startyear": str(max(1948, end - 9)), "endyear": str(end)}, timeout=40)
+        except requests.RequestException as e:
+            print("  BLS ERR", str(e)[:80], flush=True); break
+        js = r.json() if r is not None and r.status_code == 200 else {}
+        data = (js.get("Results") or {}).get("series", [{}])[0].get("data", [])
+        if not data: print("  BLS", sid, js.get("status"), (js.get("message") or [""])[:1], flush=True); break
+        for d in data:
+            if d["period"].startswith("M") and d["period"] != "M13":
+                try: out[f"{d['year']}-{d['period'][1:]}"] = float(d["value"])
+                except ValueError: pass
+        if end - 9 <= 1950: break
+    return {k: v for k, v in out.items() if k >= SINCE} or None
 
 def yahoo(sym):
     r = get(f"https://query1.finance.yahoo.com/v8/finance/chart/{requests.utils.quote(sym)}",
@@ -120,6 +163,15 @@ def main():
         p = pack({a: b for a, b in (m or {}).items() if a >= SINCE})
         if p: series[k] = {"name": sym, "src": "Yahoo", **p}; print(f"YAHOO {k} {p['start']} n={len(p['v'])}", flush=True)
         else: errors.append(f"Yahoo {sym}")
+    # FRED가 막혔을 때 대신: 실업률(BLS), 금리(야후 국채 금리)
+    if "UNRATE" not in series:
+        m = bls("LNS14000000"); p = pack(m)
+        if p: series["UNRATE"] = {"name": "실업률(BLS)", "src": "BLS", **p}; print("BLS UNRATE", p["start"], len(p["v"]), flush=True)
+    if "ICSA" not in series:
+        pass
+    for fk, yk, nm in (("GS10", "TNX", "10년 국채 금리(야후 ^TNX)"), ("TB3MS", "IRX", "3개월 국채 금리(야후 ^IRX)")):
+        if fk not in series and yk in series:
+            series[fk] = {**series[yk], "name": nm, "src": "Yahoo"}
     try:
         m = shiller(); p = pack(m)
         if p: series["CAPE"] = {"name": "쉴러 경기조정 PER(S&P 500)", "src": "Shiller", **p}; print("CAPE", p["start"], len(p["v"]), flush=True)
