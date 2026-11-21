@@ -1,0 +1,97 @@
+{
+  "ticker": "PLTR",
+  "name": "팔란티어",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "",
+  "current": {
+    "price": 143.49,
+    "pe": 101.0,
+    "divYield": 0,
+    "eps": 1.42
+  },
+  "fullPeriod": {
+    "start_date": "2020-09-30",
+    "end_date": "2026-11-20",
+    "start_price": 9.5,
+    "end_price": 143.49,
+    "years": 6.1,
+    "cagr": 55.63,
+    "multiple": 15.1042
+  },
+  "stats": {
+    "n": 0,
+    "min": null,
+    "minBuy": "",
+    "median": null,
+    "mean": null,
+    "max": null,
+    "maxBuy": "",
+    "over10": null,
+    "over15": null,
+    "over20": null,
+    "losses": 0,
+    "beatBench": null,
+    "beatTotal": null
+  },
+  "rows10y": [
+    {
+      "buyYear": 2020,
+      "sellYear": 2026,
+      "sellDate": "2026-11-20",
+      "yearsActual": 5.9,
+      "cagr": 35.93,
+      "multiple": 6.09,
+      "isComplete": false,
+      "benchCagr": 12.5,
+      "diff": 23.43
+    },
+    {
+      "buyYear": 2021,
+      "sellYear": 2026,
+      "sellDate": "2026-11-20",
+      "yearsActual": 4.9,
+      "cagr": 52.56,
+      "multiple": 7.88,
+      "isComplete": false,
+      "benchCagr": 9.44,
+      "diff": 43.12
+    },
+    {
+      "buyYear": 2022,
+      "sellYear": 2026,
+      "sellDate": "2026-11-20",
+      "yearsActual": 3.9,
+      "cagr": 122.36,
+      "multiple": 22.35,
+      "isComplete": false,
+      "benchCagr": 17.92,
+      "diff": 104.44
+    },
+    {
+      "buyYear": 2023,
+      "sellYear": 2026,
+      "sellDate": "2026-11-20",
+      "yearsActual": 2.9,
+      "cagr": 108.56,
+      "multiple": 8.36,
+      "isComplete": false,
+      "benchCagr": 15.15,
+      "diff": 93.41
+    },
+    {
+      "buyYear": 2024,
+      "sellYear": 2026,
+      "sellDate": "2026-11-20",
+      "yearsActual": 1.9,
+      "cagr": 40.42,
+      "multiple": 1.9,
+      "isComplete": false,
+      "benchCagr": 10.25,
+      "diff": 30.17
+    }
+  ],
+  "loss5y": [],
+  "epsDecomp": [],
+  "epsNote": "EPS 데이터 미수집"
+}

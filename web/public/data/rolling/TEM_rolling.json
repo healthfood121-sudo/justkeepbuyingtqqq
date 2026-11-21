@@ -1,0 +1,53 @@
+{
+  "ticker": "TEM",
+  "name": "템퍼스 AI",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "",
+  "current": {
+    "price": 54.04,
+    "pe": -1366.4,
+    "divYield": 0,
+    "eps": -1.06
+  },
+  "fullPeriod": {
+    "start_date": "2024-06-14",
+    "end_date": "2026-11-20",
+    "start_price": 40.25,
+    "end_price": 54.04,
+    "years": 2.4,
+    "cagr": 12.87,
+    "multiple": 1.3426
+  },
+  "stats": {
+    "n": 0,
+    "min": null,
+    "minBuy": "",
+    "median": null,
+    "mean": null,
+    "max": null,
+    "maxBuy": "",
+    "over10": null,
+    "over15": null,
+    "over20": null,
+    "losses": 0,
+    "beatBench": null,
+    "beatTotal": null
+  },
+  "rows10y": [
+    {
+      "buyYear": 2024,
+      "sellYear": 2026,
+      "sellDate": "2026-11-20",
+      "yearsActual": 1.9,
+      "cagr": 28.32,
+      "multiple": 1.6,
+      "isComplete": false,
+      "benchCagr": 10.25,
+      "diff": 18.07
+    }
+  ],
+  "loss5y": [],
+  "epsDecomp": [],
+  "epsNote": "EPS 데이터 미수집"
+}

@@ -1,0 +1,119 @@
+{
+  "ticker": "ZS",
+  "name": "지스케일러",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "",
+  "current": {
+    "price": 194.82,
+    "pe": 34.6,
+    "divYield": 0,
+    "eps": -0.39
+  },
+  "fullPeriod": {
+    "start_date": "2018-03-16",
+    "end_date": "2026-11-20",
+    "start_price": 33.0,
+    "end_price": 194.82,
+    "years": 8.7,
+    "cagr": 22.69,
+    "multiple": 5.9036
+  },
+  "stats": {
+    "n": 0,
+    "min": null,
+    "minBuy": "",
+    "median": null,
+    "mean": null,
+    "max": null,
+    "maxBuy": "",
+    "over10": null,
+    "over15": null,
+    "over20": null,
+    "losses": 0,
+    "beatBench": null,
+    "beatTotal": null
+  },
+  "rows10y": [
+    {
+      "buyYear": 2018,
+      "sellYear": 2026,
+      "sellDate": "2026-11-20",
+      "yearsActual": 7.9,
+      "cagr": 22.54,
+      "multiple": 4.97,
+      "isComplete": false,
+      "benchCagr": 15.49,
+      "diff": 7.05
+    },
+    {
+      "buyYear": 2019,
+      "sellYear": 2026,
+      "sellDate": "2026-11-20",
+      "yearsActual": 6.9,
+      "cagr": 23.12,
+      "multiple": 4.19,
+      "isComplete": false,
+      "benchCagr": 13.33,
+      "diff": 9.78
+    },
+    {
+      "buyYear": 2020,
+      "sellYear": 2026,
+      "sellDate": "2026-11-20",
+      "yearsActual": 5.9,
+      "cagr": -0.42,
+      "multiple": 0.98,
+      "isComplete": false,
+      "benchCagr": 12.5,
+      "diff": -12.92
+    },
+    {
+      "buyYear": 2021,
+      "sellYear": 2026,
+      "sellDate": "2026-11-20",
+      "yearsActual": 4.9,
+      "cagr": -9.73,
+      "multiple": 0.61,
+      "isComplete": false,
+      "benchCagr": 9.44,
+      "diff": -19.18
+    },
+    {
+      "buyYear": 2022,
+      "sellYear": 2026,
+      "sellDate": "2026-11-20",
+      "yearsActual": 3.9,
+      "cagr": 15.33,
+      "multiple": 1.74,
+      "isComplete": false,
+      "benchCagr": 17.92,
+      "diff": -2.59
+    },
+    {
+      "buyYear": 2023,
+      "sellYear": 2026,
+      "sellDate": "2026-11-20",
+      "yearsActual": 2.9,
+      "cagr": -4.36,
+      "multiple": 0.88,
+      "isComplete": false,
+      "benchCagr": 15.15,
+      "diff": -19.5
+    },
+    {
+      "buyYear": 2024,
+      "sellYear": 2026,
+      "sellDate": "2026-11-20",
+      "yearsActual": 1.9,
+      "cagr": 4.16,
+      "multiple": 1.08,
+      "isComplete": false,
+      "benchCagr": 10.25,
+      "diff": -6.1
+    }
+  ],
+  "loss5y": [],
+  "epsDecomp": [],
+  "epsNote": "EPS 데이터 미수집"
+}

@@ -1,0 +1,108 @@
+{
+  "ticker": "CRWD",
+  "name": "크라우드스트라이크",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "",
+  "current": {
+    "price": 229.44,
+    "pe": 3824.0,
+    "divYield": 0,
+    "eps": 0.06
+  },
+  "fullPeriod": {
+    "start_date": "2019-06-12",
+    "end_date": "2026-11-20",
+    "start_price": 14.5,
+    "end_price": 229.44,
+    "years": 7.4,
+    "cagr": 44.93,
+    "multiple": 15.8234
+  },
+  "stats": {
+    "n": 0,
+    "min": null,
+    "minBuy": "",
+    "median": null,
+    "mean": null,
+    "max": null,
+    "maxBuy": "",
+    "over10": null,
+    "over15": null,
+    "over20": null,
+    "losses": 0,
+    "beatBench": null,
+    "beatTotal": null
+  },
+  "rows10y": [
+    {
+      "buyYear": 2019,
+      "sellYear": 2026,
+      "sellDate": "2026-11-20",
+      "yearsActual": 6.9,
+      "cagr": 52.62,
+      "multiple": 18.4,
+      "isComplete": false,
+      "benchCagr": 13.33,
+      "diff": 39.29
+    },
+    {
+      "buyYear": 2020,
+      "sellYear": 2026,
+      "sellDate": "2026-11-20",
+      "yearsActual": 5.9,
+      "cagr": 28.28,
+      "multiple": 4.33,
+      "isComplete": false,
+      "benchCagr": 12.5,
+      "diff": 15.78
+    },
+    {
+      "buyYear": 2021,
+      "sellYear": 2026,
+      "sellDate": "2026-11-20",
+      "yearsActual": 4.9,
+      "cagr": 35.93,
+      "multiple": 4.48,
+      "isComplete": false,
+      "benchCagr": 9.44,
+      "diff": 26.49
+    },
+    {
+      "buyYear": 2022,
+      "sellYear": 2026,
+      "sellDate": "2026-11-20",
+      "yearsActual": 3.9,
+      "cagr": 74.53,
+      "multiple": 8.72,
+      "isComplete": false,
+      "benchCagr": 17.92,
+      "diff": 56.61
+    },
+    {
+      "buyYear": 2023,
+      "sellYear": 2026,
+      "sellDate": "2026-11-20",
+      "yearsActual": 2.9,
+      "cagr": 55.73,
+      "multiple": 3.59,
+      "isComplete": false,
+      "benchCagr": 15.15,
+      "diff": 40.58
+    },
+    {
+      "buyYear": 2024,
+      "sellYear": 2026,
+      "sellDate": "2026-11-20",
+      "yearsActual": 1.9,
+      "cagr": 68.72,
+      "multiple": 2.68,
+      "isComplete": false,
+      "benchCagr": 10.25,
+      "diff": 58.46
+    }
+  ],
+  "loss5y": [],
+  "epsDecomp": [],
+  "epsNote": "EPS 데이터 미수집"
+}

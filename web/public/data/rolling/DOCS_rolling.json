@@ -1,0 +1,86 @@
+{
+  "ticker": "DOCS",
+  "name": "닥시미티",
+  "currency": "USD",
+  "benchmark": "S&P 500",
+  "note": "",
+  "current": {
+    "price": 28.73,
+    "pe": 39.9,
+    "divYield": 0,
+    "eps": 0.72
+  },
+  "fullPeriod": {
+    "start_date": "2021-06-24",
+    "end_date": "2026-11-20",
+    "start_price": 53.0,
+    "end_price": 28.73,
+    "years": 5.4,
+    "cagr": -10.71,
+    "multiple": 0.5421
+  },
+  "stats": {
+    "n": 0,
+    "min": null,
+    "minBuy": "",
+    "median": null,
+    "mean": null,
+    "max": null,
+    "maxBuy": "",
+    "over10": null,
+    "over15": null,
+    "over20": null,
+    "losses": 0,
+    "beatBench": null,
+    "beatTotal": null
+  },
+  "rows10y": [
+    {
+      "buyYear": 2021,
+      "sellYear": 2026,
+      "sellDate": "2026-11-20",
+      "yearsActual": 4.9,
+      "cagr": -10.77,
+      "multiple": 0.57,
+      "isComplete": false,
+      "benchCagr": 9.44,
+      "diff": -20.21
+    },
+    {
+      "buyYear": 2022,
+      "sellYear": 2026,
+      "sellDate": "2026-11-20",
+      "yearsActual": 3.9,
+      "cagr": -3.92,
+      "multiple": 0.86,
+      "isComplete": false,
+      "benchCagr": 17.92,
+      "diff": -21.84
+    },
+    {
+      "buyYear": 2023,
+      "sellYear": 2026,
+      "sellDate": "2026-11-20",
+      "yearsActual": 2.9,
+      "cagr": 0.85,
+      "multiple": 1.02,
+      "isComplete": false,
+      "benchCagr": 15.15,
+      "diff": -14.3
+    },
+    {
+      "buyYear": 2024,
+      "sellYear": 2026,
+      "sellDate": "2026-11-20",
+      "yearsActual": 1.9,
+      "cagr": -28.0,
+      "multiple": 0.54,
+      "isComplete": false,
+      "benchCagr": 10.25,
+      "diff": -38.25
+    }
+  ],
+  "loss5y": [],
+  "epsDecomp": [],
+  "epsNote": "EPS 데이터 미수집"
+}
