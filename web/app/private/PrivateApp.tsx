@@ -64,6 +64,7 @@ import { IRMD_REPORT } from './reports/irmdData'
 import { VEEV_REPORT } from './reports/veevData'
 import { ROST_REPORT } from './reports/rostData'
 import { CMG_REPORT } from './reports/cmgData'
+import { COR_REPORT } from './reports/corData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11181,6 +11182,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   VEEV: () => <BigReport d={VEEV_REPORT} />,
   ROST: () => <BigReport d={ROST_REPORT} />,
   CMG: () => <BigReport d={CMG_REPORT} />,
+  COR: () => <BigReport d={COR_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11269,6 +11271,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   VEEV: VEEV_REPORT,
   ROST: ROST_REPORT,
   CMG: CMG_REPORT,
+  COR: COR_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
