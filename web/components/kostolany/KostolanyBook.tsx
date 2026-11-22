@@ -122,6 +122,142 @@ export function EggHistory() {
   )
 }
 
+// ── 8. 기정사실 현상 + 팩트 풀 현상 ──────────────────────────────
+const faitsStories = [
+  {
+    title: '전쟁 선포 당일 주가가 급등한 이유',
+    body: '전쟁 가능성이 오랫동안 가격에 반영되어 있었기 때문에, 실제 선포는 불확실성 해소로 받아들여졌다. "전쟁 소식에 주가가 오른다"는 역설은 이미 오래 전부터 준비된 가격 조정의 결과다.',
+    book: '2권',
+  },
+  {
+    title: '크라이슬러 흑자 전환 발표 뒤 주가가 하락한 이유',
+    body: '5달러에 사서 105달러까지 올랐다. 흑자 전환 발표 직후 주가는 오히려 떨어졌다. 오랜 기간 "언젠간 살아나겠지"라는 기대가 이미 가격에 녹아 있었기 때문이다.',
+    book: '2권',
+  },
+  {
+    title: '어닝 서프라이즈 직후 주가가 하락하는 이유',
+    body: '좋은 실적 기대감이 공시 전에 이미 선반영된다. 기대치를 충족하더라도 더 살 사람이 없어 하락한다. 반대로 나쁜 실적이 예상된 종목은 공시 전에 투매가 몰려 바닥을 찍고, 공시가 예상보다 덜 나쁘면 폭등한다.',
+    book: '3권',
+  },
+]
+
+export function FaitsAccompliSection() {
+  return (
+    <div className={card}>
+      <Head title="이미 알려진 사실로는 돈을 못 번다" desc="기정사실 현상(Fait Accompli)과 공시 선반영 — 2권·3권 공통 주제" />
+      <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded-xl p-4 mb-5 flex items-start gap-3">
+        <span className="text-xl flex-shrink-0">💡</span>
+        <div className="space-y-1">
+          <p className="text-sm font-bold text-indigo-800 dark:text-indigo-300">기정사실 현상</p>
+          <p className={p}>기대가 가격에 충분히 반영된 뒤 그 기대가 현실화되면, 주가는 오히려 반대로 움직인다. 긍정적 사건이 실현되면 하락하고, 부정적 사건이 실현되면 상승한다.</p>
+        </div>
+      </div>
+      <div className="space-y-3 mb-5">
+        {faitsStories.map((s, i) => (
+          <div key={i} className="rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300">{s.book}</span>
+              <span className="text-sm font-bold text-gray-900 dark:text-white">{s.title}</span>
+            </div>
+            <p className={p}>{s.body}</p>
+          </div>
+        ))}
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 p-4">
+          <p className="text-sm font-black text-emerald-700 dark:text-emerald-300 mb-1">호재에도 더 오르지 않으면 → 나와라</p>
+          <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">시장이 과잉매수 상태라는 신호. 좋은 소식을 소화하고도 주가가 꿈쩍 않는다면 사려는 사람이 이미 다 산 것이다.</p>
+        </div>
+        <div className="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4">
+          <p className="text-sm font-black text-red-700 dark:text-red-300 mb-1">악재에도 더 떨어지지 않으면 → 들어가라</p>
+          <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">시장이 과잉매도 상태라는 신호. 나쁜 소식을 소화하고도 주가가 더 안 내려간다면 팔 사람이 이미 다 판 것이다.</p>
+        </div>
+      </div>
+      <p className={`${quote} mt-4 text-center`}>&ldquo;이미 알려진 사실로 접근하면 선반영 고점에서 당한다.&rdquo; — 3권</p>
+    </div>
+  )
+}
+
+// ── 9. 빚 투자 금지 실화 3편 ──────────────────────────────────────
+const debtStories = [
+  {
+    no: '01',
+    title: '아이젠하워 심장발작 사건',
+    when: '1955년, 뉴욕',
+    setup: '뉴욕 증시 상승 무드 속에 전 재산과 대출 한도를 모두 동원해 전자산업 주식을 매수했다.',
+    crisis: '대통령 심장발작 뉴스에 주가가 하루 10~20% 급락. 증거금이 부족해 증권사가 강제 청산 통보를 했다.',
+    lesson: '울며 겨자 먹기로 매도. 그런데 이후 주가는 10배 이상 급등했다. "빚 때문에 역사적 기회를 놓쳤다."',
+    color: 'red',
+  },
+  {
+    no: '02',
+    title: '독일 채권 대출 투자',
+    when: '1950년대, 독일',
+    setup: '아데나워 정권을 믿고 전 재산과 대출로 독일 국채를 매수했다.',
+    crisis: '투자는 성공했지만, 미국에 출장 중에 "나쁜 뉴스가 나오면 어떡하지"라는 불안감에 며칠을 뜬눈으로 보냈다.',
+    lesson: '결과는 좋았지만 빚 때문에 겪은 심리적 고통은 불필요했다. 자기 돈이었다면 태연하게 기다렸을 것이다.',
+    color: 'amber',
+  },
+  {
+    no: '03',
+    title: '알제리 전쟁과 파리 거래소',
+    when: '1960년대, 파리',
+    setup: '이번엔 100% 자기 돈으로 프랑스 주식을 보유했다.',
+    crisis: '알제리 전쟁 격화로 "시장이 피바다"라는 소식이 들렸다. 그럼에도 단골 식당에서 여유 있게 점심을 먹었다.',
+    lesson: '시장 개장 후 1시간 만에 절반 회복. "빚이 없었기 때문에 침착할 수 있었다. 빚이 있었다면 머리가 다르게 반응해 손실을 봤을 것이다."',
+    color: 'emerald',
+  },
+]
+
+const debtColorMap: Record<string, { border: string; bg: string; badge: string; tc: string }> = {
+  red:     { border: 'border-red-300 dark:border-red-700',     bg: 'bg-red-50 dark:bg-red-900/20',     badge: 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300',     tc: 'text-red-700 dark:text-red-300' },
+  amber:   { border: 'border-amber-300 dark:border-amber-700', bg: 'bg-amber-50 dark:bg-amber-900/20', badge: 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300', tc: 'text-amber-700 dark:text-amber-300' },
+  emerald: { border: 'border-emerald-300 dark:border-emerald-700', bg: 'bg-emerald-50 dark:bg-emerald-900/20', badge: 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300', tc: 'text-emerald-700 dark:text-emerald-300' },
+}
+
+export function DebtWarningStories() {
+  return (
+    <div className={card}>
+      <Head title="빚 투자 금지 — 실화 3편" desc="코스톨라니가 직접 경험한 신용 투자의 대가 — 3권" />
+      <div className="bg-slate-800 dark:bg-slate-700 rounded-xl p-4 mb-5 text-white text-center">
+        <p className="text-sm font-black">&ldquo;빚 많은 회사 주식 조금을 내 돈으로 사는 것이, 좋은 회사 주식을 남의 돈으로 대량 사는 것보다 훨씬 낫다.&rdquo;</p>
+      </div>
+      <div className="space-y-4">
+        {debtStories.map((s) => {
+          const c = debtColorMap[s.color]
+          return (
+            <div key={s.no} className={`rounded-xl border-2 ${c.border} ${c.bg} overflow-hidden`}>
+              <div className="flex items-center gap-3 px-4 py-3 border-b border-current border-opacity-20">
+                <span className={`text-xs font-black px-2 py-0.5 rounded-full ${c.badge}`}>사례 {s.no}</span>
+                <span className="text-sm font-bold text-gray-900 dark:text-white">{s.title}</span>
+                <span className="ml-auto text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">{s.when}</span>
+              </div>
+              <div className="p-4 space-y-2">
+                <div className="flex items-start gap-2">
+                  <span className="text-xs font-bold text-gray-400 w-10 flex-shrink-0 pt-0.5">상황</span>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{s.setup}</p>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-xs font-bold text-gray-400 w-10 flex-shrink-0 pt-0.5">위기</span>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{s.crisis}</p>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className={`text-xs font-bold w-10 flex-shrink-0 pt-0.5 ${c.tc}`}>교훈</span>
+                  <p className={`text-sm font-semibold leading-relaxed ${c.tc}`}>{s.lesson}</p>
+                </div>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+      <div className="mt-4 rounded-xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 p-4">
+        <p className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-1">세 이야기의 공통점</p>
+        <p className={p}>빚이 없을 때 — 사람은 위기에 침착하게 반응하고, 필요한 만큼 기다릴 수 있다. 빚이 있으면 뇌가 다르게 작동한다. 판단이 아니라 공포가 행동을 결정한다.</p>
+      </div>
+    </div>
+  )
+}
+
 // ── 3~7. 기타 ─────────────────────────────────────────────────────
 const assets = [
   { name: '주식', icon: '📈', verdict: '권장', vc: 'bg-emerald-500', text: '다른 투자보다 성공하기 어렵지 않다. 재산을 나누고, 크고 튼튼한 우량기업을 사고, 오르지 않아도 초조해하지 말고 기다린다. 배당을 재투자하면 복리로 자란다.' },

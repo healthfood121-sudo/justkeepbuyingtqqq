@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import { useState } from 'react'
-import { MoneyMindMatrix, EggHistory, KostolanyExtra } from './KostolanyBook'
+import { MoneyMindMatrix, EggHistory, KostolanyExtra, FaitsAccompliSection, DebtWarningStories } from './KostolanyBook'
 
 interface RateStep { phase: string; desc: string }
 interface InvestorType { no: string; label: string; badge: string; icon: string; color: string; tagline: string; desc: string }
@@ -495,6 +495,10 @@ export default function KostolanyEgg() {
       <EggHistory />
 
       <KostolanyExtra />
+
+      <FaitsAccompliSection />
+
+      <DebtWarningStories />
 
       {/* 10가지 수칙 & 금기사항 */}
       <div className="space-y-2">
