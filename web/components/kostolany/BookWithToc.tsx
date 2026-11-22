@@ -5,23 +5,36 @@ import MarkdownView from './MarkdownView'
 
 interface Heading { text: string; id: string }
 
-// "포인트 1 — 재정적 독립" → "1. 재정적 독립"
-// "들어가며 — 이 책과 이 영상에 대하여" → "들어가며"
-// 그 외 → 원문 그대로
-function formatTocLabel(text: string): string {
-  const point = text.match(/^포인트\s+(\S+)\s*—\s*(.+)/)
-  if (point) return `${point[1]}. ${point[2]}`
-  const dash = text.match(/^(.+?)\s*[—–]\s*(.+)/)
-  if (dash) return dash[1]
+// 목차 행 "[포인트 N — 제목](#앵커)" 에서 N → 제목 매핑 추출
+function buildPointTitleMap(content: string): Map<string, string> {
+  const map = new Map<string, string>()
+  for (const line of content.split('\n')) {
+    const m = line.match(/\[포인트\s+(\S+?)\s*[—–]\s*([^\]]+)\]/)
+    if (m) map.set(m[1], m[2].trim())
+  }
+  return map
+}
+
+// "포인트 1" + titleMap → "1. 재정적 독립"
+// "목차" / "들어가며 — …" → "들어가며"
+function formatTocLabel(text: string, titleMap: Map<string, string>): string {
+  const point = text.match(/^포인트\s+(\S+)/)
+  if (point) {
+    const title = titleMap.get(point[1])
+    return title ? `${point[1]}. ${title}` : `포인트 ${point[1]}`
+  }
+  const dash = text.match(/^(.+?)\s*[—–]\s*.+/)
+  if (dash) return dash[1].trim()
   return text
 }
 
 function extractH2s(content: string): Heading[] {
+  const titleMap = buildPointTitleMap(content)
   let count = 0
   return content
     .split('\n')
     .filter(l => l.startsWith('## ') && !l.startsWith('### '))
-    .map(l => ({ text: formatTocLabel(l.slice(3)), id: `h2-${count++}` }))
+    .map(l => ({ text: formatTocLabel(l.slice(3), titleMap), id: `h2-${count++}` }))
 }
 
 function TocList({
