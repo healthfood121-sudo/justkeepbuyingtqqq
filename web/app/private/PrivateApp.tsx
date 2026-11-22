@@ -61,6 +61,7 @@ import { DECK_REPORT } from './reports/deckData'
 import { CORT_REPORT } from './reports/cortData'
 import { AZO_REPORT } from './reports/azoData'
 import { IRMD_REPORT } from './reports/irmdData'
+import { VEEV_REPORT } from './reports/veevData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11175,6 +11176,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   CORT: () => <BigReport d={CORT_REPORT} />,
   AZO: () => <BigReport d={AZO_REPORT} />,
   IRMD: () => <BigReport d={IRMD_REPORT} />,
+  VEEV: () => <BigReport d={VEEV_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11260,6 +11262,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   CORT: CORT_REPORT,
   AZO: AZO_REPORT,
   IRMD: IRMD_REPORT,
+  VEEV: VEEV_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
