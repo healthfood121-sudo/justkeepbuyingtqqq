@@ -25,8 +25,9 @@ export default function Header({ maxWidth = 'max-w-6xl', activePage }: HeaderPro
       ['/private/baillie-gifford', '베일리 기퍼드', '베일리 기퍼드 — 큰 승자를 일찍 찾아 끝까지'],
       ['/private/kostolany', '코스톨라니', '코스톨라니 달걀'],
     ] },
-    { label: '시장 공부', href: '/private/slowdown', title: '둔화 판단, 횡보장, 실패 사례', items: [
+    { label: '시장 공부', href: '/private/slowdown', title: '둔화 판단, FOMC 의사록, 횡보장, 실패 사례', items: [
       ['/private/slowdown', '둔화 판단', '경기 둔화는 얼마나 클까 — 하락장 유형과 지금 신호'],
+      ['/private/fomc', 'FOMC 의사록', 'FOMC 의사록 번역·정리 — 연준은 무엇을 걱정하나'],
       ['/private/cycles', '횡보장 공부방', '횡보장 공부방'],
       ['/private/failures', '실패 공부방', '기업 실패 사례 공부방'],
     ] },
