@@ -73,6 +73,7 @@ import { TSCO_REPORT } from './reports/tscoData'
 import { PAYX_REPORT } from './reports/payxData'
 import { MTD_REPORT } from './reports/mtdData'
 import { ARHS_REPORT } from './reports/arhsData'
+import { CDNS_REPORT } from './reports/cdnsData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11199,6 +11200,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   PAYX: () => <BigReport d={PAYX_REPORT} />,
   MTD: () => <BigReport d={MTD_REPORT} />,
   ARHS: () => <BigReport d={ARHS_REPORT} />,
+  CDNS: () => <BigReport d={CDNS_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11296,6 +11298,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   PAYX: PAYX_REPORT,
   MTD: MTD_REPORT,
   ARHS: ARHS_REPORT,
+  CDNS: CDNS_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
