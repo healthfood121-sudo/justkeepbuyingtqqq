@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import Link from 'next/link'
 import { useState } from 'react'
 import { MoneyMindMatrix, EggHistory, KostolanyExtra, FaitsAccompliSection, DebtWarningStories } from './KostolanyBook'
 
@@ -147,6 +148,22 @@ export default function KostolanyEgg() {
         <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 max-w-4xl mx-auto">
           코스톨라니 달걀은 투자의 대가 앙드레 코스톨라니가 제시한 주식 시장의 심리 사이클 모형입니다. 달걀 모양의 곡선으로 시장 참여자들의 감정 변화와 주가 움직임의 패턴을 설명합니다.
         </p>
+        <div className="flex flex-wrap justify-center gap-2 pt-2">
+          <span className="text-xs text-gray-400 dark:text-gray-500 self-center">원문 정리본:</span>
+          {[
+            { href: '/private/kostolany/book1', label: '1권 — 돈, 뜨겁게' },
+            { href: '/private/kostolany/book2', label: '2권 — 심리게임' },
+            { href: '/private/kostolany/book3', label: '3권 — 실전강의' },
+          ].map(b => (
+            <Link
+              key={b.href}
+              href={b.href}
+              className="text-xs px-3 py-1.5 rounded-full border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:border-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+            >
+              {b.label}
+            </Link>
+          ))}
+        </div>
       </div>
 
       {/* 이미지 비교 섹션 */}
