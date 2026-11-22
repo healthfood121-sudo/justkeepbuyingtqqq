@@ -5,12 +5,23 @@ import MarkdownView from './MarkdownView'
 
 interface Heading { text: string; id: string }
 
+// "포인트 1 — 재정적 독립" → "1. 재정적 독립"
+// "들어가며 — 이 책과 이 영상에 대하여" → "들어가며"
+// 그 외 → 원문 그대로
+function formatTocLabel(text: string): string {
+  const point = text.match(/^포인트\s+(\S+)\s*—\s*(.+)/)
+  if (point) return `${point[1]}. ${point[2]}`
+  const dash = text.match(/^(.+?)\s*[—–]\s*(.+)/)
+  if (dash) return dash[1]
+  return text
+}
+
 function extractH2s(content: string): Heading[] {
   let count = 0
   return content
     .split('\n')
     .filter(l => l.startsWith('## ') && !l.startsWith('### '))
-    .map(l => ({ text: l.slice(3), id: `h2-${count++}` }))
+    .map(l => ({ text: formatTocLabel(l.slice(3)), id: `h2-${count++}` }))
 }
 
 function TocList({
