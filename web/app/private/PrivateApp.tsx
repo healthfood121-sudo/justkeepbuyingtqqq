@@ -71,6 +71,7 @@ import { VRTX_REPORT } from './reports/vrtxData'
 import { YUM_REPORT } from './reports/yumData'
 import { TSCO_REPORT } from './reports/tscoData'
 import { PAYX_REPORT } from './reports/payxData'
+import { MTD_REPORT } from './reports/mtdData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11195,6 +11196,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   YUM: () => <BigReport d={YUM_REPORT} />,
   TSCO: () => <BigReport d={TSCO_REPORT} />,
   PAYX: () => <BigReport d={PAYX_REPORT} />,
+  MTD: () => <BigReport d={MTD_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11290,6 +11292,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   YUM: YUM_REPORT,
   TSCO: TSCO_REPORT,
   PAYX: PAYX_REPORT,
+  MTD: MTD_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
