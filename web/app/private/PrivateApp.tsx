@@ -67,6 +67,7 @@ import { CMG_REPORT } from './reports/cmgData'
 import { COR_REPORT } from './reports/corData'
 import { ORLY_REPORT } from './reports/orlyData'
 import { LRCX_REPORT } from './reports/lrcxData'
+import { VRTX_REPORT } from './reports/vrtxData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11187,6 +11188,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   COR: () => <BigReport d={COR_REPORT} />,
   ORLY: () => <BigReport d={ORLY_REPORT} />,
   LRCX: () => <BigReport d={LRCX_REPORT} />,
+  VRTX: () => <BigReport d={VRTX_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11278,6 +11280,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   COR: COR_REPORT,
   ORLY: ORLY_REPORT,
   LRCX: LRCX_REPORT,
+  VRTX: VRTX_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
