@@ -47,6 +47,7 @@ export default function SlowdownCharts({ chart }: { chart: Record<string, Ser> }
   const r2 = useRef<ChartJS<'line'> | null>(null)
   const r3 = useRef<ChartJS<'line'> | null>(null)
   const r4 = useRef<ChartJS<'line'> | null>(null)
+  const r5 = useRef<ChartJS<'line'> | null>(null)
   const [from, setFrom] = useState('1970')
 
   const { labels, get, rec } = useMemo(() => {
@@ -123,6 +124,19 @@ export default function SlowdownCharts({ chart }: { chart: Record<string, Ser> }
         </div>
         {hint}
         <p className="text-xs text-gray-400 dark:text-gray-600">하이일드 스프레드의 옛 기록 대신 — 회사채 전체(우량~투기)의 부도 위험 웃돈. 바닥에서 눌려 있다가 침체 때 튀는 모양이 하이일드와 같다. 침체 확률 선은 ×10(예: 5 = 50%).</p>
+      </div>
+
+      <div className="relative">
+        <button onClick={() => r5.current?.resetZoom()} className={btn}>줌 초기화</button>
+        <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-1">⑤ 쏠림: 나스닥100 ÷ S&amp;P 500(왼쪽, 1985년~) · 동일가중 ÷ 시가총액가중 S&amp;P 500(오른쪽, 2003년~)</p>
+        <div style={{ height: 300 }}>
+          <Line ref={r5} plugins={[shade]} data={{ labels, datasets: [
+            { label: '나스닥100 ÷ S&P 500 (오르면 큰 기술주 쏠림)', data: get('NDXSPX'), borderColor: 'rgb(37,99,235)', yAxisID: 'y' },
+            { label: '동일가중 ÷ 시가총액가중 (오르면 시장 폭 넓어짐)', data: get('BREADTH'), borderColor: 'rgb(16,185,129)', yAxisID: 'y2' },
+          ] }} options={{ ...base('나스닥100÷S&P 500'), scales: { ...base('').scales, y: { ...base('나스닥100÷S&P 500').scales.y }, y2: { position: 'right' as const, grid: { display: false }, ticks: { font: { size: 10 } } } } }} />
+        </div>
+        {hint}
+        <p className="text-xs text-gray-400 dark:text-gray-600">2000년 3월 파란 선 꼭대기 → 2002년까지 급락(큰 기술주 쏠림이 풀림). 2000년형이면 파란 선이 꺾여 내려가고 초록 선이 오른다.</p>
       </div>
 
       <div className="relative">

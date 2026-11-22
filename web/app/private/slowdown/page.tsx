@@ -20,6 +20,7 @@ const D = data as unknown as {
   given: { dd: number; n: number; rows: [string, string, number, number][]; within5: number; deeper15: number; median: number } | null
   inversions: [string, boolean, string | null][]; sahm: [string, string | null][]
   analog: { month: string; now: Record<string, number>; top: [number, string, Record<string, number>, number | null, number | null, number | null, number | null, number | null, number | null, number | null, string | null][]; summary: { n: number; up12: number; med12: number | null; deep: number; rec2y: number } } | null
+  check2000: { items: { k: string; t: string; rule: string; now: string; state: 'on' | 'near' | 'off'; y2000: string; asOf?: string }[]; coreOn: number; coreNear: number; splitState: string; verdict: string; ctx: { cape: number | null; capeMonth: string | null; fed3: number | null; g10: number | null; infl: number | null; defcyc6: number | null } } | null
   weekly: {
     HY?: { date: string; v: number; low52: number; lowDate: string; up52: number; chg13w: number; max52: number; band: string }
     BAA10Y?: { date: string; v: number; chg26w: number | null }
@@ -106,7 +107,7 @@ export default async function SlowdownPage() {
         ? { t: 'hike', s: '일자리·신용은 아직 버티고, 금리·물가가 문제 → ② 금리 인상 둔화형에 가장 가까움' }
         : { t: 'soft', s: '일자리·신용·금리 모두 큰 문제 없음 → ① 둔화만 또는 ③ 사건형에 가까움' }
 
-  const toc: [string, string][] = [['answer', '먼저 답부터'], ['weekly', '매주 볼 두 줄'], ['types', '하락장 다섯 유형'], ['how', '유형을 가르는 법'], ['now', '지금 신호등'], ['given', '지금 낙폭에서 보면'], ['analog', '닮은 시기'], ['bottom', '바닥은 언제였나'], ['future', '미래를 알 수 있나'], ['all', '하락장 21개 전체'], ['charts', '그래프'], ['src', '데이터·출처']]
+  const toc: [string, string][] = [['answer', '먼저 답부터'], ['y2000', '2000년형 체크리스트'], ['weekly', '매주 볼 두 줄'], ['types', '하락장 다섯 유형'], ['how', '유형을 가르는 법'], ['now', '지금 신호등'], ['given', '지금 낙폭에서 보면'], ['analog', '닮은 시기'], ['bottom', '바닥은 언제였나'], ['future', '미래를 알 수 있나'], ['all', '하락장 21개 전체'], ['charts', '그래프'], ['src', '데이터·출처']]
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
@@ -133,6 +134,51 @@ export default async function SlowdownPage() {
           </ul>
         </section>
 
+
+
+        {D.check2000 && (() => { const C = D.check2000; const st = { on: ['bg-red-500', '켜짐'], near: ['bg-amber-400', '가까워짐'], off: ['bg-emerald-500', '꺼짐'] } as const; return (
+        <section id="y2000" className={box}>
+          <h2 className={h2}>2000년형 체크리스트 — AI 거품이 꺼지며 침체로 가는가</h2>
+          <p className={p}>가설: <b>거품은 AI·큰 기술주에만 끼었고, 그게 꺼지면서 큰 우량주가 이끌던 강세장이 끝난다</b>(2000~2002년형: 나스닥100 −83%, 30개월, 그동안 가치주·중소형주는 선방). 아래 ①~③ 중 <b>2개가 켜지면</b> 2000년형 쪽으로 무게를 옮기고, ④는 &quot;AI만 거품&quot; 구도가 맞는지 확인하는 칸이다. 매주 자동 갱신(③은 직접 적는 칸).</p>
+          <div className={`rounded-lg p-3 text-sm font-semibold ${C.coreOn >= 2 ? 'bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300' : C.coreOn === 1 ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300' : 'bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200'}`}>
+            판정: {C.verdict} · 구도 확인(④): {st[C.splitState as 'on' | 'near' | 'off'][1]}
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead><tr className="border-b border-gray-200 dark:border-gray-800">{['', '항목', '지금', '켜지는 기준', '2000년엔'].map(h => <th key={h} className={th}>{h}</th>)}</tr></thead>
+              <tbody>
+                {C.items.map(c => (
+                  <tr key={c.k} className="border-b border-gray-100 dark:border-gray-900">
+                    <td className={td}><span className={`inline-block w-2.5 h-2.5 rounded-full ${st[c.state][0]}`} /> <span className="text-[10px] text-gray-500">{st[c.state][1]}</span></td>
+                    <td className={`${td} whitespace-normal font-semibold min-w-[9rem]`}>{c.t}</td>
+                    <td className={`${td} whitespace-normal min-w-[14rem]`}>{c.now}{c.asOf ? <span className="text-gray-400"> ({c.asOf} 확인)</span> : null}</td>
+                    <td className={`${td} whitespace-normal text-gray-500 min-w-[12rem]`}>{c.rule}</td>
+                    <td className={`${td} whitespace-normal text-gray-500 min-w-[10rem]`}>{c.y2000}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">배경 조건(점수에는 안 넣음)</p>
+          <div className="flex flex-wrap gap-1.5 text-xs">
+            {[
+              [`시장 값(CAPE) ${f(C.ctx.cape, 0)}배`, `2000년 43배 · ${ym(C.ctx.capeMonth)} 자료`],
+              [`기준금리 3개월 ${f(C.ctx.fed3, 2, '%p')}`, '1999~2000년 연준 인상 중 거품이 꺾임'],
+              [`10년 금리 ${f(C.ctx.g10, 1, '%')}`, '2000년 1월 약 6.7%'],
+              [`물가 ${f(C.ctx.infl, 1, '%')}`, '2000년 약 3%대'],
+              [`방어주÷경기민감주 6개월 ${f(C.ctx.defcyc6, 0, '%')}`, '거품 뒤 돈이 방어주로'],
+            ].map(([a, b]) => <span key={a} className="px-2 py-1 rounded border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-200">{a} <span className="text-gray-400">· {b}</span></span>)}
+          </div>
+          <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">2000년형에 거는 사람의 TQ 규칙</p>
+          <ul className={`${p} list-disc pl-5 space-y-1`}>
+            <li><b>2000년 장에서는 −30·−40·−50%에서 산 TQ가 모두 거의 0이 됐다.</b> 200일 이동평균 회복 신호도 2000년엔 가짜 신호 세 번이 다 0. 나눠 사기 시작점을 −50% 아래로, 그것도 작게.</li>
+            <li><b>시간 조건:</b> 2000년 바닥은 고점 30개월 뒤, 침체 시작 19개월 뒤였다. 고점이 2026년 가을이면 비슷한 바닥은 2028~29년.</li>
+            <li><b>바닥 확인:</b> 하이일드·GZ 스프레드가 꼭대기를 찍고 꺾이고, 실업률이 이미 오른 뒤(2002년 10월 모양).</li>
+            <li><b>그동안 들 것:</b> AI 거품과 거리가 먼 우량주(에르메스·유나이티드헬스 등). 단 값이 비싼 우량주는 같이 끌려 내려갈 수 있다.</li>
+            <li><b>경계:</b> &quot;지금은 2000년&quot;은 흔한 이야기다. 1996년 &quot;비이성적 과열&quot;부터 꼭대기까지 3년 넘게 걸렸다 — 결론을 정하고 걸기보다 켜지는 신호만큼 비중을 옮긴다.</li>
+          </ul>
+          <p className={small}>④의 비율 흐름은 아래 그래프 ⑤(나스닥100÷S&amp;P 500, 동일가중÷시가총액가중)에서 볼 수 있다. ③을 켜려면 scripts/build_slowdown.py의 CAPEX에 날짜·내용을 적는다.</p>
+        </section>) })()}
 
         <section id="weekly" className={box}>
           <h2 className={h2}>매주 볼 두 줄 — 하이일드 스프레드와 실업수당 청구</h2>

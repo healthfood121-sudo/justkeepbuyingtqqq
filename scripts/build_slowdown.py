@@ -83,6 +83,8 @@ for mo in S.get("XLP", {}):
     except (KeyError, TypeError): pass
 for mo in S.get("RSP", {}):
     if mo in S.get("SPY", {}): S.setdefault("BREADTH", {})[mo] = S["RSP"][mo] / S["SPY"][mo]
+for mo in S.get("NDX", {}):  # 나스닥100 ÷ S&P 500(1985~): 큰 기술주 쏠림
+    if mo in S.get("SPX", {}): S.setdefault("NDXSPX", {})[mo] = S["NDX"][mo] / S["SPX"][mo]
 
 # ── 하락장 찾기 (나스닥100 일간) ──
 n = len(D); eps = []; pk = 0; tr = 0
@@ -199,7 +201,7 @@ for k in ("NDX", "SPX"):
 
 # 그래프용 월별 시계열(1970년~): 금리차, 신용 스프레드, 실업률, 기준금리, 침체 기간, 나스닥100(로그용), 하이일드, 방어/경기민감
 chart = {}
-for k in ("GZ", "EBP", "EBPPROB", "CURVE", "CREDIT", "BAMLH0A0HYM2", "UNRATE", "FEDFUNDS", "USREC", "NDX", "SPX", "CAPE", "SAHMREALTIME", "DEFCYC", "BREADTH", "INFL", "RECPROUSM156N"):
+for k in ("GZ", "EBP", "EBPPROB", "CURVE", "CREDIT", "BAMLH0A0HYM2", "UNRATE", "FEDFUNDS", "USREC", "NDX", "SPX", "CAPE", "SAHMREALTIME", "DEFCYC", "BREADTH", "NDXSPX", "INFL", "RECPROUSM156N"):
     s = S.get(k, {})
     ks = [m for m in sorted(s) if m >= "1970-01"]
     if ks: chart[k] = {"start": ks[0], "v": [r1(s.get(m), 3) for m in (lambda a, b: [a] + [shift(a, i) for i in range(1, (int(b[:4]) - int(a[:4])) * 12 + int(b[5:]) - int(a[5:]) + 1)])(ks[0], ks[-1])]}
@@ -327,6 +329,50 @@ if W.get("HY"):
              "hist": hist[-24:]}
     WEDGE["levels"] = [[round(a, 2), b] for a, b in WEDGE["levels"]]
 weekly["wedge"] = WEDGE
+# ── 2000년형 체크리스트 ──
+# ①신용 ②일자리 ③AI 설비 투자 감축(사람이 적는 칸) ④나스닥100만 깊게 빠지고 동일가중은 버팀. ①~③ 중 2개 켜지면 2000년형 쪽으로.
+# AI 설비 투자 감축은 자동으로 알 수 없어 아래 CAPEX에 직접 적는다(발표가 나오면 on=True, 날짜·내용).
+CAPEX = {"on": False, "asOf": "2026-11-22",
+         "note": "아직 감축 발표 없음. 10월 회의 사이 한 하이퍼스케일러가 오히려 더 큰 자금 조달이 필요한 설비 투자 계획을 냈다(FOMC 의사록). 반대로 '설비 투자를 줄인다/미룬다'는 발표가 나오면 켠다."}
+def dd12(k):
+    s = S.get(k, {})
+    if not s: return None
+    mo = max(s); hi = max(v for m, v in s.items() if m >= shift(mo, -12))
+    return r1((s[mo] / hi - 1) * 100)
+ck = []
+hy = weekly.get("HY", {}); gz = now.get("GZ", {})
+gzup = (gz["v"] - gz["low12"]) if gz.get("v") is not None and gz.get("low12") is not None else None
+hyv = hy.get("v")
+c1 = "on" if ((hyv or 0) >= 6 or (gzup or 0) >= 0.8) else "near" if ((hyv or 0) >= 5 or (gzup or 0) >= 0.3 or (hy.get("up52") or 0) >= 1.0) else "off"
+ck.append({"k": "credit", "t": "① 신용이 2000년처럼 나빠짐", "rule": "하이일드 6% 이상 또는 GZ 스프레드가 1년 최저보다 +0.8%p 이상 (가까워짐: 하이일드 5% 또는 1년 최저 +1%p, GZ +0.3%p)",
+           "now": f"하이일드 {hyv:.2f}% (1년 최저 대비 +{hy.get('up52', 0):.2f}%p) · GZ {gz.get('v')}%p (1년 최저 대비 +{gzup:.2f}%p)" if hyv is not None and gzup is not None else "자료 없음",
+           "state": c1, "y2000": "GZ 스프레드가 1998년부터 올라 2000년에 1.95 → 3.76"})
+cl = weekly.get("ICSA", {})
+c2 = "on" if (cl.get("upPct") or 0) >= 20 else "near" if (cl.get("upPct") or 0) >= 10 else "off"
+ck.append({"k": "jobs", "t": "② 일자리가 꺾임(침체로 넘어감)", "rule": "실업수당 신규 청구 4주 평균이 1년 최저보다 +20% (가까워짐: +10%)",
+           "now": f"4주 평균 {cl.get('ma4', 0)/10000:.1f}만 건, 1년 최저 대비 {cl.get('upPct', 0):+.1f}%" if cl else "자료 없음",
+           "state": c2, "y2000": "2000년 11월 +20% 돌파 → 2001년 3월 침체 시작"})
+ck.append({"k": "capex", "t": "③ 초대형 클라우드 기업이 AI 설비 투자를 줄임", "rule": "하이퍼스케일러(마이크로소프트·구글·아마존·메타 등)의 설비 투자 감축·연기 발표 — 사람이 확인해 적는 칸",
+           "now": CAPEX["note"], "state": "on" if CAPEX["on"] else "off", "asOf": CAPEX["asOf"],
+           "y2000": "2001년 통신 회사들의 설비 투자 감축 → 장비주(루슨트·노텔·시스코) 폭락"})
+nd = dd12("NDX"); rsp = dd12("RSP"); spx = dd12("SPX")
+gap = (rsp - nd) if nd is not None and rsp is not None else None
+c4 = "on" if (nd is not None and nd <= -30 and (rsp or 0) > -15) else "near" if (nd is not None and nd <= -15 and (gap or 0) >= 7) else "off"
+ndxspx6 = None
+if S.get("NDXSPX"):
+    mo = max(S["NDXSPX"]); pv = S["NDXSPX"].get(shift(mo, -6))
+    ndxspx6 = r1((S["NDXSPX"][mo] / pv - 1) * 100) if pv else None
+ck.append({"k": "split", "t": "④ AI·큰 기술주만 깊게 빠지고 나머지는 버팀", "rule": "나스닥100 1년 고점 대비 −30% 이하인데 동일가중 S&P 500(RSP)은 −15% 위 (가까워짐: 나스닥100 −15% 이하 + 동일가중보다 7%p 넘게 더 빠짐)",
+           "now": f"나스닥100 {nd}% · 동일가중 {rsp}% · S&P 500 {spx}% (1년 고점 대비, 월말) · 나스닥100÷S&P 500 6개월 {ndxspx6:+.1f}%" if nd is not None and rsp is not None and ndxspx6 is not None else "자료 없음",
+           "state": c4, "y2000": "2000~2002년 나스닥100 −83%, 그동안 가치주·중소형주·필수소비재는 선방하거나 오름"})
+ctx = {"cape": now.get("CAPE", {}).get("v"), "capeMonth": now.get("CAPE", {}).get("month"), "fed3": r1(chg("FEDFUNDS", 3), 2), "g10": now.get("GS10", {}).get("v"),
+       "infl": now.get("INFL", {}).get("v"), "defcyc6": now.get("DEFCYC", {}).get("chg6pct")}
+core_on = sum(1 for c in ck[:3] if c["state"] == "on"); core_near = sum(1 for c in ck[:3] if c["state"] == "near")
+CHECK2000 = {"items": ck, "coreOn": core_on, "coreNear": core_near, "splitState": c4, "ctx": ctx,
+             "verdict": ("2000년형 쪽으로 무게를 옮길 때 — 핵심 3개 중 %d개 켜짐" % core_on) if core_on >= 2 else
+                        ("한 개 켜짐 — 2000년형 가능성 커지는 중, 나머지 두 개를 지켜볼 것") if core_on == 1 else
+                        ("아직 2000년형 신호 없음 — 가까워진 항목 %d개" % core_near)}
+
 
 
 # ── 닮은 시기 찾기: 지금 지표 10개와 가장 가까운 과거 달(1972~, 2년 뒤 결과가 있는 달만) ──
@@ -392,7 +438,7 @@ def analogs():
 ANALOG = analogs()
 
 for r in rows: r.pop("spx", None)
-out = {"generated": json.loads((DATA / "macro_cycle.json").read_text())["generated"], "rows": rows, "types": types, "now": now, "chart": chart, "given": given, "inversions": inv, "sahm": sahm, "weekly": weekly, "analog": ANALOG,
+out = {"generated": json.loads((DATA / "macro_cycle.json").read_text())["generated"], "rows": rows, "types": types, "now": now, "chart": chart, "given": given, "inversions": inv, "sahm": sahm, "weekly": weekly, "analog": ANALOG, "check2000": CHECK2000,
        "errors": json.loads((DATA / "macro_cycle.json").read_text()).get("errors", [])}
 (DATA / "slowdown.json").write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")))
 print("하락장", len(rows), "유형", {k: v["n"] for k, v in types.items()})
