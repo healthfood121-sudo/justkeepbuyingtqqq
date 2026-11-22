@@ -54,6 +54,7 @@ import { NVR_REPORT } from './reports/nvrData'
 import { ANET_REPORT } from './reports/anetData'
 import { IDCC_REPORT } from './reports/idccData'
 import { TPL_REPORT } from './reports/tplData'
+import { WSM_REPORT } from './reports/wsmData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11161,6 +11162,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   ANET: () => <BigReport d={ANET_REPORT} />,
   IDCC: () => <BigReport d={IDCC_REPORT} />,
   TPL: () => <BigReport d={TPL_REPORT} />,
+  WSM: () => <BigReport d={WSM_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11239,6 +11241,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   ANET: ANET_REPORT,
   IDCC: IDCC_REPORT,
   TPL: TPL_REPORT,
+  WSM: WSM_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
