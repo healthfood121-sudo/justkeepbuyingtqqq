@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import MarkdownView from '@/components/kostolany/MarkdownView'
+import BookWithToc from '@/components/kostolany/BookWithToc'
 import { content } from '../books/book2'
 
 export default async function Book2Page() {
@@ -25,7 +25,7 @@ export default async function Book2Page() {
           <span>📖</span>
           <span>YouTube 자막을 맞춤법·띄어쓰기 교정 후 소제목·굵게·인용 형식으로 정리한 원문입니다.</span>
         </div>
-        <MarkdownView content={content} />
+        <BookWithToc content={content} />
         <div className="mt-10 pt-6 border-t border-gray-200 dark:border-gray-700 flex justify-between text-sm text-gray-500 dark:text-gray-400">
           <Link href="/private/kostolany/book1" className="hover:text-gray-900 dark:hover:text-white transition-colors">← 1권 원문</Link>
           <Link href="/private/kostolany/book3" className="hover:text-gray-900 dark:hover:text-white transition-colors">3권 원문 →</Link>

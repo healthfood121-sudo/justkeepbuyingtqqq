@@ -39,6 +39,7 @@ export default function MarkdownView({ content }: { content: string }) {
   const lines = content.split('\n')
   const nodes: React.ReactNode[] = []
   let i = 0
+  let h2Count = 0
 
   while (i < lines.length) {
     const line = lines[i]
@@ -63,8 +64,9 @@ export default function MarkdownView({ content }: { content: string }) {
 
     // H2
     if (line.startsWith('## ') && !line.startsWith('### ')) {
+      const id = `h2-${h2Count++}`
       nodes.push(
-        <h2 key={i} className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mt-7 mb-3 scroll-mt-20">
+        <h2 key={i} id={id} className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mt-7 mb-3 scroll-mt-24">
           <InlineText text={line.slice(3)} />
         </h2>
       )
