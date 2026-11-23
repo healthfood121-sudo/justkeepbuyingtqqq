@@ -80,6 +80,7 @@ import { AMAT_REPORT } from './reports/amatData'
 import { IT_REPORT } from './reports/itData'
 import { CARG_REPORT } from './reports/cargData'
 import { ADSK_REPORT } from './reports/adskData'
+import { MPWR_REPORT } from './reports/mpwrData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11213,6 +11214,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   IT: () => <BigReport d={IT_REPORT} />,
   CARG: () => <BigReport d={CARG_REPORT} />,
   ADSK: () => <BigReport d={ADSK_REPORT} />,
+  MPWR: () => <BigReport d={MPWR_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11317,6 +11319,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   IT: IT_REPORT,
   CARG: CARG_REPORT,
   ADSK: ADSK_REPORT,
+  MPWR: MPWR_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
