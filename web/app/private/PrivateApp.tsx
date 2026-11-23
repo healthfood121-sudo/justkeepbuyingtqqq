@@ -129,6 +129,7 @@ import { HCA_REPORT } from './reports/hcaData'
 import { PCAR_REPORT } from './reports/pcarData'
 import { MRK_REPORT } from './reports/mrkData'
 import { HLT_REPORT } from './reports/hltData'
+import { IBP_REPORT } from './reports/ibpData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11311,6 +11312,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   PCAR: () => <BigReport d={PCAR_REPORT} />,
   MRK: () => <BigReport d={MRK_REPORT} />,
   HLT: () => <BigReport d={HLT_REPORT} />,
+  IBP: () => <BigReport d={IBP_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11464,6 +11466,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   PCAR: PCAR_REPORT,
   MRK: MRK_REPORT,
   HLT: HLT_REPORT,
+  IBP: IBP_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
