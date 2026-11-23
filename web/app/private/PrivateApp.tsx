@@ -137,6 +137,7 @@ import { TT_REPORT } from './reports/ttData'
 import { ALLE_REPORT } from './reports/alleData'
 import { DE_REPORT } from './reports/deData'
 import { RMD_REPORT } from './reports/rmdData'
+import { UFPI_REPORT } from './reports/ufpiData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11327,6 +11328,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   ALLE: () => <BigReport d={ALLE_REPORT} />,
   DE: () => <BigReport d={DE_REPORT} />,
   RMD: () => <BigReport d={RMD_REPORT} />,
+  UFPI: () => <BigReport d={UFPI_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11488,6 +11490,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   ALLE: ALLE_REPORT,
   DE: DE_REPORT,
   RMD: RMD_REPORT,
+  UFPI: UFPI_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
