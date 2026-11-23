@@ -86,6 +86,7 @@ import { HD_REPORT } from './reports/hdData'
 import { LOW_REPORT } from './reports/lowData'
 import { GWW_REPORT } from './reports/gwwData'
 import { QCOM_REPORT } from './reports/qcomData'
+import { TXN_REPORT } from './reports/txnData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11225,6 +11226,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   LOW: () => <BigReport d={LOW_REPORT} />,
   GWW: () => <BigReport d={GWW_REPORT} />,
   QCOM: () => <BigReport d={QCOM_REPORT} />,
+  TXN: () => <BigReport d={TXN_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11335,6 +11337,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   LOW: LOW_REPORT,
   GWW: GWW_REPORT,
   QCOM: QCOM_REPORT,
+  TXN: TXN_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
