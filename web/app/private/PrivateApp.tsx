@@ -91,6 +91,7 @@ import { FTDR_REPORT } from './reports/ftdrData'
 import { XPEL_REPORT } from './reports/xpelData'
 import { PM_REPORT } from './reports/pmData'
 import { MSI_REPORT } from './reports/msiData'
+import { DRI_REPORT } from './reports/driData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11235,6 +11236,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   XPEL: () => <BigReport d={XPEL_REPORT} />,
   PM: () => <BigReport d={PM_REPORT} />,
   MSI: () => <BigReport d={MSI_REPORT} />,
+  DRI: () => <BigReport d={DRI_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11350,6 +11352,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   XPEL: XPEL_REPORT,
   PM: PM_REPORT,
   MSI: MSI_REPORT,
+  DRI: DRI_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
