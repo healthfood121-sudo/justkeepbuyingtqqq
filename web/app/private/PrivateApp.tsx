@@ -77,6 +77,7 @@ import { CDNS_REPORT } from './reports/cdnsData'
 import { COCO_REPORT } from './reports/cocoData'
 import { NSSC_REPORT } from './reports/nsscData'
 import { AMAT_REPORT } from './reports/amatData'
+import { IT_REPORT } from './reports/itData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11207,6 +11208,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   COCO: () => <BigReport d={COCO_REPORT} />,
   NSSC: () => <BigReport d={NSSC_REPORT} />,
   AMAT: () => <BigReport d={AMAT_REPORT} />,
+  IT: () => <BigReport d={IT_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11308,6 +11310,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   COCO: COCO_REPORT,
   NSSC: NSSC_REPORT,
   AMAT: AMAT_REPORT,
+  IT: IT_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
