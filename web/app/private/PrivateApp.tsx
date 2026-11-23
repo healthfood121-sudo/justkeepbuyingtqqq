@@ -121,6 +121,7 @@ import { CTAS_REPORT } from './reports/ctasData'
 import { KEYS_REPORT } from './reports/keysData'
 import { WDFC_REPORT } from './reports/wdfcData'
 import { ITW_REPORT } from './reports/itwData'
+import { WST_REPORT } from './reports/wstData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11295,6 +11296,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   KEYS: () => <BigReport d={KEYS_REPORT} />,
   WDFC: () => <BigReport d={WDFC_REPORT} />,
   ITW: () => <BigReport d={ITW_REPORT} />,
+  WST: () => <BigReport d={WST_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11440,6 +11442,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   KEYS: KEYS_REPORT,
   WDFC: WDFC_REPORT,
   ITW: ITW_REPORT,
+  WST: WST_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
