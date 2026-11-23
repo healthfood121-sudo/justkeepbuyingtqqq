@@ -84,6 +84,7 @@ import { MPWR_REPORT } from './reports/mpwrData'
 import { RL_REPORT } from './reports/rlData'
 import { HD_REPORT } from './reports/hdData'
 import { LOW_REPORT } from './reports/lowData'
+import { GWW_REPORT } from './reports/gwwData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11221,6 +11222,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   RL: () => <BigReport d={RL_REPORT} />,
   HD: () => <BigReport d={HD_REPORT} />,
   LOW: () => <BigReport d={LOW_REPORT} />,
+  GWW: () => <BigReport d={GWW_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11329,6 +11331,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   RL: RL_REPORT,
   HD: HD_REPORT,
   LOW: LOW_REPORT,
+  GWW: GWW_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
