@@ -103,6 +103,7 @@ import { FAST_REPORT } from './reports/fastData'
 import { MNST_REPORT } from './reports/mnstData'
 import { LMT_REPORT } from './reports/lmtData'
 import { CHE_REPORT } from './reports/cheData'
+import { TPR_REPORT } from './reports/tprData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11259,6 +11260,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   MNST: () => <BigReport d={MNST_REPORT} />,
   LMT: () => <BigReport d={LMT_REPORT} />,
   CHE: () => <BigReport d={CHE_REPORT} />,
+  TPR: () => <BigReport d={TPR_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11386,6 +11388,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   MNST: MNST_REPORT,
   LMT: LMT_REPORT,
   CHE: CHE_REPORT,
+  TPR: TPR_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
