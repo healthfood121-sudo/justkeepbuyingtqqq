@@ -101,6 +101,7 @@ import { INCY_REPORT } from './reports/incyData'
 import { ODFL_REPORT } from './reports/odflData'
 import { FAST_REPORT } from './reports/fastData'
 import { MNST_REPORT } from './reports/mnstData'
+import { LMT_REPORT } from './reports/lmtData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11255,6 +11256,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   ODFL: () => <BigReport d={ODFL_REPORT} />,
   FAST: () => <BigReport d={FAST_REPORT} />,
   MNST: () => <BigReport d={MNST_REPORT} />,
+  LMT: () => <BigReport d={LMT_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11380,6 +11382,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   ODFL: ODFL_REPORT,
   FAST: FAST_REPORT,
   MNST: MNST_REPORT,
+  LMT: LMT_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
