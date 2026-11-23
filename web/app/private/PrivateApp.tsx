@@ -123,6 +123,7 @@ import { WDFC_REPORT } from './reports/wdfcData'
 import { ITW_REPORT } from './reports/itwData'
 import { WST_REPORT } from './reports/wstData'
 import { HSY_REPORT } from './reports/hsyData'
+import { SNPS_REPORT } from './reports/snpsData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11299,6 +11300,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   ITW: () => <BigReport d={ITW_REPORT} />,
   WST: () => <BigReport d={WST_REPORT} />,
   HSY: () => <BigReport d={HSY_REPORT} />,
+  SNPS: () => <BigReport d={SNPS_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11446,6 +11448,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   ITW: ITW_REPORT,
   WST: WST_REPORT,
   HSY: HSY_REPORT,
+  SNPS: SNPS_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
