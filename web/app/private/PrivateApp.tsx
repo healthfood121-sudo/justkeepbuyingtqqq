@@ -89,6 +89,7 @@ import { QCOM_REPORT } from './reports/qcomData'
 import { TXN_REPORT } from './reports/txnData'
 import { FTDR_REPORT } from './reports/ftdrData'
 import { XPEL_REPORT } from './reports/xpelData'
+import { PM_REPORT } from './reports/pmData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11231,6 +11232,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   TXN: () => <BigReport d={TXN_REPORT} />,
   FTDR: () => <BigReport d={FTDR_REPORT} />,
   XPEL: () => <BigReport d={XPEL_REPORT} />,
+  PM: () => <BigReport d={PM_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11344,6 +11346,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   TXN: TXN_REPORT,
   FTDR: FTDR_REPORT,
   XPEL: XPEL_REPORT,
+  PM: PM_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
