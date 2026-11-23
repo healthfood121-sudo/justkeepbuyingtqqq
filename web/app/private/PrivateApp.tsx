@@ -125,6 +125,7 @@ import { WST_REPORT } from './reports/wstData'
 import { HSY_REPORT } from './reports/hsyData'
 import { SNPS_REPORT } from './reports/snpsData'
 import { GRMN_REPORT } from './reports/grmnData'
+import { HCA_REPORT } from './reports/hcaData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11303,6 +11304,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   HSY: () => <BigReport d={HSY_REPORT} />,
   SNPS: () => <BigReport d={SNPS_REPORT} />,
   GRMN: () => <BigReport d={GRMN_REPORT} />,
+  HCA: () => <BigReport d={HCA_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11452,6 +11454,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   HSY: HSY_REPORT,
   SNPS: SNPS_REPORT,
   GRMN: GRMN_REPORT,
+  HCA: HCA_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
