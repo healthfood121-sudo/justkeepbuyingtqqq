@@ -132,6 +132,7 @@ import { HLT_REPORT } from './reports/hltData'
 import { IBP_REPORT } from './reports/ibpData'
 import { EXP_REPORT } from './reports/expData'
 import { POOL_REPORT } from './reports/poolData'
+import { MUSA_REPORT } from './reports/musaData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11317,6 +11318,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   IBP: () => <BigReport d={IBP_REPORT} />,
   EXP: () => <BigReport d={EXP_REPORT} />,
   POOL: () => <BigReport d={POOL_REPORT} />,
+  MUSA: () => <BigReport d={MUSA_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11473,6 +11475,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   IBP: IBP_REPORT,
   EXP: EXP_REPORT,
   POOL: POOL_REPORT,
+  MUSA: MUSA_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
