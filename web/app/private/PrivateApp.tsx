@@ -98,6 +98,7 @@ import { ACN_REPORT } from './reports/acnData'
 import { USLM_REPORT } from './reports/uslmData'
 import { PANW_REPORT } from './reports/panwData'
 import { INCY_REPORT } from './reports/incyData'
+import { ODFL_REPORT } from './reports/odflData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11249,6 +11250,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   USLM: () => <BigReport d={USLM_REPORT} />,
   PANW: () => <BigReport d={PANW_REPORT} />,
   INCY: () => <BigReport d={INCY_REPORT} />,
+  ODFL: () => <BigReport d={ODFL_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11371,6 +11373,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   USLM: USLM_REPORT,
   PANW: PANW_REPORT,
   INCY: INCY_REPORT,
+  ODFL: ODFL_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
