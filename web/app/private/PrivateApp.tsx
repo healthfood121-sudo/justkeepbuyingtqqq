@@ -119,6 +119,7 @@ import { VLTO_REPORT } from './reports/vltoData'
 import { TGLS_REPORT } from './reports/tglsData'
 import { CTAS_REPORT } from './reports/ctasData'
 import { KEYS_REPORT } from './reports/keysData'
+import { WDFC_REPORT } from './reports/wdfcData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11291,6 +11292,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   TGLS: () => <BigReport d={TGLS_REPORT} />,
   CTAS: () => <BigReport d={CTAS_REPORT} />,
   KEYS: () => <BigReport d={KEYS_REPORT} />,
+  WDFC: () => <BigReport d={WDFC_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11434,6 +11436,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   TGLS: TGLS_REPORT,
   CTAS: CTAS_REPORT,
   KEYS: KEYS_REPORT,
+  WDFC: WDFC_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
