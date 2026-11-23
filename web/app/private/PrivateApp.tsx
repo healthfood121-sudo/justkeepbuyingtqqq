@@ -131,6 +131,7 @@ import { MRK_REPORT } from './reports/mrkData'
 import { HLT_REPORT } from './reports/hltData'
 import { IBP_REPORT } from './reports/ibpData'
 import { EXP_REPORT } from './reports/expData'
+import { POOL_REPORT } from './reports/poolData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11315,6 +11316,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   HLT: () => <BigReport d={HLT_REPORT} />,
   IBP: () => <BigReport d={IBP_REPORT} />,
   EXP: () => <BigReport d={EXP_REPORT} />,
+  POOL: () => <BigReport d={POOL_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11470,6 +11472,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   HLT: HLT_REPORT,
   IBP: IBP_REPORT,
   EXP: EXP_REPORT,
+  POOL: POOL_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
