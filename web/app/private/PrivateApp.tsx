@@ -110,6 +110,7 @@ import { ERIE_REPORT } from './reports/erieData'
 import { WAT_REPORT } from './reports/watData'
 import { FIX_REPORT } from './reports/fixData'
 import { FN_REPORT } from './reports/fnData'
+import { LLY_REPORT } from './reports/llyData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11273,6 +11274,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   WAT: () => <BigReport d={WAT_REPORT} />,
   FIX: () => <BigReport d={FIX_REPORT} />,
   FN: () => <BigReport d={FN_REPORT} />,
+  LLY: () => <BigReport d={LLY_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11407,6 +11409,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   WAT: WAT_REPORT,
   FIX: FIX_REPORT,
   FN: FN_REPORT,
+  LLY: LLY_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
