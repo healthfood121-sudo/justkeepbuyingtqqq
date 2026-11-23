@@ -112,6 +112,7 @@ import { FIX_REPORT } from './reports/fixData'
 import { FN_REPORT } from './reports/fnData'
 import { LLY_REPORT } from './reports/llyData'
 import { LECO_REPORT } from './reports/lecoData'
+import { CRAI_REPORT } from './reports/craiData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11277,6 +11278,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   FN: () => <BigReport d={FN_REPORT} />,
   LLY: () => <BigReport d={LLY_REPORT} />,
   LECO: () => <BigReport d={LECO_REPORT} />,
+  CRAI: () => <BigReport d={CRAI_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11413,6 +11415,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   FN: FN_REPORT,
   LLY: LLY_REPORT,
   LECO: LECO_REPORT,
+  CRAI: CRAI_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
