@@ -118,6 +118,7 @@ import { CSCO_REPORT } from './reports/cscoData'
 import { VLTO_REPORT } from './reports/vltoData'
 import { TGLS_REPORT } from './reports/tglsData'
 import { CTAS_REPORT } from './reports/ctasData'
+import { KEYS_REPORT } from './reports/keysData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11289,6 +11290,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   VLTO: () => <BigReport d={VLTO_REPORT} />,
   TGLS: () => <BigReport d={TGLS_REPORT} />,
   CTAS: () => <BigReport d={CTAS_REPORT} />,
+  KEYS: () => <BigReport d={KEYS_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11431,6 +11433,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   VLTO: VLTO_REPORT,
   TGLS: TGLS_REPORT,
   CTAS: CTAS_REPORT,
+  KEYS: KEYS_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
