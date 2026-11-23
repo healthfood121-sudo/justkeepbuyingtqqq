@@ -136,6 +136,7 @@ import { MUSA_REPORT } from './reports/musaData'
 import { TT_REPORT } from './reports/ttData'
 import { ALLE_REPORT } from './reports/alleData'
 import { DE_REPORT } from './reports/deData'
+import { RMD_REPORT } from './reports/rmdData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11325,6 +11326,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   TT: () => <BigReport d={TT_REPORT} />,
   ALLE: () => <BigReport d={ALLE_REPORT} />,
   DE: () => <BigReport d={DE_REPORT} />,
+  RMD: () => <BigReport d={RMD_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11485,6 +11487,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   TT: TT_REPORT,
   ALLE: ALLE_REPORT,
   DE: DE_REPORT,
+  RMD: RMD_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
