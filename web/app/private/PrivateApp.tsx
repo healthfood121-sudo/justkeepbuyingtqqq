@@ -172,6 +172,7 @@ import { ALGN_REPORT } from './reports/algnData'
 import { NDSN_REPORT } from './reports/ndsnData'
 import { CSX_REPORT } from './reports/csxData'
 import { AMGN_REPORT } from './reports/amgnData'
+import { XOM_REPORT } from './reports/xomData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11397,6 +11398,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   NDSN: () => <BigReport d={NDSN_REPORT} />,
   CSX: () => <BigReport d={CSX_REPORT} />,
   AMGN: () => <BigReport d={AMGN_REPORT} />,
+  XOM: () => <BigReport d={XOM_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11593,6 +11595,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   NDSN: NDSN_REPORT,
   CSX: CSX_REPORT,
   AMGN: AMGN_REPORT,
+  XOM: XOM_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
