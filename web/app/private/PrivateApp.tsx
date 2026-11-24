@@ -202,6 +202,7 @@ import { ALG_REPORT } from './reports/algData'
 import { CSW_REPORT } from './reports/cswData'
 import { MWA_REPORT } from './reports/mwaData'
 import { LDOS_REPORT } from './reports/ldosData'
+import { ECL_REPORT } from './reports/eclData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11457,6 +11458,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   CSW: () => <BigReport d={CSW_REPORT} />,
   MWA: () => <BigReport d={MWA_REPORT} />,
   LDOS: () => <BigReport d={LDOS_REPORT} />,
+  ECL: () => <BigReport d={ECL_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11683,6 +11685,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   CSW: CSW_REPORT,
   MWA: MWA_REPORT,
   LDOS: LDOS_REPORT,
+  ECL: ECL_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
