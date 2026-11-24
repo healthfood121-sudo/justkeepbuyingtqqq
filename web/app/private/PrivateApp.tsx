@@ -239,6 +239,7 @@ import { TRV_REPORT } from './reports/trvData'
 import { TJX_REPORT } from './reports/tjxData'
 import { SCHW_REPORT } from './reports/schwData'
 import { RJF_REPORT } from './reports/rjfData'
+import { PSA_REPORT } from './reports/psaData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11531,6 +11532,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   TJX: () => <BigReport d={TJX_REPORT} />,
   SCHW: () => <BigReport d={SCHW_REPORT} />,
   RJF: () => <BigReport d={RJF_REPORT} />,
+  PSA: () => <BigReport d={PSA_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11794,6 +11796,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   TJX: TJX_REPORT,
   SCHW: SCHW_REPORT,
   RJF: RJF_REPORT,
+  PSA: PSA_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
