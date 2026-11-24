@@ -199,6 +199,7 @@ import { APD_REPORT } from './reports/apdData'
 import { RCL_REPORT } from './reports/rclData'
 import { EMR_REPORT } from './reports/emrData'
 import { ALG_REPORT } from './reports/algData'
+import { CSW_REPORT } from './reports/cswData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11451,6 +11452,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   RCL: () => <BigReport d={RCL_REPORT} />,
   EMR: () => <BigReport d={EMR_REPORT} />,
   ALG: () => <BigReport d={ALG_REPORT} />,
+  CSW: () => <BigReport d={CSW_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11674,6 +11676,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   RCL: RCL_REPORT,
   EMR: EMR_REPORT,
   ALG: ALG_REPORT,
+  CSW: CSW_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
