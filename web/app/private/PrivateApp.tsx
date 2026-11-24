@@ -273,6 +273,7 @@ import { BX_REPORT } from './reports/bxData'
 import { BRKB_REPORT } from './reports/brkbData'
 import { BNY_REPORT } from './reports/bnyData'
 import { BLK_REPORT } from './reports/blkData'
+import { AXP_REPORT } from './reports/axpData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11599,6 +11600,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   BRKB: () => <BigReport d={BRKB_REPORT} />,
   BNY: () => <BigReport d={BNY_REPORT} />,
   BLK: () => <BigReport d={BLK_REPORT} />,
+  AXP: () => <BigReport d={AXP_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11896,6 +11898,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   BRKB: BRKB_REPORT,
   BNY: BNY_REPORT,
   BLK: BLK_REPORT,
+  AXP: AXP_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
