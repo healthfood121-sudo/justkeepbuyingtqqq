@@ -153,6 +153,7 @@ import { SNA_REPORT } from './reports/snaData'
 import { CMI_REPORT } from './reports/cmiData'
 import { AON_REPORT } from './reports/aonData'
 import { HUBB_REPORT } from './reports/hubbData'
+import { CAT_REPORT } from './reports/catData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11359,6 +11360,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   CMI: () => <BigReport d={CMI_REPORT} />,
   AON: () => <BigReport d={AON_REPORT} />,
   HUBB: () => <BigReport d={HUBB_REPORT} />,
+  CAT: () => <BigReport d={CAT_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11536,6 +11538,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   CMI: CMI_REPORT,
   AON: AON_REPORT,
   HUBB: HUBB_REPORT,
+  CAT: CAT_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
