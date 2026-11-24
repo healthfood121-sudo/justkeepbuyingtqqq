@@ -205,6 +205,7 @@ import { LDOS_REPORT } from './reports/ldosData'
 import { ECL_REPORT } from './reports/eclData'
 import { PWR_REPORT } from './reports/pwrData'
 import { VMC_REPORT } from './reports/vmcData'
+import { TMO_REPORT } from './reports/tmoData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11463,6 +11464,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   ECL: () => <BigReport d={ECL_REPORT} />,
   PWR: () => <BigReport d={PWR_REPORT} />,
   VMC: () => <BigReport d={VMC_REPORT} />,
+  TMO: () => <BigReport d={TMO_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11692,6 +11694,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   ECL: ECL_REPORT,
   PWR: PWR_REPORT,
   VMC: VMC_REPORT,
+  TMO: TMO_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
