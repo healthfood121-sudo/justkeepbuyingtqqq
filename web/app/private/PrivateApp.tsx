@@ -241,6 +241,7 @@ import { SCHW_REPORT } from './reports/schwData'
 import { RJF_REPORT } from './reports/rjfData'
 import { PSA_REPORT } from './reports/psaData'
 import { PLTR_REPORT } from './reports/pltrData'
+import { PLMR_REPORT } from './reports/plmrData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11535,6 +11536,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   RJF: () => <BigReport d={RJF_REPORT} />,
   PSA: () => <BigReport d={PSA_REPORT} />,
   PLTR: () => <BigReport d={PLTR_REPORT} />,
+  PLMR: () => <BigReport d={PLMR_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11800,6 +11802,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   RJF: RJF_REPORT,
   PSA: PSA_REPORT,
   PLTR: PLTR_REPORT,
+  PLMR: PLMR_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
