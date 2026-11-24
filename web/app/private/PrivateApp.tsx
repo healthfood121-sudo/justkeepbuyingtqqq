@@ -220,6 +220,7 @@ import { STE_REPORT } from './reports/steData'
 import { BSX_REPORT } from './reports/bsxData'
 import { WAB_REPORT } from './reports/wabData'
 import { DIS_REPORT } from './reports/disData'
+import { DHR_REPORT } from './reports/dhrData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11493,6 +11494,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   BSX: () => <BigReport d={BSX_REPORT} />,
   WAB: () => <BigReport d={WAB_REPORT} />,
   DIS: () => <BigReport d={DIS_REPORT} />,
+  DHR: () => <BigReport d={DHR_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11737,6 +11739,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   BSX: BSX_REPORT,
   WAB: WAB_REPORT,
   DIS: DIS_REPORT,
+  DHR: DHR_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
