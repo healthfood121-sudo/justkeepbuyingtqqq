@@ -254,6 +254,7 @@ import { LYV_REPORT } from './reports/lyvData'
 import { KLAC_REPORT } from './reports/klacData'
 import { JPM_REPORT } from './reports/jpmData'
 import { JNJ_REPORT } from './reports/jnjData'
+import { ITX_REPORT } from './reports/itxData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11561,6 +11562,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   KLAC: () => <BigReport d={KLAC_REPORT} />,
   JPM: () => <BigReport d={JPM_REPORT} />,
   JNJ: () => <BigReport d={JNJ_REPORT} />,
+  ITX: () => <BigReport d={ITX_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11839,6 +11841,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   KLAC: KLAC_REPORT,
   JPM: JPM_REPORT,
   JNJ: JNJ_REPORT,
+  ITX: ITX_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
