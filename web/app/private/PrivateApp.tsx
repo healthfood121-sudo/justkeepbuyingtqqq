@@ -181,6 +181,7 @@ import { CPAY_REPORT } from './reports/cpayData'
 import { PKG_REPORT } from './reports/pkgData'
 import { PNR_REPORT } from './reports/pnrData'
 import { KAI_REPORT } from './reports/kaiData'
+import { CHD_REPORT } from './reports/chdData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11415,6 +11416,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   PKG: () => <BigReport d={PKG_REPORT} />,
   PNR: () => <BigReport d={PNR_REPORT} />,
   KAI: () => <BigReport d={KAI_REPORT} />,
+  CHD: () => <BigReport d={CHD_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11620,6 +11622,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   PKG: PKG_REPORT,
   PNR: PNR_REPORT,
   KAI: KAI_REPORT,
+  CHD: CHD_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
