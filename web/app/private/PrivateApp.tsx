@@ -267,6 +267,7 @@ import { CVLT_REPORT } from './reports/cvltData'
 import { CRWD_REPORT } from './reports/crwdData'
 import { CINF_REPORT } from './reports/cinfData'
 import { CBOE_REPORT } from './reports/cboeData'
+import { CB_REPORT } from './reports/cbData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11587,6 +11588,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   CRWD: () => <BigReport d={CRWD_REPORT} />,
   CINF: () => <BigReport d={CINF_REPORT} />,
   CBOE: () => <BigReport d={CBOE_REPORT} />,
+  CB: () => <BigReport d={CB_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11878,6 +11880,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   CRWD: CRWD_REPORT,
   CINF: CINF_REPORT,
   CBOE: CBOE_REPORT,
+  CB: CB_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
