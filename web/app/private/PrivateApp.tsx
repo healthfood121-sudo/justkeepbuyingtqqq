@@ -270,6 +270,7 @@ import { CBOE_REPORT } from './reports/cboeData'
 import { CB_REPORT } from './reports/cbData'
 import { CASY_REPORT } from './reports/casyData'
 import { BX_REPORT } from './reports/bxData'
+import { BRKB_REPORT } from './reports/brkbData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11593,6 +11594,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   CB: () => <BigReport d={CB_REPORT} />,
   CASY: () => <BigReport d={CASY_REPORT} />,
   BX: () => <BigReport d={BX_REPORT} />,
+  BRKB: () => <BigReport d={BRKB_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11887,6 +11889,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   CB: CB_REPORT,
   CASY: CASY_REPORT,
   BX: BX_REPORT,
+  BRKB: BRKB_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
