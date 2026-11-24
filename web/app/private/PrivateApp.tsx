@@ -166,6 +166,7 @@ import { PODD_REPORT } from './reports/poddData'
 import { UNP_REPORT } from './reports/unpData'
 import { MATX_REPORT } from './reports/matxData'
 import { ABBV_REPORT } from './reports/abbvData'
+import { AJG_REPORT } from './reports/ajgData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11385,6 +11386,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   UNP: () => <BigReport d={UNP_REPORT} />,
   MATX: () => <BigReport d={MATX_REPORT} />,
   ABBV: () => <BigReport d={ABBV_REPORT} />,
+  AJG: () => <BigReport d={AJG_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11575,6 +11577,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   UNP: UNP_REPORT,
   MATX: MATX_REPORT,
   ABBV: ABBV_REPORT,
+  AJG: AJG_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
