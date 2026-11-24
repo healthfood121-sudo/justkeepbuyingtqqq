@@ -160,6 +160,7 @@ import { A_REPORT } from './reports/aData'
 import { TEL_REPORT } from './reports/telData'
 import { CSL_REPORT } from './reports/cslData'
 import { AVY_REPORT } from './reports/avyData'
+import { SPSC_REPORT } from './reports/spscData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11373,6 +11374,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   TEL: () => <BigReport d={TEL_REPORT} />,
   CSL: () => <BigReport d={CSL_REPORT} />,
   AVY: () => <BigReport d={AVY_REPORT} />,
+  SPSC: () => <BigReport d={SPSC_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11557,6 +11559,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   TEL: TEL_REPORT,
   CSL: CSL_REPORT,
   AVY: AVY_REPORT,
+  SPSC: SPSC_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
