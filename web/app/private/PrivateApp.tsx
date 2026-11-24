@@ -168,6 +168,7 @@ import { MATX_REPORT } from './reports/matxData'
 import { ABBV_REPORT } from './reports/abbvData'
 import { AJG_REPORT } from './reports/ajgData'
 import { GILD_REPORT } from './reports/gildData'
+import { ALGN_REPORT } from './reports/algnData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11389,6 +11390,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   ABBV: () => <BigReport d={ABBV_REPORT} />,
   AJG: () => <BigReport d={AJG_REPORT} />,
   GILD: () => <BigReport d={GILD_REPORT} />,
+  ALGN: () => <BigReport d={ALGN_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11581,6 +11583,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   ABBV: ABBV_REPORT,
   AJG: AJG_REPORT,
   GILD: GILD_REPORT,
+  ALGN: ALGN_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
