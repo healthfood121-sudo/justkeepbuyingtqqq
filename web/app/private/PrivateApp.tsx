@@ -224,6 +224,7 @@ import { DHR_REPORT } from './reports/dhrData'
 import { WDAY_REPORT } from './reports/wdayData'
 import { GLW_REPORT } from './reports/glwData'
 import { IRM_REPORT } from './reports/irmData'
+import { ADI_REPORT } from './reports/adiData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11501,6 +11502,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   WDAY: () => <BigReport d={WDAY_REPORT} />,
   GLW: () => <BigReport d={GLW_REPORT} />,
   IRM: () => <BigReport d={IRM_REPORT} />,
+  ADI: () => <BigReport d={ADI_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11749,6 +11751,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   WDAY: WDAY_REPORT,
   GLW: GLW_REPORT,
   IRM: IRM_REPORT,
+  ADI: ADI_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
