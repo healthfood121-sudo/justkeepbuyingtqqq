@@ -158,6 +158,7 @@ import { GDDY_REPORT } from './reports/gddyData'
 import { WMT_REPORT } from './reports/wmtData'
 import { A_REPORT } from './reports/aData'
 import { TEL_REPORT } from './reports/telData'
+import { CSL_REPORT } from './reports/cslData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11369,6 +11370,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   WMT: () => <BigReport d={WMT_REPORT} />,
   A: () => <BigReport d={A_REPORT} />,
   TEL: () => <BigReport d={TEL_REPORT} />,
+  CSL: () => <BigReport d={CSL_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11551,6 +11553,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   WMT: WMT_REPORT,
   A: A_REPORT,
   TEL: TEL_REPORT,
+  CSL: CSL_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
