@@ -171,6 +171,7 @@ import { GILD_REPORT } from './reports/gildData'
 import { ALGN_REPORT } from './reports/algnData'
 import { NDSN_REPORT } from './reports/ndsnData'
 import { CSX_REPORT } from './reports/csxData'
+import { AMGN_REPORT } from './reports/amgnData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11395,6 +11396,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   ALGN: () => <BigReport d={ALGN_REPORT} />,
   NDSN: () => <BigReport d={NDSN_REPORT} />,
   CSX: () => <BigReport d={CSX_REPORT} />,
+  AMGN: () => <BigReport d={AMGN_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11590,6 +11592,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   ALGN: ALGN_REPORT,
   NDSN: NDSN_REPORT,
   CSX: CSX_REPORT,
+  AMGN: AMGN_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
