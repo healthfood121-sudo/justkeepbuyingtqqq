@@ -210,6 +210,7 @@ import { XYL_REPORT } from './reports/xylData'
 import { SPG_REPORT } from './reports/spgData'
 import { MLM_REPORT } from './reports/mlmData'
 import { TYL_REPORT } from './reports/tylData'
+import { TMUS_REPORT } from './reports/tmusData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11473,6 +11474,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   SPG: () => <BigReport d={SPG_REPORT} />,
   MLM: () => <BigReport d={MLM_REPORT} />,
   TYL: () => <BigReport d={TYL_REPORT} />,
+  TMUS: () => <BigReport d={TMUS_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11707,6 +11709,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   SPG: SPG_REPORT,
   MLM: MLM_REPORT,
   TYL: TYL_REPORT,
+  TMUS: TMUS_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
