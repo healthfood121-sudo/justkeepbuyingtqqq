@@ -149,6 +149,7 @@ import { LAUR_REPORT } from './reports/laurData'
 import { VRSK_REPORT } from './reports/vrskData'
 import { APH_REPORT } from './reports/aphData'
 import { BOOT_REPORT } from './reports/bootData'
+import { SNA_REPORT } from './reports/snaData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11351,6 +11352,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   VRSK: () => <BigReport d={VRSK_REPORT} />,
   APH: () => <BigReport d={APH_REPORT} />,
   BOOT: () => <BigReport d={BOOT_REPORT} />,
+  SNA: () => <BigReport d={SNA_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11524,6 +11526,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   VRSK: VRSK_REPORT,
   APH: APH_REPORT,
   BOOT: BOOT_REPORT,
+  SNA: SNA_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
