@@ -257,6 +257,7 @@ import { JNJ_REPORT } from './reports/jnjData'
 import { ITX_REPORT } from './reports/itxData'
 import { ICE_REPORT } from './reports/iceData'
 import { IBKR_REPORT } from './reports/ibkrData'
+import { HIG_REPORT } from './reports/higData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11567,6 +11568,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   ITX: () => <BigReport d={ITX_REPORT} />,
   ICE: () => <BigReport d={ICE_REPORT} />,
   IBKR: () => <BigReport d={IBKR_REPORT} />,
+  HIG: () => <BigReport d={HIG_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11848,6 +11850,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   ITX: ITX_REPORT,
   ICE: ICE_REPORT,
   IBKR: IBKR_REPORT,
+  HIG: HIG_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
