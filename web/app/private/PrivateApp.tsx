@@ -221,6 +221,7 @@ import { BSX_REPORT } from './reports/bsxData'
 import { WAB_REPORT } from './reports/wabData'
 import { DIS_REPORT } from './reports/disData'
 import { DHR_REPORT } from './reports/dhrData'
+import { WDAY_REPORT } from './reports/wdayData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11495,6 +11496,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   WAB: () => <BigReport d={WAB_REPORT} />,
   DIS: () => <BigReport d={DIS_REPORT} />,
   DHR: () => <BigReport d={DHR_REPORT} />,
+  WDAY: () => <BigReport d={WDAY_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11740,6 +11742,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   WAB: WAB_REPORT,
   DIS: DIS_REPORT,
   DHR: DHR_REPORT,
+  WDAY: WDAY_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
