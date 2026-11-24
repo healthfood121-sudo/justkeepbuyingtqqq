@@ -262,6 +262,7 @@ import { GL_REPORT } from './reports/glData'
 import { GE_REPORT } from './reports/geData'
 import { FTNT_REPORT } from './reports/ftntData'
 import { ETN_REPORT } from './reports/etnData'
+import { DXCM_REPORT } from './reports/dxcmData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11577,6 +11578,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   GE: () => <BigReport d={GE_REPORT} />,
   FTNT: () => <BigReport d={FTNT_REPORT} />,
   ETN: () => <BigReport d={ETN_REPORT} />,
+  DXCM: () => <BigReport d={DXCM_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11863,6 +11865,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   GE: GE_REPORT,
   FTNT: FTNT_REPORT,
   ETN: ETN_REPORT,
+  DXCM: DXCM_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
