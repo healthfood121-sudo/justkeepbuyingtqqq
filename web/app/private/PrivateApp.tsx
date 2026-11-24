@@ -176,6 +176,7 @@ import { XOM_REPORT } from './reports/xomData'
 import { PH_REPORT } from './reports/phData'
 import { FSS_REPORT } from './reports/fssData'
 import { URI_REPORT } from './reports/uriData'
+import { HEI_REPORT } from './reports/heiData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11405,6 +11406,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   PH: () => <BigReport d={PH_REPORT} />,
   FSS: () => <BigReport d={FSS_REPORT} />,
   URI: () => <BigReport d={URI_REPORT} />,
+  HEI: () => <BigReport d={HEI_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11605,6 +11607,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   PH: PH_REPORT,
   FSS: FSS_REPORT,
   URI: URI_REPORT,
+  HEI: HEI_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
