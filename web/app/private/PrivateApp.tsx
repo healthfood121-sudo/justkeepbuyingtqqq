@@ -243,6 +243,7 @@ import { PSA_REPORT } from './reports/psaData'
 import { PLTR_REPORT } from './reports/pltrData'
 import { PLMR_REPORT } from './reports/plmrData'
 import { ORCL_REPORT } from './reports/orclData'
+import { NMIH_REPORT } from './reports/nmihData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11539,6 +11540,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   PLTR: () => <BigReport d={PLTR_REPORT} />,
   PLMR: () => <BigReport d={PLMR_REPORT} />,
   ORCL: () => <BigReport d={ORCL_REPORT} />,
+  NMIH: () => <BigReport d={NMIH_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11806,6 +11808,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   PLTR: PLTR_REPORT,
   PLMR: PLMR_REPORT,
   ORCL: ORCL_REPORT,
+  NMIH: NMIH_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
