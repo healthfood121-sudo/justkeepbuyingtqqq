@@ -264,6 +264,7 @@ import { FTNT_REPORT } from './reports/ftntData'
 import { ETN_REPORT } from './reports/etnData'
 import { DXCM_REPORT } from './reports/dxcmData'
 import { CVLT_REPORT } from './reports/cvltData'
+import { CRWD_REPORT } from './reports/crwdData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11581,6 +11582,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   ETN: () => <BigReport d={ETN_REPORT} />,
   DXCM: () => <BigReport d={DXCM_REPORT} />,
   CVLT: () => <BigReport d={CVLT_REPORT} />,
+  CRWD: () => <BigReport d={CRWD_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11869,6 +11871,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   ETN: ETN_REPORT,
   DXCM: DXCM_REPORT,
   CVLT: CVLT_REPORT,
+  CRWD: CRWD_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
