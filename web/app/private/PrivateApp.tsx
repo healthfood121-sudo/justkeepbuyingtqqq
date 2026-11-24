@@ -185,6 +185,7 @@ import { CHD_REPORT } from './reports/chdData'
 import { MSA_REPORT } from './reports/msaData'
 import { ENS_REPORT } from './reports/ensData'
 import { ABT_REPORT } from './reports/abtData'
+import { IEX_REPORT } from './reports/iexData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11423,6 +11424,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   MSA: () => <BigReport d={MSA_REPORT} />,
   ENS: () => <BigReport d={ENS_REPORT} />,
   ABT: () => <BigReport d={ABT_REPORT} />,
+  IEX: () => <BigReport d={IEX_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11632,6 +11634,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   MSA: MSA_REPORT,
   ENS: ENS_REPORT,
   ABT: ABT_REPORT,
+  IEX: IEX_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
