@@ -191,6 +191,7 @@ import { HWM_REPORT } from './reports/hwmData'
 import { GD_REPORT } from './reports/gdData'
 import { AME_REPORT } from './reports/ameData'
 import { LAMR_REPORT } from './reports/lamrData'
+import { DOV_REPORT } from './reports/dovData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11435,6 +11436,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   GD: () => <BigReport d={GD_REPORT} />,
   AME: () => <BigReport d={AME_REPORT} />,
   LAMR: () => <BigReport d={LAMR_REPORT} />,
+  DOV: () => <BigReport d={DOV_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11650,6 +11652,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   GD: GD_REPORT,
   AME: AME_REPORT,
   LAMR: LAMR_REPORT,
+  DOV: DOV_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
