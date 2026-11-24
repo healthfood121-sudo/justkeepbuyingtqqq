@@ -251,6 +251,7 @@ import { MKL_REPORT } from './reports/mklData'
 import { MCK_REPORT } from './reports/mckData'
 import { MAR_REPORT } from './reports/marData'
 import { LYV_REPORT } from './reports/lyvData'
+import { KLAC_REPORT } from './reports/klacData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11555,6 +11556,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   MCK: () => <BigReport d={MCK_REPORT} />,
   MAR: () => <BigReport d={MAR_REPORT} />,
   LYV: () => <BigReport d={LYV_REPORT} />,
+  KLAC: () => <BigReport d={KLAC_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11830,6 +11832,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   MCK: MCK_REPORT,
   MAR: MAR_REPORT,
   LYV: LYV_REPORT,
+  KLAC: KLAC_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
