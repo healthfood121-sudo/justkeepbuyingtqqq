@@ -229,6 +229,7 @@ import { AWK_REPORT } from './reports/awkData'
 import { NEE_REPORT } from './reports/neeData'
 import { ATO_REPORT } from './reports/atoData'
 import { BDX_REPORT } from './reports/bdxData'
+import { PLD_REPORT } from './reports/pldData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11511,6 +11512,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   NEE: () => <BigReport d={NEE_REPORT} />,
   ATO: () => <BigReport d={ATO_REPORT} />,
   BDX: () => <BigReport d={BDX_REPORT} />,
+  PLD: () => <BigReport d={PLD_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11764,6 +11766,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   NEE: NEE_REPORT,
   ATO: ATO_REPORT,
   BDX: BDX_REPORT,
+  PLD: PLD_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
