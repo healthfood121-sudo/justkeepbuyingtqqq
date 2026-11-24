@@ -146,6 +146,7 @@ import { ENSG_REPORT } from './reports/ensgData'
 import { DOCS_REPORT } from './reports/docsData'
 import { SKY_REPORT } from './reports/skyData'
 import { LAUR_REPORT } from './reports/laurData'
+import { VRSK_REPORT } from './reports/vrskData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11345,6 +11346,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   DOCS: () => <BigReport d={DOCS_REPORT} />,
   SKY: () => <BigReport d={SKY_REPORT} />,
   LAUR: () => <BigReport d={LAUR_REPORT} />,
+  VRSK: () => <BigReport d={VRSK_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11515,6 +11517,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   DOCS: DOCS_REPORT,
   SKY: SKY_REPORT,
   LAUR: LAUR_REPORT,
+  VRSK: VRSK_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
