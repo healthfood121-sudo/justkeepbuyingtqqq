@@ -216,6 +216,7 @@ import { WMB_REPORT } from './reports/wmbData'
 import { TDY_REPORT } from './reports/tdyData'
 import { VST_REPORT } from './reports/vstData'
 import { AMT_REPORT } from './reports/amtData'
+import { STE_REPORT } from './reports/steData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11485,6 +11486,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   TDY: () => <BigReport d={TDY_REPORT} />,
   VST: () => <BigReport d={VST_REPORT} />,
   AMT: () => <BigReport d={AMT_REPORT} />,
+  STE: () => <BigReport d={STE_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11725,6 +11727,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   TDY: TDY_REPORT,
   VST: VST_REPORT,
   AMT: AMT_REPORT,
+  STE: STE_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
