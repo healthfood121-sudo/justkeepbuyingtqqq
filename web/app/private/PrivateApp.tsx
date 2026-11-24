@@ -213,6 +213,7 @@ import { TYL_REPORT } from './reports/tylData'
 import { TMUS_REPORT } from './reports/tmusData'
 import { MDLZ_REPORT } from './reports/mdlzData'
 import { WMB_REPORT } from './reports/wmbData'
+import { TDY_REPORT } from './reports/tdyData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11479,6 +11480,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   TMUS: () => <BigReport d={TMUS_REPORT} />,
   MDLZ: () => <BigReport d={MDLZ_REPORT} />,
   WMB: () => <BigReport d={WMB_REPORT} />,
+  TDY: () => <BigReport d={TDY_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11716,6 +11718,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   TMUS: TMUS_REPORT,
   MDLZ: MDLZ_REPORT,
   WMB: WMB_REPORT,
+  TDY: TDY_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
