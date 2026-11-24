@@ -236,6 +236,7 @@ import { AXON_REPORT } from './reports/axonData'
 import { WRB_REPORT } from './reports/wrbData'
 import { VRSN_REPORT } from './reports/vrsnData'
 import { TRV_REPORT } from './reports/trvData'
+import { TJX_REPORT } from './reports/tjxData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11525,6 +11526,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   WRB: () => <BigReport d={WRB_REPORT} />,
   VRSN: () => <BigReport d={VRSN_REPORT} />,
   TRV: () => <BigReport d={TRV_REPORT} />,
+  TJX: () => <BigReport d={TJX_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11785,6 +11787,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   WRB: WRB_REPORT,
   VRSN: VRSN_REPORT,
   TRV: TRV_REPORT,
+  TJX: TJX_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
