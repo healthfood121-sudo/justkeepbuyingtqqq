@@ -164,6 +164,7 @@ import { SPSC_REPORT } from './reports/spscData'
 import { NXPI_REPORT } from './reports/nxpiData'
 import { PODD_REPORT } from './reports/poddData'
 import { UNP_REPORT } from './reports/unpData'
+import { MATX_REPORT } from './reports/matxData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11381,6 +11382,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   NXPI: () => <BigReport d={NXPI_REPORT} />,
   PODD: () => <BigReport d={PODD_REPORT} />,
   UNP: () => <BigReport d={UNP_REPORT} />,
+  MATX: () => <BigReport d={MATX_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11569,6 +11571,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   NXPI: NXPI_REPORT,
   PODD: PODD_REPORT,
   UNP: UNP_REPORT,
+  MATX: MATX_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
