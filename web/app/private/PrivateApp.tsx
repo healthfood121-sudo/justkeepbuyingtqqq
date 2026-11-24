@@ -227,6 +227,7 @@ import { IRM_REPORT } from './reports/irmData'
 import { ADI_REPORT } from './reports/adiData'
 import { AWK_REPORT } from './reports/awkData'
 import { NEE_REPORT } from './reports/neeData'
+import { ATO_REPORT } from './reports/atoData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11507,6 +11508,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   ADI: () => <BigReport d={ADI_REPORT} />,
   AWK: () => <BigReport d={AWK_REPORT} />,
   NEE: () => <BigReport d={NEE_REPORT} />,
+  ATO: () => <BigReport d={ATO_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11758,6 +11760,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   ADI: ADI_REPORT,
   AWK: AWK_REPORT,
   NEE: NEE_REPORT,
+  ATO: ATO_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
