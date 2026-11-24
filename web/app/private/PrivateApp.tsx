@@ -247,6 +247,7 @@ import { NMIH_REPORT } from './reports/nmihData'
 import { NET_REPORT } from './reports/netData'
 import { NDAQ_REPORT } from './reports/ndaqData'
 import { MS_REPORT } from './reports/msData'
+import { MKL_REPORT } from './reports/mklData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11547,6 +11548,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   NET: () => <BigReport d={NET_REPORT} />,
   NDAQ: () => <BigReport d={NDAQ_REPORT} />,
   MS: () => <BigReport d={MS_REPORT} />,
+  MKL: () => <BigReport d={MKL_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11818,6 +11820,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   NET: NET_REPORT,
   NDAQ: NDAQ_REPORT,
   MS: MS_REPORT,
+  MKL: MKL_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
