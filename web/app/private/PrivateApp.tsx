@@ -156,6 +156,7 @@ import { HUBB_REPORT } from './reports/hubbData'
 import { CAT_REPORT } from './reports/catData'
 import { GDDY_REPORT } from './reports/gddyData'
 import { WMT_REPORT } from './reports/wmtData'
+import { A_REPORT } from './reports/aData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11365,6 +11366,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   CAT: () => <BigReport d={CAT_REPORT} />,
   GDDY: () => <BigReport d={GDDY_REPORT} />,
   WMT: () => <BigReport d={WMT_REPORT} />,
+  A: () => <BigReport d={A_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11545,6 +11547,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   CAT: CAT_REPORT,
   GDDY: GDDY_REPORT,
   WMT: WMT_REPORT,
+  A: A_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
