@@ -141,6 +141,7 @@ import { UFPI_REPORT } from './reports/ufpiData'
 import { REGN_REPORT } from './reports/regnData'
 import { HON_REPORT } from './reports/honData'
 import { SSD_REPORT } from './reports/ssdData'
+import { SHW_REPORT } from './reports/shwData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11335,6 +11336,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   REGN: () => <BigReport d={REGN_REPORT} />,
   HON: () => <BigReport d={HON_REPORT} />,
   SSD: () => <BigReport d={SSD_REPORT} />,
+  SHW: () => <BigReport d={SHW_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11500,6 +11502,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   REGN: REGN_REPORT,
   HON: HON_REPORT,
   SSD: SSD_REPORT,
+  SHW: SHW_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
