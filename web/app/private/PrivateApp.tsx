@@ -231,6 +231,7 @@ import { ATO_REPORT } from './reports/atoData'
 import { BDX_REPORT } from './reports/bdxData'
 import { PLD_REPORT } from './reports/pldData'
 import { EQIX_REPORT } from './reports/eqixData'
+import { AMD_REPORT } from './reports/amdData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11515,6 +11516,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   BDX: () => <BigReport d={BDX_REPORT} />,
   PLD: () => <BigReport d={PLD_REPORT} />,
   EQIX: () => <BigReport d={EQIX_REPORT} />,
+  AMD: () => <BigReport d={AMD_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11770,6 +11772,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   BDX: BDX_REPORT,
   PLD: PLD_REPORT,
   EQIX: EQIX_REPORT,
+  AMD: AMD_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
