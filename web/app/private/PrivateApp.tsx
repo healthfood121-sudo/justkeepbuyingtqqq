@@ -197,6 +197,7 @@ import { BRO_REPORT } from './reports/broData'
 import { SBAC_REPORT } from './reports/sbacData'
 import { APD_REPORT } from './reports/apdData'
 import { RCL_REPORT } from './reports/rclData'
+import { EMR_REPORT } from './reports/emrData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11447,6 +11448,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   SBAC: () => <BigReport d={SBAC_REPORT} />,
   APD: () => <BigReport d={APD_REPORT} />,
   RCL: () => <BigReport d={RCL_REPORT} />,
+  EMR: () => <BigReport d={EMR_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11668,6 +11670,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   SBAC: SBAC_REPORT,
   APD: APD_REPORT,
   RCL: RCL_REPORT,
+  EMR: EMR_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
