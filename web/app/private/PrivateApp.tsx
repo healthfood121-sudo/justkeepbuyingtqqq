@@ -178,6 +178,7 @@ import { FSS_REPORT } from './reports/fssData'
 import { URI_REPORT } from './reports/uriData'
 import { HEI_REPORT } from './reports/heiData'
 import { CPAY_REPORT } from './reports/cpayData'
+import { PKG_REPORT } from './reports/pkgData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11409,6 +11410,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   URI: () => <BigReport d={URI_REPORT} />,
   HEI: () => <BigReport d={HEI_REPORT} />,
   CPAY: () => <BigReport d={CPAY_REPORT} />,
+  PKG: () => <BigReport d={PKG_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11611,6 +11613,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   URI: URI_REPORT,
   HEI: HEI_REPORT,
   CPAY: CPAY_REPORT,
+  PKG: PKG_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
