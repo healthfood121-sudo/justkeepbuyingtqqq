@@ -18,7 +18,7 @@
 - [x] 4. TPL (roic5 126.1, 현재 28KB)
 - [x] 5. NVDA (roic5 110.8, 현재 42KB)
 - [x] 6. WSM (roic5 106.5, 현재 31KB)
-- [ ] 7. UI (roic5 104.2, 현재 29KB)
+- [x] 7. UI (roic5 104.2, 현재 29KB)
 - [ ] 8. ANF (roic5 93.7, 현재 31KB)
 - [ ] 9. ULTA (roic5 93.4, 현재 28KB)
 - [ ] 10. DECK (roic5 91.0, 현재 31KB)
