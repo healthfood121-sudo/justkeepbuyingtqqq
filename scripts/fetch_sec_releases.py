@@ -121,6 +121,8 @@ for date, acc in rows:
         continue
     names = [it['name'] for it in idx.json()['directory']['item']]
     pick = [n for n in names if n.lower().endswith(('.htm', '.html')) and re.search(r'ex.?99|99\.?1|press|release', n, re.I)]
+    if FORM == '10-K':
+        pick = []  # 10-K는 본문이 필요하다 — 첨부(매장량 보고서 등)를 고르지 않게
     if FORM != '8-K' and not pick:
         pick = [n for n in names if n.lower().endswith(('.htm', '.html')) and 'index' not in n.lower()]
         # 10-K 등: 본문(가장 큰 htm)을 먼저
