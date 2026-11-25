@@ -123,6 +123,9 @@ for date, acc in rows:
     pick = [n for n in names if n.lower().endswith(('.htm', '.html')) and re.search(r'ex.?99|99\.?1|press|release', n, re.I)]
     if FORM != '8-K' and not pick:
         pick = [n for n in names if n.lower().endswith(('.htm', '.html')) and 'index' not in n.lower()]
+        # 10-K 등: 본문(가장 큰 htm)을 먼저
+        sizes = {it['name']: int(it.get('size') or 0) for it in idx.json()['directory']['item'] if str(it.get('size') or '').isdigit()}
+        pick.sort(key=lambda n: -sizes.get(n, 0))
     if not pick:
         # 보도자료를 별도 첨부로 두지 않는 회사(ADP 등): 공시 원문 전체(.txt)에서 EX-99 부분을 읽는다
         full = [n for n in names if n.endswith('.txt') and n.startswith(acc)]
