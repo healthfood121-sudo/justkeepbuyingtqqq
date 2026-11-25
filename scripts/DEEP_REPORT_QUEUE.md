@@ -23,7 +23,7 @@
 - [x] 9. ULTA (roic5 93.4, 현재 28KB)
 - [x] 10. DECK (roic5 91.0, 현재 31KB)
 - [x] 11. AAPL (roic5 89.0, 현재 45KB)
-- [ ] 12. CORT (roic5 87.6, 현재 29KB)
+- [x] 12. CORT (roic5 87.6, 현재 29KB)
 - [ ] 13. AZO (roic5 86.1, 현재 31KB)
 - [ ] 14. IRMD (roic5 84.8, 현재 24KB)
 - [ ] 15. MA (roic5 84.1, 현재 55KB)
