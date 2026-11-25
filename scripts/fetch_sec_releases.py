@@ -132,6 +132,8 @@ for date, acc in rows:
         if not full:
             print('  첨부 못 찾음', date, names[:10]); continue
         pick = full
+    if FORM != '8-K':
+        print('  선택', pick[:4], flush=True)
     r = get(base + pick[0])
     if not r:
         continue
