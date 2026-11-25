@@ -337,7 +337,7 @@ export default function CocoReport() {
                       <ul className="list-disc pl-4 space-y-0.5 text-gray-700 dark:text-gray-200">{c.nums.map(n => <li key={n}>{n}</li>)}</ul>
                       {c.said && <p className="italic text-purple-700 dark:text-purple-300 border-l-2 border-purple-300 dark:border-purple-700 pl-2">{c.said}</p>}
                       <p className="text-emerald-800 dark:text-emerald-300"><b>의미:</b> {c.note}</p>
-                      <a href={c.url} target="_blank" rel="noreferrer" className="text-[11px] text-gray-400 hover:underline">원문 보기 →</a>
+                      {c.url && <a href={c.url} target="_blank" rel="noreferrer" className="text-[11px] text-gray-400 hover:underline">원문 보기 →</a>}
                     </div>
                   )}
                 </div>
