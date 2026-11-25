@@ -15,7 +15,7 @@
 - [x] 1. NVR (roic5 155.1, 현재 37KB)
 - [x] 2. ANET (roic5 131.8, 현재 34KB)
 - [x] 3. IDCC (roic5 127.3, 현재 29KB)
-- [ ] 4. TPL (roic5 126.1, 현재 28KB)
+- [x] 4. TPL (roic5 126.1, 현재 28KB)
 - [ ] 5. NVDA (roic5 110.8, 현재 42KB)
 - [ ] 6. WSM (roic5 106.5, 현재 31KB)
 - [ ] 7. UI (roic5 104.2, 현재 29KB)
