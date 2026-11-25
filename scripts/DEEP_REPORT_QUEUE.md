@@ -21,7 +21,7 @@
 - [x] 7. UI (roic5 104.2, 현재 29KB)
 - [x] 8. ANF (roic5 93.7, 현재 31KB)
 - [x] 9. ULTA (roic5 93.4, 현재 28KB)
-- [ ] 10. DECK (roic5 91.0, 현재 31KB)
+- [x] 10. DECK (roic5 91.0, 현재 31KB)
 - [ ] 11. AAPL (roic5 89.0, 현재 45KB)
 - [ ] 12. CORT (roic5 87.6, 현재 29KB)
 - [ ] 13. AZO (roic5 86.1, 현재 31KB)
