@@ -278,6 +278,7 @@ import { APO_REPORT } from './reports/apoData'
 import { AMP_REPORT } from './reports/ampData'
 import { AGX_REPORT } from './reports/agxData'
 import { AFL_REPORT } from './reports/aflData'
+import { ACGL_REPORT } from './reports/acglData'
 import { ANT_REPORT } from './reports/antData'
 import { EW_REPORT } from './reports/ewData'
 import { CSGP_REPORT } from './reports/csgpData'
@@ -11609,6 +11610,7 @@ const REPORTS: Record<string, () => ReactNode> = {
   AMP: () => <BigReport d={AMP_REPORT} />,
   AGX: () => <BigReport d={AGX_REPORT} />,
   AFL: () => <BigReport d={AFL_REPORT} />,
+  ACGL: () => <BigReport d={ACGL_REPORT} />,
   ANT: () => <BigReport d={ANT_REPORT} />,
   EW: () => <BigReport d={EW_REPORT} />,
   CSGP: () => <BigReport d={CSGP_REPORT} />,
@@ -11911,6 +11913,7 @@ const BIG_REPORTS: Record<string, BigReportData> = {
   AMP: AMP_REPORT,
   AGX: AGX_REPORT,
   AFL: AFL_REPORT,
+  ACGL: ACGL_REPORT,
   ANT: ANT_REPORT,
   EW: EW_REPORT,
   CSGP: CSGP_REPORT,
