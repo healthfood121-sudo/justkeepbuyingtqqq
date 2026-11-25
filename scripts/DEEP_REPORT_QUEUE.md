@@ -13,7 +13,7 @@
 ## 순서 (roic5 내림차순, 데이터 없는 종목은 뒤) — [x] 완료
 
 - [x] 1. NVR (roic5 155.1, 현재 37KB)
-- [ ] 2. ANET (roic5 131.8, 현재 34KB)
+- [x] 2. ANET (roic5 131.8, 현재 34KB)
 - [ ] 3. IDCC (roic5 127.3, 현재 29KB)
 - [ ] 4. TPL (roic5 126.1, 현재 28KB)
 - [ ] 5. NVDA (roic5 110.8, 현재 42KB)
