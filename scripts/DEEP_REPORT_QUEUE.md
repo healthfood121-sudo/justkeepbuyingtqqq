@@ -38,7 +38,7 @@
 - [x] 24. LRCX (roic5 66.8, 현재 31KB)
 - [x] 25. VRTX (roic5 66.7, 현재 28KB)
 - [x] 26. YUM (roic5 62.7, 현재 28KB)
-- [ ] 27. TSCO (roic5 58.7, 현재 27KB)
+- [x] 27. TSCO (roic5 58.7, 현재 27KB)
 - [ ] 28. IDXX (roic5 57.3, 현재 29KB)
 - [ ] 29. FICO (roic5 54.0, 현재 34KB)
 - [ ] 30. EXPO (roic5 53.4, 현재 53KB)
