@@ -81,7 +81,7 @@
 - [x] 67. NOW (roic5 33.9, 현재 33KB)
 - [x] 68. INCY (roic5 33.4, 현재 27KB)
 - [x] 69. ODFL (roic5 33.3, 현재 27KB)
-- [ ] 70. FAST (roic5 33.2, 현재 26KB)
+- [x] 70. FAST (roic5 33.2, 현재 26KB)
 - [ ] 71. MNST (roic5 33.0, 현재 28KB)
 - [ ] 72. GGG (roic5 32.8, 현재 45KB)
 - [ ] 73. TXRH (roic5 32.3, 현재 29KB)
