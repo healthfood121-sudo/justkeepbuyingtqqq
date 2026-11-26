@@ -68,7 +68,7 @@
 - [x] 54. TXN (roic5 38.1, 현재 29KB)
 - [x] 55. FTDR (roic5 37.8, 현재 22KB)
 - [x] 56. XPEL (roic5 37.6, 현재 21KB)
-- [ ] 57. PM (roic5 37.5, 현재 28KB)
+- [x] 57. PM (roic5 37.5, 현재 28KB)
 - [ ] 58. MSI (roic5 37.2, 현재 26KB)
 - [ ] 59. DRI (roic5 37.0, 현재 28KB)
 - [ ] 60. EME (roic5 36.8, 현재 26KB)
