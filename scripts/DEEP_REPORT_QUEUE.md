@@ -25,7 +25,7 @@
 - [x] 11. AAPL (roic5 89.0, 현재 45KB)
 - [x] 12. CORT (roic5 87.6, 현재 29KB)
 - [x] 13. AZO (roic5 86.1, 현재 31KB)
-- [ ] 14. IRMD (roic5 84.8, 현재 24KB)
+- [x] 14. IRMD (roic5 84.8, 현재 24KB)
 - [ ] 15. MA (roic5 84.1, 현재 55KB)
 - [ ] 16. DPZ (roic5 82.6, 현재 35KB)
 - [ ] 17. MEDP (roic5 78.6, 현재 31KB)
