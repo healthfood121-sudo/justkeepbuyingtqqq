@@ -53,7 +53,7 @@
 - [x] 39. NSSC (roic5 45.2, 현재 27KB)
 - [x] 40. IT (roic5 44.6, 현재 28KB)
 - [x] 41. ADBE (roic5 44.4, 현재 51KB)
-- [ ] 42. CARG (roic5 44.3, 현재 24KB)
+- [x] 42. CARG (roic5 44.3, 현재 24KB)
 - [ ] 43. ADSK (roic5 44.0, 현재 29KB)
 - [ ] 44. MPWR (roic5 43.5, 현재 26KB)
 - [ ] 45. RL (roic5 41.8, 현재 27KB)
