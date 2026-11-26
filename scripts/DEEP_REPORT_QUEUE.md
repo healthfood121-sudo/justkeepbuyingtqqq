@@ -50,7 +50,7 @@
 - [x] 36. COCO (roic5 47.5, 현재 21KB)
 - [x] 37. MO (roic5 45.6, 현재 35KB)
 - [x] 38. AMAT (roic5 45.2, 현재 30KB)
-- [ ] 39. NSSC (roic5 45.2, 현재 27KB)
+- [x] 39. NSSC (roic5 45.2, 현재 27KB)
 - [ ] 40. IT (roic5 44.6, 현재 28KB)
 - [ ] 41. ADBE (roic5 44.4, 현재 51KB)
 - [ ] 42. CARG (roic5 44.3, 현재 24KB)
