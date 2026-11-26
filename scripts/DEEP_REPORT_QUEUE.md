@@ -60,7 +60,7 @@
 - [x] 46. HD (roic5 41.5, 현재 30KB)
 - [x] 47. LOW (roic5 41.4, 현재 29KB)
 - [x] 48. COST (roic5 40.5, 현재 58KB)
-- [ ] 49. V (roic5 40.5, 현재 40KB)
+- [x] 49. V (roic5 40.5, 현재 40KB)
 - [ ] 50. MSCI (roic5 39.9, 현재 32KB)
 - [ ] 51. GWW (roic5 39.5, 현재 28KB)
 - [ ] 52. QCOM (roic5 38.6, 현재 31KB)
