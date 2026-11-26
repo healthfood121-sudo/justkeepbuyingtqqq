@@ -74,7 +74,7 @@
 - [x] 60. EME (roic5 36.8, 현재 26KB)
 - [x] 61. CL (roic5 35.9, 현재 26KB)
 - [x] 62. MELI (roic5 35.7, 현재 34KB)
-- [ ] 63. ROL (roic5 35.3, 현재 27KB)
+- [x] 63. ROL (roic5 35.3, 현재 27KB)
 - [ ] 64. ACN (roic5 34.9, 현재 28KB)
 - [ ] 65. PANW (roic5 34.7, 현재 29KB)
 - [ ] 66. USLM (roic5 34.7, 현재 28KB)
