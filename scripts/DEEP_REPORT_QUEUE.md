@@ -43,7 +43,7 @@
 - [x] 29. FICO (roic5 54.0, 현재 34KB)
 - [x] 30. EXPO (roic5 53.4, 현재 53KB)
 - [x] 31. PAYX (roic5 52.1, 현재 29KB)
-- [ ] 32. MTD (roic5 51.4, 현재 27KB)
+- [x] 32. MTD (roic5 51.4, 현재 27KB)
 - [ ] 33. ARHS (roic5 49.8, 현재 20KB)
 - [ ] 34. CDNS (roic5 49.2, 현재 29KB)
 - [ ] 35. LII (roic5 48.3, 현재 29KB)
