@@ -55,7 +55,7 @@
 - [x] 41. ADBE (roic5 44.4, 현재 51KB)
 - [x] 42. CARG (roic5 44.3, 현재 24KB)
 - [x] 43. ADSK (roic5 44.0, 현재 29KB)
-- [ ] 44. MPWR (roic5 43.5, 현재 26KB)
+- [x] 44. MPWR (roic5 43.5, 현재 26KB)
 - [ ] 45. RL (roic5 41.8, 현재 27KB)
 - [ ] 46. HD (roic5 41.5, 현재 30KB)
 - [ ] 47. LOW (roic5 41.4, 현재 29KB)
