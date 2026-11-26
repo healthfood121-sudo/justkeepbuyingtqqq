@@ -58,7 +58,7 @@
 - [x] 44. MPWR (roic5 43.5, 현재 26KB)
 - [x] 45. RL (roic5 41.8, 현재 27KB)
 - [x] 46. HD (roic5 41.5, 현재 30KB)
-- [ ] 47. LOW (roic5 41.4, 현재 29KB)
+- [x] 47. LOW (roic5 41.4, 현재 29KB)
 - [ ] 48. COST (roic5 40.5, 현재 58KB)
 - [ ] 49. V (roic5 40.5, 현재 40KB)
 - [ ] 50. MSCI (roic5 39.9, 현재 32KB)
