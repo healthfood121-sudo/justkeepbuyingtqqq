@@ -32,7 +32,7 @@
 - [x] 18. ADP (roic5 78.2, 현재 31KB)
 - [x] 19. VEEV (roic5 76.5, 현재 28KB)
 - [x] 20. ROST (roic5 75.2, 현재 30KB)
-- [ ] 21. CMG (roic5 73.0, 현재 30KB)
+- [x] 21. CMG (roic5 73.0, 현재 30KB)
 - [ ] 22. COR (roic5 71.4, 현재 30KB)
 - [ ] 23. ORLY (roic5 67.3, 현재 28KB)
 - [ ] 24. LRCX (roic5 66.8, 현재 31KB)
