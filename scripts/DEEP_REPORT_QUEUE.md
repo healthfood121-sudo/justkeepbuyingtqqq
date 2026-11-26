@@ -63,7 +63,7 @@
 - [x] 49. V (roic5 40.5, 현재 40KB)
 - [x] 50. MSCI (roic5 39.9, 현재 32KB)
 - [x] 51. GWW (roic5 39.5, 현재 28KB)
-- [ ] 52. QCOM (roic5 38.6, 현재 31KB)
+- [x] 52. QCOM (roic5 38.6, 현재 31KB)
 - [ ] 53. META (roic5 38.3, 현재 51KB)
 - [ ] 54. TXN (roic5 38.1, 현재 29KB)
 - [ ] 55. FTDR (roic5 37.8, 현재 22KB)
