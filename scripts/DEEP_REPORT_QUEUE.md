@@ -45,7 +45,7 @@
 - [x] 31. PAYX (roic5 52.1, 현재 29KB)
 - [x] 32. MTD (roic5 51.4, 현재 27KB)
 - [x] 33. ARHS (roic5 49.8, 현재 20KB)
-- [ ] 34. CDNS (roic5 49.2, 현재 29KB)
+- [x] 34. CDNS (roic5 49.2, 현재 29KB)
 - [ ] 35. LII (roic5 48.3, 현재 29KB)
 - [ ] 36. COCO (roic5 47.5, 현재 21KB)
 - [ ] 37. MO (roic5 45.6, 현재 35KB)
