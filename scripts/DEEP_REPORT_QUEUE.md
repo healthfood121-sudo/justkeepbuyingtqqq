@@ -78,7 +78,7 @@
 - [x] 64. ACN (roic5 34.9, 현재 28KB)
 - [x] 65. PANW (roic5 34.7, 현재 29KB)
 - [x] 66. USLM (roic5 34.7, 현재 28KB)
-- [ ] 67. NOW (roic5 33.9, 현재 33KB)
+- [x] 67. NOW (roic5 33.9, 현재 33KB)
 - [ ] 68. INCY (roic5 33.4, 현재 27KB)
 - [ ] 69. ODFL (roic5 33.3, 현재 27KB)
 - [ ] 70. FAST (roic5 33.2, 현재 26KB)
