@@ -35,7 +35,7 @@
 - [x] 21. CMG (roic5 73.0, 현재 30KB)
 - [x] 22. COR (roic5 71.4, 현재 30KB)
 - [x] 23. ORLY (roic5 67.3, 현재 28KB)
-- [ ] 24. LRCX (roic5 66.8, 현재 31KB)
+- [x] 24. LRCX (roic5 66.8, 현재 31KB)
 - [ ] 25. VRTX (roic5 66.7, 현재 28KB)
 - [ ] 26. YUM (roic5 62.7, 현재 28KB)
 - [ ] 27. TSCO (roic5 58.7, 현재 27KB)
