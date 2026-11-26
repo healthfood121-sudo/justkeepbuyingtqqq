@@ -27,7 +27,7 @@
 - [x] 13. AZO (roic5 86.1, 현재 31KB)
 - [x] 14. IRMD (roic5 84.8, 현재 24KB)
 - [x] 15. MA (roic5 84.1, 현재 55KB)
-- [ ] 16. DPZ (roic5 82.6, 현재 35KB)
+- [x] 16. DPZ (roic5 82.6, 현재 35KB)
 - [ ] 17. MEDP (roic5 78.6, 현재 31KB)
 - [ ] 18. ADP (roic5 78.2, 현재 31KB)
 - [ ] 19. VEEV (roic5 76.5, 현재 28KB)
