@@ -30,7 +30,7 @@
 - [x] 16. DPZ (roic5 82.6, 현재 35KB)
 - [x] 17. MEDP (roic5 78.6, 현재 31KB)
 - [x] 18. ADP (roic5 78.2, 현재 31KB)
-- [ ] 19. VEEV (roic5 76.5, 현재 28KB)
+- [x] 19. VEEV (roic5 76.5, 현재 28KB)
 - [ ] 20. ROST (roic5 75.2, 현재 30KB)
 - [ ] 21. CMG (roic5 73.0, 현재 30KB)
 - [ ] 22. COR (roic5 71.4, 현재 30KB)
