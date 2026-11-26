@@ -41,7 +41,7 @@
 - [x] 27. TSCO (roic5 58.7, 현재 27KB)
 - [x] 28. IDXX (roic5 57.3, 현재 29KB)
 - [x] 29. FICO (roic5 54.0, 현재 34KB)
-- [ ] 30. EXPO (roic5 53.4, 현재 53KB)
+- [x] 30. EXPO (roic5 53.4, 현재 53KB)
 - [ ] 31. PAYX (roic5 52.1, 현재 29KB)
 - [ ] 32. MTD (roic5 51.4, 현재 27KB)
 - [ ] 33. ARHS (roic5 49.8, 현재 20KB)
