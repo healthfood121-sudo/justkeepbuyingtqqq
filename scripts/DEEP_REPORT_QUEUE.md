@@ -131,7 +131,7 @@
 - [x] 117. CVCO (roic5 22.6, 현재 32KB)
 - [x] 118. REGN (roic5 22.4, 현재 27KB)
 - [x] 119. HON (roic5 22.2, 현재 27KB)
-- [ ] 120. SSD (roic5 22.0, 현재 26KB)
+- [x] 120. SSD (roic5 22.0, 현재 26KB)
 - [ ] 121. DCI (roic5 21.7, 현재 33KB)
 - [ ] 122. SHW (roic5 21.7, 현재 26KB)
 - [ ] 123. ENSG (roic5 21.5, 현재 22KB)
