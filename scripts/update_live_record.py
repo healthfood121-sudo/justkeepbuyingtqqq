@@ -7,7 +7,7 @@ update_live_record.py
 
 규칙: 그날 종가 이후 상태(보유/현금)는 withdrawal_signal.json과 같은 상태 머신 — 신호 다음 거래일 종가에 매매.
   전날 종가 기준 '보유'였으면 그날 TQQQ 수익률, '현금'이었으면 외화RP 이자(기준금리 − 0.4%, 세후)를 받는다.
-  비교: S0(200일선 15일), 신호 없이 TQQQ 계속 보유, 나스닥100(1배) 보유. 세금·생활비 인출은 넣지 않는다.
+  비교: S0(200일선 15일), D10GK(S0 + RSI 조기 재매수 — LOC로 신호 당일 종가에 매수), 신호 없이 TQQQ 계속 보유, 나스닥100(1배) 보유. 세금·생활비 인출은 넣지 않는다.
 TQQQ 종가가 없는 날(Yahoo 조회 실패)은 나스닥100 수익률 × 3으로 추정하고 est 표시.
 
   python scripts/update_live_record.py               # 오늘 신호 파일(withdrawal_signal.json)을 한 줄 추가
@@ -31,7 +31,7 @@ SIGNAL   = ROOT / "web/public/data/withdrawal_signal.json"
 OUT_PATH = ROOT / "web/public/data/live_record.json"
 FED_PATH = ROOT / "data/fed_funds_rate.json"
 START    = "2026-10-02"          # 신호 매일 공개 직전 종가 (사이트 공개 2026-10-03)
-KEYS     = ("RULE25", "S0")
+KEYS     = ("RULE25", "S0", "D10GK")
 ROW_KEYS = ("d", "ndx", "tqqq", "state", "sig")
 
 
@@ -62,6 +62,16 @@ def sig_fields(sig: dict) -> dict:
     return out
 
 
+def add_missing_state(rows: list) -> None:
+    """D10GK 추가 전 행: 그날 기록된 신호(sig)의 D10GK 상태, 없으면(첫날) 전날 또는 S0 상태로 채운다."""
+    for i, r in enumerate(rows):
+        for k in KEYS:
+            if k in r["state"]:
+                continue
+            t = (r.get("sig") or {}).get("s", {}).get(k)
+            r["state"][k] = t["st"] if t else (rows[i - 1]["state"][k] if i else r["state"]["S0"])
+
+
 def sig_history() -> dict:
     """git 이력에 남은 날짜별 withdrawal_signal.json → {asof: sig_fields}. 같은 날짜는 마지막 커밋 값."""
     rel = str(SIGNAL.relative_to(ROOT))
@@ -87,7 +97,7 @@ def cash_daily(d: str) -> float:
 
 def recompute(rows: list) -> dict:
     """rows(날짜·가격·상태)로 성적 다시 계산."""
-    v = {"RULE25": 100.0, "S0": 100.0, "HOLD3": 100.0, "HOLD1": 100.0}
+    v = {"RULE25": 100.0, "S0": 100.0, "D10GK": 100.0, "HOLD3": 100.0, "HOLD1": 100.0}
     for i, r in enumerate(rows):
         if i == 0:
             r["v"] = {k: 100.0 for k in v}
@@ -157,6 +167,7 @@ def main():
     elif args.fill_sig:
         hist = sig_history()
         rows = [{k: r[k] for k in ROW_KEYS if k in r} for r in old["rows"]]
+        add_missing_state(rows)
         n = 0
         for r in rows:
             if r["d"] in hist:
@@ -164,6 +175,7 @@ def main():
         print(f"신호 채움: {n}/{len(rows)}일")
     else:
         rows = [{k: r[k] for k in ROW_KEYS if k in r} for r in old["rows"]]
+        add_missing_state(rows)
         sig = json.loads(SIGNAL.read_text(encoding="utf-8"))
         if sig["asof"] < START or (rows and sig["asof"] <= rows[-1]["d"]):
             print(f"새 날짜 없음 ({sig['asof']}) — 그대로"); return
@@ -174,7 +186,7 @@ def main():
     out = recompute(rows)
     OUT_PATH.write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     n = out["now"]
-    print(f"{out['start']} ~ {out['asof']} ({out['days']}거래일) · 25% 룰 {n['RULE25'] - 100:+.2f}% · S0 {n['S0'] - 100:+.2f}% · "
+    print(f"{out['start']} ~ {out['asof']} ({out['days']}거래일) · 25% 룰 {n['RULE25'] - 100:+.2f}% · S0 {n['S0'] - 100:+.2f}% · D10GK {n['D10GK'] - 100:+.2f}% · "
           f"TQQQ 보유 {n['HOLD3'] - 100:+.2f}% · 나스닥100 {n['HOLD1'] - 100:+.2f}%")
 
 

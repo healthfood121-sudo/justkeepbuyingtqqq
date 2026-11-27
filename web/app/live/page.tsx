@@ -17,18 +17,19 @@ import { useTheme } from '@/components/ThemeProvider'
 
 ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Tooltip, Legend)
 
-type Key = 'RULE25' | 'S0' | 'HOLD3' | 'HOLD1'
+type Key = 'RULE25' | 'S0' | 'D10GK' | 'HOLD3' | 'HOLD1'
 // sig: 그날 종가로 홈 화면 '오늘의 신호'에 실제로 떴던 값 (첫날은 없음)
 //   s[전략].cnt = 보유 중이면 200일선 아래 연속일(15일이면 매도), 현금이면 위 연속일(15일이면 매수)
 type Strat = 'RULE25' | 'S0' | 'D10GK'
 interface StratSig { st: '보유' | '현금'; act: string; cnt?: number }
 interface Sig { rsi: number | null; ema: number | null; peak: number | null; s: Partial<Record<Strat, StratSig>> }
-interface Row { d: string; ndx: number; tqqq: number | null; state: Record<'RULE25' | 'S0', '보유' | '현금'>; v: Record<Key, number>; est?: boolean; sig?: Sig }
+interface Row { d: string; ndx: number; tqqq: number | null; state: Record<'RULE25' | 'S0' | 'D10GK', '보유' | '현금'>; v: Record<Key, number>; est?: boolean; sig?: Sig }
 interface Record_ { start: string; asof: string; days: number; now: Record<Key, number>; events: { d: string; k: string; from: string; to: string }[]; rows: Row[] }
 
 const SERIES: { k: Key; label: string; light: string; dark: string }[] = [
   { k: 'RULE25', label: '25% 룰', light: '#7c3aed', dark: '#a78bfa' },
   { k: 'S0', label: 'S0', light: '#2563eb', dark: '#60a5fa' },
+  { k: 'D10GK', label: 'D10GK', light: '#059669', dark: '#34d399' },
   { k: 'HOLD3', label: 'TQQQ 계속 보유', light: '#6b7280', dark: '#9ca3af' },
   { k: 'HOLD1', label: '나스닥100 보유', light: '#d97706', dark: '#fbbf24' },
 ]
@@ -155,7 +156,7 @@ export default function LivePage() {
 
         {!rec ? <p className="text-xs text-gray-400 py-6 text-center">불러오는 중…</p> : (
           <>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-2">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-2">
               {SERIES.map(s => (
                 <div key={s.k} className={`rounded-xl px-3 py-3 text-center ${s.k === 'RULE25' ? 'bg-purple-50 dark:bg-purple-500/10' : 'bg-gray-50 dark:bg-gray-900'}`}>
                   <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">{s.label}</p>
@@ -164,7 +165,7 @@ export default function LivePage() {
               ))}
             </div>
             <p className="text-xs text-gray-400 dark:text-gray-500 mb-8">
-              {rec.start} 종가 ~ {rec.asof} 종가 · {rec.days}거래일 · 세금·생활비 인출 제외 · 현금일 때 외화RP 이자(세후) · 신호 다음 거래일 종가에 매매
+              {rec.start} 종가 ~ {rec.asof} 종가 · {rec.days}거래일 · 세금·생활비 인출 제외 · 현금일 때 외화RP 이자(세후) · 신호 다음 거래일 종가에 매매 (D10GK 조기 재매수만 신호 당일 종가 LOC 주문)
             </p>
 
             {rec.rows.length > 2 && (
@@ -209,7 +210,7 @@ export default function LivePage() {
 
             <h2 className="text-lg font-bold mb-3">매매 기록</h2>
             {rec.events.length === 0
-              ? <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">아직 매매가 없다. 공개 이후 25% 룰과 S0 모두 TQQQ를 계속 들고 있다.</p>
+              ? <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">아직 매매가 없다. 공개 이후 25% 룰 · S0 · D10GK 모두 TQQQ를 계속 들고 있다.</p>
               : (
                 <ul className="text-sm text-gray-700 dark:text-gray-300 mb-8 space-y-1">
                   {rec.events.map(e => (
@@ -233,7 +234,7 @@ export default function LivePage() {
                     <th colSpan={2} className={`pt-2 px-2 text-left font-bold ${GROUP}`}>25% 룰</th>
                     <th colSpan={2} className={`pt-2 px-2 text-left font-bold ${GROUP}`}>S0</th>
                     <th colSpan={3} className={`pt-2 px-2 text-left font-bold ${GROUP}`}>D10GK</th>
-                    <th colSpan={4} className={`pt-2 px-2 text-left font-bold ${GROUP}`}>누적 수익률</th>
+                    <th colSpan={5} className={`pt-2 px-2 text-left font-bold ${GROUP}`}>누적 수익률</th>
                   </tr>
                   <tr className="border-b border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400">
                     {[
@@ -241,7 +242,7 @@ export default function LivePage() {
                       ['상태 · 할 일', GROUP], ['최고가 대비', ''],
                       ['상태 · 할 일', GROUP], ['200일선 연속', ''],
                       ['상태 · 할 일', GROUP], ['200일선 연속', ''], ['재매수 조건 (RSI · 200일선 대비)', ''],
-                      ['25% 룰', GROUP], ['S0', ''], ['TQQQ 보유', ''], ['나스닥100 보유', ''],
+                      ['25% 룰', GROUP], ['S0', ''], ['D10GK', ''], ['TQQQ 보유', ''], ['나스닥100 보유', ''],
                     ].map(([h, c], i) => (
                       <th key={i} className={`py-2 px-2 text-left font-medium whitespace-nowrap ${c}`}>{h}</th>
                     ))}
