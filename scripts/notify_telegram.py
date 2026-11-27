@@ -49,6 +49,18 @@ def rule(sig):
     return st.get(KEY) or st.get("T25") or {}
 
 
+def last_lines(r):
+    """마지막 매도·매수 신호 날짜 (신호가 켜진 날 → 실제 매매일). last_events는 최신순."""
+    out = []
+    for a in ("매도", "매수"):
+        e = next((x for x in r.get("last_events", []) if x.get("action") == a), None)
+        if not e:
+            continue
+        s = e.get("signal") or e["date"]
+        out.append(f"마지막 {a} 신호: {s}" + (f" → {e['date']} 종가에 {a}" if s != e["date"] else f" (그날 종가에 {a})"))
+    return out
+
+
 def status_lines(sig):
     r = rule(sig)
     drop = -sig["vs_peak_pct"]
@@ -63,6 +75,11 @@ def status_lines(sig):
     else:
         d = r.get("above_days")
         lines.append("상태: 현금 보유" + (f" · 재매수까지 15일 중 {d}일째" if d is not None else ""))
+    last = last_lines(r)
+    if last:
+        if r.get("action") in ("매도", "매수"):
+            last = [x.replace("마지막", "직전", 1) for x in last]
+        lines += [""] + last
     return lines
 
 
