@@ -161,7 +161,7 @@
 - [x] 147. TEL (roic5 17.7, 현재 27KB)
 - [x] 148. CSL (roic5 17.6, 현재 26KB)
 - [x] 149. AVY (roic5 17.5, 현재 25KB)
-- [ ] 150. PEP (roic5 17.4, 현재 46KB)
+- [x] 150. PEP (roic5 17.4, 현재 46KB)
 - [ ] 151. LMAT (roic5 17.3, 현재 27KB)
 - [ ] 152. BFB (roic5 17.0, 현재 34KB)
 - [ ] 153. SPSC (roic5 16.6, 현재 25KB)
