@@ -206,7 +206,7 @@ def describe(kind, m, closes, ema, rsi, ag, al, peaks, dates, tqqq):
         out["detail"] = (f"200일 평균선 아래 ({(c / e - 1) * 100:+.1f}%). "
                          f"종가가 {e:,.0f} 위로 15일 연속 마감하면 매수 신호")
 
-    if kind == "D10GK" and not m["invested"]:
+    if kind == "D10GK":
         x, xr, xe = loc_threshold(c, e, ag[t], al[t])
         loc = {
             "ndx_price":   round(x, 2),
@@ -215,6 +215,10 @@ def describe(kind, m, closes, ema, rsi, ag, al, peaks, dates, tqqq):
             "tqqq_price":  round(tqqq * (1 + 3 * (x / c - 1)), 2) if tqqq else None,
             "by":          "RSI" if xr <= xe else "200일선 -10%",
         }
+    if kind == "D10GK" and m["invested"]:
+        # 보유 중이면 할 일은 없지만, 현금으로 새로 시작하는 사람에게는 같은 가격이 진입 LOC 주문가
+        out["entry_loc"] = loc
+    if kind == "D10GK" and not m["invested"]:
         out["loc"] = loc
         out["action"] = "LOC 매수 주문"
         price = f"TQQQ ${loc['tqqq_price']:,.2f}" if loc["tqqq_price"] else f"TQQQ 전일 종가 대비 {loc['tqqq_pct']:+.1f}%"

@@ -15,6 +15,7 @@ interface StrategySignal {
   action: string
   detail: string
   loc?:   Loc
+  entry_loc?: Loc       // D10GK 보유 중: 다음 종가가 이 값 이하면 재매수 조건 충족 (새로 시작하는 사람용)
   above_days?: number   // 현금일 때 200일선 위 연속일 (15일이면 매수)
   sell_line?:  number   // RULE25 보유 중 매도선 (1년 최고 종가 × 0.75)
   below_days?: number   // S0·D10GK 보유 중 200일선 아래 연속일 (15일이면 매도)
@@ -166,6 +167,12 @@ function RsiCheck({ sig, t }: { sig: Signal; t: StrategySignal }) {
       </div>
       <Item ok={rsiOk} label="14일 RSI" now={sig.rsi14.toFixed(1)} need="30 미만" />
       <Item ok={divOk} label="200일선 대비" now={pct(sig.vs_ema_pct)} need="−10% 이하" />
+      {t.state === '보유' && t.entry_loc && sig.rsi14 < 35 && t.entry_loc.ndx_pct >= -8 && (
+        <p className="text-[11px] text-amber-700 dark:text-amber-300 pt-0.5">
+          새로 시작하는 사람 참고: 오늘 밤 나스닥100이 <strong>{num(t.entry_loc.ndx_price)}</strong>({pct(t.entry_loc.ndx_pct)}) 이하로 마감하면 조건 충족
+          {t.entry_loc.tqqq_price ? <> → TQQQ <strong>${t.entry_loc.tqqq_price.toFixed(2)}</strong> 이하 LOC 매수</> : null}
+        </p>
+      )}
       <p className="text-[10px] text-gray-400 dark:text-gray-500 leading-relaxed pt-0.5">
         {t.state === '보유'
           ? both

@@ -12,6 +12,8 @@ notify_telegram.py — 인출식 신호를 텔레그램 채널로 알린다 (Git
   · D10GK LOC 주문이 체결된 날                           → 조기 재매수 체결
   · D10GK 보유 중인데 RSI 조건이 맞은 날 (예: 2026-11-20) → 참고 알림: 보유자는 할 일 없음,
                                                            현금으로 새로 시작하는 사람에게는 D10GK 기준 진입 조건
+  · D10GK 보유 중, RSI 35 미만이고 하루 8% 이내 하락으로 조건이 맞을 수 있는 날
+                                                         → 새로 시작하는 사람용 '오늘 밤 이 가격 이하면 조건 충족' 미리 알림
   · 매주 금요일 장 마감 뒤(한국 토요일 아침)            → 세 전략 한 주 요약 (그날 다른 알림이 있어도 따로)
   · --test                                              → 지금 상태를 바로 한 번 (토큰 설정 확인용)
 
@@ -43,6 +45,8 @@ NAME = {"RULE25": "25% 룰", "S0": "S0", "D10GK": "D10GK"}
 WARN_DROP = 20.0   # 25% 룰: 최고 종가 대비 이만큼(%) 빠지면 주의 알림
 SELL_WARN = 10     # S0·D10GK: 보유 중 200일선 아래 연속일이 이만큼 되면 매도 임박 알림
 REBUY_WARN = 10    # 현금 중 200일선 위 연속일이 이만큼 되면 재매수 임박 알림
+ENTRY_RSI = 35.0   # D10GK 보유 중 RSI가 이 값 미만이면 '진입 가격 미리 알림' 후보
+ENTRY_MOVE = -8.0  # 그리고 조건까지 필요한 나스닥100 하루 하락폭이 이 값(%) 이내일 때만 (2026-11-20은 전날 기준 −5.6% 필요)
 
 
 def load(path):
@@ -172,6 +176,10 @@ def events(sig, prev):
         if (k == "D10GK" and t.get("state") == "보유" and sig.get("rsi14") is not None
                 and sig["rsi14"] < 30 and sig.get("vs_ema_pct", 0) <= -10):
             ev.append(("진입 조건", k))
+        elif (k == "D10GK" and t.get("state") == "보유" and t.get("entry_loc")
+                and sig.get("rsi14") is not None and sig["rsi14"] < ENTRY_RSI
+                and t["entry_loc"]["ndx_pct"] >= ENTRY_MOVE):
+            ev.append(("진입 가격", k))
 
         if t.get("state") == "보유":
             if k == "RULE25":
@@ -211,6 +219,18 @@ def message(kind, ks, sig):
                 "· 이미 TQQQ를 보유 중인 사람: 할 일 없음",
                 "· 현금으로 새로 시작하려는 사람: D10GK 규칙으로는 들어가는 조건이 맞은 날입니다. "
                 "규칙대로라면 이 종가에 샀어야 하므로, 다음 거래일에 사면 가격이 달라집니다."]
+        el = strat(sig, ks[0]).get("entry_loc")
+        if el:
+            price = f"TQQQ ${el['tqqq_price']:,.2f} 이하" if el.get("tqqq_price") else f"TQQQ 전일 종가 대비 {el['tqqq_pct']:+.1f}% 이하"
+            head.append(f"· 오늘 밤도 조건이 맞으려면 나스닥100 {el['ndx_price']:,.0f}({el['ndx_pct']:+.1f}%) 이하 마감 → {price} LOC 매수")
+    elif kind == "진입 가격":
+        el = strat(sig, ks[0])["entry_loc"]
+        price = f"TQQQ ${el['tqqq_price']:,.2f} 이하" if el.get("tqqq_price") else f"TQQQ 전일 종가 대비 {el['tqqq_pct']:+.1f}% 이하"
+        head = [f"🟠 {n} 재매수 조건 근접 — 새로 시작하는 사람 참고", "",
+                f"RSI {sig['rsi14']:.1f}, 200일선 대비 {sig['vs_ema_pct']:+.1f}%입니다. "
+                f"오늘 밤 나스닥100이 {el['ndx_price']:,.0f}({el['ndx_pct']:+.1f}%) 이하로 마감하면 D10GK 재매수 조건(RSI 30 미만 + 200일선 −10% 이하)이 맞습니다.",
+                "· 이미 TQQQ를 보유 중인 사람: 할 일 없음",
+                f"· 현금으로 새로 시작하려는 사람: D10GK 규칙대로라면 {price} LOC 매수 주문 (조건이 안 맞으면 체결 안 됨)"]
     elif kind == "25% 주의":
         head = [f"🟡 {n} 주의 — 매도선에 가까워졌습니다", "", "아직 할 일은 없습니다. 매도는 −25% 아래로 마감한 다음 날입니다."]
     elif kind == "매도 임박":
@@ -253,7 +273,7 @@ def build(sig, prev, weekly, test):
     groups = {}
     for kind, k in events(sig, prev):
         groups.setdefault(kind, []).append(k)
-    order = ("매도", "매수", "LOC 체결", "LOC 주문", "진입 조건", "25% 주의", "매도 임박", "재매수 임박")
+    order = ("매도", "매수", "LOC 체결", "LOC 주문", "진입 조건", "진입 가격", "25% 주의", "매도 임박", "재매수 임박")
     msgs = [message(kind, groups[kind], sig) for kind in order if kind in groups]
 
     # 주간 요약 · 테스트: 세 전략 모두
