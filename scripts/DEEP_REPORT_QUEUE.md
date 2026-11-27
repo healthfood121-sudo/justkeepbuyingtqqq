@@ -120,7 +120,7 @@
 - [x] 106. IBP (roic5 23.6, 현재 23KB)
 - [x] 107. IPAR (roic5 23.5, 현재 36KB)
 - [x] 108. POOL (roic5 23.2, 현재 28KB)
-- [ ] 109. MUSA (roic5 23.0, 현재 25KB)
+- [x] 109. MUSA (roic5 23.0, 현재 25KB)
 - [ ] 110. TT (roic5 22.9, 현재 27KB)
 - [ ] 111. ALLE (roic5 22.8, 현재 24KB)
 - [ ] 112. DE (roic5 22.8, 현재 29KB)
