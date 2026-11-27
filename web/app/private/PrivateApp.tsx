@@ -340,6 +340,7 @@ import { classify, GROUPS, GRADE_LABEL, gradeColor, groupColor, qualityScore, fm
 import { EXTRA_METRICS } from './ideas/picks'
 import qldData        from '@/public/data/rolling/QLD_rolling.json'
 import qqqData        from '@/public/data/rolling/QQQ_rolling.json'
+import spxData        from '@/public/data/rolling/SPX_rolling.json'
 import tqqqData       from '@/public/data/rolling/TQQQ_rolling.json'
 import aData          from '@/public/data/rolling/A_rolling.json'
 import aaplData       from '@/public/data/rolling/AAPL_rolling.json'
@@ -900,6 +901,7 @@ type StockData = typeof nkeData
 
 const STOCKS: Array<{ key: string; data: StockData }> = [
   { key: 'QLD',      data: qldData        as unknown as unknown as StockData },
+  { key: 'SPX',      data: spxData        as unknown as StockData },
   { key: 'QQQ',      data: qqqData        as unknown as unknown as StockData },
   { key: 'TQQQ',     data: tqqqData       as unknown as unknown as StockData },
   { key: 'A',        data: aData          as unknown as StockData },
@@ -8104,7 +8106,7 @@ function AutoOwnerCard({ stockKey }: { stockKey: string }) {
   useEffect(() => { let alive = true; setP(null); loadOwner(stockKey).then(x => { if (alive) setP(x) }); return () => { alive = false } }, [stockKey])
   return p ? <OwnerCard p={p} /> : null
 }
-const PORTFOLIO_OPTIONS = STOCKS.filter(s => !['QLD', 'QQQ', 'TQQQ'].includes(s.key)).map(s => ({ key: s.key, name: stockName(s.key) }))
+const PORTFOLIO_OPTIONS = STOCKS.filter(s => !['QLD', 'QQQ', 'TQQQ', 'SPX'].includes(s.key)).map(s => ({ key: s.key, name: stockName(s.key) }))
 
 // ── 연말 PER 흐름 차트 (에르메스 3-1) ─────────────────────────
 function PeTimelineChart({ timeline, peNow }: { timeline: Array<[number, number]>; peNow: number }) {
@@ -11946,6 +11948,121 @@ const BIG_REPORTS: Record<string, BigReportData> = {
 
 export type Universe = 'picks' | 'sp500' | 'ndx' | 'mid' | 'r2k' | 'nasdaq' | 'other'
 const PICK_KEYS = new Set(PICK_GROUPS.flatMap(g => g.items.map(it => it.key)))
+
+// ── S&P 500 지수 자체: 1871년~ 10년 보유 수익을 EPS·배당·PER로 나누기 (쉴러 데이터) ─────────
+type SpxRow = { buyYear: number; sellYear: number; yearsActual: number; cagr: number; isComplete: boolean; priceCagr: number; inflCagr: number | null; realCagr: number | null; peBuyActual?: number }
+type SpxDecomp = Decomp & { divCagr: number; priceCagr: number; inflCagr: number | null; epsBuy: number; epsSell: number }
+function SpxIndexView({ data }: { data: StockData }) {
+  const d = data as any
+  const rows = d.rows10y as SpxRow[]
+  const raw = (d.epsDecomp ?? []) as SpxDecomp[]
+  const st = d.stats
+  const fp = d.fullPeriod
+  const cur = d.current
+  const [from, setFrom] = useState(1946)
+  const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
+  const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500'
+  const td = 'py-1.5 px-2 tabular-nums text-gray-700 dark:text-gray-200'
+  const sgn = (v: number) => `${v > 0 ? '+' : ''}${v.toFixed(1)}`
+  const med = (a: number[]) => { const b = [...a].sort((x, y) => x - y); const n = b.length; return n ? (n % 2 ? b[(n - 1) / 2] : (b[n / 2 - 1] + b[n / 2]) / 2) : NaN }
+  // 공통 분해 화면은 PER 몫에 배당이 섞인 값(배당 조정 주가 기준)을 기대한다 → 순수 PER 변화에 배당을 곱해 맞춘다
+  const epsDrop = new Map<number, number>()
+  raw.forEach(x => epsDrop.set(x.buyYear, x.epsBuy))
+  const decomp: Decomp[] = raw.filter(x => x.buyYear >= from).map(x => {
+    const prev = epsDrop.get(x.buyYear - 1)
+    const notes: string[] = []
+    if (prev && x.epsBuy < prev * 0.6) notes.push(`매수 해 EPS가 전년보다 ${Math.round((1 - x.epsBuy / prev) * 100)}% 급감 — 이익이 바닥이라 PER이 부풀어 보이고 이후 EPS 성장이 크게 나온다`)
+    const sPrev = epsDrop.get(x.sellYear - 1)
+    if (!x.inProgress && sPrev && x.epsSell < sPrev * 0.6) notes.push(`매도 해 EPS가 전년보다 ${Math.round((1 - x.epsSell / sPrev) * 100)}% 급감 — EPS 몫이 작게, PER 몫이 크게 나온다`)
+    return { ...x, peCagr: ((1 + x.peCagr / 100) * (1 + x.divCagr / 100) - 1) * 100, note: notes.length ? notes.join(' / ') : null }
+  })
+  const divRows: DivRow[] = raw.filter(x => x.buyYear >= from).map(x => ({ buyYear: x.buyYear, priceCagr: x.priceCagr, totalCagr: x.totalCagr, divCagr: x.divCagr }))
+  const done = rows.filter(r => r.isComplete)
+  // 매수 PER 구간별 10년 성적
+  const bands: [string, number, number][] = [['10배 미만', 0, 10], ['10~15배', 10, 15], ['15~20배', 15, 20], ['20~25배', 20, 25], ['25배 이상', 25, 999]]
+  const byBand = bands.map(([label, lo, hi]) => {
+    const g = done.filter(r => r.peBuyActual != null && r.peBuyActual >= lo && r.peBuyActual < hi)
+    const c = g.map(r => r.cagr), rl = g.map(r => r.realCagr ?? 0)
+    return { label, n: g.length, med: med(c), min: g.length ? Math.min(...c) : NaN, minY: g.length ? g.reduce((a, b) => (b.cagr < a.cagr ? b : a)).buyYear : 0, realMed: med(rl), loss: g.filter(r => r.cagr < 0).length }
+  })
+  const recent = done.filter(r => r.buyYear >= 1946)
+  const nowPe = cur.pe as number
+  const nowBand = bands.find(([, lo, hi]) => nowPe >= lo && nowPe < hi)?.[0]
+  return (
+    <div className="space-y-5">
+      <div className="rounded-xl border border-blue-200 dark:border-blue-900 bg-blue-50/60 dark:bg-blue-950/30 p-4 space-y-2">
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white">S&P 500 지수 자체 — {fp.start_date.slice(0, 4)}년부터 10년 보유 수익을 EPS·배당·PER로 나눠 보기</h3>
+        <p className={p}>
+          매년 12월에 S&P 500(배당 재투자)을 사서 10년 들고 있었다면 연 몇 %였는지, 그 수익이 <b>기업 이익(EPS) 성장</b>·<b>배당</b>·<b>PER 변화(시장이 매기는 값)</b> 중 어디서 왔는지 나눴다.
+          주가 = EPS × PER 이므로 10년 수익은 결국 이 셋으로 설명된다.
+        </p>
+        <p className="text-[11px] text-gray-400 dark:text-gray-500">
+          데이터: 로버트 쉴러 교수의 S&P 500 월별 자료(주가는 월평균, 배당·EPS는 최근 12개월 합, 1957년 이전은 앞선 지수로 이어 붙인 값) · 주가 {d.dataThrough}까지, EPS {d.epsThrough}까지 · 비교 기준은 같은 기간 미국 물가(CPI)
+        </p>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <StatCard label={`전체 ${fp.years}년 (배당 포함)`} value={`연 ${fp.cagr}%`} />
+        <StatCard label={`10년 보유 ${st.n}번 중간값`} value={`연 ${st.median}%`} />
+        <StatCard label="물가 뺀 중간값" value={`연 ${st.realMedian}%`} />
+        <StatCard label="10년 보유 손실" value={`${st.losses}번 (물가 빼면 ${st.realLosses}번)`} />
+        <StatCard label="가장 나빴던 매수" value={`${st.minBuy}년 연 ${st.min}%`} />
+        <StatCard label="가장 좋았던 매수" value={`${st.maxBuy}년 연 ${st.max}%`} />
+        <StatCard label="연 10% 넘은 경우" value={`${st.over10}%`} />
+        <StatCard label={`지금 PER (EPS ${d.epsThrough} 기준)`} value={`${cur.pe}배 · 배당 ${cur.divYield}%`} />
+      </div>
+
+      <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-2">
+        <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">살 때 PER이 10년 수익을 얼마나 갈랐나 ({done.length}번, {done[0]?.buyYear}~{done[done.length - 1]?.buyYear}년 매수)</h4>
+        <div className="overflow-x-auto">
+          <table className="text-xs">
+            <thead><tr>
+              <th className={`${th} text-left`}>매수할 때 PER</th><th className={`${th} text-right`}>횟수</th>
+              <th className={`${th} text-right break-keep`}>10년 연평균 중간값</th><th className={`${th} text-right break-keep`}>물가 뺀 중간값</th>
+              <th className={`${th} text-right break-keep`}>가장 나빴던 경우</th><th className={`${th} text-right`}>손실</th>
+            </tr></thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+              {byBand.map(b => (
+                <tr key={b.label} className={b.label === nowBand ? 'bg-amber-50 dark:bg-amber-950/30' : ''}>
+                  <td className={`${td} break-keep`}>{b.label}{b.label === nowBand && <span className="ml-1 text-amber-600 dark:text-amber-400 font-semibold">← 지금 {nowPe}배</span>}</td>
+                  <td className={`${td} text-right`}>{b.n}</td>
+                  <td className={`${td} text-right font-semibold`}>{b.n ? `${b.med.toFixed(1)}%` : '—'}</td>
+                  <td className={`${td} text-right`}>{b.n ? `${b.realMed.toFixed(1)}%` : '—'}</td>
+                  <td className={`${td} text-right`}>{b.n ? `${b.min.toFixed(1)}% (${b.minY})` : '—'}</td>
+                  <td className={`${td} text-right`}>{b.loss}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className={p}>
+          PER은 그해 12월 주가 ÷ 최근 12개월 EPS. 이익이 일시적으로 무너진 해(예: 1921·2008년)는 PER이 비정상적으로 높게 나와 &lsquo;비싼 구간&rsquo;에 들어가 있다 — 그해 매수 성적이 좋아 보이는 이유.
+          {` 1946년 이후(${recent.length}번)만 보면 10년 연평균 중간값은 ${med(recent.map(r => r.cagr)).toFixed(1)}%.`}
+        </p>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-1.5">
+        <span className="text-xs text-gray-500 dark:text-gray-400">분해 차트 시작 연도:</span>
+        {[1871, 1900, 1946, 1980].map(y => (
+          <button key={y} type="button" onClick={() => setFrom(y)}
+            className={`text-xs px-2 py-1 rounded ${from === y ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200'}`}>{y}년~</button>
+        ))}
+      </div>
+      {decomp.length > 0 && (
+        <DecompSection
+          title={`매수 연도별 10년 수익률 분해 (${from}년~) — 막대 하나 = EPS 몫 + 배당 몫 + PER 몫`}
+          decomp={decomp}
+          divRows={divRows}
+          exampleYear={2015}
+        />
+      )}
+      <p className="text-[11px] text-gray-400 dark:text-gray-500">
+        진행 중 구간(2016년 매수)의 현재 값은 쉴러 자료의 최신 월평균 주가와 최근 12개월 EPS를 썼다. ⚠ 표시는 매수·매도 해의 EPS가 일시적으로 급감해 분해가 한쪽으로 쏠린 구간.
+      </p>
+    </div>
+  )
+}
+
 const UNIVERSES: { u: Universe; href: string; label: string; title: string; sub: string; test: (k: string) => boolean }[] = [
   { u: 'picks', href: '/private?v=picks', label: '엄선', title: '엄선 포트폴리오', sub: '전체 지수에서 고른 종목을 포트폴리오 안의 역할별로 묶었다', test: k => PICK_KEYS.has(k) },
   { u: 'sp500', href: '/private/sp500', label: 'S&P 500', title: 'S&P 500', sub: '미국 대형주 500 — 지금 S&P 500에 들어 있는 분석 종목', test: k => (UNIV[k] ?? '').includes('S') },
@@ -12218,6 +12335,13 @@ function PrivateAppInner({ u = 'picks' }: { u?: Universe }) {
         <p className="text-sm text-gray-500 dark:text-gray-400">{sub}</p>
         <p className="text-xs text-gray-400 dark:text-gray-500">매년 연말 매수 후 10년 보유 시나리오 · 수익률은 배당 재투자 포함 총수익률</p>
       </div>
+      {u === 'sp500' && !allMode && (
+        <button type="button" onClick={() => openKey('SPX')}
+          className="w-full text-left rounded-xl border border-blue-200 dark:border-blue-900 bg-blue-50/60 dark:bg-blue-950/30 p-3 hover:bg-blue-100/60 dark:hover:bg-blue-900/30">
+          <p className="text-sm font-semibold text-gray-900 dark:text-white">S&P 500 지수 자체 보기 →</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">1871년부터 매년 연말에 사서 10년 보유했을 때의 수익을 EPS 성장·배당·PER 변화로 나눠 본다(쉴러 데이터)</p>
+        </button>
+      )}
       <StockSearch onPick={openKey} />
       {u === 'picks' && v === 'picks' && <TrioCompare onPick={openKey} />}
       {u === 'picks' && v === 'picks' ? (<>
@@ -12285,7 +12409,8 @@ function PrivateAppInner({ u = 'picks' }: { u?: Universe }) {
     {current.key === 'NKE' && <QualityCard stockKey="NKE" />}
     {current.key === 'NKE' && <NkeInsight data={current.data} />}
     {current.key === 'NKE' && <FutureBox stockKey="NKE" num="6." />}
-    {current.key !== 'RMS' && current.key !== 'NKE' && (current.data as any).type !== 'etf' && (
+    {current.key === 'SPX' && <SpxIndexView data={current.data} />}
+    {current.key !== 'RMS' && current.key !== 'NKE' && current.key !== 'SPX' && (current.data as any).type !== 'etf' && (
       <AutoInsight key={`insight-${current.key}`} stockKey={current.key} data={current.data}
         past={<div className="space-y-3"><h3 className="text-base font-semibold text-gray-900 dark:text-white">과거 10년 보유 성적 — 언제 샀어도 어땠나</h3><RollingChart key={`chart-${current.key}`} data={current.data} /><RollingTable data={current.data} /></div>} />
     )}
