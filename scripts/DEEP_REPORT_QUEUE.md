@@ -105,7 +105,7 @@
 - [x] 91. MCO (roic5 27.2, 현재 34KB)
 - [x] 92. TGLS (roic5 27.2, 현재 23KB)
 - [x] 93. CTAS (roic5 26.9, 현재 27KB)
-- [ ] 94. KEYS (roic5 26.8, 현재 24KB)
+- [x] 94. KEYS (roic5 26.8, 현재 24KB)
 - [ ] 95. WDFC (roic5 26.5, 현재 26KB)
 - [ ] 96. ITW (roic5 26.4, 현재 26KB)
 - [ ] 97. WST (roic5 26.3, 현재 27KB)
