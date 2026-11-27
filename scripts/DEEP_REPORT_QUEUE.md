@@ -177,7 +177,7 @@
 - [x] 163. KO (roic5 15.6, 현재 30KB)
 - [x] 164. ALGN (roic5 15.4, 현재 26KB)
 - [x] 165. GILD (roic5 15.4, 현재 26KB)
-- [ ] 166. MGRC (roic5 15.1, 현재 33KB)
+- [x] 166. MGRC (roic5 15.1, 현재 33KB)
 - [ ] 167. NDSN (roic5 15.0, 현재 27KB)
 - [ ] 168. INTU (roic5 14.9, 현재 34KB)
 - [ ] 169. AMGN (roic5 14.5, 현재 26KB)
