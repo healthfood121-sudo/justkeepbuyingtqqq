@@ -144,7 +144,7 @@
 - [x] 130. SKY (roic5 20.8, 현재 21KB)
 - [x] 131. FDS (roic5 20.7, 현재 37KB)
 - [x] 132. VRSK (roic5 20.5, 현재 22KB)
-- [ ] 133. PG (roic5 20.2, 현재 31KB)
+- [x] 133. PG (roic5 20.2, 현재 31KB)
 - [ ] 134. APH (roic5 20.1, 현재 27KB)
 - [ ] 135. BOOT (roic5 20.1, 현재 23KB)
 - [ ] 136. UNH (roic5 20.1, 현재 63KB)
