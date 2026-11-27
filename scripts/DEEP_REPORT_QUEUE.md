@@ -148,7 +148,7 @@
 - [x] 134. APH (roic5 20.1, 현재 27KB)
 - [x] 135. BOOT (roic5 20.1, 현재 23KB)
 - [x] 136. UNH (roic5 20.1, 현재 63KB)
-- [ ] 137. AVGO (roic5 19.9, 현재 39KB)
+- [x] 137. AVGO (roic5 19.9, 현재 39KB)
 - [ ] 138. SNA (roic5 19.8, 현재 25KB)
 - [ ] 139. CMI (roic5 19.7, 현재 26KB)
 - [ ] 140. AON (roic5 19.4, 현재 25KB)
