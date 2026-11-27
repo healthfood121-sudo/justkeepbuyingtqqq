@@ -154,7 +154,7 @@
 - [x] 140. AON (roic5 19.4, 현재 25KB)
 - [x] 141. CLX (roic5 18.6, 현재 38KB)
 - [x] 142. CAT (roic5 18.4, 현재 27KB)
-- [ ] 143. HUBB (roic5 18.4, 현재 26KB)
+- [x] 143. HUBB (roic5 18.4, 현재 26KB)
 - [ ] 144. GDDY (roic5 18.2, 현재 18KB)
 - [ ] 145. WMT (roic5 18.1, 현재 28KB)
 - [ ] 146. A (roic5 17.8, 현재 27KB)
