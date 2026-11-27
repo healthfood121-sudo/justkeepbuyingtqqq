@@ -100,7 +100,7 @@
 - [x] 86. ZTS (roic5 28.3, 현재 28KB)
 - [x] 87. CRAI (roic5 28.2, 현재 20KB)
 - [x] 88. CSCO (roic5 27.7, 현재 29KB)
-- [ ] 89. FIVE (roic5 27.7, 현재 24KB)
+- [x] 89. FIVE (roic5 27.7, 현재 24KB)
 - [ ] 90. VLTO (roic5 27.3, 현재 19KB)
 - [ ] 91. MCO (roic5 27.2, 현재 34KB)
 - [ ] 92. TGLS (roic5 27.2, 현재 23KB)
