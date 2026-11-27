@@ -123,7 +123,7 @@
 - [x] 109. MUSA (roic5 23.0, 현재 25KB)
 - [x] 110. TT (roic5 22.9, 현재 27KB)
 - [x] 111. ALLE (roic5 22.8, 현재 24KB)
-- [ ] 112. DE (roic5 22.8, 현재 29KB)
+- [x] 112. DE (roic5 22.8, 현재 29KB)
 - [ ] 113. RMD (roic5 22.8, 현재 29KB)
 - [ ] 114. JKHY (roic5 22.7, 현재 54KB)
 - [ ] 115. UFPI (roic5 22.7, 현재 26KB)
