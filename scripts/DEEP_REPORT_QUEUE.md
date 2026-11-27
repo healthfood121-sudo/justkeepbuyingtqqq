@@ -169,7 +169,7 @@
 - [x] 155. NXPI (roic5 16.4, 현재 24KB)
 - [x] 156. FELE (roic5 16.2, 현재 27KB)
 - [x] 157. PODD (roic5 16.1, 현재 25KB)
-- [ ] 158. UNP (roic5 16.0, 현재 26KB)
+- [x] 158. UNP (roic5 16.0, 현재 26KB)
 - [ ] 159. ABBV (roic5 15.7, 현재 24KB)
 - [ ] 160. MATX (roic5 15.7, 현재 26KB)
 - [ ] 161. UFPT (roic5 15.7, 현재 32KB)
