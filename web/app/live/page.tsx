@@ -18,7 +18,12 @@ import { useTheme } from '@/components/ThemeProvider'
 ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Tooltip, Legend)
 
 type Key = 'RULE25' | 'S0' | 'HOLD3' | 'HOLD1'
-interface Row { d: string; ndx: number; tqqq: number | null; state: Record<'RULE25' | 'S0', '보유' | '현금'>; v: Record<Key, number>; est?: boolean }
+// sig: 그날 종가로 홈 화면 '오늘의 신호'에 실제로 떴던 값 (첫날은 없음)
+interface Sig {
+  rsi: number | null; ema: number | null; peak: number | null; below: number | null
+  act: Partial<Record<'RULE25' | 'S0' | 'D10GK', string>>; d10gk?: '보유' | '현금'
+}
+interface Row { d: string; ndx: number; tqqq: number | null; state: Record<'RULE25' | 'S0', '보유' | '현금'>; v: Record<Key, number>; est?: boolean; sig?: Sig }
 interface Record_ { start: string; asof: string; days: number; now: Record<Key, number>; events: { d: string; k: string; from: string; to: string }[]; rows: Row[] }
 
 const SERIES: { k: Key; label: string; light: string; dark: string }[] = [
@@ -28,6 +33,17 @@ const SERIES: { k: Key; label: string; light: string; dark: string }[] = [
   { k: 'HOLD1', label: '나스닥100 보유', light: '#d97706', dark: '#fbbf24' },
 ]
 const pct = (v: number) => `${v >= 100 ? '+' : ''}${(v - 100).toFixed(2)}%`
+const sgn = (v: number) => `${v > 0 ? '+' : ''}${v.toFixed(1)}%`
+const NAME: Record<string, string> = { RULE25: '25% 룰', S0: 'S0', D10GK: 'D10GK' }
+
+// 그날 신호 한 줄 요약. tone: on(매매 신호) / near(D10GK 조건 충족했지만 보유 중) / off
+function sigSummary(g: Sig): { text: string; tone: 'on' | 'near' | 'off' } {
+  const on = Object.entries(g.act).filter(([, a]) => a && a !== '없음')
+  if (on.length) return { text: on.map(([k, a]) => `${NAME[k]} ${a === 'LOC 매수 주문' ? 'LOC 매수 주문' : `${a} 신호`}`).join(' · '), tone: 'on' }
+  if (g.rsi !== null && g.ema !== null && g.rsi < 30 && g.ema <= -10)
+    return { text: g.d10gk === '보유' ? 'D10GK 재매수 조건 충족 (보유 중이라 할 일 없음)' : 'D10GK 재매수 조건 충족', tone: 'near' }
+  return { text: '없음', tone: 'off' }
+}
 
 export default function LivePage() {
   const [rec, setRec] = useState<Record_ | null>(null)
@@ -177,25 +193,41 @@ export default function LivePage() {
               )}
 
             <h2 className="text-lg font-bold mb-3">날짜별 기록</h2>
+            <div className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed mb-3 space-y-0.5">
+              <p>날짜마다 그날 종가로 홈 화면 &lsquo;오늘의 신호&rsquo;에 실제로 떴던 값을 함께 남긴다. 기준에 닿은 칸은 빨간색이다.</p>
+              <p>· <strong>최고가 대비</strong>: 1년 최고 종가에서 몇 % 내려왔는지 (−25%면 25% 룰 매도)</p>
+              <p>· <strong>200일선 아래</strong>: 나스닥100이 200일 평균선 아래로 마감한 연속 일수 (15일이면 S0·D10GK 매도)</p>
+              <p>· <strong>RSI · 200일선 대비</strong>: 14일 상대강도지수(RSI)와 200일 평균선에서 떨어진 정도. 현금일 때 둘이 같은 날 30 미만 · −10% 이하면 D10GK가 조기 재매수한다</p>
+            </div>
             <div className="overflow-x-auto">
               <table className="w-full text-xs border-collapse">
                 <thead>
                   <tr className="border-b border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400">
-                    {['날짜 (종가)', '나스닥100', 'TQQQ', '25% 룰 상태', '25% 룰', 'S0', 'TQQQ 보유', '나스닥100 보유'].map(h => (
+                    {['날짜 (종가)', '나스닥100', 'TQQQ', '신호', '최고가 대비', '200일선 아래', 'RSI', '200일선 대비', '25% 룰 상태', '25% 룰', 'S0', 'TQQQ 보유', '나스닥100 보유'].map(h => (
                       <th key={h} className="py-2 px-2 text-left font-medium whitespace-nowrap">{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                  {[...rec.rows].reverse().map(r => (
-                    <tr key={r.d} className="text-gray-700 dark:text-gray-300">
+                  {[...rec.rows].reverse().map(r => {
+                    const g = r.sig
+                    const sm = g ? sigSummary(g) : null
+                    const hit = 'text-red-600 dark:text-red-400 font-semibold'
+                    return (
+                    <tr key={r.d} className={`text-gray-700 dark:text-gray-300 ${sm?.tone === 'on' ? 'bg-red-50 dark:bg-red-500/10' : sm?.tone === 'near' ? 'bg-amber-50 dark:bg-amber-500/10' : ''}`}>
                       <td className="py-1.5 px-2 font-mono whitespace-nowrap">{r.d}</td>
                       <td className="py-1.5 px-2 font-mono">{r.ndx.toLocaleString('en-US', { maximumFractionDigits: 0 })}</td>
                       <td className="py-1.5 px-2 font-mono">{r.tqqq ? `$${r.tqqq.toFixed(2)}` : '—'}{r.est && <span className="text-gray-400"> (추정)</span>}</td>
+                      <td className={`py-1.5 px-2 whitespace-nowrap ${sm?.tone === 'on' ? hit : sm?.tone === 'near' ? 'text-amber-700 dark:text-amber-300 font-semibold' : 'text-gray-400 dark:text-gray-500'}`}>{sm ? sm.text : '—'}</td>
+                      <td className={`py-1.5 px-2 font-mono ${g?.peak != null && g.peak <= -25 ? hit : ''}`}>{g?.peak != null ? sgn(g.peak) : '—'}</td>
+                      <td className={`py-1.5 px-2 font-mono whitespace-nowrap ${g?.below != null && g.below >= 15 ? hit : ''}`}>{g?.below != null ? (g.below > 0 ? `${g.below}/15일` : '0') : '—'}</td>
+                      <td className={`py-1.5 px-2 font-mono ${g?.rsi != null && g.rsi < 30 ? hit : ''}`}>{g?.rsi != null ? g.rsi.toFixed(1) : '—'}</td>
+                      <td className={`py-1.5 px-2 font-mono ${g?.ema != null && g.ema <= -10 ? hit : ''}`}>{g?.ema != null ? sgn(g.ema) : '—'}</td>
                       <td className="py-1.5 px-2">{r.state.RULE25}</td>
                       {SERIES.map(s => <td key={s.k} className="py-1.5 px-2 font-mono">{pct(r.v[s.k])}</td>)}
                     </tr>
-                  ))}
+                    )
+                  })}
                 </tbody>
               </table>
             </div>

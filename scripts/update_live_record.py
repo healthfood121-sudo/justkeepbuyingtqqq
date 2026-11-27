@@ -12,11 +12,15 @@ TQQQ 종가가 없는 날(Yahoo 조회 실패)은 나스닥100 수익률 × 3으
 
   python scripts/update_live_record.py               # 오늘 신호 파일(withdrawal_signal.json)을 한 줄 추가
   python scripts/update_live_record.py --backfill    # data/extra CSV로 START부터 다시 만든다 (처음 한 번)
+  python scripts/update_live_record.py --fill-sig    # 날짜별 신호(sig)를 git 이력의 withdrawal_signal.json으로 채운다
+
+각 날짜 행의 sig = 그날 종가로 홈 화면 '오늘의 신호'에 실제로 떴던 값
+  (RSI, 200일선 대비 %, 1년 최고가 대비 %, 200일선 아래 연속일, 전략별 할 일, D10GK 상태).
 
 출력: web/public/data/live_record.json
 """
 
-import argparse, json, sys
+import argparse, json, re, subprocess, sys
 from pathlib import Path
 
 import numpy as np
@@ -28,6 +32,40 @@ OUT_PATH = ROOT / "web/public/data/live_record.json"
 FED_PATH = ROOT / "data/fed_funds_rate.json"
 START    = "2026-10-02"          # 신호 매일 공개 직전 종가 (사이트 공개 2026-10-03)
 KEYS     = ("RULE25", "S0")
+ROW_KEYS = ("d", "ndx", "tqqq", "state", "sig")
+
+
+def sig_fields(sig: dict) -> dict:
+    """withdrawal_signal.json 한 개 → 성적표 행에 붙일 신호 요약."""
+    st = sig["strategies"]
+    below = st["S0"].get("below_days")
+    if below is None:                                   # below_days 필드 추가 전 파일은 문구에서 읽는다
+        m = re.search(r"아래 (\d+)일째", st["S0"].get("detail", ""))
+        below = int(m.group(1)) if m and st["S0"]["state"] == "보유" else None
+    return {
+        "rsi":   sig.get("rsi14"),
+        "ema":   sig.get("vs_ema_pct"),
+        "peak":  sig.get("vs_peak_pct"),
+        "below": below,
+        "act":   {k: st[k]["action"] for k in ("RULE25", "S0", "D10GK") if k in st},
+        "d10gk": st.get("D10GK", {}).get("state"),
+    }
+
+
+def sig_history() -> dict:
+    """git 이력에 남은 날짜별 withdrawal_signal.json → {asof: sig_fields}. 같은 날짜는 마지막 커밋 값."""
+    rel = str(SIGNAL.relative_to(ROOT))
+    hashes = subprocess.run(["git", "log", "--format=%H", "--reverse", "--", rel],
+                            cwd=ROOT, capture_output=True, text=True, check=True).stdout.split()
+    out = {}
+    for h in hashes:
+        r = subprocess.run(["git", "show", f"{h}:{rel}"], cwd=ROOT, capture_output=True, text=True)
+        try:
+            sig = json.loads(r.stdout)
+            out[sig["asof"]] = sig_fields(sig)
+        except (json.JSONDecodeError, KeyError):
+            continue
+    return out
 
 
 def cash_daily(d: str) -> float:
@@ -96,18 +134,32 @@ def backfill() -> list:
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--backfill", action="store_true")
+    ap.add_argument("--fill-sig", action="store_true")
     args = ap.parse_args()
 
+    old = json.loads(OUT_PATH.read_text(encoding="utf-8")) if OUT_PATH.exists() else {"rows": []}
+    old_sig = {r["d"]: r["sig"] for r in old["rows"] if r.get("sig")}
     if args.backfill:
         rows = backfill()
+        for r in rows:
+            if r["d"] in old_sig:
+                r["sig"] = old_sig[r["d"]]
+    elif args.fill_sig:
+        hist = sig_history()
+        rows = [{k: r[k] for k in ROW_KEYS if k in r} for r in old["rows"]]
+        n = 0
+        for r in rows:
+            if r["d"] in hist:
+                r["sig"] = hist[r["d"]]; n += 1
+        print(f"신호 채움: {n}/{len(rows)}일")
     else:
-        old = json.loads(OUT_PATH.read_text(encoding="utf-8")) if OUT_PATH.exists() else {"rows": []}
-        rows = [{k: r[k] for k in ("d", "ndx", "tqqq", "state")} for r in old["rows"]]
+        rows = [{k: r[k] for k in ROW_KEYS if k in r} for r in old["rows"]]
         sig = json.loads(SIGNAL.read_text(encoding="utf-8"))
         if sig["asof"] < START or (rows and sig["asof"] <= rows[-1]["d"]):
             print(f"새 날짜 없음 ({sig['asof']}) — 그대로"); return
         rows.append({"d": sig["asof"], "ndx": sig["ndx_close"], "tqqq": sig.get("tqqq_close"),
-                     "state": {k: sig["strategies"][k]["state"] for k in KEYS}})
+                     "state": {k: sig["strategies"][k]["state"] for k in KEYS},
+                     "sig": sig_fields(sig)})
 
     out = recompute(rows)
     OUT_PATH.write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
