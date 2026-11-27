@@ -17,6 +17,7 @@ interface StrategySignal {
   loc?:   Loc
   above_days?: number   // 현금일 때 200일선 위 연속일 (15일이면 매수)
   sell_line?:  number   // RULE25 보유 중 매도선 (1년 최고 종가 × 0.75)
+  below_days?: number   // S0·D10GK 보유 중 200일선 아래 연속일 (15일이면 매도)
   last_events: { date: string; action: string; how: string }[]
 }
 
@@ -31,10 +32,9 @@ interface Signal {
   strategies:  Record<'S0' | 'RULE25' | 'D10GK', StrategySignal>
 }
 
-const ROWS: { key: 'RULE25' | 'S0' | 'D10GK'; name: string; rule: string }[] = [
-  { key: 'RULE25',   name: '25% 룰',   rule: '1년 최고 종가보다 25% 떨어지면 매도' },
-  { key: 'S0',    name: 'S0',    rule: '200일 평균선 아래 15일 연속이면 매도' },
-  { key: 'D10GK', name: 'D10GK', rule: 'S0 + 급락 때 LOC 주문으로 조기 재매수' },
+const ROWS: { key: 'S0' | 'D10GK'; name: string; rule: string }[] = [
+  { key: 'S0',    name: 'S0',    rule: '200일 평균선 아래 15일 연속 마감하면 매도, 위로 15일 연속이면 재매수' },
+  { key: 'D10GK', name: 'D10GK', rule: 'S0와 같은 매도 규칙 + 급락 때 RSI 조건으로 조기 재매수' },
 ]
 
 // 텔레그램 채널 주소 (Vercel 환경 변수 NEXT_PUBLIC_TELEGRAM_URL, 예: https://t.me/채널아이디) — 없으면 링크 숨김
@@ -83,9 +83,70 @@ function Gauge({ sig, t }: { sig: Signal; t: StrategySignal }) {
   )
 }
 
+// S0·D10GK 보유 중: 200일선 아래 연속일 15칸 막대
+function BelowGauge({ sig, days }: { sig: Signal; days: number }) {
+  const d = Math.min(15, days)
+  const color = d >= 12 ? 'bg-red-500' : d >= 8 ? 'bg-amber-500' : 'bg-gray-400'
+  return (
+    <div className="mt-1.5">
+      <div className="flex gap-0.5">
+        {Array.from({ length: 15 }, (_, i) => (
+          <div key={i} className={`h-2 flex-1 rounded-sm ${i < d ? color : 'bg-gray-200 dark:bg-gray-700'}`} />
+        ))}
+      </div>
+      <p className="text-[11px] text-gray-600 dark:text-gray-300 mt-1">
+        {days === 0
+          ? <>200일 평균선 위 · 매도 카운트 없음</>
+          : <>매도까지 <strong>15일 중 {d}일째</strong></>}
+        <span className="text-gray-400 dark:text-gray-500"> · 200일 평균선 {num(sig.ema200)} 아래 마감 기준</span>
+      </p>
+    </div>
+  )
+}
+
+// D10GK 조기 재매수 조건: RSI(14) 30 미만 + 200일선 대비 −10% 이하 (둘 다 그날 종가 기준)
+function RsiCheck({ sig, t }: { sig: Signal; t: StrategySignal }) {
+  const rsiOk = sig.rsi14 < 30
+  const divOk = sig.vs_ema_pct <= -10
+  const both = rsiOk && divOk
+  const Item = ({ ok, label, now, need }: { ok: boolean; label: string; now: string; need: string }) => (
+    <div className="flex items-center justify-between gap-2">
+      <span className="text-gray-600 dark:text-gray-300">
+        <span className={ok ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-gray-500'}>{ok ? '✓' : '✗'}</span> {label}
+      </span>
+      <span className="tabular-nums">
+        <strong className={ok ? 'text-green-700 dark:text-green-300' : 'text-gray-700 dark:text-gray-200'}>{now}</strong>
+        <span className="text-gray-400 dark:text-gray-500"> / 기준 {need}</span>
+      </span>
+    </div>
+  )
+  return (
+    <div className="mt-2 rounded-md bg-gray-50 dark:bg-gray-800/60 px-2 py-1.5 space-y-0.5">
+      <div className="flex items-center justify-between">
+        <span className="font-semibold text-gray-700 dark:text-gray-200">조기 재매수 조건</span>
+        <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold ${
+          both ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300'
+               : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-300'}`}>
+          {both ? '둘 다 충족' : rsiOk || divOk ? '1개 충족' : '미충족'}
+        </span>
+      </div>
+      <Item ok={rsiOk} label="14일 RSI" now={sig.rsi14.toFixed(1)} need="30 미만" />
+      <Item ok={divOk} label="200일선 대비" now={pct(sig.vs_ema_pct)} need="−10% 이하" />
+      <p className="text-[10px] text-gray-400 dark:text-gray-500 leading-relaxed pt-0.5">
+        {t.state === '보유'
+          ? both
+            ? '지금은 TQQQ를 보유 중이라 조건이 맞아도 할 일이 없습니다. 매도 후 현금일 때만 매수 신호로 작동합니다.'
+            : '매도 후 현금일 때, 두 조건이 같은 날 종가로 동시에 맞으면 그날 종가에 재매수합니다.'
+          : '두 조건이 같은 날 종가로 동시에 맞으면 그날 종가에 재매수합니다 (LOC 주문).'}
+      </p>
+    </div>
+  )
+}
+
 export default function WithdrawalSignal() {
   const [sig, setSig] = useState<Signal | null>(null)
   const [err, setErr] = useState(false)
+  const [showOthers, setShowOthers] = useState(false)
 
   useEffect(() => {
     fetch('/data/withdrawal_signal.json')
@@ -128,36 +189,69 @@ export default function WithdrawalSignal() {
         )
       })()}
 
-      <details className="text-[11px]">
-        <summary className="cursor-pointer text-gray-400 dark:text-gray-500 select-none">다른 전략 신호 (비교용)</summary>
-        <div className="space-y-2 mt-2">
-          {ROWS.filter(r => r.key !== 'RULE25').map(({ key, name, rule }) => {
+      {(() => {
+        const urgentCount = ROWS.filter(r => {
+          const a = sig.strategies[r.key].action
+          return a === '매도' || a === '매수' || a === 'LOC 매수 주문'
+        }).length
+        return (
+          <button
+            type="button"
+            onClick={() => setShowOthers(v => !v)}
+            aria-expanded={showOthers}
+            className="w-full flex items-center justify-between rounded-lg border border-gray-200 dark:border-gray-700 px-3 py-1.5 text-[11px] font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/60"
+          >
+            <span>
+              다른 신호 보기 (S0 · D10GK)
+              {urgentCount > 0
+                ? <span className="ml-1.5 text-red-600 dark:text-red-400">· 신호 {urgentCount}개 켜짐</span>
+                : <span className="ml-1.5 font-normal text-gray-400 dark:text-gray-500">· 켜진 신호 없음</span>}
+            </span>
+            <span className="text-gray-400">{showOthers ? '접기 ▲' : '펼치기 ▼'}</span>
+          </button>
+        )
+      })()}
+
+      {showOthers && (
+        <div className="space-y-2 mt-2 text-[11px]">
+          <p className="text-[10px] text-gray-400 dark:text-gray-500">비교용입니다. 메인 전략은 위의 25% 룰입니다.</p>
+          {ROWS.map(({ key, name, rule }) => {
             const s = sig.strategies[key]
             const urgent = s.action === '매도' || s.action === '매수'
             return (
-              <div key={key} className="border-t border-gray-100 dark:border-gray-800 pt-2">
+              <div key={key} className="rounded-lg border border-gray-100 dark:border-gray-800 px-3 py-2">
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="font-bold text-gray-700 dark:text-gray-300">{name}</span>
-                  <span className="text-gray-500 dark:text-gray-400">{s.state === '보유' ? 'TQQQ 보유' : '현금'}</span>
-                  <span className={urgent ? 'text-red-600 dark:text-red-400 font-semibold' : s.loc ? 'text-purple-600 dark:text-purple-300' : 'text-gray-400 dark:text-gray-500'}>
-                    {urgent ? `다음 거래일 ${s.action}` : s.loc ? 'LOC 매수 주문' : '할 일 없음'}
+                  <span className="text-xs font-bold text-gray-800 dark:text-gray-200">{name}</span>
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold ${
+                    s.state === '보유'
+                      ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300'
+                      : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300'}`}>
+                    {s.state === '보유' ? 'TQQQ 보유' : '현금'}
+                  </span>
+                  <span className={urgent ? 'text-red-600 dark:text-red-400 font-semibold' : s.loc ? 'text-purple-600 dark:text-purple-300 font-semibold' : 'text-gray-400 dark:text-gray-500'}>
+                    {urgent ? `다음 거래일 전량 ${s.action}` : s.loc ? 'LOC 매수 주문' : '할 일 없음'}
                   </span>
                 </div>
-                <p className="text-gray-400 dark:text-gray-500">{rule}</p>
+                <p className="text-gray-400 dark:text-gray-500 mt-0.5">{rule}</p>
+                {urgent
+                  ? <p className="text-red-600 dark:text-red-400 mt-0.5">{s.detail}</p>
+                  : s.state === '보유' && s.below_days !== undefined
+                    ? <BelowGauge sig={sig} days={s.below_days} />
+                    : <Gauge sig={sig} t={s} />}
                 {s.loc && (
-                  <p className="text-purple-700 dark:text-purple-300 mt-0.5">
+                  <p className="text-purple-700 dark:text-purple-300 mt-1">
                     {s.loc.tqqq_price
                       ? <>TQQQ <strong>${s.loc.tqqq_price.toFixed(2)}</strong> 이하 LOC 매수</>
                       : <>TQQQ 전일 종가 대비 <strong>{pct(s.loc.tqqq_pct)}</strong> 이하 가격으로 LOC 매수</>}
                     {' '}(나스닥100이 {pct(s.loc.ndx_pct)} 이하로 끝나야 체결)
                   </p>
                 )}
-                {urgent && <p className="text-red-600 dark:text-red-400 mt-0.5">{s.detail}</p>}
+                {key === 'D10GK' && <RsiCheck sig={sig} t={s} />}
               </div>
             )
           })}
         </div>
-      </details>
+      )}
       <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-2 leading-relaxed">
         매일 아침 7시 30분 자동 갱신 · 투자 권유 아님 ·{' '}
         <Link href="/live" className="underline text-purple-600 dark:text-purple-300">공개 이후 실제 성적</Link>
