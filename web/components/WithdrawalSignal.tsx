@@ -102,10 +102,13 @@ function LastEvents({ t }: { t: StrategySignal }) {
         const sameDay = sigDay === e.date
         return (
           <p key={a} className="text-gray-500 dark:text-gray-400">
-            <span className={`font-semibold ${a === '매도' ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400'}`}>마지막 {a} 신호</span>{' '}
-            <span className="font-mono text-gray-700 dark:text-gray-200">{sigDay}</span>
-            <span className="text-gray-400 dark:text-gray-500">
-              {' '}({ago(sigDay)}) → {sameDay ? '그날 종가에' : <><span className="font-mono">{e.date}</span> 종가에</>} {a}
+            <span className="whitespace-nowrap">
+              <span className={`font-semibold ${a === '매도' ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400'}`}>마지막 {a} 신호</span>{' '}
+              <span className="font-mono text-gray-700 dark:text-gray-200">{sigDay}</span>
+              <span className="text-gray-400 dark:text-gray-500"> ({ago(sigDay)})</span>
+            </span>{' '}
+            <span className="whitespace-nowrap text-gray-400 dark:text-gray-500">
+              → {sameDay ? '그날 종가에' : <><span className="font-mono">{e.date}</span> 종가에</>} {a}
             </span>
           </p>
         )
@@ -143,7 +146,7 @@ function RsiCheck({ sig, t }: { sig: Signal; t: StrategySignal }) {
   const Item = ({ ok, label, now, need }: { ok: boolean; label: string; now: string; need: string }) => (
     <div className="flex items-center justify-between gap-2">
       <span className="text-gray-600 dark:text-gray-300">
-        <span className={ok ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-gray-500'}>{ok ? '✓' : '✗'}</span> {label}
+        <span className={`inline-block w-1.5 h-1.5 rounded-full align-middle mr-1 ${ok ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}`} />{label}
       </span>
       <span className="tabular-nums">
         <strong className={ok ? 'text-green-700 dark:text-green-300' : 'text-gray-700 dark:text-gray-200'}>{now}</strong>
@@ -233,13 +236,13 @@ export default function WithdrawalSignal() {
             aria-expanded={showOthers}
             className="w-full flex items-center justify-between rounded-lg border border-gray-200 dark:border-gray-700 px-3 py-1.5 text-[11px] font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/60"
           >
-            <span>
-              다른 신호 보기 (S0 · D10GK)
+            <span className="text-left">
+              <span className="block">다른 신호 보기 <span className="font-normal text-gray-400 dark:text-gray-500">· 비교 전략 S0 · D10GK</span></span>
               {urgentCount > 0
-                ? <span className="ml-1.5 text-red-600 dark:text-red-400">· 신호 {urgentCount}개 켜짐</span>
-                : <span className="ml-1.5 font-normal text-gray-400 dark:text-gray-500">· 켜진 신호 없음</span>}
+                ? <span className="block text-red-600 dark:text-red-400">신호 {urgentCount}개 켜짐</span>
+                : <span className="block font-normal text-gray-400 dark:text-gray-500">켜진 신호 없음</span>}
             </span>
-            <span className="text-gray-400">{showOthers ? '접기 ▲' : '펼치기 ▼'}</span>
+            <span className="shrink-0 pl-2 text-gray-400 whitespace-nowrap">{showOthers ? '접기 ▲' : '펼치기 ▼'}</span>
           </button>
         )
       })()}
@@ -287,7 +290,7 @@ export default function WithdrawalSignal() {
       )}
       <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-2 leading-relaxed">
         매일 아침 7시 30분 자동 갱신 · 투자 권유 아님 ·{' '}
-        <Link href="/live" className="underline text-purple-600 dark:text-purple-300">공개 이후 실제 성적</Link>
+        <Link href="/live" className="underline text-purple-600 dark:text-purple-300 whitespace-nowrap">공개 이후 실제 성적</Link>
         {TELEGRAM_URL && (
           <>
             {' · '}

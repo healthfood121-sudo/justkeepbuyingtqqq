@@ -195,7 +195,7 @@ export default function LivePage() {
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-2">
               {SERIES.map(s => (
                 <div key={s.k} className={`rounded-xl px-3 py-3 text-center ${s.k === 'RULE25' ? 'bg-purple-50 dark:bg-purple-500/10' : 'bg-gray-50 dark:bg-gray-900'}`}>
-                  <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">{s.label}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">{s.label}{s.k === 'RULE25' ? <span className="text-purple-600 dark:text-purple-300 font-semibold"> (메인)</span> : (s.k === 'S0' || s.k === 'D10GK') ? ' (비교)' : ''}</p>
                   <p className="text-xl font-black text-gray-900 dark:text-white">{pct(rec.now[s.k])}</p>
                 </div>
               ))}
@@ -267,9 +267,9 @@ export default function LivePage() {
                 <thead>
                   <tr className="text-gray-700 dark:text-gray-200">
                     <th colSpan={3} />
-                    <th colSpan={2} className={`pt-2 px-2 text-left align-top font-bold ${GROUP}`}>25% 룰<LastSig ev={last.RULE25} /></th>
-                    <th colSpan={2} className={`pt-2 px-2 text-left align-top font-bold ${GROUP}`}>S0<LastSig ev={last.S0} /></th>
-                    <th colSpan={3} className={`pt-2 px-2 text-left align-top font-bold ${GROUP}`}>D10GK<LastSig ev={last.D10GK} /></th>
+                    <th colSpan={2} className={`pt-2 px-2 text-left align-top font-bold ${GROUP}`}>25% 룰 <span className="font-semibold text-purple-600 dark:text-purple-300">(메인)</span><LastSig ev={last.RULE25} /></th>
+                    <th colSpan={2} className={`pt-2 px-2 text-left align-top font-bold ${GROUP}`}>S0 <span className="font-normal text-gray-400 dark:text-gray-500">(비교)</span><LastSig ev={last.S0} /></th>
+                    <th colSpan={3} className={`pt-2 px-2 text-left align-top font-bold ${GROUP}`}>D10GK <span className="font-normal text-gray-400 dark:text-gray-500">(비교)</span><LastSig ev={last.D10GK} /></th>
                     <th colSpan={5} className={`pt-2 px-2 text-left align-top font-bold ${GROUP}`}>누적 수익률</th>
                   </tr>
                   <tr className="border-b border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400">
@@ -316,7 +316,7 @@ export default function LivePage() {
                             <span className={rsiOk ? HIT : ''}>{g.rsi.toFixed(1)}</span>
                             <span className="text-gray-400"> · </span>
                             <span className={emaOk ? HIT : ''}>{sgn(g.ema)}</span>
-                            {rsiOk && emaOk && <span className="ml-1 text-amber-700 dark:text-amber-300">✓</span>}
+                            {rsiOk && emaOk && <span className="ml-1 text-amber-700 dark:text-amber-300 font-sans font-semibold">충족</span>}
                           </>
                         ) : '—'}
                       </td>
