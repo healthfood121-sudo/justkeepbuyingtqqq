@@ -133,7 +133,7 @@
 - [x] 119. HON (roic5 22.2, 현재 27KB)
 - [x] 120. SSD (roic5 22.0, 현재 26KB)
 - [x] 121. DCI (roic5 21.7, 현재 33KB)
-- [ ] 122. SHW (roic5 21.7, 현재 26KB)
+- [x] 122. SHW (roic5 21.7, 현재 26KB)
 - [ ] 123. ENSG (roic5 21.5, 현재 22KB)
 - [ ] 124. EW (roic5 21.5, 현재 30KB)
 - [ ] 125. NFLX (roic5 21.5, 현재 45KB)
