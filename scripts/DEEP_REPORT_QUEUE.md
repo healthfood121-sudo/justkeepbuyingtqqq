@@ -181,7 +181,7 @@
 - [x] 167. NDSN (roic5 15.0, 현재 27KB)
 - [x] 168. INTU (roic5 14.9, 현재 34KB)
 - [x] 169. AMGN (roic5 14.5, 현재 26KB)
-- [ ] 170. CSX (roic5 14.5, 현재 25KB)
+- [x] 170. CSX (roic5 14.5, 현재 25KB)
 - [ ] 171. BR (roic5 14.4, 현재 32KB)
 - [ ] 172. FSS (roic5 14.4, 현재 25KB)
 - [ ] 173. PH (roic5 14.4, 현재 28KB)
