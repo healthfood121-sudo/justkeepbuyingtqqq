@@ -15,7 +15,7 @@ TQQQ 종가가 없는 날(Yahoo 조회 실패)은 나스닥100 수익률 × 3으
   python scripts/update_live_record.py --fill-sig    # 날짜별 신호(sig)를 git 이력의 withdrawal_signal.json으로 채운다
 
 각 날짜 행의 sig = 그날 종가로 홈 화면 '오늘의 신호'에 실제로 떴던 값
-  (RSI, 200일선 대비 %, 1년 최고가 대비 %, 200일선 아래 연속일, 전략별 할 일, D10GK 상태).
+  (RSI, 200일선 대비 %, 1년 최고가 대비 %, 그리고 25% 룰·S0·D10GK 각각의 상태·할 일·200일선 연속일).
 
 출력: web/public/data/live_record.json
 """
@@ -35,21 +35,31 @@ KEYS     = ("RULE25", "S0")
 ROW_KEYS = ("d", "ndx", "tqqq", "state", "sig")
 
 
+def _count(t: dict, key: str, word: str):
+    """보유 중이면 200일선 아래 연속일, 현금이면 위 연속일. 필드가 없던 예전 파일은 문구에서 읽는다."""
+    v = t.get(key)
+    if v is None:
+        m = re.search(rf"{word} (\d+)일째", t.get("detail", ""))
+        v = int(m.group(1)) if m else 0
+    return int(v)
+
+
 def sig_fields(sig: dict) -> dict:
-    """withdrawal_signal.json 한 개 → 성적표 행에 붙일 신호 요약."""
+    """withdrawal_signal.json 한 개 → 성적표 행에 붙일 전략별 신호 요약.
+    s[전략] = {st: 보유/현금, act: 할 일, cnt: 보유면 200일선 아래 연속일 / 현금이면 위 연속일}"""
     st = sig["strategies"]
-    below = st["S0"].get("below_days")
-    if below is None:                                   # below_days 필드 추가 전 파일은 문구에서 읽는다
-        m = re.search(r"아래 (\d+)일째", st["S0"].get("detail", ""))
-        below = int(m.group(1)) if m and st["S0"]["state"] == "보유" else None
-    return {
-        "rsi":   sig.get("rsi14"),
-        "ema":   sig.get("vs_ema_pct"),
-        "peak":  sig.get("vs_peak_pct"),
-        "below": below,
-        "act":   {k: st[k]["action"] for k in ("RULE25", "S0", "D10GK") if k in st},
-        "d10gk": st.get("D10GK", {}).get("state"),
-    }
+    out = {"rsi": sig.get("rsi14"), "ema": sig.get("vs_ema_pct"), "peak": sig.get("vs_peak_pct"), "s": {}}
+    for k in ("RULE25", "S0", "D10GK"):
+        if k not in st:
+            continue
+        t = st[k]
+        e = {"st": t["state"], "act": t["action"]}
+        if t["state"] == "현금":
+            e["cnt"] = _count(t, "above_days", "위")
+        elif k != "RULE25":
+            e["cnt"] = _count(t, "below_days", "아래")
+        out["s"][k] = e
+    return out
 
 
 def sig_history() -> dict:

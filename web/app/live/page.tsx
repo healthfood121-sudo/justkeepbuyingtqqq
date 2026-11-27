@@ -19,10 +19,10 @@ ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Tooltip,
 
 type Key = 'RULE25' | 'S0' | 'HOLD3' | 'HOLD1'
 // sig: 그날 종가로 홈 화면 '오늘의 신호'에 실제로 떴던 값 (첫날은 없음)
-interface Sig {
-  rsi: number | null; ema: number | null; peak: number | null; below: number | null
-  act: Partial<Record<'RULE25' | 'S0' | 'D10GK', string>>; d10gk?: '보유' | '현금'
-}
+//   s[전략].cnt = 보유 중이면 200일선 아래 연속일(15일이면 매도), 현금이면 위 연속일(15일이면 매수)
+type Strat = 'RULE25' | 'S0' | 'D10GK'
+interface StratSig { st: '보유' | '현금'; act: string; cnt?: number }
+interface Sig { rsi: number | null; ema: number | null; peak: number | null; s: Partial<Record<Strat, StratSig>> }
 interface Row { d: string; ndx: number; tqqq: number | null; state: Record<'RULE25' | 'S0', '보유' | '현금'>; v: Record<Key, number>; est?: boolean; sig?: Sig }
 interface Record_ { start: string; asof: string; days: number; now: Record<Key, number>; events: { d: string; k: string; from: string; to: string }[]; rows: Row[] }
 
@@ -34,15 +34,41 @@ const SERIES: { k: Key; label: string; light: string; dark: string }[] = [
 ]
 const pct = (v: number) => `${v >= 100 ? '+' : ''}${(v - 100).toFixed(2)}%`
 const sgn = (v: number) => `${v > 0 ? '+' : ''}${v.toFixed(1)}%`
-const NAME: Record<string, string> = { RULE25: '25% 룰', S0: 'S0', D10GK: 'D10GK' }
+const HIT = 'text-red-600 dark:text-red-400 font-semibold'
+const GROUP = 'border-l border-gray-200 dark:border-gray-700'
 
-// 그날 신호 한 줄 요약. tone: on(매매 신호) / near(D10GK 조건 충족했지만 보유 중) / off
-function sigSummary(g: Sig): { text: string; tone: 'on' | 'near' | 'off' } {
-  const on = Object.entries(g.act).filter(([, a]) => a && a !== '없음')
-  if (on.length) return { text: on.map(([k, a]) => `${NAME[k]} ${a === 'LOC 매수 주문' ? 'LOC 매수 주문' : `${a} 신호`}`).join(' · '), tone: 'on' }
-  if (g.rsi !== null && g.ema !== null && g.rsi < 30 && g.ema <= -10)
-    return { text: g.d10gk === '보유' ? 'D10GK 재매수 조건 충족 (보유 중이라 할 일 없음)' : 'D10GK 재매수 조건 충족', tone: 'near' }
-  return { text: '없음', tone: 'off' }
+// 상태 칩 + 그날 할 일
+function StateCell({ t, extra }: { t?: StratSig; extra?: string | null }) {
+  if (!t) return <td className={`py-1.5 px-2 text-gray-300 dark:text-gray-600 ${GROUP}`}>—</td>
+  const act = t.act && t.act !== '없음' ? t.act : null
+  return (
+    <td className={`py-1.5 px-2 whitespace-nowrap ${GROUP}`}>
+      <span className={`inline-block text-[10px] px-1.5 py-0.5 rounded-full font-semibold mr-1.5 ${
+        t.st === '보유'
+          ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300'
+          : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300'}`}>
+        {t.st === '보유' ? 'TQQQ 보유' : '현금'}
+      </span>
+      {act
+        ? <span className={act === 'LOC 매수 주문' ? 'text-purple-700 dark:text-purple-300 font-semibold' : HIT}>
+            {act === 'LOC 매수 주문' ? act : `${act} 신호`}
+          </span>
+        : extra
+          ? <span className="text-amber-700 dark:text-amber-300 font-semibold">{extra}</span>
+          : <span className="text-gray-400 dark:text-gray-500">할 일 없음</span>}
+    </td>
+  )
+}
+
+// 200일선 연속일: 보유면 아래 n/15 (매도까지), 현금이면 위 n/15 (매수까지)
+function CountCell({ t }: { t?: StratSig }) {
+  if (!t || t.cnt === undefined) return <td className="py-1.5 px-2 text-gray-300 dark:text-gray-600">—</td>
+  const n = t.cnt
+  return (
+    <td className={`py-1.5 px-2 font-mono whitespace-nowrap ${n >= 15 ? HIT : n >= 10 ? 'text-amber-700 dark:text-amber-300' : ''}`}>
+      {n === 0 ? <span className="text-gray-400 dark:text-gray-500">0</span> : `${t.st === '보유' ? '아래' : '위'} ${n}/15일`}
+    </td>
+  )
 }
 
 export default function LivePage() {
@@ -194,37 +220,71 @@ export default function LivePage() {
 
             <h2 className="text-lg font-bold mb-3">날짜별 기록</h2>
             <div className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed mb-3 space-y-0.5">
-              <p>날짜마다 그날 종가로 홈 화면 &lsquo;오늘의 신호&rsquo;에 실제로 떴던 값을 함께 남긴다. 기준에 닿은 칸은 빨간색이다.</p>
-              <p>· <strong>최고가 대비</strong>: 1년 최고 종가에서 몇 % 내려왔는지 (−25%면 25% 룰 매도)</p>
-              <p>· <strong>200일선 아래</strong>: 나스닥100이 200일 평균선 아래로 마감한 연속 일수 (15일이면 S0·D10GK 매도)</p>
-              <p>· <strong>RSI · 200일선 대비</strong>: 14일 상대강도지수(RSI)와 200일 평균선에서 떨어진 정도. 현금일 때 둘이 같은 날 30 미만 · −10% 이하면 D10GK가 조기 재매수한다</p>
+              <p>날짜마다 그날 종가로 홈 화면 &lsquo;오늘의 신호&rsquo;에 떴던 값을 전략별로 남긴다. 내가 따르는 전략의 칸만 보면 된다.</p>
+              <p>· <strong>25% 룰</strong>: 1년 최고 종가보다 25% 떨어지면 매도. &lsquo;최고가 대비&rsquo;가 −25%에 닿으면 빨간색</p>
+              <p>· <strong>S0</strong>: 200일 평균선 아래로 15일 연속 마감하면 매도, 현금일 때 위로 15일 연속이면 재매수</p>
+              <p>· <strong>D10GK</strong>: S0와 같은 매도 규칙에, 현금일 때 14일 상대강도지수(RSI) 30 미만이면서 200일선 대비 −10% 이하인 날 종가로 조기 재매수. 조건 칸은 기준에 닿으면 빨간색</p>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-xs border-collapse">
                 <thead>
+                  <tr className="text-gray-700 dark:text-gray-200">
+                    <th colSpan={3} />
+                    <th colSpan={2} className={`pt-2 px-2 text-left font-bold ${GROUP}`}>25% 룰</th>
+                    <th colSpan={2} className={`pt-2 px-2 text-left font-bold ${GROUP}`}>S0</th>
+                    <th colSpan={3} className={`pt-2 px-2 text-left font-bold ${GROUP}`}>D10GK</th>
+                    <th colSpan={4} className={`pt-2 px-2 text-left font-bold ${GROUP}`}>누적 수익률</th>
+                  </tr>
                   <tr className="border-b border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400">
-                    {['날짜 (종가)', '나스닥100', 'TQQQ', '신호', '최고가 대비', '200일선 아래', 'RSI', '200일선 대비', '25% 룰 상태', '25% 룰', 'S0', 'TQQQ 보유', '나스닥100 보유'].map(h => (
-                      <th key={h} className="py-2 px-2 text-left font-medium whitespace-nowrap">{h}</th>
+                    {[
+                      ['날짜 (종가)', ''], ['나스닥100', ''], ['TQQQ', ''],
+                      ['상태 · 할 일', GROUP], ['최고가 대비', ''],
+                      ['상태 · 할 일', GROUP], ['200일선 연속', ''],
+                      ['상태 · 할 일', GROUP], ['200일선 연속', ''], ['재매수 조건 (RSI · 200일선 대비)', ''],
+                      ['25% 룰', GROUP], ['S0', ''], ['TQQQ 보유', ''], ['나스닥100 보유', ''],
+                    ].map(([h, c], i) => (
+                      <th key={i} className={`py-2 px-2 text-left font-medium whitespace-nowrap ${c}`}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                   {[...rec.rows].reverse().map(r => {
                     const g = r.sig
-                    const sm = g ? sigSummary(g) : null
-                    const hit = 'text-red-600 dark:text-red-400 font-semibold'
+                    const d10 = g?.s.D10GK
+                    const rsiOk = g?.rsi != null && g.rsi < 30
+                    const emaOk = g?.ema != null && g.ema <= -10
+                    // 보유 중인데 재매수 조건만 맞은 날 (예: 2026-11-20)
+                    const d10extra = d10 && d10.st === '보유' && rsiOk && emaOk ? '재매수 조건 충족 (보유 중이라 해당 없음)' : null
                     return (
-                    <tr key={r.d} className={`text-gray-700 dark:text-gray-300 ${sm?.tone === 'on' ? 'bg-red-50 dark:bg-red-500/10' : sm?.tone === 'near' ? 'bg-amber-50 dark:bg-amber-500/10' : ''}`}>
+                    <tr key={r.d} className="text-gray-700 dark:text-gray-300">
                       <td className="py-1.5 px-2 font-mono whitespace-nowrap">{r.d}</td>
                       <td className="py-1.5 px-2 font-mono">{r.ndx.toLocaleString('en-US', { maximumFractionDigits: 0 })}</td>
-                      <td className="py-1.5 px-2 font-mono">{r.tqqq ? `$${r.tqqq.toFixed(2)}` : '—'}{r.est && <span className="text-gray-400"> (추정)</span>}</td>
-                      <td className={`py-1.5 px-2 whitespace-nowrap ${sm?.tone === 'on' ? hit : sm?.tone === 'near' ? 'text-amber-700 dark:text-amber-300 font-semibold' : 'text-gray-400 dark:text-gray-500'}`}>{sm ? sm.text : '—'}</td>
-                      <td className={`py-1.5 px-2 font-mono ${g?.peak != null && g.peak <= -25 ? hit : ''}`}>{g?.peak != null ? sgn(g.peak) : '—'}</td>
-                      <td className={`py-1.5 px-2 font-mono whitespace-nowrap ${g?.below != null && g.below >= 15 ? hit : ''}`}>{g?.below != null ? (g.below > 0 ? `${g.below}/15일` : '0') : '—'}</td>
-                      <td className={`py-1.5 px-2 font-mono ${g?.rsi != null && g.rsi < 30 ? hit : ''}`}>{g?.rsi != null ? g.rsi.toFixed(1) : '—'}</td>
-                      <td className={`py-1.5 px-2 font-mono ${g?.ema != null && g.ema <= -10 ? hit : ''}`}>{g?.ema != null ? sgn(g.ema) : '—'}</td>
-                      <td className="py-1.5 px-2">{r.state.RULE25}</td>
-                      {SERIES.map(s => <td key={s.k} className="py-1.5 px-2 font-mono">{pct(r.v[s.k])}</td>)}
+                      <td className="py-1.5 px-2 font-mono whitespace-nowrap">{r.tqqq ? `$${r.tqqq.toFixed(2)}` : '—'}{r.est && <span className="text-gray-400"> (추정)</span>}</td>
+
+                      <StateCell t={g?.s.RULE25} />
+                      {g?.s.RULE25?.st === '현금'
+                        ? <CountCell t={g.s.RULE25} />
+                        : <td className={`py-1.5 px-2 font-mono ${g?.peak != null && g.peak <= -25 ? HIT : g?.peak != null && g.peak <= -20 ? 'text-amber-700 dark:text-amber-300' : ''}`}>
+                            {g?.peak != null ? sgn(g.peak) : '—'}
+                          </td>}
+
+                      <StateCell t={g?.s.S0} />
+                      <CountCell t={g?.s.S0} />
+
+                      <StateCell t={d10} extra={d10extra} />
+                      <CountCell t={d10} />
+                      <td className="py-1.5 px-2 font-mono whitespace-nowrap">
+                        {g?.rsi != null && g?.ema != null ? (
+                          <>
+                            <span className={rsiOk ? HIT : ''}>{g.rsi.toFixed(1)}</span>
+                            <span className="text-gray-400"> · </span>
+                            <span className={emaOk ? HIT : ''}>{sgn(g.ema)}</span>
+                            {rsiOk && emaOk && <span className="ml-1 text-amber-700 dark:text-amber-300">✓</span>}
+                          </>
+                        ) : '—'}
+                      </td>
+
+                      {SERIES.map((s, i) => <td key={s.k} className={`py-1.5 px-2 font-mono ${i === 0 ? GROUP : ''}`}>{pct(r.v[s.k])}</td>)}
                     </tr>
                     )
                   })}
