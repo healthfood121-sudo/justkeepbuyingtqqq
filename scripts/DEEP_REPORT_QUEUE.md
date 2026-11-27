@@ -141,7 +141,7 @@
 - [x] 127. DOCS (roic5 21.0, 현재 21KB)
 - [x] 128. MCD (roic5 21.0, 현재 29KB)
 - [x] 129. LAUR (roic5 20.8, 현재 20KB)
-- [ ] 130. SKY (roic5 20.8, 현재 21KB)
+- [x] 130. SKY (roic5 20.8, 현재 21KB)
 - [ ] 131. FDS (roic5 20.7, 현재 37KB)
 - [ ] 132. VRSK (roic5 20.5, 현재 22KB)
 - [ ] 133. PG (roic5 20.2, 현재 31KB)
