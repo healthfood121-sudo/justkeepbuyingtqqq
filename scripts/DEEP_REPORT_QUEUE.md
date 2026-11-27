@@ -152,7 +152,7 @@
 - [x] 138. SNA (roic5 19.8, 현재 25KB)
 - [x] 139. CMI (roic5 19.7, 현재 26KB)
 - [x] 140. AON (roic5 19.4, 현재 25KB)
-- [ ] 141. CLX (roic5 18.6, 현재 38KB)
+- [x] 141. CLX (roic5 18.6, 현재 38KB)
 - [ ] 142. CAT (roic5 18.4, 현재 27KB)
 - [ ] 143. HUBB (roic5 18.4, 현재 26KB)
 - [ ] 144. GDDY (roic5 18.2, 현재 18KB)
