@@ -128,7 +128,7 @@
 - [x] 114. JKHY (roic5 22.7, 현재 54KB)
 - [x] 115. UFPI (roic5 22.7, 현재 26KB)
 - [x] 116. CPRT (roic5 22.6, 현재 30KB)
-- [ ] 117. CVCO (roic5 22.6, 현재 32KB)
+- [x] 117. CVCO (roic5 22.6, 현재 32KB)
 - [ ] 118. REGN (roic5 22.4, 현재 27KB)
 - [ ] 119. HON (roic5 22.2, 현재 27KB)
 - [ ] 120. SSD (roic5 22.0, 현재 26KB)
