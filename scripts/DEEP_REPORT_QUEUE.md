@@ -85,7 +85,7 @@
 - [x] 71. MNST (roic5 33.0, 현재 28KB)
 - [x] 72. GGG (roic5 32.8, 현재 45KB)
 - [x] 73. TXRH (roic5 32.3, 현재 29KB)
-- [ ] 74. LMT (roic5 32.2, 현재 28KB)
+- [x] 74. LMT (roic5 32.2, 현재 28KB)
 - [ ] 75. CHE (roic5 31.8, 현재 27KB)
 - [ ] 76. TPR (roic5 31.7, 현재 29KB)
 - [ ] 77. AOS (roic5 31.6, 현재 44KB)
