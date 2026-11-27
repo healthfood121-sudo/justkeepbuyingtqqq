@@ -137,7 +137,7 @@
 - [x] 123. ENSG (roic5 21.5, 현재 22KB)
 - [x] 124. EW (roic5 21.5, 현재 30KB)
 - [x] 125. NFLX (roic5 21.5, 현재 45KB)
-- [ ] 126. ISRG (roic5 21.1, 현재 52KB)
+- [x] 126. ISRG (roic5 21.1, 현재 52KB)
 - [ ] 127. DOCS (roic5 21.0, 현재 21KB)
 - [ ] 128. MCD (roic5 21.0, 현재 29KB)
 - [ ] 129. LAUR (roic5 20.8, 현재 20KB)
