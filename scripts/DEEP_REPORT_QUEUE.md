@@ -92,7 +92,7 @@
 - [x] 78. BJ (roic5 30.9, 현재 23KB)
 - [x] 79. IESC (roic5 30.5, 현재 28KB)
 - [x] 80. ERIE (roic5 30.4, 현재 21KB)
-- [ ] 81. WAT (roic5 30.2, 현재 26KB)
+- [x] 81. WAT (roic5 30.2, 현재 26KB)
 - [ ] 82. FIX (roic5 30.1, 현재 27KB)
 - [ ] 83. FN (roic5 29.1, 현재 27KB)
 - [ ] 84. LLY (roic5 28.9, 현재 27KB)
