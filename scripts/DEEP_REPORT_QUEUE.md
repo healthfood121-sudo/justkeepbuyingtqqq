@@ -188,7 +188,7 @@
 - [x] 174. XOM (roic5 14.4, 현재 27KB)
 - [x] 175. URI (roic5 14.3, 현재 25KB)
 - [x] 176. CPAY (roic5 14.2, 현재 24KB)
-- [ ] 177. HEI (roic5 14.2, 현재 25KB)
+- [x] 177. HEI (roic5 14.2, 현재 25KB)
 - [ ] 178. PKG (roic5 14.1, 현재 26KB)
 - [ ] 179. PNR (roic5 14.0, 현재 22KB)
 - [ ] 180. CHD (roic5 13.9, 현재 26KB)
