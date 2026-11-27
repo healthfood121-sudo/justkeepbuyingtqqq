@@ -163,7 +163,7 @@
 - [x] 149. AVY (roic5 17.5, 현재 25KB)
 - [x] 150. PEP (roic5 17.4, 현재 46KB)
 - [x] 151. LMAT (roic5 17.3, 현재 27KB)
-- [ ] 152. BFB (roic5 17.0, 현재 34KB)
+- [x] 152. BFB (roic5 17.0, 현재 34KB)
 - [ ] 153. SPSC (roic5 16.6, 현재 25KB)
 - [ ] 154. TDG (roic5 16.6, 현재 49KB)
 - [ ] 155. NXPI (roic5 16.4, 현재 24KB)
