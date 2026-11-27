@@ -10,7 +10,7 @@ notify_telegram.py — 인출식 신호를 텔레그램 채널로 알린다 (Git
   · 현금 중 200일 평균선 위 10일째가 된 날 (세 전략 공통) → 재매수 임박 (15일이면 매수)
   · D10GK 현금 중 매일                                  → 그날 밤 넣을 LOC 매수 주문 가격 (RSI 조기 재매수)
   · D10GK LOC 주문이 체결된 날                           → 조기 재매수 체결
-  · 매주 금요일 장 마감 뒤(한국 토요일 아침)            → 세 전략 한 주 요약
+  · 매주 금요일 장 마감 뒤(한국 토요일 아침)            → 세 전략 한 주 요약 (그날 다른 알림이 있어도 따로)
   · --test                                              → 지금 상태를 바로 한 번 (토큰 설정 확인용)
 
 환경 변수
@@ -245,8 +245,9 @@ def build(sig, prev, weekly, test):
     msgs = [message(kind, groups[kind], sig) for kind in order if kind in groups]
 
     # 주간 요약 · 테스트: 세 전략 모두
-    if (weekly or test) and not msgs:
-        head = "🧪 알림 테스트 — 현재 상태" if test else "📋 인출식 신호 주간 요약"
+    # 금요일 종가(주간 요약)는 다른 알림이 있어도 따로 보낸다. 테스트는 다른 알림이 없을 때만.
+    if weekly or (test and not msgs):
+        head = "📋 인출식 신호 주간 요약" if weekly else "🧪 알림 테스트 — 현재 상태"
         act = strat(sig, MAIN).get("action", "없음")
         todo = f"25% 룰(메인): {'할 일 없음' if act == '없음' else f'다음 거래일 전량 {act}'}"
         body = [head, "", todo, ""] + header_lines(sig)
