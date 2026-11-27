@@ -28,6 +28,9 @@ def text(h):
 t = sys.argv[1].upper()
 tick = get('https://www.sec.gov/files/company_tickers.json').json()
 cik = next(int(v['cik_str']) for v in tick.values() if v['ticker'].upper() == t)
+import os as _os
+if _os.environ.get('CIK'):
+    cik = int(_os.environ['CIK'])  # 회사 번호가 바뀐 경우(예: XOM 옛 번호 34088)
 
 # 두 번째 값이 FACTS면: XBRL 연간 숫자(주당이익·순이익·매출·영업현금·설비투자·자사주·배당·빚)를 표로 출력하고 끝낸다
 if len(sys.argv) > 2 and sys.argv[2].upper() == 'FACTS':

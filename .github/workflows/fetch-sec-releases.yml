@@ -26,6 +26,10 @@ on:
         description: '이 정규식이 든 문서만, 찾은 위치부터'
         required: false
         default: ''
+      cik:
+        description: '회사 번호 직접 지정(티커의 번호가 바뀐 경우)'
+        required: false
+        default: ''
 
 jobs:
   fetch:
@@ -43,3 +47,4 @@ jobs:
           ANNUAL: ${{ inputs.annual }}
           FORM: ${{ inputs.form }}
           PATTERN: ${{ inputs.pattern }}
+          CIK: ${{ inputs.cik }}
