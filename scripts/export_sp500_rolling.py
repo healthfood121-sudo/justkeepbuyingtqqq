@@ -22,9 +22,28 @@ OUT = ROOT / "web" / "public" / "data" / "rolling" / "SPX_rolling.json"
 URL = "http://www.econ.yale.edu/~shiller/data/ie_data.xls"
 
 
+def xls_bytes():
+    """쉴러 교수는 2024년부터 shillerdata.com 에 갱신본을 올린다(예일 주소는 2023-09에서 멈춤)."""
+    import re
+    H = {"User-Agent": "Mozilla/5.0"}
+    try:
+        page = requests.get("https://shillerdata.com/", timeout=60, headers=H).text
+        m = re.search(r'href="([^"]*?/ie_data\.xls[^"]*)"', page)
+        if m:
+            u = m.group(1); u = "https:" + u if u.startswith("//") else u
+            r = requests.get(u, timeout=180, headers=H); r.raise_for_status()
+            print("source", u, flush=True)
+            return r.content
+    except Exception as e:
+        print("shillerdata.com 실패:", e, flush=True)
+    r = requests.get(URL, timeout=180, headers=H); r.raise_for_status()
+    print("source", URL, flush=True)
+    return r.content
+
+
 def load():
-    r = requests.get(URL, timeout=180, headers={"User-Agent": "Mozilla/5.0"})
-    r.raise_for_status()
+    class _R: pass
+    r = _R(); r.content = xls_bytes()
     raw = pd.read_excel(io.BytesIO(r.content), sheet_name="Data", header=None)
     hdr = next(i for i in range(30) if str(raw.iat[i, 0]).strip() == "Date")
     cols = [str(c).strip() for c in raw.iloc[hdr]]
