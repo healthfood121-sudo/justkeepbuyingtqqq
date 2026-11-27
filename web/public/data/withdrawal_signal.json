@@ -107,7 +107,14 @@
    },
    "action": "없음",
    "detail": "200일 평균선 아래 10일째 (15일이면 매도 신호). 다음 종가가 27,984 아래면 11일째",
-   "below_days": 10
+   "below_days": 10,
+   "entry_loc": {
+    "ndx_price": 23400.95,
+    "ndx_pct": -12.44,
+    "tqqq_pct": -37.33,
+    "tqqq_price": 30.62,
+    "by": "RSI"
+   }
   }
  }
 }
