@@ -200,6 +200,19 @@ def message(kind, ks, sig):
     body = [""] + header_lines(sig)
     for k in ks:
         body += [""] + block(sig, k, prefix)
+    # 이 알림에 없는 전략도 한 줄씩 (그 전략을 따르는 사람이 헷갈리지 않게)
+    others = [k for k in KEYS if k not in ks and strat(sig, k)]
+    if others:
+        body += ["", "— 다른 전략 —"]
+        for k in others:
+            act = strat(sig, k).get("action", "없음")
+            line = state_line(sig, k)
+            if act == "없음":                         # "TQQQ 보유 · 할 일 없음 · 매도선까지 …"
+                first, _, rest = line.partition(" · ")
+                line = f"{first} · 할 일 없음" + (f" · {rest}" if rest else "")
+            body.append(f"{NAME[k]}: {line}")
+            if k == "D10GK" and strat(sig, k).get("state") == "현금" and loc_line(strat(sig, k)):
+                body.append("  " + loc_line(strat(sig, k)))
     return "\n".join(head + body)
 
 
