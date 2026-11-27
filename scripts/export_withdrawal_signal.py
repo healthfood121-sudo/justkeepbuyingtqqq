@@ -132,6 +132,7 @@ def run_machine(kind, closes, ema, rsi, peaks, dates, start=200):
     below = above = 0
     pend = None          # (action, 실행 거래일 index, 신호일)
     events = []
+    last_cond = None     # D10GK: 재매수 조건이 마지막으로 맞은 날 (보유 중이었으면 매매 없음)
     for t in range(start, len(closes)):
         e = ema[t]
         if closes[t] < e:
@@ -144,10 +145,14 @@ def run_machine(kind, closes, ema, rsi, peaks, dates, start=200):
         buy_sig = above >= TIME_FILTER
         rsi_buy = (kind == "D10GK" and not inv and not buy_sig and not np.isnan(rsi[t])
                    and rsi[t] < RSI_THR and (closes[t] - e) / e <= DIV_THR)
+        if kind == "D10GK" and not np.isnan(rsi[t]) and rsi[t] < RSI_THR and (closes[t] - e) / e <= DIV_THR:
+            last_cond = {"date": str(dates[t].date()), "state": "보유" if inv else "현금"}
 
         fire_sell = fire_buy = False
         how = ""
+        sig_t = t                                    # 신호가 켜진 날 (다음 거래일 매매면 전날)
         if pend is not None and t >= pend[1]:
+            sig_t = pend[2]
             fire_sell = pend[0] == "sell" and inv
             fire_buy = pend[0] == "buy" and not inv
             how = "신호 다음 거래일"
@@ -161,11 +166,12 @@ def run_machine(kind, closes, ema, rsi, peaks, dates, start=200):
                 pend = ("buy", t + 1, t)
         if fire_sell:
             inv, below = False, 0
-            events.append({"date": str(dates[t].date()), "action": "매도", "how": how})
+            events.append({"date": str(dates[t].date()), "signal": str(dates[sig_t].date()), "action": "매도", "how": how})
         if fire_buy:
             inv, above = True, 0
-            events.append({"date": str(dates[t].date()), "action": "매수", "how": how})
-    return {"invested": bool(inv), "below": below, "above": above, "pend": pend, "events": events}
+            events.append({"date": str(dates[t].date()), "signal": str(dates[sig_t].date()), "action": "매수", "how": how})
+    return {"invested": bool(inv), "below": below, "above": above, "pend": pend, "events": events,
+            "last_cond": last_cond}
 
 
 def describe(kind, m, closes, ema, rsi, ag, al, peaks, dates, tqqq):
@@ -174,12 +180,15 @@ def describe(kind, m, closes, ema, rsi, ag, al, peaks, dates, tqqq):
     out = {
         "state":       "보유" if m["invested"] else "현금",
         "last_events": m["events"][-4:][::-1],
+        **({"last_cond": m["last_cond"]} if kind == "D10GK" and m.get("last_cond") else {}),
         "action":      "없음",
         "detail":      "",
     }
     # 화면 게이지용: 현금일 때 200일선 위 연속일(15일이면 매수), RULE25 보유일 때 매도선
     if not m["invested"]:
         out["above_days"] = int(m["above"])
+    elif kind in ("S0", "D10GK"):
+        out["below_days"] = int(m["below"])          # 200일선 아래 연속일 (15일이면 매도)
     elif kind == "RULE25":
         out["sell_line"] = round(float(peaks[t] * (1 - TRAIL)), 2)
     if m["pend"] is not None:
@@ -202,7 +211,7 @@ def describe(kind, m, closes, ema, rsi, ag, al, peaks, dates, tqqq):
         out["detail"] = (f"200일 평균선 아래 ({(c / e - 1) * 100:+.1f}%). "
                          f"종가가 {e:,.0f} 위로 15일 연속 마감하면 매수 신호")
 
-    if kind == "D10GK" and not m["invested"]:
+    if kind == "D10GK":
         x, xr, xe = loc_threshold(c, e, ag[t], al[t])
         loc = {
             "ndx_price":   round(x, 2),
@@ -211,6 +220,10 @@ def describe(kind, m, closes, ema, rsi, ag, al, peaks, dates, tqqq):
             "tqqq_price":  round(tqqq * (1 + 3 * (x / c - 1)), 2) if tqqq else None,
             "by":          "RSI" if xr <= xe else "200일선 -10%",
         }
+    if kind == "D10GK" and m["invested"]:
+        # 보유 중이면 할 일은 없지만, 현금으로 새로 시작하는 사람에게는 같은 가격이 진입 LOC 주문가
+        out["entry_loc"] = loc
+    if kind == "D10GK" and not m["invested"]:
         out["loc"] = loc
         out["action"] = "LOC 매수 주문"
         price = f"TQQQ ${loc['tqqq_price']:,.2f}" if loc["tqqq_price"] else f"TQQQ 전일 종가 대비 {loc['tqqq_pct']:+.1f}%"

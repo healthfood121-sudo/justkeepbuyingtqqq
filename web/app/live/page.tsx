@@ -17,23 +17,116 @@ import { useTheme } from '@/components/ThemeProvider'
 
 ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Tooltip, Legend)
 
-type Key = 'RULE25' | 'S0' | 'HOLD3' | 'HOLD1'
-interface Row { d: string; ndx: number; tqqq: number | null; state: Record<'RULE25' | 'S0', '보유' | '현금'>; v: Record<Key, number>; est?: boolean }
+type Key = 'RULE25' | 'S0' | 'D10GK' | 'HOLD3' | 'HOLD1'
+// sig: 그날 종가로 홈 화면 '오늘의 신호'에 실제로 떴던 값 (첫날은 없음)
+//   s[전략].cnt = 보유 중이면 200일선 아래 연속일(15일이면 매도), 현금이면 위 연속일(15일이면 매수)
+type Strat = 'RULE25' | 'S0' | 'D10GK'
+interface StratSig { st: '보유' | '현금'; act: string; cnt?: number }
+interface Sig { rsi: number | null; ema: number | null; peak: number | null; s: Partial<Record<Strat, StratSig>> }
+interface Row { d: string; ndx: number; tqqq: number | null; state: Record<'RULE25' | 'S0' | 'D10GK', '보유' | '현금'>; v: Record<Key, number>; est?: boolean; sig?: Sig }
 interface Record_ { start: string; asof: string; days: number; now: Record<Key, number>; events: { d: string; k: string; from: string; to: string }[]; rows: Row[] }
 
 const SERIES: { k: Key; label: string; light: string; dark: string }[] = [
   { k: 'RULE25', label: '25% 룰', light: '#7c3aed', dark: '#a78bfa' },
   { k: 'S0', label: 'S0', light: '#2563eb', dark: '#60a5fa' },
+  { k: 'D10GK', label: 'D10GK', light: '#059669', dark: '#34d399' },
   { k: 'HOLD3', label: 'TQQQ 계속 보유', light: '#6b7280', dark: '#9ca3af' },
   { k: 'HOLD1', label: '나스닥100 보유', light: '#d97706', dark: '#fbbf24' },
 ]
 const pct = (v: number) => `${v >= 100 ? '+' : ''}${(v - 100).toFixed(2)}%`
+const sgn = (v: number) => `${v > 0 ? '+' : ''}${v.toFixed(1)}%`
+// 홈 화면 신호 파일의 전략별 최근 매매 (최신순). date=매매일, signal=신호가 켜진 날
+type LastEv = { date: string; signal?: string; action: string }
+type LastMap = Partial<Record<Strat, LastEv[]>>
+
+// 표 머리글: 전략 이름 아래 마지막 매도·매수 신호 날짜
+type LastCond = { date: string; state: '보유' | '현금' }
+
+function LastSig({ ev, cond }: { ev?: LastEv[]; cond?: LastCond }) {
+  // D10GK: 마지막 매수 신호 뒤에 조건만 맞은 날(보유 중이라 매매 없음)이 있으면 한 줄 더
+  const buy = ev?.find(x => x.action === '매수')
+  const c = cond && (!buy || cond.date > (buy.signal ?? buy.date)) ? cond : null
+  if (!ev?.length && !c) return null
+  return (
+    <div className="mt-0.5 space-y-px font-normal text-[10px] whitespace-nowrap">
+      {(['매도', '매수'] as const).map(a => {
+        const e = ev.find(x => x.action === a)
+        if (!e) return null
+        const d = e.signal ?? e.date
+        return (
+          <div key={a} className="text-gray-500 dark:text-gray-400">
+            <span className={a === '매도' ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400'}>마지막 {a} 신호</span>{' '}
+            <span className="font-mono">{d}</span>
+            {d !== e.date && <span className="text-gray-400 dark:text-gray-500"> → {e.date.slice(5)} {a}</span>}
+          </div>
+        )
+      })}
+      {c && (
+        <div className="text-gray-500 dark:text-gray-400">
+          <span className="text-amber-700 dark:text-amber-300">마지막 재매수 조건 충족</span>{' '}
+          <span className="font-mono">{c.date}</span>
+          <span className="text-gray-400 dark:text-gray-500"> → {c.state === '보유' ? '보유 중이라 매매 없음' : '그날 종가에 매수'}</span>
+        </div>
+      )}
+    </div>
+  )
+}
+
+const HIT = 'text-red-600 dark:text-red-400 font-semibold'
+const GROUP = 'border-l border-gray-200 dark:border-gray-700'
+
+// 상태 칩 + 그날 할 일
+function StateCell({ t, extra }: { t?: StratSig; extra?: string | null }) {
+  if (!t) return <td className={`py-1.5 px-2 text-gray-300 dark:text-gray-600 ${GROUP}`}>—</td>
+  const act = t.act && t.act !== '없음' ? t.act : null
+  return (
+    <td className={`py-1.5 px-2 whitespace-nowrap ${GROUP}`}>
+      <span className={`inline-block text-[10px] px-1.5 py-0.5 rounded-full font-semibold mr-1.5 ${
+        t.st === '보유'
+          ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300'
+          : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300'}`}>
+        {t.st === '보유' ? 'TQQQ 보유' : '현금'}
+      </span>
+      {act
+        ? <span className={act === 'LOC 매수 주문' ? 'text-purple-700 dark:text-purple-300 font-semibold' : HIT}>
+            {act === 'LOC 매수 주문' ? act : `${act} 신호`}
+          </span>
+        : extra
+          ? <span className="text-amber-700 dark:text-amber-300 font-semibold">{extra}</span>
+          : <span className="text-gray-400 dark:text-gray-500">할 일 없음</span>}
+    </td>
+  )
+}
+
+// 200일선 연속일: 보유면 아래 n/15 (매도까지), 현금이면 위 n/15 (매수까지)
+function CountCell({ t }: { t?: StratSig }) {
+  if (!t || t.cnt === undefined) return <td className="py-1.5 px-2 text-gray-300 dark:text-gray-600">—</td>
+  const n = t.cnt
+  return (
+    <td className={`py-1.5 px-2 font-mono whitespace-nowrap ${n >= 15 ? HIT : n >= 10 ? 'text-amber-700 dark:text-amber-300' : ''}`}>
+      {n === 0 ? <span className="text-gray-400 dark:text-gray-500">0</span> : `${t.st === '보유' ? '아래' : '위'} ${n}/15일`}
+    </td>
+  )
+}
 
 export default function LivePage() {
   const [rec, setRec] = useState<Record_ | null>(null)
   const { theme } = useTheme()
   const dark = theme === 'dark'
   useEffect(() => { fetch('/data/live_record.json').then(r => r.json()).then(setRec) }, [])
+  const [last, setLast] = useState<LastMap>({})
+  const [d10Cond, setD10Cond] = useState<LastCond | undefined>()
+  useEffect(() => {
+    fetch('/data/withdrawal_signal.json')
+      .then(r => r.json())
+      .then(j => {
+        const m: LastMap = {}
+        for (const k of ['RULE25', 'S0', 'D10GK'] as Strat[]) m[k] = j.strategies?.[k]?.last_events
+        setLast(m)
+        setD10Cond(j.strategies?.D10GK?.last_cond)
+      })
+      .catch(() => {})
+  }, [])
   const liveChartRef = useRef<ChartJS<'line'> | null>(null)
   const [pluginLoaded, setPluginLoaded] = useState(false)
   useEffect(() => {
@@ -113,16 +206,16 @@ export default function LivePage() {
 
         {!rec ? <p className="text-xs text-gray-400 py-6 text-center">불러오는 중…</p> : (
           <>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-2">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-2">
               {SERIES.map(s => (
                 <div key={s.k} className={`rounded-xl px-3 py-3 text-center ${s.k === 'RULE25' ? 'bg-purple-50 dark:bg-purple-500/10' : 'bg-gray-50 dark:bg-gray-900'}`}>
-                  <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">{s.label}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">{s.label}{s.k === 'RULE25' ? <span className="text-purple-600 dark:text-purple-300 font-semibold"> (메인)</span> : (s.k === 'S0' || s.k === 'D10GK') ? ' (비교)' : ''}</p>
                   <p className="text-xl font-black text-gray-900 dark:text-white">{pct(rec.now[s.k])}</p>
                 </div>
               ))}
             </div>
             <p className="text-xs text-gray-400 dark:text-gray-500 mb-8">
-              {rec.start} 종가 ~ {rec.asof} 종가 · {rec.days}거래일 · 세금·생활비 인출 제외 · 현금일 때 외화RP 이자(세후) · 신호 다음 거래일 종가에 매매
+              {rec.start} 종가 ~ {rec.asof} 종가 · {rec.days}거래일 · 세금·생활비 인출 제외 · 현금일 때 외화RP 이자(세후) · 신호 다음 거래일 종가에 매매 (D10GK 조기 재매수만 신호 당일 종가 LOC 주문)
             </p>
 
             {rec.rows.length > 2 && (
@@ -167,7 +260,7 @@ export default function LivePage() {
 
             <h2 className="text-lg font-bold mb-3">매매 기록</h2>
             {rec.events.length === 0
-              ? <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">아직 매매가 없다. 공개 이후 25% 룰과 S0 모두 TQQQ를 계속 들고 있다.</p>
+              ? <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">아직 매매가 없다. 공개 이후 25% 룰 · S0 · D10GK 모두 TQQQ를 계속 들고 있다.</p>
               : (
                 <ul className="text-sm text-gray-700 dark:text-gray-300 mb-8 space-y-1">
                   {rec.events.map(e => (
@@ -177,25 +270,75 @@ export default function LivePage() {
               )}
 
             <h2 className="text-lg font-bold mb-3">날짜별 기록</h2>
+            <div className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed mb-3 space-y-0.5">
+              <p>날짜마다 그날 종가로 홈 화면 &lsquo;오늘의 신호&rsquo;에 떴던 값을 전략별로 남긴다. 내가 따르는 전략의 칸만 보면 된다.</p>
+              <p>· <strong>25% 룰</strong>: 1년 최고 종가보다 25% 떨어지면 매도. &lsquo;최고가 대비&rsquo;가 −25%에 닿으면 빨간색</p>
+              <p>· <strong>S0</strong>: 200일 평균선 아래로 15일 연속 마감하면 매도, 현금일 때 위로 15일 연속이면 재매수</p>
+              <p>· <strong>D10GK</strong>: S0와 같은 매도 규칙에, 현금일 때 14일 상대강도지수(RSI) 30 미만이면서 200일선 대비 −10% 이하인 날 종가로 조기 재매수. 조건 칸은 기준에 닿으면 빨간색</p>
+            </div>
             <div className="overflow-x-auto">
               <table className="w-full text-xs border-collapse">
                 <thead>
+                  <tr className="text-gray-700 dark:text-gray-200">
+                    <th colSpan={3} />
+                    <th colSpan={2} className={`pt-2 px-2 text-left align-top font-bold ${GROUP}`}>25% 룰 <span className="font-semibold text-purple-600 dark:text-purple-300">(메인)</span><LastSig ev={last.RULE25} /></th>
+                    <th colSpan={2} className={`pt-2 px-2 text-left align-top font-bold ${GROUP}`}>S0 <span className="font-normal text-gray-400 dark:text-gray-500">(비교)</span><LastSig ev={last.S0} /></th>
+                    <th colSpan={3} className={`pt-2 px-2 text-left align-top font-bold ${GROUP}`}>D10GK <span className="font-normal text-gray-400 dark:text-gray-500">(비교)</span><LastSig ev={last.D10GK} cond={d10Cond} /></th>
+                    <th colSpan={5} className={`pt-2 px-2 text-left align-top font-bold ${GROUP}`}>누적 수익률</th>
+                  </tr>
                   <tr className="border-b border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400">
-                    {['날짜 (종가)', '나스닥100', 'TQQQ', '25% 룰 상태', '25% 룰', 'S0', 'TQQQ 보유', '나스닥100 보유'].map(h => (
-                      <th key={h} className="py-2 px-2 text-left font-medium whitespace-nowrap">{h}</th>
+                    {[
+                      ['날짜 (종가)', ''], ['나스닥100', ''], ['TQQQ', ''],
+                      ['상태 · 할 일', GROUP], ['최고가 대비', ''],
+                      ['상태 · 할 일', GROUP], ['200일선 연속', ''],
+                      ['상태 · 할 일', GROUP], ['200일선 연속', ''], ['재매수 조건 (RSI · 200일선 대비)', ''],
+                      ['25% 룰', GROUP], ['S0', ''], ['D10GK', ''], ['TQQQ 보유', ''], ['나스닥100 보유', ''],
+                    ].map(([h, c], i) => (
+                      <th key={i} className={`py-2 px-2 text-left font-medium whitespace-nowrap ${c}`}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                  {[...rec.rows].reverse().map(r => (
+                  {[...rec.rows].reverse().map(r => {
+                    const g = r.sig
+                    const d10 = g?.s.D10GK
+                    const rsiOk = g?.rsi != null && g.rsi < 30
+                    const emaOk = g?.ema != null && g.ema <= -10
+                    // 보유 중인데 재매수 조건만 맞은 날 (예: 2026-11-20)
+                    const d10extra = d10 && d10.st === '보유' && rsiOk && emaOk ? '재매수 조건 충족 (보유 중이라 해당 없음)' : null
+                    return (
                     <tr key={r.d} className="text-gray-700 dark:text-gray-300">
                       <td className="py-1.5 px-2 font-mono whitespace-nowrap">{r.d}</td>
                       <td className="py-1.5 px-2 font-mono">{r.ndx.toLocaleString('en-US', { maximumFractionDigits: 0 })}</td>
-                      <td className="py-1.5 px-2 font-mono">{r.tqqq ? `$${r.tqqq.toFixed(2)}` : '—'}{r.est && <span className="text-gray-400"> (추정)</span>}</td>
-                      <td className="py-1.5 px-2">{r.state.RULE25}</td>
-                      {SERIES.map(s => <td key={s.k} className="py-1.5 px-2 font-mono">{pct(r.v[s.k])}</td>)}
+                      <td className="py-1.5 px-2 font-mono whitespace-nowrap">{r.tqqq ? `$${r.tqqq.toFixed(2)}` : '—'}{r.est && <span className="text-gray-400"> (추정)</span>}</td>
+
+                      <StateCell t={g?.s.RULE25} />
+                      {g?.s.RULE25?.st === '현금'
+                        ? <CountCell t={g.s.RULE25} />
+                        : <td className={`py-1.5 px-2 font-mono ${g?.peak != null && g.peak <= -25 ? HIT : g?.peak != null && g.peak <= -20 ? 'text-amber-700 dark:text-amber-300' : ''}`}>
+                            {g?.peak != null ? sgn(g.peak) : '—'}
+                          </td>}
+
+                      <StateCell t={g?.s.S0} />
+                      <CountCell t={g?.s.S0} />
+
+                      <StateCell t={d10} extra={d10extra} />
+                      <CountCell t={d10} />
+                      <td className="py-1.5 px-2 font-mono whitespace-nowrap">
+                        {g?.rsi != null && g?.ema != null ? (
+                          <>
+                            <span className={rsiOk ? HIT : ''}>{g.rsi.toFixed(1)}</span>
+                            <span className="text-gray-400"> · </span>
+                            <span className={emaOk ? HIT : ''}>{sgn(g.ema)}</span>
+                            {rsiOk && emaOk && <span className="ml-1 text-amber-700 dark:text-amber-300 font-sans font-semibold">충족</span>}
+                          </>
+                        ) : '—'}
+                      </td>
+
+                      {SERIES.map((s, i) => <td key={s.k} className={`py-1.5 px-2 font-mono ${i === 0 ? GROUP : ''}`}>{pct(r.v[s.k])}</td>)}
                     </tr>
-                  ))}
+                    )
+                  })}
                 </tbody>
               </table>
             </div>
