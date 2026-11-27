@@ -1,0 +1,3026 @@
+{
+ "ticker": "NDX",
+ "name": "나스닥100 지수",
+ "currency": "USD",
+ "benchmark": "없음",
+ "type": "index",
+ "note": "지수 월말 종가(배당 제외). PER은 worldperatio.com 월별 추정치, EPS = 지수 ÷ PER.",
+ "dataThrough": "2026-10",
+ "epsThrough": "2026-10",
+ "current": {
+  "price": 28384.85,
+  "pe": 26.2,
+  "divYield": 0,
+  "eps": 1085.16
+ },
+ "fullPeriod": {
+  "start_date": "1990-12-31",
+  "end_date": "2026-10-28",
+  "start_price": 200.53,
+  "end_price": 28384.85,
+  "years": 35.8,
+  "cagr": 14.82,
+  "multiple": 141.5
+ },
+ "stats": {
+  "n": 26,
+  "min": -6.66,
+  "minBuy": "1999",
+  "median": 11.46,
+  "mean": 11.93,
+  "max": 27.86,
+  "maxBuy": "1990",
+  "over10": 73.1,
+  "over15": 38.5,
+  "over20": 7.7,
+  "losses": 3,
+  "realLosses": null,
+  "realMedian": null,
+  "beatInfl": null,
+  "beatBench": null,
+  "beatTotal": null
+ },
+ "rows10y": [
+  {
+   "buyYear": 1990,
+   "sellYear": 2000,
+   "sellDate": "2000-12-31",
+   "yearsActual": 10.0,
+   "cagr": 27.86,
+   "multiple": 11.6776,
+   "isComplete": true,
+   "priceCagr": 27.86,
+   "inflCagr": null,
+   "realCagr": null,
+   "peBuyActual": 16.2,
+   "peBuy": 16.2
+  },
+  {
+   "buyYear": 1991,
+   "sellYear": 2001,
+   "sellDate": "2001-12-31",
+   "yearsActual": 10.0,
+   "cagr": 16.9,
+   "multiple": 4.7666,
+   "isComplete": true,
+   "priceCagr": 16.9,
+   "inflCagr": null,
+   "realCagr": null,
+   "peBuyActual": 21.7,
+   "peBuy": 21.7
+  },
+  {
+   "buyYear": 1992,
+   "sellYear": 2002,
+   "sellDate": "2002-12-31",
+   "yearsActual": 10.0,
+   "cagr": 10.58,
+   "multiple": 2.7329,
+   "isComplete": true,
+   "priceCagr": 10.58,
+   "inflCagr": null,
+   "realCagr": null,
+   "peBuyActual": 31.5,
+   "peBuy": 31.5
+  },
+  {
+   "buyYear": 1993,
+   "sellYear": 2003,
+   "sellDate": "2003-12-31",
+   "yearsActual": 10.0,
+   "cagr": 13.93,
+   "multiple": 3.6856,
+   "isComplete": true,
+   "priceCagr": 13.93,
+   "inflCagr": null,
+   "realCagr": null,
+   "peBuyActual": 25.9,
+   "peBuy": 25.9
+  },
+  {
+   "buyYear": 1994,
+   "sellYear": 2004,
+   "sellDate": "2004-12-31",
+   "yearsActual": 10.0,
+   "cagr": 14.9,
+   "multiple": 4.01,
+   "isComplete": true,
+   "priceCagr": 14.9,
+   "inflCagr": null,
+   "realCagr": null,
+   "peBuyActual": 17.4,
+   "peBuy": 17.4
+  },
+  {
+   "buyYear": 1995,
+   "sellYear": 2005,
+   "sellDate": "2005-12-31",
+   "yearsActual": 10.0,
+   "cagr": 11.06,
+   "multiple": 2.8551,
+   "isComplete": true,
+   "priceCagr": 11.06,
+   "inflCagr": null,
+   "realCagr": null,
+   "peBuyActual": 22.7,
+   "peBuy": 22.7
+  },
+  {
+   "buyYear": 1996,
+   "sellYear": 2006,
+   "sellDate": "2006-12-31",
+   "yearsActual": 10.0,
+   "cagr": 7.9,
+   "multiple": 2.139,
+   "isComplete": true,
+   "priceCagr": 7.9,
+   "inflCagr": null,
+   "realCagr": null,
+   "peBuyActual": 30.6,
+   "peBuy": 30.6
+  },
+  {
+   "buyYear": 1997,
+   "sellYear": 2007,
+   "sellDate": "2007-12-31",
+   "yearsActual": 10.0,
+   "cagr": 7.72,
+   "multiple": 2.1042,
+   "isComplete": true,
+   "priceCagr": 7.72,
+   "inflCagr": null,
+   "realCagr": null,
+   "peBuyActual": 30.7,
+   "peBuy": 30.7
+  },
+  {
+   "buyYear": 1998,
+   "sellYear": 2008,
+   "sellDate": "2008-12-31",
+   "yearsActual": 10.0,
+   "cagr": -4.07,
+   "multiple": 0.6599,
+   "isComplete": true,
+   "priceCagr": -4.07,
+   "inflCagr": null,
+   "realCagr": null,
+   "peBuyActual": 46.7,
+   "peBuy": 46.7
+  },
+  {
+   "buyYear": 1999,
+   "sellYear": 2009,
+   "sellDate": "2009-12-31",
+   "yearsActual": 10.0,
+   "cagr": -6.66,
+   "multiple": 0.5017,
+   "isComplete": true,
+   "priceCagr": -6.66,
+   "inflCagr": null,
+   "realCagr": null,
+   "peBuyActual": 57.7,
+   "peBuy": 57.7
+  },
+  {
+   "buyYear": 2000,
+   "sellYear": 2010,
+   "sellDate": "2010-12-31",
+   "yearsActual": 10.0,
+   "cagr": -0.54,
+   "multiple": 0.9471,
+   "isComplete": true,
+   "priceCagr": -0.54,
+   "inflCagr": null,
+   "realCagr": null,
+   "peBuyActual": 40.3,
+   "peBuy": 40.3
+  },
+  {
+   "buyYear": 2001,
+   "sellYear": 2011,
+   "sellDate": "2011-12-31",
+   "yearsActual": 10.0,
+   "cagr": 3.75,
+   "multiple": 1.4444,
+   "isComplete": true,
+   "priceCagr": 3.75,
+   "inflCagr": null,
+   "realCagr": null,
+   "peBuyActual": 64.6,
+   "peBuy": 64.6
+  },
+  {
+   "buyYear": 2002,
+   "sellYear": 2012,
+   "sellDate": "2012-12-31",
+   "yearsActual": 10.0,
+   "cagr": 10.46,
+   "multiple": 2.7032,
+   "isComplete": true,
+   "priceCagr": 10.46,
+   "inflCagr": null,
+   "realCagr": null,
+   "peBuyActual": 45.6,
+   "peBuy": 45.6
+  },
+  {
+   "buyYear": 2003,
+   "sellYear": 2013,
+   "sellDate": "2013-12-31",
+   "yearsActual": 10.0,
+   "cagr": 9.36,
+   "multiple": 2.447,
+   "isComplete": true,
+   "priceCagr": 9.36,
+   "inflCagr": null,
+   "realCagr": null,
+   "peBuyActual": 44.5,
+   "peBuy": 44.5
+  },
+  {
+   "buyYear": 2004,
+   "sellYear": 2014,
+   "sellDate": "2014-12-31",
+   "yearsActual": 10.0,
+   "cagr": 10.08,
+   "multiple": 2.6132,
+   "isComplete": true,
+   "priceCagr": 10.08,
+   "inflCagr": null,
+   "realCagr": null,
+   "peBuyActual": 30.9,
+   "peBuy": 30.9
+  },
+  {
+   "buyYear": 2005,
+   "sellYear": 2015,
+   "sellDate": "2015-12-31",
+   "yearsActual": 10.0,
+   "cagr": 10.81,
+   "multiple": 2.7919,
+   "isComplete": true,
+   "priceCagr": 10.81,
+   "inflCagr": null,
+   "realCagr": null,
+   "peBuyActual": 25.0,
+   "peBuy": 25.0
+  },
+  {
+   "buyYear": 2006,
+   "sellYear": 2016,
+   "sellDate": "2016-12-31",
+   "yearsActual": 10.0,
+   "cagr": 10.72,
+   "multiple": 2.7683,
+   "isComplete": true,
+   "priceCagr": 10.72,
+   "inflCagr": null,
+   "realCagr": null,
+   "peBuyActual": 23.9,
+   "peBuy": 23.9
+  },
+  {
+   "buyYear": 2007,
+   "sellYear": 2017,
+   "sellDate": "2017-12-31",
+   "yearsActual": 10.0,
+   "cagr": 11.86,
+   "multiple": 3.0679,
+   "isComplete": true,
+   "priceCagr": 11.86,
+   "inflCagr": null,
+   "realCagr": null,
+   "peBuyActual": 24.4,
+   "peBuy": 24.4
+  },
+  {
+   "buyYear": 2008,
+   "sellYear": 2018,
+   "sellDate": "2018-12-31",
+   "yearsActual": 10.0,
+   "cagr": 17.98,
+   "multiple": 5.2243,
+   "isComplete": true,
+   "priceCagr": 17.98,
+   "inflCagr": null,
+   "realCagr": null,
+   "peBuyActual": 18.5,
+   "peBuy": 18.5
+  },
+  {
+   "buyYear": 2009,
+   "sellYear": 2019,
+   "sellDate": "2019-12-31",
+   "yearsActual": 10.0,
+   "cagr": 16.72,
+   "multiple": 4.6944,
+   "isComplete": true,
+   "priceCagr": 16.72,
+   "inflCagr": null,
+   "realCagr": null,
+   "peBuyActual": 18.6,
+   "peBuy": 18.6
+  },
+  {
+   "buyYear": 2010,
+   "sellYear": 2020,
+   "sellDate": "2020-12-31",
+   "yearsActual": 10.0,
+   "cagr": 19.24,
+   "multiple": 5.8111,
+   "isComplete": true,
+   "priceCagr": 19.24,
+   "inflCagr": null,
+   "realCagr": null,
+   "peBuyActual": 13.3,
+   "peBuy": 13.3
+  },
+  {
+   "buyYear": 2011,
+   "sellYear": 2021,
+   "sellDate": "2021-12-31",
+   "yearsActual": 10.0,
+   "cagr": 21.76,
+   "multiple": 7.1647,
+   "isComplete": true,
+   "priceCagr": 21.76,
+   "inflCagr": null,
+   "realCagr": null,
+   "peBuyActual": 12.7,
+   "peBuy": 12.7
+  },
+  {
+   "buyYear": 2012,
+   "sellYear": 2022,
+   "sellDate": "2022-12-31",
+   "yearsActual": 10.0,
+   "cagr": 15.19,
+   "multiple": 4.1113,
+   "isComplete": true,
+   "priceCagr": 15.19,
+   "inflCagr": null,
+   "realCagr": null,
+   "peBuyActual": 14.2,
+   "peBuy": 14.2
+  },
+  {
+   "buyYear": 2013,
+   "sellYear": 2023,
+   "sellDate": "2023-12-31",
+   "yearsActual": 10.0,
+   "cagr": 16.7,
+   "multiple": 4.6843,
+   "isComplete": true,
+   "priceCagr": 16.7,
+   "inflCagr": null,
+   "realCagr": null,
+   "peBuyActual": 15.6,
+   "peBuy": 15.6
+  },
+  {
+   "buyYear": 2014,
+   "sellYear": 2024,
+   "sellDate": "2024-12-31",
+   "yearsActual": 10.0,
+   "cagr": 17.37,
+   "multiple": 4.9601,
+   "isComplete": true,
+   "priceCagr": 17.37,
+   "inflCagr": null,
+   "realCagr": null,
+   "peBuyActual": 13.1,
+   "peBuy": 13.1
+  },
+  {
+   "buyYear": 2015,
+   "sellYear": 2025,
+   "sellDate": "2025-12-31",
+   "yearsActual": 10.0,
+   "cagr": 18.58,
+   "multiple": 5.4971,
+   "isComplete": true,
+   "priceCagr": 18.58,
+   "inflCagr": null,
+   "realCagr": null,
+   "peBuyActual": 20.9,
+   "peBuy": 20.9
+  },
+  {
+   "buyYear": 2016,
+   "sellYear": 2026,
+   "sellDate": "2026-10-28",
+   "yearsActual": 9.8,
+   "cagr": 19.65,
+   "multiple": 5.8362,
+   "isComplete": false,
+   "priceCagr": 19.65,
+   "inflCagr": null,
+   "realCagr": null,
+   "peBuyActual": 22.4,
+   "peBuy": 22.4
+  },
+  {
+   "buyYear": 2017,
+   "sellYear": 2026,
+   "sellDate": "2026-10-28",
+   "yearsActual": 8.8,
+   "cagr": 18.38,
+   "multiple": 4.4376,
+   "isComplete": false,
+   "priceCagr": 18.38,
+   "inflCagr": null,
+   "realCagr": null,
+   "peBuyActual": 22.8,
+   "peBuy": 22.8
+  },
+  {
+   "buyYear": 2018,
+   "sellYear": 2026,
+   "sellDate": "2026-10-28",
+   "yearsActual": 7.8,
+   "cagr": 21.11,
+   "multiple": 4.4842,
+   "isComplete": false,
+   "priceCagr": 21.11,
+   "inflCagr": null,
+   "realCagr": null,
+   "peBuyActual": 17.5,
+   "peBuy": 17.5
+  },
+  {
+   "buyYear": 2019,
+   "sellYear": 2026,
+   "sellDate": "2026-10-28",
+   "yearsActual": 6.8,
+   "cagr": 18.83,
+   "multiple": 3.2503,
+   "isComplete": false,
+   "priceCagr": 18.83,
+   "inflCagr": null,
+   "realCagr": null,
+   "peBuyActual": 22.9,
+   "peBuy": 22.9
+  },
+  {
+   "buyYear": 2020,
+   "sellYear": 2026,
+   "sellDate": "2026-10-28",
+   "yearsActual": 5.8,
+   "cagr": 14.49,
+   "multiple": 2.2024,
+   "isComplete": false,
+   "priceCagr": 14.49,
+   "inflCagr": null,
+   "realCagr": null,
+   "peBuyActual": 32.9,
+   "peBuy": 32.9
+  },
+  {
+   "buyYear": 2021,
+   "sellYear": 2026,
+   "sellDate": "2026-10-28",
+   "yearsActual": 4.8,
+   "cagr": 12.13,
+   "multiple": 1.7393,
+   "isComplete": false,
+   "priceCagr": 12.13,
+   "inflCagr": null,
+   "realCagr": null,
+   "peBuyActual": 28.8,
+   "peBuy": 28.8
+  },
+  {
+   "buyYear": 2022,
+   "sellYear": 2026,
+   "sellDate": "2026-10-28",
+   "yearsActual": 3.8,
+   "cagr": 28.24,
+   "multiple": 2.5947,
+   "isComplete": false,
+   "priceCagr": 28.24,
+   "inflCagr": null,
+   "realCagr": null,
+   "peBuyActual": 22.2,
+   "peBuy": 22.2
+  },
+  {
+   "buyYear": 2023,
+   "sellYear": 2026,
+   "sellDate": "2026-10-28",
+   "yearsActual": 2.8,
+   "cagr": 20.27,
+   "multiple": 1.687,
+   "isComplete": false,
+   "priceCagr": 20.27,
+   "inflCagr": null,
+   "realCagr": null,
+   "peBuyActual": 32.0,
+   "peBuy": 32.0
+  },
+  {
+   "buyYear": 2024,
+   "sellYear": 2026,
+   "sellDate": "2026-10-28",
+   "yearsActual": 1.8,
+   "cagr": 17.83,
+   "multiple": 1.3509,
+   "isComplete": false,
+   "priceCagr": 17.83,
+   "inflCagr": null,
+   "realCagr": null,
+   "peBuyActual": 34.9,
+   "peBuy": 34.9
+  }
+ ],
+ "loss5y": [],
+ "epsDecomp": [
+  {
+   "buyYear": 1990,
+   "sellYear": 2000,
+   "epsBuy": 12.35,
+   "epsSell": 58.1,
+   "epsMultiple": 4.7,
+   "peBuy": 16.2,
+   "peSell": 40.3,
+   "peMultiple": 2.48,
+   "epsGrowthCagr": 16.74,
+   "peCagr": 9.52,
+   "divCagr": 0.0,
+   "priceCagr": 27.86,
+   "totalCagr": 27.86,
+   "inflCagr": null,
+   "note": null,
+   "inProgress": false,
+   "years": 10.0
+  },
+  {
+   "buyYear": 1991,
+   "sellYear": 2001,
+   "epsBuy": 15.23,
+   "epsSell": 24.43,
+   "epsMultiple": 1.6,
+   "peBuy": 21.7,
+   "peSell": 64.6,
+   "peMultiple": 2.97,
+   "epsGrowthCagr": 4.84,
+   "peCagr": 11.51,
+   "divCagr": 0.0,
+   "priceCagr": 16.9,
+   "totalCagr": 16.9,
+   "inflCagr": null,
+   "note": null,
+   "inProgress": false,
+   "years": 10.0
+  },
+  {
+   "buyYear": 1992,
+   "sellYear": 2002,
+   "epsBuy": 11.42,
+   "epsSell": 21.59,
+   "epsMultiple": 1.89,
+   "peBuy": 31.5,
+   "peSell": 45.6,
+   "peMultiple": 1.45,
+   "epsGrowthCagr": 6.57,
+   "peCagr": 3.76,
+   "divCagr": 0.0,
+   "priceCagr": 10.58,
+   "totalCagr": 10.58,
+   "inflCagr": null,
+   "note": null,
+   "inProgress": false,
+   "years": 10.0
+  },
+  {
+   "buyYear": 1993,
+   "sellYear": 2003,
+   "epsBuy": 15.4,
+   "epsSell": 32.97,
+   "epsMultiple": 2.14,
+   "peBuy": 25.9,
+   "peSell": 44.5,
+   "peMultiple": 1.72,
+   "epsGrowthCagr": 7.91,
+   "peCagr": 5.58,
+   "divCagr": 0.0,
+   "priceCagr": 13.93,
+   "totalCagr": 13.93,
+   "inflCagr": null,
+   "note": null,
+   "inProgress": false,
+   "years": 10.0
+  },
+  {
+   "buyYear": 1994,
+   "sellYear": 2004,
+   "epsBuy": 23.18,
+   "epsSell": 52.39,
+   "epsMultiple": 2.26,
+   "peBuy": 17.4,
+   "peSell": 30.9,
+   "peMultiple": 1.77,
+   "epsGrowthCagr": 8.49,
+   "peCagr": 5.9,
+   "divCagr": 0.0,
+   "priceCagr": 14.9,
+   "totalCagr": 14.9,
+   "inflCagr": null,
+   "note": null,
+   "inProgress": false,
+   "years": 10.0
+  },
+  {
+   "buyYear": 1995,
+   "sellYear": 2005,
+   "epsBuy": 25.37,
+   "epsSell": 65.81,
+   "epsMultiple": 2.59,
+   "peBuy": 22.7,
+   "peSell": 25.0,
+   "peMultiple": 1.1,
+   "epsGrowthCagr": 10.0,
+   "peCagr": 0.96,
+   "divCagr": 0.0,
+   "priceCagr": 11.06,
+   "totalCagr": 11.06,
+   "inflCagr": null,
+   "note": null,
+   "inProgress": false,
+   "years": 10.0
+  },
+  {
+   "buyYear": 1996,
+   "sellYear": 2006,
+   "epsBuy": 26.86,
+   "epsSell": 73.63,
+   "epsMultiple": 2.74,
+   "peBuy": 30.6,
+   "peSell": 23.9,
+   "peMultiple": 0.78,
+   "epsGrowthCagr": 10.61,
+   "peCagr": -2.45,
+   "divCagr": 0.0,
+   "priceCagr": 7.9,
+   "totalCagr": 7.9,
+   "inflCagr": null,
+   "note": null,
+   "inProgress": false,
+   "years": 10.0
+  },
+  {
+   "buyYear": 1997,
+   "sellYear": 2007,
+   "epsBuy": 32.33,
+   "epsSell": 85.48,
+   "epsMultiple": 2.64,
+   "peBuy": 30.7,
+   "peSell": 24.4,
+   "peMultiple": 0.8,
+   "epsGrowthCagr": 10.21,
+   "peCagr": -2.26,
+   "divCagr": 0.0,
+   "priceCagr": 7.72,
+   "totalCagr": 7.72,
+   "inflCagr": null,
+   "note": null,
+   "inProgress": false,
+   "years": 10.0
+  },
+  {
+   "buyYear": 1998,
+   "sellYear": 2008,
+   "epsBuy": 39.3,
+   "epsSell": 65.57,
+   "epsMultiple": 1.67,
+   "peBuy": 46.7,
+   "peSell": 18.5,
+   "peMultiple": 0.4,
+   "epsGrowthCagr": 5.25,
+   "peCagr": -8.86,
+   "divCagr": 0.0,
+   "priceCagr": -4.07,
+   "totalCagr": -4.07,
+   "inflCagr": null,
+   "note": null,
+   "inProgress": false,
+   "years": 10.0
+  },
+  {
+   "buyYear": 1999,
+   "sellYear": 2009,
+   "epsBuy": 64.24,
+   "epsSell": 99.8,
+   "epsMultiple": 1.55,
+   "peBuy": 57.7,
+   "peSell": 18.6,
+   "peMultiple": 0.32,
+   "epsGrowthCagr": 4.5,
+   "peCagr": -10.69,
+   "divCagr": 0.0,
+   "priceCagr": -6.66,
+   "totalCagr": -6.66,
+   "inflCagr": null,
+   "note": null,
+   "inProgress": false,
+   "years": 10.0
+  },
+  {
+   "buyYear": 2000,
+   "sellYear": 2010,
+   "epsBuy": 58.1,
+   "epsSell": 166.63,
+   "epsMultiple": 2.87,
+   "peBuy": 40.3,
+   "peSell": 13.3,
+   "peMultiple": 0.33,
+   "epsGrowthCagr": 11.11,
+   "peCagr": -10.49,
+   "divCagr": 0.0,
+   "priceCagr": -0.54,
+   "totalCagr": -0.54,
+   "inflCagr": null,
+   "note": null,
+   "inProgress": false,
+   "years": 10.0
+  },
+  {
+   "buyYear": 2001,
+   "sellYear": 2011,
+   "epsBuy": 24.43,
+   "epsSell": 179.5,
+   "epsMultiple": 7.35,
+   "peBuy": 64.6,
+   "peSell": 12.7,
+   "peMultiple": 0.2,
+   "epsGrowthCagr": 22.07,
+   "peCagr": -15.01,
+   "divCagr": 0.0,
+   "priceCagr": 3.75,
+   "totalCagr": 3.75,
+   "inflCagr": null,
+   "note": null,
+   "inProgress": false,
+   "years": 10.0
+  },
+  {
+   "buyYear": 2002,
+   "sellYear": 2012,
+   "epsBuy": 21.59,
+   "epsSell": 187.65,
+   "epsMultiple": 8.69,
+   "peBuy": 45.6,
+   "peSell": 14.2,
+   "peMultiple": 0.31,
+   "epsGrowthCagr": 24.14,
+   "peCagr": -11.02,
+   "divCagr": 0.0,
+   "priceCagr": 10.46,
+   "totalCagr": 10.46,
+   "inflCagr": null,
+   "note": null,
+   "inProgress": false,
+   "years": 10.0
+  },
+  {
+   "buyYear": 2003,
+   "sellYear": 2013,
+   "epsBuy": 32.97,
+   "epsSell": 231.0,
+   "epsMultiple": 7.01,
+   "peBuy": 44.5,
+   "peSell": 15.6,
+   "peMultiple": 0.35,
+   "epsGrowthCagr": 21.49,
+   "peCagr": -9.99,
+   "divCagr": 0.0,
+   "priceCagr": 9.36,
+   "totalCagr": 9.36,
+   "inflCagr": null,
+   "note": null,
+   "inProgress": false,
+   "years": 10.0
+  },
+  {
+   "buyYear": 2004,
+   "sellYear": 2014,
+   "epsBuy": 52.39,
+   "epsSell": 323.87,
+   "epsMultiple": 6.18,
+   "peBuy": 30.9,
+   "peSell": 13.1,
+   "peMultiple": 0.42,
+   "epsGrowthCagr": 19.98,
+   "peCagr": -8.25,
+   "divCagr": 0.0,
+   "priceCagr": 10.08,
+   "totalCagr": 10.08,
+   "inflCagr": null,
+   "note": null,
+   "inProgress": false,
+   "years": 10.0
+  },
+  {
+   "buyYear": 2005,
+   "sellYear": 2015,
+   "epsBuy": 65.81,
+   "epsSell": 219.35,
+   "epsMultiple": 3.33,
+   "peBuy": 25.0,
+   "peSell": 20.9,
+   "peMultiple": 0.84,
+   "epsGrowthCagr": 12.79,
+   "peCagr": -1.76,
+   "divCagr": 0.0,
+   "priceCagr": 10.81,
+   "totalCagr": 10.81,
+   "inflCagr": null,
+   "note": null,
+   "inProgress": false,
+   "years": 10.0
+  },
+  {
+   "buyYear": 2006,
+   "sellYear": 2016,
+   "epsBuy": 73.63,
+   "epsSell": 217.22,
+   "epsMultiple": 2.95,
+   "peBuy": 23.9,
+   "peSell": 22.4,
+   "peMultiple": 0.94,
+   "epsGrowthCagr": 11.43,
+   "peCagr": -0.63,
+   "divCagr": 0.0,
+   "priceCagr": 10.72,
+   "totalCagr": 10.72,
+   "inflCagr": null,
+   "note": null,
+   "inProgress": false,
+   "years": 10.0
+  },
+  {
+   "buyYear": 2007,
+   "sellYear": 2017,
+   "epsBuy": 85.48,
+   "epsSell": 280.67,
+   "epsMultiple": 3.28,
+   "peBuy": 24.4,
+   "peSell": 22.8,
+   "peMultiple": 0.93,
+   "epsGrowthCagr": 12.62,
+   "peCagr": -0.68,
+   "divCagr": 0.0,
+   "priceCagr": 11.86,
+   "totalCagr": 11.86,
+   "inflCagr": null,
+   "note": null,
+   "inProgress": false,
+   "years": 10.0
+  },
+  {
+   "buyYear": 2008,
+   "sellYear": 2018,
+   "epsBuy": 65.57,
+   "epsSell": 361.71,
+   "epsMultiple": 5.52,
+   "peBuy": 18.5,
+   "peSell": 17.5,
+   "peMultiple": 0.95,
+   "epsGrowthCagr": 18.62,
+   "peCagr": -0.54,
+   "divCagr": 0.0,
+   "priceCagr": 17.98,
+   "totalCagr": 17.98,
+   "inflCagr": null,
+   "note": null,
+   "inProgress": false,
+   "years": 10.0
+  },
+  {
+   "buyYear": 2009,
+   "sellYear": 2019,
+   "epsBuy": 99.8,
+   "epsSell": 381.52,
+   "epsMultiple": 3.82,
+   "peBuy": 18.6,
+   "peSell": 22.9,
+   "peMultiple": 1.23,
+   "epsGrowthCagr": 14.35,
+   "peCagr": 2.08,
+   "divCagr": 0.0,
+   "priceCagr": 16.72,
+   "totalCagr": 16.72,
+   "inflCagr": null,
+   "note": null,
+   "inProgress": false,
+   "years": 10.0
+  },
+  {
+   "buyYear": 2010,
+   "sellYear": 2020,
+   "epsBuy": 166.63,
+   "epsSell": 391.74,
+   "epsMultiple": 2.35,
+   "peBuy": 13.3,
+   "peSell": 32.9,
+   "peMultiple": 2.47,
+   "epsGrowthCagr": 8.92,
+   "peCagr": 9.47,
+   "divCagr": 0.0,
+   "priceCagr": 19.24,
+   "totalCagr": 19.24,
+   "inflCagr": null,
+   "note": null,
+   "inProgress": false,
+   "years": 10.0
+  },
+  {
+   "buyYear": 2011,
+   "sellYear": 2021,
+   "epsBuy": 179.5,
+   "epsSell": 567.46,
+   "epsMultiple": 3.16,
+   "peBuy": 12.7,
+   "peSell": 28.8,
+   "peMultiple": 2.27,
+   "epsGrowthCagr": 12.2,
+   "peCagr": 8.53,
+   "divCagr": 0.0,
+   "priceCagr": 21.76,
+   "totalCagr": 21.76,
+   "inflCagr": null,
+   "note": null,
+   "inProgress": false,
+   "years": 10.0
+  },
+  {
+   "buyYear": 2012,
+   "sellYear": 2022,
+   "epsBuy": 187.65,
+   "epsSell": 493.0,
+   "epsMultiple": 2.63,
+   "peBuy": 14.2,
+   "peSell": 22.2,
+   "peMultiple": 1.56,
+   "epsGrowthCagr": 10.14,
+   "peCagr": 4.58,
+   "divCagr": 0.0,
+   "priceCagr": 15.19,
+   "totalCagr": 15.19,
+   "inflCagr": null,
+   "note": null,
+   "inProgress": false,
+   "years": 10.0
+  },
+  {
+   "buyYear": 2013,
+   "sellYear": 2023,
+   "epsBuy": 231.0,
+   "epsSell": 525.15,
+   "epsMultiple": 2.27,
+   "peBuy": 15.6,
+   "peSell": 32.0,
+   "peMultiple": 2.06,
+   "epsGrowthCagr": 8.56,
+   "peCagr": 7.5,
+   "divCagr": 0.0,
+   "priceCagr": 16.7,
+   "totalCagr": 16.7,
+   "inflCagr": null,
+   "note": null,
+   "inProgress": false,
+   "years": 10.0
+  },
+  {
+   "buyYear": 2014,
+   "sellYear": 2024,
+   "epsBuy": 323.87,
+   "epsSell": 601.38,
+   "epsMultiple": 1.86,
+   "peBuy": 13.1,
+   "peSell": 34.9,
+   "peMultiple": 2.67,
+   "epsGrowthCagr": 6.38,
+   "peCagr": 10.32,
+   "divCagr": 0.0,
+   "priceCagr": 17.37,
+   "totalCagr": 17.37,
+   "inflCagr": null,
+   "note": null,
+   "inProgress": false,
+   "years": 10.0
+  },
+  {
+   "buyYear": 2015,
+   "sellYear": 2025,
+   "epsBuy": 219.35,
+   "epsSell": 751.0,
+   "epsMultiple": 3.42,
+   "peBuy": 20.9,
+   "peSell": 33.6,
+   "peMultiple": 1.61,
+   "epsGrowthCagr": 13.1,
+   "peCagr": 4.85,
+   "divCagr": 0.0,
+   "priceCagr": 18.58,
+   "totalCagr": 18.58,
+   "inflCagr": null,
+   "note": null,
+   "inProgress": false,
+   "years": 10.0
+  },
+  {
+   "buyYear": 2016,
+   "sellYear": 2026,
+   "epsBuy": 217.22,
+   "epsSell": 1085.16,
+   "epsMultiple": 5.0,
+   "peBuy": 22.4,
+   "peSell": 26.2,
+   "peMultiple": 1.17,
+   "epsGrowthCagr": 17.77,
+   "peCagr": 1.59,
+   "divCagr": 0.0,
+   "priceCagr": 19.65,
+   "totalCagr": 19.65,
+   "inflCagr": null,
+   "note": null,
+   "inProgress": true,
+   "years": 9.8
+  }
+ ],
+ "monthlyClose": [
+  {
+   "d": "1985-10",
+   "p": 115.48
+  },
+  {
+   "d": "1985-11",
+   "p": 126.06
+  },
+  {
+   "d": "1985-12",
+   "p": 132.29
+  },
+  {
+   "d": "1986-01",
+   "p": 132.93
+  },
+  {
+   "d": "1986-02",
+   "p": 140.43
+  },
+  {
+   "d": "1986-03",
+   "p": 148.86
+  },
+  {
+   "d": "1986-04",
+   "p": 154.91
+  },
+  {
+   "d": "1986-05",
+   "p": 163.16
+  },
+  {
+   "d": "1986-06",
+   "p": 162.62
+  },
+  {
+   "d": "1986-07",
+   "p": 144.71
+  },
+  {
+   "d": "1986-08",
+   "p": 151.7
+  },
+  {
+   "d": "1986-09",
+   "p": 137.49
+  },
+  {
+   "d": "1986-10",
+   "p": 144.48
+  },
+  {
+   "d": "1986-11",
+   "p": 147.94
+  },
+  {
+   "d": "1986-12",
+   "p": 141.4
+  },
+  {
+   "d": "1987-01",
+   "p": 166.68
+  },
+  {
+   "d": "1987-02",
+   "p": 182.75
+  },
+  {
+   "d": "1987-03",
+   "p": 186.04
+  },
+  {
+   "d": "1987-04",
+   "p": 184.83
+  },
+  {
+   "d": "1987-05",
+   "p": 188.77
+  },
+  {
+   "d": "1987-06",
+   "p": 189.24
+  },
+  {
+   "d": "1987-07",
+   "p": 196.35
+  },
+  {
+   "d": "1987-08",
+   "p": 209.57
+  },
+  {
+   "d": "1987-09",
+   "p": 205.51
+  },
+  {
+   "d": "1987-10",
+   "p": 150.07
+  },
+  {
+   "d": "1987-11",
+   "p": 137.12
+  },
+  {
+   "d": "1987-12",
+   "p": 156.25
+  },
+  {
+   "d": "1988-01",
+   "p": 159.13
+  },
+  {
+   "d": "1988-02",
+   "p": 172.64
+  },
+  {
+   "d": "1988-03",
+   "p": 173.26
+  },
+  {
+   "d": "1988-04",
+   "p": 175.92
+  },
+  {
+   "d": "1988-05",
+   "p": 173.35
+  },
+  {
+   "d": "1988-06",
+   "p": 189.02
+  },
+  {
+   "d": "1988-07",
+   "p": 181.16
+  },
+  {
+   "d": "1988-08",
+   "p": 170.99
+  },
+  {
+   "d": "1988-09",
+   "p": 179.37
+  },
+  {
+   "d": "1988-10",
+   "p": 174.78
+  },
+  {
+   "d": "1988-11",
+   "p": 169.18
+  },
+  {
+   "d": "1988-12",
+   "p": 177.41
+  },
+  {
+   "d": "1989-01",
+   "p": 186.47
+  },
+  {
+   "d": "1989-02",
+   "p": 183.79
+  },
+  {
+   "d": "1989-03",
+   "p": 185.87
+  },
+  {
+   "d": "1989-04",
+   "p": 200.47
+  },
+  {
+   "d": "1989-05",
+   "p": 214.54
+  },
+  {
+   "d": "1989-06",
+   "p": 204.59
+  },
+  {
+   "d": "1989-07",
+   "p": 214.27
+  },
+  {
+   "d": "1989-08",
+   "p": 222.01
+  },
+  {
+   "d": "1989-09",
+   "p": 226.39
+  },
+  {
+   "d": "1989-10",
+   "p": 222.62
+  },
+  {
+   "d": "1989-11",
+   "p": 224.45
+  },
+  {
+   "d": "1989-12",
+   "p": 223.84
+  },
+  {
+   "d": "1990-01",
+   "p": 201.94
+  },
+  {
+   "d": "1990-02",
+   "p": 207.91
+  },
+  {
+   "d": "1990-03",
+   "p": 213.15
+  },
+  {
+   "d": "1990-04",
+   "p": 205.82
+  },
+  {
+   "d": "1990-05",
+   "p": 236.15
+  },
+  {
+   "d": "1990-06",
+   "p": 238.46
+  },
+  {
+   "d": "1990-07",
+   "p": 223.38
+  },
+  {
+   "d": "1990-08",
+   "p": 193.62
+  },
+  {
+   "d": "1990-09",
+   "p": 177.05
+  },
+  {
+   "d": "1990-10",
+   "p": 172.55
+  },
+  {
+   "d": "1990-11",
+   "p": 192.58
+  },
+  {
+   "d": "1990-12",
+   "p": 200.53
+  },
+  {
+   "d": "1991-01",
+   "p": 232.43
+  },
+  {
+   "d": "1991-02",
+   "p": 250.12
+  },
+  {
+   "d": "1991-03",
+   "p": 264.9
+  },
+  {
+   "d": "1991-04",
+   "p": 263.65
+  },
+  {
+   "d": "1991-05",
+   "p": 279.0
+  },
+  {
+   "d": "1991-06",
+   "p": 254.2
+  },
+  {
+   "d": "1991-07",
+   "p": 272.15
+  },
+  {
+   "d": "1991-08",
+   "p": 287.4
+  },
+  {
+   "d": "1991-09",
+   "p": 287.54
+  },
+  {
+   "d": "1991-10",
+   "p": 292.51
+  },
+  {
+   "d": "1991-11",
+   "p": 284.79
+  },
+  {
+   "d": "1991-12",
+   "p": 330.86
+  },
+  {
+   "d": "1992-01",
+   "p": 338.32
+  },
+  {
+   "d": "1992-02",
+   "p": 345.88
+  },
+  {
+   "d": "1992-03",
+   "p": 323.05
+  },
+  {
+   "d": "1992-04",
+   "p": 307.86
+  },
+  {
+   "d": "1992-05",
+   "p": 315.3
+  },
+  {
+   "d": "1992-06",
+   "p": 301.23
+  },
+  {
+   "d": "1992-07",
+   "p": 310.89
+  },
+  {
+   "d": "1992-08",
+   "p": 299.26
+  },
+  {
+   "d": "1992-09",
+   "p": 313.18
+  },
+  {
+   "d": "1992-10",
+   "p": 329.15
+  },
+  {
+   "d": "1992-11",
+   "p": 350.96
+  },
+  {
+   "d": "1992-12",
+   "p": 360.18
+  },
+  {
+   "d": "1993-01",
+   "p": 370.56
+  },
+  {
+   "d": "1993-02",
+   "p": 351.14
+  },
+  {
+   "d": "1993-03",
+   "p": 359.42
+  },
+  {
+   "d": "1993-04",
+   "p": 339.95
+  },
+  {
+   "d": "1993-05",
+   "p": 368.11
+  },
+  {
+   "d": "1993-06",
+   "p": 366.12
+  },
+  {
+   "d": "1993-07",
+   "p": 352.86
+  },
+  {
+   "d": "1993-08",
+   "p": 372.65
+  },
+  {
+   "d": "1993-09",
+   "p": 382.71
+  },
+  {
+   "d": "1993-10",
+   "p": 390.98
+  },
+  {
+   "d": "1993-11",
+   "p": 386.76
+  },
+  {
+   "d": "1993-12",
+   "p": 398.28
+  },
+  {
+   "d": "1994-01",
+   "p": 413.99
+  },
+  {
+   "d": "1994-02",
+   "p": 412.17
+  },
+  {
+   "d": "1994-03",
+   "p": 382.96
+  },
+  {
+   "d": "1994-04",
+   "p": 373.25
+  },
+  {
+   "d": "1994-05",
+   "p": 378.85
+  },
+  {
+   "d": "1994-06",
+   "p": 360.3
+  },
+  {
+   "d": "1994-07",
+   "p": 370.16
+  },
+  {
+   "d": "1994-08",
+   "p": 397.9
+  },
+  {
+   "d": "1994-09",
+   "p": 393.85
+  },
+  {
+   "d": "1994-10",
+   "p": 413.05
+  },
+  {
+   "d": "1994-11",
+   "p": 404.82
+  },
+  {
+   "d": "1994-12",
+   "p": 404.27
+  },
+  {
+   "d": "1995-01",
+   "p": 405.33
+  },
+  {
+   "d": "1995-02",
+   "p": 432.5
+  },
+  {
+   "d": "1995-03",
+   "p": 447.15
+  },
+  {
+   "d": "1995-04",
+   "p": 469.56
+  },
+  {
+   "d": "1995-05",
+   "p": 488.1
+  },
+  {
+   "d": "1995-06",
+   "p": 538.03
+  },
+  {
+   "d": "1995-07",
+   "p": 568.88
+  },
+  {
+   "d": "1995-08",
+   "p": 576.77
+  },
+  {
+   "d": "1995-09",
+   "p": 585.08
+  },
+  {
+   "d": "1995-10",
+   "p": 598.78
+  },
+  {
+   "d": "1995-11",
+   "p": 593.72
+  },
+  {
+   "d": "1995-12",
+   "p": 576.23
+  },
+  {
+   "d": "1996-01",
+   "p": 591.82
+  },
+  {
+   "d": "1996-02",
+   "p": 622.83
+  },
+  {
+   "d": "1996-03",
+   "p": 609.69
+  },
+  {
+   "d": "1996-04",
+   "p": 666.73
+  },
+  {
+   "d": "1996-05",
+   "p": 692.39
+  },
+  {
+   "d": "1996-06",
+   "p": 677.3
+  },
+  {
+   "d": "1996-07",
+   "p": 636.01
+  },
+  {
+   "d": "1996-08",
+   "p": 663.57
+  },
+  {
+   "d": "1996-09",
+   "p": 737.57
+  },
+  {
+   "d": "1996-10",
+   "p": 751.99
+  },
+  {
+   "d": "1996-11",
+   "p": 834.01
+  },
+  {
+   "d": "1996-12",
+   "p": 821.36
+  },
+  {
+   "d": "1997-01",
+   "p": 921.55
+  },
+  {
+   "d": "1997-02",
+   "p": 850.46
+  },
+  {
+   "d": "1997-03",
+   "p": 797.06
+  },
+  {
+   "d": "1997-04",
+   "p": 874.74
+  },
+  {
+   "d": "1997-05",
+   "p": 958.85
+  },
+  {
+   "d": "1997-06",
+   "p": 957.3
+  },
+  {
+   "d": "1997-07",
+   "p": 1107.03
+  },
+  {
+   "d": "1997-08",
+   "p": 1074.05
+  },
+  {
+   "d": "1997-09",
+   "p": 1097.16
+  },
+  {
+   "d": "1997-10",
+   "p": 1019.62
+  },
+  {
+   "d": "1997-11",
+   "p": 1050.51
+  },
+  {
+   "d": "1997-12",
+   "p": 990.83
+  },
+  {
+   "d": "1998-01",
+   "p": 1071.13
+  },
+  {
+   "d": "1998-02",
+   "p": 1194.13
+  },
+  {
+   "d": "1998-03",
+   "p": 1220.66
+  },
+  {
+   "d": "1998-04",
+   "p": 1248.12
+  },
+  {
+   "d": "1998-05",
+   "p": 1192.07
+  },
+  {
+   "d": "1998-06",
+   "p": 1337.34
+  },
+  {
+   "d": "1998-07",
+   "p": 1377.26
+  },
+  {
+   "d": "1998-08",
+   "p": 1140.34
+  },
+  {
+   "d": "1998-09",
+   "p": 1345.48
+  },
+  {
+   "d": "1998-10",
+   "p": 1400.52
+  },
+  {
+   "d": "1998-11",
+   "p": 1557.96
+  },
+  {
+   "d": "1998-12",
+   "p": 1836.01
+  },
+  {
+   "d": "1999-01",
+   "p": 2127.19
+  },
+  {
+   "d": "1999-02",
+   "p": 1925.28
+  },
+  {
+   "d": "1999-03",
+   "p": 2106.39
+  },
+  {
+   "d": "1999-04",
+   "p": 2136.39
+  },
+  {
+   "d": "1999-05",
+   "p": 2089.7
+  },
+  {
+   "d": "1999-06",
+   "p": 2296.77
+  },
+  {
+   "d": "1999-07",
+   "p": 2270.93
+  },
+  {
+   "d": "1999-08",
+   "p": 2396.87
+  },
+  {
+   "d": "1999-09",
+   "p": 2407.9
+  },
+  {
+   "d": "1999-10",
+   "p": 2637.44
+  },
+  {
+   "d": "1999-11",
+   "p": 2966.71
+  },
+  {
+   "d": "1999-12",
+   "p": 3707.83
+  },
+  {
+   "d": "2000-01",
+   "p": 3570.05
+  },
+  {
+   "d": "2000-02",
+   "p": 4266.94
+  },
+  {
+   "d": "2000-03",
+   "p": 4397.84
+  },
+  {
+   "d": "2000-04",
+   "p": 3773.18
+  },
+  {
+   "d": "2000-05",
+   "p": 3324.08
+  },
+  {
+   "d": "2000-06",
+   "p": 3763.79
+  },
+  {
+   "d": "2000-07",
+   "p": 3609.35
+  },
+  {
+   "d": "2000-08",
+   "p": 4077.59
+  },
+  {
+   "d": "2000-09",
+   "p": 3570.61
+  },
+  {
+   "d": "2000-10",
+   "p": 3282.3
+  },
+  {
+   "d": "2000-11",
+   "p": 2506.54
+  },
+  {
+   "d": "2000-12",
+   "p": 2341.7
+  },
+  {
+   "d": "2001-01",
+   "p": 2593.0
+  },
+  {
+   "d": "2001-02",
+   "p": 1908.32
+  },
+  {
+   "d": "2001-03",
+   "p": 1573.25
+  },
+  {
+   "d": "2001-04",
+   "p": 1855.15
+  },
+  {
+   "d": "2001-05",
+   "p": 1799.89
+  },
+  {
+   "d": "2001-06",
+   "p": 1830.19
+  },
+  {
+   "d": "2001-07",
+   "p": 1683.61
+  },
+  {
+   "d": "2001-08",
+   "p": 1469.7
+  },
+  {
+   "d": "2001-09",
+   "p": 1168.37
+  },
+  {
+   "d": "2001-10",
+   "p": 1364.78
+  },
+  {
+   "d": "2001-11",
+   "p": 1596.05
+  },
+  {
+   "d": "2001-12",
+   "p": 1577.05
+  },
+  {
+   "d": "2002-01",
+   "p": 1550.17
+  },
+  {
+   "d": "2002-02",
+   "p": 1359.22
+  },
+  {
+   "d": "2002-03",
+   "p": 1452.81
+  },
+  {
+   "d": "2002-04",
+   "p": 1277.07
+  },
+  {
+   "d": "2002-05",
+   "p": 1208.34
+  },
+  {
+   "d": "2002-06",
+   "p": 1051.41
+  },
+  {
+   "d": "2002-07",
+   "p": 962.11
+  },
+  {
+   "d": "2002-08",
+   "p": 942.38
+  },
+  {
+   "d": "2002-09",
+   "p": 832.52
+  },
+  {
+   "d": "2002-10",
+   "p": 989.54
+  },
+  {
+   "d": "2002-11",
+   "p": 1116.1
+  },
+  {
+   "d": "2002-12",
+   "p": 984.36
+  },
+  {
+   "d": "2003-01",
+   "p": 983.05
+  },
+  {
+   "d": "2003-02",
+   "p": 1009.74
+  },
+  {
+   "d": "2003-03",
+   "p": 1018.66
+  },
+  {
+   "d": "2003-04",
+   "p": 1106.06
+  },
+  {
+   "d": "2003-05",
+   "p": 1197.89
+  },
+  {
+   "d": "2003-06",
+   "p": 1201.69
+  },
+  {
+   "d": "2003-07",
+   "p": 1276.94
+  },
+  {
+   "d": "2003-08",
+   "p": 1341.2
+  },
+  {
+   "d": "2003-09",
+   "p": 1303.7
+  },
+  {
+   "d": "2003-10",
+   "p": 1416.39
+  },
+  {
+   "d": "2003-11",
+   "p": 1424.25
+  },
+  {
+   "d": "2003-12",
+   "p": 1467.92
+  },
+  {
+   "d": "2004-01",
+   "p": 1493.08
+  },
+  {
+   "d": "2004-02",
+   "p": 1470.38
+  },
+  {
+   "d": "2004-03",
+   "p": 1438.41
+  },
+  {
+   "d": "2004-04",
+   "p": 1401.36
+  },
+  {
+   "d": "2004-05",
+   "p": 1466.22
+  },
+  {
+   "d": "2004-06",
+   "p": 1516.64
+  },
+  {
+   "d": "2004-07",
+   "p": 1400.39
+  },
+  {
+   "d": "2004-08",
+   "p": 1368.68
+  },
+  {
+   "d": "2004-09",
+   "p": 1412.74
+  },
+  {
+   "d": "2004-10",
+   "p": 1486.72
+  },
+  {
+   "d": "2004-11",
+   "p": 1571.5
+  },
+  {
+   "d": "2004-12",
+   "p": 1621.12
+  },
+  {
+   "d": "2005-01",
+   "p": 1519.63
+  },
+  {
+   "d": "2005-02",
+   "p": 1511.02
+  },
+  {
+   "d": "2005-03",
+   "p": 1482.53
+  },
+  {
+   "d": "2005-04",
+   "p": 1420.79
+  },
+  {
+   "d": "2005-05",
+   "p": 1542.63
+  },
+  {
+   "d": "2005-06",
+   "p": 1493.52
+  },
+  {
+   "d": "2005-07",
+   "p": 1605.14
+  },
+  {
+   "d": "2005-08",
+   "p": 1581.71
+  },
+  {
+   "d": "2005-09",
+   "p": 1601.66
+  },
+  {
+   "d": "2005-10",
+   "p": 1579.18
+  },
+  {
+   "d": "2005-11",
+   "p": 1672.56
+  },
+  {
+   "d": "2005-12",
+   "p": 1645.2
+  },
+  {
+   "d": "2006-01",
+   "p": 1710.75
+  },
+  {
+   "d": "2006-02",
+   "p": 1670.57
+  },
+  {
+   "d": "2006-03",
+   "p": 1703.66
+  },
+  {
+   "d": "2006-04",
+   "p": 1700.71
+  },
+  {
+   "d": "2006-05",
+   "p": 1579.58
+  },
+  {
+   "d": "2006-06",
+   "p": 1575.23
+  },
+  {
+   "d": "2006-07",
+   "p": 1509.43
+  },
+  {
+   "d": "2006-08",
+   "p": 1579.73
+  },
+  {
+   "d": "2006-09",
+   "p": 1654.13
+  },
+  {
+   "d": "2006-10",
+   "p": 1732.54
+  },
+  {
+   "d": "2006-11",
+   "p": 1791.25
+  },
+  {
+   "d": "2006-12",
+   "p": 1756.9
+  },
+  {
+   "d": "2007-01",
+   "p": 1792.28
+  },
+  {
+   "d": "2007-02",
+   "p": 1761.65
+  },
+  {
+   "d": "2007-03",
+   "p": 1772.36
+  },
+  {
+   "d": "2007-04",
+   "p": 1867.75
+  },
+  {
+   "d": "2007-05",
+   "p": 1928.19
+  },
+  {
+   "d": "2007-06",
+   "p": 1934.1
+  },
+  {
+   "d": "2007-07",
+   "p": 1932.06
+  },
+  {
+   "d": "2007-08",
+   "p": 1988.73
+  },
+  {
+   "d": "2007-09",
+   "p": 2091.11
+  },
+  {
+   "d": "2007-10",
+   "p": 2238.98
+  },
+  {
+   "d": "2007-11",
+   "p": 2089.1
+  },
+  {
+   "d": "2007-12",
+   "p": 2084.93
+  },
+  {
+   "d": "2008-01",
+   "p": 1841.42
+  },
+  {
+   "d": "2008-02",
+   "p": 1745.27
+  },
+  {
+   "d": "2008-03",
+   "p": 1781.93
+  },
+  {
+   "d": "2008-04",
+   "p": 1917.7
+  },
+  {
+   "d": "2008-05",
+   "p": 2032.57
+  },
+  {
+   "d": "2008-06",
+   "p": 1837.09
+  },
+  {
+   "d": "2008-07",
+   "p": 1849.15
+  },
+  {
+   "d": "2008-08",
+   "p": 1872.54
+  },
+  {
+   "d": "2008-09",
+   "p": 1594.63
+  },
+  {
+   "d": "2008-10",
+   "p": 1334.78
+  },
+  {
+   "d": "2008-11",
+   "p": 1185.75
+  },
+  {
+   "d": "2008-12",
+   "p": 1211.65
+  },
+  {
+   "d": "2009-01",
+   "p": 1180.25
+  },
+  {
+   "d": "2009-02",
+   "p": 1116.99
+  },
+  {
+   "d": "2009-03",
+   "p": 1237.01
+  },
+  {
+   "d": "2009-04",
+   "p": 1394.33
+  },
+  {
+   "d": "2009-05",
+   "p": 1435.57
+  },
+  {
+   "d": "2009-06",
+   "p": 1477.25
+  },
+  {
+   "d": "2009-07",
+   "p": 1603.36
+  },
+  {
+   "d": "2009-08",
+   "p": 1625.19
+  },
+  {
+   "d": "2009-09",
+   "p": 1718.99
+  },
+  {
+   "d": "2009-10",
+   "p": 1667.13
+  },
+  {
+   "d": "2009-11",
+   "p": 1767.43
+  },
+  {
+   "d": "2009-12",
+   "p": 1860.31
+  },
+  {
+   "d": "2010-01",
+   "p": 1741.04
+  },
+  {
+   "d": "2010-02",
+   "p": 1818.68
+  },
+  {
+   "d": "2010-03",
+   "p": 1958.34
+  },
+  {
+   "d": "2010-04",
+   "p": 2000.63
+  },
+  {
+   "d": "2010-05",
+   "p": 1852.39
+  },
+  {
+   "d": "2010-06",
+   "p": 1739.14
+  },
+  {
+   "d": "2010-07",
+   "p": 1864.0
+  },
+  {
+   "d": "2010-08",
+   "p": 1767.43
+  },
+  {
+   "d": "2010-09",
+   "p": 1998.04
+  },
+  {
+   "d": "2010-10",
+   "p": 2124.45
+  },
+  {
+   "d": "2010-11",
+   "p": 2117.33
+  },
+  {
+   "d": "2010-12",
+   "p": 2217.86
+  },
+  {
+   "d": "2011-01",
+   "p": 2281.91
+  },
+  {
+   "d": "2011-02",
+   "p": 2350.99
+  },
+  {
+   "d": "2011-03",
+   "p": 2338.99
+  },
+  {
+   "d": "2011-04",
+   "p": 2404.08
+  },
+  {
+   "d": "2011-05",
+   "p": 2372.54
+  },
+  {
+   "d": "2011-06",
+   "p": 2325.07
+  },
+  {
+   "d": "2011-07",
+   "p": 2362.81
+  },
+  {
+   "d": "2011-08",
+   "p": 2241.01
+  },
+  {
+   "d": "2011-09",
+   "p": 2139.18
+  },
+  {
+   "d": "2011-10",
+   "p": 2360.08
+  },
+  {
+   "d": "2011-11",
+   "p": 2295.2
+  },
+  {
+   "d": "2011-12",
+   "p": 2277.83
+  },
+  {
+   "d": "2012-01",
+   "p": 2467.95
+  },
+  {
+   "d": "2012-02",
+   "p": 2623.1
+  },
+  {
+   "d": "2012-03",
+   "p": 2755.27
+  },
+  {
+   "d": "2012-04",
+   "p": 2723.68
+  },
+  {
+   "d": "2012-05",
+   "p": 2524.87
+  },
+  {
+   "d": "2012-06",
+   "p": 2615.72
+  },
+  {
+   "d": "2012-07",
+   "p": 2642.53
+  },
+  {
+   "d": "2012-08",
+   "p": 2772.24
+  },
+  {
+   "d": "2012-09",
+   "p": 2799.19
+  },
+  {
+   "d": "2012-10",
+   "p": 2647.92
+  },
+  {
+   "d": "2012-11",
+   "p": 2677.88
+  },
+  {
+   "d": "2012-12",
+   "p": 2660.93
+  },
+  {
+   "d": "2013-01",
+   "p": 2731.53
+  },
+  {
+   "d": "2013-02",
+   "p": 2738.58
+  },
+  {
+   "d": "2013-03",
+   "p": 2818.69
+  },
+  {
+   "d": "2013-04",
+   "p": 2887.44
+  },
+  {
+   "d": "2013-05",
+   "p": 2981.76
+  },
+  {
+   "d": "2013-06",
+   "p": 2909.6
+  },
+  {
+   "d": "2013-07",
+   "p": 3090.19
+  },
+  {
+   "d": "2013-08",
+   "p": 3073.81
+  },
+  {
+   "d": "2013-09",
+   "p": 3218.2
+  },
+  {
+   "d": "2013-10",
+   "p": 3377.73
+  },
+  {
+   "d": "2013-11",
+   "p": 3487.82
+  },
+  {
+   "d": "2013-12",
+   "p": 3592.0
+  },
+  {
+   "d": "2014-01",
+   "p": 3521.92
+  },
+  {
+   "d": "2014-02",
+   "p": 3696.1
+  },
+  {
+   "d": "2014-03",
+   "p": 3595.74
+  },
+  {
+   "d": "2014-04",
+   "p": 3582.02
+  },
+  {
+   "d": "2014-05",
+   "p": 3736.82
+  },
+  {
+   "d": "2014-06",
+   "p": 3849.48
+  },
+  {
+   "d": "2014-07",
+   "p": 3892.5
+  },
+  {
+   "d": "2014-08",
+   "p": 4082.56
+  },
+  {
+   "d": "2014-09",
+   "p": 4049.45
+  },
+  {
+   "d": "2014-10",
+   "p": 4158.21
+  },
+  {
+   "d": "2014-11",
+   "p": 4337.78
+  },
+  {
+   "d": "2014-12",
+   "p": 4236.28
+  },
+  {
+   "d": "2015-01",
+   "p": 4148.43
+  },
+  {
+   "d": "2015-02",
+   "p": 4440.67
+  },
+  {
+   "d": "2015-03",
+   "p": 4333.69
+  },
+  {
+   "d": "2015-04",
+   "p": 4414.25
+  },
+  {
+   "d": "2015-05",
+   "p": 4508.25
+  },
+  {
+   "d": "2015-06",
+   "p": 4396.76
+  },
+  {
+   "d": "2015-07",
+   "p": 4588.91
+  },
+  {
+   "d": "2015-08",
+   "p": 4274.58
+  },
+  {
+   "d": "2015-09",
+   "p": 4181.06
+  },
+  {
+   "d": "2015-10",
+   "p": 4648.83
+  },
+  {
+   "d": "2015-11",
+   "p": 4664.51
+  },
+  {
+   "d": "2015-12",
+   "p": 4593.27
+  },
+  {
+   "d": "2016-01",
+   "p": 4279.17
+  },
+  {
+   "d": "2016-02",
+   "p": 4201.12
+  },
+  {
+   "d": "2016-03",
+   "p": 4483.65
+  },
+  {
+   "d": "2016-04",
+   "p": 4341.3
+  },
+  {
+   "d": "2016-05",
+   "p": 4523.89
+  },
+  {
+   "d": "2016-06",
+   "p": 4417.7
+  },
+  {
+   "d": "2016-07",
+   "p": 4730.23
+  },
+  {
+   "d": "2016-08",
+   "p": 4771.06
+  },
+  {
+   "d": "2016-09",
+   "p": 4875.7
+  },
+  {
+   "d": "2016-10",
+   "p": 4801.27
+  },
+  {
+   "d": "2016-11",
+   "p": 4810.81
+  },
+  {
+   "d": "2016-12",
+   "p": 4863.62
+  },
+  {
+   "d": "2017-01",
+   "p": 5116.77
+  },
+  {
+   "d": "2017-02",
+   "p": 5330.31
+  },
+  {
+   "d": "2017-03",
+   "p": 5436.23
+  },
+  {
+   "d": "2017-04",
+   "p": 5583.53
+  },
+  {
+   "d": "2017-05",
+   "p": 5788.8
+  },
+  {
+   "d": "2017-06",
+   "p": 5646.92
+  },
+  {
+   "d": "2017-07",
+   "p": 5880.33
+  },
+  {
+   "d": "2017-08",
+   "p": 5988.6
+  },
+  {
+   "d": "2017-09",
+   "p": 5979.3
+  },
+  {
+   "d": "2017-10",
+   "p": 6248.56
+  },
+  {
+   "d": "2017-11",
+   "p": 6365.56
+  },
+  {
+   "d": "2017-12",
+   "p": 6396.42
+  },
+  {
+   "d": "2018-01",
+   "p": 6949.99
+  },
+  {
+   "d": "2018-02",
+   "p": 6854.42
+  },
+  {
+   "d": "2018-03",
+   "p": 6581.13
+  },
+  {
+   "d": "2018-04",
+   "p": 6605.57
+  },
+  {
+   "d": "2018-05",
+   "p": 6967.73
+  },
+  {
+   "d": "2018-06",
+   "p": 7040.8
+  },
+  {
+   "d": "2018-07",
+   "p": 7231.98
+  },
+  {
+   "d": "2018-08",
+   "p": 7654.55
+  },
+  {
+   "d": "2018-09",
+   "p": 7627.65
+  },
+  {
+   "d": "2018-10",
+   "p": 6967.1
+  },
+  {
+   "d": "2018-11",
+   "p": 6949.01
+  },
+  {
+   "d": "2018-12",
+   "p": 6329.97
+  },
+  {
+   "d": "2019-01",
+   "p": 6906.84
+  },
+  {
+   "d": "2019-02",
+   "p": 7097.52
+  },
+  {
+   "d": "2019-03",
+   "p": 7378.77
+  },
+  {
+   "d": "2019-04",
+   "p": 7781.46
+  },
+  {
+   "d": "2019-05",
+   "p": 7127.96
+  },
+  {
+   "d": "2019-06",
+   "p": 7671.07
+  },
+  {
+   "d": "2019-07",
+   "p": 7848.78
+  },
+  {
+   "d": "2019-08",
+   "p": 7691.0
+  },
+  {
+   "d": "2019-09",
+   "p": 7749.45
+  },
+  {
+   "d": "2019-10",
+   "p": 8083.83
+  },
+  {
+   "d": "2019-11",
+   "p": 8403.68
+  },
+  {
+   "d": "2019-12",
+   "p": 8733.07
+  },
+  {
+   "d": "2020-01",
+   "p": 8991.51
+  },
+  {
+   "d": "2020-02",
+   "p": 8461.83
+  },
+  {
+   "d": "2020-03",
+   "p": 7813.5
+  },
+  {
+   "d": "2020-04",
+   "p": 9000.51
+  },
+  {
+   "d": "2020-05",
+   "p": 9555.52
+  },
+  {
+   "d": "2020-06",
+   "p": 10156.85
+  },
+  {
+   "d": "2020-07",
+   "p": 10905.88
+  },
+  {
+   "d": "2020-08",
+   "p": 12110.7
+  },
+  {
+   "d": "2020-09",
+   "p": 11418.06
+  },
+  {
+   "d": "2020-10",
+   "p": 11052.95
+  },
+  {
+   "d": "2020-11",
+   "p": 12268.32
+  },
+  {
+   "d": "2020-12",
+   "p": 12888.28
+  },
+  {
+   "d": "2021-01",
+   "p": 12925.38
+  },
+  {
+   "d": "2021-02",
+   "p": 12909.44
+  },
+  {
+   "d": "2021-03",
+   "p": 13091.44
+  },
+  {
+   "d": "2021-04",
+   "p": 13860.76
+  },
+  {
+   "d": "2021-05",
+   "p": 13686.51
+  },
+  {
+   "d": "2021-06",
+   "p": 14554.8
+  },
+  {
+   "d": "2021-07",
+   "p": 14959.9
+  },
+  {
+   "d": "2021-08",
+   "p": 15582.51
+  },
+  {
+   "d": "2021-09",
+   "p": 14689.62
+  },
+  {
+   "d": "2021-10",
+   "p": 15850.47
+  },
+  {
+   "d": "2021-11",
+   "p": 16135.92
+  },
+  {
+   "d": "2021-12",
+   "p": 16320.08
+  },
+  {
+   "d": "2022-01",
+   "p": 14930.05
+  },
+  {
+   "d": "2022-02",
+   "p": 14237.81
+  },
+  {
+   "d": "2022-03",
+   "p": 14838.49
+  },
+  {
+   "d": "2022-04",
+   "p": 12854.8
+  },
+  {
+   "d": "2022-05",
+   "p": 12642.1
+  },
+  {
+   "d": "2022-06",
+   "p": 11503.72
+  },
+  {
+   "d": "2022-07",
+   "p": 12947.98
+  },
+  {
+   "d": "2022-08",
+   "p": 12272.03
+  },
+  {
+   "d": "2022-09",
+   "p": 10971.22
+  },
+  {
+   "d": "2022-10",
+   "p": 11405.57
+  },
+  {
+   "d": "2022-11",
+   "p": 12030.06
+  },
+  {
+   "d": "2022-12",
+   "p": 10939.76
+  },
+  {
+   "d": "2023-01",
+   "p": 12101.93
+  },
+  {
+   "d": "2023-02",
+   "p": 12042.12
+  },
+  {
+   "d": "2023-03",
+   "p": 13181.35
+  },
+  {
+   "d": "2023-04",
+   "p": 13245.99
+  },
+  {
+   "d": "2023-05",
+   "p": 14254.09
+  },
+  {
+   "d": "2023-06",
+   "p": 15179.21
+  },
+  {
+   "d": "2023-07",
+   "p": 15757.0
+  },
+  {
+   "d": "2023-08",
+   "p": 15501.07
+  },
+  {
+   "d": "2023-09",
+   "p": 14715.24
+  },
+  {
+   "d": "2023-10",
+   "p": 14409.78
+  },
+  {
+   "d": "2023-11",
+   "p": 15947.87
+  },
+  {
+   "d": "2023-12",
+   "p": 16825.93
+  },
+  {
+   "d": "2024-01",
+   "p": 17137.24
+  },
+  {
+   "d": "2024-02",
+   "p": 18043.85
+  },
+  {
+   "d": "2024-03",
+   "p": 18254.69
+  },
+  {
+   "d": "2024-04",
+   "p": 17440.69
+  },
+  {
+   "d": "2024-05",
+   "p": 18536.65
+  },
+  {
+   "d": "2024-06",
+   "p": 19682.87
+  },
+  {
+   "d": "2024-07",
+   "p": 19362.43
+  },
+  {
+   "d": "2024-08",
+   "p": 19574.64
+  },
+  {
+   "d": "2024-09",
+   "p": 20060.69
+  },
+  {
+   "d": "2024-10",
+   "p": 19890.41
+  },
+  {
+   "d": "2024-11",
+   "p": 20930.37
+  },
+  {
+   "d": "2024-12",
+   "p": 21012.17
+  },
+  {
+   "d": "2025-01",
+   "p": 21478.05
+  },
+  {
+   "d": "2025-02",
+   "p": 20884.41
+  },
+  {
+   "d": "2025-03",
+   "p": 19278.45
+  },
+  {
+   "d": "2025-04",
+   "p": 19571.02
+  },
+  {
+   "d": "2025-05",
+   "p": 21340.99
+  },
+  {
+   "d": "2025-06",
+   "p": 22679.01
+  },
+  {
+   "d": "2025-07",
+   "p": 23218.12
+  },
+  {
+   "d": "2025-08",
+   "p": 23415.42
+  },
+  {
+   "d": "2025-09",
+   "p": 24679.99
+  },
+  {
+   "d": "2025-10",
+   "p": 25858.13
+  },
+  {
+   "d": "2025-11",
+   "p": 25434.89
+  },
+  {
+   "d": "2025-12",
+   "p": 25249.85
+  },
+  {
+   "d": "2026-01",
+   "p": 25552.39
+  },
+  {
+   "d": "2026-02",
+   "p": 24960.04
+  },
+  {
+   "d": "2026-03",
+   "p": 23740.19
+  },
+  {
+   "d": "2026-04",
+   "p": 27452.12
+  },
+  {
+   "d": "2026-05",
+   "p": 30333.18
+  },
+  {
+   "d": "2026-06",
+   "p": 30276.35
+  },
+  {
+   "d": "2026-07",
+   "p": 28274.2
+  },
+  {
+   "d": "2026-08",
+   "p": 29456.97
+  },
+  {
+   "d": "2026-09",
+   "p": 30408.5
+  },
+  {
+   "d": "2026-10",
+   "p": 28384.85
+  }
+ ],
+ "epsNote": "PER: worldperatio.com 나스닥100 월별 최근 12개월 PER(제3자 추정치 — 다른 출처와 수 배까지는 아니지만 몇 배 포인트 차이가 난다). 배당 제외."
+}

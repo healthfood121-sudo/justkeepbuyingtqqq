@@ -1208,3 +1208,10 @@ withdrawal_more_ideas.py        → withdrawal_more_ideas.json
 - `epsDecomp`: EPS 성장·순수 PER 변화(실제 주가 기준)·배당 몫(`divCagr`)·물가(`inflCagr`). 화면(`SpxIndexView`)에서 공통 분해 차트 형식(PER에 배당 섞인 값)으로 바꿔 넣음
 - 결과 요약: 10년 연평균 중간값 8.66%, 손실 3번(1928·1998·1999년 매수), 물가 빼면 손실 14번. 매수 PER 25배 이상(8번) 중간값 4.8%
 - 사용처: `/private/sp500?s=SPX` (S&P 500 목록 맨 위 카드)
+
+#### 나스닥100 지수 자체 10년 보유·EPS 분해 (2026-11-27, 사용자 요청)
+- `web/public/data/rolling/NDX_rolling.json` (~40 KB) · 스크립트 `scripts/export_ndx_rolling.py`(로컬 실행) · 입력 `data/ndx_1971_now.csv`(일별 종가 → 월말), `data/ndx_pe_monthly_worldperatio.csv`(worldperatio.com 나스닥100 차트 `detailPE_data`, 1990-05~2026-11 월별 최근 12개월 PER, fetch-pages series=1로 받음)
+- EPS = 월말 지수 ÷ PER (추정). 배당 제외 가격 지수. 매년 12월 말 매수 → 10년(완결 26번, 1990~2015년 매수)
+- **주의:** 출처 EPS가 2014년 1분기 +26%, 2015년 1분기 −23%로 계단처럼 바뀜(산출 방식 변화로 보임). Siblis Research 연말 PER(2016~2025)과 0.7~9.2배 포인트 차이. 화면에서 2014→2015를 걸치는 구간에 ⚠ 표시
+- 결과: 10년 연평균 중간값 11.46%, 손실 3번(1998·1999·2000년 말 매수)
+- 사용처: `/private/ndx?s=NDX` (나스닥100 목록 맨 위 카드), 화면은 S&P 500과 같은 `SpxIndexView`
