@@ -10478,7 +10478,7 @@ function QualityCard({ stockKey, fund }: { stockKey: string; fund?: any }) {
 
 // ── 자동 심화 분석: PER별 과거 수익률 · 과거 저점 비교 · 시나리오 · 자동 결론 ─────────
 // part: 섹션별로 나눠 그림 (pastPe 3-3 · future 4 · conclusion 5 · appendix 부록), num: 섹션 번호
-function AutoDeep({ f, data, part, num = '', deep }: { f: Fundamentals; data: StockData; part: 'pastPe' | 'future' | 'conclusion' | 'appendix'; num?: string; deep?: DeepInsight }) {
+function AutoDeep({ f, data, part, num = '', deep, idx = false }: { f: Fundamentals; data: StockData; part: 'pastPe' | 'future' | 'conclusion' | 'appendix'; num?: string; deep?: DeepInsight; idx?: boolean }) {
   const box = 'rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-2'
   const h4 = 'text-sm font-semibold text-gray-800 dark:text-gray-100'
   const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
@@ -10607,7 +10607,7 @@ function AutoDeep({ f, data, part, num = '', deep }: { f: Fundamentals; data: St
             {pricier.length > 0 && <li>지금보다 20% 이상 비싸게 산 경우({pricier.length}번): 평균 연 {avg(pricier.map(d => d.totalCagr)).toFixed(1)}%</li>}
           </ul>
           <p className="text-[11px] text-gray-400 dark:text-gray-500">
-            SEC 공시 EPS가 2008년 무렵부터 있어 10년을 다 채운 경우가 적다. 경우 수가 적으면 참고 정도로만 보자.
+            {idx ? '쉴러 자료의 EPS로 1946년 이후 매수만 계산했다(그 전은 위 3-1·3-2에서 볼 수 있다 — 산업 구성·회계 기준이 지금과 크게 달랐다).' : 'SEC 공시 EPS가 2008년 무렵부터 있어 10년을 다 채운 경우가 적다. 경우 수가 적으면 참고 정도로만 보자.'}
           </p>
         </div>
       )}
@@ -10707,7 +10707,7 @@ function AutoDeep({ f, data, part, num = '', deep }: { f: Fundamentals; data: St
           <ul className={`${p} list-disc pl-4 space-y-1`}>
             {concl.map((c, i) => <li key={i}>{c}</li>)}
           </ul>
-          <p className="text-[11px] text-gray-400 dark:text-gray-500">데이터로 자동 작성한 문장이다. 사업 측면 판단은 위 사업성 평가와 함께 보자.</p>
+          <p className="text-[11px] text-gray-400 dark:text-gray-500">{idx ? '데이터로 자동 작성한 문장이다. 지수는 개별 기업 분석 대신 이익 성장과 값(PER)만으로 판단한다.' : '데이터로 자동 작성한 문장이다. 사업 측면 판단은 위 사업성 평가와 함께 보자.'}</p>
         </div>
       )}
     </>
@@ -11949,6 +11949,43 @@ const BIG_REPORTS: Record<string, BigReportData> = {
 export type Universe = 'picks' | 'sp500' | 'ndx' | 'mid' | 'r2k' | 'nasdaq' | 'other'
 const PICK_KEYS = new Set(PICK_GROUPS.flatMap(g => g.items.map(it => it.key)))
 
+
+// S&P 500 지수용 이익 시계(적정가 선 vs 지수) — 연말 EPS는 쉴러 자료, 월별 지수는 sp500_monthly.json(1927-12~ 월말 종가)
+function SpxClock({ data, mon, title }: { data: StockData; mon: Array<{ d: string; p: number }> | null; title: string }) {
+  const d = data as any
+  const cur = d.current as { price: number; eps: number; divYield: number }
+  const epsY = new Map<number, number>()
+  for (const x of ((d.epsDecomp ?? []) as Array<{ buyYear: number; sellYear: number; epsBuy: number; epsSell: number; inProgress?: boolean }>)) {
+    epsY.set(x.buyYear, x.epsBuy)
+    if (!x.inProgress) epsY.set(x.sellYear, x.epsSell)
+  }
+  const ys = [...epsY.keys()].sort((a, b) => a - b)
+  const lastY = ys[ys.length - 1]
+  const cg = (n: number) => epsY.get(lastY - n) ? (Math.pow(epsY.get(lastY)! / epsY.get(lastY - n)!, 1 / n) - 1) * 100 : null
+  const g10 = cg(10), g5 = cg(5)
+  const clamp = (v: number) => Math.max(0, Math.min(15, v))
+  const base = g10 != null && g5 != null ? clamp(Math.min(g10, g5)) : g10 != null ? clamp(g10) : 6
+  const [g, setG] = useState(Math.round(base * 2) / 2)
+  if (!mon || !cur?.eps) return null
+  const anchors: ClockAnchor[] = ys.filter(y => y >= 1927).map(y => [decYear(Date.parse(`${y}-12-31`)), epsY.get(y)!] as ClockAnchor)
+  const tT = decYear(Date.parse(`${d.epsThrough}-28`))
+  if (tT > anchors[anchors.length - 1][0] + 0.1) anchors.push([tT, cur.eps])
+  const monthly = mon.map(r => { const [y, m] = r.d.split('-').map(Number); return { t: y + m / 12, price: r.p } }).filter(r => r.price > 0)
+  const marks = growthMarks(anchors, [{ k: '보수적', short: '보수', v: base, c: TICK_C.pick }])
+  return (
+    <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-3">
+      <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">{title}</h4>
+      <ValueClockCore
+        growthBar={<GrowthBar g={g} setG={setG} marks={marks}
+          note={<>보수적 = 과거 5년·10년 EPS 성장률 중 낮은 값(0~15%로 제한). 과거 N년 = N년 전부터 지금까지의 연평균.</>} />}
+        cur="$" anchors={anchors} monthly={monthly} last={{ date: `${d.dataThrough}-15`, close: cur.price }} g={g}
+        sharesOut={null} divYield={cur.divYield ?? 0} storageKey="clock-shares-SPX"
+        notes={`지수 단위(1포인트 = 1달러로 본 값)로 계산했다. EPS는 쉴러 자료의 연말 최근 12개월 EPS(S&P 500 구성 기업 이익을 지수 단위로 환산한 값)를 이었고, 마지막 점은 ${d.epsThrough} 기준 ${cur.eps}달러. 월별 지수는 월말 종가(1927년 12월~), 지금 값은 쉴러 자료의 ${d.dataThrough} 월평균 ${cur.price}.`}
+      />
+    </div>
+  )
+}
+
 // ── S&P 500 지수 자체: 1871년~ 10년 보유 수익을 EPS·배당·PER로 나누기 (쉴러 데이터) ─────────
 type SpxRow = { buyYear: number; sellYear: number; yearsActual: number; cagr: number; isComplete: boolean; priceCagr: number; inflCagr: number | null; realCagr: number | null; peBuyActual?: number }
 type SpxDecomp = Decomp & { divCagr: number; priceCagr: number; inflCagr: number | null; epsBuy: number; epsSell: number }
@@ -11960,6 +11997,8 @@ function SpxIndexView({ data }: { data: StockData }) {
   const fp = d.fullPeriod
   const cur = d.current
   const [from, setFrom] = useState(1946)
+  const [mon, setMon] = useState<Array<{ d: string; p: number }> | null>(null)
+  useEffect(() => { fetch('/data/sp500_monthly.json').then(r => (r.ok ? r.json() : null)).then(setMon).catch(() => {}) }, [])
   const p = 'text-xs leading-relaxed text-gray-600 dark:text-gray-300'
   const th = 'py-1.5 px-2 font-medium text-gray-400 dark:text-gray-500'
   const td = 'py-1.5 px-2 tabular-nums text-gray-700 dark:text-gray-200'
@@ -11985,6 +12024,22 @@ function SpxIndexView({ data }: { data: StockData }) {
     const c = g.map(r => r.cagr), rl = g.map(r => r.realCagr ?? 0)
     return { label, n: g.length, med: med(c), min: g.length ? Math.min(...c) : NaN, minY: g.length ? g.reduce((a, b) => (b.cagr < a.cagr ? b : a)).buyYear : 0, realMed: med(rl), loss: g.filter(r => r.cagr < 0).length }
   })
+  // 다른 종목 화면의 자동 분석(과거 PER·앞으로·결론·부록)에 쓰는 형식으로 바꾼다
+  const epsY: Record<string, number | null> = {}, peY: Record<string, number | null> = {}
+  for (const x of raw) { epsY[String(x.buyYear)] = x.epsBuy; if (!x.inProgress) epsY[String(x.sellYear)] = x.epsSell }
+  for (const r of rows) if (r.peBuyActual != null) peY[String(r.buyYear)] = r.peBuyActual
+  const lastFy = Math.max(...Object.keys(epsY).map(Number))
+  const egr = (n: number) => epsY[String(lastFy - n)] ? (Math.pow(epsY[String(lastFy)]! / epsY[String(lastFy - n)]!, 1 / n) - 1) * 100 : null
+  const pe10 = Object.entries(peY).filter(([y]) => +y > lastFy - 10).map(([, v]) => v as number)
+  const eps10 = Object.entries(epsY).filter(([y]) => +y > lastFy - 10).map(([, v]) => v as number)
+  const lastP = mon?.length ? mon[mon.length - 1].p : null
+  const p12 = mon && mon.length > 12 ? mon[mon.length - 13].p : null
+  const hi3 = mon ? Math.max(...mon.slice(-36).map(r => r.p)) : null
+  const fund = {
+    eps: epsY, pe: peY, generated: d.dataThrough,
+    decomp: raw.filter(x => x.buyYear >= 1946).map(x => ({ ...x, peCagr: ((1 + x.peCagr / 100) * (1 + x.divCagr / 100) - 1) * 100 })),
+    metrics: { pe: cur.pe, peMed10: med(pe10), ttmEps: cur.eps, lastFy, epsCagr5: egr(5), epsCagr10: egr(10), divYield: cur.divYield },
+  } as unknown as Fundamentals
   const recent = done.filter(r => r.buyYear >= 1946)
   const nowPe = cur.pe as number
   const nowBand = bands.find(([, lo, hi]) => nowPe >= lo && nowPe < hi)?.[0]
@@ -12013,7 +12068,33 @@ function SpxIndexView({ data }: { data: StockData }) {
       </div>
 
       <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-2">
-        <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">살 때 PER이 10년 수익을 얼마나 갈랐나 ({done.length}번, {done[0]?.buyYear}~{done[done.length - 1]?.buyYear}년 매수)</h4>
+        <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">1. 지금 한눈에</h4>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <StatCard label="현재 PER" value={`${cur.pe}배`} />
+          <StatCard label="10년 중간 PER(연말)" value={`${med(pe10).toFixed(1)}배`} />
+          <StatCard label="EPS 10년 성장(연)" value={egr(10) != null ? `${sgn(egr(10)!)}%` : '—'} />
+          <StatCard label="EPS 5년 성장(연)" value={egr(5) != null ? `${sgn(egr(5)!)}%` : '—'} />
+          <StatCard label="3년 고점 대비 지수" value={lastP && hi3 ? `${sgn((lastP / hi3 - 1) * 100)}%` : '—'} />
+          <StatCard label="이익 / 10년 고점" value={`${Math.round(100 * cur.eps / Math.max(cur.eps, ...eps10))}%`} />
+          <StatCard label="배당수익률" value={`${cur.divYield}%`} />
+          <StatCard label="1년 지수 변화" value={lastP && p12 ? `${sgn((lastP / p12 - 1) * 100)}%` : '—'} />
+        </div>
+        <ul className={`${p} list-disc pl-4 space-y-0.5`}>
+          <li>현재 PER {cur.pe}배는 최근 10년 연말 PER 중간값({med(pe10).toFixed(1)}배)의 {Math.round(100 * cur.pe / med(pe10))}% 수준이다{` (1871년 이후 연말 PER 중간값 ${med(Object.values(peY) as number[]).toFixed(1)}배).`}</li>
+          <li>최근 12개월 EPS {cur.eps}달러({d.epsThrough} 기준), {lastFy}년 말 {epsY[String(lastFy)]}달러.</li>
+        </ul>
+        <p className="text-[11px] text-gray-400 dark:text-gray-500">지수 변화·고점 대비는 월말 종가({mon?.length ? mon[mon.length - 1].d : '—'}까지) 기준.</p>
+      </div>
+
+      <SpxClock data={data} mon={mon} title="2. 이익 시계 — 적정가 선 vs S&P 500 지수" />
+
+      <div className="space-y-1">
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white">3. 과거에는 어땠나</h3>
+        <p className={p}>10년 보유 수익이 이익·배당·PER 중 어디서 나왔는지, 매수 시점 PER에 따라 결과가 어떻게 달랐는지 본다.</p>
+      </div>
+
+      <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-4 space-y-2">
+        <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100">3-1. 살 때 PER이 10년 수익을 얼마나 갈랐나 ({done.length}번, {done[0]?.buyYear}~{done[done.length - 1]?.buyYear}년 매수)</h4>
         <div className="overflow-x-auto">
           <table className="text-xs">
             <thead><tr>
@@ -12050,7 +12131,7 @@ function SpxIndexView({ data }: { data: StockData }) {
       </div>
       {decomp.length > 0 && (
         <DecompSection
-          title={`매수 연도별 10년 수익률 분해 (${from}년~) — 막대 하나 = EPS 몫 + 배당 몫 + PER 몫`}
+          title={`3-2. 매수 연도별 10년 수익률 분해 (${from}년~) — 막대 하나 = EPS 몫 + 배당 몫 + PER 몫`}
           decomp={decomp}
           divRows={divRows}
           exampleYear={2015}
@@ -12059,6 +12140,13 @@ function SpxIndexView({ data }: { data: StockData }) {
       <p className="text-[11px] text-gray-400 dark:text-gray-500">
         진행 중 구간(2016년 매수)의 현재 값은 쉴러 자료의 최신 월평균 주가와 최근 12개월 EPS를 썼다. ⚠ 표시는 매수·매도 해의 EPS가 일시적으로 급감해 분해가 한쪽으로 쏠린 구간.
       </p>
+      <AutoDeep f={fund} data={data} part="pastPe" num="3-3." idx />
+      <div className="space-y-1">
+        <h3 className="text-base font-semibold text-gray-900 dark:text-white">4. 앞으로</h3>
+      </div>
+      <AutoDeep f={fund} data={data} part="future" num="4." idx />
+      <AutoDeep f={fund} data={data} part="conclusion" num="5." idx />
+      <AutoDeep f={fund} data={data} part="appendix" idx />
     </div>
   )
 }
