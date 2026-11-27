@@ -157,7 +157,7 @@
 - [x] 143. HUBB (roic5 18.4, 현재 26KB)
 - [x] 144. GDDY (roic5 18.2, 현재 18KB)
 - [x] 145. WMT (roic5 18.1, 현재 28KB)
-- [ ] 146. A (roic5 17.8, 현재 27KB)
+- [x] 146. A (roic5 17.8, 현재 27KB)
 - [ ] 147. TEL (roic5 17.7, 현재 27KB)
 - [ ] 148. CSL (roic5 17.6, 현재 26KB)
 - [ ] 149. AVY (roic5 17.5, 현재 25KB)
