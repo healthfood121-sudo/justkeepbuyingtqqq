@@ -40,8 +40,13 @@ type LastEv = { date: string; signal?: string; action: string }
 type LastMap = Partial<Record<Strat, LastEv[]>>
 
 // 표 머리글: 전략 이름 아래 마지막 매도·매수 신호 날짜
-function LastSig({ ev }: { ev?: LastEv[] }) {
-  if (!ev?.length) return null
+type LastCond = { date: string; state: '보유' | '현금' }
+
+function LastSig({ ev, cond }: { ev?: LastEv[]; cond?: LastCond }) {
+  // D10GK: 마지막 매수 신호 뒤에 조건만 맞은 날(보유 중이라 매매 없음)이 있으면 한 줄 더
+  const buy = ev?.find(x => x.action === '매수')
+  const c = cond && (!buy || cond.date > (buy.signal ?? buy.date)) ? cond : null
+  if (!ev?.length && !c) return null
   return (
     <div className="mt-0.5 space-y-px font-normal text-[10px] whitespace-nowrap">
       {(['매도', '매수'] as const).map(a => {
@@ -56,6 +61,13 @@ function LastSig({ ev }: { ev?: LastEv[] }) {
           </div>
         )
       })}
+      {c && (
+        <div className="text-gray-500 dark:text-gray-400">
+          <span className="text-amber-700 dark:text-amber-300">마지막 재매수 조건 충족</span>{' '}
+          <span className="font-mono">{c.date}</span>
+          <span className="text-gray-400 dark:text-gray-500"> → {c.state === '보유' ? '보유 중이라 매매 없음' : '그날 종가에 매수'}</span>
+        </div>
+      )}
     </div>
   )
 }
@@ -103,6 +115,7 @@ export default function LivePage() {
   const dark = theme === 'dark'
   useEffect(() => { fetch('/data/live_record.json').then(r => r.json()).then(setRec) }, [])
   const [last, setLast] = useState<LastMap>({})
+  const [d10Cond, setD10Cond] = useState<LastCond | undefined>()
   useEffect(() => {
     fetch('/data/withdrawal_signal.json')
       .then(r => r.json())
@@ -110,6 +123,7 @@ export default function LivePage() {
         const m: LastMap = {}
         for (const k of ['RULE25', 'S0', 'D10GK'] as Strat[]) m[k] = j.strategies?.[k]?.last_events
         setLast(m)
+        setD10Cond(j.strategies?.D10GK?.last_cond)
       })
       .catch(() => {})
   }, [])
@@ -269,7 +283,7 @@ export default function LivePage() {
                     <th colSpan={3} />
                     <th colSpan={2} className={`pt-2 px-2 text-left align-top font-bold ${GROUP}`}>25% 룰 <span className="font-semibold text-purple-600 dark:text-purple-300">(메인)</span><LastSig ev={last.RULE25} /></th>
                     <th colSpan={2} className={`pt-2 px-2 text-left align-top font-bold ${GROUP}`}>S0 <span className="font-normal text-gray-400 dark:text-gray-500">(비교)</span><LastSig ev={last.S0} /></th>
-                    <th colSpan={3} className={`pt-2 px-2 text-left align-top font-bold ${GROUP}`}>D10GK <span className="font-normal text-gray-400 dark:text-gray-500">(비교)</span><LastSig ev={last.D10GK} /></th>
+                    <th colSpan={3} className={`pt-2 px-2 text-left align-top font-bold ${GROUP}`}>D10GK <span className="font-normal text-gray-400 dark:text-gray-500">(비교)</span><LastSig ev={last.D10GK} cond={d10Cond} /></th>
                     <th colSpan={5} className={`pt-2 px-2 text-left align-top font-bold ${GROUP}`}>누적 수익률</th>
                   </tr>
                   <tr className="border-b border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400">
