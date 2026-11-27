@@ -107,11 +107,15 @@ limit = int(sys.argv[2]) if len(sys.argv) > 2 else 40
 BRIEF = int(os.environ.get('BRIEF') or 0)
 ANNUAL = os.environ.get('ANNUAL') == '1'
 FORM = os.environ.get('FORM') or '8-K'
+# FORM=8-K-ALL: 항목 2.02로 분류하지 않는 회사(예: FSS)용 — 모든 8-K를 읽고 PATTERN으로 거른다
+ALL8K = FORM == '8-K-ALL'
+if ALL8K:
+    FORM = '8-K'
 PATTERN = os.environ.get('PATTERN') or ''
 sub = get(f'https://data.sec.gov/submissions/CIK{cik:010d}.json').json()
 rec = sub['filings']['recent']
 rows = [(rec['filingDate'][i], rec['accessionNumber'][i]) for i in range(len(rec['form']))
-        if rec['form'][i] == FORM and (FORM != '8-K' or '2.02' in (rec.get('items') or [''] * 9999)[i])]
+        if rec['form'][i] == FORM and (FORM != '8-K' or ALL8K or '2.02' in (rec.get('items') or [''] * 9999)[i])]
 rows = sorted(rows)[-limit:]
 print(t, cik, '실적 8-K', len(rows), flush=True)
 for date, acc in rows:
