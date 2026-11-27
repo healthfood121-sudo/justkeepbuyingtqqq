@@ -145,6 +145,11 @@ def block(sig, k, prefix="마지막"):
     if k == "D10GK" and t.get("state") == "현금" and loc_line(t):
         lines.append("  " + loc_line(t))
     lines += ["  " + x for x in last_lines(t, prefix)]
+    lc = t.get("last_cond")
+    if lc:
+        buy = next((x for x in t.get("last_events", []) if x.get("action") == "매수"), None)
+        if not buy or lc["date"] > (buy.get("signal") or buy["date"]):
+            lines.append(f"  마지막 재매수 조건 충족: {lc['date']}" + (" (보유 중이라 매매 없음)" if lc["state"] == "보유" else ""))
     return lines
 
 

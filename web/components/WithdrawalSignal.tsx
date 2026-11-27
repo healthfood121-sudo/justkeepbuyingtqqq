@@ -20,6 +20,7 @@ interface StrategySignal {
   sell_line?:  number   // RULE25 보유 중 매도선 (1년 최고 종가 × 0.75)
   below_days?: number   // S0·D10GK 보유 중 200일선 아래 연속일 (15일이면 매도)
   last_events: { date: string; signal?: string; action: string; how: string }[]   // 최신순. date=매매일, signal=신호가 켜진 날
+  last_cond?: { date: string; state: '보유' | '현금' }   // D10GK: 재매수 조건이 마지막으로 맞은 날과 그때 상태
 }
 
 interface Signal {
@@ -95,7 +96,10 @@ function LastEvents({ t }: { t: StrategySignal }) {
   const items = (['매도', '매수'] as const)
     .map(a => ({ a, e: t.last_events.find(e => e.action === a) }))
     .filter((x): x is { a: '매도' | '매수'; e: StrategySignal['last_events'][number] } => !!x.e)
-  if (!items.length) return null
+  // D10GK: 마지막 매수 신호보다 뒤에 조건만 맞은 날(보유 중이라 매매 없음)이 있으면 따로 표시
+  const lastBuy = items.find(x => x.a === '매수')?.e
+  const cond = t.last_cond && (!lastBuy || t.last_cond.date > (lastBuy.signal ?? lastBuy.date)) ? t.last_cond : null
+  if (!items.length && !cond) return null
   return (
     <div className="mt-1.5 space-y-0.5 text-[11px]">
       {items.map(({ a, e }) => {
@@ -114,6 +118,18 @@ function LastEvents({ t }: { t: StrategySignal }) {
           </p>
         )
       })}
+      {cond && (
+        <p className="text-gray-500 dark:text-gray-400">
+          <span className="whitespace-nowrap">
+            <span className="font-semibold text-amber-700 dark:text-amber-300">마지막 재매수 조건 충족</span>{' '}
+            <span className="font-mono text-gray-700 dark:text-gray-200">{cond.date}</span>
+            <span className="text-gray-400 dark:text-gray-500"> ({ago(cond.date)})</span>
+          </span>{' '}
+          <span className="whitespace-nowrap text-gray-400 dark:text-gray-500">
+            → {cond.state === '보유' ? '보유 중이라 매매 없음' : '그날 종가에 매수'}
+          </span>
+        </p>
+      )}
     </div>
   )
 }

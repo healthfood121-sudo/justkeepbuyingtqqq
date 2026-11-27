@@ -132,6 +132,7 @@ def run_machine(kind, closes, ema, rsi, peaks, dates, start=200):
     below = above = 0
     pend = None          # (action, 실행 거래일 index, 신호일)
     events = []
+    last_cond = None     # D10GK: 재매수 조건이 마지막으로 맞은 날 (보유 중이었으면 매매 없음)
     for t in range(start, len(closes)):
         e = ema[t]
         if closes[t] < e:
@@ -144,6 +145,8 @@ def run_machine(kind, closes, ema, rsi, peaks, dates, start=200):
         buy_sig = above >= TIME_FILTER
         rsi_buy = (kind == "D10GK" and not inv and not buy_sig and not np.isnan(rsi[t])
                    and rsi[t] < RSI_THR and (closes[t] - e) / e <= DIV_THR)
+        if kind == "D10GK" and not np.isnan(rsi[t]) and rsi[t] < RSI_THR and (closes[t] - e) / e <= DIV_THR:
+            last_cond = {"date": str(dates[t].date()), "state": "보유" if inv else "현금"}
 
         fire_sell = fire_buy = False
         how = ""
@@ -167,7 +170,8 @@ def run_machine(kind, closes, ema, rsi, peaks, dates, start=200):
         if fire_buy:
             inv, above = True, 0
             events.append({"date": str(dates[t].date()), "signal": str(dates[sig_t].date()), "action": "매수", "how": how})
-    return {"invested": bool(inv), "below": below, "above": above, "pend": pend, "events": events}
+    return {"invested": bool(inv), "below": below, "above": above, "pend": pend, "events": events,
+            "last_cond": last_cond}
 
 
 def describe(kind, m, closes, ema, rsi, ag, al, peaks, dates, tqqq):
@@ -176,6 +180,7 @@ def describe(kind, m, closes, ema, rsi, ag, al, peaks, dates, tqqq):
     out = {
         "state":       "보유" if m["invested"] else "현금",
         "last_events": m["events"][-4:][::-1],
+        **({"last_cond": m["last_cond"]} if kind == "D10GK" and m.get("last_cond") else {}),
         "action":      "없음",
         "detail":      "",
     }
