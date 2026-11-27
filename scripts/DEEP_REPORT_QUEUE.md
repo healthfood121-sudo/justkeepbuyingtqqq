@@ -110,7 +110,7 @@
 - [x] 96. ITW (roic5 26.4, 현재 26KB)
 - [x] 97. WST (roic5 26.3, 현재 27KB)
 - [x] 98. HSY (roic5 25.7, 현재 21KB)
-- [ ] 99. GRMN (roic5 25.5, 현재 27KB)
+- [x] 99. GRMN (roic5 25.5, 현재 27KB)
 - [ ] 100. SNPS (roic5 25.5, 현재 27KB)
 - [ ] 101. HCA (roic5 24.7, 현재 24KB)
 - [ ] 102. HLT (roic5 24.3, 현재 24KB)
