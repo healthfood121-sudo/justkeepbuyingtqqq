@@ -183,7 +183,7 @@
 - [x] 169. AMGN (roic5 14.5, 현재 26KB)
 - [x] 170. CSX (roic5 14.5, 현재 25KB)
 - [x] 171. BR (roic5 14.4, 현재 32KB)
-- [ ] 172. FSS (roic5 14.4, 현재 25KB)
+- [x] 172. FSS (roic5 14.4, 현재 25KB)
 - [x] 173. PH (roic5 14.4, 현재 28KB)
 - [ ] 174. XOM (roic5 14.4, 현재 27KB)
 - [ ] 175. URI (roic5 14.3, 현재 25KB)
