@@ -117,7 +117,7 @@
 - [x] 103. MRK (roic5 24.3, 현재 28KB)
 - [x] 104. PCAR (roic5 24.3, 현재 26KB)
 - [x] 105. EXP (roic5 23.6, 현재 28KB)
-- [ ] 106. IBP (roic5 23.6, 현재 23KB)
+- [x] 106. IBP (roic5 23.6, 현재 23KB)
 - [ ] 107. IPAR (roic5 23.5, 현재 36KB)
 - [ ] 108. POOL (roic5 23.2, 현재 28KB)
 - [ ] 109. MUSA (roic5 23.0, 현재 25KB)
