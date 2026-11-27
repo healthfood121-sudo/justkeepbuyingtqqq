@@ -172,7 +172,7 @@
 - [x] 158. UNP (roic5 16.0, 현재 26KB)
 - [x] 159. ABBV (roic5 15.7, 현재 24KB)
 - [x] 160. MATX (roic5 15.7, 현재 26KB)
-- [ ] 161. UFPT (roic5 15.7, 현재 32KB)
+- [x] 161. UFPT (roic5 15.7, 현재 32KB)
 - [ ] 162. AJG (roic5 15.6, 현재 25KB)
 - [ ] 163. KO (roic5 15.6, 현재 30KB)
 - [ ] 164. ALGN (roic5 15.4, 현재 26KB)
