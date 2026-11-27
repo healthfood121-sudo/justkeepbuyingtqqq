@@ -114,7 +114,7 @@
 - [x] 100. SNPS (roic5 25.5, 현재 27KB)
 - [x] 101. HCA (roic5 24.7, 현재 24KB)
 - [x] 102. HLT (roic5 24.3, 현재 24KB)
-- [ ] 103. MRK (roic5 24.3, 현재 28KB)
+- [x] 103. MRK (roic5 24.3, 현재 28KB)
 - [ ] 104. PCAR (roic5 24.3, 현재 26KB)
 - [ ] 105. EXP (roic5 23.6, 현재 28KB)
 - [ ] 106. IBP (roic5 23.6, 현재 23KB)
