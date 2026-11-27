@@ -175,7 +175,7 @@
 - [x] 161. UFPT (roic5 15.7, 현재 32KB)
 - [x] 162. AJG (roic5 15.6, 현재 25KB)
 - [x] 163. KO (roic5 15.6, 현재 30KB)
-- [ ] 164. ALGN (roic5 15.4, 현재 26KB)
+- [x] 164. ALGN (roic5 15.4, 현재 26KB)
 - [ ] 165. GILD (roic5 15.4, 현재 26KB)
 - [ ] 166. MGRC (roic5 15.1, 현재 33KB)
 - [ ] 167. NDSN (roic5 15.0, 현재 27KB)
