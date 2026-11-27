@@ -169,7 +169,7 @@ function RsiCheck({ sig, t }: { sig: Signal; t: StrategySignal }) {
       <p className="text-[10px] text-gray-400 dark:text-gray-500 leading-relaxed pt-0.5">
         {t.state === '보유'
           ? both
-            ? '지금은 TQQQ를 보유 중이라 조건이 맞아도 할 일이 없습니다. 매도 후 현금일 때만 매수 신호로 작동합니다.'
+            ? '이미 TQQQ를 보유 중이면 할 일이 없습니다. 현금으로 새로 시작하는 사람에게는 D10GK 규칙상 들어가는 조건이 맞은 날입니다 (규칙대로라면 이 종가에 매수).'
             : '매도 후 현금일 때, 두 조건이 같은 날 종가로 동시에 맞으면 그날 종가에 재매수합니다.'
           : '두 조건이 같은 날 종가로 동시에 맞으면 그날 종가에 재매수합니다 (LOC 주문).'}
       </p>

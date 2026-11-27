@@ -10,6 +10,8 @@ notify_telegram.py — 인출식 신호를 텔레그램 채널로 알린다 (Git
   · 현금 중 200일 평균선 위 10일째가 된 날 (세 전략 공통) → 재매수 임박 (15일이면 매수)
   · D10GK 현금 중 매일                                  → 그날 밤 넣을 LOC 매수 주문 가격 (RSI 조기 재매수)
   · D10GK LOC 주문이 체결된 날                           → 조기 재매수 체결
+  · D10GK 보유 중인데 RSI 조건이 맞은 날 (예: 2026-11-20) → 참고 알림: 보유자는 할 일 없음,
+                                                           현금으로 새로 시작하는 사람에게는 D10GK 기준 진입 조건
   · 매주 금요일 장 마감 뒤(한국 토요일 아침)            → 세 전략 한 주 요약 (그날 다른 알림이 있어도 따로)
   · --test                                              → 지금 상태를 바로 한 번 (토큰 설정 확인용)
 
@@ -167,6 +169,10 @@ def events(sig, prev):
         if act != "없음" and act != "LOC 매수 주문":
             continue
 
+        if (k == "D10GK" and t.get("state") == "보유" and sig.get("rsi14") is not None
+                and sig["rsi14"] < 30 and sig.get("vs_ema_pct", 0) <= -10):
+            ev.append(("진입 조건", k))
+
         if t.get("state") == "보유":
             if k == "RULE25":
                 drop, pdrop = -sig["vs_peak_pct"], (-prev["vs_peak_pct"] if prev else 0.0)
@@ -199,6 +205,12 @@ def message(kind, ks, sig):
         t = strat(sig, ks[0])
         head = [f"🟣 {n} 오늘 밤 LOC 매수 주문", "", loc_line(t),
                 "RSI 30 미만 + 200일선 대비 −10% 이하가 같은 날 종가로 맞으면 체결됩니다. 체결 안 되면 다음 날 새 가격으로 다시 주문합니다."]
+    elif kind == "진입 조건":
+        head = [f"🟠 {n} 재매수 조건 충족 (참고)", "",
+                f"오늘 종가에 RSI {sig['rsi14']:.1f}(30 미만), 200일선 대비 {sig['vs_ema_pct']:+.1f}%(−10% 이하)로 D10GK 조기 재매수 조건이 맞았습니다.",
+                "· 이미 TQQQ를 보유 중인 사람: 할 일 없음",
+                "· 현금으로 새로 시작하려는 사람: D10GK 규칙으로는 들어가는 조건이 맞은 날입니다. "
+                "규칙대로라면 이 종가에 샀어야 하므로, 다음 거래일에 사면 가격이 달라집니다."]
     elif kind == "25% 주의":
         head = [f"🟡 {n} 주의 — 매도선에 가까워졌습니다", "", "아직 할 일은 없습니다. 매도는 −25% 아래로 마감한 다음 날입니다."]
     elif kind == "매도 임박":
@@ -241,7 +253,7 @@ def build(sig, prev, weekly, test):
     groups = {}
     for kind, k in events(sig, prev):
         groups.setdefault(kind, []).append(k)
-    order = ("매도", "매수", "LOC 체결", "LOC 주문", "25% 주의", "매도 임박", "재매수 임박")
+    order = ("매도", "매수", "LOC 체결", "LOC 주문", "진입 조건", "25% 주의", "매도 임박", "재매수 임박")
     msgs = [message(kind, groups[kind], sig) for kind in order if kind in groups]
 
     # 주간 요약 · 테스트: 세 전략 모두
