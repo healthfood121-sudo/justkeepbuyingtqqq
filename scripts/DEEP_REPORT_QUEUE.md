@@ -97,7 +97,7 @@
 - [x] 83. FN (roic5 29.1, 현재 27KB)
 - [x] 84. LLY (roic5 28.9, 현재 27KB)
 - [x] 85. LECO (roic5 28.7, 현재 26KB)
-- [ ] 86. ZTS (roic5 28.3, 현재 28KB)
+- [x] 86. ZTS (roic5 28.3, 현재 28KB)
 - [ ] 87. CRAI (roic5 28.2, 현재 20KB)
 - [ ] 88. CSCO (roic5 27.7, 현재 29KB)
 - [ ] 89. FIVE (roic5 27.7, 현재 24KB)
