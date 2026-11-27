@@ -135,7 +135,7 @@
 - [x] 121. DCI (roic5 21.7, 현재 33KB)
 - [x] 122. SHW (roic5 21.7, 현재 26KB)
 - [x] 123. ENSG (roic5 21.5, 현재 22KB)
-- [ ] 124. EW (roic5 21.5, 현재 30KB)
+- [x] 124. EW (roic5 21.5, 현재 30KB)
 - [ ] 125. NFLX (roic5 21.5, 현재 45KB)
 - [ ] 126. ISRG (roic5 21.1, 현재 52KB)
 - [ ] 127. DOCS (roic5 21.0, 현재 21KB)
