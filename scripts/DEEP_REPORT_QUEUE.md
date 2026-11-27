@@ -185,7 +185,7 @@
 - [x] 171. BR (roic5 14.4, 현재 32KB)
 - [x] 172. FSS (roic5 14.4, 현재 25KB)
 - [x] 173. PH (roic5 14.4, 현재 28KB)
-- [ ] 174. XOM (roic5 14.4, 현재 27KB)
+- [x] 174. XOM (roic5 14.4, 현재 27KB)
 - [x] 175. URI (roic5 14.3, 현재 25KB)
 - [ ] 176. CPAY (roic5 14.2, 현재 24KB)
 - [ ] 177. HEI (roic5 14.2, 현재 25KB)
