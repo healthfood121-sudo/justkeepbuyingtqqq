@@ -35,6 +35,31 @@ const SERIES: { k: Key; label: string; light: string; dark: string }[] = [
 ]
 const pct = (v: number) => `${v >= 100 ? '+' : ''}${(v - 100).toFixed(2)}%`
 const sgn = (v: number) => `${v > 0 ? '+' : ''}${v.toFixed(1)}%`
+// 홈 화면 신호 파일의 전략별 최근 매매 (최신순). date=매매일, signal=신호가 켜진 날
+type LastEv = { date: string; signal?: string; action: string }
+type LastMap = Partial<Record<Strat, LastEv[]>>
+
+// 표 머리글: 전략 이름 아래 마지막 매도·매수 신호 날짜
+function LastSig({ ev }: { ev?: LastEv[] }) {
+  if (!ev?.length) return null
+  return (
+    <div className="mt-0.5 space-y-px font-normal text-[10px] whitespace-nowrap">
+      {(['매도', '매수'] as const).map(a => {
+        const e = ev.find(x => x.action === a)
+        if (!e) return null
+        const d = e.signal ?? e.date
+        return (
+          <div key={a} className="text-gray-500 dark:text-gray-400">
+            <span className={a === '매도' ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400'}>마지막 {a} 신호</span>{' '}
+            <span className="font-mono">{d}</span>
+            {d !== e.date && <span className="text-gray-400 dark:text-gray-500"> → {e.date.slice(5)} {a}</span>}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 const HIT = 'text-red-600 dark:text-red-400 font-semibold'
 const GROUP = 'border-l border-gray-200 dark:border-gray-700'
 
@@ -77,6 +102,17 @@ export default function LivePage() {
   const { theme } = useTheme()
   const dark = theme === 'dark'
   useEffect(() => { fetch('/data/live_record.json').then(r => r.json()).then(setRec) }, [])
+  const [last, setLast] = useState<LastMap>({})
+  useEffect(() => {
+    fetch('/data/withdrawal_signal.json')
+      .then(r => r.json())
+      .then(j => {
+        const m: LastMap = {}
+        for (const k of ['RULE25', 'S0', 'D10GK'] as Strat[]) m[k] = j.strategies?.[k]?.last_events
+        setLast(m)
+      })
+      .catch(() => {})
+  }, [])
   const liveChartRef = useRef<ChartJS<'line'> | null>(null)
   const [pluginLoaded, setPluginLoaded] = useState(false)
   useEffect(() => {
@@ -231,10 +267,10 @@ export default function LivePage() {
                 <thead>
                   <tr className="text-gray-700 dark:text-gray-200">
                     <th colSpan={3} />
-                    <th colSpan={2} className={`pt-2 px-2 text-left font-bold ${GROUP}`}>25% 룰</th>
-                    <th colSpan={2} className={`pt-2 px-2 text-left font-bold ${GROUP}`}>S0</th>
-                    <th colSpan={3} className={`pt-2 px-2 text-left font-bold ${GROUP}`}>D10GK</th>
-                    <th colSpan={5} className={`pt-2 px-2 text-left font-bold ${GROUP}`}>누적 수익률</th>
+                    <th colSpan={2} className={`pt-2 px-2 text-left align-top font-bold ${GROUP}`}>25% 룰<LastSig ev={last.RULE25} /></th>
+                    <th colSpan={2} className={`pt-2 px-2 text-left align-top font-bold ${GROUP}`}>S0<LastSig ev={last.S0} /></th>
+                    <th colSpan={3} className={`pt-2 px-2 text-left align-top font-bold ${GROUP}`}>D10GK<LastSig ev={last.D10GK} /></th>
+                    <th colSpan={5} className={`pt-2 px-2 text-left align-top font-bold ${GROUP}`}>누적 수익률</th>
                   </tr>
                   <tr className="border-b border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400">
                     {[
