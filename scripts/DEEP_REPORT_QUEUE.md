@@ -192,7 +192,7 @@
 - [x] 178. PKG (roic5 14.1, 현재 26KB)
 - [x] 179. PNR (roic5 14.0, 현재 22KB)
 - [x] 180. CHD (roic5 13.9, 현재 26KB)
-- [ ] 181. KAI (roic5 13.9, 현재 24KB)
+- [x] 181. KAI (roic5 13.9, 현재 24KB)
 - [ ] 182. ABT (roic5 13.7, 현재 24KB)
 - [ ] 183. ENS (roic5 13.7, 현재 26KB)
 - [ ] 184. MSA (roic5 13.7, 현재 25KB)
