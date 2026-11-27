@@ -88,7 +88,7 @@
 - [x] 74. LMT (roic5 32.2, 현재 28KB)
 - [x] 75. CHE (roic5 31.8, 현재 27KB)
 - [x] 76. TPR (roic5 31.7, 현재 29KB)
-- [ ] 77. AOS (roic5 31.6, 현재 44KB)
+- [x] 77. AOS (roic5 31.6, 현재 44KB)
 - [ ] 78. BJ (roic5 30.9, 현재 23KB)
 - [ ] 79. IESC (roic5 30.5, 현재 28KB)
 - [ ] 80. ERIE (roic5 30.4, 현재 21KB)
