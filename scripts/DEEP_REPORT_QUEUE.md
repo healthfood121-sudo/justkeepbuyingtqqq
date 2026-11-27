@@ -125,7 +125,7 @@
 - [x] 111. ALLE (roic5 22.8, 현재 24KB)
 - [x] 112. DE (roic5 22.8, 현재 29KB)
 - [x] 113. RMD (roic5 22.8, 현재 29KB)
-- [ ] 114. JKHY (roic5 22.7, 현재 54KB)
+- [x] 114. JKHY (roic5 22.7, 현재 54KB)
 - [ ] 115. UFPI (roic5 22.7, 현재 26KB)
 - [ ] 116. CPRT (roic5 22.6, 현재 30KB)
 - [ ] 117. CVCO (roic5 22.6, 현재 32KB)
