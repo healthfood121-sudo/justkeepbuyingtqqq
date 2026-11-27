@@ -1,6 +1,7 @@
 """
-notify_telegram.py — 인출식 세 전략(25% 룰 · S0 · D10GK) 신호를 텔레그램 채널로 알린다
-(GitHub Actions에서 신호 계산 직후 실행)
+notify_telegram.py — 인출식 신호를 텔레그램 채널로 알린다 (GitHub Actions에서 신호 계산 직후 실행)
+메인 전략은 25% 룰, S0 · D10GK는 비교 전략. 모든 메시지에서 25% 룰 상태가 맨 앞에 오고,
+비교 전략만의 알림은 제목에 '비교 전략'을 붙이고 "메인 전략은 할 일 없음"을 먼저 적는다.
 
 보내는 경우 (같은 날 같은 종류의 알림은 전략 이름을 묶어 한 메시지로)
   · 매도/매수 신호가 새로 뜬 날                         → 즉시 알림 ("다음 거래일에 전량 매도")
@@ -34,6 +35,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 SIGNAL = ROOT / "web/public/data/withdrawal_signal.json"
 KEYS = ("RULE25", "S0", "D10GK")
+MAIN = "RULE25"
+COMPARE = ("S0", "D10GK")
 NAME = {"RULE25": "25% 룰", "S0": "S0", "D10GK": "D10GK"}
 WARN_DROP = 20.0   # 25% 룰: 최고 종가 대비 이만큼(%) 빠지면 주의 알림
 SELL_WARN = 10     # S0·D10GK: 보유 중 200일선 아래 연속일이 이만큼 되면 매도 임박 알림
@@ -119,10 +122,20 @@ def last_lines(t, prefix="마지막"):
     return out
 
 
+def one_line(sig, k):
+    """전략 한 줄 요약: "TQQQ 보유 · 할 일 없음 · 매도선까지 …" """
+    line = state_line(sig, k)
+    if strat(sig, k).get("action", "없음") == "없음":
+        first, _, rest = line.partition(" · ")
+        line = f"{first} · 할 일 없음" + (f" · {rest}" if rest else "")
+    return line
+
+
 def block(sig, k, prefix="마지막"):
     """전략 하나의 상태 + 마지막 신호."""
     t = strat(sig, k)
-    lines = [f"■ {NAME[k]}: {state_line(sig, k)}"]
+    label = f"{NAME[k]} (메인)" if k == MAIN else NAME[k]
+    lines = [f"■ {label}: {one_line(sig, k)}"]
     if k == "D10GK" and t.get("state") == "현금" and loc_line(t):
         lines.append("  " + loc_line(t))
     lines += ["  " + x for x in last_lines(t, prefix)]
@@ -173,7 +186,8 @@ def events(sig, prev):
 
 
 def message(kind, ks, sig):
-    n = names(ks)
+    only_compare = MAIN not in ks
+    n = ("비교 전략 " if only_compare else "") + names(ks)
     if kind == "매도":
         head = [f"🔴 {n} 매도 신호", "", "할 일: 다음 거래일 종가에 TQQQ 전량 매도 → 현금(외화RP) 보관"]
     elif kind == "매수":
@@ -195,24 +209,30 @@ def message(kind, ks, sig):
         d = strat(sig, ks[0]).get("above_days")
         head = [f"🔵 {n} 재매수 임박", "", f"200일 평균선 위 {d}일째입니다. 15일 연속이면 다음 거래일에 전액 매수합니다.",
                 "아직 할 일은 없습니다. 중간에 한 번이라도 평균선 아래로 마감하면 처음부터 다시 셉니다."]
+
+    # 비교 전략만의 알림: 메인 전략 상태를 제목 바로 아래에 먼저
+    if only_compare and strat(sig, MAIN):
+        act = strat(sig, MAIN).get("action", "없음")
+        main_todo = "할 일 없음" if act in ("없음", "LOC 매수 주문") else f"다음 거래일 전량 {act}"
+        head[1:1] = ["", f"※ 메인 전략(25% 룰)은 {main_todo}입니다. 아래는 비교 전략 알림입니다."]
+
     # 새 매도·매수 신호 날은 아직 매매 전이라 기록의 마지막 신호는 이전 것 → '직전'
     prefix = "직전" if kind in ("매도", "매수") else "마지막"
     body = [""] + header_lines(sig)
-    for k in ks:
-        body += [""] + block(sig, k, prefix)
-    # 이 알림에 없는 전략도 한 줄씩 (그 전략을 따르는 사람이 헷갈리지 않게)
-    others = [k for k in KEYS if k not in ks and strat(sig, k)]
-    if others:
-        body += ["", "— 다른 전략 —"]
-        for k in others:
-            act = strat(sig, k).get("action", "없음")
-            line = state_line(sig, k)
-            if act == "없음":                         # "TQQQ 보유 · 할 일 없음 · 매도선까지 …"
-                first, _, rest = line.partition(" · ")
-                line = f"{first} · 할 일 없음" + (f" · {rest}" if rest else "")
-            body.append(f"{NAME[k]}: {line}")
-            if k == "D10GK" and strat(sig, k).get("state") == "현금" and loc_line(strat(sig, k)):
-                body.append("  " + loc_line(strat(sig, k)))
+    # 25% 룰(메인)은 항상 맨 앞, 전체 표시
+    if strat(sig, MAIN):
+        body += [""] + block(sig, MAIN, prefix if MAIN in ks else "마지막")
+    # 비교 전략: 이 알림의 대상은 전체, 나머지는 한 줄
+    comp = [k for k in COMPARE if strat(sig, k)]
+    if comp:
+        body += ["", "— 비교 전략 —"]
+        for k in comp:
+            if k in ks:
+                body += block(sig, k, prefix)
+            else:
+                body.append(f"{NAME[k]}: {one_line(sig, k)}")
+                if k == "D10GK" and strat(sig, k).get("state") == "현금" and loc_line(strat(sig, k)):
+                    body.append("  " + loc_line(strat(sig, k)))
     return "\n".join(head + body)
 
 
@@ -226,13 +246,17 @@ def build(sig, prev, weekly, test):
 
     # 주간 요약 · 테스트: 세 전략 모두
     if (weekly or test) and not msgs:
-        head = "🧪 알림 테스트 — 세 전략 현재 상태" if test else "📋 인출식 신호 주간 요약"
-        todo = [f"{NAME[k]}: 할 일 없음" if strat(sig, k).get("action", "없음") == "없음"
-                else f"{NAME[k]}: {strat(sig, k)['action']}" for k in KEYS if strat(sig, k)]
-        body = [head, ""] + todo + [""] + header_lines(sig)
-        for k in KEYS:
-            if strat(sig, k):
-                body += [""] + block(sig, k)
+        head = "🧪 알림 테스트 — 현재 상태" if test else "📋 인출식 신호 주간 요약"
+        act = strat(sig, MAIN).get("action", "없음")
+        todo = f"25% 룰(메인): {'할 일 없음' if act == '없음' else f'다음 거래일 전량 {act}'}"
+        body = [head, "", todo, ""] + header_lines(sig)
+        if strat(sig, MAIN):
+            body += [""] + block(sig, MAIN)
+        comp = [k for k in COMPARE if strat(sig, k)]
+        if comp:
+            body += ["", "— 비교 전략 —"]
+            for k in comp:
+                body += block(sig, k)
         msgs.append("\n".join(body))
 
     site = os.environ.get("SITE_URL", "").strip()
