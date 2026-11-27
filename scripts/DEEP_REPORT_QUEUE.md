@@ -116,7 +116,7 @@
 - [x] 102. HLT (roic5 24.3, 현재 24KB)
 - [x] 103. MRK (roic5 24.3, 현재 28KB)
 - [x] 104. PCAR (roic5 24.3, 현재 26KB)
-- [ ] 105. EXP (roic5 23.6, 현재 28KB)
+- [x] 105. EXP (roic5 23.6, 현재 28KB)
 - [ ] 106. IBP (roic5 23.6, 현재 23KB)
 - [ ] 107. IPAR (roic5 23.5, 현재 36KB)
 - [ ] 108. POOL (roic5 23.2, 현재 28KB)
