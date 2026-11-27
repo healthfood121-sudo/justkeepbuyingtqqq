@@ -18,7 +18,7 @@ interface StrategySignal {
   above_days?: number   // 현금일 때 200일선 위 연속일 (15일이면 매수)
   sell_line?:  number   // RULE25 보유 중 매도선 (1년 최고 종가 × 0.75)
   below_days?: number   // S0·D10GK 보유 중 200일선 아래 연속일 (15일이면 매도)
-  last_events: { date: string; action: string; how: string }[]
+  last_events: { date: string; signal?: string; action: string; how: string }[]   // 최신순. date=매매일, signal=신호가 켜진 날
 }
 
 interface Signal {
@@ -79,6 +79,37 @@ function Gauge({ sig, t }: { sig: Signal; t: StrategySignal }) {
         재매수까지 <strong>15일 중 {d}일째</strong>
         <span className="text-gray-400 dark:text-gray-500"> · 200일 평균선 {num(sig.ema200)} 위 마감 기준</span>
       </p>
+    </div>
+  )
+}
+
+// 마지막 매도·매수 신호가 켜진 날과 실제 매매일
+function LastEvents({ t }: { t: StrategySignal }) {
+  const ago = (d: string) => {
+    const days = Math.round((Date.now() - new Date(d + 'T00:00:00Z').getTime()) / 86400000)
+    if (days < 60) return `${days}일 전`
+    if (days < 730) return `${Math.round(days / 30.4)}개월 전`
+    return `${(days / 365.25).toFixed(1)}년 전`
+  }
+  const items = (['매도', '매수'] as const)
+    .map(a => ({ a, e: t.last_events.find(e => e.action === a) }))
+    .filter((x): x is { a: '매도' | '매수'; e: StrategySignal['last_events'][number] } => !!x.e)
+  if (!items.length) return null
+  return (
+    <div className="mt-1.5 space-y-0.5 text-[11px]">
+      {items.map(({ a, e }) => {
+        const sigDay = e.signal ?? e.date
+        const sameDay = sigDay === e.date
+        return (
+          <p key={a} className="text-gray-500 dark:text-gray-400">
+            <span className={`font-semibold ${a === '매도' ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400'}`}>마지막 {a} 신호</span>{' '}
+            <span className="font-mono text-gray-700 dark:text-gray-200">{sigDay}</span>
+            <span className="text-gray-400 dark:text-gray-500">
+              {' '}({ago(sigDay)}) → {sameDay ? '그날 종가에' : <><span className="font-mono">{e.date}</span> 종가에</>} {a}
+            </span>
+          </p>
+        )
+      })}
     </div>
   )
 }
@@ -185,6 +216,7 @@ export default function WithdrawalSignal() {
             {urgent
               ? <p className="text-[11px] mt-0.5 text-red-600 dark:text-red-400">{t.detail}</p>
               : <Gauge sig={sig} t={t} />}
+            <LastEvents t={t} />
           </div>
         )
       })()}
@@ -246,6 +278,7 @@ export default function WithdrawalSignal() {
                     {' '}(나스닥100이 {pct(s.loc.ndx_pct)} 이하로 끝나야 체결)
                   </p>
                 )}
+                <LastEvents t={s} />
                 {key === 'D10GK' && <RsiCheck sig={sig} t={s} />}
               </div>
             )

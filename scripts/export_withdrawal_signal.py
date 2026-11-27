@@ -147,7 +147,9 @@ def run_machine(kind, closes, ema, rsi, peaks, dates, start=200):
 
         fire_sell = fire_buy = False
         how = ""
+        sig_t = t                                    # 신호가 켜진 날 (다음 거래일 매매면 전날)
         if pend is not None and t >= pend[1]:
+            sig_t = pend[2]
             fire_sell = pend[0] == "sell" and inv
             fire_buy = pend[0] == "buy" and not inv
             how = "신호 다음 거래일"
@@ -161,10 +163,10 @@ def run_machine(kind, closes, ema, rsi, peaks, dates, start=200):
                 pend = ("buy", t + 1, t)
         if fire_sell:
             inv, below = False, 0
-            events.append({"date": str(dates[t].date()), "action": "매도", "how": how})
+            events.append({"date": str(dates[t].date()), "signal": str(dates[sig_t].date()), "action": "매도", "how": how})
         if fire_buy:
             inv, above = True, 0
-            events.append({"date": str(dates[t].date()), "action": "매수", "how": how})
+            events.append({"date": str(dates[t].date()), "signal": str(dates[sig_t].date()), "action": "매수", "how": how})
     return {"invested": bool(inv), "below": below, "above": above, "pend": pend, "events": events}
 
 
