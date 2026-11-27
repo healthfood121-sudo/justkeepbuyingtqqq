@@ -190,7 +190,7 @@
 - [x] 176. CPAY (roic5 14.2, 현재 24KB)
 - [x] 177. HEI (roic5 14.2, 현재 25KB)
 - [x] 178. PKG (roic5 14.1, 현재 26KB)
-- [ ] 179. PNR (roic5 14.0, 현재 22KB)
+- [x] 179. PNR (roic5 14.0, 현재 22KB)
 - [ ] 180. CHD (roic5 13.9, 현재 26KB)
 - [ ] 181. KAI (roic5 13.9, 현재 24KB)
 - [ ] 182. ABT (roic5 13.7, 현재 24KB)
