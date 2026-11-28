@@ -228,7 +228,7 @@
 - [x] 214. XYL (roic5 8.2, 현재 23KB)
 - [x] 215. MDLZ (roic5 7.7, 현재 23KB)
 - [x] 216. TMUS (roic5 7.7, 현재 22KB)
-- [ ] 217. TYL (roic5 7.7, 현재 25KB)
+- [x] 217. TYL (roic5 7.7, 현재 25KB)
 - [ ] 218. CRM (roic5 7.5, 현재 34KB)
 - [ ] 219. TDY (roic5 7.4, 현재 25KB)
 - [ ] 220. WMB (roic5 7.4, 현재 22KB)
