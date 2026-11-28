@@ -26,7 +26,13 @@ jobs:
           UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
                 "Accept-Language": "en-US,en;q=0.9"}
           import json
-          hs=[c["handle"] for c in requests.get(base+"/collections.json?limit=250",headers=UA,timeout=40).json()["collections"] if "herm" in c["handle"]]
+          allc=[]
+          for cp in range(1,10):
+              cs=requests.get(f"{base}/collections.json?limit=250&page={cp}",headers=UA,timeout=40).json().get("collections",[])
+              if not cs: break
+              allc+=cs
+          print("collections total:", len(allc))
+          hs=[c["handle"] for c in allc if c["handle"] in ("hermes-handbags","hermes","all-hermes","hermes-bags","hermes-birkin","hermes-kelly","hermes-birkin-bags","hermes-kelly-bags","new-hermes","hermes-new") or ("herm" in c["handle"] and ("handbag" in c["handle"] or "birkin" in c["handle"] or "kelly" in c["handle"] or "all" in c["handle"]))]
           print("hermes collections:", hs)
           for h in hs:
               tot=0
