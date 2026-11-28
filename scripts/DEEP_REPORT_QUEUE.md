@@ -203,7 +203,7 @@
 - [x] 189. AME (roic5 13.1, 현재 25KB)
 - [x] 190. GD (roic5 13.1, 현재 25KB)
 - [x] 191. LAMR (roic5 12.9, 현재 25KB)
-- [ ] 192. DOV (roic5 12.4, 현재 25KB)
+- [x] 192. DOV (roic5 12.4, 현재 25KB)
 - [ ] 193. BRO (roic5 11.9, 현재 25KB)
 - [ ] 194. WM (roic5 11.9, 현재 25KB)
 - [ ] 195. SPGI (roic5 11.8, 현재 36KB)
