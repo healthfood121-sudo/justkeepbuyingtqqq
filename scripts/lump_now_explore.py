@@ -8,6 +8,7 @@ lump_now_explore.py — (탐색용, 터미널 출력만) 지금처럼 나스닥1
   B  거치 + 매일 20만원 적립, TQQQ 계속 보유
   C  거치만, 25% 룰 (1년 최고 종가 −25% 아래 마감 → 다음 날 매도, 현금일 때 200일선 위 15일 연속 → 다음 날 매수,
      현금은 연방기금금리 −0.4%p 세후 이자)
+  D  거치 + 매일 20만원 적립 + 25% 룰 (현금일 때 적립금은 현금으로 쌓였다가 재매수 때 함께 매수)
 TQQQ는 data_loader 합성가격 with_costs (운용보수 + 스왑금리). 세금·환율 무시, 명목 금액.
 
 실행: python scripts/lump_now_explore.py [--lump 2.4e8] [--target 1e9]
@@ -133,6 +134,7 @@ def main():
         ("A 거치만 보유  ", lambda t: years_to_target(px, t, args.lump, args.target)),
         ("B 거치+일20만  ", lambda t: years_to_target(px, t, args.lump, args.target, daily=DAILY)),
         ("C 거치·25% 룰 ", lambda t: years_to_target(px, t, args.lump, args.target, inv=inv25, cash_r=cash_r)),
+        ("D 거치+적립·25%", lambda t: years_to_target(px, t, args.lump, args.target, daily=DAILY, inv=inv25, cash_r=cash_r)),
     ]:
         for gname, ts in groups:
             ys = [fn(t) for t in ts]
@@ -140,14 +142,16 @@ def main():
             print(line)
         print()
 
-    print("하락 국면별 (처음 −12~−17%에 들어온 날 진입) — A 거치만 / C 25% 룰 · 이후 1년 최저(나스닥100 1년 최고가 대비)")
+    print("하락 국면별 (처음 −12~−17%에 들어온 날 진입) — A 거치만 / C 25% 룰 / B 거치+적립 / D 거치+적립·25% 룰")
     for t in episodes:
         a = years_to_target(px, t, args.lump, args.target)
         c = years_to_target(px, t, args.lump, args.target, inv=inv25, cash_r=cash_r)
+        b = years_to_target(px, t, args.lump, args.target, daily=DAILY)
+        dd_ = years_to_target(px, t, args.lump, args.target, daily=DAILY, inv=inv25, cash_r=cash_r)
         low = (closes[t:t + 252].min() / peaks[t] - 1) if t + 1 < n else np.nan
         tq_dd = px[t] / px[max(0, t - 252):t + 1].max() - 1
         f = lambda y: f"{y:5.1f}년" if y is not None else ("  진행중" if avail(t) < MAX_YEARS else " 30년+ ")
-        print(f"  {dates[t].date()}  나스닥100 {dd[t]:+.0%} · TQQQ {tq_dd:+.0%} · 이후 1년 최저 {low:+.0%}   A {f(a)}   C {f(c)}")
+        print(f"  {dates[t].date()}  나스닥100 {dd[t]:+.0%} · TQQQ {tq_dd:+.0%} · 이후 1년 최저 {low:+.0%}   A {f(a)}   C {f(c)}   B {f(b)}   D {f(dd_)}")
 
 
 if __name__ == "__main__":
