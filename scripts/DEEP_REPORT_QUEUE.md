@@ -246,7 +246,7 @@
 - [x] 232. IRM (roic5 6.3, 현재 22KB)
 - [x] 233. ROP (roic5 6.0, 현재 34KB)
 - [x] 234. AWK (roic5 5.8, 현재 22KB)
-- [ ] 235. NEE (roic5 5.7, 현재 22KB)
+- [x] 235. NEE (roic5 5.7, 현재 22KB)
 - [ ] 236. ATO (roic5 5.5, 현재 22KB)
 - [ ] 237. BDX (roic5 5.2, 현재 23KB)
 - [ ] 238. PLD (roic5 5.1, 현재 22KB)
