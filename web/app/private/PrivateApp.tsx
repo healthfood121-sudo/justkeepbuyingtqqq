@@ -8468,6 +8468,12 @@ function HermesResaleCard() {
         <h4 className={h4}>에르메스 리셀 웃돈 추이 <span className="font-normal text-gray-400">· 대표 가방 10종</span></h4>
         <span className="text-[11px] text-gray-400">{last.date} 기준 · 기록 {days.length}일</span>
       </div>
+      {(() => {
+        const gap = days.filter((d: any) => d.missingShops?.length)
+        if (!gap.length) return null
+        const shops = Array.from(new Set(gap.flatMap((d: any) => d.missingShops))).map((x: any) => x === 'mac' ? '매디슨 애비뉴 쿠튀르' : x).join(', ')
+        return <p className="text-[11px] text-amber-700 dark:text-amber-400">⚠ {gap[0].date}~{gap[gap.length - 1].date}: {shops} 매물을 수집하지 못한 날({gap.length}일)이 있어, 이 기간 새 가방 매물 수가 낮고 가격 분포가 달라 보입니다. 시장 변화가 아니라 수집 공백입니다.</p>
+      })()}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         <Tile label={`평균 웃돈 (정가 확인 ${sNow?.n ?? 0}종)`} value={sNow ? `정가의 ${sNow.avg.toFixed(2)}배` : '-'}
           sub={sNow ? `중간값 ${bx(sNow.med)}` : '매물 부족'} />

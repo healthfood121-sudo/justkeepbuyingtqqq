@@ -28,6 +28,10 @@ SHOPS = {
     "rebag":        ("https://shop.rebag.com", "pre"),
     "fashionphile": ("https://www.fashionphile.com", "pre"),
 }
+# 쇼핑몰별 에르메스 컬렉션 주소(앞에서부터 시도). MAC는 2026-11-19 무렵 hermes → hermes-handbags로 바꿨다.
+HANDLES = {"mac": ["hermes-handbags", "hermes"]}
+# 한 쇼핑몰의 바구니 매물이 전날보다 이 비율 아래로 떨어지면 수집 실패로 보고, 그 쇼핑몰은 팔림 판정에서 뺀다
+DROP_RATIO = 0.5
 # 대표 모델 10종. 정가는 2026년 1월 미국 매장가(소더비·퍼스밥 보도), 확인된 것만 넣는다.
 BASKET = {
     "B25": {"label": "버킨 25", "retail": 13500},
@@ -71,14 +75,23 @@ def classify(title, tags):
     return None
 
 def fetch_shop(name, base):
-    items, page = [], 1
-    while page <= 40:
-        r = requests.get(f"{base}/collections/hermes/products.json?limit=250&page={page}", headers=UA, timeout=40)
-        if r.status_code != 200: break
-        ps = r.json().get("products", [])
-        if not ps: break
-        items += ps; page += 1; time.sleep(0.7)
-    return items
+    tried = []
+    for handle in HANDLES.get(name, ["hermes"]):
+        items, page = [], 1
+        while page <= 40:
+            r = requests.get(f"{base}/collections/{handle}/products.json?limit=250&page={page}", headers=UA, timeout=40)
+            if r.status_code != 200:
+                if page == 1: tried.append(f"{handle}: HTTP {r.status_code}")
+                break
+            ps = r.json().get("products", [])
+            if not ps:
+                if page == 1: tried.append(f"{handle}: 상품 0개")
+                break
+            items += ps; page += 1; time.sleep(0.7)
+        if items:
+            return items
+    # 조용히 0개로 넘기지 않는다 — 오류로 남겨 그날 팔림 판정에서 이 쇼핑몰을 뺀다
+    raise RuntimeError("; ".join(tried) or "상품 0개")
 
 def q(vals, p):
     s = sorted(vals); i = (len(s) - 1) * p; lo = int(i); hi = min(lo + 1, len(s) - 1)
@@ -107,6 +120,18 @@ def hermes():
                              "price": price, "avail": avail, "created": (p.get("created_at") or "")[:10],
                              "title": p["title"][:120]})
     live = [l for l in listings if l["avail"]]
+    # 전날 스냅숏과 비교해 쇼핑몰별 수집 실패 판정
+    snap_p = Path("scripts/data/resale_snapshot.json")  # 배포 폴더 밖에 둠
+    prev = json.loads(snap_p.read_text()) if snap_p.exists() else {"date": None, "items": []}
+    prev_n, cur_n = {}, {}
+    for it in prev["items"]: prev_n[it["shop"]] = prev_n.get(it["shop"], 0) + 1
+    for l in live: cur_n[l["shop"]] = cur_n.get(l["shop"], 0) + 1
+    failed = {e.split(":")[0] for e in errors}
+    for sh, n in prev_n.items():
+        if n >= 50 and cur_n.get(sh, 0) < n * DROP_RATIO:
+            failed.add(sh)
+            if not any(e.startswith(sh + ":") for e in errors):
+                errors.append(f"{sh}: 바구니 매물 {n} → {cur_n.get(sh, 0)}개로 급감(수집 실패로 판단)")
     keys = {}
     for k in BASKET:
         keys[k] = {}
@@ -116,13 +141,12 @@ def hermes():
             d = {"n": len(ps), "med": round(q(ps, .5)), "p25": round(q(ps, .25)), "p75": round(q(ps, .75))}
             if BASKET[k]["retail"]: d["prem"] = round(d["med"] / BASKET[k]["retail"], 3)
             keys[k][cond] = d
-    # 팔림 판정: 어제 있던 매물이 오늘 없어지거나 품절로 바뀜
-    snap_p = Path("scripts/data/resale_snapshot.json")  # 배포 폴더 밖에 둠
-    prev = json.loads(snap_p.read_text()) if snap_p.exists() else {"date": None, "items": []}
+    # 팔림 판정: 어제 있던 매물이 오늘 없어지거나 품절로 바뀜(수집 실패한 쇼핑몰은 빼고 판정)
     now_live = {l["id"] for l in live}
     sold_today = []
     if prev.get("date") and prev["date"] != TODAY:
         for it in prev["items"]:
+            if it["shop"] in failed: continue
             if it["id"] not in now_live:
                 days = None
                 if it.get("created"):
@@ -135,7 +159,10 @@ def hermes():
     sold = (sold + sold_today)[-3000:]
     sold_p.write_text(json.dumps(sold, ensure_ascii=False))
     keep = ("id", "shop", "key", "cond", "price", "created")
-    snap_p.write_text(json.dumps({"date": TODAY, "items": [{f: l[f] for f in keep} for l in live]}, ensure_ascii=False, separators=(",", ":")))
+    snap_items = [{f: l[f] for f in keep} for l in live if l["shop"] not in failed]
+    # 실패한 쇼핑몰은 전날 매물을 그대로 넘겨, 다시 수집될 때 가짜 "팔림"이 생기지 않게 한다
+    snap_items += [it for it in prev["items"] if it["shop"] in failed]
+    snap_p.write_text(json.dumps({"date": TODAY, "items": snap_items}, ensure_ascii=False, separators=(",", ":")))
     # 핵심 웃돈 지수: 정가가 확인된 5종의 새 가방 웃돈 중간값(매물 2개 이상인 모델만)
     prems = [keys[k]["new"]["prem"] for k in PREM_KEYS if "new" in keys[k] and keys[k]["new"]["n"] >= 2]
     day = {"date": TODAY, "keys": keys, "shops": shop_n,
@@ -143,6 +170,7 @@ def hermes():
            "soldToday": len(sold_today),
            "premIndex": round(statistics.median(prems), 3) if prems else None}
     if errors: day["errors"] = errors
+    if failed: day["missingShops"] = sorted(failed)
     daily_p = OUT / "hermes_daily.json"
     daily = json.loads(daily_p.read_text()) if daily_p.exists() else {}
     days = [d for d in daily.get("days", []) if d["date"] != TODAY] + [day]
