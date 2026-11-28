@@ -8433,12 +8433,10 @@ function HermesResaleCard() {
   const gapDay = (d: any) => !!d.missingShops?.length
   if (sel === 'ALL') {
     const ss = days.map(d => gapDay(d) ? null : premSummary(d, premKeys))
-    chart = <TrendChart key={`ALL-${gran}`} labels={labels} yFmt={bx} y2Fmt={v => `${Math.round(v)}개`} height={260} series={mk([
+    chart = <TrendChart key={`ALL-${gran}`} labels={labels} yFmt={bx} height={260} series={mk([
       { label: '평균 웃돈', data: ss.map(s => s?.avg ?? null), color: 'rgba(234,88,12,0.95)' },
       { label: '최고', data: ss.map(s => s?.hi.v ?? null), color: 'rgba(220,38,38,0.55)', dash: true },
       { label: '최저', data: ss.map(s => s?.lo.v ?? null), color: 'rgba(234,88,12,0.4)', dash: true },
-      { label: '리셀 새 가방(미사용) 매물(오른쪽)', data: days.map(d => gapDay(d) ? null : d.listed.new), color: 'rgba(37,99,235,0.8)', axis: 'y2' },
-      { label: '리셀 중고(사용한 가방) 매물(오른쪽)', data: days.map(d => gapDay(d) ? null : d.listed.pre), color: 'rgba(107,114,128,0.7)', axis: 'y2' },
     ])} />
   } else {
     const b = basket[sel]
