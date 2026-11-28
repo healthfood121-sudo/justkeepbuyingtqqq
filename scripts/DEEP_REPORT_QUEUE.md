@@ -206,7 +206,7 @@
 - [x] 192. DOV (roic5 12.4, 현재 25KB)
 - [x] 193. BRO (roic5 11.9, 현재 25KB)
 - [x] 194. WM (roic5 11.9, 현재 25KB)
-- [ ] 195. SPGI (roic5 11.8, 현재 36KB)
+- [x] 195. SPGI (roic5 11.8, 현재 36KB)
 - [ ] 196. SBAC (roic5 11.7, 현재 25KB)
 - [ ] 197. APD (roic5 11.6, 현재 26KB)
 - [ ] 198. RCL (roic5 11.5, 현재 24KB)
