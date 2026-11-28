@@ -1,0 +1,36 @@
+name: 리셀 수집처 진단 (조사용)
+
+on:
+  workflow_dispatch:
+    inputs:
+      base:
+        description: '쇼핑몰 주소'
+        required: false
+        default: 'https://www.madisonavenuecouture.com'
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install requests
+      - name: 진단
+        env:
+          BASE: ${{ inputs.base }}
+        run: |
+          python - <<'PY'
+          import os, requests
+          base = os.environ["BASE"]
+          UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+                "Accept-Language": "en-US,en;q=0.9"}
+          for path in ["/collections/hermes/products.json?limit=250&page=1", "/collections/hermes", "/products.json?limit=5", "/collections.json", "/"]:
+              try:
+                  r = requests.get(base + path, headers=UA, timeout=40, allow_redirects=True)
+                  print("==", path, r.status_code, len(r.content), r.url)
+                  print("   headers:", {k: v for k, v in r.headers.items() if k.lower() in ("server", "content-type", "location", "cf-ray", "x-shopid", "x-shopify-stage", "retry-after")})
+                  print("   body:", r.text[:300].replace("\n", " "))
+              except Exception as e:
+                  print("==", path, "ERR", e)
+          PY
