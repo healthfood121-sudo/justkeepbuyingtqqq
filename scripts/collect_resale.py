@@ -97,6 +97,20 @@ def q(vals, p):
     s = sorted(vals); i = (len(s) - 1) * p; lo = int(i); hi = min(lo + 1, len(s) - 1)
     return s[lo] + (s[hi] - s[lo]) * (i - lo)
 
+def by_shop(live):
+    """쇼핑몰별 대표 10종 매물 수와 모델별 희망가(중간값). 한 곳이 빠져도 나머지를 따로 볼 수 있게."""
+    out = {}
+    for sh in SHOPS:
+        ls = [l for l in live if l["shop"] == sh]
+        if not ls: continue
+        ks = {}
+        for k in BASKET:
+            for cond in ("new", "pre"):
+                ps = [l["price"] for l in ls if l["key"] == k and l["cond"] == cond]
+                if ps: ks.setdefault(k, {})[cond] = {"n": len(ps), "med": round(q(ps, .5)), "p25": round(q(ps, .25))}
+        out[sh] = {"new": sum(1 for l in ls if l["cond"] == "new"), "pre": sum(1 for l in ls if l["cond"] == "pre"), "keys": ks}
+    return out
+
 def hermes():
     listings, shop_n, errors = [], {}, []
     for name, (base, default_cond) in SHOPS.items():
@@ -171,6 +185,7 @@ def hermes():
            "premIndex": round(statistics.median(prems), 3) if prems else None}
     if errors: day["errors"] = errors
     if failed: day["missingShops"] = sorted(failed)
+    day["byShop"] = by_shop(live)
     daily_p = OUT / "hermes_daily.json"
     daily = json.loads(daily_p.read_text()) if daily_p.exists() else {}
     days = [d for d in daily.get("days", []) if d["date"] != TODAY] + [day]

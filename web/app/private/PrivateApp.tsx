@@ -8197,7 +8197,7 @@ const RMS_PE_MARKS: PeMark[] = [
 ]
 
 // ── 리셀가·할인율 추이 (에르메스 웃돈 / 나이키 할인) ─────────────────
-type TrendSeries = { label: string; data: Array<number | null>; color: string; axis?: 'y' | 'y2'; dash?: boolean }
+type TrendSeries = { label: string; data: Array<number | null>; color: string; axis?: 'y' | 'y2'; dash?: boolean; breakGaps?: boolean }
 function TrendChart({ labels, series, yFmt, y2Fmt, height = 220 }: {
   labels: string[]; series: TrendSeries[]; yFmt: (v: number) => string; y2Fmt?: (v: number) => string; height?: number
 }) {
@@ -8211,7 +8211,7 @@ function TrendChart({ labels, series, yFmt, y2Fmt, height = 220 }: {
     labels,
     datasets: series.map(s => ({
       label: s.label, data: s.data, borderColor: s.color, backgroundColor: s.color, yAxisID: s.axis ?? 'y',
-      borderWidth: 2, borderDash: s.dash ? [5, 4] : [], pointRadius: one ? 4 : 2, pointHoverRadius: 5, tension: 0.2, spanGaps: true,
+      borderWidth: 2, borderDash: s.dash ? [5, 4] : [], pointRadius: one ? 4 : 2, pointHoverRadius: 5, tension: 0.2, spanGaps: !s.breakGaps,
     })),
   }
   const options: any = {
@@ -8429,25 +8429,27 @@ function HermesResaleCard() {
 
   // 차트: 종합 또는 선택한 모델
   let chart: ReactNode
+  // 수집 공백 날(한 쇼핑몰을 못 모은 날)은 합계·가격 선을 비워 가짜 급감·급등을 그리지 않는다
+  const gapDay = (d: any) => !!d.missingShops?.length
   if (sel === 'ALL') {
-    const ss = days.map(d => premSummary(d, premKeys))
+    const ss = days.map(d => gapDay(d) ? null : premSummary(d, premKeys))
     chart = <TrendChart key={`ALL-${gran}`} labels={labels} yFmt={bx} y2Fmt={v => `${Math.round(v)}개`} height={260} series={mk([
       { label: '평균 웃돈', data: ss.map(s => s?.avg ?? null), color: 'rgba(234,88,12,0.95)' },
       { label: '최고', data: ss.map(s => s?.hi.v ?? null), color: 'rgba(220,38,38,0.55)', dash: true },
       { label: '최저', data: ss.map(s => s?.lo.v ?? null), color: 'rgba(234,88,12,0.4)', dash: true },
-      { label: '리셀 새 가방(미사용) 매물(오른쪽)', data: days.map(d => d.listed.new), color: 'rgba(37,99,235,0.8)', axis: 'y2' },
-      { label: '리셀 중고(사용한 가방) 매물(오른쪽)', data: days.map(d => d.listed.pre), color: 'rgba(107,114,128,0.7)', axis: 'y2' },
+      { label: '리셀 새 가방(미사용) 매물(오른쪽)', data: days.map(d => gapDay(d) ? null : d.listed.new), color: 'rgba(37,99,235,0.8)', axis: 'y2' },
+      { label: '리셀 중고(사용한 가방) 매물(오른쪽)', data: days.map(d => gapDay(d) ? null : d.listed.pre), color: 'rgba(107,114,128,0.7)', axis: 'y2' },
     ])} />
   } else {
     const b = basket[sel]
-    const cnt = { label: '매물 수(오른쪽)', data: days.map(d => (d.keys[sel]?.new?.n ?? 0) + (d.keys[sel]?.pre?.n ?? 0)), color: 'rgba(107,114,128,0.6)', axis: 'y2' as const, dash: true }
+    const cnt = { label: '매물 수(오른쪽)', data: days.map(d => gapDay(d) ? null : (d.keys[sel]?.new?.n ?? 0) + (d.keys[sel]?.pre?.n ?? 0)), color: 'rgba(107,114,128,0.6)', axis: 'y2' as const, dash: true }
     chart = b.retail
       ? <TrendChart key={`${sel}-${gran}`} labels={labels} yFmt={bx} y2Fmt={v => `${Math.round(v)}개`} series={mk([
-          { label: '새 가방 웃돈', data: days.map(d => d.keys[sel]?.new?.prem ?? null), color: 'rgba(234,88,12,0.95)' },
-          { label: '중고 웃돈', data: days.map(d => d.keys[sel]?.pre?.prem ?? null), color: 'rgba(37,99,235,0.85)' }, cnt])} />
+          { label: '새 가방 웃돈', data: days.map(d => gapDay(d) ? null : d.keys[sel]?.new?.prem ?? null), color: 'rgba(234,88,12,0.95)' },
+          { label: '중고 웃돈', data: days.map(d => gapDay(d) ? null : d.keys[sel]?.pre?.prem ?? null), color: 'rgba(37,99,235,0.85)' }, cnt])} />
       : <TrendChart key={`${sel}-${gran}`} labels={labels} yFmt={usd} y2Fmt={v => `${Math.round(v)}개`} series={mk([
-          { label: '새 가방 희망가', data: days.map(d => d.keys[sel]?.new?.med ?? null), color: 'rgba(234,88,12,0.95)' },
-          { label: '중고 희망가', data: days.map(d => d.keys[sel]?.pre?.med ?? null), color: 'rgba(37,99,235,0.85)' }, cnt])} />
+          { label: '새 가방 희망가', data: days.map(d => gapDay(d) ? null : d.keys[sel]?.new?.med ?? null), color: 'rgba(234,88,12,0.95)' },
+          { label: '중고 희망가', data: days.map(d => gapDay(d) ? null : d.keys[sel]?.pre?.med ?? null), color: 'rgba(37,99,235,0.85)' }, cnt])} />
   }
   const btn = (k: string, lb: string) => (
     <button key={k} onClick={() => setSel(k)}
@@ -8489,6 +8491,38 @@ function HermesResaleCard() {
       </div>
       <GranButtons gran={gran} setGran={setGran} />
       {chart}
+      {(() => {
+        // 쇼핑몰별 매물: 한 곳을 못 모은 날은 그 쇼핑몰 선만 끊긴다(0으로 떨어뜨리지 않음)
+        const SH: [string, string, string][] = [['priveporter', '프리베 포터(새 가방)', 'rgba(234,88,12,0.9)'], ['mac', '매디슨 애비뉴 쿠튀르(새 가방)', 'rgba(220,38,38,0.75)'],
+          ['rebag', '리백(중고)', 'rgba(37,99,235,0.85)'], ['fashionphile', '패셔노필(중고)', 'rgba(107,114,128,0.8)']]
+        const val = (d: any, k: string) => (d.missingShops?.includes(k) || !d.shops?.[k]) ? null : d.shops[k]
+        const bs = last.byShop as Record<string, { new: number; pre: number; keys: Record<string, any> }> | undefined
+        return (
+          <div className="space-y-2">
+            <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">쇼핑몰별 에르메스 매물 수 <span className="font-normal text-gray-400">· 각 쇼핑몰의 에르메스 상품 전체(가방 외 포함). 못 모은 날은 선이 끊김</span></p>
+            <TrendChart key={`SHOP-${gran}`} labels={labels} yFmt={v => `${Math.round(v)}개`} height={200} series={mk(SH.map(([k, lb, c]) => ({ label: lb, data: days.map(d => val(d, k)), color: c, breakGaps: true })))} />
+            {bs && (
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead><tr className="text-gray-500 border-b border-gray-200 dark:border-gray-700">
+                    <th className="text-left py-1 pr-2 font-medium">쇼핑몰({last.date})</th>
+                    <th className="text-right py-1 px-2 font-medium">대표 10종 매물<br />새/중고</th>
+                    {premKeys.map(k => <th key={k} className="text-right py-1 px-2 font-medium">{basket[k].label}<br />새 가방 웃돈</th>)}
+                  </tr></thead>
+                  <tbody>{SH.filter(([k]) => bs[k]).map(([k, lb]) => (
+                    <tr key={k} className="border-b border-gray-100 dark:border-gray-800 text-gray-700 dark:text-gray-200">
+                      <td className="py-1 pr-2">{lb}</td>
+                      <td className="text-right py-1 px-2">{bs[k].new}/{bs[k].pre}</td>
+                      {premKeys.map(pk => { const v = bs[k].keys?.[pk]?.new; const r = basket[pk].retail
+                        return <td key={pk} className="text-right py-1 px-2">{v && r ? `${(v.med / r).toFixed(2)}배 (${v.n})` : '-'}</td> })}
+                    </tr>))}</tbody>
+                </table>
+                <p className="text-[11px] text-gray-400 mt-1">괄호 안은 매물 수. 쇼핑몰별 숫자는 2026-11-28부터 따로 모은다.</p>
+              </div>
+            )}
+          </div>
+        )
+      })()}
       <div className="overflow-x-auto">
         <table className="w-full text-xs">
           <thead>
