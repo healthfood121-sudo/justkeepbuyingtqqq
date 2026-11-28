@@ -267,7 +267,7 @@
 - [x] 253. BMI (roic5 —, 현재 28KB)
 - [x] 254. BNY (roic5 —, 현재 24KB)
 - [x] 255. BRKB (roic5 —, 현재 22KB)
-- [ ] 256. BX (roic5 —, 현재 25KB)
+- [x] 256. BX (roic5 —, 현재 25KB)
 - [ ] 257. CASY (roic5 —, 현재 25KB)
 - [ ] 258. CB (roic5 —, 현재 25KB)
 - [ ] 259. CBOE (roic5 —, 현재 23KB)
