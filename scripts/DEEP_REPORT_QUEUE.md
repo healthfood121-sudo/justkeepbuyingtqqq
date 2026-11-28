@@ -270,7 +270,7 @@
 - [x] 256. BX (roic5 —, 현재 25KB)
 - [x] 257. CASY (roic5 —, 현재 25KB)
 - [x] 258. CB (roic5 —, 현재 25KB)
-- [ ] 259. CBOE (roic5 —, 현재 23KB)
+- [x] 259. CBOE (roic5 —, 현재 23KB)
 - [ ] 260. CINF (roic5 —, 현재 24KB)
 - [ ] 261. CME (roic5 —, 현재 30KB)
 - [ ] 262. CRWD (roic5 —, 현재 21KB)
