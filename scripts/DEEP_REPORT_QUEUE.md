@@ -196,7 +196,7 @@
 - [x] 182. ABT (roic5 13.7, 현재 24KB)
 - [x] 183. ENS (roic5 13.7, 현재 26KB)
 - [x] 184. MSA (roic5 13.7, 현재 25KB)
-- [ ] 185. IEX (roic5 13.6, 현재 25KB)
+- [x] 185. IEX (roic5 13.6, 현재 25KB)
 - [ ] 186. BCPC (roic5 13.5, 현재 25KB)
 - [ ] 187. NOC (roic5 13.5, 현재 25KB)
 - [ ] 188. HWM (roic5 13.4, 현재 19KB)
