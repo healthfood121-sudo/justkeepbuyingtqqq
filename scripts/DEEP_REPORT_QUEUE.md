@@ -261,7 +261,7 @@
 - [x] 247. AMP (roic5 —, 현재 25KB)
 - [x] 248. ANT (roic5 —, 현재 32KB) — 상장 첫 주라 분기·보유 기록 없음, 생략
 - [x] 249. APO (roic5 —, 현재 20KB)
-- [ ] 250. AXP (roic5 —, 현재 20KB)
+- [x] 250. AXP (roic5 —, 현재 20KB)
 - [ ] 251. BKNG (roic5 —, 현재 46KB)
 - [ ] 252. BLK (roic5 —, 현재 19KB)
 - [ ] 253. BMI (roic5 —, 현재 28KB)
