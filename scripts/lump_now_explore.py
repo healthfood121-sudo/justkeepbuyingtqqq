@@ -9,6 +9,7 @@ lump_now_explore.py — (탐색용, 터미널 출력만) 지금처럼 나스닥1
   C  거치만, 25% 룰 (1년 최고 종가 −25% 아래 마감 → 다음 날 매도, 현금일 때 200일선 위 15일 연속 → 다음 날 매수,
      현금은 연방기금금리 −0.4%p 세후 이자)
   D  거치 + 매일 20만원 적립 + 25% 룰 (현금일 때 적립금은 현금으로 쌓였다가 재매수 때 함께 매수)
+  E~H  위 A~D와 같되 거치금을 5번(시작일, 이후 1년마다) 나눠 넣음. 안 넣은 돈은 현금 이자 받으며 자산에 포함
 TQQQ는 data_loader 합성가격 with_costs (운용보수 + 스왑금리). 세금·환율 무시, 명목 금액.
 
 실행: python scripts/lump_now_explore.py [--lump 2.4e8] [--target 1e9]
@@ -50,13 +51,25 @@ def rule25_states(closes, ema, peaks):
     return inv
 
 
-def years_to_target(px, start, lump, target, daily=0.0, inv=None, cash_r=None):
-    """start 종가에 진입, 목표 도달까지 연수 (도달 못 하면 None)."""
+def years_to_target(px, start, lump, target, daily=0.0, inv=None, cash_r=None, split=1):
+    """start 종가에 진입, 목표 도달까지 연수 (도달 못 하면 None).
+    split>1: 거치금을 split번(시작일, 이후 252거래일마다) 나눠 넣고, 아직 안 넣은 돈은 현금 이자를 받으며 자산에 포함."""
     n = len(px)
     end = min(n, start + MAX_YEARS * 252)
-    shares, cash = lump / px[start], 0.0
+    part = lump / split
+    shares, cash = part / px[start], 0.0
+    reserve, left = lump - part, split - 1
     holding = True
     for t in range(start + 1, end):
+        if reserve:
+            reserve *= 1 + cash_r[t]
+            if left and (t - start) % 252 == 0:
+                amt = reserve if left == 1 else part
+                reserve -= amt; left -= 1
+                if holding or inv is None:
+                    shares += amt / px[t]
+                else:
+                    cash += amt
         if inv is not None:
             want = inv[t - 1]                    # 전날 종가 이후 상태로 오늘 수익
             if holding and not want:             # 전날 종가에 매도한 것으로
@@ -70,7 +83,7 @@ def years_to_target(px, start, lump, target, daily=0.0, inv=None, cash_r=None):
                 shares += daily / px[t]
             else:
                 cash += daily
-        val = shares * px[t] + cash
+        val = shares * px[t] + cash + reserve
         if val >= target:
             return (t - start) / 252
     return None
@@ -135,6 +148,10 @@ def main():
         ("B 거치+일20만  ", lambda t: years_to_target(px, t, args.lump, args.target, daily=DAILY)),
         ("C 거치·25% 룰 ", lambda t: years_to_target(px, t, args.lump, args.target, inv=inv25, cash_r=cash_r)),
         ("D 거치+적립·25%", lambda t: years_to_target(px, t, args.lump, args.target, daily=DAILY, inv=inv25, cash_r=cash_r)),
+        ("E 5년분할      ", lambda t: years_to_target(px, t, args.lump, args.target, cash_r=cash_r, split=5)),
+        ("F 5년분할·25%  ", lambda t: years_to_target(px, t, args.lump, args.target, inv=inv25, cash_r=cash_r, split=5)),
+        ("G 5년분할+적립 ", lambda t: years_to_target(px, t, args.lump, args.target, daily=DAILY, cash_r=cash_r, split=5)),
+        ("H 분할+적립·25%", lambda t: years_to_target(px, t, args.lump, args.target, daily=DAILY, inv=inv25, cash_r=cash_r, split=5)),
     ]:
         for gname, ts in groups:
             ys = [fn(t) for t in ts]
@@ -142,16 +159,18 @@ def main():
             print(line)
         print()
 
-    print("하락 국면별 (처음 −12~−17%에 들어온 날 진입) — A 거치만 / C 25% 룰 / B 거치+적립 / D 거치+적립·25% 룰")
+    print("하락 국면별 (처음 −12~−17%에 들어온 날 진입) — A 거치만 / C 25% 룰 / B 거치+적립 / D 거치+적립·25% 룰 / G 5년분할+적립 / H 5년분할+적립·25% 룰")
     for t in episodes:
         a = years_to_target(px, t, args.lump, args.target)
         c = years_to_target(px, t, args.lump, args.target, inv=inv25, cash_r=cash_r)
         b = years_to_target(px, t, args.lump, args.target, daily=DAILY)
         dd_ = years_to_target(px, t, args.lump, args.target, daily=DAILY, inv=inv25, cash_r=cash_r)
+        g = years_to_target(px, t, args.lump, args.target, daily=DAILY, cash_r=cash_r, split=5)
+        h = years_to_target(px, t, args.lump, args.target, daily=DAILY, inv=inv25, cash_r=cash_r, split=5)
         low = (closes[t:t + 252].min() / peaks[t] - 1) if t + 1 < n else np.nan
         tq_dd = px[t] / px[max(0, t - 252):t + 1].max() - 1
         f = lambda y: f"{y:5.1f}년" if y is not None else ("  진행중" if avail(t) < MAX_YEARS else " 30년+ ")
-        print(f"  {dates[t].date()}  나스닥100 {dd[t]:+.0%} · TQQQ {tq_dd:+.0%} · 이후 1년 최저 {low:+.0%}   A {f(a)}   C {f(c)}   B {f(b)}   D {f(dd_)}")
+        print(f"  {dates[t].date()}  나스닥100 {dd[t]:+.0%} · TQQQ {tq_dd:+.0%} · 이후 1년 최저 {low:+.0%}   A {f(a)}   C {f(c)}   B {f(b)}   D {f(dd_)}   G {f(g)}   H {f(h)}")
 
 
 if __name__ == "__main__":
