@@ -27,7 +27,7 @@ def text(h):
 
 t = sys.argv[1].upper()
 tick = get('https://www.sec.gov/files/company_tickers.json').json()
-cik = next(int(v['cik_str']) for v in tick.values() if v['ticker'].upper() == t)
+cik = next((int(v['cik_str']) for v in tick.values() if v['ticker'].upper() == t), None)
 import os as _os
 if _os.environ.get('CIK'):
     cik = int(_os.environ['CIK'])  # 회사 번호가 바뀐 경우(예: XOM 옛 번호 34088)
