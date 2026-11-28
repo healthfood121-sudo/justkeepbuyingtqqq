@@ -222,7 +222,7 @@
 - [x] 208. TMO (roic5 9.2, 현재 26KB)
 - [x] 209. VMC (roic5 9.2, 현재 24KB)
 - [x] 210. EFX (roic5 8.5, 현재 43KB)
-- [ ] 211. MKC (roic5 8.3, 현재 44KB)
+- [x] 211. MKC (roic5 8.3, 현재 44KB)
 - [ ] 212. MLM (roic5 8.2, 현재 25KB)
 - [ ] 213. SPG (roic5 8.2, 현재 20KB)
 - [ ] 214. XYL (roic5 8.2, 현재 23KB)
