@@ -242,7 +242,7 @@
 - [x] 228. DHR (roic5 6.7, 현재 24KB)
 - [x] 229. GLW (roic5 6.4, 현재 22KB)
 - [x] 230. WDAY (roic5 6.4, 현재 21KB)
-- [ ] 231. ADI (roic5 6.3, 현재 21KB)
+- [x] 231. ADI (roic5 6.3, 현재 21KB)
 - [ ] 232. IRM (roic5 6.3, 현재 22KB)
 - [ ] 233. ROP (roic5 6.0, 현재 34KB)
 - [ ] 234. AWK (roic5 5.8, 현재 22KB)
