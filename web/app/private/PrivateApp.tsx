@@ -8565,6 +8565,7 @@ function HermesResaleCard() {
       </div>
       <div className="rounded-md bg-amber-50 dark:bg-amber-950/30 p-3 space-y-1">
         <p className="text-xs font-semibold text-amber-800 dark:text-amber-300">읽는 법</p>
+        <p className={p}>· <b>가격은 어디서 가져오나</b>: 미국 리셀 쇼핑몰 4곳의 공개 상품 목록에 올라온 <b>판매 희망가</b>를 매일 아침 7시 40분(한국 시간)에 모은다. 새 가방은 <b>프리베 포터</b>(priveporter.com)·<b>매디슨 애비뉴 쿠튀르</b>(madisonavenuecouture.com), 중고는 <b>리백</b>(shop.rebag.com)·<b>패셔노필</b>(fashionphile.com). 에르메스 매장 가격이 아니라 리셀 시장의 호가다. 대표 10종만 골라 판매 중인 매물의 가격 중간값·하위 25%·상위 25%를 내고, 웃돈은 새 가방 희망가 중간값 ÷ 미국 매장 정가(2026년 1월, 소더비·퍼스밥 보도 기준)다. 새 가방은 두 곳뿐이라 한 곳이 빠지면 숫자가 크게 흔들린다(아래 쇼핑몰별 차트로 확인).</p>
         <p className={p}>· <b>새 가방·중고는 둘 다 리셀(되팔기) 시장이다</b> — 에르메스 매장 재고가 아니다. <b>새 가방</b> = 매장에서 사서 한 번도 안 들고 바로 되파는 미사용 가방(주로 Privé Porter·Madison Avenue Couture), <b>중고</b> = 누군가 들고 다니다 파는 사용한 가방(주로 Rebag·Fashionphile). 새 가방 웃돈은 &lsquo;매장에서 못 사서 웃돈 주고라도 사려는 수요&rsquo;, 중고 값은 &lsquo;들던 가방도 정가 근처에 팔리는지(가치 보존)&rsquo;를 보여 준다.</p>
         <p className={p}>· <b>웃돈</b> = 매장에서 새로 산 가방을 되파는 가격 ÷ 매장 정가. 1.5배면 정가보다 50% 비싸게 내놓는다는 뜻. 매장에서 못 사서 웃돈을 주고라도 사려는 수요가 얼마나 남았는지 보여준다.</p>
         <p className={p}>· <b>종합은 평균을 주로 본다.</b> 중간값은 그날 가운데 있는 모델 하나의 값이라 기준 모델이 바뀌면 선이 튈 수 있다. 평균은 5종이 모두 반영돼 흐름이 매끄럽다. 최고·최저는 인기 모델(보통 미니 켈리·버킨 25)과 덜 인기 모델의 차이 — 이 간격이 벌어지면 수요가 일부 모델에만 몰리는 것.</p>
