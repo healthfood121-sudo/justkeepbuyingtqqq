@@ -218,7 +218,7 @@
 - [x] 204. SYK (roic5 10.7, 현재 39KB)
 - [x] 205. ECL (roic5 10.4, 현재 20KB)
 - [x] 206. RSG (roic5 9.8, 현재 27KB)
-- [ ] 207. PWR (roic5 9.6, 현재 24KB)
+- [x] 207. PWR (roic5 9.6, 현재 24KB)
 - [ ] 208. TMO (roic5 9.2, 현재 26KB)
 - [ ] 209. VMC (roic5 9.2, 현재 24KB)
 - [ ] 210. EFX (roic5 8.5, 현재 43KB)
