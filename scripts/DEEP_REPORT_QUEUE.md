@@ -256,7 +256,7 @@
 - [x] 242. TTWO (roic5 -14.9, 현재 26KB)
 - [x] 243. ABNB (roic5 —, 현재 20KB)
 - [x] 244. ACGL (roic5 —, 현재 24KB)
-- [ ] 245. AFL (roic5 —, 현재 25KB)
+- [x] 245. AFL (roic5 —, 현재 25KB)
 - [ ] 246. AGX (roic5 —, 현재 22KB)
 - [ ] 247. AMP (roic5 —, 현재 25KB)
 - [ ] 248. ANT (roic5 —, 현재 32KB)
