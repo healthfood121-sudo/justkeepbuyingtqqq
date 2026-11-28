@@ -257,9 +257,9 @@
 - [x] 243. ABNB (roic5 —, 현재 20KB)
 - [x] 244. ACGL (roic5 —, 현재 24KB)
 - [x] 245. AFL (roic5 —, 현재 25KB)
-- [ ] 246. AGX (roic5 —, 현재 22KB)
+- [x] 246. AGX (roic5 —, 현재 22KB)
 - [ ] 247. AMP (roic5 —, 현재 25KB)
-- [ ] 248. ANT (roic5 —, 현재 32KB)
+- [x] 248. ANT (roic5 —, 현재 32KB) — 상장 첫 주라 분기·보유 기록 없음, 생략
 - [ ] 249. APO (roic5 —, 현재 20KB)
 - [ ] 250. AXP (roic5 —, 현재 20KB)
 - [ ] 251. BKNG (roic5 —, 현재 46KB)
