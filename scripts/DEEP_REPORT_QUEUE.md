@@ -253,7 +253,7 @@
 - [x] 239. EQIX (roic5 4.7, 현재 22KB)
 - [x] 240. AMD (roic5 4.5, 현재 22KB)
 - [x] 241. AXON (roic5 3.5, 현재 23KB)
-- [ ] 242. TTWO (roic5 -14.9, 현재 26KB)
+- [x] 242. TTWO (roic5 -14.9, 현재 26KB)
 - [ ] 243. ABNB (roic5 —, 현재 20KB)
 - [ ] 244. ACGL (roic5 —, 현재 24KB)
 - [ ] 245. AFL (roic5 —, 현재 25KB)
