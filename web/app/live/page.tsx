@@ -43,31 +43,26 @@ type LastMap = Partial<Record<Strat, LastEv[]>>
 type LastCond = { date: string; state: '보유' | '현금' }
 
 function LastSig({ ev, cond }: { ev?: LastEv[]; cond?: LastCond }) {
-  // D10GK: 마지막 매수 신호 뒤에 조건만 맞은 날(보유 중이라 매매 없음)이 있으면 한 줄 더
+  // D10GK: 보유 중에 RSI 매수 신호만 뜬 날이 마지막 매수보다 뒤면, 그날을 '마지막 매수 신호'로
   const buy = ev?.find(x => x.action === '매수')
-  const c = cond && (!buy || cond.date > (buy.signal ?? buy.date)) ? cond : null
+  const c = cond && cond.state === '보유' && (!buy || cond.date > (buy.signal ?? buy.date)) ? cond : null
   if (!ev?.length && !c) return null
   return (
     <div className="mt-0.5 space-y-px font-normal text-[10px] whitespace-nowrap">
       {(['매도', '매수'] as const).map(a => {
-        const e = ev.find(x => x.action === a)
-        if (!e) return null
-        const d = e.signal ?? e.date
+        const e = ev?.find(x => x.action === a)
+        if (!e && !(a === '매수' && c)) return null
+        const d = a === '매수' && c ? c.date : (e!.signal ?? e!.date)
         return (
           <div key={a} className="text-gray-500 dark:text-gray-400">
             <span className={a === '매도' ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400'}>마지막 {a} 신호</span>{' '}
             <span className="font-mono">{d}</span>
-            {d !== e.date && <span className="text-gray-400 dark:text-gray-500"> → {e.date.slice(5)} {a}</span>}
+            {a === '매수' && c
+              ? <span className="text-gray-400 dark:text-gray-500"> → 이미 보유 중이라 매매 없음{e ? ` (${e.date}부터 보유)` : ''}</span>
+              : d !== e!.date && <span className="text-gray-400 dark:text-gray-500"> → {e!.date.slice(5)} {a}</span>}
           </div>
         )
       })}
-      {c && (
-        <div className="text-gray-500 dark:text-gray-400">
-          <span className="text-amber-700 dark:text-amber-300">마지막 재매수 조건 충족</span>{' '}
-          <span className="font-mono">{c.date}</span>
-          <span className="text-gray-400 dark:text-gray-500"> → {c.state === '보유' ? '보유 중이라 매매 없음' : '그날 종가에 매수'}</span>
-        </div>
-      )}
     </div>
   )
 }

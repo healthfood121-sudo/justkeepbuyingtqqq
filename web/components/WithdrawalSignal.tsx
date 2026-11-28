@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import Link from 'next/link'
 
 interface Loc {
@@ -96,40 +96,32 @@ function LastEvents({ t }: { t: StrategySignal }) {
   const items = (['매도', '매수'] as const)
     .map(a => ({ a, e: t.last_events.find(e => e.action === a) }))
     .filter((x): x is { a: '매도' | '매수'; e: StrategySignal['last_events'][number] } => !!x.e)
-  // D10GK: 마지막 매수 신호보다 뒤에 조건만 맞은 날(보유 중이라 매매 없음)이 있으면 따로 표시
+  // D10GK: 보유 중에 RSI 매수 신호만 뜬 날이 마지막 매수보다 뒤면, 그날을 '마지막 매수 신호'로 보여준다
   const lastBuy = items.find(x => x.a === '매수')?.e
-  const cond = t.last_cond && (!lastBuy || t.last_cond.date > (lastBuy.signal ?? lastBuy.date)) ? t.last_cond : null
+  const cond = t.last_cond && t.last_cond.state === '보유' && (!lastBuy || t.last_cond.date > (lastBuy.signal ?? lastBuy.date)) ? t.last_cond : null
   if (!items.length && !cond) return null
+  const Line = ({ a, day, rest }: { a: '매도' | '매수'; day: string; rest: ReactNode }) => (
+    <p className="text-gray-500 dark:text-gray-400">
+      <span className="whitespace-nowrap">
+        <span className={`font-semibold ${a === '매도' ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400'}`}>마지막 {a} 신호</span>{' '}
+        <span className="font-mono text-gray-700 dark:text-gray-200">{day}</span>
+        <span className="text-gray-400 dark:text-gray-500"> ({ago(day)})</span>
+      </span>{' '}
+      <span className="text-gray-400 dark:text-gray-500">→ {rest}</span>
+    </p>
+  )
   return (
     <div className="mt-1.5 space-y-0.5 text-[11px]">
       {items.map(({ a, e }) => {
+        if (a === '매수' && cond) {
+          return <Line key={a} a={a} day={cond.date}
+            rest={<><span className="whitespace-nowrap">이미 보유 중이라 매매 없음</span>{' '}<span className="whitespace-nowrap">(<span className="font-mono">{e.date}</span>부터 보유)</span></>} />
+        }
         const sigDay = e.signal ?? e.date
-        const sameDay = sigDay === e.date
-        return (
-          <p key={a} className="text-gray-500 dark:text-gray-400">
-            <span className="whitespace-nowrap">
-              <span className={`font-semibold ${a === '매도' ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400'}`}>마지막 {a} 신호</span>{' '}
-              <span className="font-mono text-gray-700 dark:text-gray-200">{sigDay}</span>
-              <span className="text-gray-400 dark:text-gray-500"> ({ago(sigDay)})</span>
-            </span>{' '}
-            <span className="whitespace-nowrap text-gray-400 dark:text-gray-500">
-              → {sameDay ? '그날 종가에' : <><span className="font-mono">{e.date}</span> 종가에</>} {a}
-            </span>
-          </p>
-        )
+        return <Line key={a} a={a} day={sigDay}
+          rest={<span className="whitespace-nowrap">{sigDay === e.date ? '그날 종가에' : <><span className="font-mono">{e.date}</span> 종가에</>} {a}</span>} />
       })}
-      {cond && (
-        <p className="text-gray-500 dark:text-gray-400">
-          <span className="whitespace-nowrap">
-            <span className="font-semibold text-amber-700 dark:text-amber-300">마지막 재매수 조건 충족</span>{' '}
-            <span className="font-mono text-gray-700 dark:text-gray-200">{cond.date}</span>
-            <span className="text-gray-400 dark:text-gray-500"> ({ago(cond.date)})</span>
-          </span>{' '}
-          <span className="whitespace-nowrap text-gray-400 dark:text-gray-500">
-            → {cond.state === '보유' ? '보유 중이라 매매 없음' : '그날 종가에 매수'}
-          </span>
-        </p>
-      )}
+      {cond && !lastBuy && <Line a="매수" day={cond.date} rest="이미 보유 중이라 매매 없음" />}
     </div>
   )
 }
