@@ -232,7 +232,7 @@
 - [x] 218. CRM (roic5 7.5, 현재 34KB)
 - [x] 219. TDY (roic5 7.4, 현재 25KB)
 - [x] 220. WMB (roic5 7.4, 현재 22KB)
-- [ ] 221. AMT (roic5 7.3, 현재 23KB)
+- [x] 221. AMT (roic5 7.3, 현재 23KB)
 - [ ] 222. VST (roic5 7.3, 현재 21KB)
 - [ ] 223. STE (roic5 7.2, 현재 21KB)
 - [ ] 224. BSX (roic5 7.1, 현재 23KB)
