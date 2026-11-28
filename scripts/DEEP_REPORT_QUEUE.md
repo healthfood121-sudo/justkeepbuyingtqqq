@@ -210,7 +210,7 @@
 - [x] 196. SBAC (roic5 11.7, 현재 25KB)
 - [x] 197. APD (roic5 11.6, 현재 26KB)
 - [x] 198. RCL (roic5 11.5, 현재 24KB)
-- [ ] 199. ALG (roic5 11.4, 현재 24KB)
+- [x] 199. ALG (roic5 11.4, 현재 24KB)
 - [ ] 200. EMR (roic5 11.4, 현재 27KB)
 - [ ] 201. CSW (roic5 11.2, 현재 18KB)
 - [ ] 202. MWA (roic5 10.8, 현재 19KB)
