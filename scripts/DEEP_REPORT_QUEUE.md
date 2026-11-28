@@ -214,7 +214,7 @@
 - [x] 200. EMR (roic5 11.4, 현재 27KB)
 - [x] 201. CSW (roic5 11.2, 현재 18KB)
 - [x] 202. MWA (roic5 10.8, 현재 19KB)
-- [ ] 203. LDOS (roic5 10.7, 현재 21KB)
+- [x] 203. LDOS (roic5 10.7, 현재 21KB)
 - [ ] 204. SYK (roic5 10.7, 현재 39KB)
 - [ ] 205. ECL (roic5 10.4, 현재 20KB)
 - [ ] 206. RSG (roic5 9.8, 현재 27KB)
