@@ -238,7 +238,7 @@
 - [x] 224. BSX (roic5 7.1, 현재 23KB)
 - [x] 225. CSGP (roic5 7.0, 현재 32KB)
 - [x] 226. WAB (roic5 7.0, 현재 24KB)
-- [ ] 227. DIS (roic5 6.9, 현재 22KB)
+- [x] 227. DIS (roic5 6.9, 현재 22KB)
 - [ ] 228. DHR (roic5 6.7, 현재 24KB)
 - [ ] 229. GLW (roic5 6.4, 현재 22KB)
 - [ ] 230. WDAY (roic5 6.4, 현재 21KB)
