@@ -236,7 +236,7 @@
 - [x] 222. VST (roic5 7.3, 현재 21KB)
 - [x] 223. STE (roic5 7.2, 현재 21KB)
 - [x] 224. BSX (roic5 7.1, 현재 23KB)
-- [ ] 225. CSGP (roic5 7.0, 현재 32KB)
+- [x] 225. CSGP (roic5 7.0, 현재 32KB)
 - [ ] 226. WAB (roic5 7.0, 현재 24KB)
 - [ ] 227. DIS (roic5 6.9, 현재 22KB)
 - [ ] 228. DHR (roic5 6.7, 현재 24KB)
