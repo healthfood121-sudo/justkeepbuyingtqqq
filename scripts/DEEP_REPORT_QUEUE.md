@@ -251,7 +251,7 @@
 - [x] 237. BDX (roic5 5.2, 현재 23KB)
 - [x] 238. PLD (roic5 5.1, 현재 22KB)
 - [x] 239. EQIX (roic5 4.7, 현재 22KB)
-- [ ] 240. AMD (roic5 4.5, 현재 22KB)
+- [x] 240. AMD (roic5 4.5, 현재 22KB)
 - [ ] 241. AXON (roic5 3.5, 현재 23KB)
 - [ ] 242. TTWO (roic5 -14.9, 현재 26KB)
 - [ ] 243. ABNB (roic5 —, 현재 20KB)
