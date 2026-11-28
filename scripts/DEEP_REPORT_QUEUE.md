@@ -220,7 +220,7 @@
 - [x] 206. RSG (roic5 9.8, 현재 27KB)
 - [x] 207. PWR (roic5 9.6, 현재 24KB)
 - [x] 208. TMO (roic5 9.2, 현재 26KB)
-- [ ] 209. VMC (roic5 9.2, 현재 24KB)
+- [x] 209. VMC (roic5 9.2, 현재 24KB)
 - [ ] 210. EFX (roic5 8.5, 현재 43KB)
 - [ ] 211. MKC (roic5 8.3, 현재 44KB)
 - [ ] 212. MLM (roic5 8.2, 현재 25KB)
