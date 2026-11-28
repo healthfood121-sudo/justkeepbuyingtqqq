@@ -234,7 +234,7 @@
 - [x] 220. WMB (roic5 7.4, 현재 22KB)
 - [x] 221. AMT (roic5 7.3, 현재 23KB)
 - [x] 222. VST (roic5 7.3, 현재 21KB)
-- [ ] 223. STE (roic5 7.2, 현재 21KB)
+- [x] 223. STE (roic5 7.2, 현재 21KB)
 - [ ] 224. BSX (roic5 7.1, 현재 23KB)
 - [ ] 225. CSGP (roic5 7.0, 현재 32KB)
 - [ ] 226. WAB (roic5 7.0, 현재 24KB)
