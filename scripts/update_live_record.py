@@ -13,6 +13,7 @@ TQQQ 종가가 없는 날(Yahoo 조회 실패)은 나스닥100 수익률 × 3으
   python scripts/update_live_record.py               # 오늘 신호 파일(withdrawal_signal.json)을 한 줄 추가
   python scripts/update_live_record.py --backfill    # data/extra CSV로 START부터 다시 만든다 (처음 한 번)
   python scripts/update_live_record.py --fill-sig    # 날짜별 신호(sig)를 git 이력의 withdrawal_signal.json으로 채운다
+  (모든 모드 공통) TQQQ 종가가 빠진 날은 data/extra/tqqq.csv → Yahoo 순서로 다시 채운 뒤 성적을 다시 계산한다
 
 각 날짜 행의 sig = 그날 종가로 홈 화면 '오늘의 신호'에 실제로 떴던 값
   (RSI, 200일선 대비 %, 1년 최고가 대비 %, 그리고 25% 룰·S0·D10GK 각각의 상태·할 일·200일선 연속일).
@@ -151,10 +152,36 @@ def backfill() -> list:
     return rows
 
 
+def fill_tqqq(rows: list, online: bool = True) -> int:
+    """TQQQ 종가가 빠진 행을 data/extra/tqqq.csv, 그다음 Yahoo(최근 3개월)로 채운다. 채운 개수."""
+    miss = [r for r in rows if not r.get("tqqq")]
+    if not miss:
+        return 0
+    src = {}
+    csv = ROOT / "data/extra/tqqq.csv"
+    if csv.exists():
+        tq = pd.read_csv(csv, parse_dates=["Date"]).set_index("Date")["Close"]
+        src.update({str(d.date()): float(v) for d, v in tq.items()})
+    if online and any(r["d"] not in src for r in miss):
+        try:
+            sys.path.insert(0, str(Path(__file__).parent))
+            import export_withdrawal_signal as X
+            y = X.fetch_yahoo("TQQQ")
+            src.update({str(d.date()): float(v) for d, v in y.items()})
+        except Exception as e:                      # 네트워크 실패 시 다음 날 다시 시도
+            print(f"[경고] TQQQ 종가 조회 실패 — 빠진 날은 추정으로 둠: {e}", file=sys.stderr)
+    n = 0
+    for r in miss:
+        if r["d"] in src:
+            r["tqqq"] = round(src[r["d"]], 2); n += 1
+    return n
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--backfill", action="store_true")
     ap.add_argument("--fill-sig", action="store_true")
+    ap.add_argument("--offline", action="store_true", help="빠진 TQQQ 종가를 Yahoo에서 받지 않음")
     args = ap.parse_args()
 
     old = json.loads(OUT_PATH.read_text(encoding="utf-8")) if OUT_PATH.exists() else {"rows": []}
@@ -178,11 +205,17 @@ def main():
         add_missing_state(rows)
         sig = json.loads(SIGNAL.read_text(encoding="utf-8"))
         if sig["asof"] < START or (rows and sig["asof"] <= rows[-1]["d"]):
-            print(f"새 날짜 없음 ({sig['asof']}) — 그대로"); return
-        rows.append({"d": sig["asof"], "ndx": sig["ndx_close"], "tqqq": sig.get("tqqq_close"),
-                     "state": {k: sig["strategies"][k]["state"] for k in KEYS},
-                     "sig": sig_fields(sig)})
+            if all(r.get("tqqq") for r in rows):
+                print(f"새 날짜 없음 ({sig['asof']}) — 그대로"); return
+            print(f"새 날짜 없음 ({sig['asof']}) — 빠진 TQQQ 종가만 다시 채움")
+        else:
+            rows.append({"d": sig["asof"], "ndx": sig["ndx_close"], "tqqq": sig.get("tqqq_close"),
+                         "state": {k: sig["strategies"][k]["state"] for k in KEYS},
+                         "sig": sig_fields(sig)})
 
+    n = fill_tqqq(rows, online=not args.offline)
+    if n:
+        print(f"TQQQ 종가 채움: {n}일")
     out = recompute(rows)
     OUT_PATH.write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     n = out["now"]
