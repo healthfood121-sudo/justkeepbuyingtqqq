@@ -265,7 +265,7 @@
 - [x] 251. BKNG (roic5 —, 현재 46KB)
 - [x] 252. BLK (roic5 —, 현재 19KB)
 - [x] 253. BMI (roic5 —, 현재 28KB)
-- [ ] 254. BNY (roic5 —, 현재 24KB)
+- [x] 254. BNY (roic5 —, 현재 24KB)
 - [ ] 255. BRKB (roic5 —, 현재 22KB)
 - [ ] 256. BX (roic5 —, 현재 25KB)
 - [ ] 257. CASY (roic5 —, 현재 25KB)
